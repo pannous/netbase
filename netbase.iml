@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="C++" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/copyright" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/inspectionProfiles" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/scopes" />
+      <excludeFolder url="file://$MODULE_DIR$/.settings" />
+      <excludeFolder url="file://$MODULE_DIR$/archive" />
+      <excludeFolder url="file://$MODULE_DIR$/build" />
+      <excludeFolder url="file://$MODULE_DIR$/build/Debug" />
+      <excludeFolder url="file://$MODULE_DIR$/build/s2" />
+      <excludeFolder url="file://$MODULE_DIR$/build/src" />
+      <excludeFolder url="file://$MODULE_DIR$/data" />
+      <excludeFolder url="file://$MODULE_DIR$/data/bins" />
+      <excludeFolder url="file://$MODULE_DIR$/data/csv" />
+      <excludeFolder url="file://$MODULE_DIR$/data/import" />
+      <excludeFolder url="file://$MODULE_DIR$/data/sql_scripts" />
+      <excludeFolder url="file://$MODULE_DIR$/data/wiki" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/import" />
+      <excludeFolder url="file://$MODULE_DIR$/import/dbpedia_extraction" />
+      <excludeFolder url="file://$MODULE_DIR$/import/facts" />
+      <excludeFolder url="file://$MODULE_DIR$/import/freebase" />
+      <excludeFolder url="file://$MODULE_DIR$/nbproject" />
+      <excludeFolder url="file://$MODULE_DIR$/nbproject/private" />
+      <excludeFolder url="file://$MODULE_DIR$/netbase.dSYM" />
+      <excludeFolder url="file://$MODULE_DIR$/netbase.dSYM/Contents" />
+    </content>
+    <orderEntry type="jdk" jdkName="Cpp SDK" jdkType="CppSdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+  </component>
+</module>
+

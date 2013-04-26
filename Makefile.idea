@@ -1,0 +1,60 @@
+CFLAGS := --debug -c -g -w -s -MMD -MP -MF
+CC := g++
+LD        := g++
+define cc_command
+$(CC) $(CFLAGS) $< -o $@
+endef
+
+VPATH := src
+SRC_DIR   := src
+BUILDDIR := build/
+BUILDDIR = build
+
+ccc = g++ --debug -c -g -w -s -MMD -MP
+#ccc := g++ --debug -g -w -s -MMD -MP
+
+all: buildall objects do_netbase test console
+
+test:
+	echo "HALLO"
+
+clean:
+	rm -rf build
+	rm -f netbase
+	mkdir build
+
+buildall :
+$(BUILDDIR)/%.o:    $(SRC_DIR)/%.cpp
+	$(cc_command)
+
+#buildall :
+#	$(ccc) -c src/%.cpp -o build/%.o
+
+
+objects:
+	$(ccc) -c src/export.cpp -o build/export.o
+	$(ccc) -c src/import.cpp -o build/import.o
+	$(ccc) -c src/console.cpp -o build/console.o
+	$(ccc) -c src/netbase.cpp -o build/netbase.o
+	$(ccc) -c src/md5.cpp -o build/md5.o
+	$(ccc) -c src/tests.cpp -o build/tests.o
+	$(ccc) -c src/util.cpp -o build/util.o
+
+do_netbase:
+#	$(ccc) src/import.cpp src/netbase.cpp src/tests.cpp src/export.cpp src/md5.cpp src/util.cpp src/console.cpp /usr/lib/libsqlite3.dylib -o netbase
+	g++ -g -w src/import.cpp src/netbase.cpp src/tests.cpp src/export.cpp src/md5.cpp src/util.cpp src/console.cpp /usr/lib/libsqlite3.dylib -o netbase
+	echo "NETBASE compiled successfully"
+
+console:
+	./netbase $@
+
+
+#
+# g++ --debug -c -g -w -s -MMD -MP -MF build/export.o.d -o build/export.o src/export.cpp
+# g++ --debug -c -g -w -s -MMD -MP -MF build/console.o.d -o build/console.o src/console.cpp
+# g++ --debug -c -g -w -s -MMD -MP -MF build/import.o.d -o build/import.o src/import.cpp
+# g++ --debug -c -g -w -s -MMD -MP -MF build/md5.o.d -o build/md5.o src/md5.cpp
+# g++ --debug -c -g -w -s -MMD -MP -MF build/netbase.o.d -o build/netbase.o src/netbase.cpp
+# g++ --debug -c -g -w -s -MMD -MP -MF build/tests.o.d -o build/tests.o src/tests.cpp
+# g++ --debug -c -g -w -s -MMD -MP -MF build/util.o.d -o build/util.o src/util.cpp
+# g++ -g -w src/import.cpp src/netbase.cpp src/tests.cpp src/export.cpp src/md5.cpp src/util.cpp src/console.cpp /usr/lib/libsqlite3.dylib -o netbase  && ./netbase $@

@@ -1,0 +1,1057 @@
+checking for main() in -lrice... yes
+creating Makefile
+compiling console.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+console.cpp: In function ‘void showHelp()’:
+console.cpp:37: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:38: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:39: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:40: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:41: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:42: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:43: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:44: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:45: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:46: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:47: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:48: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:49: warning: deprecated conversion from string constant to ‘char*’
+console.cpp: In function ‘char* getaline()’:
+console.cpp:294: warning: implicit conversion shortens 64-bit value into a 32-bit value
+console.cpp:295: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:315: warning: comparison between signed and unsigned integer expressions
+console.cpp:327: warning: comparison between signed and unsigned integer expressions
+console.cpp:336: warning: comparison between signed and unsigned integer expressions
+console.cpp:352: warning: format not a string literal and no format arguments
+console.cpp:352: warning: format not a string literal and no format arguments
+console.cpp:354: warning: implicit conversion shortens 64-bit value into a 32-bit value
+console.cpp:365: warning: format not a string literal and no format arguments
+console.cpp:365: warning: format not a string literal and no format arguments
+console.cpp:367: warning: implicit conversion shortens 64-bit value into a 32-bit value
+console.cpp:384: warning: comparison between signed and unsigned integer expressions
+console.cpp:304: warning: unused variable ‘insert’
+console.cpp: In function ‘void console()’:
+console.cpp:455: warning: unused variable ‘n’
+console.cpp:456: warning: unused variable ‘i’
+console.cpp: In function ‘char* serve(const char*)’:
+console.cpp:480: warning: deprecated conversion from string constant to ‘char*’
+console.cpp:481: warning: deprecated conversion from string constant to ‘char*’
+console.cpp: In function ‘bool parse(const char*)’:
+console.cpp:248: warning: control reaches end of non-void function
+netbase.hpp: At global scope:
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+netbase.hpp:463: warning: ‘contextOffset’ defined but not used
+compiling export.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+export.cpp: In function ‘void save()’:
+export.cpp:32: warning: deprecated conversion from string constant to ‘char*’
+export.cpp: In function ‘void export_csv()’:
+export.cpp:75: warning: deprecated conversion from string constant to ‘char*’
+netbase.hpp: At global scope:
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+netbase.hpp:463: warning: ‘contextOffset’ defined but not used
+compiling import.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+import.cpp:1:9: warning: #pragma once in main file
+import.cpp:985:1: warning: "a" redefined
+In file included from import.cpp:17:
+netbase.hpp:32:1: warning: this is the location of the previous definition
+import.cpp:25: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:26: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:27: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘int share_memory()’:
+import.cpp:74: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:78: warning: overflow in implicit constant conversion
+import.cpp:78: warning: implicit conversion shortens 64-bit value into a 32-bit value
+import.cpp:83: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:98: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:107: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘char*’
+import.cpp:107: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 3 has type ‘const void*’
+import.cpp:107: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘char*’
+import.cpp:107: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 3 has type ‘const void*’
+import.cpp:110: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:105: warning: unused variable ‘c’
+import.cpp: In function ‘long int getMemory()’:
+import.cpp:123: warning: no return statement in function returning non-void
+import.cpp: In function ‘void norm(char*)’:
+import.cpp:142: warning: implicit conversion shortens 64-bit value into a 32-bit value
+import.cpp: In function ‘void importImages()’:
+import.cpp:154: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:190: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:236: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:168: warning: unused variable ‘tokens’
+import.cpp:172: warning: unused variable ‘bad’
+import.cpp:197: warning: unused variable ‘object’
+import.cpp: In function ‘void importNodes()’:
+import.cpp:240: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:302: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:273: warning: unused variable ‘deleted’
+import.cpp:274: warning: unused variable ‘version’
+import.cpp:275: warning: unused variable ‘wordKindName’
+import.cpp:276: warning: unused variable ‘wordKind’
+import.cpp:280: warning: unused variable ‘contextID’
+import.cpp:309: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘void importStatements()’:
+import.cpp:335: warning: unused variable ‘contextId’
+import.cpp:348: warning: unused variable ‘s’
+import.cpp:351: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:324: warning: unused variable ‘tokens’
+import.cpp: In function ‘std::string deCamel(std::string)’:
+import.cpp:384: warning: implicit conversion shortens 64-bit value into a 32-bit value
+import.cpp: In function ‘const char* parseWikiTitle(char*, int, int)’:
+import.cpp:417: warning: implicit conversion shortens 64-bit value into a 32-bit value
+import.cpp:418: warning: implicit conversion shortens 64-bit value into a 32-bit value
+import.cpp: At global scope:
+import.cpp:399: warning: unused parameter ‘context’
+import.cpp: In function ‘void fixNewline(char*)’:
+import.cpp:459: warning: implicit conversion shortens 64-bit value into a 32-bit value
+import.cpp: In function ‘char* extractTagName(char*)’:
+import.cpp:467: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘char* extractTagValue(char*)’:
+import.cpp:471: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘void addAttributes(Node*, char*)’:
+import.cpp:493: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:494: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘bool hasAttribute(char*)’:
+import.cpp:503: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘void importXml(const char*, char*, const char*, const char*)’:
+import.cpp:510: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:540: warning: the address of ‘line’ will always evaluate as ‘true’
+import.cpp:566: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:616: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:511: warning: unused variable ‘dissect’
+import.cpp: At global scope:
+import.cpp:509: warning: unused parameter ‘includedFields’
+import.cpp: In function ‘void importCsv(const char*, Node*, const char*, const char*, const char*, int, const char*)’:
+import.cpp:621: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:646: warning: the address of ‘line’ will always evaluate as ‘true’
+import.cpp:651: warning: implicit conversion shortens 64-bit value into a 32-bit value
+import.cpp:694: warning: unused variable ‘s’
+import.cpp:704: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:642: warning: unused variable ‘objectName’
+import.cpp: In function ‘void importList(const char*, const char*)’:
+import.cpp:709: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:723: warning: unused variable ‘objectName’
+import.cpp:732: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘bool importFacts(const char*, const char*)’:
+import.cpp:736: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:756: warning: unused variable ‘contextId’
+import.cpp:758: warning: unused variable ‘subjectId’
+import.cpp:759: warning: unused variable ‘predicateId’
+import.cpp:760: warning: unused variable ‘objectId’
+import.cpp:807: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘int collectAbstracts()’:
+import.cpp:812: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: At global scope:
+import.cpp:857: warning: unused parameter ‘oldNodes’
+import.cpp: In function ‘void load(bool)’:
+import.cpp:896: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:903: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:909: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:938: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:945: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:879: warning: unused variable ‘start’
+import.cpp:880: warning: unused variable ‘diff’
+import.cpp: In function ‘void fixPointers(Context*)’:
+import.cpp:974: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:978: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:978: warning: deprecated conversion from string constant to ‘char*’
+import.cpp:978: warning: deprecated conversion from string constant to ‘char*’
+import.cpp: In function ‘void import(const char*, const char*)’:
+import.cpp:1027: warning: unused variable ‘start’
+import.cpp:1028: warning: unused variable ‘diff’
+import.cpp: In function ‘long int getMemory()’:
+import.cpp:123: warning: control reaches end of non-void function
+netbase.hpp: At global scope:
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+compiling md5.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+md5.cpp: In constructor ‘MD5::MD5(const std::string&)’:
+md5.cpp:119: warning: implicit conversion shortens 64-bit value into a 32-bit value
+compiling netbase-ruby.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+In file included from util.hpp:3,
+                 from netbase-ruby.cpp:2:
+netbase.hpp:33:1: warning: "_" redefined
+In file included from /Users/me/.rvm/rubies/ruby-1.9.3-p125/include/ruby-1.9.1/ruby/ruby.h:67,
+                 from /Users/me/.rvm/rubies/ruby-1.9.3-p125/include/ruby-1.9.1/ruby.h:32,
+                 from netbase-ruby.cpp:1:
+/Users/me/.rvm/rubies/ruby-1.9.3-p125/include/ruby-1.9.1/ruby/defines.h:42:1: warning: this is the location of the previous definition
+netbase-ruby.cpp:35: warning: unused parameter ‘self’
+netbase-ruby.cpp:51: warning: unused parameter ‘self’
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+netbase.hpp:463: warning: ‘contextOffset’ defined but not used
+compiling netbase.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+netbase.cpp: In function ‘bool checkHash(Ahash*)’:
+netbase.cpp:93: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘bool addStatementToNode2(Node*, int)’:
+netbase.cpp:132: warning: unused variable ‘context’
+netbase.cpp: In function ‘bool addStatementToNodeX(Statement*, Node*, int)’:
+netbase.cpp:155: warning: no return statement in function returning non-void
+netbase.cpp: In function ‘bool addStatementToNodeAlt(Node*, int)’:
+netbase.cpp:165: warning: unused variable ‘context’
+netbase.cpp: In function ‘char* statementString(Statement*)’:
+netbase.cpp:229: warning: address of local variable ‘name’ returned
+netbase.cpp: In function ‘char* name(Node*)’:
+netbase.cpp:251: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:252: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘char* initContext(Context*)’:
+netbase.cpp:274: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:276: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:290: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:298: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:266: warning: unused variable ‘ahashSize’
+netbase.cpp:305: warning: unused variable ‘oldstatements’
+netbase.cpp:307: warning: unused variable ‘oldnodes’
+netbase.cpp: In function ‘void showContext(Context*)’:
+netbase.cpp:366: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘void checkExpand(Context*)’:
+netbase.cpp:381: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:383: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:386: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘void initNode(Node*, int, const char*, int, int)’:
+netbase.cpp:430: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:432: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘bool checkNode(Node*, int, bool, bool)’:
+netbase.cpp:450: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:458: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Node*’
+netbase.cpp:458: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 3 has type ‘Node*’
+netbase.cpp:458: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Node*’
+netbase.cpp:458: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 3 has type ‘Node*’
+netbase.cpp:463: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Node*’
+netbase.cpp:463: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 3 has type ‘void*’
+netbase.cpp:463: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Node*’
+netbase.cpp:463: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 3 has type ‘void*’
+netbase.cpp:469: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:470: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:472: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:478: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘Node*’
+netbase.cpp:478: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘Node*’
+netbase.cpp:483: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘Node*’
+netbase.cpp:483: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘Node*’
+netbase.cpp:488: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: At global scope:
+netbase.cpp:447: warning: unused parameter ‘checkStatements’
+netbase.cpp: In function ‘Node* add_force(int, int, const char*, int)’:
+netbase.cpp:538: warning: unused variable ‘node2’
+netbase.cpp:539: warning: unused variable ‘node3’
+netbase.cpp: In function ‘Statement* addStatement4(int, int, int, int, bool)’:
+netbase.cpp:564: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:569: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘Statement* addStatement(Node*, Node*, Node*, bool)’:
+netbase.cpp:616: warning: unused variable ‘s’
+netbase.cpp: In function ‘void dissectParent(Node*)’:
+netbase.cpp:738: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:739: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:740: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘void dissectWord(Node*)’:
+netbase.cpp:769: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:770: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:781: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:783: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:799: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:807: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:808: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:816: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:824: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:825: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:833: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:843: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:844: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:847: warning: unused variable ‘word’
+netbase.cpp:853: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:854: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:855: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:865: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:866: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:867: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:877: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:886: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:895: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘Node* getThe(const char*, Node*, bool)’:
+netbase.cpp:927: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘Node* getAbstract(const char*)’:
+netbase.cpp:969: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘void showStatement(Statement*)’:
+netbase.cpp:1002: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1003: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Statement*’
+netbase.cpp:1003: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Statement*’
+netbase.cpp:1013: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 6 has type ‘Statement*’
+netbase.cpp:1013: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 6 has type ‘Statement*’
+netbase.cpp: In function ‘void show(Node*, bool)’:
+netbase.cpp:1043: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘Statement* findStatement(Node*, Node*, Node*, int, bool, bool, bool)’:
+netbase.cpp:1102: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘void deleteNode(Node*)’:
+netbase.cpp:1203: warning: comparison between signed and unsigned integer expressions
+netbase.cpp: At global scope:
+netbase.cpp:1249: warning: unused parameter ‘symmetric’
+netbase.cpp: In function ‘Node* has(Node*, Node*, Node*, int, bool, bool, bool)’:
+netbase.cpp:1280: warning: comparison between signed and unsigned integer expressions
+netbase.cpp: In function ‘Node* isGreater(Node*, Node*)’:
+netbase.cpp:1308: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:1309: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘Node* isLess(Node*, Node*)’:
+netbase.cpp:1317: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp:1318: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘Node* isAproxymately(Node*, Node*)’:
+netbase.cpp:1328: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘void showNodes(NodeVector, bool)’:
+netbase.cpp:1496: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1497: warning: comparison between signed and unsigned integer expressions
+netbase.cpp:1501: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1502: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘Node* last(NodeVector)’:
+netbase.cpp:1519: warning: implicit conversion shortens 64-bit value into a 32-bit value
+netbase.cpp: In function ‘void initUnits()’:
+netbase.cpp:1529: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Ahash*’
+netbase.cpp:1529: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘Ahash*’
+netbase.cpp:1532: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘Statement* learn(std::string)’:
+netbase.cpp:1554: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘Node* findPath(Node*, Node*, NodeVector (*)(Node*))’:
+netbase.cpp:1730: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1738: warning: suggest parentheses around assignment used as truth value
+netbase.cpp:1744: warning: comparison between signed and unsigned integer expressions
+netbase.cpp: In function ‘bool isA(Node*, Node*)’:
+netbase.cpp:1759: warning: comparison between signed and unsigned integer expressions
+netbase.cpp: In function ‘void set(Node*, Node*, Node*)’:
+netbase.cpp:1781: warning: format ‘%s’ expects type ‘char*’, but argument 4 has type ‘Node*’
+netbase.cpp:1781: warning: format ‘%s’ expects type ‘char*’, but argument 4 has type ‘Node*’
+netbase.cpp: In function ‘void checkRootContext()’:
+netbase.cpp:1836: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1842: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘void init()’:
+netbase.cpp:1851: warning: unused variable ‘i’
+netbase.cpp: In function ‘void testBrandNewStuff()’:
+netbase.cpp:1866: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1867: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘int main(int, char**)’:
+netbase.cpp:1895: warning: comparison between signed and unsigned integer expressions
+netbase.cpp:1900: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1902: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1904: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1910: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1917: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1919: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1921: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1923: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1931: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1935: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1938: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp:1940: warning: deprecated conversion from string constant to ‘char*’
+netbase.cpp: In function ‘bool addStatementToNodeX(Statement*, Node*, int)’:
+netbase.cpp:155: warning: control reaches end of non-void function
+netbase.hpp: At global scope:
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+compiling query.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+query.cpp: In function ‘NodeVector query(std::string, int)’:
+query.cpp:44: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:47: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp: In function ‘Facet& findFacet(Query&, Node*)’:
+query.cpp:59: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘int getFieldNr(Query&, Node*)’:
+query.cpp:77: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘void collectFacets(Query&)’:
+query.cpp:85: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:86: warning: comparison between signed and unsigned integer expressions
+query.cpp:98: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp: In function ‘std::string renderResults(Query&)’:
+query.cpp:122: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:149: warning: comparison between signed and unsigned integer expressions
+query.cpp:176: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘std::string query(Query&)’:
+query.cpp:196: warning: comparison between signed and unsigned integer expressions
+query.cpp:203: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘NodeVector nodeVector(std::vector<char*, std::allocator<char*> >)’:
+query.cpp:213: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘Statement* parseSentence(std::string, bool)’:
+query.cpp:228: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:234: warning: comparison between signed and unsigned integer expressions
+query.cpp:237: warning: unused variable ‘getPredicate’
+query.cpp:222: warning: unused variable ‘recurse’
+query.cpp:223: warning: unused variable ‘limit’
+query.cpp: In function ‘Statement* parseFilter(std::string)’:
+query.cpp:270: warning: comparison of unsigned expression >= 0 is always true
+query.cpp:275: warning: comparison of unsigned expression >= 0 is always true
+query.cpp:280: warning: comparison of unsigned expression >= 0 is always true
+query.cpp: In function ‘Query parseQuery(std::string, int)’:
+query.cpp:295: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:304: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:316: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘NodeVector evaluate_sql(std::string, int)’:
+query.cpp:347: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:362: warning: comparison between signed and unsigned integer expressions
+query.cpp:363: warning: comparison between signed and unsigned integer expressions
+query.cpp:373: warning: comparison between signed and unsigned integer expressions
+query.cpp:374: warning: comparison between signed and unsigned integer expressions
+query.cpp:381: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘Node* match(std::string)’:
+query.cpp:404: warning: no return statement in function returning non-void
+query.cpp: In function ‘NodeVector exclude(NodeVector, NodeVector)’:
+query.cpp:409: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp: In function ‘NodeVector filter(NodeVector, char*)’:
+query.cpp:444: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:448: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:450: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:454: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘size_t’
+query.cpp:454: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘size_t’
+query.cpp:457: warning: comparison between signed and unsigned integer expressions
+query.cpp:463: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:472: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:479: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:486: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:503: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:506: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘size_t’
+query.cpp:506: warning: format ‘%d’ expects type ‘int’, but argument 2 has type ‘size_t’
+query.cpp: In function ‘NodeVector filter(Query&, Statement*)’:
+query.cpp:540: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp: In function ‘NodeVector filter(Query&, Node*)’:
+query.cpp:587: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp: In function ‘NodeVector& all_instances(Query&)’:
+query.cpp:615: warning: comparison between signed and unsigned integer expressions
+query.cpp:646: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘NodeVector& all_instances(Node*, int, int)’:
+query.cpp:688: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:704: warning: comparison between signed and unsigned integer expressions
+query.cpp:704: warning: comparison between signed and unsigned integer expressions
+query.cpp:709: warning: comparison between signed and unsigned integer expressions
+query.cpp:710: warning: comparison between signed and unsigned integer expressions
+query.cpp: In function ‘NodeVector find_all(char*, int, int, int)’:
+query.cpp:746: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:732: warning: unused variable ‘max’
+query.cpp: In function ‘Node* findMatch(Node*, const char*)’:
+query.cpp:770: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:774: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:784: warning: deprecated conversion from string constant to ‘char*’
+query.cpp: In function ‘int countInstances(Node*)’:
+query.cpp:798: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:799: warning: implicit conversion shortens 64-bit value into a 32-bit value
+query.cpp:803: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:805: warning: deprecated conversion from string constant to ‘char*’
+query.cpp:807: warning: deprecated conversion from string constant to ‘char*’
+netbase.hpp: At global scope:
+netbase.hpp:342: warning: inline function ‘Node* get(int)’ used but never defined
+query.cpp: In function ‘Node* match(std::string)’:
+query.cpp:404: warning: control reaches end of non-void function
+netbase.hpp: At global scope:
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+netbase.hpp:463: warning: ‘contextOffset’ defined but not used
+compiling relations.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+netbase.hpp:463: warning: ‘contextOffset’ defined but not used
+compiling tests.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+tests.cpp:1:9: warning: #pragma once in main file
+tests.cpp: In function ‘bool assert(bool, std::string)’:
+tests.cpp:19: warning: format not a string literal and no format arguments
+tests.cpp:19: warning: format not a string literal and no format arguments
+tests.cpp: In function ‘void testScanf()’:
+tests.cpp:56: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:54: warning: unused variable ‘d’
+tests.cpp: In function ‘void test()’:
+tests.cpp:70: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:75: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:75: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:75: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:76: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:76: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:76: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:77: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:78: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:79: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:80: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:82: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:82: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:82: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:83: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:83: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:83: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:84: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:84: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:84: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:85: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:85: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:85: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:86: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:86: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:86: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:87: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:87: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:87: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:88: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:88: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:88: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:89: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:89: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:89: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:90: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:90: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:90: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:91: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:91: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:91: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:93: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:93: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:93: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:95: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:95: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:95: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:96: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:96: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:96: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:102: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:102: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:102: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:122: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:127: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:129: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:132: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:133: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:134: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:147: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:148: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:149: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:150: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:152: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:152: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:152: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:153: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:153: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:153: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:154: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:154: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:154: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:155: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:155: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:155: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:156: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:156: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:156: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:157: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:157: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:157: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:158: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:158: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:158: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:165: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:167: warning: unused variable ‘instance’
+tests.cpp:168: warning: unused variable ‘instance2’
+tests.cpp: In function ‘void testLogic()’:
+tests.cpp:209: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:214: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:214: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:214: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:219: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:219: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:219: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:221: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:221: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:221: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:224: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:224: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:224: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:226: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:226: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:226: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:227: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:227: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:227: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:232: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:240: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:240: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:240: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:241: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:242: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:244: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:246: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:247: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:248: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:249: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:250: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:251: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:252: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:257: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:264: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:266: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:268: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:270: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:272: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:274: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:276: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:278: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:280: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:282: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:286: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:290: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:293: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:297: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:301: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:303: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:306: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:307: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:315: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:316: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:317: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:317: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:317: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:318: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:318: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:318: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:319: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:319: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:319: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:320: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:320: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:320: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:322: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:324: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:324: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:324: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:325: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:325: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:325: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:326: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:329: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:330: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:330: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:332: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:332: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:332: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:333: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:333: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:333: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:333: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:337: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:337: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:337: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:338: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:340: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:340: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:340: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:341: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:341: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:341: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:201: warning: unused variable ‘s1’
+tests.cpp:204: warning: unused variable ‘s2a’
+tests.cpp:211: warning: unused variable ‘s3’
+tests.cpp:213: warning: unused variable ‘s4’
+tests.cpp:215: warning: unused variable ‘s4a’
+tests.cpp:217: warning: unused variable ‘s4b’
+tests.cpp:343: warning: unused variable ‘learned’
+tests.cpp: In function ‘void testWordnet()’:
+tests.cpp:375: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:379: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:382: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:386: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:390: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:390: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:390: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:396: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:397: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp: In function ‘void testStringLogic()’:
+tests.cpp:438: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:438: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:438: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:439: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:439: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:439: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:444: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:444: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:444: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:445: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:445: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:445: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:446: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:446: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:446: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:447: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:447: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:447: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:448: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:448: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:448: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:453: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:453: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:453: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp: In function ‘void testHash()’:
+tests.cpp:464: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:467: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:467: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:467: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp: In function ‘void testImportExport()’:
+tests.cpp:487: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:490: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:502: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:502: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:502: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:504: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:504: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:504: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:506: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:506: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:506: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:508: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:508: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:508: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:510: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:510: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:510: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:511: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:511: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:511: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:522: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:522: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:522: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:523: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:523: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:523: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:524: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:524: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:524: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:525: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:525: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:525: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp: In function ‘void testImages()’:
+tests.cpp:537: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:537: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:537: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:538: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:538: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:538: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp: In function ‘void testInstanceLogic()’:
+tests.cpp:545: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:545: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:545: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:557: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:557: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:557: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:559: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:559: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:559: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:544: warning: unused variable ‘test4’
+tests.cpp:550: warning: unused variable ‘s’
+tests.cpp: In function ‘void testValueLogic()’:
+tests.cpp:571: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:571: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:571: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:583: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:583: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:583: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:590: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:590: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:590: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:591: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:591: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:591: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:593: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:593: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:593: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:596: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:596: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:596: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:597: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:597: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:597: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:598: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:598: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:598: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:599: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:599: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:599: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:600: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:600: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:600: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:601: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:601: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:601: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:602: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:602: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:602: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:603: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:603: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:603: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:604: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:604: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:604: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:605: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:605: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:605: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:606: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:606: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:606: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:610: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:610: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:610: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:613: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:613: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:613: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:618: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:618: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:618: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:619: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:619: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:619: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:631: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:631: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:631: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:636: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:636: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:636: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:637: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:637: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:637: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:638: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:638: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:638: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:639: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:639: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:639: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:642: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:642: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:642: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:643: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:643: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:643: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:644: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:644: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:644: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:647: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:647: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:647: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:649: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:649: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:649: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:650: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:650: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:650: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:653: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:653: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:653: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:659: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:659: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:659: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:660: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:660: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:660: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:663: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:663: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:663: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:664: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:664: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:664: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:665: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:665: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:665: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:666: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:666: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:666: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:670: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:670: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:670: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:671: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:671: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:671: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:672: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:672: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:672: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:675: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:675: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:675: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:676: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:676: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:676: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:577: warning: unused variable ‘mm14’
+tests.cpp:578: warning: unused variable ‘mm15’
+tests.cpp:656: warning: unused variable ‘n’
+tests.cpp: In function ‘void testQuery()’:
+tests.cpp:697: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:697: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:697: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:700: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:700: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:700: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:717: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:717: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:717: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:718: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:718: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:718: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:721: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:721: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:721: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:724: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:724: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:724: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:727: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:727: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:727: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:730: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:730: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:730: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:733: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:733: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:733: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:743: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:743: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:743: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:755: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:755: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:755: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:766: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:766: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:766: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:770: warning: implicit conversion shortens 64-bit value into a 32-bit value
+tests.cpp:774: warning: implicit conversion shortens 64-bit value into a 32-bit value
+tests.cpp:778: warning: implicit conversion shortens 64-bit value into a 32-bit value
+tests.cpp:748: warning: unused variable ‘hasloh’
+tests.cpp: In function ‘void testReification()’:
+tests.cpp:800: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:800: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:800: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:801: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:801: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:801: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp: In function ‘void testFactLearning()’:
+tests.cpp:808: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:808: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:808: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:809: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:809: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:809: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:810: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:810: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:810: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:811: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:811: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:811: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:813: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:813: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:813: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:815: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:815: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:815: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:820: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:820: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:820: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:821: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:821: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:821: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:822: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:822: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:822: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:823: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:823: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:823: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:824: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:824: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:824: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:825: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:825: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:825: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:826: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:826: warning: deprecated conversion from string constant to ‘char*’
+tests.cpp:826: warning: deprecated conversion from string constant to ‘char*’
+netbase.hpp: At global scope:
+netbase.hpp:342: warning: inline function ‘Node* get(int)’ used but never defined
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+netbase.hpp:463: warning: ‘contextOffset’ defined but not used
+compiling util.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+util.cpp:1:9: warning: #pragma once in main file
+util.cpp: In function ‘bool assert(bool, char*)’:
+util.cpp:17: warning: format not a string literal and no format arguments
+util.cpp:17: warning: format not a string literal and no format arguments
+util.cpp: In function ‘std::string* next(std::string)’:
+util.cpp:38: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp:40: warning: taking address of temporary
+util.cpp:37: warning: address of local variable ‘data’ returned
+util.cpp: In function ‘char* tolower(const char*)’:
+util.cpp:57: warning: comparison between signed and unsigned integer expressions
+util.cpp: In function ‘bool contains(std::vector<Node*, std::allocator<Node*> >, Node*)’:
+util.cpp:84: warning: comparison between signed and unsigned integer expressions
+util.cpp: In function ‘bool contains(std::vector<char*, std::allocator<char*> >&, char*)’:
+util.cpp:92: warning: comparison between signed and unsigned integer expressions
+util.cpp: In function ‘std::string replace_all(std::string, std::string, std::string)’:
+util.cpp:105: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp:107: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp: In function ‘bool startsWith(const char*, const char*)’:
+util.cpp:123: warning: comparison between signed and unsigned integer expressions
+util.cpp: In function ‘bool startsWith(std::string*, const char*)’:
+util.cpp:130: warning: comparison of unsigned expression >= 0 is always true
+util.cpp: In function ‘bool eq(const char*, const char*, bool)’:
+util.cpp:143: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp:144: warning: comparison between signed and unsigned integer expressions
+util.cpp: In function ‘void px(void*)’:
+util.cpp:210: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘void*’
+util.cpp:210: warning: format ‘%016llX’ expects type ‘long long unsigned int’, but argument 2 has type ‘void*’
+util.cpp: In function ‘NodeVector intersect(NodeVector, NodeVector)’:
+util.cpp:224: warning: comparison between signed and unsigned integer expressions
+util.cpp:228: warning: no return statement in function returning non-void
+util.cpp: In function ‘std::vector<char*, std::allocator<char*> >& splitString(const char*, const char*)’:
+util.cpp:239: warning: deprecated conversion from string constant to ‘char*’
+util.cpp:245: warning: unused variable ‘row’
+util.cpp: In function ‘int splitStringC(char*, char**, const char*)’:
+util.cpp:258: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp: In function ‘unsigned int hash(const char*)’:
+util.cpp:295: warning: suggest parentheses around assignment used as truth value
+util.cpp:296: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp: In function ‘void addRange(NodeVector&, NodeVector)’:
+util.cpp:313: warning: comparison between signed and unsigned integer expressions
+util.cpp: In function ‘NodeVector mergeVectors(NodeVector, NodeVector)’:
+util.cpp:320: warning: comparison between signed and unsigned integer expressions
+util.cpp: In function ‘char* match(char*, char*)’:
+util.cpp:355: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp:356: warning: implicit conversion shortens 64-bit value into a 32-bit value
+util.cpp: In function ‘NodeVector intersect(NodeVector, NodeVector)’:
+util.cpp:228: warning: control reaches end of non-void function
+netbase.hpp: At global scope:
+netbase.hpp:61: warning: ‘NIL_string’ defined but not used
+netbase.hpp:463: warning: ‘contextOffset’ defined but not used
+compiling webserver.cpp
+cc1plus: warning: command line option "-Wdeclaration-after-statement" is valid for C/ObjC but not for C++
+cc1plus: warning: command line option "-Wimplicit-function-declaration" is valid for C/ObjC but not for C++
+webserver.cpp: In function ‘ssize_t Readline(int, void*, size_t)’:
+webserver.cpp:41: warning: comparison between signed and unsigned integer expressions
+webserver.cpp: In function ‘int Trim(char*)’:
+webserver.cpp:94: warning: implicit conversion shortens 64-bit value into a 32-bit value
+webserver.cpp: In function ‘int Parse_HTTP_Header(char*, ReqInfo*)’:
+webserver.cpp:204: warning: implicit conversion shortens 64-bit value into a 32-bit value
+webserver.cpp:206: warning: implicit conversion shortens 64-bit value into a 32-bit value
+webserver.cpp: In function ‘int Return_Resource(int, int, ReqInfo*)’:
+webserver.cpp:413: warning: implicit conversion shortens 64-bit value into a 32-bit value
+webserver.cpp: At global scope:
+webserver.cpp:408: warning: unused parameter ‘reqinfo’
+linking shared-object netbase.bundle
+querying: all bugs
+receiving other share_memory address
+FYI: root_memory != desired shmat_root 0000000109362000!=0000000101000000 
+Context#0 name: nodes:0, statements:0 n#0000000000000000 nN#0000000000000000 s#0000000000000000
+ADJUSTING SHARED MEMORY
+Initiating context 0
+0000000109362000
+00000001094A6000
+00000001230A2C00
+000000012DC4C100
+000000015A2D0D00
+0000000162C25100
+(char*) context->nodes == root_memory + contextOffset
+OK
+Context#0 name: nodes:0, statements:0 n#00000001094A6000 nN#00000001230A2C00 s#000000012DC4C100
+./test-netbase-c.rb:5: [BUG] Segmentation fault
+ruby 1.8.7 (2010-01-10 patchlevel 249) [universal-darwin11.0]
+
+./build.sh: line 1: 21694 Abort trap: 6           ./test-netbase-c.rb
