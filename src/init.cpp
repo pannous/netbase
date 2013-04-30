@@ -4,7 +4,14 @@
 //#include <sys/types.h>
 //#include <sys/ipc.h>
 #include <sys/shm.h>
-#include <stdlib.h> // system(cmd)
+
+
+//Since using #include <stdlib.h> dumps all declared names in the global namespace,
+//the preference should be to use #include <cstdlib>, unless you need compatibility with C
+#include <cstdlib>
+//#include <stdlib.h> // system(cmd)
+
+#include <string.h>
 #include "util.hpp"
 #include "netbase.hpp"
 #include "init.hpp"

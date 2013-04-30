@@ -1,7 +1,8 @@
 #include "netbase.hpp";
 #include "util.hpp";
 #include "query.hpp"
-
+#include <cstdlib>
+#include <string.h>
 
 string fixQuery(string s){
      s = s + string(" $");

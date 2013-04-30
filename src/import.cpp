@@ -1,6 +1,8 @@
 #pragma once
 // strcmp
 #include <string.h>
+#include <cstdlib>
+
 
 #ifdef sqlite3
 #include "sqlite3.h"
