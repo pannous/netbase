@@ -319,7 +319,7 @@ void extractUnit() {
 	string s = "397.1#/km^2";
 }
 
-int getFields(char* line, vector<char*>& fields, const char* separator = ",;\t", int nameRowNr = -1, const char* nameRow = 0) {
+int getFields(char* line, vector<char*>& fields, const char* separator = ",;\t|", int nameRowNr = -1, const char* nameRow = 0) {
 	char * token;
 	token = strtok(line, separator);
 	int row = 0;
