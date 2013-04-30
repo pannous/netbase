@@ -41,24 +41,31 @@ string next(string data) {
 	return data;
 }
 
-char* substr(char* what,int from,int to){
+char* substr(char* what, int from, int to) {
 #ifndef DEBUG
-	if(from>to)
-		return what;// ERROR!!
+	if (from > to)
+		return what; // ERROR!!
 #endif
-	char *result = (char*) malloc(to-from+1);
-	strncpy(result, what + from, to-from);
-	result[to-from]=0;// In case of unclean malloc
+	char *result = (char*) malloc(to - from + 1);
+	strncpy(result, what + from, to - from);
+	result[to - from] = 0; // In case of unclean malloc
 	return result;
 }
 
 char* tolower(const char* x) {
-	char* neu=(char*)malloc(strlen(x));
+	char* neu = (char*) malloc(strlen(x));
 	for (int i = 0; i < strlen(x); i++) {
 		neu[i] = tolower(x[i]);
 	}
 	return neu;
 }
+
+bool contains(const char* x, char y) {
+	for (int i = 0; i < strlen(x); i++)
+		if(x[i]==y)return true;
+	return false;
+}
+
 
 bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
@@ -133,17 +140,19 @@ bool startsWith(string* x, const char* y) {
 // tolower
 
 bool eq(const char* x, const char* y, bool ignoreCase) {
+
 	if (!x && !y)return true; //danger better: undefined?
 	if (!x || !y)return false; //danger better: undefined?
-//	Context* c=currentContext();
-//	if(x<c->nodeNames || x >c->nodeNames+c->currentNameSlot){
-//		p("corrupt name!");
-//		return false;
-//	}
-//	if(y<c->nodeNames || y >c->nodeNames+c->currentNameSlot){
-//		p("corrupt name!");
-//		return false;
-//	}
+	if(x==0 || y==0)return false;
+	//	Context* c=currentContext();
+	//	if(x<c->nodeNames || x >c->nodeNames+c->currentNameSlot){
+	//		p("corrupt name!");
+	//		return false;
+	//	}
+	//	if(y<c->nodeNames || y >c->nodeNames+c->currentNameSlot){
+	//		p("corrupt name!");
+	//		return false;
+	//	}
 	if (x && x[0] == 0 && y == 0)return true; // 0=='' danger!
 	if (y && y[0] == 0 && x == 0)return true; // 0=='' danger!
 	if (x == 0 || !y)return false;
@@ -188,9 +197,9 @@ void ps(string s) {// string geht nicht!?!
 	fflush(stdout);
 }
 
-void ps(NodeVector v){
+void ps(NodeVector v) {
 	if (quiet)return;
-	for(int i=0;i<v.size();i++)
+	for (int i = 0; i < v.size(); i++)
 		show(v[i]);
 }
 
@@ -232,11 +241,11 @@ void p(char* s) {
 	fflush(stdout);
 }
 
-void p(Node* n){
+void p(Node* n) {
 	show(n);
 }
 
-void p(Query& q){
+void p(Query& q) {
 	p("Query:");
 	show(q.keyword);
 	ps(q.keywords);
@@ -277,21 +286,35 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 	return v;
 }
 
-int splitStringC(char* line, char** tokens, const char* separators) {
+
+// no empty fields: treats a||b as a|b -- !
+int splitStringC2(char* str, char** tokens, const char* separators, int count) {
+	int row = 0;
+//	printf("Splitting string \"%s\" into tokens:\n", str);
+	char * token;
+	token = strtok(str, separators);
+	while (token != NULL) {
+		tokens[row++] = token;
+		token = strtok(NULL, separators);
+	}
+	return row + 1; //s
+}
+
+int splitStringC(char* line, char** tokens, const char* separators, int count) {
 	char * token;
 	//  token = strtok (line,separator);
 	int row = 0;
 	int len = strlen(line);
-	int i = 0;
 	char* lastgood = line;
+	for (int i = 0; i < count; i++)tokens[i] = 0;
+	int i = 0;
 	while (i < len) {
-		if (contains(separators,(const char*) (line+i))) {
-			line[i] = 0;
+		if (contains(separators, line[i])) {//(const char*) (line + i)
 			token = lastgood;
+			line[i] = 0; // cut c style
 			lastgood = &line[i + 1];
 			tokens[row] = token;
 			//        token = strtok (NULL, separator);
-
 			row++;
 		}
 		i++;
@@ -300,54 +323,54 @@ int splitStringC(char* line, char** tokens, const char* separators) {
 	return row + 1; //s
 }
 
-
 inline int normChar(int c) {
-    switch (c) {
-        case '_':return 0;
-            break;
-        case ' ':return 0;
-            break;
-        case '-':return 0;
-            break;
-        default: return tolower(c);
-    }
+	switch (c) {
+		case '_':return 0;
+			break;
+		case ' ':return 0;
+			break;
+		case '-':return 0;
+			break;
+		default: return tolower(c);
+	}
 }
 
 //unsigned long hash(const char *str) {// unsigned
+
 unsigned int hash(const char *str) {// unsigned
-    if (!str)return 0;
-    unsigned long hash = 5381;
-    int c;
-    while (c = *str++) hash = ((hash << 5) + hash) + normChar(c); /* hash * 33 + c */
-    int pos=hash % maxNodes;
-    return abs(pos);
+	if (!str)return 0;
+	unsigned long hash = 5381;
+	int c;
+	while (c = *str++) hash = ((hash << 5) + hash) + normChar(c); /* hash * 33 + c */
+	int pos = hash % maxNodes;
+	return abs(pos);
 }
 
-
-string stem(string word){
-	word="|^"+word+"$|";
-	word=replace_all(word,"_"," ");
-	word=replace_all(word,"s$","$");
-	word=replace_all(word,"$|","");
-	word=replace_all(word,"|^","");
+string stem(string word) {
+	word = "|^" + word + "$|";
+	word = replace_all(word, "_", " ");
+	word = replace_all(word, "s$", "$");
+	word = replace_all(word, "$|", "");
+	word = replace_all(word, "|^", "");
 	return word;
 }
 
 
 // call by object => destination unmodified!   (how) expensive?!
+
 void addRange(NodeVector& some, NodeVector more) {// bool keep destination unmodified=TRUE
-    for (int i = 0; i < more.size(); i++) {
-        if (!contains(some, (Node*) more[i]))
-            some.push_back(more[i]);
-    }
+	for (int i = 0; i < more.size(); i++) {
+		if (!contains(some, (Node*) more[i]))
+			some.push_back(more[i]);
+	}
 }
 
 NodeVector mergeVectors(NodeVector some, NodeVector more) {// bool keep destination unmodified=TRUE
-    for (int i = 0; i < more.size(); i++) {
-        if (!contains(some, (Node*) more[i]))
-            some.push_back(more[i]);
-    }
-    return some;
+	for (int i = 0; i < more.size(); i++) {
+		if (!contains(some, (Node*) more[i]))
+			some.push_back(more[i]);
+	}
+	return some;
 }
 
 
@@ -359,7 +382,6 @@ NodeVector mergeVectors(NodeVector some, NodeVector more) {// bool keep destinat
 //    return false;
 //}
 
-
 int charCount(char*__, char c) {
 	int ___ = 0;
 	while (*__)___ = c == *__++ ? ___ + 1 : ___;
@@ -370,6 +392,7 @@ int charCount(char*__, char c) {
 // for non-greedy use something like <([^>]+)>
 // or this: //#define MINMOD	29	/* no	Next operator is not greedy. */
 // USE [a-z] instead of \\w !!!
+
 char* match(char* input, char* pattern) {
 	int groups = charCount(pattern, '(');
 	regmatch_t matches[groups + 1]; // matches[0] == whole pattern

@@ -1774,8 +1774,9 @@ string getImage(const char* n, int size) {
 
 void testBrandNewStuff() {
     ps("test brand new stuff");
-	if(!hasWord("zip"))
-	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
+	importCsv("import/wins.csv");
+//	if(!hasWord("zip"))
+//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
 	console();
 //	x=extractTagName("aa <a>dsaffd</b>  ee");
 //	export_csv();
@@ -1842,7 +1843,7 @@ int main(int argc, char *argv[]) {
 //			p("BROKEN");
 //			collectAbstracts();
 //		}
-        tests();
+//        tests();
 		p("TEST OK!");
     }
 
@@ -1853,6 +1854,7 @@ int main(int argc, char *argv[]) {
     }
     parse(join(argv, argc).c_str());
     printf("Warnings: %d\n", badCount);
+	testBrandNewStuff();
     console();
     //    } catch (std::exception const& ex) {
 }
