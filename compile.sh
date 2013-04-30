@@ -1,17 +1,10 @@
-#g++ -g -w src/tests.cpp src/util.cpp src/netbase.cpp -o netbase && ./netbase
-#g++ -g -w src/tests.cpp src/netbase.cpp -o netbase && ./netbase
-# g++ -g -w src/netbase.cpp src/tests.cpp -o netbase && ./netbase
-# ./update.sh quit&
-
 sudo killall -SIGKILL gdb-i386-apple-darwin
 sudo killall -SIGKILL netbase
+
+options="--debug -c -g -w -s -MMD -MP" #-MF
 #  -arch i686
 # -arch x86-64 -Xarch-x86-64
 # x86_64-apple-darwin
-
-# options=--debug -c -g -w -s -MMD -MP -MF
-options="--debug -c -g -w -s -MMD -MP" #-MF
-#g++  		-c -g -w -s -MMD -MP -MF build/netbase.o.d -o build/netbase.o src/netbase.cpp
 
 g++ $options -MF build/query.o.d -o build/query.o src/query.cpp
 g++ $options -MF build/init.o.d -o build/init.o src/init.cpp
@@ -24,16 +17,4 @@ g++ $options -MF build/netbase.o.d -o build/netbase.o src/netbase.cpp
 g++ $options -MF build/tests.o.d -o build/tests.o src/tests.cpp
 g++ $options -MF build/util.o.d -o build/util.o src/util.cpp
 g++ -g -w src/*.cpp /usr/lib/libsqlite3.dylib -o netbase  && ./netbase $@ 
-
-
-#g++ -g -w src/tests.cpp src/util.cpp src/netbase.cpp -o netbase && ./netbase
-#g++ -g -w src/netbase.cpp  -o netbase && ./netbase
-# g++ -g -w src/*.cpp  -o netbase && ./netbase
-# 
-# build/export.o.d 
-# build/console.o.d 
-# build/import.o.d 
-# build/md5.o.d 	
-# build/netbase.o.d
-# build/tests.o.d 
-# build/util.o.d 
+# ln -s /usr/lib/x86_64-linux-gnu/libsqlite3.so libsqlite3.dylib
