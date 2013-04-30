@@ -335,14 +335,15 @@ string query2(string s,int limit) {
 
 NodeVector evaluate_sql(string s, int limit=20) {//,bool onlyResults=true){
     clearAlgorithmHash();
+    NodeVector found;
     static char fields[10000];
     static char type[10000];
     static char match[10000];
     ps(s);
-
     if ((int) s.find("from") < 0)
         s = string("select * from ") + s; // why (int) neccessary???
-    //    s=replace_all(s,"","y");//singular
+//	s=stem_singular(s)/
+    //    s=replace_all(s,"ies","y");//singular
     ps(s);
     sscanf(s.c_str(), "select %s from %s where %s", fields, type, match);
     p(fields);
@@ -356,13 +357,16 @@ NodeVector evaluate_sql(string s, int limit=20) {//,bool onlyResults=true){
     }
 
     int batch = limit * 10; // 200000000;//// dont limit wegen filter!! limit + 100;
-    NodeVector found;
     //    while (found.size() < limit && batch < 200000000) {
     //        batch = batch * 100; //=> max 9 runs
     // what if all==1000000 but limit==3?
-    NodeVector all = all_instances(getAbstract(type)); //  find_all(type, current_context, true, batch); // dont limit wegen filter!!
+
+	NodeVector all = all_instances(getAbstract(type));
+	//  find_all(type, current_context, true, batch); // dont limit wegen filter!!
+
     found = filter(all, match2); //fields
-    //	if(found.size()==0 && match2)
+
+//    add instance matches
     for (int i = 0; i < all.size(); i++) {
         if (found.size() >= limit)goto good;
         all_instances(0, 0); // clear hack!
@@ -371,16 +375,6 @@ NodeVector evaluate_sql(string s, int limit=20) {//,bool onlyResults=true){
     }
     batch = 200000000;
 
-    all = find_all(type, current_context, true, batch); // dont limit wegen filter!!
-    found = filter(all, match2); //fields
-    //	if(found.size()==0 && match2)
-    for (int i = 0; i < all.size(); i++) {
-        if (found.size() >= limit)goto good;
-        all_instances(0, 0); // clear hack!
-        NodeVector all2 = all_instances((Node*) all[i], true, limit);
-        found = mergeVectors(found, filter(all2, match2)); //fields)
-    }
-    //    }
 good:
     if (found.size() > limit)// dont deliver too much
         found.erase(found.begin() + limit + 1, found.end());
@@ -753,7 +747,8 @@ NodeVector find_all(char* name, int context, int recurse, int limit) {
         for (int i = 0; i < alle; i++) {
             all_instances(0, 0); // hack to reset all_instances
             Node* node = (Node*) all[i];
-            all = mergeVectors(all, all_instances(node, true, limit));
+			NodeVector& neu=all_instances(node, true, limit);
+            all = mergeVectors(all, neu);
         }
     return all;
 }

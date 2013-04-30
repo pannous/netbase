@@ -738,7 +738,7 @@ void importGeoDB() {
 
 void importAll() {
 	//	importFacts()
-	importCsv("adressen.txt");
+//	importCsv("adressen.txt");
 	importNames();
 	importWordnet();
 	importGeoDB();

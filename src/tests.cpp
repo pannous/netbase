@@ -269,6 +269,7 @@ void testLogic() {
 	check(contains(tests,test));
 	tests=all_instances(getAbstract("test"));
 	check(contains(tests,test));
+	pi(tests.size());
 	NodeVector funnys= filter(tests, "funny");
 	check(contains(tests,test));
     char* sql = "select * from test where funny";
@@ -276,31 +277,42 @@ void testLogic() {
     //	show((Node *)(list[0]));
     //	show((Node *)list[1]);
 	showNodes(list,true);
-    assert(last(list) == test, sql);
+    assert(contains(list, test), sql);
     //	sql="select * from test funny";
     //	assert(last(query(sql)) == 0,sql);
     sql = "select * from test where size=11";
-    assert(last(query(sql)) == test, sql);
+	list=query(sql);
+    assert(contains(list, test), sql);
     sql = "select * from test where size=11 and funny";
-    assert(last(query(sql)) == test, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
     sql = "select * from test where size=11 and test.funny";
-    assert(last(query(sql)) == test, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
     sql = "select * from test where size=11 and test.bunny";
-    assert(last(query(sql)) == 0, sql);
+    list=query(sql);
+    assert(false==contains(list, test), sql);
     sql = "test that are funny";
-    assert(last(query(sql)) == test, sql);
-    sql = "all tests";
-    assert(last(query(sql)) != null, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
+	sql = "all tests";
+	list=query(sql);
+    assert(contains(list, test), sql);
     sql = "test where size=11";
-    assert(last(query(sql)) == test, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
     sql = "test with size=11";
-    assert(last(query(sql)) == test, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
     sql = "tests with size=11";
-    assert(last(query(sql)) == test, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
     sql = "tests with size=11 and test.funny";
-    assert(last(query(sql)) == test, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
     sql = "test with size>10";
-    assert(last(query(sql)) == test, sql);
+    list=query(sql);
+    assert(contains(list, test), sql);
 
 
     assert(isA(beth, Person), "isA(beth,Person->name)");
@@ -327,8 +339,6 @@ void testLogic() {
     assert(contains(persons, beth), "contains(persons,Beth)");
     //    check(contains(people, karsten));
     vector<Node*> managers = all_instances(manager);
-    ;
-    ;
     //    todo:
     //    check(contains(managers, karsten));
     //    vector<Node*>
@@ -874,5 +884,6 @@ void tests() {
 
 	testFactLearning();
 	testReification();
+	p("ALL TESTS SUCCESSFUL!");
     //    testLoop();
 }
