@@ -9,7 +9,7 @@
 #define	INIT_HPP
 void clearMemory();
 void load(bool force=false);
-int semrm(key_t key, int id = 0);
+int semrm(key_t key, int id);
 int share_memory();
 void fixPointers();
 void fixPointers(Context* context);
