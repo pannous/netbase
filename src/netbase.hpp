@@ -420,8 +420,9 @@ NodeVector parentFilter(Node* subject);
 NodeVector memberFilter(Node* subject);
 NodeVector childFilter(Node* subject);
 NodeVector ownerFilter(Node* subject);
+NodeVector anyFilter(Node* subject);
 NodeVector instanceFilter(Node* subject);
-
+NodeVector shortestPath(Node* from,Node* to );
 
 
 #define is Parent

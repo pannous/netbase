@@ -1046,7 +1046,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
             ps("!s!");
             return 0;
         };
-		showStatement(s);// debug!!!
+//		showStatement(s);// debug!!!
 //        if(s->context != current_context)continue;// only queryContext
 #ifdef use_instance_gap
         if(s->Predicate==subject||i>1&&s->Predicate==Instance&&predicate!=Instance||i>1&&s->Predicate==Type&&predicate!=Type){
@@ -1587,6 +1587,24 @@ Node* firstInstance(Node* abstract, Node* type) {
     return 0;
 }
 
+
+NodeVector anyFilter(Node* subject) {
+     NodeVector all;
+for (int i = 0; i < subject->statementCount; i++) {
+        Statement* s = getStatement(subject, i);
+        if (s == 0) {
+            badCount++;
+            continue;
+        };
+        bool subjectMatch = (s->Subject == subject || subject == Any);
+        bool subjectMatchReverse = s->Object == subject;
+
+        if (subjectMatch )all.push_back(s->Object);
+        if (subjectMatchReverse )all.push_back(s->Subject);
+    }
+    return all;
+}
+
 NodeVector instanceFilter(Node* subject) {
     NodeVector all;
     for (int i = 0; i < subject->statementCount; i++) {
@@ -1606,6 +1624,7 @@ NodeVector instanceFilter(Node* subject) {
     }
     return all;
 }
+
 NodeVector hasFilter(Node* subject) {
      NodeVector all;
     for (int i = 0; i < subject->statementCount; i++) {
@@ -1633,6 +1652,7 @@ NodeVector hasFilter(Node* subject) {
      }
     return all;
 }
+
 NodeVector parentFilter(Node* subject) {
     NodeVector all;
     for (int i = 0; i < subject->statementCount; i++) {
@@ -1673,11 +1693,36 @@ NodeVector parentFilter(Node* subject) {
     return all;
 }
 
-// todo : memory LEAK
+
+
+NodeVector shortestPath(Node* from,Node* to ){
+	findPath(from,to,anyFilter);
+}
+
+
+int* enqueued;// 'parents'
+NodeVector reconstructPath(Node* from,Node* to){
+	Node* current=to;
+	NodeVector all;
+	while(true){
+		all.push_back(current);
+		int id=enqueued[current->id];
+		current=get(id);
+		if(!current || id ==0)break;
+		if(contains(all,current)){
+			ps("LOOOOOP!");
+			break;
+		}
+		show(current,false);
+	}
+	all.push_back(from);// done
+	return all;
+}
+
+// todo : memory LEAK? why?
 Node* findPath(Node* fro, Node* to, NodeVector (*edgeFilter)(Node*)) {
     //    map<Node*, Node*>enqueued;
-    int* enqueued = (int*) malloc(currentContext()->nodeCount * sizeof (int));
-    //    int* enqueued=(int*)calloc(currentContext()->nodeCount*sizeof(int));
+    enqueued = (int*) malloc(currentContext()->nodeCount * sizeof (int));
     queue<Node*> q;
     if (enqueued == 0) {
 		p("out of memory for findPath");
@@ -1686,19 +1731,26 @@ Node* findPath(Node* fro, Node* to, NodeVector (*edgeFilter)(Node*)) {
     memset(enqueued, 0, currentContext()->nodeCount * sizeof (int));
 
     q.push(fro);
-    Node* c;
+    Node* current;
 
-    while (c = q.front()) {
+    while (current = q.front()) {
         q.pop();
-        if (to == c){free(enqueued); return c;}
-        if (!checkNode(c, 0, true))
+        if (to == current){
+			NodeVector all=reconstructPath(fro,to);
+			showNodes(all,false);
+			free(enqueued);
+			free(q);
+			return all;
+		}
+        if (!checkNode(current, 0, true))
             continue;
-        NodeVector all = edgeFilter(c);
+        NodeVector all = edgeFilter(current);
         for (int i = 0; i < all.size(); i++) {
             Node* d = (Node*) all[i];
             if (enqueued[d->id])continue;
             if (isA4(d, to)){free(enqueued);return d;}
-            enqueued[d->id] = c->id;
+			if(enqueued[d->id]==0)
+				enqueued[d->id] = current->id;
             q.push(d);
         }
     }
@@ -1770,25 +1822,6 @@ string getImage(const char* n, int size) {
     return base + hash[0] + "/" + hash[0] + hash[1] + "/" + image + "/" + ssize + "px-" + image;
 }
 
-
-
-void testBrandNewStuff() {
-    ps("test brand new stuff");
-	importCsv("import/wins.csv");
-//	if(!hasWord("zip"))
-//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
-	console();
-//	x=extractTagName("aa <a>dsaffd</b>  ee");
-//	export_csv();
-    //    import("images",path.c_str());// importImages();
-    //    ps(getImage("bluefin"));
-    //    check(getImage("wiki_image")=="");//todo!
-    //    check(getImage("abagsd")=="");
-    //    query("a limit 124 ;");
-}
-
-
-
 int main(int argc, char *argv[]) {
     char* data = getenv("QUERY_STRING");
     if(data){
@@ -1858,4 +1891,13 @@ int main(int argc, char *argv[]) {
     console();
     //    } catch (std::exception const& ex) {
 }
-int test2(){return 3329;}
+
+void testBrandNewStuff() {
+    ps("test brand new stuff");
+//	importWordnet();
+	shortestPath(a(bug),a(frog));
+//	importCsv("import/wins.csv");
+//	if(!hasWord("zip"))
+//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
+	console();
+}

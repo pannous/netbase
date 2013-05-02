@@ -235,6 +235,7 @@ void importStatements() {
 	fclose(infile); /* Close the file */
 	p("statements import ok");
 }
+
 #ifdef sqlite3
 int maxBytes = 1000000;
 
@@ -753,7 +754,7 @@ void importWordnet() {
 }
 
 void importGeoDB() {
-	importCsv("/Users/me/data/base/geo/geonames/cities1000.txt",\
+	importCsv("./import/cities1000.txt",\
 			getThe("city"), "\t", "alternatenames,modificationdate,geonameid",\
 		"latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }

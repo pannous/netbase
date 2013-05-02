@@ -149,6 +149,14 @@ bool parse(const char* data) {
         remove(next(data).c_str());
         return true;
     }
+
+    if (startsWith(data, "path")) {
+		vector<char*> args=splitString(data," ");
+        Node* from=getAbstract(args.at(1));
+        Node* to=getAbstract(args.at(2));
+		shortestPath(from,to);
+        return true;
+    }
     if (startsWith(data, "select ")) {
         query(data);
         return true;
