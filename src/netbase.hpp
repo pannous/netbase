@@ -362,12 +362,7 @@ Statement* findStatement(Node* n, string predicate, string object, int recurse =
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
 string getImage(const char* n, int size = 300);
-NodeVector hasFilter(Node* subject);
-NodeVector filter(NodeVector all, Node* filterTree);
-//NodeVector filter(NodeVector all, Statement* filterTree);
-NodeVector filter(Query& q, Statement* filterTree);
 
-Node* findPath(Node* fro, Node* to, NodeVector (*edgeFilter)(Node*));
 Node* has(const char* n, const char* m);
 Node* has(Node* n, Node* m);
 Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);//naja!!!
@@ -416,14 +411,6 @@ Context* currentContext();
 //void initRelations();
 void init();
 Node* add_force(int contextId, int id, const char* nodeName, int kind);
-NodeVector parentFilter(Node* subject);
-NodeVector memberFilter(Node* subject);
-NodeVector childFilter(Node* subject);
-NodeVector ownerFilter(Node* subject);
-NodeVector anyFilter(Node* subject);
-NodeVector instanceFilter(Node* subject);
-NodeVector shortestPath(Node* from,Node* to );
-
 
 #define is Parent
 #define is_a Parent

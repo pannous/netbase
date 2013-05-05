@@ -271,12 +271,13 @@ void load(bool force) {
 
 void fixPointers() {
 	Context* context = (Context*) root_memory;
-	showContext(context);
+	context = currentContext();
+//	showContext(context);
 	fixPointers(context);
-	showContext(context);
-	context = currentContext();// &contexts[wordnet]; // todo: all
-	showContext(context);
-	fixPointers(context);
+//	showContext(context);
+//	context = currentContext();// &contexts[wordnet]; // todo: all
+//	showContext(context);
+//	fixPointers(context);
 	showContext(context);
 	collectAbstracts();
 }
@@ -340,10 +341,11 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 	}
 }
 
-void clearMemory(){
+bool clearMemory(){
 	ps("Cleansing Memory!");
     memset(root_memory,0,sizeOfSharedMemory);
 	initRootContext();
+	return true;
 //		Context* context=currentContext();
 //        memset(context->nodes, 0, nodeSegmentSize ); //calloc!
 //        memset(contextnodeNames, 0, nameSegmentSize);

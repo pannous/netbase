@@ -7,7 +7,7 @@
 
 #ifndef INIT_HPP
 #define	INIT_HPP
-void clearMemory();
+bool clearMemory();
 void load(bool force=false);
 //int semrm(key_t key, int id);
 int share_memory();

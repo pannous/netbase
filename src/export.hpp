@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   export.hpp
  * Author: pannous
  *
@@ -9,7 +9,7 @@
 #define	_EXPORT_HPP
 
 void save();
-void export_csv();
+bool export_csv();
 
 #endif	/* _EXPORT_HPP */
 

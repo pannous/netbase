@@ -74,10 +74,10 @@ bool parse(const char* data) {
     if (eq(data, ":q")){exit(1);return false;}
     if (eq(data, "q"))return false;
     if (eq(data, "x"))return false;
-    if (eq(data, "export"))export_csv();
-    if (eq(data, ":cl"))clearMemory();
-	if (eq(data, "clear"))clearMemory();
-    if (eq(data, ":e"))export_csv();
+    if (eq(data, "export"))return export_csv();
+    if (eq(data, ":cl"))return clearMemory();
+	if (eq(data, "clear"))return clearMemory();
+    if (eq(data, ":e"))return export_csv();
     if (eq(data, "quit"))return false;
     if (eq(data, "quiet"))quiet = !quiet;
     if (eq(data, "help") || eq(data, "?")) {
@@ -150,11 +150,26 @@ bool parse(const char* data) {
         return true;
     }
 
-    if (startsWith(data, "path")) {
+    if (startsWith(data, "path")||startsWith(data, ":p")) {
 		vector<char*> args=splitString(data," ");
         Node* from=getAbstract(args.at(1));
         Node* to=getAbstract(args.at(2));
 		shortestPath(from,to);
+        return true;
+    }
+
+    if (startsWith(data, "has")||startsWith(data, ":h")) {
+		vector<char*> args=splitString(data," ");
+        Node* from=getAbstract(args.at(1));
+        Node* to=getAbstract(args.at(2));
+		memberPath(from,to);
+        return true;
+    }
+    if (startsWith(data, "is")) {
+		vector<char*> args=splitString(data," ");
+        Node* from=getAbstract(args.at(1));
+        Node* to=getAbstract(args.at(2));
+		parentPath(from,to);
         return true;
     }
     if (startsWith(data, "select ")) {

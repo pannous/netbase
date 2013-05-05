@@ -37,7 +37,7 @@ void save() {
 }
 
 // what for??
-void export_csv(){
+bool export_csv(){
     Context* c = currentContext();
     FILE *fp;
 	// To write numbers in octal, precede the value with a 0. Thus, 023 is 238 (which is 19 in base 10).
@@ -45,7 +45,7 @@ void export_csv(){
     fp = fopen((path+"export/nodes.csv").data(), "w");
 	if(!fp){
 		ps("CANT ACCESS "+(path+"export/nodes.csv"));
-		return;
+		return false;
 	}
     for (int i = 0; i < c->nodeCount; i++) {
         Node* n= &c->nodes[i];
@@ -73,6 +73,6 @@ void export_csv(){
     fclose(fp);
 
     ps("context CSV saved!");
-
+	return true;
 }
 

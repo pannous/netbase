@@ -25,12 +25,33 @@ Statement* pattern(Node* subject, Node* predicate, Node* object);
 void clearAlgorithmHash();
 NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
-NodeVector filter(Query& q, Node* _filter);
-NodeVector filter(Query& q, Statement* filterTree);
-NodeVector filter(NodeVector all, char* matches);
 NodeVector find_all(char* name, int context=1, int recurse=0, int limit=defaultLimit);
 NodeVector& all_instances(Node* type, int recurse, int max= defaultLimit);
 NodeVector& all_instances(Node* type);
 NodeVector& all_instances(Query& q);
+
+NodeVector filter(Query& q, Node* _filter);
+NodeVector filter(Query& q, Statement* filterTree);
+NodeVector filter(NodeVector all, char* matches);
+
+NodeVector parentFilter(Node* subject);
+NodeVector memberFilter(Node* subject);
+NodeVector hasFilter(Node* subject);
+
+NodeVector filter(NodeVector all, Node* filterTree);
+//NodeVector filter(NodeVector all, Statement* filterTree);
+NodeVector filter(Query& q, Statement* filterTree);
+NodeVector findPath(Node* fro, Node* to, NodeVector (*edgeFilter)(Node*));
+
+NodeVector childFilter(Node* subject);
+NodeVector ownerFilter(Node* subject);
+NodeVector anyFilter(Node* subject);
+NodeVector instanceFilter(Node* subject);
+
+
+NodeVector shortestPath(Node* from,Node* to );// any
+NodeVector parentPath(Node* from, Node* to);
+NodeVector memberPath(Node* from, Node* to);
+
 #endif	/* QUERY_H */
 
