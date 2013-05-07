@@ -1,0 +1,15 @@
+.dep.inc
+.idea/
+build/
+data
+dist/
+export/
+nbproject/
+neo/
+netbase
+netbase.dSYM/
+src/.svn
+synset-methods.txt
+to_update
+todo.txt
+
