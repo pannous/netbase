@@ -61,6 +61,8 @@ bool parse(const char* data) {
     }
 
     string arg=next(string(data));
+	vector<char*> args=splitString(data," ");// WITH 0==cmd!!!
+
     //		scanf ( "%s", data );
     if (eq(data, "exit"))return false;
     if (eq(data, ":x")) {
@@ -151,22 +153,19 @@ bool parse(const char* data) {
     }
 
     if (startsWith(data, "path")||startsWith(data, ":p")) {
-		vector<char*> args=splitString(data," ");
-        Node* from=getAbstract(args.at(1));
+		Node* from=getAbstract(args.at(1));
         Node* to=getAbstract(args.at(2));
 		shortestPath(from,to);
         return true;
     }
 
     if (startsWith(data, "has")||startsWith(data, ":h")) {
-		vector<char*> args=splitString(data," ");
         Node* from=getAbstract(args.at(1));
         Node* to=getAbstract(args.at(2));
 		memberPath(from,to);
         return true;
     }
     if (startsWith(data, "is")) {
-		vector<char*> args=splitString(data," ");
         Node* from=getAbstract(args.at(1));
         Node* to=getAbstract(args.at(2));
 		parentPath(from,to);
@@ -260,9 +259,17 @@ bool parse(const char* data) {
         return false;
     }
 	if(splitString(data," ").size()>2){
-		learn(data);
+		learn(data);// SPO
 		return true;
 	}
+
+	if(splitString(data," ").size()==2){
+        Node* from=getAbstract(args.at(0));
+        Node* to=getAbstract(args.at(1));
+		shortestPath(from,to);
+		return true;
+	}
+
 
     //        query(string("all ")+data);// NO!
     //        query(data);// NOO!

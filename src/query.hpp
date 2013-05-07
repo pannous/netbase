@@ -34,19 +34,30 @@ NodeVector filter(Query& q, Node* _filter);
 NodeVector filter(Query& q, Statement* filterTree);
 NodeVector filter(NodeVector all, char* matches);
 
-NodeVector parentFilter(Node* subject);
-NodeVector memberFilter(Node* subject);
-NodeVector hasFilter(Node* subject);
 
 NodeVector filter(NodeVector all, Node* filterTree);
 //NodeVector filter(NodeVector all, Statement* filterTree);
 NodeVector filter(Query& q, Statement* filterTree);
-NodeVector findPath(Node* fro, Node* to, NodeVector (*edgeFilter)(Node*));
 
-NodeVector childFilter(Node* subject);
-NodeVector ownerFilter(Node* subject);
-NodeVector anyFilter(Node* subject);
-NodeVector instanceFilter(Node* subject);
+bool enqueue(Node* current, Node* d, NodeQueue* q);
+//typedef (NodeVector (*edgeFilter)(Node*)) NodeFilter;
+NodeVector findPath(Node* fro, Node* to,NodeVector (*edgeFilter)(Node*,NodeQueue*) );
+
+NodeVector parentFilter(Node* subject,NodeQueue* queue=null);
+NodeVector memberFilter(Node* subject,NodeQueue* queue=null);
+NodeVector hasFilter(Node* subject,NodeQueue* queue=null);
+NodeVector childFilter(Node* subject,NodeQueue* queue=null);
+NodeVector ownerFilter(Node* subject,NodeQueue* queue=null);
+NodeVector anyFilter(Node* subject,NodeQueue* queue=null);
+NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);
+
+//NodeVector parentFilter(Node* subject);
+//NodeVector memberFilter(Node* subject);
+//NodeVector hasFilter(Node* subject);
+//NodeVector childFilter(Node* subject);
+//NodeVector ownerFilter(Node* subject);
+//NodeVector anyFilter(Node* subject);
+//NodeVector instanceFilter(Node* subject);
 
 
 NodeVector shortestPath(Node* from,Node* to );// any

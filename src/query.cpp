@@ -6,26 +6,33 @@
 #include <cstdlib>
 #include <string.h>
 
+NodeVector EMPTY;
+int* enqueued; // 'parents'
+
+string select(string s) {
+	if (contains(s, "select"))
+		return "";
+	else
+		return "select * from ";
+}
+
 string fixQuery(string s) {
 	s = s + string(" $");
-	s = replace_all(s, "types ofe ", "select * from "); //todo .*types of regex
-	s = replace_all(s, "kinds of ", "select * from ");
-	s = replace_all(s, "list ", "select * from ");
-	s = replace_all(s, "list all ", "select * from ");
-	s = replace_all(s, " of all ", " ");
-	s = replace_all(s, "species of ", "select * from ");
-	s = replace_all(s, "all types of ", "select * from ");
-	s = replace_all(s, "all kinds of ", "select * from ");
-	s = replace_all(s, "all ", "select * from "); // todo all fields of types that ...
-	s = replace_all(s, "some ", "select * from ");
-	s = replace_all(s, "different ", "select * from ");
-	s = replace_all(s, "various ", "select * from ");
-	s = replace_all(s, "the ", "select * from ");
-	s = replace_all(s, "a ", "select * from "); //limit 1
-	s = replace_all(s, "these ", "select * from ");
-	s = replace_all(s, "those ", "select * from ");
-	s = replace_all(s, "an ", "select * from ");
-	s = replace_all(s, "any ", "select * from ");
+	s = replace_all(s, "types of ", select(s)); //todo .*types of regex
+	s = replace_all(s, "kinds of ", select(s));
+	s = replace_all(s, "list of ", select(s));
+	s = replace_all(s, "list ", select(s));
+	s = replace_all(s, "species of ", select(s));
+	s = replace_all(s, "all ", select(s)); // todo all fields of types that ...
+	s = replace_all(s, "some ", select(s));
+	s = replace_all(s, "different ", select(s));
+	s = replace_all(s, "various ", select(s));
+	s = replace_all(s, "the ", select(s));
+	s = replace_all(s, "a ", select(s)); //limit 1
+	s = replace_all(s, "these ", select(s));
+	s = replace_all(s, "those ", select(s));
+	s = replace_all(s, "an ", select(s));
+	s = replace_all(s, "any ", select(s));
 	s = replace_all(s, " are ", " ");
 	s = replace_all(s, " is ", " ");
 	s = replace_all(s, " with ", " where ");
@@ -90,7 +97,7 @@ void collectFacets(Query& q) {
 				if (values.find(value) != values.end()) {// 4m!=4m !?!?
 					values[value] = values[value] + 1;
 					f.maxHits = max(f.maxHits, values[value]);
-				}					//                if (values.find(value)!=values.end())// no
+				}//                if (values.find(value)!=values.end())// no
 					//                    values[value] = values[value] + 1;
 					//                    f->values[value] = f->values->[value] + 1;
 				else {
@@ -822,7 +829,7 @@ int countInstances(Node* node) {
 	return i;
 }
 
-NodeVector instanceFilter(Node* subject) {
+NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
 		Statement* s = getStatement(subject, i);
@@ -836,14 +843,19 @@ NodeVector instanceFilter(Node* subject) {
 		bool subjectMatchReverse = s->Object == subject;
 		bool predicateMatchReverse = s->Predicate == Type; // || inverse
 
-		if (subjectMatch && predicateMatch)all.push_back(s->Object);
-		if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+		if (queue) {
+			if (subjectMatch)enqueue(subject, s->Object, queue);
+			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+		} else {
+			if (subjectMatch && predicateMatch)all.push_back(s->Object);
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+		}
 	}
 	return all;
 }
 
-NodeVector memberFilter(Node* subject) {
-	NodeVector all;
+NodeVector memberFilter(Node* subject, NodeQueue * queue) {
+	//	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
 		Statement* s = getStatement(subject, i);
 		if (!checkStatement(s)) {
@@ -875,15 +887,22 @@ NodeVector memberFilter(Node* subject) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
 
 
-		if (subjectMatch && predicateMatch)all.push_back(s->Object);
-		if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
-		//        if (subjectMatch && s->Predicate>1000)all.push_back(s->Object);
+		if (queue) {
+			if (subjectMatch)enqueue(subject, s->Object, queue);
+			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+		} else {
+			//			if (subjectMatch && predicateMatch)all.push_back(s->Object);
+			//			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+			//        if (subjectMatch && s->Predicate>1000)all.push_back(s->Object);
+		}
 	}
-	return all;
+
+	return EMPTY; //hack
+	//	return all;
 }
 
-NodeVector parentFilter(Node* subject) {
-	NodeVector all;
+NodeVector parentFilter(Node* subject, NodeQueue * queue) {
+	//	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
 		Statement* s = getStatement(subject, i);
 		if (s == 0) {
@@ -902,34 +921,46 @@ NodeVector parentFilter(Node* subject) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == Synonym;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
 
-		if (subjectMatch && predicateMatch)all.push_back(s->Object);
-		if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
-		/*bool semantic=true;// ANTI QUEUE
-	if (!semantic)continue;
-
-	subjectMatch = subjectMatch || semantic && isA(s->Subject, subject, recurse, semantic);
-	if (subjectMatch)
-		objectMatch = objectMatch || semantic && isA(s->Object, object, recurse, semantic);
-	if (subjectMatch && objectMatch)
-		predicateMatch = predicateMatch || semantic && isA(s->Predicate, predicate, recurse, semantic);
-	if (subjectMatch && predicateMatch && objectMatch)return s;
-
-	subjectMatchReverse = subjectMatchReverse || isA(s->Subject, object, recurse, semantic);
-	predicateMatchReverse = predicateMatchReverse || (symmetric && isA(s->Predicate, predicate, recurse, semantic) || predicate == Any);
-	|| inverse
-	objectMatchReverse = objectMatchReverse || isA(s->Object, subject, recurse, semantic);
-	if (!semantic &&!recurse)
-		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse)return s;
-*/
+		if (queue) {
+			if (subjectMatch)enqueue(subject, s->Object, queue);
+			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+		} else {
+			//		if (subjectMatch && predicateMatch)all.push_back(s->Object);
+			//		if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+		}
 	}
-	return all;
+	return EMPTY; //hack
+	//	return all;
 }
 
 
+// todo : memory LEAK NodeVector ?
+// todo : enqueue instances?
 
-int* enqueued; // 'parents'
+NodeVector anyFilter(Node* subject, NodeQueue * queue) {
+	//	NodeVector all;
+	for (int i = 0; i < subject->statementCount; i++) {
+		Statement* s = getStatement(subject, i);
+		if (s == 0 || !checkStatement(s)) {
+			badCount++;
+			continue;
+		};
 
-NodeVector reconstructPath(Node* from, Node* to) {
+		bool subjectMatch = (s->Subject == subject || subject == Any);
+		bool subjectMatchReverse = s->Object == subject;
+		if (queue) {
+			if (subjectMatch)enqueue(subject, s->Object, queue);
+			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+		} else {
+			//		if (subjectMatch)all.push_back(s->Object);
+			//		if (subjectMatchReverse)all.push_back(s->Subject);
+		}
+	}
+	return EMPTY; //hack
+	//	return all;
+}
+
+NodeVector reconstructPath(Node* from, Node * to) {
 	Node* current = to;
 	NodeVector all;
 	//	enqueued[from->id]=0;// terminate
@@ -947,38 +978,25 @@ NodeVector reconstructPath(Node* from, Node* to) {
 	all.push_back(from); // done
 	return all;
 }
-NodeVector EMPTY;
-// todo : memory LEAK NodeVector ?
-// todo : enqueue instances?
 
-NodeVector anyFilter(Node* subject) {
-	NodeVector all;
-	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatement(subject, i);
-		if (s == 0 || !checkStatement(s)) {
-			badCount++;
-			continue;
-		};
-
-		bool subjectMatch = (s->Subject == subject || subject == Any);
-		bool subjectMatchReverse = s->Object == subject;
-
-		if (subjectMatch)all.push_back(s->Object);
-		if (subjectMatchReverse)all.push_back(s->Subject);
-	}
-	return all;
+bool enqueue(Node* current, Node* d, NodeQueue * q) {
+	if (enqueued[d->id])return false; // continue;
+	enqueued[d->id] = current->id;
+	q->push(d);
+	return true;
 }
 
-NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*)) {
+NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	//    map<Node*, Node*>enqueued;
 	enqueued = (int*) malloc(currentContext()->nodeCount * sizeof (int));
-	queue<Node*> q;
+	NodeQueue q;
 	if (enqueued == 0) {
 		p("out of memory for findPath");
 		throw "out of memory for findPath";
 	}
 	memset(enqueued, 0, currentContext()->nodeCount * sizeof (int));
 
+	ps("LOAD!");
 	q.push(fro);
 	NodeVector instances = all_instances(fro);
 	for (int i = 0; i < instances.size(); i++) {
@@ -986,6 +1004,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*)) {
 		enqueued[d->id] = fro->id;
 		q.push(d);
 	}
+	ps("GO!");
 
 	Node* current;
 
@@ -998,33 +1017,31 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*)) {
 		}
 		if (!checkNode(current, 0, true))
 			continue;
-		NodeVector all = edgeFilter(current);
-		for (int i = 0; i < all.size(); i++) {
-			Node* d = (Node*) all[i];
-			if (enqueued[d->id])continue;
-			enqueued[d->id] = current->id;
-			q.push(d);
-		}
+		NodeVector all = edgeFilter(current, &q);
+		if (all != EMPTY)
+			for (int i = 0; i < all.size(); i++) {
+				Node* d = (Node*) all[i];
+				enqueue(current, d, &q);
+			}
 	}
 	free(enqueued);
 	return EMPTY; //reconstructPath(fro, to);
 }
 
-
-NodeVector memberPath(Node* from, Node* to) {
+NodeVector memberPath(Node* from, Node * to) {
 	NodeVector all = findPath(from, to, memberFilter);
-	showNodes(all, false);
+	showNodes(all, false, true);
 	return all;
 }
 
-NodeVector parentPath(Node* from, Node* to) {
+NodeVector parentPath(Node* from, Node * to) {
 	NodeVector all = findPath(from, to, parentFilter);
-	showNodes(all, false);
+	showNodes(all, false, true);
 	return all;
 }
 
-NodeVector shortestPath(Node* from, Node* to) {
+NodeVector shortestPath(Node* from, Node * to) {
 	NodeVector all = findPath(from, to, anyFilter);
-	showNodes(all, false);
+	showNodes(all, false, true);
 	return all;
 }

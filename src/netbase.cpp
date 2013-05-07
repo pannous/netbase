@@ -1448,11 +1448,30 @@ Node* has(Node* n, Node* m) {
 	return no;
 }
 
-void showNodes(NodeVector all, bool showStatements) {
+Node* findRelation(Node* from, Node* to){
+	Statement* s=findStatement(from, Any, to);
+	if(!s) s=findStatement(to, Any, from);
+	if(s){
+		if(s->Object==from)return s->Predicate;
+		else if(s->Subject==from) return invert(s->Predicate);
+		if(s->Subject==to)return s->Predicate;
+		else if(s->Object==to) return invert(s->Predicate);
+//		if(s->Subject==from)return s->Predicate;
+//		else if(s->Object==from) return invert(s->Predicate);
+//		if(s->Object==to)return s->Predicate;
+//		else if(s->Subject==to) return invert(s->Predicate);
+		else return null;
+	}
+	if(!s)return null;
+}
+
+void showNodes(NodeVector all, bool showStatements,bool showRelation) {
 	int size = all.size();
 	ps("+++++++++++++++++++++++++++++++++++");
 	for (int i = 0; i < size; i++) {
 		Node* node = (Node*) all[i];
+		if(i>0 && showRelation)
+			show(findRelation(node,all[i-1]),false);
 		show(node, showStatements);
 	}
 	ps("++++++++++ Hits : +++++++++++++++++");
@@ -1568,7 +1587,6 @@ int collectAbstracts3() {
 
 
 //void cleanAbstracts(Context* c){
-
 Node* firstInstance(Node* abstract, Node* type) {
 	if (type == 0) {
 		Statement* last = &(currentContext()->statements[abstract->lastStatement]);
@@ -1614,10 +1632,6 @@ bool isA(Node* fro, Node* to) {
 // all mountains higher than Krakatao
 // todo:wordnet bugs: vulgar
 
-void pathFinder() {
-	//calloc() initializes the allocated memory to ZERO.
-}
-//char*
 
 void set(Node* node, Node* property, Node* value) {
 	Statement *s = findStatement(node, property, value);
@@ -1733,10 +1747,10 @@ int main(int argc, char *argv[]) {
 void testBrandNewStuff() {
 	ps("test brand new stuff");
 //	parentPath(a(bee),a(insect));
-	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug
-
-	parentPath(a(insect),a(bug));
-	parentPath(a(bee),a(bug));
+//	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug
+//
+//	parentPath(a(insect),a(bug));
+//	parentPath(a(bee),a(bug));
 //	parentPath(a(bug),a(insect));
 	//	importWordnet();
 //	shortestPath(a(bug), a(frog));

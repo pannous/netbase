@@ -146,7 +146,9 @@ typedef struct Statement {
 
 // union: context->hasNode->0 , name
 typedef vector<Node*> NodeVector;
+typedef queue<Node*> NodeQueue;
 typedef Node** NodeList;
+//typedef (NodeVector (*edgeFilter)(Node*)) NodeFilter;
 //typedef Node* NodeList;
 
 class Facet {
@@ -328,7 +330,7 @@ char* name(Node* node);
 Context* getContext(int contextId);
 void showContext(int nr);
 void showContext(Context* cp);
-void showNodes(NodeVector all, bool showStatements = false); //
+void showNodes(NodeVector all, bool showStatements = false,bool showRelation=false); //
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
 void initNode(Node* node, int id, const char* nodeName, int kind, int contextId);

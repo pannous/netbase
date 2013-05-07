@@ -156,5 +156,6 @@ static const int _EndsWith = 159;
 
 
 void initRelations();
+Node* invert(Node* relation);
 #endif	/* RELATIONS_HPP */
 

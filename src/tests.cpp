@@ -20,6 +20,14 @@ void clearTestContext(){
 	initRelations();
 }
 
+void checkWordnet(){
+	if(hasWord("effloresce"))
+		return;
+	else
+		importWordnet();
+}
+
+
 bool assert(bool test, string what) {// bool nix gut
     printf("----\n");
     printf(what.c_str());
@@ -399,6 +407,7 @@ void testLogic() {
 
 void testWordnet() {
     load();
+	checkWordnet();
     //    importAll();
     Context c = *getContext(wordnet);
     showContext(wordnet);
@@ -863,6 +872,16 @@ void testFactLearning(){
 	check(has(the(Peter),a(Sohn),the(Milan)));
 }
 
+void testPaths(){
+	checkWordnet();
+	NodeVector path= memberPath(a(human),a(hand));
+	check(path.size()>2);
+	check(has(a(human),Member, a(hand)));
+	check(has(a(human),a(hand)));
+//	check(a(bird),has_a,a(feather));
+//	check(a(mouse),has_a,a(foot));
+}
+
 void tests() {
     //    testOutput();
     //	testScanf();
@@ -884,6 +903,7 @@ void tests() {
 
 	testFactLearning();
 	testReification();
+	testPaths();
 	p("ALL TESTS SUCCESSFUL!");
     //    testLoop();
 }
