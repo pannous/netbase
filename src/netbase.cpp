@@ -1746,84 +1746,11 @@ int main(int argc, char *argv[]) {
 
 void testBrandNewStuff() {
 	ps("test brand new stuff");
-//	parentPath(a(bee),a(insect));
+//	parentPath(a(bee),a(insect));	
 //	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug
-//
 //	parentPath(a(insect),a(bug));
-//	parentPath(a(bee),a(bug));
-//	parentPath(a(bug),a(insect));
-	//	importWordnet();
 //	shortestPath(a(bug), a(frog));
 	//	importCsv("import/wins.csv");
 	//	if(!hasWord("zip"))
 	//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
-}
-
-int main(int argc, char *argv[]) {
-    char* data = getenv("QUERY_STRING");
-    if(data){
-    printf("Content-Type: text/plain;charset=us-ascii\n\n");
-    printf("got QUERY_STRING %s",data);
-	parse(data);
-//	start_server();
-	}
-
-    //    signal(SIGSEGV, handler); // only when fully debugged!
-    //    signal(SIGINT, SIGINT_handler); // only when fully debugged!
-    //    setjmp(loop_context);
-    path = argv[0];
-    path = path.substr(0, path.rfind("/") + 1);
-    if (path.rfind("/dist") != -1) {
-        path = path.substr(0, path.rfind("/dist") + 1);
-    }
-    system(string("cd " + path).c_str());
-
-    if (checkParams(argc, argv, "quiet"))
-        quiet = true;
-    if (checkParams(argc, argv, "quit"))
-        exit(0);
-    if (checkParams(argc, argv, "exit"))
-        exit(0);
-
-    init();
-    //    import();
-    if (checkParams(argc, argv, "query")) {
-        load();
-        string q = replace_all(join(argv, argc), "query ", "");
-        parse(q.c_str());
-        exit(0);
-        //        import();
-    }
-    if (checkParams(argc, argv, "export"))
-        export_csv();
-    if (checkParams(argc, argv, "load"))
-        load(false);
-    if (checkParams(argc, argv, "load_files"))
-        load(true);
-    if (checkParams(argc, argv, "test")) {
-//        load();
-//		clean();
-
-//		testBrandNewStuff();
-//		if(!hasWord("city")){
-//			importAll();
-//			collectAbstracts();
-//		}
-//		if(!hasWord("city")){
-//			p("BROKEN");
-//			collectAbstracts();
-//		}
-        tests();
-		p("TEST OK!");
-    }
-
-    if (checkParams(argc, argv, "import")) {
-        import(argv[2], path.c_str()); // netbase import save
-        if (checkParams(argc, argv, "save"))
-            save(); // danger
-    }
-    parse(join(argv, argc).c_str());
-    printf("Warnings: %d\n", badCount);
-    console();
-    //    } catch (std::exception const& ex) {
 }

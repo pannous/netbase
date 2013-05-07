@@ -57,6 +57,10 @@ Node* Adjective;
 Node* Noun;
 Node* Verb;
 Node* Adverb;
+
+Node* Derived;// Adjective^-1
+Node* DerivedFromNoun;
+
 Node* Number;
 Node* String;
 Node* Date;
@@ -105,10 +109,8 @@ void initRelations() {
 	Antonym = addRelation(1, "antonym");
 	Attribute = addRelation(2, "attribute"); // tag
 	Cause = addRelation(3, "cause"); //
-	//    Derived =
-	addRelation(4, "derived from adjective"); //
-	//    DerivedFromNoun =
-	addRelation(5, "derived from noun"); //
+	Derived =addRelation(4, "derived from adjective"); //
+	DerivedFromNoun =addRelation(5, "derived from noun"); //
 	//        DOMAIN_OF_SYNSET_CATEGORY =
 	addRelation(6, "usage context"); // # sheet @ maths   // think of!! OWNER -> Part
 	//    DOMAIN_OF_SYNSET_REGION =
@@ -247,11 +249,15 @@ Node* invert(Node* relation) {
 	if (relation == Tag)return Tag; //gged
 	if (relation == Label)return BackLabel;
 	if (relation == BackLabel)return Label;
-	//if(relation==Labels)return ;
-	//if(relation==LabeledNode)return ;
+	if(relation==Labels)return LabeledNode;
+	if(relation==LabeledNode)return Label;
 	//if(relation==Category)return ;
 	if (relation == SubContext)return SuperContext;
 	if (relation == SuperContext)return SubContext;
+
+
+	if (relation == Derived)return Adjective;
+//	if (relation == DerivedFromNoun)return Noun;
 
 	if (relation == Equals)return Not;
 	if (relation == Greater)return Less;
@@ -260,5 +266,5 @@ Node* invert(Node* relation) {
 	if (relation == Little)return Much;
 	if (has(relation, Antonym, null, false, false, false, false))
 		return has(relation, Antonym);
-	else return Unknown;// null; //! or relation ?
+	else return Unknown;// null; //! or relation .name + "OF" ?  weight => weight OF
 }
