@@ -24,8 +24,6 @@ const void * shmat_root = (const void *) 0x110000000; // just higher than system
 
 bool virgin_memory = false;
 
-#ifndef HAS_UNION_SEMUN
-#ifdef USE_SEMCTL_SEMUN
 union semun {
     int              val;    /* Value for SETVAL */
     struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
@@ -33,8 +31,7 @@ union semun {
     struct seminfo  *__buf;  /* Buffer for IPC_INFO
                                 (Linux-specific) */
 };
-#endif
-#endif
+
 int semrm(key_t key, int id = 0) {
 	union semun arg;
 	id = semget(key, 0, 0);

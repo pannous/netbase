@@ -332,15 +332,12 @@ int getFields(char* line, vector<char*>& fields, const char* separator = ",;\t|"
 				if (eq("Name", token))nameRowNr = row;
 				if (eq("title", token))nameRowNr = row;
 				if (eq("Title", token))nameRowNr = row;
-				if (contains(token,"name")&& nameRow<0)nameRowNr = row;
-				if (contains(token,"title")&& nameRow<0)nameRowNr = row;
 			} else if (eq(nameRow, token))nameRowNr = row;
 		}
 		//    printf ("%s\n",pch);
 		token = strtok(NULL, separator);
 		row++;
 	}
-	if(nameRowNr<0)nameRowNr=0;// todo !
 	return nameRowNr;
 }
 
@@ -525,20 +522,6 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 	pi(linecount);
 }
 
-const char* guess_separator(const char* separator, const char* fields){
-	if(fields==0)return separator;
-	int max=0;
-	int test=splitString(fields,",").size();
-	if(test>max){max=test;separator=",";}
-	test=splitString(fields,";").size();
-	if(test>max){max=test;separator=";";}
-	test=splitString(fields,"|").size();
-	if(test>max){max=test;separator="|";}
-	test=splitString(fields,"\t").size();
-	if(test>max){max=test;separator="\t";}
-	return separator;
-}
-
 void importCsv(const char* facts_file, Node* type, const char* separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("import csv start");
 	char line[1000];
@@ -550,10 +533,8 @@ void importCsv(const char* facts_file, Node* type, const char* separator, const 
 	Node* predicate=0;
 	Node* object=0;
 	vector<Node*> predicates = *new vector<Node*>();
-	separator=guess_separator(separator, ignoredFields);
-	separator=guess_separator(separator, includedFields);
-	vector<char*> ignoreFields = splitString(ignoredFields, separator);
-	vector<char*>& includeFields = splitString(includedFields, separator);
+	vector<char*> ignoreFields = splitString(ignoredFields, ",");
+	vector<char*>& includeFields = splitString(includedFields, ",");
 	vector<char*>& fields = *new vector<char*>();
 	int linecount = 0;
 	FILE *infile;
@@ -570,7 +551,6 @@ void importCsv(const char* facts_file, Node* type, const char* separator, const 
 		if (!line)break;
 		if (linecount == 0) {
 			columnTitles = line;
-			separator=guess_separator(separator, columnTitles);
 			if (fields.size() == 0)
 				nameRowNr = getFields(line, fields, separator, nameRowNr, nameRow);
 			fieldCount = fields.size();
@@ -587,9 +567,7 @@ void importCsv(const char* facts_file, Node* type, const char* separator, const 
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
 
-		memset(values, 0, 100);
-		int size = splitStringC(line, values, separator,fieldCount);
-//		int size = splitString(line, separator).size();
+		int size = splitStringC(line, values, separator);
 		if (fieldCount != size) {
 			printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
 			//            ps(columnTitles); // only 1st word:
@@ -617,7 +595,7 @@ void importCsv(const char* facts_file, Node* type, const char* separator, const 
 			if (includedFields != null && !contains(includeFields, predicate->name))continue;
 			char* vali = values[i];
 			if (!vali || strlen(vali) == 0)continue; //HOW *vali<100??
-			object = getThe(vali,0,dissect);
+			object = getThe(vali);
 			Statement *s = addStatement(subject, predicate, object, false);
 			//            showStatement(s);
 		}
