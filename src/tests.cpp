@@ -779,7 +779,7 @@ void testQuery() {
     check(!contains(q.instances, Boot));
 
     if(!hasWord("Sheberghan"))
-        importCsv("/Users/me/data/base/geo/geonames/cities1000.txt",getThe("city"),"\t","alternatenames,modificationdate,geonameid","latitude,longitude,population,elevation,countrycode",2,"asciiname");
+        importCsv("/Users/me/data/base/geo/geonames/cities1000.txt",getThe("city"),'\t',"alternatenames,modificationdate,geonameid","latitude,longitude,population,elevation,countrycode",2,"asciiname");
 
 //	show(the(Sheberghan));
 //    check(has(the(Sheberghan),the(population),the(55641)));// ?
@@ -892,6 +892,7 @@ void tests() {
 //    testHash();
 	clearTestContext();
 //    testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
+	testBrandNewStuff();
     testValueLogic();
     testStringLogic();
 
@@ -906,4 +907,36 @@ void tests() {
 	testPaths();
 	p("ALL TESTS SUCCESSFUL!");
     //    testLoop();
+}
+void testCities(){
+	char* line="geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\\tadmin3code\\tadmin4code\\tpopulation\\televation\\tgtopo30\\ttimezone\\tmodificationdate\\n";
+	int nr=splitStringC(line,0,'\t',true);
+//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\\tadmin3code\\tadmin4code\\tpopulation\\televation\\tgtopo30\\ttimezone\\tmodificationdate\\n",0,"\t",true);
+	check(nr>4);
+	vector<char*> fields;
+//	int n=getFields(modifyConstChar(line),fields,'\t');
+//	check(fields.size()==nr);
+	clearMemory();
+	if(!hasWord("Mersing")){
+		char* ignore="alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
+		importCsv("cities1000.txt",the(city),'\t',ignore);
+	}
+	p(the(Mersing));
+	check(has(the(Mersing),a(population)))
+	check(has(the(Mersing),value("population",22007)))
+	check(!has(the(Mersing),value("population",22008)))
+
+}
+
+void testBrandNewStuff() {
+	ps("test brand new stuff");
+	testCities();
+
+//	parentPath(a(bee),a(insect));
+//	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug
+//	parentPath(a(insect),a(bug));
+//	shortestPath(a(bug), a(frog));
+	//	importCsv("import/wins.csv");
+	//	if(!hasWord("zip"))
+	//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
 }

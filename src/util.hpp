@@ -40,11 +40,14 @@ void pi(int i);
 void px(void* p);// 64 bit hex
 extern void p(char* s);
 void p(Query& q);
+void p(Node* n);
 //char* next(char* data);
 string next(string data);
 vector<char*>& splitString(string line0,const char* separator="\t");
 vector<char*>& splitString(const char* line0,const char* separator="\t");
-int splitStringC(char* line,char** tokens,const char* separator="\t");
+char** splitStringC(const char* line0, const char* separator);
+//int splitStringC2(char* line,char** tokens,const char* separator="\t");// BROKEN!!!
+int splitStringC(char* line,char** tokens, char separator,bool safe=false);
 void fixNewline(char* line);
 NodeVector intersect(NodeVector a,NodeVector b);
 char* tolower(char* x);
@@ -55,5 +58,5 @@ void addRange(NodeVector& some, NodeVector more);
 NodeVector mergeVectors(NodeVector some, NodeVector more);
 char* substr(char* what,int from,int to);
 char* match(char* input, char* pattern);
-
+char* modifyConstChar(char* line);
 #define check(assertion) ps(#assertion);if(assertion)ps("OK");else{ps("FAILED");exit(0);}

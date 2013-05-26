@@ -126,7 +126,7 @@ bool parse(const char* data) {
         showContext(currentContext());
         return true;
     }
-    if (eq(data, ":t") || eq(data, "test") || eq(data, "tests")) {
+    if (eq(data, ":t") || eq(data, "test") || eq(data, "test ") || eq(data, "tests")) {
         exitOnFailure = false;
         tests();
         return true;

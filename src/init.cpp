@@ -23,17 +23,17 @@ const void * shmat_root = (const void *) 0x110000000; // just higher than system
 //const void * shmat_root = (const void *)0x105800000;//test
 
 bool virgin_memory = false;
-
-#ifndef HAS_UNION_SEMUN
-#ifdef USE_SEMCTL_SEMUN
+#if defined(__FreeBSD__) || defined(__APPLE__)
+   /* union semun is defined by including <sys/sem.h> */
+#else
+   /* according to X/OPEN we have to define it ourselves */
 union semun {
     int              val;    /* Value for SETVAL */
     struct semid_ds *buf;    /* Buffer for IPC_STAT, IPC_SET */
     unsigned short  *array;  /* Array for GETALL, SETALL */
-    struct seminfo  *__buf;  /* Buffer for IPC_INFO
+    struct seminfo  *__buf;  /* Buffer fTheor IPC_INFO
                                 (Linux-specific) */
 };
-#endif
 #endif
 int semrm(key_t key, int id = 0) {
 	union semun arg;

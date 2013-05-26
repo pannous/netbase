@@ -277,7 +277,27 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 	return v;
 }
 
-int splitStringC(char* line, char** tokens, const char* separators) {
+
+char** splitStringC(const char* line0, const char* separator) {
+	if (line0 == 0) {
+		ps("empty splitString!");
+		return 0;
+	}
+	char * token;
+	char** tokens=(char**) malloc(100);
+	char* line = (char*) malloc(strlen(line0)*2 + 1); //dont free!
+	strcpy(line, line0);
+	token = strtok(line, separator);
+	int row = 0;
+	while (token != NULL) {
+		token=strtok(NULL, separator);
+		tokens[row++]=token;
+	}
+	//free(line);// ja? NEIN: incorrect checksum for freed object - object was probably modified after being freed.
+	return tokens;
+}
+
+int splitStringC2(char* line, char** tokens, const char* separators) {
 	char * token;
 	//  token = strtok (line,separator);
 	int row = 0;
@@ -289,17 +309,51 @@ int splitStringC(char* line, char** tokens, const char* separators) {
 			line[i] = 0;
 			token = lastgood;
 			lastgood = &line[i + 1];
-			tokens[row] = token;
+			if(tokens)
+				tokens[row] = token;
 			//        token = strtok (NULL, separator);
 
 			row++;
 		}
 		i++;
 	}
+	if(tokens)
 	tokens[row] = lastgood;
 	return row + 1; //s
 }
 
+char* modifyConstChar(char* line){
+		char* line0 = (char*) malloc(strlen(line)*2 + 1); //dont free!
+		strcpy(line0,line);
+		return line0;
+}
+
+// line MUST not be const!
+int splitStringC(char* line, char** tokens, char separator,bool safe) {
+	if(safe)line=modifyConstChar(line);
+	char * token;
+	int row = 0;
+	int len = strlen(line);
+	int i = 0;
+	char* lastgood = line;
+	while (i < len) {
+		char c=line[i];
+		if (c==separator) {
+			line[i] = 0;
+			token = lastgood;
+			lastgood = &line[i + 1];
+			if(tokens)
+				tokens[row] = token;
+			//        token = strtok (NULL, separator);
+
+			row++;
+		}
+		i++;
+	}
+	if(tokens)
+	tokens[row] = lastgood;
+	return row + 1; //s
+}
 
 inline int normChar(int c) {
     switch (c) {

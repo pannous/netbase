@@ -22,7 +22,6 @@ char* nodes_file = "data/nodes.txt";
 char* statements_file = "data/statements.txt";
 char* images_file = "data/images.txt";
 
-
 void norm(char* title) {
 	int len = strlen(title);
 	for (int i = len; i >= 0; --i) {
@@ -320,9 +319,51 @@ void extractUnit() {
 	string s = "397.1#/km^2";
 }
 
-int getFields(char* line, vector<char*>& fields, const char* separator = ",;\t|", int nameRowNr = -1, const char* nameRow = 0) {
+char* charToCharPointer(char c) {
+	char separator[2] = {c, 0};
+	char* separatorx = separator;
+	return separatorx;
+}
+
+char guessSeparator(char* line) {
+	const char* separators = ",\t;|";
+	char the_separator = '\t';
+	int max = 0;
+	int size = strlen(separators);
+	for (int i = 0; i < size; i++) {
+		int nr = splitStringC(line, 0, (char) separators[i], true);
+		if (nr > max) {
+			the_separator = separators[i];
+			max = nr;
+		}
+	}
+	return the_separator;
+}
+
+int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow=0) {
+	int row = 0;
+	while (true) {
+		char* token = tokens[row++];
+		if (!token)break;
+		if (nameRowNr < 0) {
+			if (nameRow == 0) {
+				if (eq("name", token))nameRowNr = row;
+				if (eq("Name", token))nameRowNr = row;
+				if (eq("title", token))nameRowNr = row;
+				if (eq("Title", token))nameRowNr = row;
+			} else if (eq(nameRow, token))nameRowNr = row;
+		}
+	}
+	return nameRowNr;
+}
+
+int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, const char* nameRow) {
 	char * token;
-	token = strtok(line, separator);
+
+	char* separators = ",;\t|";
+	if (separator)
+		separators = charToCharPointer(separator);
+	token = strtok(line, separators);
 	int row = 0;
 	while (token != NULL) {
 		fields.push_back(token);
@@ -335,7 +376,8 @@ int getFields(char* line, vector<char*>& fields, const char* separator = ",;\t|"
 			} else if (eq(nameRow, token))nameRowNr = row;
 		}
 		//    printf ("%s\n",pch);
-		token = strtok(NULL, separator);
+		token = strtok(NULL, separators); // rest
+		//		token = strtok(token, separators);// split
 		row++;
 	}
 	return nameRowNr;
@@ -367,12 +409,12 @@ bool isNameField(char* field, char* nameField) {
 }
 
 Node* namify(Node* node, char* name) {
-	Context* context=currentContext();
-    node->name = &context->nodeNames[context->currentNameSlot];
-    strcpy(node->name, name);// can be freed now!
-    int len = strlen(name);
-    context->nodeNames[context->currentNameSlot + len] = 0;
-	addStatement(getAbstract(name), Instance, node,DONT_CHECK_DUPLICATES);
+	Context* context = currentContext();
+	node->name = &context->nodeNames[context->currentNameSlot];
+	strcpy(node->name, name); // can be freed now!
+	int len = strlen(name);
+	context->nodeNames[context->currentNameSlot + len] = 0;
+	addStatement(getAbstract(name), Instance, node, DONT_CHECK_DUPLICATES);
 	// replaceNode(subject,object);
 	return node;
 }
@@ -396,25 +438,26 @@ bool hasAttribute(char* line) {
 //Context* context,
 //Node* type,
 // importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
+
 void importXml(const char* facts_file, char* nameField, const char* ignoredFields, const char* includedFields) {
 	p("import csv start");
 	bool dissect = false;
 	char line[1000];
-	char* line0= (char*) malloc(sizeof (char*) *100);
+	char* line0 = (char*) malloc(sizeof (char*) *100);
 	char* field = (char*) malloc(sizeof (char*) *100);
 	char* value = (char*) malloc(sizeof (char*) *10000000);
 
-	Node* root=0;
-	Node* parent=0;// keep track of 1 layer
-	Node* subject=0;
-	Node* predicate=0;
-	Node* object=0;
+	Node* root = 0;
+	Node* parent = 0; // keep track of 1 layer
+	Node* subject = 0;
+	Node* predicate = 0;
+	Node* object = 0;
 	vector<Node*> predicates = *new vector<Node*>();
 	map<char*, char*> fields;
 	queue<Node*> parents; //constructed!!
 
-//	char* objectName = (char*) malloc(100);
-//	int depth = 0;
+	//	char* objectName = (char*) malloc(100);
+	//	int depth = 0;
 	//	vector<char*> ignoreFields = splitString(ignoredFields, ",");
 	//	vector<char*>& includeFields = splitString(includedFields, ",");
 	int linecount = 0;
@@ -425,19 +468,19 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 		perror("Error opening file");
 		exit(1);
 	}
-	Node* UNKNOWN_OR_EMPTY=getThe("<unknown/>");
+	Node* UNKNOWN_OR_EMPTY = getThe("<unknown/>");
 	//	map<Node*,Node*> fields;
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (!line)break;
 		if (++linecount % 1000 == 0)printf("%d\n", linecount);
 		fixNewline(line);
-		line0=line;// readable in Debugger!
+		line0 = line; // readable in Debugger!
 		if (contains(line, "<?xml"))continue;
 		if (!subject) {
-			if(root)
+			if (root)
 				subject = add(extractTagName(line));
 			else
-				root= add(extractTagName(line));
+				root = add(extractTagName(line));
 			continue;
 		}
 
@@ -447,9 +490,9 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 			//				Statement *s = addStatement(subject, predicate, object, false);
 			//				showStatement(s);
 			//			}
-//			if(!parents.empty())
-			subject = 0;// parents.back(); // back????
-//			parents.pop();
+			//			if(!parents.empty())
+			subject = 0; // parents.back(); // back????
+			//			parents.pop();
 			fields.clear();
 			continue;
 		}
@@ -457,40 +500,39 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 		if (match(line, "<[a-z]") && contains(line, "</")) {
 			field = extractTagName(line);
 			value = extractTagValue(line);
-			if(ignoredFields&&contains(ignoredFields,field))
+			if (ignoredFields && contains(ignoredFields, field))
 				continue;
 			if (isNameField(field, nameField)) {
-//				parent=parents.front();
+				//				parent=parents.front();
 				// rewrite address.member=city
-//				deleteStatement(findStatement(parent, Member, subject, 0, 0, 0, 0));
+				//				deleteStatement(findStatement(parent, Member, subject, 0, 0, 0, 0));
 				// address.CITY=bukarest
 				predicate = getThe(subject->name); // CITY
 				Node* object = namify(subject, value); // city.name=bukarest
-				addStatement(parent, predicate, object,DONT_CHECK_DUPLICATES); // address.CITY=bukarest
+				addStatement(parent, predicate, object, DONT_CHECK_DUPLICATES); // address.CITY=bukarest
 				subject = object; // bukarest
-//				show(subject,true);
+				//				show(subject,true);
 				continue;
 			}
 
 			if (!value) {//<address> <city> ...
-//				parents.push(subject);
-				parent=subject;
+				//				parents.push(subject);
+				parent = subject;
 
-//			if(eq(field,"zip")){
-//				value=value;
-//				showStatement(s);
-//			}
+				//			if(eq(field,"zip")){
+				//				value=value;
+				//				showStatement(s);
+				//			}
 
-				if(!contains(line,"><")){// else empty!
+				if (!contains(line, "><")) {// else empty!
 					object = add(field);
-					addStatement(subject, Member, object,DONT_CHECK_DUPLICATES);
+					addStatement(subject, Member, object, DONT_CHECK_DUPLICATES);
 					subject = object;
-				}
-				else{
-					object=getThe(field);
-//					addStatement(subject, Unknown,object,DONT_CHECK_DUPLICATES);//EMPTY
-					addStatement(subject, object,Unknown,DONT_CHECK_DUPLICATES);//EMPTY
-//					addStatement(subject, object,UNKNOWN_OR_EMPTY,DONT_CHECK_DUPLICATES);//EMPTY
+				} else {
+					object = getThe(field);
+					//					addStatement(subject, Unknown,object,DONT_CHECK_DUPLICATES);//EMPTY
+					addStatement(subject, object, Unknown, DONT_CHECK_DUPLICATES); //EMPTY
+					//					addStatement(subject, object,UNKNOWN_OR_EMPTY,DONT_CHECK_DUPLICATES);//EMPTY
 				}
 				addAttributes(subject, line);
 				continue;
@@ -502,17 +544,17 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 				predicate = getThe(field, NO_TYPE, DONT_DISSECT);
 			}
 			object = getThe(value, NO_TYPE, DONT_DISSECT);
-			Statement* s=addStatement(subject, predicate, object,DONT_CHECK_DUPLICATES);
+			Statement* s = addStatement(subject, predicate, object, DONT_CHECK_DUPLICATES);
 
 			//			fields.insert(predicate,object);//
 			continue;
 		}
 		if (startsWith(line, "<") && !contains(line, "</")) {
-			parent=subject;
-//			parents.push(subject); // <address> <city> ...
+			parent = subject;
+			//			parents.push(subject); // <address> <city> ...
 			field = extractTagName(line);
 			subject = add(field); // can be replaced by name!
-			addStatement(parent, Member, subject,DONT_CHECK_DUPLICATES); // address.city
+			addStatement(parent, Member, subject, DONT_CHECK_DUPLICATES); // address.city
 			addAttributes(subject, line);
 			continue;
 		}
@@ -522,20 +564,20 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 	pi(linecount);
 }
 
-void importCsv(const char* facts_file, Node* type, const char* separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
+void importCsv(const char* facts_file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("import csv start");
 	char line[1000];
 	char** values = (char**) malloc(sizeof (char*) *100);
 	memset(values, 0, 100);
 	//    vector<char*> values;
 
-	Node* subject=0;
-	Node* predicate=0;
-	Node* object=0;
+	Node* subject = 0;
+	Node* predicate = 0;
+	Node* object = 0;
 	vector<Node*> predicates = *new vector<Node*>();
 	vector<char*> ignoreFields = splitString(ignoredFields, ",");
 	vector<char*>& includeFields = splitString(includedFields, ",");
-	vector<char*>& fields = *new vector<char*>();
+	//	vector<char*>& fields = *new vector<char*>();
 	int linecount = 0;
 	FILE *infile;
 	printf("Opening File %s\n", (facts_file));
@@ -549,13 +591,20 @@ void importCsv(const char* facts_file, Node* type, const char* separator, const 
 	char* columnTitles;
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (!line)break;
+		fixNewline(line);
 		if (linecount == 0) {
 			columnTitles = line;
-			if (fields.size() == 0)
-				nameRowNr = getFields(line, fields, separator, nameRowNr, nameRow);
-			fieldCount = fields.size();
+			if (!separator)
+				separator = guessSeparator(line);
+			fieldCount = splitStringC(line, values, separator, true	);
+			nameRowNr = getNameRow(values, nameRowNr, nameRow);
+			//						getFields(line, fields, separator, nameRowNr, nameRow);// vector ok, only once!
+
+			//			check(fields.size() == fieldCount)
+			//				if (fields.size() == 0)
 			for (int i = 0; i < fieldCount; i++) {
-				char* field = fields.at(i);
+				char* field = values[i];
+				//				char* field = fields.at(i);
 				predicates.push_back(getThe(field));
 			}
 			++linecount;
@@ -563,7 +612,6 @@ void importCsv(const char* facts_file, Node* type, const char* separator, const 
 		}
 		if (++linecount % 100 == 0)printf("%d\n", linecount);
 
-		fixNewline(line);
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
 
@@ -574,6 +622,7 @@ void importCsv(const char* facts_file, Node* type, const char* separator, const 
 			//            ps(line);// split! :{
 			continue;
 		}
+
 		bool dissect = type && !eq(type->name, "city"); // city special: too many!
 		// todo more generally : don't dissect special names ...
 
@@ -733,7 +782,7 @@ void importWordnet() {
 
 void importGeoDB() {
 	importCsv("./import/cities1000.txt",\
-			getThe("city"), "\t", "alternatenames,modificationdate,geonameid",\
+			getThe("city"), '\t', "alternatenames,modificationdate,geonameid",\
 		"latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
 
@@ -741,7 +790,7 @@ void importGeoDB() {
 
 void importAll() {
 	//	importFacts()
-//	importCsv("adressen.txt");
+	//	importCsv("adressen.txt");
 	importNames();
 	importWordnet();
 	importGeoDB();

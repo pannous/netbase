@@ -683,7 +683,8 @@ void dissectParent(Node* subject) {
 	if (type < 1)type = str.find(".");
 	if (type >= 0 && len - type > 2) {
 		Node* word = getThe(str.substr(type + 1).c_str());
-		addStatement(word, Instance, subject, true);
+//		addStatement(word, Instance, subject, true);
+		addStatement(word, Instance, subject, false);
 	}// release str
 	//    str.clear();
 }
@@ -744,8 +745,8 @@ void dissectWord(Node* subject) {
 		Node* in = getThe("location");
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		Node* ort = getThe(str.substr(type + 4).c_str());
-		addStatement(word, Instance, subject, true);
-		addStatement(subject, in, ort, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(subject, in, ort, false);
 	}
 	type = str.find("_at_");
 	type = str.find("_am_");
@@ -753,16 +754,16 @@ void dissectWord(Node* subject) {
 		Node* at = getThe("at");
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		Node* ort = getThe(str.substr(type + 4).c_str());
-		addStatement(word, Instance, subject, true);
-		addStatement(subject, at, ort, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(subject, at, ort, false);
 	}
 	type = str.find("_from_");
 	if (type >= 0 && len - type > 2) {
 		Node* from = getThe("from");
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		Node* ort = getThe(str.substr(type + 6).c_str());
-		addStatement(word, Instance, subject, true);
-		addStatement(subject, from, ort, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(subject, from, ort, false);
 	}
 	type = str.find("_for_");
 	type = str.find("_für_");
@@ -770,8 +771,8 @@ void dissectWord(Node* subject) {
 		Node* from = getThe("for");
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		Node* obj = getThe(str.substr(type + 5).c_str());
-		addStatement(word, Instance, subject, true);
-		addStatement(subject, from, obj, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(subject, from, obj, false);
 	}
 	type = str.find("_bei_");
 	if (type >= 0 && len - type > 2) {
@@ -779,8 +780,8 @@ void dissectWord(Node* subject) {
 		//        check(eq(getThe("near")->name,"near"));
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		Node* ort = getThe(str.substr(type + 5).c_str());
-		addStatement(word, Instance, subject, true);
-		addStatement(subject, in, ort, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(subject, in, ort, false);
 	}
 
 	type = str.find("'s_");
@@ -790,8 +791,8 @@ void dissectWord(Node* subject) {
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		const char* o = str.substr(type + 4).c_str();
 		Node* ort = getThe(o);
-		addStatement(ort, Instance, subject, true);
-		addStatement(subject, hat, ort, true);
+		addStatement(ort, Instance, subject, false);
+		addStatement(subject, hat, ort, false);
 	}
 	type = str.find("_of_");
 	if (type < 0)type = str.find("_de_"); // de_la_Casa
@@ -802,8 +803,8 @@ void dissectWord(Node* subject) {
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		const char* o = str.substr(type + 4).c_str();
 		Node* ort = getThe(o);
-		addStatement(word, Instance, subject, true);
-		addStatement(ort, hat, subject, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(ort, hat, subject, false);
 	}
 	type = str.find("_der_");
 	if (type < 0)type = str.find("_des_");
@@ -814,8 +815,8 @@ void dissectWord(Node* subject) {
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		string so = str.substr(type + 5); // keep! dont autofree
 		Node* ort = getThe(so.data());
-		addStatement(word, Instance, subject, true);
-		addStatement(ort, hat, subject, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(ort, hat, subject, false);
 	}
 	type = str.find("_von_");
 	if (type >= 0 && len - type > 2) {
@@ -823,22 +824,22 @@ void dissectWord(Node* subject) {
 		Node* word = getThe(str.substr(0, type).data()); //deCamel
 		string so = str.substr(type + 5); // keep! dont autofree
 		Node* ort = getThe(so.data());
-		addStatement(word, Instance, subject, true);
-		addStatement(ort, hat, subject, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(ort, hat, subject, false);
 	}
 	type = str.find("._");
 	if (type >= 0 && len - type > 2) {
 		Node* number = getThe("number");
 		Node* nr = getThe(str.substr(0, type).c_str()); //deCamel
 		Node* word = getThe(str.substr(type + 2).c_str());
-		addStatement(word, Instance, subject, true);
-		addStatement(subject, number, nr, true);
+		addStatement(word, Instance, subject, false);
+		addStatement(subject, number, nr, false);
 
 	}
 	type = str.find("_");
 	if (type >= 0 && len - type > 2) {
 		Node* word = getThe(str.substr(type + 1).c_str());
-		addStatement(word, Instance, subject, true);
+		addStatement(word, Instance, subject, false);
 	}
 
 	// todo: zu (ort/name) _der_ (nicht:name) bei von auf_der auf am (Angriff_)gegen (Schlacht_)um...
@@ -1742,15 +1743,4 @@ int main(int argc, char *argv[]) {
 	testBrandNewStuff();
 	console();
 	//    } catch (std::exception const& ex) {
-}
-
-void testBrandNewStuff() {
-	ps("test brand new stuff");
-//	parentPath(a(bee),a(insect));	
-//	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug
-//	parentPath(a(insect),a(bug));
-//	shortestPath(a(bug), a(frog));
-	//	importCsv("import/wins.csv");
-	//	if(!hasWord("zip"))
-	//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
 }
