@@ -909,9 +909,9 @@ void tests() {
     //    testLoop();
 }
 void testCities(){
-	char* line="geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\\tadmin3code\\tadmin4code\\tpopulation\\televation\\tgtopo30\\ttimezone\\tmodificationdate\\n";
+	char* line="geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n";
 	int nr=splitStringC(line,0,'\t',true);
-//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\\tadmin3code\\tadmin4code\\tpopulation\\televation\\tgtopo30\\ttimezone\\tmodificationdate\\n",0,"\t",true);
+//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n",0,"\t",true);
 	check(nr>4);
 	vector<char*> fields;
 //	int n=getFields(modifyConstChar(line),fields,'\t');

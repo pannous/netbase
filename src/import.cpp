@@ -357,16 +357,22 @@ int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow=0) {
 	return nameRowNr;
 }
 
+// BROKEN!!!??!!
 int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, const char* nameRow) {
 	char * token;
-
 	char* separators = ",;\t|";
 	if (separator)
 		separators = charToCharPointer(separator);
+//	line=modifyConstChar(line);
 	token = strtok(line, separators);
 	int row = 0;
 	while (token != NULL) {
 		fields.push_back(token);
+		token = strtok(NULL, separators);// BROKEN !!??!!??!!??
+		row++;
+	}
+	for (int i = 0; i < row; i++) {
+		token=fields.at(i);
 		if (nameRowNr < 0) {
 			if (nameRow == 0) {
 				if (eq("name", token))nameRowNr = row;
@@ -375,10 +381,6 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 				if (eq("Title", token))nameRowNr = row;
 			} else if (eq(nameRow, token))nameRowNr = row;
 		}
-		//    printf ("%s\n",pch);
-		token = strtok(NULL, separators); // rest
-		//		token = strtok(token, separators);// split
-		row++;
 	}
 	return nameRowNr;
 }
