@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="05b436c5-4953-4ad1-8fd6-0d8170cc2559" name="Default" comment="" />
+    <list default="true" id="05b436c5-4953-4ad1-8fd6-0d8170cc2559" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$USER_HOME$/netbase/netbase.ipr" afterPath="$USER_HOME$/netbase/netbase.ipr" />
+      <change type="MODIFICATION" beforePath="$USER_HOME$/netbase/netbase.iws" afterPath="$USER_HOME$/netbase/netbase.iws" />
+      <change type="MODIFICATION" beforePath="$USER_HOME$/netbase/src/tests.cpp" afterPath="$USER_HOME$/netbase/src/tests.cpp" />
+    </list>
     <ignored path=".idea/workspace.xml" />
     <ignored path="netbase.iws" />
+    <file path="/Dummy.txt" changelist="05b436c5-4953-4ad1-8fd6-0d8170cc2559" time="1378232662925" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,8 +28,6 @@
     <disable_hints />
   </component>
   <component name="DebuggerManager">
-    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
-    <breakpoint_rules default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_any default_suspend_policy="SuspendAll" default_condition_enabled="true">
       <breakpoint>
         <option name="NOTIFY_CAUGHT" value="true" />
@@ -59,6 +62,7 @@
         <option name="LOG_MESSAGE" value="" />
       </breakpoint>
     </breakpoint_any>
+    <ui_properties default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -73,7 +77,7 @@
       <file leaf-file-name="import.cpp" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/import.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="196" column="25" selection-start="5689" selection-end="5689" vertical-scroll-proportion="0.0">
+            <state line="196" column="25" selection-start="5707" selection-end="5707" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -88,28 +92,28 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="all_nodes.sql" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sql/all_nodes.sql">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="4" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="netbase.cpp" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/netbase.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="1838" column="4" selection-start="64943" selection-end="64943" vertical-scroll-proportion="0.0">
+            <state line="1745" column="4" selection-start="56020" selection-end="56020" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="servreq.c" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="servreq.c" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/webserv/servreq.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="24" column="62" selection-start="344" selection-end="344" vertical-scroll-proportion="0.020170676">
+            <state line="24" column="62" selection-start="344" selection-end="344" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="netbase.cpp" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$USER_HOME$/netbase/src/netbase.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="1742" column="11" selection-start="55949" selection-end="55949" vertical-scroll-proportion="0.84639496">
               <folding />
             </state>
           </provider>
@@ -136,7 +140,7 @@
       <file leaf-file-name="netbase.hpp" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/netbase.hpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="256" column="19" selection-start="7254" selection-end="7254" vertical-scroll-proportion="0.0">
+            <state line="256" column="19" selection-start="7295" selection-end="7295" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -145,7 +149,7 @@
       <file leaf-file-name="tests.cpp" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/tests.cpp">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="537" column="4" selection-start="20426" selection-end="20426" vertical-scroll-proportion="0.0">
+            <state line="538" column="4" selection-start="19747" selection-end="19747" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -157,6 +161,14 @@
     <FindUsagesManager>
       <setting name="OPEN_NEW_TAB" value="false" />
     </FindUsagesManager>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$USER_HOME$/netbase" />
+  </component>
+  <component name="GitLogSettings">
+    <option name="myDateState">
+      <MyDateState />
+    </option>
   </component>
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
@@ -262,7 +274,7 @@
     <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+    <navigator proportions="" version="1" splitterProportion="0.5">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -273,24 +285,11 @@
       <autoscrollFromSource />
       <sortByType />
     </navigator>
-    <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="netbase" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="PackagesPane" />
-      <pane id="Scope" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="GenerateAntBuildDialog.generateIdeaHomeProperty" value="false" />
-    <property name="project.structure.last.edited" value="Project" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="JdbcConsole.Extract.Separator" value=";" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
@@ -299,6 +298,7 @@
     <property name="recentsLimit" value="5" />
     <property name="GenerateAntBuildDialog.generateSingleFile" value="true" />
     <property name="GenerateAntBuildDialog.inclineRuntiemClasspath" value="false" />
+    <property name="last_opened_file_path" value="$USER_HOME$/netbase/netbase.iml" />
     <property name="JdbcConsole.ResultInNewTab" value="true" />
     <property name="JdbcConsole.OpenEditorOnStart" value="false" />
     <property name="GenerateAntBuildDialog.outputFileNameProperty" value="netbase" />
@@ -312,8 +312,8 @@
     <property name="GoToFile.includeJavaFiles" value="false" />
     <property name="options.lastSelected" value="com.advancedtools.cpp.CppSupportSettings" />
     <property name="JdbcConsole.Extract.OpeningQuote" value="'" />
-    <property name="project.structure.side.proportion" value="0.2" />
     <property name="GenerateAntBuildDialog.forceTargetJdk" value="true" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="JdbcConsole.Extract.ClosingQuote" value="'" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="JdbcConsole.Extract.IncludeHeader" value="false" />
@@ -346,6 +346,7 @@
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <option name="MAIN_CLASS_NAME" />
       <option name="VM_PARAMETERS" />
       <option name="PROGRAM_PARAMETERS" />
@@ -360,6 +361,7 @@
       <method />
     </configuration>
     <configuration default="true" type="JUnit" factoryName="JUnit">
+      <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea" />
       <module name="" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
@@ -447,21 +449,23 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="22" width="2559" height="1414" extended-state="6" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="SBT Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3995451" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="RESTClient" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32959402" sideWeight="0.6635417" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24950258" sideWeight="0.60424566" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24950258" sideWeight="0.60424566" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3956781" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="IDEtalk Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Dataflow to this" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -469,6 +473,7 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32959402" sideWeight="0.596875" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32752085" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32916668" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -542,9 +547,18 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/sql/all_nodes.sql">
+    <entry file="file://$PROJECT_DIR$/src/netbase.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.1444867" />
+        <state line="256" column="19" selection-start="7295" selection-end="7295" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="537" column="4" selection-start="19742" selection-end="19742" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/util.cpp">
@@ -560,11 +574,6 @@
     <entry file="file://$PROJECT_DIR$/src/import.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state line="242" column="28" selection-start="7113" selection-end="7113" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sql/all_nodes.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/netbase.cpp">
@@ -638,7 +647,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/import.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="196" column="25" selection-start="5689" selection-end="5689" vertical-scroll-proportion="0.0">
+        <state line="196" column="25" selection-start="5707" selection-end="5707" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -646,13 +655,6 @@
     <entry file="file://$PROJECT_DIR$/src/import.hpp">
       <provider selected="true" editor-type-id="text-editor">
         <state line="2" column="0" selection-start="31" selection-end="31" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sql/all_nodes.sql">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="4" column="0" selection-start="23" selection-end="23" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -673,14 +675,14 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/netbase.hpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="256" column="19" selection-start="7254" selection-end="7254" vertical-scroll-proportion="0.0">
+        <state line="256" column="19" selection-start="7295" selection-end="7295" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/tests.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="537" column="4" selection-start="20426" selection-end="20426" vertical-scroll-proportion="0.0">
+        <state line="538" column="4" selection-start="19747" selection-end="19747" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -692,14 +694,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/netbase.cpp">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="1838" column="4" selection-start="64943" selection-end="64943" vertical-scroll-proportion="0.0">
+        <state line="1745" column="4" selection-start="56020" selection-end="56020" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/webserv/servreq.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="62" selection-start="344" selection-end="344" vertical-scroll-proportion="0.020170676">
+        <state line="24" column="62" selection-start="344" selection-end="344" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/netbase/src/netbase.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="1742" column="11" selection-start="55949" selection-end="55949" vertical-scroll-proportion="0.84639496">
           <folding />
         </state>
       </provider>
@@ -762,7 +771,6 @@
             <option name="proportions">
               <list>
                 <option value="0.2" />
-                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>

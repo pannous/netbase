@@ -40,7 +40,6 @@
   <component name="CppTools.Loader" reportImplicitCastToBool="false" reportNameReferencedOnce="false" warnedAboutFileOutOfSourceRoot="true" version="3" activeConfiguration="Debug" additionalCommandLineBuildParameters="" currentProject="$PROJECT_DIR$/Makefile" additionalPreprocessorDefs="" compilerSelect="GCC">
     <include-dir path="src" />
   </component>
-  <component name="DataSourceManagerImpl" compressed="false" />
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>
@@ -52,27 +51,27 @@
         <option name="myName" value="Project Default" />
         <option name="myLocal" value="false" />
         <inspection_tool class="CastToConcreteClass" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="CheckImageSize" level="WARNING" enabled="false" />
+        <inspection_tool class="CheckImageSize" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="CheckNodeTest" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="CheckValidXmlInScriptTagBody" enabled="false" level="ERROR" enabled_by_default="false" />
         <inspection_tool class="ClassReferencesSubclass" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ClassWithoutToString" level="WARNING" enabled="true" />
-        <inspection_tool class="CssInvalidElementInspection" level="ERROR" enabled="false" />
-        <inspection_tool class="CyclomaticComplexityJS" level="WARNING" enabled="true">
+        <inspection_tool class="CssInvalidElementInspection" enabled="false" level="ERROR" enabled_by_default="false" />
+        <inspection_tool class="CyclomaticComplexityJS" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_limit" value="10" />
         </inspection_tool>
         <inspection_tool class="DeclareCollectionAsInterface" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreLocalVariables" value="false" />
           <option name="ignorePrivateMethodsAndFields" value="false" />
         </inspection_tool>
-        <inspection_tool class="DocumentWriteJS" level="WARNING" enabled="true" />
+        <inspection_tool class="DocumentWriteJS" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="FeatureEnvy" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreTestCases" value="false" />
         </inspection_tool>
-        <inspection_tool class="FunctionWithMultipleLoopsJS" level="WARNING" enabled="true" />
-        <inspection_tool class="FunctionWithMultipleReturnPointsJS" level="WARNING" enabled="true" />
+        <inspection_tool class="FunctionWithMultipleLoopsJS" enabled="true" level="WARNING" enabled_by_default="true" />
+        <inspection_tool class="FunctionWithMultipleReturnPointsJS" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="HardwiredNamespacePrefix" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="HtmlDeprecatedTag" level="WARNING" enabled="false" />
+        <inspection_tool class="HtmlDeprecatedTag" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="HtmlExtraClosingTag" enabled="false" level="ERROR" enabled_by_default="false" />
         <inspection_tool class="HtmlUnknownAttribute" enabled="false" level="WARNING" enabled_by_default="false">
           <option name="myValues">
@@ -108,7 +107,7 @@
           <option name="IGNORE_NODESET_TO_BOOLEAN_VIA_STRING" value="true" />
         </inspection_tool>
         <inspection_tool class="IndexZeroUsage" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="InnerHTMLJS" level="WARNING" enabled="true" />
+        <inspection_tool class="InnerHTMLJS" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="InstanceVariableOfConcreteClass" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="InstanceofChain" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="ignoreInstanceofOnLibraryClasses" value="false" />
@@ -125,7 +124,7 @@
         </inspection_tool>
         <inspection_tool class="MethodReturnOfConcreteClass" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="NativeJavaMethods" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="NestingDepthJS" level="WARNING" enabled="true">
+        <inspection_tool class="NestingDepthJS" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_limit" value="5" />
         </inspection_tool>
         <inspection_tool class="ObsoleteCollection" enabled="true" level="WARNING" enabled_by_default="true">
@@ -135,10 +134,10 @@
           <option name="ignoreInMatchingInstanceof" value="false" />
         </inspection_tool>
         <inspection_tool class="ParameterOfConcreteClass" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="ParametersPerFunctionJS" level="WARNING" enabled="true">
+        <inspection_tool class="ParametersPerFunctionJS" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_limit" value="5" />
         </inspection_tool>
-        <inspection_tool class="PlatformDetectionJS" level="WARNING" enabled="true" />
+        <inspection_tool class="PlatformDetectionJS" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="PublicMethodNotExposedInInterface" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="onlyWarnIfContainingClassImplementsAnInterface" value="false" />
           <option name="ignorableAnnotations">
@@ -155,7 +154,7 @@
         <inspection_tool class="RubyResolve" level="WARNING" enabled="false">
           <option name="warnImplicitResults" value="false" />
         </inspection_tool>
-        <inspection_tool class="StatementsPerFunctionJS" level="WARNING" enabled="true">
+        <inspection_tool class="StatementsPerFunctionJS" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="m_limit" value="30" />
         </inspection_tool>
         <inspection_tool class="StaticMethodOnlyUsedInOneClass" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -163,7 +162,7 @@
         <inspection_tool class="SuppressionAnnotation" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="SystemOutErr" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ThreadDumpStack" enabled="true" level="WARNING" enabled_by_default="true" />
-        <inspection_tool class="ThreeNegationsPerFunctionJS" level="WARNING" enabled="true" />
+        <inspection_tool class="ThreeNegationsPerFunctionJS" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="ThrowablePrintStackTrace" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="TypeMayBeWeakened" enabled="true" level="WARNING" enabled_by_default="true">
           <option name="useRighthandTypeAsWeakestTypeInAssignments" value="true" />
@@ -172,7 +171,7 @@
           <option name="onlyWeakentoInterface" value="true" />
         </inspection_tool>
         <inspection_tool class="UnusedCppSymbol" enabled="false" level="WARNING" enabled_by_default="false" />
-        <inspection_tool class="XHTMLIncompatabilitiesJS" level="WARNING" enabled="true" />
+        <inspection_tool class="XHTMLIncompatabilitiesJS" enabled="true" level="WARNING" enabled_by_default="true" />
         <inspection_tool class="XmlDuplicatedId" enabled="false" level="ERROR" enabled_by_default="false" />
         <inspection_tool class="XmlUnboundNsPrefix" enabled="false" level="WARNING" enabled_by_default="false" />
         <inspection_tool class="XmlWrongRootElement" enabled="false" level="ERROR" enabled_by_default="false" />
@@ -328,6 +327,7 @@
   </component>
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/netbase/netbase.iml" filepath="$USER_HOME$/netbase/netbase.iml" />
       <module fileurl="file://$PROJECT_DIR$/netbase+.iml" filepath="$PROJECT_DIR$/netbase+.iml" />
     </modules>
   </component>
@@ -348,7 +348,7 @@
     <option name="mySupportsUserInfoFilter" value="true" />
   </component>
   <component name="VcsDirectoryMappings">
-    <mapping directory="" vcs="" />
+    <mapping directory="$USER_HOME$/netbase" vcs="Git" />
   </component>
   <component name="WebServicesPlugin" addRequiredLibraries="true" />
 </project>

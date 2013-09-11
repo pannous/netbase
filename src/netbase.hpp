@@ -80,7 +80,6 @@ typedef union Value {
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
 // reduce from 0x20 bytes to name,kind, firstStatement == 0x0b bytes!
 // 1 nit == 4+1 words =20bytes
-
 typedef struct Node {
     //class Node{
     //public:
@@ -90,7 +89,7 @@ typedef struct Node {
 #ifdef inlineName
     char name[100];
 #else
-    char* name; // cast char* to float if type==float?
+    char* name; // see value for float etc
 #endif
     int kind; // year, m^2
     Value value; // for statements, numbers
@@ -107,6 +106,7 @@ typedef struct Node {
     // germany.index[0]=80Mio .index[1]=Berlin
     //        Node* index;//nur #properties+1 Nits!!
 }Node ;
+
 // norway captial oslo
 // oslo population 325235
 // all captials with more than 300000
@@ -114,22 +114,19 @@ typedef struct Node {
 // units
 // beth age '29 years'
 // oldest -> sort by old
-
 typedef struct Ahash {
     Node* abstract;
     Ahash* next;
 }Ahash ;
-// 1Stit==3 words
 
 // S13425 beth likes apple
 // Node3254 value=S13425
 // S      karsten agrees <Node3254>
 // S      Node3254/S13425 is wrong
-
+// 1 Stit == 3 words
 typedef struct Statement {
     int id; // implicit?
     int context; // implicit?  NODE!?!
-
     //        Node* meta;
     Node* Subject; // as function? nee as it is!! transpose on context load
     Node* Predicate;
@@ -165,7 +162,7 @@ public:
 
     ~Facet() {
         printf("~Facet\n");
-        //        when an object variable goesout of scope, its destructor is called automatically.
+        //        when an object variable goes out of scope, its destructor is called automatically.
     }
     Node* field;
     map<Node*, int> *values; //count
@@ -337,9 +334,10 @@ void initNode(Node* node, int id, const char* nodeName, int kind, int contextId)
 Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
 bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
 bool addStatementToNode(Node* node, int statementNr);
+bool addStatementToNodeDirect(Node* node, int statementNr);
+bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
 Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
-Statement* getStatement(Node* n, int nr,bool firstInstanceGap=false);
 inline Node* get(int NodeId);
 
 //extern "C" /* <== don't mingle name! */ inline
@@ -380,6 +378,10 @@ void clearAlgorithmHash();
 Node* firstInstance(Node* abstract, Node* type);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
+Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
+Statement* getStatementNr(int id,int context_id=current_context);
+Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
+
 //NodeVector& all_instances(Node* type, int recurse , int limit = defaultLimit);
 //NodeVector& all_instances(Node* type);
 //NodeVector all(Node* type,Node* slot,int recurse);
@@ -453,7 +455,8 @@ static int abstractHashSize = maxNodes*ahashSize; //~nodes?
 static int contextOffset=0x4000;
 static int abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;
 // 5GB
-static long sizeOfSharedMemory =contextOffset+ maxNodes*(nodeSize+averageNameLength+ahashSize*2)+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
+static int bytesPerNode=(nodeSize+averageNameLength+ahashSize*2);
+static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 
 

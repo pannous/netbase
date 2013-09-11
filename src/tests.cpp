@@ -119,7 +119,7 @@ void test() {
 #ifdef inlineName // todo!
     check(eq(Synonym->name, "synonym"));
 #endif
-    showStatement(getStatement(syn, 0));
+    showStatement(getStatementNr(syn, 0));
     //    initContext(c);
     int initialNodeCount = c->nodeCount;
     int initialStatementCount = c->statementCount;
@@ -163,13 +163,13 @@ void test() {
     assert(s->Predicate == is, "s->predicate==is");
     assert(s->Object == good, "s->object==good");
 
-    check(getStatement(test, 0)->Subject == a(test));
-    check(getStatement(good, 0)->Subject == a(good));
-    check(getStatement(test, 1)->Object == &c->nodes[(noun)]);
-    check(getStatement(good, 1)->Object == &c->nodes[(adjective)]);
-    check(getStatement(test, 2) == s);
-    check(getStatement(is, 2) == s);
-    check(getStatement(good, 2) == s);
+    check(getStatementNr(test, 0)->Subject == a(test));
+    check(getStatementNr(good, 0)->Subject == a(good));
+    check(getStatementNr(test, 1)->Object == &c->nodes[(noun)]);
+    check(getStatementNr(good, 1)->Object == &c->nodes[(adjective)]);
+    check(getStatementNr(test, 2) == s);
+    check(getStatementNr(is, 2) == s);
+    check(getStatementNr(good, 2) == s);
     show(test);
     show(is);
     show(dead);
@@ -244,7 +244,7 @@ void testLogic() {
     showStatement(s2);
 
     assert(getContext(current_context)->statementCount >= 3, "current_context->statementCount==2");
-    //	assert(getStatement(funny,0)==s3,"getStatement(funny,0)==s");
+    //	assert(getStatementNr(funny,0)==s3,"getStatementNr(funny,0)==s");
     addStatement(test, size, eleven);
     show(test);
     addStatement(test2, Passive, eleven);
@@ -598,9 +598,9 @@ void testInstanceLogic() {
     addStatement(Baum,the(colour),_(green));
     addStatement(Baum,the(colour),_(pink));
     show(Baum);
-    Statement *c=getStatement(Baum,1);
+    Statement *c=getStatementNr(Baum,1);
     check(c->Predicate!=Instance);
-    c=getStatement(Baum,2);
+    c=getStatementNr(Baum,2);
     check(c->Predicate!=Instance);
 }
 
@@ -923,9 +923,10 @@ void testCities(){
 	}
 	p(the(Mersing));
 	check(has(the(Mersing),a(population)))
-	check(has(the(Mersing),value("population",22007)))
+	check(has(the(Mersing),a(population),the(22007)))
+	check(!has(the(Mersing),a(population),the(22008)))
 	check(!has(the(Mersing),value("population",22008)))
-
+//	check(has(the(Mersing),value("population",22007))) todo
 }
 
 void testBrandNewStuff() {

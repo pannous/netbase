@@ -85,7 +85,7 @@ void collectFacets(Query& q) {
 		Node* n = all[rowNr];
 		q.values[n] = (NodeList) malloc(sizeof (Node*) * nrFields);
 		for (int columnNr = 0; columnNr < n->statementCount; columnNr++) {
-			Statement *s = getStatement(n, columnNr); //todo: ->next for efficiency
+			Statement *s = getStatementNr(n, columnNr); //todo: ->next for efficiency
 			if (s->Subject == n) {
 				Node* predicate = s->Predicate;
 				Node* value = s->Object;
@@ -640,7 +640,7 @@ NodeVector& all_instances(Query& q) {
 		for (int i = 0; i < c->statementCount; i++) {
 			if (i + j++ >= q.lookuplimit) break; //lookuplimit reached
 			//    pi(i);
-			Statement* s = getStatement(c, i);
+			Statement* s = getStatementNr(c, i);
 			if (!s) continue;
 			if (!checkStatement(s))continue;
 			//    	showStatement(s);
@@ -704,7 +704,7 @@ NodeVector& all_instances(Node* type, int recurse, int max) {
 	NodeVector subtypes;
 	subtypes.push_back(type);
 	for (int i = 0; i < type->statementCount; i++) {
-		Statement* s = getStatement(type, i);
+		Statement* s = getStatementNr(type, i);
 		if (!s) {
 			badCount++;
 			ps("!s");
@@ -832,7 +832,7 @@ int countInstances(Node* node) {
 NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatement(subject, i);
+		Statement* s = getStatementNr(subject, i);
 		if (s == 0) {
 			badCount++;
 			continue;
@@ -857,7 +857,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 	//	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatement(subject, i);
+		Statement* s = getStatementNr(subject, i);
 		if (!checkStatement(s)) {
 			badCount++;
 			continue;
@@ -904,7 +904,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	//	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatement(subject, i);
+		Statement* s = getStatementNr(subject, i);
 		if (s == 0) {
 			badCount++;
 			continue;
@@ -940,7 +940,7 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 NodeVector anyFilter(Node* subject, NodeQueue * queue) {
 	//	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatement(subject, i);
+		Statement* s = getStatementNr(subject, i);
 		if (s == 0 || !checkStatement(s)) {
 			badCount++;
 			continue;

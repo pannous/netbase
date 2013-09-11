@@ -124,74 +124,51 @@ Ahash* insertAbstractHash(int pos, Node* a) {
 	return ah;
 }
 
-bool addStatementToNode2(Node* node, int statementNr) {
-	int n = node->statementCount;
-	if (n == 0)node->firstStatement = statementNr;
-	else {
-		Context* context = getContext(node->context);
-		Statement* statement0 = getStatement(node, n - 1);
-		if (statement0 == 0) {
-			badCount++;
-			return false;
-		}
-		//            Statement* statement1=&context->statements[statementNr];
-		if (statement0->Subject == node) statement0-> nextSubjectStatement = statementNr; //statement1;
-		if (statement0->Predicate == node) statement0-> nextPredicateStatement = statementNr; //statement1;
-		if (statement0->Object == node) statement0-> nextObjectStatement = statementNr; //statement1;
-	}
-	node->statementCount++;
-	return true;
+
+bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statementNr) {
+	//    Statement* statement1=&c->statements[statementNr];
+	if (add_here->Subject == node)
+		add_here-> nextSubjectStatement = statementNr;
+	if (add_here->Predicate == node)
+		add_here-> nextPredicateStatement = statementNr;
+	if (add_here->Object == node)
+		add_here-> nextObjectStatement = statementNr;
 }
 
-bool appendLinkedListOfStatements(Statement *statement0, Node* node, int statementNr) {
-	//    Statement* statement1=&c->statements[statementNr];
-	if (statement0->Subject == node)
-		statement0-> nextSubjectStatement = statementNr;
-	if (statement0->Predicate == node)
-		statement0-> nextPredicateStatement = statementNr;
-	if (statement0->Object == node)
-		statement0-> nextObjectStatement = statementNr;
+
+bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int statementNr) {
+	appendLinkedListOfStatements(to_insert,node,statementNr);// append old to new
 }
+
 
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 	int n = node->statementCount;
 	if (n == 0) {
 		node->firstStatement = statementNr;
-		node->statementCount++;
-		return true;
+		node->lastStatement = statementNr;
 	} else {
 		Context* context = getContext(node->context);
-		Statement* statement0 = getStatement(node, n - 1, true); // using instant gap ONLY HERE
-		// because of InstanceGap!! ^^^ todo O(n) -> O(1)
-		if (statement0 == 0) {
-			badCount++;
-			return false;
+		Statement* to_insert = &context->statements[statementNr];
+		if(to_insert->Predicate==Instance){
+			Statement* add_here= &context->statements[node->lastStatement];
+			appendLinkedListOfStatements(add_here,node,statementNr);// append new to old
+			node->lastStatement = statementNr;
 		}
-		Context* c = getContext(node->context);
-		int statement2Nr = 0;
-		if (statement0->Subject == node) {
-			statement2Nr = statement0-> nextSubjectStatement;
-			statement0-> nextSubjectStatement = statementNr;
+		else{
+			prependLinkedListOfStatements(to_insert,node,node->firstStatement);// append old to new
+			node->firstStatement = statementNr;
 		}
-		if (statement0->Predicate == node) {
-			statement2Nr = statement0-> nextPredicateStatement;
-			statement0-> nextPredicateStatement = statementNr;
-		}
-		if (statement0->Object == node) {
-			statement2Nr = statement0-> nextObjectStatement;
-			statement0-> nextObjectStatement = statementNr;
-		}
-		Statement* statement1 = &c->statements[statementNr];
-		appendLinkedListOfStatements(statement1, node, statement2Nr);
 	}
 	node->statementCount++;
 	return true;
 }
 
-
-//bool addStatementToNodeInstanceGap(Node* node, int statementNr) {
-
 bool addStatementToNode(Node* node, int statementNr) {
+//	return addStatementToNodeDirect(node, statementNr);
+	return addStatementToNodeWithInstanceGap(node, statementNr);
+}
+
+bool addStatementToNodeDirect(Node* node, int statementNr) {
 	int n = node->lastStatement;
 	if (n == 0) {
 		node->firstStatement = statementNr;
@@ -343,14 +320,41 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 	if (semantic && has(n, "label", match, false, false, false))return true;
 	if (semantic && has(n, "is", match, false, false, false))return true; // --
 
-	if (semantic && n->kind == Abstract->id)//|| isA(n,List)
-		for (int i = 0; i < n->statementCount; i++) {
-			Statement* s = getStatement(n, i);
+	if (semantic && n->kind == Abstract->id){//|| isA(n,List)
+		Statement* current=getStatementNr(n->firstStatement);//n->context
+		while(current =nextStatement(n,current,false)){
+			if (isA4(current->Object, match, recurse, semantic))
+					return true;
+		}
+		for (int i = 0; i < n->statementCount; i++) {// todo : iterate nextStatement(n,current)
+			Statement* s = getStatementNr(n, i);
 			if (s->Predicate == Instance)
 				if (isA4(s->Object, match, recurse, semantic))
 					return true;
 		}
+	}
 	return false;
+}
+
+Statement* getStatementNr(int id, int context_id){
+	if (id >= maxStatements0) {
+		badCount++;
+		return null;
+	}
+	if (id < 0) {
+		badCount++;
+		return null;
+	}
+	Context* context= getContext(context_id);
+	return &context->statements[id];
+}
+
+Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances){
+	if(stopAtInstances && current->Predicate==Instance)return null;
+	if(current->Subject==n)return getStatementNr(current->nextSubjectStatement,n->context);
+	if(current->Predicate==n)return getStatementNr(current->nextPredicateStatement,n->context);;
+	if(current->Object==n)return getStatementNr(current->nextObjectStatement,n->context);;
+	return null;
 }
 //NodeVector findPath(Node* from, Node* to){
 //
@@ -581,8 +585,7 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 // TODO!!! what if x->y->x !?!?!
 // TODO firstInstanceGap too complicated, but needed for nodes with 1000000 instances (city etc)
 // TODO only used in addStatementToNodeWithInstanceGap !!
-
-Statement* getStatement(Node* n, int nr, bool firstInstanceGap) {
+Statement* getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 	if (nr >= maxStatementsPerNode) {
 		badCount++;
 		return null;
@@ -983,7 +986,7 @@ void show(Node* n, bool showStatements) {//=true
 	int maxShowStatements = 1000; //hm
 	if (showStatements)
 		for (; i < min(n->statementCount, maxShowStatements); i++) {
-			showStatement(getStatement(n, i));
+			showStatement(getStatementNr(n, i));
 		}
 	if (showStatements)
 		p("--------------");
@@ -1044,7 +1047,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 		return false;
 	//    if(recurse>maxRecursions/3)semantic = false;
 	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatement(subject, i);
+		Statement* s = getStatementNr(subject, i);
 		if (s == 0) {
 			badCount++;
 			ps("!s!");
@@ -1059,6 +1062,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 			break; // todo : make sure statements are ordered!
 		}
 #endif
+		if(predicate!=Instance && s->Predicate == Instance ) return 0;
 		//        showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == predicate || predicate == Any);
@@ -1111,7 +1115,7 @@ void removeStatement(Node* n, Statement* s) {
 	if (!n || !s)return;
 	Statement* last = 0;
 	for (int i = 0; i < n->statementCount; i++) {
-		Statement* st = getStatement(n, i);
+		Statement* st = getStatementNr(n, i);
 		if (st == s) {
 			if (last == 0) {
 				if (s->Subject == n)n->firstStatement = s->nextSubjectStatement;
@@ -1160,16 +1164,13 @@ void deleteNode(Node* n) {
 			deleteNode(n);
 		}
 	}
-	for (int i = 0; i < n->statementCount; i++) {
-		Statement* s = getStatement(n, i);
-		deleteStatement(s);
-	}
+	deleteStatements(n);
 	memset(n, 0, sizeof (Node)); // hole in context!
 }
 
 void deleteStatements(Node* n) {
 	for (int i = 0; i < n->statementCount; i++) {
-		Statement* s = getStatement(n, i);
+		Statement* s = getStatementNr(n, i);
 		deleteStatement(s);
 	}
 }
@@ -1207,7 +1208,7 @@ Statement* findStatement(Node* subject, string predicate, string object, int rec
 	else recurse = maxRecursions;
 	if (recurse > maxRecursions)return false;
 	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatement(subject, i);
+		Statement* s = getStatementNr(subject, i);
 		if (isA4(s->Predicate, predicate, recurse, semantic))
 			if (s->Subject == subject)
 				if (isA4(s->Object, object))return s;
@@ -1384,7 +1385,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic) {
 	//    if(isA(n,match->name,false,false))return true;// compare by name
 	if (n->kind == Abstract->id && recurse < 3) {//|| isA(n,List)
 		for (int i = 0; i < n->statementCount; i++) {
-			Statement* s = getStatement(n, i);
+			Statement* s = getStatementNr(n, i);
 			if (s == 0)continue; //todo: why!!??
 			if (s->Predicate == Instance)
 				if (recurse && isA4(s->Object, match, recurse, semantic)) {
@@ -1405,7 +1406,7 @@ Node* findMember(Node* n, string match, int recurse, bool semantic) {
 	if (recurse > maxRecursions)return false;
 	if (debug)show(n);
 	for (int i = 0; i < n->statementCount; i++) {
-		Statement* s = getStatement(n, i); // Not using instant gap
+		Statement* s = getStatementNr(n, i); // Not using instant gap
 		if (!s) {
 			badCount++;
 			continue;
@@ -1437,15 +1438,17 @@ Node* has(const char* n, const char* m) {
 Node* has(Node* n, Node* m) {
 	Node *no = 0;
 	Node* save = n; // heap data loss !?!
-	if (!no)no = has(n, m, Any); // TODO: test
-	//    findPath(n,m,hasFilter);// Todo new algoritym!
-
+//	if(m->value!=0)
+//		if (!no)no = has(n, m, m->value); // TODO: test
+//	else
+		if (!no)no = has(n, m, Any); // TODO: test
+	//    findPath(n,m,hasFilter);// Todo new algoritym
 	if (!no)no = has(n, Member, m);
 	if (!no)no = has(n, Attribute, m);
 	if (!no)no = has(n, Substance, m);
 	if (!no)no = has(n, Part, m);
 	//    if(!n)n=has(n,Predicate,m);// TODO!
-	if (!no)no = has(save, Any, m); //TODO: really?
+//	if (!no)no = has(save, Any, m); //TODO: really?
 	return no;
 }
 
@@ -1595,7 +1598,7 @@ Node* firstInstance(Node* abstract, Node* type) {
 		else return 0; // NO SUCH!!
 	}
 	for (int i = 0; i < abstract->statementCount; i++) {
-		Statement* s = getStatement(abstract, i);
+		Statement* s = getStatementNr(abstract, i);
 		//		showStatement(s);
 		if (s == 0) {
 			ps("CORRUPTED Statements for");
@@ -1729,7 +1732,7 @@ int main(int argc, char *argv[]) {
 		//			p("BROKEN");
 		//			collectAbstracts();
 		//		}
-		//        tests();
+		tests();
 		p("TEST OK!");
 	}
 
@@ -1740,7 +1743,7 @@ int main(int argc, char *argv[]) {
 	}
 	parse(join(argv, argc).c_str());
 	printf("Warnings: %d\n", badCount);
-	testBrandNewStuff();
+//	testBrandNewStuff();
 	console();
 	//    } catch (std::exception const& ex) {
 }
