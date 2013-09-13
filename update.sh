@@ -6,6 +6,7 @@ git commit -a --allow-empty-message -m '' && git push --all && git status
 # server="kfluegge@pannous.jo"
 # server="root@quasiris.com"
 server="root@87.118.71.24"
+
 echo using server $server
 # find . -mmin -12 |grep -v nbproject| grep -v development |grep -v to_update|grep -v bin|grep -v build|grep -v compile.sh|grep -v update.sh|grep -v netbase.dSYM|grep -v iws |grep -v .txt|grep -v git| grep -v "./netbase$"> to_update                        
 # 
