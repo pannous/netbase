@@ -50,6 +50,9 @@ extern int current_context;
 int maxStatements();
 static const bool multipleContexts = false;
 extern string path;
+extern string data_path;
+extern string import_path;
+
 extern bool virgin_memory;
 
 static const int maxStatementsPerNode = 10000; // cant make dynamic if used as array[100]

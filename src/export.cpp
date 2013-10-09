@@ -3,21 +3,21 @@
 #include <sys/stat.h> // mkdir
 bool save() {
     Context* c = currentContext();
-
+	string basepath=path+"/data/";
     FILE *fp;
-    fp = fopen((path+"statements.bin").data(), "wb");
+    fp = fopen((basepath+"statements.bin").data(), "wb");
     fwrite(c->statements, sizeof (Statement), c->statementCount, fp);
     fclose(fp);
 
-    fp = fopen((path+"nodes.bin").data(), "wb");
+    fp = fopen((basepath+"nodes.bin").data(), "wb");
     fwrite(c->nodes, sizeof (Node), c->nodeCount, fp);
     fclose(fp);
 
-    fp = fopen((path+"names.bin").data(), "wb");
+    fp = fopen((basepath+"names.bin").data(), "wb");
     fwrite(c->nodeNames, sizeof (char), c->currentNameSlot + 100, fp);
     fclose(fp);
 
-    fp = fopen((path+"contexts.bin").data(), "wb");
+    fp = fopen((basepath+"contexts.bin").data(), "wb");
     fwrite(contexts, sizeof (Context), maxContexts, fp);
     fclose(fp);
 

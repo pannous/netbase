@@ -41,6 +41,7 @@ void px(void* p);// 64 bit hex
 extern void p(char* s);
 void p(Query& q);
 void p(Node* n);
+void p(string s);
 //char* next(char* data);
 string next(string data);
 vector<char*>& splitString(string line0,const char* separator="\t");
@@ -48,9 +49,11 @@ vector<char*>& splitString(const char* line0,const char* separator="\t");
 char** splitStringC(const char* line0, const char* separator);
 //int splitStringC2(char* line,char** tokens,const char* separator="\t");// BROKEN!!!
 int splitStringC(char* line,char** tokens, char separator,bool safe=false);
+char* downcase(char* x);
+//char* tolower(char* x);//call of overloaded 'tolower(const char*&)' is ambiguous
+char* tolower(const char* x);
 void fixNewline(char* line);
 NodeVector intersect(NodeVector a,NodeVector b);
-char* tolower(char* x);
 unsigned int hash(const char *str);
 inline int normChar(int c);
 string stem(string word);

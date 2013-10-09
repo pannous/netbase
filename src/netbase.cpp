@@ -46,6 +46,8 @@ int maxRecursions = 7;
 int runs = 0;
 Context* contexts; //[maxContexts];// extern
 string path; // extern
+string data_path;
+string import_path;
 
 //int maxNodes() {
 //    return maxNodes;
@@ -1669,6 +1671,7 @@ string getImage(const char* n, int size) {
 	Node* a = getAbstract(n);
 	Node* i = findMember(a, "wiki_image", false, false);
 	if (!i)return "";
+	if(!checkNode(i))return "";
 	string image = i->name;
 	string hash = md5(i->name);
 	string base = "http://upload.wikimedia.org/wikipedia/commons/thumb/";
@@ -1696,7 +1699,9 @@ int main(int argc, char *argv[]) {
 		path = path.substr(0, path.rfind("/dist") + 1);
 	}
 	system(string("cd " + path).c_str());
-	path=sprintf("%s/data",path);
+	data_path=path+"/data/";
+	import_path=path+"/import/";
+//	path=sprintf("%s/data",path);
 	if (checkParams(argc, argv, "quiet"))
 		quiet = true;
 	if (checkParams(argc, argv, "quit"))
@@ -1729,7 +1734,7 @@ int main(int argc, char *argv[]) {
 
 
 	if (checkParams(argc, argv, "import")) {
-		import(argv[2], path.c_str()); // netbase import save
+		import(argv[2]); // netbase import save
 		if (checkParams(argc, argv, "save"))
 			save(); // danger
 	}
@@ -1743,9 +1748,9 @@ int main(int argc, char *argv[]) {
 		printf("debugging\n");
 		//        load();
 		//		clean();
-		//		testBrandNewStuff();
-		start_server();
-		return 0;
+		testBrandNewStuff();// << PUT ALL HERE!
+//		start_server();
+//		return 0;
 //		tests();
 	}
 

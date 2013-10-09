@@ -93,7 +93,7 @@ bool parse(const char* data) {
     //        }
     if (startsWith(data, ":i") || startsWith(data, "import")) {
         if(arg.length()>2) // && arg<0x7fff00000000
-           import(arg.c_str(),basepath.c_str());
+           import(arg.c_str());
         else
 			importAll();
         return true;
@@ -102,7 +102,7 @@ bool parse(const char* data) {
         sscanf(data,"limit %d",&defaultLimit);
         return true;
     }
-    if (eq(data, "load")) {
+    if (eq(data, "load")||eq(data, ":l")) {
         load(false);
         return true;
     }
@@ -110,11 +110,7 @@ bool parse(const char* data) {
         load(true);
         return true;
     }
-    if (eq(data, ":l")) {
-        load(false);
-        return true;
-    }
-    if (eq(data, ":lf")) {
+    if (eq(data, ":lf")||eq(data, ":l!")||eq(data, "load!")) {
         load(true);
         return true;
     }

@@ -575,9 +575,18 @@ void testImportExport() {
 
 void testImages() {
     getThe("alabama");
-    import("images", "");
+	getThe("Alabama");
+	if(getImage("alabama")==""||getImage("Alabama")==""){
+		clearMemory();
+		importAll();
+//		importImages();
+		import("images");
+	}
+	p(getImage("Alabama"));
+	p(getImage("alabama"));
     show(getThe("alabama"));
     //    check(getImage("wiki_image")=="");//todo!
+	check(getImage("alabama") != "");
     check(getImage("Alabama") != "");
     check(getImage("abagsfadd") == "");
 }
@@ -931,7 +940,8 @@ void testCities(){
 
 void testBrandNewStuff() {
 	ps("test brand new stuff");
-	testCities();
+	testImages() ;
+//	testCities();
 
 //	parentPath(a(bee),a(insect));
 //	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug

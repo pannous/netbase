@@ -219,10 +219,12 @@ void load(bool force) {
 	ps("Loading graph from files!");
 
 	FILE *fp;
-	printf("Opening File %s\n", (path + "contexts.bin").data());
-	if ((fp = fopen((path + "contexts.bin").data(), "rb")) == NULL) {
+	printf("Opening File %s\n", (data_path + "contexts.bin").data());
+	if ((fp = fopen((data_path + "contexts.bin").data(), "rb")) == NULL) {
 		perror("Error opening file");
 		p("starting with fresh context!");
+		clearMemory();
+		return;
 		//        exit(1);
 	} else {
 		fread(contexts, sizeof (Context), maxContexts, fp);
@@ -232,15 +234,15 @@ void load(bool force) {
 	//    fread(c, sizeof(Context), 1, fp);
 	//    fclose (fp);
 
-	fp = fopen((path + "names.bin").data(), "rb");
+	fp = fopen((data_path + "names.bin").data(), "rb");
 	fread(c->nodeNames, sizeof (char), c->currentNameSlot + 100, fp);
 	fclose(fp);
 
-	fp = fopen((path + "statements.bin").data(), "rb");
+	fp = fopen((data_path+ "statements.bin").data(), "rb");
 	fread(c->statements, sizeof (Statement), c->statementCount, fp); //c->statementCount maxStatements
 	fclose(fp);
 
-	fp = fopen((path + "nodes.bin").data(), "rb");
+	fp = fopen((data_path+ "nodes.bin").data(), "rb");
 	fread(c->nodes, sizeof (Node), c->nodeCount, fp);
 
 	//
@@ -350,6 +352,7 @@ bool clearMemory(){
 	ps("Cleansing Memory!");
     memset(root_memory,0,sizeOfSharedMemory);
 	initRootContext();
+	initRelations();
 	return true;
 //		Context* context=currentContext();
 //        memset(context->nodes, 0, nodeSegmentSize ); //calloc!

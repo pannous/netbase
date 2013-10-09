@@ -17,10 +17,9 @@
 #include "relations.hpp"// for wordnet
 
 // 64 BIT : %x -> %016llX
-string basepath = "./import/";
-char* nodes_file = "data/nodes.txt";
-char* statements_file = "data/statements.txt";
-char* images_file = "data/images.txt";
+char* nodes_file = "nodes.txt";
+char* statements_file = "statements.txt";
+char* images_file = "images.txt";
 
 void norm(char* title) {
 	int len = strlen(title);
@@ -35,23 +34,25 @@ map<long, string> nodeNameImages2; // chopped
 //map<long,string> nodeNameImages3;// chopped image name
 
 void importImages() {// 18 MILLION!   // 18496249
+
 	p("image import starting ...");
 	FILE *infile;
 	char line[100];
+	char* lastTitle = 0;
 	int linecount = 0;
 	Node* wiki_image = getAbstract("wiki_image");
 	addStatement(wiki_image, is_a, getThe("image"));
 
 	/* Open the file.  If NULL is returned there was an error */
 
-	printf("Opening File %s\n", (basepath + images_file).data());
-	if ((infile = fopen((basepath + images_file).data(), "r")) == NULL) {
+	printf("Opening File %s\n", (import_path + images_file).data());
+	if ((infile = fopen((import_path + images_file).data(), "r")) == NULL) {
 		perror("Error opening file");
 		exit(1);
 	}
 	char tokens[1000];
 	char image[1000];
-	char title[1000];
+	char *title = (char *) malloc(1000);
 	int good = 0;
 	int bad = 0;
 	while (fgets(line, sizeof (line), infile) != NULL) {
@@ -59,17 +60,27 @@ void importImages() {// 18 MILLION!   // 18496249
 			pi(linecount);
 		};
 		sscanf(line, "%s %*s %s", title, image);
+		if (eq(title, "Alabama")){
+			printf("A! %s\n",title);
+			lastTitle=0;
+		}
+		if (eq(lastTitle, title))
+			continue;
+		lastTitle = title; // only the first
 		if (!hasWord(title))
 			norm(title); //blue -_fin ==> bluefin
-		if (!hasWord(title)) {// currently only import matching words.
+		if (!hasWord(title)&&!hasWord(downcase(title)))
+				continue;// currently only import matching words.
+
 			//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
-			continue;
-		}
-		if (getImage(title) != "")
-			continue; //already has one ; only one so far!
+		//		if (getImage(title) != "")
+		//			continue; //already has one ; only one so far!
 		Node* subject = getAbstract(title);
 		Node* object = getAbstract(image); // getThe(image);;
+		//		if(endswith(image,".ogg")||endswith(image,".mid")||endswith(image,".mp3"))
 		addStatement(subject, wiki_image, object, false);
+		if (!eq(title, downcase(title)))
+			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
 		if (++good % 1000 == 0) {
 			ps("GOOD images:");
 			pi(good);
@@ -82,7 +93,7 @@ void importImages() {// 18 MILLION!   // 18496249
 	/*
 	// again, this time with word fragments
 	 * MEMORY LEAK!? where??
-	infile = fopen((basepath + images_file).data(), "r");
+	infile = fopen((import_path+ images_file).data(), "r");
 	  while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 1000 == 0)pi(linecount);
 		sscanf(line, "%s %*s %s", title, image);
@@ -132,8 +143,8 @@ void importNodes() {
 	char line[100];
 	int linecount = 0;
 	/* Open the file.  If NULL is returned there was an error */
-	printf("Opening File %s\n", (basepath + nodes_file).data());
-	if ((infile = fopen((basepath + nodes_file).data(), "r")) == NULL) {
+	printf("Opening File %s\n", (data_path + nodes_file).data());
+	if ((infile = fopen((data_path + nodes_file).data(), "r")) == NULL) {
 		perror("Error opening file");
 		exit(1);
 	}
@@ -200,8 +211,8 @@ void importStatements() {
 	int linecount = 0;
 
 	/* Open the file.  If NULL is returned there was an error */
-	printf("Opening File %s\n", (basepath + statements_file).data());
-	if ((infile = fopen((basepath + statements_file).data(), "r")) == NULL) {
+	printf("Opening File %s\n", (data_path + statements_file).data());
+	if ((infile = fopen((data_path + statements_file).data(), "r")) == NULL) {
 		perror("Error opening file");
 		exit(1);
 	}
@@ -340,7 +351,7 @@ char guessSeparator(char* line) {
 	return the_separator;
 }
 
-int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow=0) {
+int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow = 0) {
 	int row = 0;
 	while (true) {
 		char* token = tokens[row++];
@@ -358,21 +369,22 @@ int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow=0) {
 }
 
 // BROKEN!!!??!!
+
 int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, const char* nameRow) {
 	char * token;
 	char* separators = ",;\t|";
 	if (separator)
 		separators = charToCharPointer(separator);
-//	line=modifyConstChar(line);
+	//	line=modifyConstChar(line);
 	token = strtok(line, separators);
 	int row = 0;
 	while (token != NULL) {
 		fields.push_back(token);
-		token = strtok(NULL, separators);// BROKEN !!??!!??!!??
+		token = strtok(NULL, separators); // BROKEN !!??!!??!!??
 		row++;
 	}
 	for (int i = 0; i < row; i++) {
-		token=fields.at(i);
+		token = fields.at(i);
 		if (nameRowNr < 0) {
 			if (nameRow == 0) {
 				if (eq("name", token))nameRowNr = row;
@@ -465,7 +477,7 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 	int linecount = 0;
 	FILE *infile;
 	printf("Opening XML File %s\n", (facts_file));
-	if ((infile = fopen((facts_file), "r")) == NULL)facts_file = (basepath + facts_file).c_str();
+	if ((infile = fopen((facts_file), "r")) == NULL)facts_file = (import_path + facts_file).c_str();
 	if ((infile = fopen((facts_file), "r")) == NULL) {
 		perror("Error opening file");
 		exit(1);
@@ -583,7 +595,7 @@ void importCsv(const char* facts_file, Node* type, char separator, const char* i
 	int linecount = 0;
 	FILE *infile;
 	printf("Opening File %s\n", (facts_file));
-	if ((infile = fopen((facts_file), "r")) == NULL)facts_file = (basepath + facts_file).c_str();
+	if ((infile = fopen((facts_file), "r")) == NULL)facts_file = (import_path + facts_file).c_str();
 	if ((infile = fopen((facts_file), "r")) == NULL) {
 		perror("Error opening file");
 		exit(1);
@@ -598,7 +610,7 @@ void importCsv(const char* facts_file, Node* type, char separator, const char* i
 			columnTitles = line;
 			if (!separator)
 				separator = guessSeparator(line);
-			fieldCount = splitStringC(line, values, separator, true	);
+			fieldCount = splitStringC(line, values, separator, true);
 			nameRowNr = getNameRow(values, nameRowNr, nameRow);
 			//						getFields(line, fields, separator, nameRowNr, nameRow);// vector ok, only once!
 
@@ -690,6 +702,7 @@ void importList(const char* facts_file, const char* type) {
 
 bool importFacts(const char* facts_file, const char* predicateName = "population") {
 	p("import facts start");
+	printf("WARNING: SETTING predicateName %s",predicateName);
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -768,8 +781,8 @@ bool importFacts(const char* facts_file, const char* predicateName = "population
 #define all(word) getThe(#word)
 
 void importNames() {
-	importList((basepath + "FrauenVornamen.txt").data(), "female_firstname");
-	importList((basepath + "MaennerVornamen.txt").data(), "male_firstname");
+	importList((import_path + "FrauenVornamen.txt").data(), "female_firstname");
+	importList((import_path + "MaennerVornamen.txt").data(), "male_firstname");
 	addStatement(all(firstname), are, a(name));
 	addStatement(all(male_firstname), a(gender), a(male));
 	addStatement(all(male_firstname), Owner, a(male));
@@ -783,7 +796,7 @@ void importWordnet() {
 }
 
 void importGeoDB() {
-	importCsv("./import/cities1000.txt",\
+	importCsv("cities1000.txt",\
 			getThe("city"), '\t', "alternatenames,modificationdate,geonameid",\
 		"latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
@@ -796,18 +809,17 @@ void importAll() {
 	importNames();
 	importWordnet();
 	importGeoDB();
-	//    importImages();
+//	if (getImage("alabama") != "" && getImage("Alabama") != "")
+//		p("image import done before ...");
+//	else
+//		importImages();
 }
 
 void importWikipedia() {
 
 }
 
-void import(const char* filename, const char* path0) {
-	// todo:
-	// if(contains(filename,"/",false))
-	// 	basepath=substr(filename,0,(int)(void*)(rindex(filename,"/")-filename));
-	basepath = path0;
+void import(const char* filename) {
 
 	clock_t start;
 	double diff;
@@ -817,7 +829,7 @@ void import(const char* filename, const char* path0) {
 	if (eq(filename, "all")) {
 		importAll();
 	} else if (eq(filename, "csv")) {
-		importCsv(path0);
+		importCsv(filename);
 	} else if (eq(filename, "wordnet")) {
 		importWordnet();
 	} else if (eq(filename, "names")) {
@@ -829,7 +841,7 @@ void import(const char* filename, const char* path0) {
 	} else if (eq(filename, "topic")) {
 		importWikipedia();
 	} else if (eq(filename, "yago")) {
-		importFacts(filename, filename);
+		importFacts(filename,filename);
 	} else if (contains(filename, "txt")) {
 		importCsv(filename);
 	} else if (contains(filename, "csv")) {

@@ -53,11 +53,20 @@ char* substr(char* what,int from,int to){
 	return result;
 }
 
-char* tolower(const char* x) {
+char* tolower(const char* x) {//const
 	char* neu=(char*)malloc(strlen(x));
 	for (int i = 0; i < strlen(x); i++) {
 		neu[i] = tolower(x[i]);
 	}
+	return neu;
+}
+char* downcase(char* x) {
+	char* neu=(char*)malloc(strlen(x)+1);
+	int i = 0;
+	for (; i < strlen(x); i++) {
+		neu[i] = tolower(x[i]);
+	}
+	neu[i]=0;// unclean malloc possible?
 	return neu;
 }
 
@@ -232,6 +241,14 @@ void p(char* s) {
 	printf("%s\n", s);
 	fflush(stdout);
 }
+
+
+void p(string s) {
+	if (quiet)return;
+	printf("%s\n", s.data());
+	fflush(stdout);
+}
+
 
 void p(Node* n){
 	show(n);

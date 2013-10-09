@@ -43,7 +43,7 @@ int Service_Request(int conn) {
 	// file system:
 //		Serve_Resource(ReqInfo  reqinfo,int conn)
 
-//	CleanURL(reqinfo->resource);
+	CleanURL(reqinfo.resource);
 
 	init();// for each forked process!
 	char* q=substr(reqinfo.resource,1,-1);
@@ -55,7 +55,9 @@ int Service_Request(int conn) {
 	NodeVector all=query(q);
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
-		Writeline(conn,node->name,strlen(node->name));
+		Writeline(conn,node->name);
+		Writeline(conn," \t");
+		Writeline(conn,"<img src='"+getImage(node->name)+"'/>");
 		Writeline(conn,"\n");
 	}
 //	if()
@@ -111,7 +113,9 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 
 
 /*  Write a line to a socket  */
-
+ssize_t Writeline(int sockd, string s) {
+	return Writeline(sockd,s.data(),s.length());
+}
 //ssize_t Writeline(int sockd, const void *vptr, size_t n) {
 ssize_t Writeline(int sockd, const char *vptr, size_t n) {
     size_t      nleft;
