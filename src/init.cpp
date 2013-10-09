@@ -19,7 +19,11 @@
 
 /* attach to the segment to get a pointer to it: */
 //const void * shmat_root = (const void *) 0x101000000; // mac 64 bitpointer to it: */
+#ifdef i386
+const void * shmat_root = (const void *) 0x10000000; // just higher than system Recommendation
+#else
 const void * shmat_root = (const void *) 0x110000000; // just higher than system Recommendation
+#endif
 //const void * shmat_root = (const void *)0x105800000;//test
 
 bool virgin_memory = false;
@@ -49,7 +53,8 @@ int share_memory() {
 		return 0;
 	}
 	/* make the key: */
-	int key = 0x0410669190; //0x57020303;// #netbase ftok("netbase", 'RW');
+	int key = 0x69190; //0x57020303;// #netbase ftok("netbase", 'RW');
+//	int key = 0x0410669190; //0x57020303;// #netbase ftok("netbase", 'RW');
 	int shmid;
 	//                virgin_memory=0;
 	int READ_WRITE=0666;//

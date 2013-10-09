@@ -6,8 +6,9 @@
 #include <cstdlib>
 #include <string.h>
 
-NodeVector EMPTY;
+
 int* enqueued; // 'parents'
+NodeVector EMPTY;
 
 string select(string s) {
 	if (contains(s, "select"))
@@ -332,7 +333,6 @@ Query parseQuery(string s, int limit) {
 		p(match2);
 	}
 	q.keyword = getThe(type);
-	;
 	//    q.keywords=nodeVector(splitString(type, ","));
 	//    if(q.keywords.size()>0)
 	//    q.keyword=q.keywords[0];
@@ -937,8 +937,9 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 // todo : memory LEAK NodeVector ?
 // todo : enqueue instances?
 
-NodeVector anyFilter(Node* subject, NodeQueue * queue) {
+NodeVector anyFilter(Node* subject, NodeQueue * queue,bool includeRelations) {
 	//	NodeVector all;
+	if(!includeRelations && subject->id<1000)return EMPTY;
 	for (int i = 0; i < subject->statementCount; i++) {
 		Statement* s = getStatementNr(subject, i);
 		if (s == 0 || !checkStatement(s)) {
@@ -959,6 +960,11 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue) {
 	return EMPTY; //hack
 	//	return all;
 }
+
+NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue) {
+	return anyFilter(subject,queue,false);
+}
+
 
 NodeVector reconstructPath(Node* from, Node * to) {
 	Node* current = to;
@@ -1041,7 +1047,7 @@ NodeVector parentPath(Node* from, Node * to) {
 }
 
 NodeVector shortestPath(Node* from, Node * to) {
-	NodeVector all = findPath(from, to, anyFilter);
+	NodeVector all = findPath(from, to, anyFilterNoKinds);
 	showNodes(all, false, true);
 	return all;
 }

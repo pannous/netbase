@@ -1,7 +1,7 @@
 sudo killall -SIGKILL gdb-i386-apple-darwin
 sudo killall -SIGKILL netbase
 
-options="-m64 --debug -c -g -w -s -MMD -MP" #-MF
+options="-m64 --debug -c -g -w -s -MMD -MP" #-MF #64bit
 #  -arch i686
 # -arch x86-64 -Xarch-x86-64
 # x86_64-apple-darwin
@@ -17,5 +17,5 @@ g++ $options -MF build/netbase.o.d -o build/netbase.o src/netbase.cpp
 g++ $options -MF build/tests.o.d -o build/tests.o src/tests.cpp
 g++ $options -MF build/util.o.d -o build/util.o src/util.cpp
 #g++ -g -w src/*.cpp /usr/lib/libsqlite3.dylib -o netbase  && ./netbase $@ 
-g++ -g -w src/*.cpp -o netbase  && ./netbase $@ 
+g++ -lreadline -g -w src/*.cpp -o netbase  && ./netbase $@ 
 # ln -s /usr/lib/x86_64-linux-gnu/libsqlite3.so libsqlite3.dylib

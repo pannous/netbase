@@ -42,6 +42,7 @@ string next(string data) {
 }
 
 char* substr(char* what,int from,int to){
+	if(to==-1)to=strlen(what);
 #ifndef DEBUG
 	if(from>to)
 		return what;// ERROR!!
@@ -321,7 +322,11 @@ int splitStringC2(char* line, char** tokens, const char* separators) {
 	tokens[row] = lastgood;
 	return row + 1; //s
 }
-
+char* clone(const char* line){
+		char* line0 = (char*) malloc(strlen(line)*2 + 1); //dont free!
+		strcpy(line0,line);
+		return line0;
+}
 char* modifyConstChar(char* line){
 		char* line0 = (char*) malloc(strlen(line)*2 + 1); //dont free!
 		strcpy(line0,line);

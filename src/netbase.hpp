@@ -145,6 +145,7 @@ typedef struct Statement {
 typedef vector<Node*> NodeVector;
 typedef queue<Node*> NodeQueue;
 typedef Node** NodeList;
+
 //typedef (NodeVector (*edgeFilter)(Node*)) NodeFilter;
 //typedef Node* NodeList;
 

@@ -19,7 +19,54 @@
 
 #include "webserver.hpp"
 #include "console.hpp" // parse request
+#include "util.hpp"
+#include "query.hpp"
 //#include "helper.h"
+
+/*  Service an HTTP request  */
+
+#define SERVER_PORT            (3333)
+
+// WORKS FINE, but not when debugging
+int Service_Request(int conn) {
+
+    struct ReqInfo  reqinfo;
+    InitReqInfo(&reqinfo);
+
+    /*  Get HTTP request  */
+    if ( Get_Request(conn, &reqinfo) < 0 )
+		return -1;
+
+	if ( reqinfo.type == FULL )
+		Output_HTTP_Headers(conn, &reqinfo);
+
+	// file system:
+//		Serve_Resource(ReqInfo  reqinfo,int conn)
+
+//	CleanURL(reqinfo->resource);
+
+	init();// for each forked process!
+	char* q=substr(reqinfo.resource,1,-1);
+	Writeline(conn,q);
+	char* buff="\nthinking...\n";
+	Writeline(conn,buff);
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	parse(q);// <<<<<<<< NETBASE!
+	NodeVector all=query(q);
+	for (int i = 0; i < all.size(); i++) {
+		Node* node = (Node*) all[i];
+		Writeline(conn,node->name,strlen(node->name));
+		Writeline(conn,"\n");
+	}
+//	if()
+
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	buff="\nOK\n";
+	Writeline(conn,buff);//,strlen(buff)
+    FreeReqInfo(&reqinfo);
+    return 0;
+}
+
 
 
 /*  Prints an error message and quits  */
@@ -65,12 +112,16 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 
 /*  Write a line to a socket  */
 
-ssize_t Writeline(int sockd, const void *vptr, size_t n) {
+//ssize_t Writeline(int sockd, const void *vptr, size_t n) {
+ssize_t Writeline(int sockd, const char *vptr, size_t n) {
     size_t      nleft;
     ssize_t     nwritten;
     const char *buffer;
 
-    buffer = (char*)vptr;
+    buffer = vptr;
+	if(n==0||n==-1)
+		n=strlen(buffer);
+//	printf("%d:%s\n",n,buffer);
     nleft  = n;
 
     while ( nleft > 0 ) {
@@ -338,7 +389,7 @@ int Get_Request(int conn, struct ReqInfo * reqinfo) {
 	    /*  We have an input line waiting, so retrieve it  */
 
 	    Readline(conn, buffer, MAX_REQ_LINE - 1);
-	    Trim(buffer);
+//	    Trim(buffer);
 
 	    if ( buffer[0] == '\0' )
 		break;
@@ -406,7 +457,6 @@ static char server_root[1000] = "/Users/me/";
 /*  Returns a resource  */
 
 int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
-
     char c;
     int  i;
 
@@ -424,17 +474,11 @@ int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
 /*  Tries to open a resource. The calling function can use
     the return value to check for success, and then examine
     errno to determine the cause of failure if neceesary.    */
-
 int Check_Resource(struct ReqInfo * reqinfo) {
-
     /*  Resource name can contain urlencoded
 	data, so clean it up just in case.    */
-
     CleanURL(reqinfo->resource);
-
-
-    /*  Concatenate resource name to server root, and try to open  */
-
+/*  Concatenate resource name to server root, and try to open  */
     strcat(server_root, reqinfo->resource);
     return open(server_root, O_RDONLY);
 }
@@ -471,9 +515,7 @@ int Return_Error_Msg(int conn, struct ReqInfo * reqinfo) {
 
 */
 
-
 #include <unistd.h>
-
 #include <stdio.h>
 
 //#include "resphead.h"
@@ -483,58 +525,23 @@ int Return_Error_Msg(int conn, struct ReqInfo * reqinfo) {
 /*  Outputs HTTP response headers  */
 
 int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
-
     char buffer[100];
-
     sprintf(buffer, "HTTP/1.0 %d OK\r\n", reqinfo->status);
     Writeline(conn, buffer, strlen(buffer));
-
-    Writeline(conn, "Server: PGWebServ v0.1\r\n", 24);
+    Writeline(conn, "Server: Netbase \r\n", 24);
     Writeline(conn, "Content-Type: text/html\r\n", 25);
     Writeline(conn, "\r\n", 2);
-
     return 0;
 }
 
 
 
-/*
-
-  SERVREQ.C
-  =========
-  (c) Copyright Paul Griffiths 1999
-  Email: mail@paulgriffiths.net
-
-  Implementation of function to service requests.
-
-*/
-
-
 #include <stdio.h>
 #include <errno.h>
 
-//#include "helper.h"
-//#include "reqhead.h"
-//#include "resphead.h"
-//#include "resource.h"
 
-
-/*  Service an HTTP request  */
-
-int Service_Request(int conn) {
-
-    struct ReqInfo  reqinfo;
+void Serve_Resource(ReqInfo  reqinfo,int conn){
     int             resource = 0;
-
-    InitReqInfo(&reqinfo);
-
-
-    /*  Get HTTP request  */
-
-    if ( Get_Request(conn, &reqinfo) < 0 )
-	return -1;
-
-
     /*  Check whether resource exists, whether we have permission
 	to access it, and update status code accordingly.          */
 
@@ -554,22 +561,17 @@ int Service_Request(int conn) {
 
     /*  Service the HTTP request  */
 
-    if ( reqinfo.status == 200 ) {// -> NETBASE CONSOLE
-		parse((char*)reqinfo.resource);
-	if ( Return_Resource(conn, resource, &reqinfo) )
-	    Error_Quit("Something wrong returning resource.");
-    }
-    else
-	Return_Error_Msg(conn, &reqinfo);
+//	if ( Return_Resource(conn, resource, &reqinfo) )
+//	    Error_Quit("Something wrong returning resource.");
+//    }
+//    else
+//	Return_Error_Msg(conn, &reqinfo);
 
     if ( resource > 0 )
 	if ( close(resource) < 0 )
 	    Error_Quit("Error closing resource.");
     FreeReqInfo(&reqinfo);
-
-    return 0;
 }
-
 
 
 
@@ -597,13 +599,13 @@ int Service_Request(int conn) {
 //#include "helper.h"
 //#include "servreq.h"
 
-#define SERVER_PORT            (8080)
 
 
 /*  main() funcion  */
 
 void start_server(){
-	printf("STARTING SERVER!");
+	printf("STARTING SERVER!\n localhost:%d\n",SERVER_PORT);
+	flush();
     int    listener, conn;
     pid_t  pid;
     struct sockaddr_in servaddr;
@@ -635,7 +637,7 @@ void start_server(){
 	Error_Quit("Call to listen failed.");
 
 
-	printf("listening on %d port %d",INADDR_ANY,SERVER_PORT);
+	printf("listening on %d port %d\n",INADDR_ANY,SERVER_PORT);
 
     /*  Loop infinitely to accept and service connections  */
 
@@ -644,8 +646,8 @@ void start_server(){
 	/*  Wait for connection  */
 
 	if ( (conn = accept(listener, NULL, NULL)) < 0 )
-	    Error_Quit("Error calling accept()");
-
+	    Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
+		// WORKS FINE, but not when debugging
 
 	/*  Fork child process to service connection  */
 
@@ -653,15 +655,12 @@ void start_server(){
 
 	    /*  This is now the forked child process, so
 		close listening socket and service request   */
-
 	    if ( close(listener) < 0 )
 		Error_Quit("Error closing listening socket in child.");
 
 	    Service_Request(conn);
 
-
-	    /*  Close connected socket and exit  */
-
+	    /*  Close connected socket and exit forked process */
 	    if ( close(conn) < 0 )
 		Error_Quit("Error closing connection socket.");
 	    exit(EXIT_SUCCESS);
@@ -672,12 +671,13 @@ void start_server(){
 	    so close the connected socket, clean up child processes,
 	    and go back to accept a new connection.                   */
 
+	waitpid(-1, NULL, WNOHANG);
+
 	if ( close(conn) < 0 )
 	    Error_Quit("Error closing connection socket in parent.");
 
-	waitpid(-1, NULL, WNOHANG);
     }
-
+	Error_Quit("FORK web server failed");
     return;// EXIT_FAILURE;    /*  We shouldn't get here  */
 }
 

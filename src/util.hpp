@@ -58,5 +58,6 @@ void addRange(NodeVector& some, NodeVector more);
 NodeVector mergeVectors(NodeVector some, NodeVector more);
 char* substr(char* what,int from,int to);
 char* match(char* input, char* pattern);
+char* clone(const char* line);
 char* modifyConstChar(char* line);
 #define check(assertion) ps(#assertion);if(assertion)ps("OK");else{ps("FAILED");exit(0);}

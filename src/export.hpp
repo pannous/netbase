@@ -8,7 +8,7 @@
 #ifndef _EXPORT_HPP
 #define	_EXPORT_HPP
 
-void save();
+bool save();
 bool export_csv();
 
 #endif	/* _EXPORT_HPP */

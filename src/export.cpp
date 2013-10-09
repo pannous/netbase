@@ -1,7 +1,7 @@
 #include "netbase.hpp"
 #include "util.hpp"
 #include <sys/stat.h> // mkdir
-void save() {
+bool save() {
     Context* c = currentContext();
 
     FILE *fp;
@@ -34,6 +34,7 @@ void save() {
     //    fp=fopen("test.bin", "wb");
     //    fwrite(test, sizeof(char), 100, fp);
     //    fclose (fp);
+	return true;
 }
 
 // what for??

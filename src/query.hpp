@@ -9,7 +9,7 @@
 #ifndef QUERY_H
 #define	QUERY_H
 
-static const int defaultLimit = 100;
+static int defaultLimit = 1000;
 
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
@@ -48,7 +48,7 @@ NodeVector memberFilter(Node* subject,NodeQueue* queue=null);
 NodeVector hasFilter(Node* subject,NodeQueue* queue=null);
 NodeVector childFilter(Node* subject,NodeQueue* queue=null);
 NodeVector ownerFilter(Node* subject,NodeQueue* queue=null);
-NodeVector anyFilter(Node* subject,NodeQueue* queue=null);
+NodeVector anyFilter(Node* subject,NodeQueue* queue=null,bool includeRelations=true);
 NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);
 
 //NodeVector parentFilter(Node* subject);
@@ -65,4 +65,3 @@ NodeVector parentPath(Node* from, Node* to);
 NodeVector memberPath(Node* from, Node* to);
 
 #endif	/* QUERY_H */
-

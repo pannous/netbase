@@ -7,7 +7,6 @@
 #include <vector>
 #include <string>
 
-//#include "webserv/webserv.h"
 #include "webserver.hpp"
 
 #include "netbase.hpp"
@@ -17,21 +16,16 @@
 #include "tests.hpp"
 #include "query.hpp"
 #include "init.hpp"
-// for console:
-#ifdef console
-#include <stdio.h>
-#include <unistd.h>
-#include <termios.h>
+
+#define USE_READLINE
+// compile with -lreadline !
+#ifdef USE_READLINE
+	#include <readline/history.h>
+    #include <readline/readline.h>
 #endif
-
-
 
 using namespace std;
 // static struct termios stored_settings;
-
-static vector<char*> history;
-
-
 
 
 void showHelp() {
@@ -52,6 +46,8 @@ void showHelp() {
 }
 
 //bool parse(string* data) {
+static char* lastCommand;
+
 bool parse(const char* data) {
     if (eq(data, null)) {
         return true;
@@ -65,14 +61,18 @@ bool parse(const char* data) {
 
     //		scanf ( "%s", data );
     if (eq(data, "exit"))return false;
+
+	if (eq(data, "more")&&lastCommand){
+		defaultLimit*=2;
+		return parse(lastCommand);
+	}
     if (eq(data, ":x")) {
         save();
 		exit(1);
         return false;
     }
-    if (eq(data, ":w")) {
-        save();
-    }
+	lastCommand=clone(data);
+    if (eq(data, ":w")) return save();
     if (eq(data, ":q")){exit(1);return false;}
     if (eq(data, "q"))return false;
     if (eq(data, "x"))return false;
@@ -96,6 +96,10 @@ bool parse(const char* data) {
            import(arg.c_str(),basepath.c_str());
         else
 			importAll();
+        return true;
+    }
+    if (startsWith(data, "limit")) {
+        sscanf(data,"limit %d",&defaultLimit);
         return true;
     }
     if (eq(data, "load")) {
@@ -266,10 +270,11 @@ bool parse(const char* data) {
 	if(splitString(data," ").size()==2){
         Node* from=getAbstract(args.at(0));
         Node* to=getAbstract(args.at(1));
-		shortestPath(from,to);
+		NodeVector all = memberPath(from,to);
+//		if(all==EMPTY)parentPath(from,to);
+//		if(all==EMPTY)shortestPath(from,to);
 		return true;
 	}
-
 
     //        query(string("all ")+data);// NO!
     //        query(data);// NOO!
@@ -280,174 +285,6 @@ bool parse(const char* data) {
         showNr(currentContext()->id, i);
     }
 }
-// todo: all species => select * from specy
-
-
-//int filter(string* word,string* filters){
-//
-//}
-//void parseXPath(string* c){
-//p=c->c_str();
-//int len=strlen(p);
-//for(int i=0;i<len;i++){
-//if(p[i]=='.'){
-//    string word=c->substr(0,i);
-//    string filters=c->substr(i,len);
-//    filter(word,filters);
-//}
-//
-//}
-////    c->
-//}
-
-
-
-int mygetch( ) {
-  struct termios oldt,
-                 newt;
-  int            ch;
-  tcgetattr( STDIN_FILENO, &oldt );
-  newt = oldt;
-  newt.c_lflag &= ~( ICANON | ECHO );
-  tcsetattr( STDIN_FILENO, TCSANOW, &newt );
-// putc(c_cc[VINS]);
-  ch = getchar();
-  tcsetattr( STDIN_FILENO, TCSANOW, &oldt );
-  return ch;
-}
-void clearline(){
-	printf("\r");
-	for(int i=0;i<80;i++)printf(" ");
-	printf("\r");
-}
-char* getaline(){//vector<char*> history
-	char* line=(char*)malloc(1000);
-	line[0]=0;
-	int d=0;
-	int pos=0;
-	int size=history.size();
-    if(size==0)history.push_back("");
-	int nr=size;
-	char* b=(char*)malloc(4);;//=(string("x")).c_str();
-	b[0]=0;
-	b[1]=0;
-		int c;
-	while(true){
-	c=mygetch();
-	b[0]=(char)c;
-	char insert=45;
-	if(c==0x0a)break;//enter
-	// if(e==0x1b)
-
-	if(c==0x7f){//  backspace
-		printf("\b \b");
-		pos--;
-		strcpy(&line[pos],&line[pos+1]);
-			line[strlen(line)]=0;
-			if(line[pos])
-			printf("%s  \b\b",&line[pos]);
-			for(int i=0;i<strlen(&line[pos]);i++)printf("\b");
-	}
-			// c_cc[VINS]
-
-	// printf("%c",insert);
-
-	printf("%c",c);
-		if(d==0x33 && c==0x7e){// del
-				strcpy(&line[pos],&line[pos+1]);
-				line[strlen(line)]=0;
-				if(line[pos])
-				printf("%s \b",&line[pos]);
-				for(int i=0;i<strlen(&line[pos]);i++)printf("\b");
-			// printf("%s",&line[pos]);
-			// printf(" ");
-		}
-
-	if(d==0x5b){
-
-		// 0x1b 5b 44 == right
-		if(c==0x43)
-			if(pos<strlen(line))
-				pos++;
-			else printf("\b");
-
-
-		// 0x1b 5b 44 == left
-		if(c==0x44)
-			pos--;
-
-		// 0x1b 5b 41 == up
-		if(c==0x41 ){
-			printf("\n");
-			clearline();
-			if(size>0){
-			nr=(nr-1)%size;
-			if(nr<0||nr==size)nr=size-1;
-			printf(history[nr]);
-			strcpy(line,history[nr]);
-			pos=strlen(history[nr]);
-			}
-			// printf("last");
-		}
-
-		// 0x1b 5b 41 == down
-		if(c==0x42){
-			printf("\r");
-			clearline();
-			if(size>0){
-			nr=(nr+1)%size;
-			printf(history[nr]);
-			strcpy(line,history[nr]);
-			pos=strlen(history[nr]);
-			}
-			// printf("down");
-		}
-		// if(c==0x43){
-			// printf(history[nr]);
-		// }
-		// replaceLast(line,pos,3);
-	}
-	else
-	if(isprint(b[0]) && c!=0x1b && c!=0x5b && c!=0x7f && c!=0x7e){
-		char tmp[1000];
-		strcpy(tmp,&line[pos]);
-		strcpy(&line[pos+1],tmp);
-		line[pos++]=b[0];
-		if(line[pos])
-		printf("%s",&line[pos]);
-	for(int i=0;i<strlen(tmp);i++)printf("\b");
-}
-// if(c==9){}//tab
-if(d==0x1b&&c==0x7f){// alt back
-	pos=0;
-	line[0]=0;
-	line[1]=0;
-	clearline();
-}
-
-// keypad(stdscr, TRUE);
-	d=c;
-}
-if(strlen(line)>0)
-history.push_back(line);
-printf("\n");
-return line;
-}
-// all car_makes
-
-//
-// int main(){
-// 	history.push_back("test0");
-// 	history.push_back("test1");
-// 	history.push_back("test2");
-// 	while(1){
-// 		printf("netbase>");
-// 	char* a=getline();
-// 	printf("\n{{>>>>>>>>>>>>>%s<<<<<<<<<<}}\n",a);
-// 	printf("%d",history.size());
-// 	}
-// }
-
 
 
 #ifdef signal
@@ -485,27 +322,38 @@ void handler(int sig) {
 }
 #endif
 
+void getline(char *buf)
+{
+			int MAXLENGTH=1000;
+			char* PROMPT="netbase>";
+    #ifdef RL_READLINE_VERSION // USE_READLINE
+            char *tmp;
+	        tmp = readline(PROMPT);
+            if(strncmp(tmp, buf, MAXLENGTH)) add_history(tmp);      // only add new content
+            strncpy(buf, tmp, MAXLENGTH);
+            buf[MAXLENGTH]='\0';
+            free(tmp);
+    #else
+            std::cout<<PROMPT;
+            std::cin.get(buf,MAXLENGTH);
+            std::cin.ignore(); // delete CR
+    #endif
+}
+
 void console() {
     Node* n;
     int i;
     quiet = false;
-    printf("\nNetbase C++ Version z.a");
-    const char* data = (char*) malloc(1000);
-    string data2;
+    printf("\nNetbase C++ Version z.a\n");
+    char* data = (char*) malloc(1000);
 #ifdef signal
     setjmp(try_context); //recovery point
 #endif
     while (true) {
         clearAlgorithmHash();
-        printf("\nnetbase> ");
-        flush();
-        std::getline(std::cin, data2);
-        data = data2.c_str();
+        getline(data);
         parse(data);
     }
-	start_server();
-
-    //	p("farewell...");
 }
 
 

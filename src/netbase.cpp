@@ -1696,7 +1696,7 @@ int main(int argc, char *argv[]) {
 		path = path.substr(0, path.rfind("/dist") + 1);
 	}
 	system(string("cd " + path).c_str());
-
+	path=sprintf("%s/data",path);
 	if (checkParams(argc, argv, "quiet"))
 		quiet = true;
 	if (checkParams(argc, argv, "quit"))
@@ -1719,28 +1719,37 @@ int main(int argc, char *argv[]) {
 		load(false);
 	if (checkParams(argc, argv, "load_files"))
 		load(true);
-	if (checkParams(argc, argv, "test")) {
-		//        load();
-		//		clean();
-
-		//		testBrandNewStuff();
-		//		if(!hasWord("city")){
-		//			importAll();
-		//			collectAbstracts();
-		//		}
-		//		if(!hasWord("city")){
-		//			p("BROKEN");
-		//			collectAbstracts();
-		//		}
-		tests();
-		p("TEST OK!");
+	if (	  checkParams(argc, argv, "server")
+			||checkParams(argc, argv, "daemon")
+			||checkParams(argc, argv, "demon")){
+		printf("starting server\n");
+		start_server();
+		return 0;
 	}
+
 
 	if (checkParams(argc, argv, "import")) {
 		import(argv[2], path.c_str()); // netbase import save
 		if (checkParams(argc, argv, "save"))
 			save(); // danger
 	}
+
+	if (checkParams(argc, argv, "test")) {
+		tests();
+		p("TEST OK!");
+	}
+
+	if (checkParams(argc, argv, "debug")) {
+		printf("debugging\n");
+		//        load();
+		//		clean();
+		//		testBrandNewStuff();
+		start_server();
+		return 0;
+//		tests();
+	}
+
+
 	parse(join(argv, argc).c_str());
 	printf("Warnings: %d\n", badCount);
 //	testBrandNewStuff();
