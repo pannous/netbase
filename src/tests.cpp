@@ -938,9 +938,34 @@ void testCities(){
 //	check(has(the(Mersing),value("population",22007))) todo
 }
 
+void testOpposite(){
+	char** splat=splitStringC("a.a",".");
+		char*	thing=splat[0];
+		char*	property=splat[1];
+		check(eq(thing,property));
+//	learn("Antonym Synonym opposite");
+//	check(isA(Antonym,a(opposite))); //OK
+//	check(isA(a(opposite),Antonym));
+	check(isA4(Antonym,a(opposite),false,true));
+	check(isA4(a(opposite),Antonym,false,true));
+	check(isA4(Antonym,a(opposite),false));
+	check(isA4(a(opposite),Antonym,false));
+	check(has(a(good),Antonym));
+//	check(has(the(good),Antonym));
+	check(has(a(good),Antonym,a(evil)));
+	addStatement(Antonym,Synonym,a(opposite));
+	addStatement(Antonym,Synonym,the(opposite));
+	addStatement(the(opposite),Synonym,Antonym);
+	check(has(a(good),a(opposite),a(evil)));
+//	check(has(a(good),the(opposite),a(evil)));
+//	check(has(the(good),Antonym,a(evil)));
+//	check(has(the(good),a(opposite),a(evil)));
+}
+
 void testBrandNewStuff() {
 	ps("test brand new stuff");
-	testImages() ;
+	testOpposite();
+//	testImages() ;
 //	testCities();
 
 //	parentPath(a(bee),a(insect));

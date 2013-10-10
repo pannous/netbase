@@ -48,6 +48,23 @@ void showHelp() {
 //bool parse(string* data) {
 static char* lastCommand;
 
+Node *parseProperty(const char *data){
+		char *thing = (char *) malloc(1000);
+		char *property = (char *) malloc(1000);
+		if(contains(data, " of "))
+			sscanf(data,"%s of %s",property,thing);
+		else{
+//			sscanf(data,"%s.%s",thing,property);
+			char** splat=splitStringC(data,".");
+			thing=splat[0];
+			property=splat[1];
+		}
+		Node* found=has(getThe(thing),getAbstract(property));
+		if(found==0)
+		found=has(getAbstract(thing),getAbstract(property));
+		show(found);
+}
+
 bool parse(const char* data) {
     if (eq(data, null)) {
         return true;
@@ -215,10 +232,13 @@ bool parse(const char* data) {
         query(data);
         return true;
     }
-    if (contains(data, " of ")) {
-        query(data);
+    if (contains(data, " of ")||contains(data, ".") && !contains(data, " ")) {
+		parseProperty(data);
+//        query(data);
         return true;
     }
+
+
     if (contains(data, " with ")) {
         query(data);
         return true;

@@ -1066,11 +1066,12 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 #endif
 		if(predicate!=Instance && s->Predicate == Instance ) return 0;
 		//        showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
-		bool subjectMatch = (s->Subject == subject || subject == Any);
+		bool subjectMatch = (s->Subject == subject || subject == Any || isA4(s->Subject,subject,false,false));
 		bool predicateMatch = (s->Predicate == predicate || predicate == Any);
 		predicateMatch = predicateMatch || predicate == Instance && s->Predicate == SubClass;
 		predicateMatch = predicateMatch || predicate == SubClass && s->Predicate == Instance;
-		bool objectMatch = (s->Object == object || object == Any);
+		predicateMatch = predicateMatch || isA4(s->Predicate,predicate,false,false);
+		bool objectMatch = (s->Object == object || object == Any || isA4(s->Object,object,false,false));
 		if (subjectMatch && predicateMatch && objectMatch)return s;
 
 		bool subjectMatchReverse = s->Object == subject; //s->Subject == object;
@@ -1440,7 +1441,7 @@ Node* has(const char* n, const char* m) {
 Node* has(Node* n, Node* m) {
 	Node *no = 0;
 	Node* save = n; // heap data loss !?!
-//	if(m->value!=0)
+//	if(m->value!=0)// hasloh population:3000
 //		if (!no)no = has(n, m, m->value); // TODO: test
 //	else
 		if (!no)no = has(n, m, Any); // TODO: test

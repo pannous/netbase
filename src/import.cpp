@@ -44,10 +44,11 @@ void importImages() {// 18 MILLION!   // 18496249
 	addStatement(wiki_image, is_a, getThe("image"));
 
 	/* Open the file.  If NULL is returned there was an error */
-
-	printf("Opening File %s\n", (import_path + images_file).data());
-	if ((infile = fopen((import_path + images_file).data(), "r")) == NULL) {
+	const char* file=(import_path + images_file).data();
+	printf("Opening File %s\n", file);
+	if ((infile = fopen(file, "r")) == NULL) {
 		perror("Error opening file");
+		perror(file);
 		exit(1);
 	}
 	char tokens[1000];
@@ -60,13 +61,14 @@ void importImages() {// 18 MILLION!   // 18496249
 			pi(linecount);
 		};
 		sscanf(line, "%s %*s %s", title, image);
-		if (eq(title, "Alabama")){
-			printf("A! %s\n",title);
-			lastTitle=0;
-		}
 		if (eq(lastTitle, title))
 			continue;
-		lastTitle = title; // only the first
+		if (eq(title, "Alabama")){
+			printf("A! %s\n",title);
+//			lastTitle=0;
+		}
+
+		lastTitle = clone(title); // only the first
 		if (!hasWord(title))
 			norm(title); //blue -_fin ==> bluefin
 		if (!hasWord(title)&&!hasWord(downcase(title)))
@@ -79,9 +81,10 @@ void importImages() {// 18 MILLION!   // 18496249
 		Node* object = getAbstract(image); // getThe(image);;
 		//		if(endswith(image,".ogg")||endswith(image,".mid")||endswith(image,".mp3"))
 		addStatement(subject, wiki_image, object, false);
+		printf("%s\n",title);
 		if (!eq(title, downcase(title)))
 			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
-		if (++good % 1000 == 0) {
+		if (++good % 10000 == 0) {
 			ps("GOOD images:");
 			pi(good);
 		}

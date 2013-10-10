@@ -296,7 +296,8 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 }
 
 
-char** splitStringC(const char* line0, const char* separator) {
+
+char** splitStringC1(const char* line0, const char* separator) {
 	if (line0 == 0) {
 		ps("empty splitString!");
 		return 0;
@@ -315,30 +316,34 @@ char** splitStringC(const char* line0, const char* separator) {
 	return tokens;
 }
 
-int splitStringC2(char* line, char** tokens, const char* separators) {
+// returns number of parts (1==no separators found => line)
+int splitStringC2(const char* line0, char** tokens, const char* separators) {
 	char * token;
+	char* line=clone(line0);
 	//  token = strtok (line,separator);
 	int row = 0;
 	int len = strlen(line);
 	int i = 0;
 	char* lastgood = line;
+	if(tokens)
+		tokens[0] = line;
 	while (i < len) {
-		if (contains(separators,(const char*) (line+i))) {
+		if (separators[0]==line[i]) {
 			line[i] = 0;
-			token = lastgood;
-			lastgood = &line[i + 1];
+			line = &line[i + 1];
 			if(tokens)
-				tokens[row] = token;
-			//        token = strtok (NULL, separator);
-
-			row++;
+				tokens[++row] = line;
 		}
 		i++;
 	}
-	if(tokens)
-	tokens[row] = lastgood;
 	return row + 1; //s
 }
+char** splitStringC(const char* line0, const char* separator) {
+	char** tokens=(char**) malloc(100);
+	splitStringC2(line0,tokens,separator);
+	return tokens;
+}
+
 char* clone(const char* line){
 		char* line0 = (char*) malloc(strlen(line)*2 + 1); //dont free!
 		strcpy(line0,line);

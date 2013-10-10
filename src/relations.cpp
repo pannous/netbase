@@ -107,6 +107,7 @@ Node* addRelation(int id, const char* name) {
 void initRelations() {
 	Unknown = addRelation(0, "see");
 	Antonym = addRelation(1, "antonym");
+//	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(2, "attribute"); // tag
 	Cause = addRelation(3, "cause"); //
 	Derived =addRelation(4, "derived from adjective"); //
@@ -226,6 +227,7 @@ void initRelations() {
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
 	Integer = addRelation(_range, "Range");
+	addStatement(Antonym,Synonym,getThe("opposite"));
 }
 
 Node* invert(Node* relation) {

@@ -230,7 +230,6 @@ NodeVector nodeVector(vector<char*> v) {
 }
 
 // sentenceToStatement
-
 Statement* parseSentence(string sentence, bool learn = false) {
 
 	int recurse = 0;
