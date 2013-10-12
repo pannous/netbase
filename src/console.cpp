@@ -41,8 +41,10 @@ void showHelp() {
     ps("quit :q");
     ps("clear :cl");
     ps("type words, ids, or queries:");
-    ps("all animals that have feathers");
+//    ps("all animals that have feathers");
+	ps("all animals with feathers");
     ps("select * from dogs where terrier");
+	ps("all city with countrycode ZW");
 }
 
 //bool parse(string* data) {
@@ -55,7 +57,7 @@ Node *parseProperty(const char *data){
 			sscanf(data,"%s of %s",property,thing);
 		else{
 //			sscanf(data,"%s.%s",thing,property);
-			char** splat=splitStringC(data,".");
+			char** splat=splitStringC(data,'.');
 			thing=splat[0];
 			property=splat[1];
 		}

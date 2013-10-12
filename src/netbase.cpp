@@ -338,6 +338,7 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 	return false;
 }
 
+// don't use! iterate via nextStatement
 Statement* getStatementNr(int id, int context_id){
 	if (id >= maxStatements0) {
 		badCount++;
@@ -353,6 +354,7 @@ Statement* getStatementNr(int id, int context_id){
 
 Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances){
 	if(stopAtInstances && current->Predicate==Instance)return null;
+	if(stopAtInstances && current->Object==n && current->Predicate==Type)return null;
 	if(current->Subject==n)return getStatementNr(current->nextSubjectStatement,n->context);
 	if(current->Predicate==n)return getStatementNr(current->nextPredicateStatement,n->context);;
 	if(current->Object==n)return getStatementNr(current->nextObjectStatement,n->context);;
@@ -946,10 +948,11 @@ Node* getClass(const char* word) {
 }
 
 void showStatement(Statement* s) {
-	if (quiet)return;
+//	if (quiet)return;
 
 	Context* c = currentContext();
 	if (s < c->statements || s > &c->statements[maxStatements0]) {
+		if (quiet)return;
 		p("illegal statement:");
 		printf("%016llX", s);
 		return;
@@ -968,7 +971,7 @@ void showStatement(Statement* s) {
 }
 
 void show(Node* n, bool showStatements) {//=true
-	if (quiet)return;
+//	if (quiet)return;
 	if (!checkNode(n))return;
 	// Context* c=getContext(n->context);
 	// if(c != null && c->name!=null)
@@ -986,12 +989,20 @@ void show(Node* n, bool showStatements) {//=true
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
 	int i = 0;
 	int maxShowStatements = 1000; //hm
-	if (showStatements)
+
+	if (showStatements){
+		Statement* s=getStatementNr(n->firstStatement,current_context);
 		for (; i < min(n->statementCount, maxShowStatements); i++) {
-			showStatement(getStatementNr(n, i));
+//			s=getStatementNr(n, i);
+			bool stopAtInstances=i>10;
+			s=nextStatement(n,s,stopAtInstances);
+			if(s)
+			showStatement(s);
+			else break;
 		}
-	if (showStatements)
 		p("--------------");
+	}
+
 }
 
 Node* showNr(int context, int id) {
@@ -1755,8 +1766,10 @@ int main(int argc, char *argv[]) {
 //		tests();
 	}
 
+	// *******************************
+	parse(join(argv, argc).c_str());// <<< HERE
+	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-	parse(join(argv, argc).c_str());
 	printf("Warnings: %d\n", badCount);
 //	testBrandNewStuff();
 	console();

@@ -171,6 +171,12 @@ bool eq(const char* x, const char* y, bool ignoreCase) {
 	return true;
 }
 
+const char* concat(const char* a,const  char* b) {
+	string c="";
+	c=a+c+b;
+	return c.data();
+}
+
 string join(char** argv, int argc) {
 	string a;
 	int i = 1;
@@ -273,9 +279,9 @@ NodeVector intersect(NodeVector a, NodeVector b) {
 
 vector<char*>& splitString(string line0, const char* separator) {
 	return splitString(line0.data(), separator);
-	;
 }
 
+// AAAHH NEVER WORKS!!! use splitStringC2 !!!
 vector<char*>& splitString(const char* line0, const char* separator) {
 	char * token;
 	vector<char*>& v = *new vector<char*>;
@@ -296,7 +302,7 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 }
 
 
-
+// never works
 char** splitStringC1(const char* line0, const char* separator) {
 	if (line0 == 0) {
 		ps("empty splitString!");
@@ -316,48 +322,20 @@ char** splitStringC1(const char* line0, const char* separator) {
 	return tokens;
 }
 
-// returns number of parts (1==no separators found => line)
-int splitStringC2(const char* line0, char** tokens, const char* separators) {
-	char * token;
-	char* line=clone(line0);
-	//  token = strtok (line,separator);
-	int row = 0;
-	int len = strlen(line);
-	int i = 0;
-	char* lastgood = line;
-	if(tokens)
-		tokens[0] = line;
-	while (i < len) {
-		if (separators[0]==line[i]) {
-			line[i] = 0;
-			line = &line[i + 1];
-			if(tokens)
-				tokens[++row] = line;
-		}
-		i++;
-	}
-	return row + 1; //s
-}
-char** splitStringC(const char* line0, const char* separator) {
-	char** tokens=(char**) malloc(100);
-	splitStringC2(line0,tokens,separator);
-	return tokens;
-}
-
 char* clone(const char* line){
 		char* line0 = (char*) malloc(strlen(line)*2 + 1); //dont free!
 		strcpy(line0,line);
 		return line0;
 }
-char* modifyConstChar(char* line){
+char* modifyConstChar(const char* line){
 		char* line0 = (char*) malloc(strlen(line)*2 + 1); //dont free!
 		strcpy(line0,line);
 		return line0;
 }
 
+
 // line MUST not be const!
-int splitStringC(char* line, char** tokens, char separator,bool safe) {
-	if(safe)line=modifyConstChar(line);
+int splitStringC(char* line, char** tokens, char separator) {
 	char * token;
 	int row = 0;
 	int len = strlen(line);
@@ -380,6 +358,19 @@ int splitStringC(char* line, char** tokens, char separator,bool safe) {
 	if(tokens)
 	tokens[row] = lastgood;
 	return row + 1; //s
+}
+char** splitStringC(const char* line0, const char* separator) {
+	return splitStringC(modifyConstChar(line0),separator[0]);
+}
+
+char** splitStringC(const char* line0, char separator) {
+	return splitStringC(modifyConstChar(line0),separator);
+}
+
+char** splitStringC(char* line0, char separator) {
+	char** tokens=(char**) malloc(100);
+	splitStringC(line0,tokens,separator);
+	return tokens;
 }
 
 inline int normChar(int c) {

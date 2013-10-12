@@ -46,9 +46,13 @@ void p(string s);
 string next(string data);
 vector<char*>& splitString(string line0,const char* separator="\t");
 vector<char*>& splitString(const char* line0,const char* separator="\t");
+
+int splitStringC(char* line,char** tokens, char separator);
+char** splitStringC(char* line0, char separator);
+char** splitStringC(const char* line0, char separator);
 char** splitStringC(const char* line0, const char* separator);
 //int splitStringC2(char* line,char** tokens,const char* separator="\t");// BROKEN!!!
-int splitStringC(char* line,char** tokens, char separator,bool safe=false);
+
 char* downcase(char* x);
 //char* tolower(char* x);//call of overloaded 'tolower(const char*&)' is ambiguous
 char* tolower(const char* x);
@@ -63,4 +67,7 @@ char* substr(char* what,int from,int to);
 char* match(char* input, char* pattern);
 char* clone(const char* line);
 char* modifyConstChar(char* line);
+const char* concat(const char* a,const  char* b);
 #define check(assertion) ps(#assertion);if(assertion)ps("OK");else{ps("FAILED");exit(0);}
+#define a(word) getThe(#word)
+#define all(word) getThe(#word)

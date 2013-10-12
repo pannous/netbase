@@ -463,7 +463,9 @@ NodeVector filter(NodeVector all, char* matches) {
 		if (!checkNode(node, 0, 0, 1))continue;
 		if (!checkNode(node))continue;
 		p("!++++++++++++++++++++++++++++\nfiltering node:");
+//		if (quiet)printf("%s ?",node->name);
 		show(node);
+
 		p("+++++++++++++++++++++++++++++\n");
 		bool good = true;
 

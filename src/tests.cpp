@@ -891,35 +891,9 @@ void testPaths(){
 //	check(a(mouse),has_a,a(foot));
 }
 
-void tests() {
-    //    testOutput();
-    //	testScanf();
-    //    share_memory();
-//    init();
-
-//    test();
-//    testHash();
-	clearTestContext();
-//    testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
-	testBrandNewStuff();
-    testValueLogic();
-    testStringLogic();
-
-    testLogic();
-    testImportExport();
-    testWordnet();
-    testQuery();
-    testFacets();
-
-	testFactLearning();
-	testReification();
-	testPaths();
-	p("ALL TESTS SUCCESSFUL!");
-    //    testLoop();
-}
 void testCities(){
 	char* line="geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n";
-	int nr=splitStringC(line,0,'\t',true);
+	int nr=splitStringC(line,0,'\t');
 //	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n",0,"\t",true);
 	check(nr>4);
 	vector<char*> fields;
@@ -962,9 +936,45 @@ void testOpposite(){
 //	check(has(the(good),a(opposite),a(evil)));
 }
 
+
+void tests() {
+    //    testOutput();
+    //	testScanf();
+    //    share_memory();
+//    init();
+
+//    test();
+//    testHash();
+	clearTestContext();
+//    testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
+	testBrandNewStuff();
+	testOpposite();
+    testValueLogic();
+    testStringLogic();
+
+    testLogic();
+    testImportExport();
+    testWordnet();
+    testQuery();
+    testFacets();
+
+	testFactLearning();
+	testReification();
+	testPaths();
+	p("ALL TESTS SUCCESSFUL!");
+    //    testLoop();
+}
 void testBrandNewStuff() {
 	ps("test brand new stuff");
-	testOpposite();
+	import("yago","yagoSimpleTypes.tsv");
+	import("yago","yagoTaxonomy.tsv");
+	import("yago","yagoImportantTypes.tsv");
+	import("yago","yagoFacts.tsv");
+
+//yagoGeonamesData.tsv nah
+//	yagoLiteralFacts.tsv // <Glen_Smith_(cricketer)>	<wasBornOnDate>	"1973-##-##"^^xsd:date	1973.0000 !
+//	yagoSchema.tsv
+//	yagoMetaFacts.tsv// redundant
 //	testImages() ;
 //	testCities();
 

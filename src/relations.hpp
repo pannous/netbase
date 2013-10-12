@@ -64,6 +64,7 @@ extern Node* String;
 extern Node* Date;
 extern Node* Float;
 extern Node* Integer;
+extern Node* Range;
 extern Node* Unit;
 
 extern Node* Cause;

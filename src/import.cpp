@@ -8,13 +8,12 @@
 #include "sqlite3.h"
 #endif
 
-
-
 #include "netbase.hpp"
 #include "util.hpp"
-
 #include "import.hpp"
 #include "relations.hpp"// for wordnet
+#include "reflection.hpp"
+
 
 // 64 BIT : %x -> %016llX
 char* nodes_file = "nodes.txt";
@@ -293,8 +292,7 @@ string deCamel(string s) {
 	return s;
 };
 
-// TODO:!test MEMLEAK!!
-
+// TODO :!test MEMLEAK!
 const char* parseWikiTitle(char* item, int id = 0, int context = current_context) {
 	//    string s="wordnet_raw_material_114596700";
 	static string s;
@@ -308,7 +306,7 @@ const char* parseWikiTitle(char* item, int id = 0, int context = current_context
 	//    if(s.find("wordnet"))contextId=wordnet;
 	//if(s.find("wikicategory")) kind=list / category
 	s = replace_all(s, "wikicategory_", "");
-	s = replace_all(s, "wordnet_", "");
+	s = replace_all(s, "wordnet_(.*)_(\\d*)", "$1");// todo
 	s = replace_all(s, "yago_", "");
 	s = replace_all(s, "wikicategory", "");
 	s = replace_all(s, "wordnet", "");
@@ -345,7 +343,7 @@ char guessSeparator(char* line) {
 	int max = 0;
 	int size = strlen(separators);
 	for (int i = 0; i < size; i++) {
-		int nr = splitStringC(line, 0, (char) separators[i], true);
+		int nr = splitStringC(line, 0, (char) separators[i]);
 		if (nr > max) {
 			the_separator = separators[i];
 			max = nr;
@@ -402,9 +400,12 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 
 void fixNewline(char* line) {
 	int len = strlen(line);
+	if(len==0)return;
 	if (line[len - 1] == '\n')
 		line[--len] = 0;
 	if (line[len - 1] == '\r')
+		line[--len] = 0;
+	if (line[len - 1] == '\t')
 		line[--len] = 0;
 }
 
@@ -613,7 +614,7 @@ void importCsv(const char* facts_file, Node* type, char separator, const char* i
 			columnTitles = line;
 			if (!separator)
 				separator = guessSeparator(line);
-			fieldCount = splitStringC(line, values, separator, true);
+			fieldCount = splitStringC(line, values, separator);
 			nameRowNr = getNameRow(values, nameRowNr, nameRow);
 			//						getFields(line, fields, separator, nameRowNr, nameRow);// vector ok, only once!
 
@@ -702,6 +703,141 @@ void importList(const char* facts_file, const char* type) {
 	fclose(infile); /* Close the file */
 	p("import list ok");
 }
+char *fixRdfName(char *key){
+	if(key[0]=='<')key++;
+	char* start=strstr(key,".");
+	if(!start)start=key;
+}
+char *cut_wordnet_id(char *key){
+	for (int i = strlen(key); i > 1; --i) {
+		if(key[i]=='_'){
+			char* id=key+i+1+1;
+			key[i]=0;
+			return id;// <wordnet_album_106591815> ->  06591815 DROP LEADING 1 !!!
+		}
+	}
+	return 0;
+}
+bool hasCamel(char* key){
+	if(contains(key,"_"))return false;
+	char last=key[0];
+	for (int i = 0; i <strlen(key); i++) {
+		char c = key[i];
+		if (c > 64 && c < 91)
+			if (last > 96 && last < 123){
+				pi(i);
+				return true;
+			}
+		last=c;
+	}
+	return false;
+}
+char* removeHead(char *key,char *bad){
+	char* start=strstr(key,bad);
+	if(start)key=key+strlen(bad);
+	return key;
+}
+const char *fixYagoName(char *key){
+	if(key[0]=='<')key++;
+	int len=strlen(key);
+	if(key[len-1]=='>')key[len-1]=0;
+	key=removeHead(key,"wikicategory_");
+	key=removeHead(key,"wordnetDomain_");
+	char* start=strstr(key,"wordnet_");
+	if(start){
+		char* id=cut_wordnet_id(start);
+		key=removeHead(key,"wordnet_");
+	}
+//	if(hasCamel(key)) // McBain
+//		return deCamel(key).data();
+	return key;
+}
+
+Node* getYagoAbstract(char* key){
+	if(eq(key,"rdf:type"))return Type;
+	if(eq(key,"rdfs:subClassOf"))return SuperClass;
+	if(eq(key,"rdfs:label"))return Label;
+	if(eq(key,"isPreferredMeaningOf"))return Label;
+	if(eq(key,"skos:prefLabel"))return Label;
+	if(eq(key,"rdfs:Property"))return Relation;
+	if(eq(key,"rdf:Property"))return Relation;
+	if(eq(key,"rdfs:range"))return Range;
+	if(eq(key,"owl:FunctionalProperty"))return Label;
+//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
+	if(contains(key,":")){
+		printf(" unknown key %s\n", key);
+		return 0;
+	}
+	return getAbstract(fixYagoName(key));
+
+}
+bool importYago(const char* facts_file) {
+	p("import YAGO start");
+	if(!contains(facts_file,"/"))
+		facts_file=concat("/Volumes/Data/BIG/yago/",facts_file);
+	Node* subject;
+	Node* predicate;
+	Node* object;
+		int linecount = 0;
+	FILE *infile;
+	printf("Opening File %s\n", facts_file);
+	if ((infile = fopen(facts_file, "r")) == NULL) {
+		perror("Error opening file");
+		return false;
+	}
+	char* line = (char*) malloc(1000);
+	char* id = (char*) malloc(100);
+	char* subjectName = (char*) malloc(100);
+	char* predicateName = (char*) malloc(100);
+	char* objectName = (char*) malloc(100);
+	while (fgets(line, 1000, infile) != NULL) {
+		fixNewline(line);
+		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		if(linecount%100000==1){
+			size_t currentSize = getCurrentRSS( );
+			size_t peakSize    = getPeakRSS( );
+			size_t free=getFreeSystemMemory();
+			printf("MEMORY: %L   peak: %d FREE: %L \n", currentSize,peakSize,free);
+			if(currentSize>4000000000)return 0;//exit(0);// 4GB max
+		}
+//			sscanf(line, "%s\t%s\t%s\t%s", &id, subjectName,predicateName, objectName /*, &certainty*/);
+		if(line[0]=='\t')line[0]=' ';// don't line++ , else nothing left!!!
+//		printf("%s\n", line);
+		int ok=sscanf(line, "<%s>\t<%s>\t%s\t<%s>", id, subjectName,predicateName, objectName /*, &certainty*/);
+		if(!ok)ok=sscanf(line, "<%s>\t%s\t<%s>",subjectName,predicateName, objectName /*, &certainty*/);
+		if(!ok)ok=sscanf(line, "%s\t%s\t%s", subjectName,predicateName, objectName /*, &certainty*/);
+		if(strlen(objectName)==0){
+			 char** all=splitStringC(line,'\t');
+			 subjectName=all[0];
+			 predicateName=all[1];
+			 objectName=all[2];
+		}
+//		if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#") || contains(objectName, ":"))
+//			continue;
+
+		subject = getYagoAbstract(subjectName); //
+		predicate = getYagoAbstract(predicateName);
+		object = getYagoAbstract(objectName);
+		if(subject==0||predicate==0||object==0){
+			printf("ERROR %s\n", line);
+			continue;
+		}
+		//dissectWord(abstract);
+		Statement* s;
+//		if (contains(objectName, subjectName, true))
+//			s = addStatement(subject, Member, object, false); // todo: id
+//		else
+		s = addStatement(subject, predicate, object, false); // todo: id
+		if (!subject || !object || subject->id > maxNodes || object->id > maxNodes) {
+			printf("Quitting import : id > maxNodes\n");
+			break;
+		}
+//		showStatement(s);
+	}
+	fclose(infile); /* Close the file */
+	p("import facts ok");
+	return true;
+}
 
 bool importFacts(const char* facts_file, const char* predicateName = "population") {
 	p("import facts start");
@@ -725,63 +861,35 @@ bool importFacts(const char* facts_file, const char* predicateName = "population
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		/* Get each line from the infile */
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
-		int contextId;
-		//	char* predicateName=(char*) malloc(100);
-		int subjectId;
-		int predicateId;
-		int objectId;
-		int id; // ignore now!!
-		int certainty;
-
 		if (!eq(predicateName, "population"))
 			sscanf(line, "%s\t%s", subjectName, objectName); // no contextId? cause this db assumes GLOBAL id!
 		else
-			sscanf(line, "%d\t%s\t%s\t%d", &id, subjectName, objectName, &certainty); // no contextId? cause this db assumes GLOBAL id!
+			sscanf(line, "%*d\t%s\t%s\t%*d", /*&id,*/ subjectName, objectName /*, &certainty*/); // no contextId? cause this db assumes GLOBAL id!
 		// printf(line);
 		//	 printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
-
-		// important words first!!
-		//if(contains(subjectName,"_") || contains(subjectName,"-") || contains(subjectName,":") || contains(subjectName,"#"))
-		//    continue;
-		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abkürzung") || contains(subjectName, ":") || contains(subjectName, "#"))
-			continue;
+//		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abkürzung") || contains(subjectName, ":") || contains(subjectName, "#"))
+//			continue;
 		if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#") || contains(objectName, ":"))
 			continue;
 
-		//     subject=getThe(subjectName);
 		subject = getAbstract(subjectName); //
-
-		//    show(subject);
-		//    int objectValue=atoi(objectName);
-		//    if(eq(predicateName,"population")&&objectValue<1000)continue;
-
-		//if(contains(objectName,",") || contains(objectName,"("))
-		//    object=getThe(objectName);
-		//    else
 		object = getAbstract(objectName);
 		//dissectWord(abstract);
-
 		Statement* s;
-
 		if (contains(objectName, subjectName, true))
 			s = addStatement(subject, Member, object, false); // todo: id
 		else
 			s = addStatement(subject, predicate, object, false); // todo: id
-
 		if (!subject || !object || subject->id > maxNodes || object->id > maxNodes) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
-
 		showStatement(s);
 	}
 	fclose(infile); /* Close the file */
 	p("import facts ok");
 	return true;
 }
-
-#define a(word) getThe(#word)
-#define all(word) getThe(#word)
 
 void importNames() {
 	importList((import_path + "FrauenVornamen.txt").data(), "female_firstname");
@@ -822,29 +930,32 @@ void importWikipedia() {
 
 }
 
-void import(const char* filename) {
+void import(const char* type,const char* filename) {
 
 	clock_t start;
 	double diff;
 	//  start = clock();
 	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
-
-	if (eq(filename, "all")) {
+	if(filename==0)filename=type;
+	if (eq(type, "all")) {
 		importAll();
-	} else if (eq(filename, "csv")) {
+	} else if (eq(type, "csv")) {
 		importCsv(filename);
-	} else if (eq(filename, "wordnet")) {
+	} else if (eq(type, "wordnet")) {
 		importWordnet();
-	} else if (eq(filename, "names")) {
+	} else if (eq(type, "names")) {
 		importNames();
-	} else if (eq(filename, "images")) {
+	} else if (eq(type, "images")) {
 		importImages();
-	} else if (eq(filename, "wiki")) {
+	} else if (eq(type, "wiki")) {
 		importWikipedia();
-	} else if (eq(filename, "topic")) {
+	} else if (eq(type, "topic")) {
 		importWikipedia();
-	} else if (eq(filename, "yago")) {
-		importFacts(filename,filename);
+	} else if (eq(type, "yago")) {
+		if(contains(filename,"fact"))
+			importFacts(filename,filename);
+		else
+			importYago(filename);
 	} else if (contains(filename, "txt")) {
 		importCsv(filename);
 	} else if (contains(filename, "csv")) {
@@ -853,10 +964,11 @@ void import(const char* filename) {
 		importCsv(filename);
 	} else if (contains(filename, "xml")) {
 		importXml(filename);
-	} else if (!importFacts(filename, filename))
+	} else{
+		//if (!importFacts(filename, filename))
+		printf("Unsupported file type %s %s",type,filename);
 		importAll();
-
-
+	}
 	//  cout<<"nanoseconds "<< diff <<'\n';
 
 	// importSqlite(filename);

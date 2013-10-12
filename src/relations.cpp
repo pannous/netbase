@@ -66,6 +66,7 @@ Node* String;
 Node* Date;
 Node* Float;
 Node* Integer;
+Node* Range;
 Node* Unit;
 
 Node* Translation;
@@ -226,7 +227,7 @@ void initRelations() {
 	Date = addRelation(_date, "Date");
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
-	Integer = addRelation(_range, "Range");
+	Range = addRelation(_range, "Range");
 	addStatement(Antonym,Synonym,getThe("opposite"));
 }
 
