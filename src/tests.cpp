@@ -966,11 +966,7 @@ void tests() {
 }
 void testBrandNewStuff() {
 	ps("test brand new stuff");
-	import("yago","yagoSimpleTypes.tsv");
-	import("yago","yagoTaxonomy.tsv");
-	import("yago","yagoImportantTypes.tsv");
-	import("yago","yagoFacts.tsv");
-
+	import("yago");
 //yagoGeonamesData.tsv nah
 //	yagoLiteralFacts.tsv // <Glen_Smith_(cricketer)>	<wasBornOnDate>	"1973-##-##"^^xsd:date	1973.0000 !
 //	yagoSchema.tsv

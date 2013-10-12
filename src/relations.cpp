@@ -6,7 +6,7 @@
  */
 #include "util.hpp"
 #include "relations.hpp"
-
+// DONT depend on netbase!
 
 Node* Unknown;
 Node* Antonym;
@@ -21,14 +21,18 @@ Node* Member;
 Node* Part;
 Node* Substance;
 Node* Synonym;
+Node* Domain;
+
 Node* Weight;
 Node* Type;
 Node* Instance;
+
 Node* Active;
 Node* Passive;
 Node* Tag;
 Node* Label;
 Node* BackLabel;
+Node* Comment;
 Node* Labels;
 Node* LabeledNode;
 Node* Category;
@@ -118,7 +122,7 @@ void initRelations() {
 	//    DOMAIN_OF_SYNSET_REGION =
 	addRelation(7, "usage region"); // mate @ australia
 	//    DOMAIN_OF_SYNSET_USAGE =
-	addRelation(8, "usage domain"); // #bitch @ colloquialism  || fin de siecle @ French   # fuck(vulgar)
+	Domain=addRelation(8, "usage domain"); // #bitch @ colloquialism  || fin de siecle @ French   # fuck(vulgar)
 	//    ENTAILMENT =
 	addRelation(9, "entails"); //ENTAILMENT  jump implies come down
 	SuperClass = addRelation(10, "superclass"); //Parent ,"Hypernym"
@@ -167,6 +171,7 @@ void initRelations() {
 	Category = addRelation(43, "category"); // tag
 	SubContext = addRelation(44, "subcontext"); // tag
 	SuperContext = addRelation(45, "supercontext"); //
+	Comment = addRelation(46, "comment");
 
 	// Node Types!
 	/*
@@ -228,7 +233,22 @@ void initRelations() {
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
 	Range = addRelation(_range, "Range");
-	addStatement(Antonym,Synonym,getThe("opposite"));
+
+	addStatement(getThe("opposite"),SuperClass,Antonym);
+//	addStatement(Antonym,Synonym,getThe("opposite"));
+
+//	addStatement(Number,Synonym,getThe("xsd:decimal"));
+//	addStatement(Number,Synonym,getThe("xsd:integer"));
+//	addStatement(Date,Synonym,getThe("xsd:date"));
+//	addStatement(getThe("xsd:date"),SuperClass,Date);
+//	addStatement(getThe("xsd:decimal"),SuperClass,Number);
+//	addStatement(getThe("xsd:integer"),SuperClass,Number);
+//	addStatement(get("xsd:date"),SuperClass,Date);
+//	addStatement(get("xsd:decimal"),SuperClass,Number);
+//	addStatement(get("xsd:integer"),SuperClass,Number);
+	addStatement(getAbstract("xsd:date"),SuperClass,Date);
+	addStatement(getAbstract("xsd:decimal"),SuperClass,Number);
+	addStatement(getAbstract("xsd:integer"),SuperClass,Number);
 }
 
 Node* invert(Node* relation) {

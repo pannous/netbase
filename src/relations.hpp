@@ -33,10 +33,12 @@ extern Node* Label;
 extern Node* BackLabel;
 extern Node* Labels;
 extern Node* LabeledNode;
+extern Node* Comment;
+
 extern Node* Category;
 extern Node* SubContext;
 extern Node* SuperContext;
-
+extern Node* Domain;
 // Types
 extern Node* Internal;
 extern Node* _Node;

@@ -43,7 +43,7 @@ void importImages() {// 18 MILLION!   // 18496249
 	addStatement(wiki_image, is_a, getThe("image"));
 
 	/* Open the file.  If NULL is returned there was an error */
-	const char* file=(import_path + images_file).data();
+	const char* file = (import_path + images_file).data();
 	printf("Opening File %s\n", file);
 	if ((infile = fopen(file, "r")) == NULL) {
 		perror("Error opening file");
@@ -62,25 +62,25 @@ void importImages() {// 18 MILLION!   // 18496249
 		sscanf(line, "%s %*s %s", title, image);
 		if (eq(lastTitle, title))
 			continue;
-		if (eq(title, "Alabama")){
-			printf("A! %s\n",title);
-//			lastTitle=0;
+		if (eq(title, "Alabama")) {
+			printf("A! %s\n", title);
+			//			lastTitle=0;
 		}
 
 		lastTitle = clone(title); // only the first
 		if (!hasWord(title))
 			norm(title); //blue -_fin ==> bluefin
 		if (!hasWord(title)&&!hasWord(downcase(title)))
-				continue;// currently only import matching words.
+			continue; // currently only import matching words.
 
-			//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
+		//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
 		//		if (getImage(title) != "")
 		//			continue; //already has one ; only one so far!
 		Node* subject = getAbstract(title);
 		Node* object = getAbstract(image); // getThe(image);;
 		//		if(endswith(image,".ogg")||endswith(image,".mid")||endswith(image,".mp3"))
 		addStatement(subject, wiki_image, object, false);
-		printf("%s\n",title);
+		printf("%s\n", title);
 		if (!eq(title, downcase(title)))
 			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
 		if (++good % 10000 == 0) {
@@ -293,6 +293,7 @@ string deCamel(string s) {
 };
 
 // TODO :!test MEMLEAK!
+
 const char* parseWikiTitle(char* item, int id = 0, int context = current_context) {
 	//    string s="wordnet_raw_material_114596700";
 	static string s;
@@ -306,7 +307,7 @@ const char* parseWikiTitle(char* item, int id = 0, int context = current_context
 	//    if(s.find("wordnet"))contextId=wordnet;
 	//if(s.find("wikicategory")) kind=list / category
 	s = replace_all(s, "wikicategory_", "");
-	s = replace_all(s, "wordnet_(.*)_(\\d*)", "$1");// todo
+	s = replace_all(s, "wordnet_(.*)_(\\d*)", "$1"); // todo
 	s = replace_all(s, "yago_", "");
 	s = replace_all(s, "wikicategory", "");
 	s = replace_all(s, "wordnet", "");
@@ -400,7 +401,7 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 
 void fixNewline(char* line) {
 	int len = strlen(line);
-	if(len==0)return;
+	if (len == 0)return;
 	if (line[len - 1] == '\n')
 		line[--len] = 0;
 	if (line[len - 1] == '\r')
@@ -463,7 +464,7 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 	char line[1000];
 	char* line0 = (char*) malloc(sizeof (char*) *100);
 	char* field = (char*) malloc(sizeof (char*) *100);
-	char* value = (char*) malloc(sizeof (char*) *10000000);
+	char* value = (char*) malloc(sizeof (char*) *10000000);// uiuiui!
 
 	Node* root = 0;
 	Node* parent = 0; // keep track of 1 layer
@@ -703,82 +704,157 @@ void importList(const char* facts_file, const char* type) {
 	fclose(infile); /* Close the file */
 	p("import list ok");
 }
-char *fixRdfName(char *key){
-	if(key[0]=='<')key++;
-	char* start=strstr(key,".");
-	if(!start)start=key;
+
+char *fixRdfName(char *key) {
+	if (key[0] == '<')key++;
+	char* start = strstr(key, ".");
+	if (!start)start = key;
 }
-char *cut_wordnet_id(char *key){
+
+char *cut_wordnet_id(char *key) {
 	for (int i = strlen(key); i > 1; --i) {
-		if(key[i]=='_'){
-			char* id=key+i+1+1;
-			key[i]=0;
-			return id;// <wordnet_album_106591815> ->  06591815 DROP LEADING 1 !!!
+		if (key[i] == '_') {
+			char* id = key + i + 1 + 1;
+			key[i] = 0;
+			return id; // <wordnet_album_106591815> ->  06591815 DROP LEADING 1 !!!
 		}
 	}
 	return 0;
 }
-bool hasCamel(char* key){
-	if(contains(key,"_"))return false;
-	char last=key[0];
-	for (int i = 0; i <strlen(key); i++) {
+
+bool hasCamel(char* key) {
+	if (contains(key, "_"))return false;
+	char last = key[0];
+	for (int i = 0; i < strlen(key); i++) {
 		char c = key[i];
 		if (c > 64 && c < 91)
-			if (last > 96 && last < 123){
+			if (last > 96 && last < 123) {
 				pi(i);
 				return true;
 			}
-		last=c;
+		last = c;
 	}
 	return false;
 }
-char* removeHead(char *key,char *bad){
-	char* start=strstr(key,bad);
-	if(start)key=key+strlen(bad);
-	return key;
-}
-const char *fixYagoName(char *key){
-	if(key[0]=='<')key++;
-	int len=strlen(key);
-	if(key[len-1]=='>')key[len-1]=0;
-	key=removeHead(key,"wikicategory_");
-	key=removeHead(key,"wordnetDomain_");
-	char* start=strstr(key,"wordnet_");
-	if(start){
-		char* id=cut_wordnet_id(start);
-		key=removeHead(key,"wordnet_");
-	}
-//	if(hasCamel(key)) // McBain
-//		return deCamel(key).data();
+
+char* removeHead(char *key, char *bad) {
+	char* start = strstr(key, bad);
+	if (start)key = key + strlen(bad);
 	return key;
 }
 
-Node* getYagoAbstract(char* key){
-	if(eq(key,"rdf:type"))return Type;
-	if(eq(key,"rdfs:subClassOf"))return SuperClass;
-	if(eq(key,"rdfs:label"))return Label;
-	if(eq(key,"isPreferredMeaningOf"))return Label;
-	if(eq(key,"skos:prefLabel"))return Label;
-	if(eq(key,"rdfs:Property"))return Relation;
-	if(eq(key,"rdf:Property"))return Relation;
-	if(eq(key,"rdfs:range"))return Range;
-	if(eq(key,"owl:FunctionalProperty"))return Label;
-//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
-	if(contains(key,":")){
+const char *fixYagoName(char *key) {
+	if (key[0] == '<')key++;
+	int len = strlen(key);
+	if (key[len - 1] == '>')key[len - 1] = 0;
+	key = removeHead(key, "wikicategory_");
+	key = removeHead(key, "wordnetDomain_");
+	char* start = strstr(key, "wordnet_");
+	if (start) {
+		char* id = cut_wordnet_id(start);
+		key = removeHead(key, "wordnet_");
+	}
+	//	if(hasCamel(key)) // McBain
+	//		return deCamel(key).data();
+	return key;
+}
+
+Node* getYagoConcept(char* key) {
+
+	// Normalized instead of using similar
+	if (eq(key, "rdf:type"))return Type;
+	if (eq(key, "rdfs:subClassOf"))return SuperClass;
+	if (eq(key, "rdfs:label"))return Label;
+	if (eq(key, "isPreferredMeaningOf"))return Label;
+	if (eq(key, "skos:prefLabel"))return Label;
+	if (eq(key, "rdfs:Property"))return Relation;
+	if (eq(key, "rdf:Property"))return Relation;
+	if (eq(key, "rdfs:subPropertyOf"))return SubClass;
+	if (eq(key, "owl:SymmetricProperty"))return Relation; // symmetric!
+	if (eq(key, "owl:TransitiveProperty"))return Relation; // transitive!
+	if (eq(key, "rdfs:domain"))return Domain;
+	if (eq(key, "rdfs:range"))return Range;
+
+	if (eq(key, "rdfs:comment"))return Comment;
+	if (eq(key, "rdf:Statement"))return get(_statement);
+	if (eq(key, "rdfs:Class"))return Class;
+	if (eq(key, "rdfs:class"))return Class;
+	if (eq(key, "rdf:Resource"))return get(_node); // no info!
+	if (eq(key, "rdfs:Resource"))return get(_node); // no info!
+	if (eq(key, "rdfs:Literal"))return get(_node); // no info!
+	if (eq(key, "xsd:string"))return get(_node); // no info!
+	if (eq(key, "owl:Thing"))return get(_node); // no info!
+	if (eq(key, "xsd:date"))return Date;
+	if (eq(key, "xsd:decimal"))return Number;
+	if (eq(key, "xsd:integer"))return Number;
+	if (eq(key, "xsd:boolean"))return getAbstract("boolean"); // !
+	if (eq(key, "xsd:gYear"))return getAbstract("year"); // !
+	if (eq(key, "owl:disjointWith"))return getAbstract("disjoint with"); // symmetric!
+	//	if(eq(key,"xsd:string"))return Text;// no info!
+	if (eq(key, "xsd:nonNegativeInteger"))return getAbstract("natural number");
+	if (eq(key, "owl:FunctionalProperty"))return Label;
+	if (eq(key, "#label"))return Label;
+	if (eq(key, "<label>"))return Label;
+	if (eq(key, "<hasWordnetDomain>"))return Domain;
+	//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
+	if (contains(key, "^^")) {
+		char** all = splitStringC(key, '^');
+		char* unit = all[2];
+		key = all[0];
+		key++; // ignore quotes "33"
+		free(all);
+		if(eq(unit,",)"))return 0;// LOL_(^^,) BUG!
+		if (eq(unit, "xsd:integer"))unit = 0; //-> number
+		if (eq(unit, "xsd:decimal"))unit = 0; //-> number
+		if (eq(unit, "xsd:float"))unit = 0; //-> number
+		if (eq(unit, "xsd:nonNegativeInteger"))unit = 0; //-> number
+		else if (eq(unit, "<yago0to100>"))unit=0;
+		if (!unit) return value(key, atoi(key), unit);
+
+		if (eq(unit, "<m"))unit="Meter";
+		else if (eq(unit, "<m>"))unit="Meter";
+		else if (eq(unit, "<s>"))unit="Seconds";
+		else if (eq(unit, "<g>"))unit="Gram";
+		else if (eq(unit, "</km"))unit="Kilometer";
+		else if (eq(unit, "xsd:date")); // parse! unit = 0; //-> number
+		else if (eq(unit, "<degrees>")); // ignore
+		else if (eq(unit, "<dollar>")); // ignore
+		else if (eq(unit, "<euro>")); // ignore
+		else if (eq(unit, "<yagoISBN>"))unit="ISBN"; // ignore
+		else if (eq(unit, "<yagoTLD>"))
+			unit="TLD"; // ???
+		else if (eq(unit, "<yagoMonetaryValue>"))unit="dollar";
+		else if (eq(unit, "<%>"))unit="%";// OK
+		else if (eq(unit, "%"));// OK
+		else printf("UNIT %s \n", unit);
+//		, current_context, getYagoConcept(unit)->id
+		return add(key);
+		Node* unity=getYagoConcept(unit);
+		return getThe(key,unity);
+	}
+	if (!startsWith(key, "<wiki") && contains(key, ":")) {
 		printf(" unknown key %s\n", key);
 		return 0;
 	}
-	return getAbstract(fixYagoName(key));
+	if (contains(key, ".jpg") || contains(key, ".gif") || contains(key, ".svg") || startsWith(key, "#") || startsWith(key, "<#")) {
+		printf(" bad key %s\n", key);
+		return 0;
+	}
+
+	if(eq(key,"<Carding>"))
+		return 0;// What the bug???
+	return getThe(fixYagoName(key));
 
 }
+
 bool importYago(const char* facts_file) {
 	p("import YAGO start");
-	if(!contains(facts_file,"/"))
-		facts_file=concat("/Volumes/Data/BIG/yago/",facts_file);
+	if (!contains(facts_file, "/"))
+		facts_file = concat("/Users/me/data/base/BIG/yago/", facts_file);
 	Node* subject;
 	Node* predicate;
 	Node* object;
-		int linecount = 0;
+	int linecount = 0;
 	FILE *infile;
 	printf("Opening File %s\n", facts_file);
 	if ((infile = fopen(facts_file, "r")) == NULL) {
@@ -792,47 +868,56 @@ bool importYago(const char* facts_file) {
 	char* objectName = (char*) malloc(100);
 	while (fgets(line, 1000, infile) != NULL) {
 		fixNewline(line);
-		if (++linecount % 10000 == 0)printf("%d\n", linecount);
-		if(linecount%100000==1){
-			size_t currentSize = getCurrentRSS( );
-			size_t peakSize    = getPeakRSS( );
-			size_t free=getFreeSystemMemory();
-			printf("MEMORY: %L   peak: %d FREE: %L \n", currentSize,peakSize,free);
-			if(currentSize>4000000000)return 0;//exit(0);// 4GB max
+		if (linecount % 10000 == 0) {
+			size_t currentSize = getCurrentRSS();
+			size_t peakSize = getPeakRSS();
+			size_t free = getFreeSystemMemory();
+			//			printf("MEMORY: %L            Peak: %d FREE: %L \n", currentSize, peakSize, free);
+			if (currentSize > 4*GB || currentSize>sizeOfSharedMemory) {
+				printf("MEMORY safety boarder reached");
+				return 0; //exit(0);// 4GB max
+			}
 		}
-//			sscanf(line, "%s\t%s\t%s\t%s", &id, subjectName,predicateName, objectName /*, &certainty*/);
-		if(line[0]=='\t')line[0]=' ';// don't line++ , else nothing left!!!
-//		printf("%s\n", line);
-		int ok=sscanf(line, "<%s>\t<%s>\t%s\t<%s>", id, subjectName,predicateName, objectName /*, &certainty*/);
-		if(!ok)ok=sscanf(line, "<%s>\t%s\t<%s>",subjectName,predicateName, objectName /*, &certainty*/);
-		if(!ok)ok=sscanf(line, "%s\t%s\t%s", subjectName,predicateName, objectName /*, &certainty*/);
-		if(strlen(objectName)==0){
-			 char** all=splitStringC(line,'\t');
-			 subjectName=all[0];
-			 predicateName=all[1];
-			 objectName=all[2];
+		if (++linecount % 10000 == 0)
+			printf("%d\n", linecount);
+		//			sscanf(line, "%s\t%s\t%s\t%s", &id, subjectName,predicateName, objectName /*, &certainty*/);
+		if (line[0] == '\t')line[0] = ' '; // don't line++ , else nothing left!!!
+		//		printf("%s\n", line);
+		int ok = sscanf(line, "<%s>\t<%s>\t%s\t<%s>", id, subjectName, predicateName, objectName /*, &certainty*/);
+		if (!ok)ok = sscanf(line, "<%s>\t%s\t<%s>", subjectName, predicateName, objectName /*, &certainty*/);
+		if (!ok)ok = sscanf(line, "%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
+		if (!ok)ok = sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
+		if (ok < 3) {
+			//			printf("%s\n", line);
+			char** all = splitStringC(line, '\t');
+			if (all[2] == 0) {
+				printf("ERROR %s\n", line);
+				continue;
+			}
+			subject = getYagoConcept(all[1]); //
+			predicate = getYagoConcept(all[2]);
+			object = getYagoConcept(all[3]);
+			free(all);
+		} else {
+			subject = getYagoConcept(subjectName); //
+			predicate = getYagoConcept(predicateName);
+			object = getYagoConcept(objectName);
 		}
-//		if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#") || contains(objectName, ":"))
-//			continue;
-
-		subject = getYagoAbstract(subjectName); //
-		predicate = getYagoAbstract(predicateName);
-		object = getYagoAbstract(objectName);
-		if(subject==0||predicate==0||object==0){
+		if (subject == 0 || predicate == 0 || object == 0) {
 			printf("ERROR %s\n", line);
 			continue;
 		}
 		//dissectWord(abstract);
 		Statement* s;
-//		if (contains(objectName, subjectName, true))
-//			s = addStatement(subject, Member, object, false); // todo: id
-//		else
+		//		if (contains(objectName, subjectName, true))
+		//			s = addStatement(subject, Member, object, false); // todo: id
+		//		else
 		s = addStatement(subject, predicate, object, false); // todo: id
 		if (!subject || !object || subject->id > maxNodes || object->id > maxNodes) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
-//		showStatement(s);
+		//		showStatement(s);
 	}
 	fclose(infile); /* Close the file */
 	p("import facts ok");
@@ -841,7 +926,7 @@ bool importYago(const char* facts_file) {
 
 bool importFacts(const char* facts_file, const char* predicateName = "population") {
 	p("import facts start");
-	printf("WARNING: SETTING predicateName %s",predicateName);
+	printf("WARNING: SETTING predicateName %s", predicateName);
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -867,8 +952,8 @@ bool importFacts(const char* facts_file, const char* predicateName = "population
 			sscanf(line, "%*d\t%s\t%s\t%*d", /*&id,*/ subjectName, objectName /*, &certainty*/); // no contextId? cause this db assumes GLOBAL id!
 		// printf(line);
 		//	 printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
-//		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abkürzung") || contains(subjectName, ":") || contains(subjectName, "#"))
-//			continue;
+		//		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abkürzung") || contains(subjectName, ":") || contains(subjectName, "#"))
+		//			continue;
 		if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#") || contains(objectName, ":"))
 			continue;
 
@@ -920,23 +1005,43 @@ void importAll() {
 	importNames();
 	importWordnet();
 	importGeoDB();
-//	if (getImage("alabama") != "" && getImage("Alabama") != "")
-//		p("image import done before ...");
-//	else
-//		importImages();
+	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
+	//		p("image import done before ...");
+	//	else
+	//		importImages();
 }
 
 void importWikipedia() {
-
 }
 
-void import(const char* type,const char* filename) {
+void importAllYago() {
+	import("yago", "yagoStatistics.tsv");
+	import("yago", "yagoSchema.tsv");
+	import("yago", "yagoGeonamesClassIds.tsv");
+	//import("yago","yagoGeonamesClasses.tsv");
+	import("yago", "yagoGeonamesGlosses.tsv");
+	import("yago", "yagoSimpleTaxonomy.tsv");
+	//import("yago","yagoWordnetIds.tsv");// hasSynsetId USELESS!!!
+	import("yago", "yagoGeonamesEntityIds.tsv");
+	//import("yago","yagoWordnetDomains.tsv");
+	//import("yago","yagoMultilingualClassLabels.tsv");
+	import("yago", "yagoTaxonomy.tsv");
+	//import("yago","yagoDBpediaClasses.tsv");
+	//import("yago","yagoDBpediaInstances.tsv");
+	//import("yago","yagoMetaFacts.tsv");
+	import("yago", "yagoImportantTypes.tsv");
+	import("yago", "yagoLiteralFacts.tsv");
+	import("yago", "yagoSimpleTypes.tsv");
+	import("yago", "yagoFacts.tsv");
+}
+
+void import(const char* type, const char* filename) {
 
 	clock_t start;
 	double diff;
 	//  start = clock();
 	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
-	if(filename==0)filename=type;
+	if (filename == 0)filename = type;
 	if (eq(type, "all")) {
 		importAll();
 	} else if (eq(type, "csv")) {
@@ -952,8 +1057,9 @@ void import(const char* type,const char* filename) {
 	} else if (eq(type, "topic")) {
 		importWikipedia();
 	} else if (eq(type, "yago")) {
-		if(contains(filename,"fact"))
-			importFacts(filename,filename);
+		if (eq(filename, "yago"))importAllYago();
+		else if (contains(filename, "fact"))
+			importFacts(filename, filename);
 		else
 			importYago(filename);
 	} else if (contains(filename, "txt")) {
@@ -964,9 +1070,9 @@ void import(const char* type,const char* filename) {
 		importCsv(filename);
 	} else if (contains(filename, "xml")) {
 		importXml(filename);
-	} else{
+	} else {
 		//if (!importFacts(filename, filename))
-		printf("Unsupported file type %s %s",type,filename);
+		printf("Unsupported file type %s %s", type, filename);
 		importAll();
 	}
 	//  cout<<"nanoseconds "<< diff <<'\n';

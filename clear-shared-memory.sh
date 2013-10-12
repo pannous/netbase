@@ -1,9 +1,11 @@
 # allow bigger shared memory
-# linux
+
 sudo killall netbase
+echo linux
 sudo /sbin/sysctl -w kernel.shmmax=2147483648
 sudo /sbin/sysctl -w kernel.shmall=2147483648
-# mac
+
+echo mac
 sudo sysctl -w kern.sysv.shmmax=2147483648
 sudo sysctl -w kern.sysv.shmall=2147483648
 

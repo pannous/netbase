@@ -67,6 +67,7 @@ struct Statement;
 // 1) faster comparison   bottleneck factor n==nr digits or is atoi part of cpu?
 // 2) memory. really?? only if value field is used >80% of the time!
 
+typedef struct Node;
 typedef union Value {
     char* text; // wiki abstracts etc
     //    char* name;
@@ -76,8 +77,10 @@ typedef union Value {
     //    long longValue;// 8 bytes
     double number; // 8 bytes OK
     //    Statement statement;// too long
+	Node* node; // THE ONE in abstracts type --- cycle !---
     Statement* statement; // overhead OK!!! 8 bytes on 64bit machines
 }Value;
+
 
 // NEVER USE STRUCTS WITHOUT POINTER!!
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
@@ -94,21 +97,25 @@ typedef struct Node {
 #else
     char* name; // see value for float etc
 #endif
-    int kind; // year, m^2
-    Value value; // for statements, numbers
-    //        Node* kind;
-    //	float rank;
-    int statementCount; //implicit
+    int kind; // abstract,node,person,year, m^2
+    //Node* kind;
+
+    //float rank;
+    int statementCount; //implicit, can be replaced with iterator KEEP!
     int firstStatement;
 	int lastStatement;
+    Value value; // for statements, numbers
+
 //    int firstPredicateStatement; // 'usages' OR: sort statements!
-//    Hope Valley             kind            City
+//    Hope_Valley             kind            City
 
     // INDEX
     // class country{ population{property:0} capital{property:1} }
     // germany.index[0]=80Mio .index[1]=Berlin
     //        Node* index;//nur #properties+1 Nits!!
 }Node ;
+
+
 
 // norway captial oslo
 // oslo population 325235
@@ -342,6 +349,7 @@ bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
 Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
+inline Node* get(char* node);
 inline Node* get(int NodeId);
 
 //extern "C" /* <== don't mingle name! */ inline
@@ -351,9 +359,12 @@ Node* getAbstract(const char* word);
 int collectAbstracts();
 unsigned int hash(const char *str); //unsigned
 //unsigned long hash(const char *str); //unsigned
-Node* getThe(const char* word, Node* type = 0,bool dissect=true);
-Node* getThe(string thing, Node* type=0,bool dissect=true);
-Node* getClass(const char* word);
+//Node* getThe(const char* word, Node* type = 0,bool dissect=true);
+//Node* getThe(string thing, Node* type=0,bool dissect=true);
+Node* getThe(const char* word, Node* type = 0,bool dissect=false);
+Node* getThe(string thing, Node* type=0,bool dissect=false);
+Node* getThe(Node* abstract, Node* type=0);
+Node* getClass(const char* word);// ?  apple vs Apple ! same as getThe NOW
 //Node* getClass(string word);
 void showStatement(Statement* s);
 void show(Node* n, bool showStatements = true);
@@ -379,7 +390,7 @@ bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit = 0);
 Node* parseValue(const char* aname);
 void clearAlgorithmHash();
-Node* firstInstance(Node* abstract, Node* type);
+
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
 Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
@@ -449,15 +460,19 @@ typedef NodeVector NV;
 //#pragma warnings_off
 static int averageNameLength = 20; // used for malloc
 static int nodeSize=sizeof(Node);// todo : adjust with sizeof(Node)!!!
-static int statementSize=56;// todo : adjust with sizeof(Node)!!!
+static int statementSize=sizeof(Statement);// todo : adjust with sizeof(Node)!!!
 static int ahashSize=16;// todo : adjust with sizeof(Node)!!!
 // static int maxNodes = 5000; // lol! # sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
-static int maxNodes = 9000000;
+static int million=1000000;
+static int billion=1000000000;
+static int MB=1000000;
+static int GB=1000000000;
+static int maxNodes = 9*million;
 static int maxStatements0 = maxNodes*10;// 10 = crude average of Statements per Node  ; max=1000!
 static int abstractHashSize = maxNodes*ahashSize; //~nodes?
 //static int contextOffset=0x144000;
 static int contextOffset=0x4000;
-static int abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;
+static int abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
 // 5GB
 static int bytesPerNode=(nodeSize+averageNameLength+ahashSize*2);
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */

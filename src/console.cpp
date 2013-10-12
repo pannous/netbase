@@ -98,6 +98,7 @@ bool parse(const char* data) {
     if (eq(data, "export"))return export_csv();
     if (eq(data, ":cl"))return clearMemory();
 	if (eq(data, "clear"))return clearMemory();
+	if (eq(data, "./clear-shared-memory.sh"))return clearMemory();
     if (eq(data, ":e"))return export_csv();
     if (eq(data, "quit"))return false;
     if (eq(data, "quiet"))quiet = !quiet;

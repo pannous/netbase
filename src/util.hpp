@@ -48,7 +48,7 @@ vector<char*>& splitString(string line0,const char* separator="\t");
 vector<char*>& splitString(const char* line0,const char* separator="\t");
 
 int splitStringC(char* line,char** tokens, char separator);
-char** splitStringC(char* line0, char separator);
+char** splitStringC(char* line0, char separator,int maxRows=20);
 char** splitStringC(const char* line0, char separator);
 char** splitStringC(const char* line0, const char* separator);
 //int splitStringC2(char* line,char** tokens,const char* separator="\t");// BROKEN!!!

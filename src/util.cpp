@@ -61,17 +61,15 @@ char* tolower(const char* x) {//const
 	return neu;
 }
 char* downcase(char* x) {
-	char* neu=(char*)malloc(strlen(x)+1);
 	int i = 0;
-	for (; i < strlen(x); i++) {
-		neu[i] = tolower(x[i]);
-	}
-	neu[i]=0;// unclean malloc possible?
-	return neu;
+	for (; i < strlen(x); i++)
+		x[i] = tolower(x[i]);
+	return x;
 }
 
 bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
+	if(!x || !y)return false;
 	if (strlen(y) == 0)return false;
 	if (ignoreCase)return strstr(tolower(x), tolower(y));
 	return strstr(x, y);
@@ -303,13 +301,13 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 
 
 // never works
-char** splitStringC1(const char* line0, const char* separator) {
+char** splitStringC1(const char* line0, const char* separator,int maxRows) {
 	if (line0 == 0) {
 		ps("empty splitString!");
 		return 0;
 	}
 	char * token;
-	char** tokens=(char**) malloc(100);
+	char** tokens=(char**) malloc(maxRows);
 	char* line = (char*) malloc(strlen(line0)*2 + 1); //dont free!
 	strcpy(line, line0);
 	token = strtok(line, separator);
@@ -367,8 +365,8 @@ char** splitStringC(const char* line0, char separator) {
 	return splitStringC(modifyConstChar(line0),separator);
 }
 
-char** splitStringC(char* line0, char separator) {
-	char** tokens=(char**) malloc(100);
+char** splitStringC(char* line0, char separator,int maxRows) {
+	char** tokens=(char**) malloc(maxRows);
 	splitStringC(line0,tokens,separator);
 	return tokens;
 }
