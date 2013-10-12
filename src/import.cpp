@@ -874,7 +874,7 @@ bool importYago(const char* facts_file) {
 			size_t peakSize = getPeakRSS();
 			size_t free = getFreeSystemMemory();
 			//			printf("MEMORY: %L            Peak: %d FREE: %L \n", currentSize, peakSize, free);
-			if (currentSize > 4*GB || currentSize>sizeOfSharedMemory) {
+			if (currentSize > 3*GB || currentSize*1.2>sizeOfSharedMemory|| currentContext()->nodeCount*1.2 > maxNodes) {
 				printf("MEMORY safety boarder reached");
 				return 0; //exit(0);// 4GB max
 			}
@@ -1031,8 +1031,8 @@ void importAllYago() {
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
 	import("yago", "yagoImportantTypes.tsv");
-	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoSimpleTypes.tsv");
+	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoFacts.tsv");
 }
 
