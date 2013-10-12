@@ -850,7 +850,8 @@ Node* getYagoConcept(char* key) {
 bool importYago(const char* facts_file) {
 	p("import YAGO start");
 	if (!contains(facts_file, "/"))
-		facts_file = concat("/Users/me/data/base/BIG/yago/", facts_file);
+		facts_file = concat("/data/base/BIG/yago/", facts_file);
+//		facts_file = concat("/Users/me/data/base/BIG/yago/", facts_file);
 	Node* subject;
 	Node* predicate;
 	Node* object;
