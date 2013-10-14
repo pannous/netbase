@@ -31,12 +31,13 @@ void showHelp() {
 	ps("available commands");
 	ps("help :h or ?");
 	ps("save :s or :w");
-	ps("load :l\tfetch the graph from disk or mem");
+	ps("load :l [force]\tfetch the graph from disk or mem");
+//	ps("load_files :lf");
 	ps("import :i [<file>]");
-	ps("load_files :lf");
+	ps("export :e (all to csv)");
 	//    ps("print :p");
 	ps("delete :d <node|statement|id|name>");
-	ps("save and exit :x");
+//	ps("save and exit :x");
 	ps("quit :q");
 	ps("clear :cl");
 	ps("limit <n>");
@@ -45,6 +46,7 @@ void showHelp() {
 	ps("all animals with feathers");
 	ps("select * from dogs where terrier");
 	ps("all city with countrycode ZW");
+	ps("Population of Gehren");
 }
 
 //bool parse(string* data) {
@@ -136,11 +138,7 @@ bool parse(const char* data) {
 		load(false);
 		return true;
 	}
-	if (eq(data, "load_files")) {
-		load(true);
-		return true;
-	}
-	if (eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
+	if (eq(data, "load_files")||eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
 		load(true);
 		return true;
 	}

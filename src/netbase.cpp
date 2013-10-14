@@ -111,7 +111,7 @@ Ahash* insertAbstractHash(int pos, Node* a) {
 	//		p(a->name);
 	int i = 0;
 	while (ah->next) {
-		if(i++ > 10){
+		if(i++ > 100){
 			p("insertAbstractHash FULL!");
 			show(a);
 			break;
