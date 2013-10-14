@@ -42,6 +42,7 @@ char* root_memory = 0;
 bool storeTypeExplicitly = true;
 bool exitOnFailure = true;
 bool debug = false; //true;//false;
+bool showAbstract=false;
 int maxRecursions = 7;
 int runs = 0;
 Context* contexts; //[maxContexts];// extern
@@ -1050,8 +1051,12 @@ Node* findWord(int context, const char* word, bool first) {//=false
 			continue;
 		if (eq(n->name, word, true)) {
 			found = n;
-			if (!quiet)
+			if (!quiet){
+				if(isAbstract(n)&&showAbstract)
+				printf("found abstract %s in context %d\n", word, context);
+				else
 				printf("found node %s in context %d\n", word, context);
+			}
 			show(n);
 			if (first)
 				return n;

@@ -265,6 +265,7 @@ void load(bool force) {
 	}
 
 	collectAbstracts(); //or load abstracts->bin
+	showContext(currentContext());
 
 	//    initContext(c);//
 	//
