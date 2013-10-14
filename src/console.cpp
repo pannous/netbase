@@ -17,7 +17,7 @@
 #include "query.hpp"
 #include "init.hpp"
 
-//#define USE_READLINE
+#define USE_READLINE
 // compile with -lreadline !
 #ifdef USE_READLINE
 #include <readline/history.h>
@@ -297,6 +297,7 @@ bool parse(const char* data) {
 
 	//        query(string("all ")+data);// NO!
 	//        query(data);// NOO!
+	dissectWord(get(data));
 	findWord(currentContext()->id, data);
 	int i = atoi(data);
 	if (i > 0) {
@@ -340,17 +341,17 @@ void handler(int sig) {
 	longjmp(try_context, 128);
 }
 #endif
-bool read_file = false;
+bool file_read_done = false;
 
 void getline(char *buf) {
 	int MAXLENGTH = 1000;
 	const char* PROMPT = "netbase> ";
 #ifdef RL_READLINE_VERSION // USE_READLINE
-	if (!read_file)read_file = 1 + read_history(0);
+	if (!file_read_done)file_read_done = 1 + read_history(0);
 	char *tmp= readline(PROMPT);
 	if (strncmp(tmp, buf, MAXLENGTH)) add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
-	buf[MAXLENGTH] = '\0';
+	buf[MAXLENGTH-1] = '\0';
 	write_history(0);
 //	append_history(1,0);
 	//            free(tmp);

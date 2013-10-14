@@ -675,9 +675,13 @@ Statement* getStatement2(Node* n, int nr) {
 #endif
 
 // Abstract notes are necessary in cases where it is not known whether it is the noun/verb etc.
-inline Node* get(char* node) {
+//inline
+Node* get(const char* node) {
 	return getAbstract(node);
 }
+//inline Node* get(char* node) {
+//	return getAbstract(node);
+//}
 
 inline Node* get(int NodeId) {
 	//    if (NodeId > maxNodes) {
@@ -713,8 +717,9 @@ void dissectParent(Node* subject) {
 	if (type < 1)type = str.find(".");
 	if (type >= 0 && len - type > 2) {
 		Node* word = getThe(str.substr(type + 1).c_str());
-		//		addStatement(word, Instance, subject, true);
-		addStatement(word, Instance, subject, false);
+		dissectParent(word);
+		addStatement(word, Instance, subject, true);
+//		addStatement(word, Instance, subject, false);
 	}// release str
 	//    str.clear();
 }
@@ -742,6 +747,9 @@ void dissectWord(Node* subject) {
 	//        p(subject->name);
 	int len = str.length();
 	int type = str.find(",");
+	const char *thing=str.data();
+	if (strstr(thing, "_") || strstr(thing, " ") || strstr(thing, "."))
+		dissectParent(subject);
 	if (type >= 0 && len - type > 2) {
 		Node* word = getThe((str.substr(type + 2) + "_" + str.substr(0, type)).c_str()); //deCamel
 		addStatement(word, Synonym, subject, true);

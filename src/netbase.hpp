@@ -350,6 +350,8 @@ bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
 Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
+//inline 
+		Node* get(const char* node);
 inline Node* get(char* node);
 inline Node* get(int NodeId);
 
