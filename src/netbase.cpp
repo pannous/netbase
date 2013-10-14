@@ -59,7 +59,6 @@ int maxStatements() {
 }
 
 //extern "C" inline
-
 Context* currentContext() {
 	return &contexts[current_context];
 }
