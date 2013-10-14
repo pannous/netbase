@@ -116,6 +116,7 @@ size_t getPeakRSS( )
  * Returns the current resident set size (physical memory use) measured
  * in bytes, or zero if the value cannot be determined on this OS.
  */
+long rss = 0L;
 size_t getCurrentRSS( )
 {
 #if defined(_WIN32)
@@ -135,7 +136,7 @@ size_t getCurrentRSS( )
 
 #elif defined(__linux__) || defined(__linux) || defined(linux) || defined(__gnu_linux__)
     /* Linux ---------------------------------------------------- */
-    long rss = 0L;
+	if(!rss){
     FILE* fp = NULL;
     if ( (fp = fopen( "/proc/self/statm", "r" )) == NULL )
         return (size_t)0L;      /* Can't open? */
@@ -145,6 +146,7 @@ size_t getCurrentRSS( )
         return (size_t)0L;      /* Can't read? */
     }
     fclose( fp );
+	}
     return (size_t)rss * (size_t)sysconf( _SC_PAGESIZE);
 
 #else

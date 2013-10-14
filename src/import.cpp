@@ -842,7 +842,7 @@ Node* getYagoConcept(char* key) {
 		return 0;
 	}
 
-	if(eq(key,"<Carding>"))
+	if(eq(key,"<Carding>")||eq(key,"<Los_Angeles_California_Temple>"))
 		return 0;// What the bug???
 	return getThe(fixYagoName(key));
 
@@ -888,6 +888,7 @@ bool importYago(const char* facts_file) {
 		int ok = sscanf(line, "<%s>\t<%s>\t%s\t<%s>", id, subjectName, predicateName, objectName /*, &certainty*/);
 		if (!ok)ok = sscanf(line, "<%s>\t%s\t<%s>", subjectName, predicateName, objectName /*, &certainty*/);
 		if (!ok)ok = sscanf(line, "%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
+		if (!ok)ok = sscanf(line, "\t%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
 		if (!ok)ok = sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
 		if (ok < 3) {
 			continue;//todo
