@@ -230,6 +230,7 @@ NodeVector nodeVector(vector<char*> v) {
 }
 
 // sentenceToStatement
+
 Statement* parseSentence(string sentence, bool learn = false) {
 
 	int recurse = 0;
@@ -463,7 +464,7 @@ NodeVector filter(NodeVector all, char* matches) {
 		if (!checkNode(node, 0, 0, 1))continue;
 		if (!checkNode(node))continue;
 		p("!++++++++++++++++++++++++++++\nfiltering node:");
-//		if (quiet)printf("%s ?",node->name);
+		//		if (quiet)printf("%s ?",node->name);
 		show(node);
 
 		p("+++++++++++++++++++++++++++++\n");
@@ -752,7 +753,7 @@ NodeVector find_all(char* name, int context, int recurse, int limit) {
 	if (recurse > 0)recurse++;
 	if (recurse > maxRecursions)return all;
 
-	int max = min(c->nodeCount,maxNodes);
+	int max = min(c->nodeCount, maxNodes);
 	all.push_back(getAbstract(name));
 
 	//    for (int i = 0; i < max; i++) {// inefficient^2 use word->instance->... instead
@@ -832,12 +833,10 @@ int countInstances(Node* node) {
 
 NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 	NodeVector all;
-		Statement* s = getStatement(subject->firstStatement);
-	while(s){
-		if (s == 0) {
-			badCount++;
-			continue;
-		};
+
+	Statement* s = getStatement(subject->firstStatement);
+	while (s) {
+		if(!checkStatement(s))continue;
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Instance);
 
@@ -851,7 +850,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object);
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
 		}
-		s=nextStatement(subject,s);
+		s = nextStatement(subject, s);
 	}
 	return all;
 }
@@ -939,9 +938,9 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 // todo : memory LEAK NodeVector ?
 // todo : enqueue instances?
 
-NodeVector anyFilter(Node* subject, NodeQueue * queue,bool includeRelations) {
+NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 	//	NodeVector all;
-	if(!includeRelations && subject->id<1000)return EMPTY;
+	if (!includeRelations && subject->id < 1000)return EMPTY;
 	for (int i = 0; i < subject->statementCount; i++) {
 		Statement* s = getStatementNr(subject, i);
 		if (s == 0 || !checkStatement(s)) {
@@ -964,9 +963,8 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue,bool includeRelations) {
 }
 
 NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue) {
-	return anyFilter(subject,queue,false);
+	return anyFilter(subject, queue, false);
 }
-
 
 NodeVector reconstructPath(Node* from, Node * to) {
 	Node* current = to;

@@ -89,7 +89,6 @@ void flush() {
 	fflush(stdout);
 }
 
-
 inline Statement* firstStatement(Node* abstract) {
 	return getStatement(abstract->firstStatement);
 }
@@ -1050,8 +1049,8 @@ void show(Node* n, bool showStatements) {//=true
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
-	//	printf("%d\t%s\t%s\n", n->id, n->name, img.data());
-	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
+		printf("(#%d)\t%s\t%s\n", n->id, n->name, img.data());
+//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	//	printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
@@ -1234,6 +1233,7 @@ void deleteStatement(Statement* s) {
 	removeStatement(s->Subject, s);
 	removeStatement(s->Predicate, s);
 	removeStatement(s->Object, s);
+//	currentContext()->statements[s->id]=0;
 	memset(s, 0, sizeof (Statement));
 }
 
@@ -1256,12 +1256,11 @@ void deleteWord(const char* data, bool completely) {
 			}
 
 		}
-	} else
-		if (checkNode(&context->nodes[id], id, false, false))
+	} else if (checkNode(&context->nodes[id], id, false, false))
 		deleteNode(&context->nodes[id]);
-	else if (checkStatement(&context->statements[id], id))
+	else if (checkStatement(&context->statements[id], false, false))
 		deleteStatement(&context->statements[id]);
-	else ps("No such node: " + string(data));
+	else ps("No such node or statement: " + string(data));
 }
 
 void deleteWord(string* s) {
