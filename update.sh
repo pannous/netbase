@@ -1,7 +1,7 @@
 date
 
 cd ~/netbase  
-git commit -a --allow-empty-message -m '' && git push --all && git status
+git commit -a --allow-empty-message -m \"''\" && git push --all && git status
 
 # server="kfluegge@pannous.jo"
 # server="root@quasiris.com"
