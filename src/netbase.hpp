@@ -12,6 +12,7 @@ using namespace std;
 extern bool exitOnFailure;
 extern int maxRecursions;
 extern bool debug; //=true;
+extern bool showAbstract;
 extern char* root_memory; // else: void value not ignored as it ought to be
 extern int recursions;
 extern int badCount;

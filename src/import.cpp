@@ -809,7 +809,8 @@ Node* getYagoConcept(char* key) {
 		if (eq(unit, "xsd:float"))unit = 0; //-> number
 		if (eq(unit, "xsd:nonNegativeInteger"))unit = 0; //-> number
 		else if (eq(unit, "<yago0to100>"))unit=0;
-		if (!unit) return value(key, atoi(key), unit);
+		if (!unit)
+			return value(key, atoi(key), unit);
 
 		if (eq(unit, "<m"))unit="Meter";
 		else if (eq(unit, "<m>"))unit="Meter";
@@ -898,7 +899,7 @@ bool importYago(const char* facts_file) {
 			subject = getYagoConcept(all[1]); //
 			predicate = getYagoConcept(all[2]);
 			object = getYagoConcept(all[3]);
-			free(all);
+//			free(all);
 		} else {
 			subject = getYagoConcept(subjectName); //
 			predicate = getYagoConcept(predicateName);
