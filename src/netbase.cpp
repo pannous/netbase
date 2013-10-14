@@ -1017,7 +1017,8 @@ void show(Node* n, bool showStatements) {//=true
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
-	printf("%d\t%s\t%s\n", n->id, n->name, img.data());
+//	printf("%d\t%s\t%s\n", n->id, n->name, img.data());
+	printf("%s\t\t(#%d)\t%s\n",  n->name, n->id,img.data());
 	//	printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
@@ -1080,10 +1081,10 @@ Node* findWord(int context, const char* word, bool first) {//=false
 		if (eq(n->name, word, true)) {
 			found = n;
 			if (!quiet){
-				if(isAbstract(n)&&showAbstract)
-				printf("found abstract %s in context %d\n", word, context);
-				else
-				printf("found node %s in context %d\n", word, context);
+//				if(isAbstract(n)&&showAbstract)
+//				printf("found abstract %s in context %d\n", word, context);
+//				else
+//				printf("found node %s in context %d\n", word, context);
 			}
 			show(n);
 			if (first)
