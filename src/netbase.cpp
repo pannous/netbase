@@ -995,7 +995,7 @@ void showStatement(Statement* s) {
 		//        if(s->Object->value.number)
 		//            printf("%d\t%s\t\t%s\t\t%g %s\t%d\t%d\t%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->value.number,s->Object->name, s->subject, s->predicate, s->object);
 		//        else
-		printf("%d\t%s\t\t%s\t\t%s\t%d\t%d\t%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->name, s->subject, s->predicate, s->object);
+		printf("<%d>\t%s\t\t%s\t\t%s\t\t%d->%d->%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->name, s->subject, s->predicate, s->object);
 	else
 		printf("#%d %d->%d->%d  [%016llX]\n", s->id, s->subject, s->predicate, s->object, s);
 	flush();
