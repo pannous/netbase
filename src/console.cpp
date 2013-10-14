@@ -347,10 +347,9 @@ bool read_file = false;
 void getline(char *buf) {
 	if (!read_file)read_file = 1 + read_history(0);
 	int MAXLENGTH = 1000;
-	char* PROMPT = "netbase>";
+	const char* PROMPT = "netbase> ";
 #ifdef RL_READLINE_VERSION // USE_READLINE
-	char *tmp;
-	tmp = readline(PROMPT);
+	char *tmp= readline(PROMPT);
 	if (strncmp(tmp, buf, MAXLENGTH)) add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
 	buf[MAXLENGTH] = '\0';
