@@ -890,6 +890,7 @@ bool importYago(const char* facts_file) {
 		if (!ok)ok = sscanf(line, "%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
 		if (!ok)ok = sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
 		if (ok < 3) {
+			continue;//todo
 			//			printf("%s\n", line);
 			char** all = splitStringC(line, '\t');
 			if (all[2] == 0) {
@@ -899,7 +900,7 @@ bool importYago(const char* facts_file) {
 			subject = getYagoConcept(all[1]); //
 			predicate = getYagoConcept(all[2]);
 			object = getYagoConcept(all[3]);
-//			free(all);
+			free(all);
 		} else {
 			subject = getYagoConcept(subjectName); //
 			predicate = getYagoConcept(predicateName);
@@ -1027,7 +1028,7 @@ void importAllYago() {
 	import("yago", "yagoGeonamesEntityIds.tsv");
 	//import("yago","yagoWordnetDomains.tsv");
 	//import("yago","yagoMultilingualClassLabels.tsv");
-	import("yago", "yagoTaxonomy.tsv");
+//	import("yago", "yagoTaxonomy.tsv");todo
 	//import("yago","yagoDBpediaClasses.tsv");
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
