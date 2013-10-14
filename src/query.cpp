@@ -752,7 +752,7 @@ NodeVector find_all(char* name, int context, int recurse, int limit) {
 	if (recurse > 0)recurse++;
 	if (recurse > maxRecursions)return all;
 
-	int max = c->nodeCount; // maxNodes;
+	int max = min(c->nodeCount,maxNodes);
 	all.push_back(getAbstract(name));
 
 	//    for (int i = 0; i < max; i++) {// inefficient^2 use word->instance->... instead

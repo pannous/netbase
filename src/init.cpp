@@ -210,7 +210,7 @@ void load(bool force) {
 	if (!force && root_memory) {//&&root_memory[1000]!=0){// first id==0
 		//        pi(root_memory[0]);
 		ps("loaded from shared memory");
-		if (virgin_memory || !hasWord("Member"))
+		if (virgin_memory || !hasWord("instance"))
 			collectAbstracts(); //or load abstracts->bin
 		showContext(wordnet);
 		return;

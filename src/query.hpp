@@ -9,7 +9,7 @@
 #ifndef QUERY_H
 #define	QUERY_H
 
-static int defaultLimit = 1000;
+static int defaultLimit = 100;
 
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);

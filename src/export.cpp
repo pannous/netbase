@@ -48,7 +48,7 @@ bool export_csv(){
 		ps("CANT ACCESS "+(path+"export/nodes.csv"));
 		return false;
 	}
-    for (int i = 0; i < c->nodeCount; i++) {
+    for (int i = 0; i < min(c->nodeCount,maxNodes); i++) {
         Node* n= &c->nodes[i];
 		if(!checkNode(n,i))continue;
         fprintf(fp,"%d\t%s\n",n->id,n->name);

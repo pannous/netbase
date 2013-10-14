@@ -40,7 +40,8 @@ void showHelp() {
     ps("save and exit :x");
     ps("quit :q");
     ps("clear :cl");
-    ps("type words, ids, or queries:");
+    ps("limit <n>");
+    ps("Type words, ids, or queries:");
 //    ps("all animals that have feathers");
 	ps("all animals with feathers");
     ps("select * from dogs where terrier");
@@ -80,6 +81,11 @@ bool parse(const char* data) {
 
     //		scanf ( "%s", data );
     if (eq(data, "exit"))return false;
+	if (eq(data, "help") || eq(data, "?")) {
+        showHelp();
+//        printf("type exit or word");
+        return true;
+    }
 
 	if (eq(data, "more")&&lastCommand){
 		defaultLimit*=2;
@@ -102,11 +108,7 @@ bool parse(const char* data) {
     if (eq(data, ":e"))return export_csv();
     if (eq(data, "quit"))return false;
     if (eq(data, "quiet"))quiet = !quiet;
-    if (eq(data, "help") || eq(data, "?")) {
-        showHelp();
-        printf("type exit or word");
-        return true;
-    }
+
     //        if (eq(data, "collect abstracts")) {
     //            collectAbstracts2();
     //            return true;
@@ -157,19 +159,11 @@ bool parse(const char* data) {
         tests();
         return true;
     }
-    if (eq(data, "debug")) {
+    if (eq(data, "debug")||eq(data, "debug on")||eq(data, "debug 1")) {
         debug = true;
         return true;
     }
-    if (eq(data, "debug on")) {
-        debug = true;
-        return true;
-    }
-    if (eq(data, "debug off")) {
-        debug = true;
-        return true;
-    }
-    if (eq(data, "no debug")) {
+    if (eq(data, "debug off")||eq(data, "no debug")||eq(data, "debug 0")) {
         debug = true;
         return true;
     }

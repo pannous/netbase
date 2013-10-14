@@ -1020,6 +1020,7 @@ void importWikipedia() {
 }
 
 void importAllYago() {
+	if(hasWord("yagoGeoEntity"))return;
 	import("yago", "yagoStatistics.tsv");
 	import("yago", "yagoSchema.tsv");
 	import("yago", "yagoGeonamesClassIds.tsv");

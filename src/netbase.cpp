@@ -458,7 +458,10 @@ Node* add(const char* nodeName, int kind, int contextId) {//=node =current_conte
 #endif
 	Context* context = getContext(contextId);
 	Node* node = &(context->nodes[context->nodeCount]);
-	if (context->nodeCount > maxNodes)return 0;
+	if (context->nodeCount > maxNodes){
+		p("MEMORY FULL!!!");
+		return 0;
+	}
 	initNode(node, context->nodeCount, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == abstractId)return node;
@@ -1054,15 +1057,24 @@ Node* showNr(int context, int id) {
 	return n;
 }
 
+// saver than iterating through abstracts?
 Node* findWord(int context, const char* word, bool first) {//=false
 	// pi(context);
 	Context* c = getContext(context);
 	Node* found = 0;
-	int max = c->nodeCount; // maxNodes;
+	int max = min(c->nodeCount,maxNodes);
 	for (int i = 0; i < max; i++) {
 		Node* n = &c->nodes[i];
+//		if(n>=maxNodePointer){
+//			printf("n>=maxNodePointer ???");
+//			break;
+//		}
 		if (n == null || n->name == null || word == null || n->id == 0 || n->context == 0)
 			continue;
+		if(n->id>=max){
+//			printf("n>=maxNodePointer ???");
+			continue;
+		}
 		if (!checkNode(n, n->id, true, true))
 			continue;
 		if (eq(n->name, word, true)) {
@@ -1803,7 +1815,7 @@ int main(int argc, char *argv[]) {
 		//		return 0;
 		//		tests();
 	}
-
+	else
 	// *******************************
 	parse(join(argv, argc).c_str()); // <<< HERE
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
