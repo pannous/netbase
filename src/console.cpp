@@ -373,7 +373,7 @@ void console() {
 	setjmp(try_context); //recovery point
 #endif
 	while (true) {
-		clearAlgorithmHash();
+//		clearAlgorithmHash();
 		getline(data);
 		parse(data);
 	}
