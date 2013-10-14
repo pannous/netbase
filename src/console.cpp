@@ -17,7 +17,7 @@
 #include "query.hpp"
 #include "init.hpp"
 
-#define USE_READLINE
+//#define USE_READLINE
 // compile with -lreadline !
 #ifdef USE_READLINE
 #include <readline/history.h>
@@ -343,10 +343,10 @@ void handler(int sig) {
 bool read_file = false;
 
 void getline(char *buf) {
-	if (!read_file)read_file = 1 + read_history(0);
 	int MAXLENGTH = 1000;
 	const char* PROMPT = "netbase> ";
 #ifdef RL_READLINE_VERSION // USE_READLINE
+	if (!read_file)read_file = 1 + read_history(0);
 	char *tmp= readline(PROMPT);
 	if (strncmp(tmp, buf, MAXLENGTH)) add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
