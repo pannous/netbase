@@ -665,6 +665,7 @@ Statement* getStatement2(Node* n, int nr) {
 }
 #endif
 
+// Abstract notes are necessary in cases where it is not known whether it is the noun/verb etc.
 inline Node* get(char* node) {
 	return getAbstract(node);
 }
@@ -899,15 +900,23 @@ Node* getThe(const char* thing, Node* type, bool dissect) {
 	return insta;
 }
 
+#include <csignal> // or signal.h if C code // Generate an interrupt
+
 Node* hasWord(const char* thingy) {
 	long h = hash(thingy);
-	Ahash* found = &abstracts[h % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
+	Ahash* found = &abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
 	if (found && found->abstract && found->next == 0 && eq(found->abstract->name, thingy))// tolower??
 		return found->abstract;
 	//&&eq(found->abstract->name, thingy)  // debug ; expensive!
 
 	int tries = 0; // cycle bugs
-	while (found >= abstracts && found<&extrahash[maxNodes] && found->next && tries++ < 100) {
+	while (found >= abstracts && found<&extrahash[maxNodes] && found->next ) {
+		if(tries++ > 100){
+			p("tries++ > 100");
+			p(thingy);
+			raise(SIGINT);
+			 // or signal.h if C code // Generate an interrupt raise(SIGINT);
+		}
 		//        if (eq(thingy, "near"))
 		//            h = h;
 		if (checkNode(found->abstract) && eq(found->abstract->name, thingy))//teuer? nö, if 1.letter differs
@@ -920,6 +929,7 @@ Node* hasWord(const char* thingy) {
 
 bool doDissect = false;
 
+// Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 Node* getAbstract(const char* thing) {// AND CREATE!
 	if (thing == 0) {
 		badCount++;

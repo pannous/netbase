@@ -128,7 +128,8 @@ bool isInteger(char* buf) {
 }
 
 bool startsWith(const char* x, const char* y) {
-	for (int i = 0; i < min(strlen(x), strlen(y)); i++) {
+	if(strlen(x)< strlen(y))return false;
+	for (int i = 0; i < strlen(y); i++) {
 		if (x[i] != y[i])return false;
 	}
 	return true;

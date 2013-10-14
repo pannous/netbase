@@ -876,7 +876,7 @@ bool importYago(const char* facts_file) {
 			size_t free = getFreeSystemMemory();
 			//			printf("MEMORY: %L            Peak: %d FREE: %L \n", currentSize, peakSize, free);
 			if (currentSize > 3*GB || currentSize*1.2>sizeOfSharedMemory|| currentContext()->nodeCount*1.2 > maxNodes) {
-				printf("MEMORY safety boarder reached");
+				printf("MEMORY safety boarder reached\n");
 				return 0; //exit(0);// 4GB max
 			}
 		}

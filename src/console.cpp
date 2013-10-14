@@ -111,9 +111,10 @@ bool parse(const char* data) {
     //            collectAbstracts2();
     //            return true;
     //        }
-	  if (startsWith(data, ":iy")){
+	if (startsWith(data, ":iy")){
 		  import("yago");
-        return true;
+		  return true;
+//		importYago()
 //		  importAllYago();
     }
     if (startsWith(data, ":i") || startsWith(data, "import")) {
