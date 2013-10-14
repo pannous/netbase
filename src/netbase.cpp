@@ -110,7 +110,13 @@ Ahash* insertAbstractHash(int pos, Node* a) {
 	//    if(pos==hash("city"))
 	//		p(a->name);
 	int i = 0;
-	while (ah->next && i++ < 10) {
+	while (ah->next) {
+		if(i++ > 10){
+			p("insertAbstractHash FULL!");
+			show(a);
+			break;
+		}
+
 		if (ah->abstract == a || eq(ah->abstract->name, a->name))
 			return ah; //schon da
 		else
@@ -912,9 +918,9 @@ Node* hasWord(const char* thingy) {
 	int tries = 0; // cycle bugs
 	while (found >= abstracts && found<&extrahash[maxNodes] && found->next ) {
 		if(tries++ > 100){
-			p("tries++ > 100");
+			p("tries++ > 100 => LOOP???");
 			p(thingy);
-			raise(SIGINT);
+//			raise(SIGINT);
 			 // or signal.h if C code // Generate an interrupt raise(SIGINT);
 		}
 		//        if (eq(thingy, "near"))
@@ -994,6 +1000,7 @@ void showStatement(Statement* s) {
 
 }
 
+//, bool showAbstract
 void show(Node* n, bool showStatements) {//=true
 	//	if (quiet)return;
 	if (!checkNode(n))return;
