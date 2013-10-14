@@ -89,6 +89,11 @@ void flush() {
 	fflush(stdout);
 }
 
+
+inline Statement* firstStatement(Node* abstract) {
+	return getStatement(abstract->firstStatement);
+}
+
 bool checkHash(Ahash* ah) {
 	//    if(pos>maxNodes*2)
 	if (ah < abstracts || ah > (void*) &abstracts[maxNodes * 2]) {// times 2 because it can be an extraHash outside of abstracts!!
@@ -326,24 +331,28 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 	if (semantic && has(n, "is", match, false, false, false))return true; // --
 
 	if (semantic && n->kind == Abstract->id) {//|| isA(n,List)
-		Statement* current = getStatementNr(n->firstStatement); //n->context
-		while (current = nextStatement(n, current, false)) {
-			if (isA4(current->Object, match, recurse, semantic))
-				return true;
-		}
-		for (int i = 0; i < n->statementCount; i++) {// todo : iterate nextStatement(n,current)
-			Statement* s = getStatementNr(n, i);
+		Statement* s = 0;
+		while (s = nextStatement(n, s, false)) {
 			if (s->Predicate == Instance)
 				if (isA4(s->Object, match, recurse, semantic))
 					return true;
+			if (s->Predicate == Type)
+				if (isA4(s->Subject, match, recurse, semantic))
+					return true;
 		}
+		//		for (int i = 0; i < n->statementCount; i++) {// todo : iterate nextStatement(n,current)
+		//			Statement* s = getStatementNr(n, i);
+		//			if (s->Predicate == Instance)
+		//				if (isA4(s->Object, match, recurse, semantic))
+		//					return true;
+		//		}
 	}
 	return false;
 }
 
 // don't use! iterate via nextStatement
 
-Statement* getStatementNr(int id, int context_id) {
+Statement* getStatement(int id, int context_id) {
 	if (id >= maxStatements0) {
 		badCount++;
 		return null;
@@ -357,12 +366,13 @@ Statement* getStatementNr(int id, int context_id) {
 }
 
 Statement* nextStatement(Node* n, Statement* current, bool stopAtInstances) {
+	if (current == 0)return firstStatement(n);
 	if (stopAtInstances && current->Predicate == Instance)return null;
 	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null;
-	if (current->Subject == n)return getStatementNr(current->nextSubjectStatement, n->context);
-	if (current->Predicate == n)return getStatementNr(current->nextPredicateStatement, n->context);
+	if (current->Subject == n)return getStatement(current->nextSubjectStatement, n->context);
+	if (current->Predicate == n)return getStatement(current->nextPredicateStatement, n->context);
 	;
-	if (current->Object == n)return getStatementNr(current->nextObjectStatement, n->context);
+	if (current->Object == n)return getStatement(current->nextObjectStatement, n->context);
 	;
 	return null;
 }
@@ -715,14 +725,23 @@ void dissectParent(Node* subject) {
 	//        p("dissectWord");
 	//        p(subject->name);
 	int len = str.length();
+	bool plural = (char) str[len - 1] == 's';
 	int type = str.find("_");
 	if (type < 1)type = str.find(".");
 	if (type >= 0 && len - type > 2) {
-		Node* word = getThe(str.substr(type + 1).c_str());
+		const char* type_name = str.substr(type + 1).c_str();
+		Node* word = getThe(type_name);
+		if (!word || !eq(word->name, type_name))return;
 		dissectParent(word);
 		addStatement(word, Instance, subject, true);
 		//		addStatement(word, Instance, subject, false);
-	}// release str
+	} else if (plural) {
+		Node* word = getThe(str.substr(0, len - 2).c_str());
+		if (!word)return;
+		dissectParent(word);
+		addStatement(word, Instance, subject, true);
+	}
+	// release str
 	//    str.clear();
 }
 
@@ -932,8 +951,9 @@ Node* hasWord(const char* thingy) {
 	int tries = 0; // cycle bugs
 	while (found >= abstracts && found<&extrahash[maxNodes] && found->next) {
 		if (tries++ > 100) {
-			p("tries++ > 100 => LOOP???");
+			p("tries++ > 100 => LOOP???"); // i.e. when deleting!
 			p(thingy);
+			break;
 			//			raise(SIGINT);
 			// or signal.h if C code // Generate an interrupt raise(SIGINT);
 		}
@@ -1039,9 +1059,10 @@ void show(Node* n, bool showStatements) {//=true
 	int maxShowStatements = 40; //hm
 
 	if (showStatements) {
-		Statement* s = getStatementNr(n->firstStatement, current_context);
-		for (; i < min(n->statementCount, maxShowStatements); i++) {
-			s = getStatementNr(n, i);
+		Statement* s = 0;
+		while (s = nextStatement(n, s)) {
+			//		for (; i < min(n->statementCount, maxShowStatements); i++) {
+			//			s = getStatementNr(n, i);
 			bool stopAtInstances = i > 10;
 			if (stopAtInstances && s && s->Predicate == Instance)
 				break;
@@ -1222,16 +1243,16 @@ void deleteWord(const char* data, bool completely) {
 	if (id <= 0) {
 		deleteNode(getThe(data));
 		if (completely) {
-			Node* word = findWord(current_context,data,true);//getAbstract(data);
+			Node* word = findWord(current_context, data, true); //getAbstract(data);
 			while (word) {
-				pf("deleteNode \n",word->name);
+				pf("deleteNode \n", word->name);
 				deleteNode(word); // DANGER!!
-//			Statement* s = getStatementNr(word->firstStatement);
-//			while (s) {
-//				deleteStatement(s);
-//				s = nextStatement(word, s, false);
-//			}
-				word = findWord(current_context,data,true);
+				//			Statement* s = getStatementNr(word->firstStatement);
+				//			while (s) {
+				//				deleteStatement(s);
+				//				s = nextStatement(word, s, false);
+				//			}
+				word = findWord(current_context, data, true);
 			}
 
 		}
@@ -1248,7 +1269,7 @@ void deleteWord(string* s) {
 }
 
 void deleteNode(Node* n) {
-	if(!n)return;
+	if (!n)return;
 	if (n->kind == abstractId) {
 		NodeVector nv = instanceFilter(n);
 		for (int i = 0; i < nv.size(); i++) {
@@ -1630,7 +1651,6 @@ Statement* learn(string sentence) {
 	}
 }
 
-
 /*
 int collectAbstracts3() {
 	Context* c = currentContext();
@@ -1682,19 +1702,20 @@ int collectAbstracts3() {
 	return abstracts->size();
 }*/
 
-
 //void cleanAbstracts(Context* c){
 
 Node* getThe(Node* abstract, Node* type) {
-	if(!abstract)return 0;
+	if (!abstract)return 0;
 	if (type == 0) {// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		if (abstract->value.node)return abstract->value.node; // NODE!!!
 		Statement* last = &(currentContext()->statements[abstract->lastStatement]);
-		if (last->Predicate == Instance)return last->Object;
-		else return 0; // NO SUCH!!
+		if (last->Predicate == Instance) {
+			abstract->value.node = last->Object; // + cace!
+			return last->Object;
+		} else return 0; // NO SUCH!!
 	}
-	for (int i = 0; i < abstract->statementCount; i++) {
-		Statement* s = getStatementNr(abstract, i);
+	Statement* s = 0;
+	while (s = nextStatement(abstract, s)) {
 		//		showStatement(s);
 		if (s == 0) {
 			ps("CORRUPTED Statements for");

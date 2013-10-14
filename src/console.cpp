@@ -32,12 +32,12 @@ void showHelp() {
 	ps("help :h or ?");
 	ps("save :s or :w");
 	ps("load :l [force]\tfetch the graph from disk or mem");
-//	ps("load_files :lf");
+	//	ps("load_files :lf");
 	ps("import :i [<file>]");
 	ps("export :e (all to csv)");
 	//    ps("print :p");
 	ps("delete :d <node|statement|id|name>");
-//	ps("save and exit :x");
+	//	ps("save and exit :x");
 	ps("quit :q");
 	ps("clear :cl");
 	ps("limit <n>");
@@ -138,12 +138,18 @@ bool parse(const char* data) {
 		load(false);
 		return true;
 	}
-	if (eq(data, "load_files")||eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
+	if (eq(data, "load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
 		load(true);
 		return true;
 	}
 	if (eq(data, "save")) {
 		save();
+		return true;
+	}
+	if (eq(data, ":ha")) {
+		Context* c=currentContext();
+		c->nodeCount -= 1000; //hack!
+//		maxNodes += 1000;
 		return true;
 	}
 	if (eq(data, ":s")) {
@@ -168,8 +174,8 @@ bool parse(const char* data) {
 		return true;
 	}
 	if (startsWith(data, ":d ") || startsWith(data, "delete ") || startsWith(data, "del ") || startsWith(data, "remove ")) {
-		const char* what=next(data).c_str();
-		printf("deleting %s\n",what);
+		const char* what = next(data).c_str();
+		printf("deleting %s\n", what);
 		deleteWord(what);
 		return true;
 	}
@@ -181,7 +187,7 @@ bool parse(const char* data) {
 		return true;
 	}
 
-	if (startsWith(data, "has") || startsWith(data, ":h")) {
+	if (args.size() > 1 && (startsWith(data, "has") || startsWith(data, ":h"))) {
 		Node* from = getAbstract(args.at(1));
 		Node* to = getAbstract(args.at(2));
 		memberPath(from, to);
@@ -350,12 +356,13 @@ void getline(char *buf) {
 	const char* PROMPT = "netbase> ";
 #ifdef RL_READLINE_VERSION // USE_READLINE
 	if (!file_read_done)file_read_done = 1 + read_history(0);
-	char *tmp= readline(PROMPT);
-	if (strncmp(tmp, buf, MAXLENGTH)) add_history(tmp); // only add new content
+	char *tmp = readline(PROMPT);
+	if (strncmp(tmp, buf, MAXLENGTH)&&strlen(tmp)>0)
+		add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
-	buf[MAXLENGTH-1] = '\0';
+	buf[MAXLENGTH - 1] = '\0';
 	write_history(0);
-//	append_history(1,0);
+	//	append_history(1,0);
 	//            free(tmp);
 #else
 	std::cout << PROMPT;
@@ -374,7 +381,7 @@ void console() {
 	setjmp(try_context); //recovery point
 #endif
 	while (true) {
-//		clearAlgorithmHash();
+		//		clearAlgorithmHash();
 		getline(data);
 		parse(data);
 	}

@@ -397,7 +397,7 @@ void clearAlgorithmHash();
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
 Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
-Statement* getStatementNr(int id,int context_id=current_context);
+Statement* getStatement(int id,int context_id=current_context);
 Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
 
 //NodeVector& all_instances(Node* type, int recurse , int limit = defaultLimit);
@@ -461,25 +461,21 @@ void checkRootContext();
 typedef Node* N;
 typedef NodeVector NV;
 
-
-//  gcc -g -w netbase.c -o netbase
 //#pragma warnings_off
 static int averageNameLength = 20; // used for malloc
-static int nodeSize=sizeof(Node);// todo : adjust with sizeof(Node)!!!
-static int statementSize=sizeof(Statement);// todo : adjust with sizeof(Node)!!!
-static int ahashSize=16;// todo : adjust with sizeof(Node)!!!
-// static int maxNodes = 5000; // lol! # sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
+static int nodeSize=sizeof(Node);
+static int statementSize=sizeof(Statement);
+static int ahashSize=16;
 static int million=1000000;
 static int billion=1000000000;
 static int MB=1000000;
 static int GB=1000000000;
+//# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
 static int maxNodes = 9*million;
 static int maxStatements0 = maxNodes*10;// 10 = crude average of Statements per Node  ; max=1000!
 static int abstractHashSize = maxNodes*ahashSize; //~nodes?
-//static int contextOffset=0x144000;
 static int contextOffset=0x4000;
 static int abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
-// 5GB
 static int bytesPerNode=(nodeSize+averageNameLength+ahashSize*2);
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */

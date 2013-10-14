@@ -832,8 +832,8 @@ int countInstances(Node* node) {
 
 NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 	NodeVector all;
-	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatementNr(subject, i);
+		Statement* s = getStatement(subject->firstStatement);
+	while(s){
 		if (s == 0) {
 			badCount++;
 			continue;
@@ -851,6 +851,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object);
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
 		}
+		s=nextStatement(subject,s);
 	}
 	return all;
 }
