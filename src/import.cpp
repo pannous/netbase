@@ -693,6 +693,7 @@ void importList(const char* facts_file, const char* type) {
 	}
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		fixNewline(line);
 		char* objectName = (char*) malloc(100);
 		object = getThe(line);
 		addStatement(subject, Instance, object, false);
