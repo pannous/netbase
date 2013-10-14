@@ -42,7 +42,7 @@ char* root_memory = 0;
 bool storeTypeExplicitly = true;
 bool exitOnFailure = true;
 bool debug = false; //true;//false;
-bool showAbstract=false;
+bool showAbstract = false;
 int maxRecursions = 7;
 int runs = 0;
 Context* contexts; //[maxContexts];// extern
@@ -59,6 +59,7 @@ int maxStatements() {
 }
 
 //extern "C" inline
+
 Context* currentContext() {
 	return &contexts[current_context];
 }
@@ -111,7 +112,7 @@ Ahash* insertAbstractHash(int pos, Node* a) {
 	//		p(a->name);
 	int i = 0;
 	while (ah->next) {
-		if(i++ > 100){
+		if (i++ > 100) {
 			p("insertAbstractHash FULL!");
 			show(a);
 			break;
@@ -458,7 +459,7 @@ Node* add(const char* nodeName, int kind, int contextId) {//=node =current_conte
 #endif
 	Context* context = getContext(contextId);
 	Node* node = &(context->nodes[context->nodeCount]);
-	if (context->nodeCount > maxNodes){
+	if (context->nodeCount > maxNodes) {
 		p("MEMORY FULL!!!");
 		return 0;
 	}
@@ -676,6 +677,7 @@ Statement* getStatement2(Node* n, int nr) {
 
 // Abstract notes are necessary in cases where it is not known whether it is the noun/verb etc.
 //inline
+
 Node* get(const char* node) {
 	return getAbstract(node);
 }
@@ -719,7 +721,7 @@ void dissectParent(Node* subject) {
 		Node* word = getThe(str.substr(type + 1).c_str());
 		dissectParent(word);
 		addStatement(word, Instance, subject, true);
-//		addStatement(word, Instance, subject, false);
+		//		addStatement(word, Instance, subject, false);
 	}// release str
 	//    str.clear();
 }
@@ -741,13 +743,14 @@ void dissectParent(Node* subject) {
 //Zeitschriftenverlag     Verlag_Technik
 
 void dissectWord(Node* subject) {
+	if (!checkNode(subject))return;
 	string str = replace_all(subject->name, " ", "_");
 	str = replace_all(str, "-", "_");
 	//        p("dissectWord");
 	//        p(subject->name);
 	int len = str.length();
 	int type = str.find(",");
-	const char *thing=str.data();
+	const char *thing = str.data();
 	if (strstr(thing, "_") || strstr(thing, " ") || strstr(thing, "."))
 		dissectParent(subject);
 	if (type >= 0 && len - type > 2) {
@@ -927,12 +930,12 @@ Node* hasWord(const char* thingy) {
 	//&&eq(found->abstract->name, thingy)  // debug ; expensive!
 
 	int tries = 0; // cycle bugs
-	while (found >= abstracts && found<&extrahash[maxNodes] && found->next ) {
-		if(tries++ > 100){
+	while (found >= abstracts && found<&extrahash[maxNodes] && found->next) {
+		if (tries++ > 100) {
 			p("tries++ > 100 => LOOP???");
 			p(thingy);
-//			raise(SIGINT);
-			 // or signal.h if C code // Generate an interrupt raise(SIGINT);
+			//			raise(SIGINT);
+			// or signal.h if C code // Generate an interrupt raise(SIGINT);
 		}
 		//        if (eq(thingy, "near"))
 		//            h = h;
@@ -947,6 +950,7 @@ Node* hasWord(const char* thingy) {
 bool doDissect = false;
 
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
+
 Node* getAbstract(const char* thing) {// AND CREATE!
 	if (thing == 0) {
 		badCount++;
@@ -960,7 +964,7 @@ Node* getAbstract(const char* thing) {// AND CREATE!
 	abstract = add(thing, abstractId, abstractId); // abstract context !!
 	if (!abstract) {
 		p("out of memory!");
-		exit(0);
+		//		exit(0);
 		//		throw "out of memory exception";
 		return 0;
 	}
@@ -1012,6 +1016,7 @@ void showStatement(Statement* s) {
 }
 
 //, bool showAbstract
+
 void show(Node* n, bool showStatements) {//=true
 	//	if (quiet)return;
 	if (!checkNode(n))return;
@@ -1025,8 +1030,8 @@ void show(Node* n, bool showStatements) {//=true
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
-//	printf("%d\t%s\t%s\n", n->id, n->name, img.data());
-	printf("%s\t\t(#%d)\t%s\n",  n->name, n->id,img.data());
+	//	printf("%d\t%s\t%s\n", n->id, n->name, img.data());
+	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	//	printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
@@ -1067,32 +1072,33 @@ Node* showNr(int context, int id) {
 }
 
 // saver than iterating through abstracts?
+
 Node* findWord(int context, const char* word, bool first) {//=false
 	// pi(context);
 	Context* c = getContext(context);
 	Node* found = 0;
-	int max = min(c->nodeCount,maxNodes);
+	int max = min(c->nodeCount, maxNodes);
 	for (int i = 0; i < max; i++) {
 		Node* n = &c->nodes[i];
-//		if(n>=maxNodePointer){
-//			printf("n>=maxNodePointer ???");
-//			break;
-//		}
+		//		if(n>=maxNodePointer){
+		//			printf("n>=maxNodePointer ???");
+		//			break;
+		//		}
 		if (n == null || n->name == null || word == null || n->id == 0 || n->context == 0)
 			continue;
-		if(n->id>=max){
-//			printf("n>=maxNodePointer ???");
+		if (n->id >= max) {
+			//			printf("n>=maxNodePointer ???");
 			continue;
 		}
 		if (!checkNode(n, n->id, true, true))
 			continue;
 		if (eq(n->name, word, true)) {
 			found = n;
-			if (!quiet){
-//				if(isAbstract(n)&&showAbstract)
-//				printf("found abstract %s in context %d\n", word, context);
-//				else
-//				printf("found node %s in context %d\n", word, context);
+			if (!quiet) {
+				//				if(isAbstract(n)&&showAbstract)
+				//				printf("found abstract %s in context %d\n", word, context);
+				//				else
+				//				printf("found node %s in context %d\n", word, context);
 			}
 			show(n);
 			if (first)
@@ -1210,13 +1216,26 @@ void deleteStatement(Statement* s) {
 	memset(s, 0, sizeof (Statement));
 }
 
-void remove(char* data) {
+void deleteWord(const char* data, bool completely) {
 	Context* context = &contexts[current_context];
 	int id = atoi(data);
-	if (id < 0)
+	if (id <= 0) {
 		deleteNode(getThe(data));
-		//		deleteNode(getAbstract(data));// DANGER!!
-	else
+		if (completely) {
+			Node* word = findWord(current_context,data,true);//getAbstract(data);
+			while (word) {
+				pf("deleteNode \n",word->name);
+				deleteNode(word); // DANGER!!
+//			Statement* s = getStatementNr(word->firstStatement);
+//			while (s) {
+//				deleteStatement(s);
+//				s = nextStatement(word, s, false);
+//			}
+				word = findWord(current_context,data,true);
+			}
+
+		}
+	} else
 		if (checkNode(&context->nodes[id], id, false, false))
 		deleteNode(&context->nodes[id]);
 	else if (checkStatement(&context->statements[id], id))
@@ -1224,11 +1243,12 @@ void remove(char* data) {
 	else ps("No such node: " + string(data));
 }
 
-void remove(string* s) {
+void deleteWord(string* s) {
 	remove(s->c_str());
 }
 
 void deleteNode(Node* n) {
+	if(!n)return;
 	if (n->kind == abstractId) {
 		NodeVector nv = instanceFilter(n);
 		for (int i = 0; i < nv.size(); i++) {
@@ -1666,6 +1686,7 @@ int collectAbstracts3() {
 //void cleanAbstracts(Context* c){
 
 Node* getThe(Node* abstract, Node* type) {
+	if(!abstract)return 0;
 	if (type == 0) {// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		if (abstract->value.node)return abstract->value.node; // NODE!!!
 		Statement* last = &(currentContext()->statements[abstract->lastStatement]);
@@ -1823,10 +1844,9 @@ int main(int argc, char *argv[]) {
 		//		start_server();
 		//		return 0;
 		//		tests();
-	}
-	else
-	// *******************************
-	parse(join(argv, argc).c_str()); // <<< HERE
+	} else
+		// *******************************
+		parse(join(argv, argc).c_str()); // <<< HERE
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 	printf("Warnings: %d\n", badCount);

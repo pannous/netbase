@@ -254,7 +254,6 @@ void p(string s) {
 	fflush(stdout);
 }
 
-
 void p(Node* n){
 	show(n);
 }

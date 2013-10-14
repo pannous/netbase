@@ -350,7 +350,7 @@ bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
 Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
-//inline 
+//inline
 		Node* get(const char* node);
 inline Node* get(char* node);
 inline Node* get(int NodeId);
@@ -451,6 +451,9 @@ extern map <double, short> yetvisitedIsA;
 //Ahash* insertAbstractHash(long hashkey, Node* abstract); //debug only
 Ahash* insertAbstractHash(int hashkey, Node* abstract); //debug only
 Ahash* insertAbstractHash(Node* abstract);
+
+void deleteWord(string* s);
+void deleteWord(const char* data,bool completely=true);
 Node* reify(Statement* s);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);
 //bool checkStatement(Statement *s);
@@ -480,6 +483,5 @@ static int abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)
 static int bytesPerNode=(nodeSize+averageNameLength+ahashSize*2);
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
-
 
 int test2();
