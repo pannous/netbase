@@ -23,6 +23,7 @@ bool eq(string* x, const char* y);
 Node* eq(Node* x, Node* y);
 bool startsWith(const char* x,const char* y);
 bool startsWith(string* x,const char* y);
+bool endsWith(const char* x, const char* y);
 bool contains(const char* x,const char* y,bool ignoreCase=false);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
@@ -37,7 +38,7 @@ void ps(string s);// string geht nicht!?!
 void ps(string* s);
 void ps(NodeVector v);
 void pl(long l);
-void pi(int i);
+void p(int i);
 void px(void* p);// 64 bit hex
 extern void p(char* s);
 void p(Query& q);

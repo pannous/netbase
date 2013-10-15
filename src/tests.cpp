@@ -69,7 +69,7 @@ void testScanf() {
     bool matching; // leider immer !? --
     char* match = "abc=er [sdaf=er ] =fe";
     matching = sscanf(match, "%s [%s ] =%s", a, b, c);
-    pi(matching);
+    p(matching);
     p(a);
     p(b);
     p(c);
@@ -156,7 +156,7 @@ void test() {
     // Statement* s=addStatement4(c.id, test->id,is->id,good->id);
     int statementCount = c->statementCount;
     Statement* s = addStatement(test, is, good);
-    pi(c->statementCount);
+    p(c->statementCount);
     //	assert(c->statementCount==statementCount+1,"c.statementCount==1");// if not yet there
     assert(s->subject == test->id, "s->subject==test->id");
     assert(s->Subject == test, "s->Subject==test");
@@ -277,7 +277,7 @@ void testLogic() {
 	check(contains(tests,test));
 	tests=all_instances(getAbstract("test"));
 	check(contains(tests,test));
-	pi(tests.size());
+	p(tests.size());
 	NodeVector funnys= filter(tests, "funny");
 	check(contains(tests,test));
     char* sql = "select * from test where funny";
@@ -412,7 +412,7 @@ void testWordnet() {
     Context c = *getContext(wordnet);
     showContext(wordnet);
     p("contexts[wordnet].nodeCount:");
-    pi(c.nodeCount);
+    p(c.nodeCount);
     show(&c.nodes[38749]);
     // assert(strcmp(c.nodes[38749].name,"disposal")==0,"contexts[wordnet].nodes[38749].name=disposal");
     assert(checkNode(&c.nodes[38749], 38749), "checkNode(c.nodes[38749],38749)");
@@ -822,15 +822,15 @@ void testQuery() {
     query(q);
     q.instances=all_instances(the(city));
     NodeVector nv=filter(q,pattern(the(population),Equals,the(8022)));
-    pi(nv.size());
+    p(nv.size());
 
     q.instances=all_instances(the(city));
     nv=filter(q,pattern(the(population),Less,the(12300)));
-    pi(nv.size());
+    p(nv.size());
 
     q.instances=all_instances(the(city));
     nv=filter(q,pattern(the(population),Greater,the(11300)));
-    pi(nv.size());
+    p(nv.size());
 
     string result=query2("city where population=3460");
     ps(result);
@@ -966,7 +966,9 @@ void tests() {
 }
 void testBrandNewStuff() {
 	ps("test brand new stuff");
-	import("yago");
+//	import("yago");
+	if(!hasWord("acceptant"))
+	import("wordnet");
 //yagoGeonamesData.tsv nah
 //	yagoLiteralFacts.tsv // <Glen_Smith_(cricketer)>	<wasBornOnDate>	"1973-##-##"^^xsd:date	1973.0000 !
 //	yagoSchema.tsv

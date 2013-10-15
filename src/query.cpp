@@ -94,7 +94,7 @@ void collectFacets(Query& q) {
 				Facet& f = findFacet(q, predicate);
 				f.hits++;
 				map<Node*, int>& values = *(f.values);
-				pi(values.size());
+				p(values.size());
 				if (values.find(value) != values.end()) {// 4m!=4m !?!?
 					values[value] = values[value] + 1;
 					f.maxHits = max(f.maxHits, values[value]);
@@ -575,7 +575,7 @@ NodeVector filter(Query& q, Statement* filterTree) {
 			else {
 				//                ps("found");
 				//                show(node);
-				pi(y);
+				p(y);
 			}
 
 		} else {// free filters:  // cities where population->equals->3999
@@ -590,7 +590,7 @@ NodeVector filter(Query& q, Statement* filterTree) {
 			} else {
 				//                ps("found");
 				//                show(node);
-				pi(y);
+				p(y);
 			}
 
 			//            N n = has(node, subject);
@@ -753,7 +753,7 @@ NodeVector find_all(char* name, int context, int recurse, int limit) {
 	if (recurse > 0)recurse++;
 	if (recurse > maxRecursions)return all;
 
-	int max = min(c->nodeCount, maxNodes);
+	int max = min((long)c->nodeCount, maxNodes);
 	all.push_back(getAbstract(name));
 
 	//    for (int i = 0; i < max; i++) {// inefficient^2 use word->instance->... instead
@@ -823,11 +823,11 @@ int countInstances(Node* node) {
 	set(node, the("total instance count"), value(0, i));
 	show(node, false);
 	ps("statement count");
-	pi(node->statementCount);
+	p(node->statementCount);
 	ps("direct instance count");
-	pi(i);
+	p(i);
 	ps("total instance count");
-	pi(j);
+	p(j);
 	return i;
 }
 
@@ -835,7 +835,8 @@ NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 	NodeVector all;
 
 	Statement* s = getStatement(subject->firstStatement);
-	while (s) {
+	int nr=0;
+	while (s && nr++ < subject->statementCount) {
 		if(!checkStatement(s))continue;
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Instance);

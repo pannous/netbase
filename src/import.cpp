@@ -57,7 +57,7 @@ void importImages() {// 18 MILLION!   // 18496249
 	int bad = 0;
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			pi(linecount);
+			p(linecount);
 		};
 		sscanf(line, "%s %*s %s", title, image);
 		if (eq(lastTitle, title))
@@ -85,7 +85,7 @@ void importImages() {// 18 MILLION!   // 18496249
 			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
 		if (++good % 10000 == 0) {
 			ps("GOOD images:");
-			pi(good);
+			p(good);
 		}
 	}
 	fclose(infile);
@@ -155,7 +155,7 @@ void importNodes() {
 		/* Get each line from the infile */
 
 		if (++linecount % 1000 == 0)
-			pi(linecount);
+			p(linecount);
 		strcpy(tokens, line);
 		int x = 0; // replace ' ' with '_'
 		while (tokens[x]) {
@@ -206,7 +206,7 @@ void importNodes() {
 	p("node import ok");
 }
 
-void importStatements() {
+void importStatements2() {
 	FILE *infile;
 
 	char line[1000];
@@ -222,7 +222,7 @@ void importStatements() {
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		/* Get each line from the infile */
 		if (++linecount % 1000 == 0)
-			pi(linecount);
+			p(linecount);
 		// p(line);
 		//	strcpy(  tokens,line);
 		//		int x = 0;
@@ -256,13 +256,13 @@ void importSqlite(char* filename) {
 	sqlite3_stmt *statement;
 	const char* unused = (char*) malloc(1000);
 	int status = sqlite3_open(filename, &db);
-	pi(status);
+	p(status);
 	status = sqlite3_prepare(db, "select * from nodes;", maxBytes, &statement, &unused);
-	pi(status);
+	p(status);
 
 	// http://www.sqlite.org/c3ref/step.html
 	status = sqlite3_step(statement);
-	pi(status);
+	p(status);
 	if (status == SQLITE_DONE) {
 		p("No results");
 	}
@@ -458,7 +458,7 @@ bool hasAttribute(char* line) {
 //Node* type,
 // importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
 
-void importXml(const char* facts_file, char* nameField, const char* ignoredFields, const char* includedFields) {
+void importXml(const char* file, char* nameField, const char* ignoredFields, const char* includedFields) {
 	p("import csv start");
 	bool dissect = false;
 	char line[1000];
@@ -481,9 +481,9 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 	//	vector<char*>& includeFields = splitString(includedFields, ",");
 	int linecount = 0;
 	FILE *infile;
-	printf("Opening XML File %s\n", (facts_file));
-	if ((infile = fopen((facts_file), "r")) == NULL)facts_file = (import_path + facts_file).c_str();
-	if ((infile = fopen((facts_file), "r")) == NULL) {
+	printf("Opening XML File %s\n", (file));
+	if ((infile = fopen((file), "r")) == NULL)file = (import_path + file).c_str();
+	if ((infile = fopen((file), "r")) == NULL) {
 		perror("Error opening file");
 		exit(1);
 	}
@@ -580,10 +580,10 @@ void importXml(const char* facts_file, char* nameField, const char* ignoredField
 	}
 	fclose(infile); /* Close the file */
 	p("import xml ok ... items imported:");
-	pi(linecount);
+	p(linecount);
 }
 
-void importCsv(const char* facts_file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
+void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("import csv start");
 	char line[1000];
 	char** values = (char**) malloc(sizeof (char*) *100);
@@ -599,9 +599,9 @@ void importCsv(const char* facts_file, Node* type, char separator, const char* i
 	//	vector<char*>& fields = *new vector<char*>();
 	int linecount = 0;
 	FILE *infile;
-	printf("Opening File %s\n", (facts_file));
-	if ((infile = fopen((facts_file), "r")) == NULL)facts_file = (import_path + facts_file).c_str();
-	if ((infile = fopen((facts_file), "r")) == NULL) {
+	printf("Opening File %s\n", (file));
+	if ((infile = fopen((file), "r")) == NULL)file = (import_path + file).c_str();
+	if ((infile = fopen((file), "r")) == NULL) {
 		perror("Error opening file");
 		exit(1);
 	}
@@ -675,18 +675,18 @@ void importCsv(const char* facts_file, Node* type, char separator, const char* i
 	}
 	fclose(infile); /* Close the file */
 	p("import csv ok ... lines imported:");
-	pi(linecount);
+	p(linecount);
 }
 
-void importList(const char* facts_file, const char* type) {
+void importList(const char* file, const char* type) {
 	p("import list start");
 	char line[1000];
 	Node* subject = getClass(type);
 	Node* object;
 	int linecount = 0;
 	FILE *infile;
-	printf("Opening File %s\n", (facts_file));
-	if ((infile = fopen((facts_file), "r")) == NULL) {
+	printf("Opening File %s\n", (file));
+	if ((infile = fopen((file), "r")) == NULL) {
 		perror("Error opening file");
 
 		exit(1);
@@ -730,7 +730,7 @@ bool hasCamel(char* key) {
 		char c = key[i];
 		if (c > 64 && c < 91)
 			if (last > 96 && last < 123) {
-				pi(i);
+				p(i);
 				return true;
 			}
 		last = c;
@@ -849,18 +849,18 @@ Node* getYagoConcept(char* key) {
 
 }
 
-bool importYago(const char* facts_file) {
+bool importYago(const char* file) {
 	p("import YAGO start");
-	if (!contains(facts_file, "/"))
-		facts_file = concat("/data/base/BIG/yago/", facts_file);
-//		facts_file = concat("/Users/me/data/base/BIG/yago/", facts_file);
+	if (!contains(file, "/"))
+		file = concat("/data/base/BIG/yago/", file);
+//		file = concat("/Users/me/data/base/BIG/yago/", file);
 	Node* subject;
 	Node* predicate;
 	Node* object;
 	int linecount = 0;
 	FILE *infile;
-	printf("Opening File %s\n", facts_file);
-	if ((infile = fopen(facts_file, "r")) == NULL) {
+	printf("Opening File %s\n", file);
+	if ((infile = fopen(file, "r")) == NULL) {
 		perror("Error opening file");
 		return false;
 	}
@@ -876,7 +876,8 @@ bool importYago(const char* facts_file) {
 			size_t peakSize = getPeakRSS();
 			size_t free = getFreeSystemMemory();
 			//			printf("MEMORY: %L            Peak: %d FREE: %L \n", currentSize, peakSize, free);
-			if (currentSize > 3*GB || currentSize*1.2>sizeOfSharedMemory|| currentContext()->nodeCount*1.2 > maxNodes) {
+//			currentSize > 3*GB || currentSize*1.2>sizeOfSharedMemory||
+			if (currentContext()->nodeCount*1.2 > maxNodes) {//MEMORY
 				printf("MEMORY safety boarder reached\n");
 				return 0; //exit(0);// 4GB max
 			}
@@ -929,7 +930,7 @@ bool importYago(const char* facts_file) {
 	return true;
 }
 
-bool importFacts(const char* facts_file, const char* predicateName = "population") {
+bool importFacts(const char* file, const char* predicateName = "population") {
 	p("import facts start");
 	printf("WARNING: SETTING predicateName %s", predicateName);
 	Node* subject;
@@ -940,8 +941,8 @@ bool importFacts(const char* facts_file, const char* predicateName = "population
 	predicate = getClass(predicateName);
 	int linecount = 0;
 	FILE *infile;
-	printf("Opening File %s\n", facts_file);
-	if ((infile = fopen(facts_file, "r")) == NULL) {
+	printf("Opening File %s\n", file);
+	if ((infile = fopen(file, "r")) == NULL) {
 		perror("Error opening file");
 		return false;
 		//        exit(1);
@@ -991,14 +992,190 @@ void importNames() {
 	addStatement(all(female_firstname), Owner, a(female));
 }
 
+FILE *open_file(const char* file){
+	if(!contains(file,"/"))file=concat(import_path.data(),file);
+	printf("Opening File %s\n", (file));
+	FILE *infile;
+	if ((infile = fopen((file), "r")) == NULL) {
+		perror("Error opening file");
+		exit(1);
+	}
+	return infile;
+}
+
+void importAbstracts() {
+	char line[1000];
+	char name[1000];
+//	char* line=(char*) malloc(1000);
+//	char* name=(char*) malloc(1000);
+	int linecount = 0;
+	int id;
+	doDissect = false;
+	memset(abstracts, 0, abstractHashSize);
+	memset(extrahash, 0, abstractHashSize/2);
+	Context* c=getContext(wordnet);
+	FILE *infile=open_file("abstracts.tsv");
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		sscanf(line,"%d\t%[^\n]s",&id,name);// %[^\n]s == REST OF LINE!
+		if(id<1000||id>10*million)continue;// skip :(
+//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
+//		printf("%s\n",line);
+		c->nodeCount=id;// hardcoded hack to sync ids!!!
+		Node* a=getAbstract(name);
+		a->context=wordnet;
+	}
+	fclose(infile); /* Close the file */
+}
+//int wordnet_synset_map[117659];
+map<int,int> wordnet_synset_map;
+
+int norm_wordnet_id(int synsetid){
+	if(synsetid<million)return synsetid;
+	int id=wordnet_synset_map[synsetid];
+	if(!id)
+		return synsetid;
+	return id;
+//	return (synsetid%million)+200000;
+}
+
+int synonyms=400000;
+void importSenses() {
+	char line[1000];
+	char name[1000];
+	int linecount = 0;
+	int id,labelid,synsetid;
+	FILE *infile=open_file("senses.tsv");
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		fixNewline(line);
+		sscanf(line,"%d\t%d\t%d\t%*d\t%*d\t%*d\t%*d\t%s",&id,&labelid,&synsetid,/*senseid,sensenum,lexid,tags,*/name);
+		if(id<1000)continue;// skip :(
+		Node* word=get(id);
+		synsetid=norm_wordnet_id(synsetid);
+		if(synsetid>200000+117659)
+			p(line);
+		if(synsetid<200000)
+			continue;
+		Node* sense=get(synsetid);
+		for(int i=0;i<strlen(name);i++)if(name[i]=='%')name[i]=0;
+		if(!sense->id){
+			initNode(sense,synsetid,name,0,wordnet);
+			addStatement(word,Instance,sense);// Sense
+		}
+		else if(!eq(sense->name,name)){
+			Node* syno=initNode(get(synonyms),synonyms,name,0,wordnet);
+			addStatement(syno,Synonym,sense);
+			addStatement(word,Instance,syno);// Sense
+			synonyms++;
+		}
+//		if(!sense->name){
+//		sense->name=fixed;
+//		sense->context=wordnet;
+//		sense->id=synsetid;
+//		}
+	}
+	fclose(infile); /* Close the file */
+}
+void addLabel(Node *node,char* text){
+	int len = strlen(text);
+	Context* context=currentContext();
+	int slot=context->currentNameSlot;
+	char* label=context->nodeNames+slot;
+	strcpy(label, text); // can be freed now!
+	node->value.text=label;
+	context->nodeNames[slot + len] = 0;
+	context->currentNameSlot =slot + len+1;
+//		addStatement(n,Label,getAbstract(definition));
+}
+
+void importSynsets() {
+	char line[1000];
+	char definition[1000];
+	int linecount = 0;
+	int id;
+	char pos;
+	FILE *infile=open_file("synsets.tsv");
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		fixNewline(line);
+		sscanf(line,"%d\t%c\t%*d\t%[^\n]s",&id,&pos,/*&lexdomain,*/definition);
+		if(id<1000)continue;// skip :(
+		id=norm_wordnet_id(id);
+		if(id>200000+117659)
+			p(line);
+		if(pos=='n')get(id)->kind=noun;
+		if(pos=='v')get(id)->kind=verb;
+		if(pos=='a')get(id)->kind=adjective;
+		if(pos=='r')get(id)->kind=adverb;
+		if(pos=='s')
+			get(id)->kind=adjective;// satelite !?
+		addLabel(get(id),definition);
+	}
+	fclose(infile); /* Close the file */
+}
+
+
+void importLables() {
+	char line[1000];
+	char definition[1000];
+	int linecount = 0;
+	int id;
+	char pos;
+	FILE *infile=open_file("labels.tsv");
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		fixNewline(line);
+		sscanf(line,"%*d\t%d\t%[^\n]s",&id,/*&lexdomain,*/definition);
+		id=norm_wordnet_id(id);
+		addLabel(get(id),definition);
+//		addStatement(get(id),Label,getAbstract(definition));
+	}
+	fclose(infile); /* Close the file */
+}
+
+void load_wordnet_synset_map(){
+	char line[1000];
+	FILE *infile=open_file("wordnet_synset_map.txt");
+	int s,id;
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		fixNewline(line);
+		sscanf(line,"%d\t%d",&s,&id);
+		wordnet_synset_map[s]=id;
+	}
+}
+void importStatements() {
+	char line[1000];
+	int linecount = 0;
+	int s,p,o;
+	FILE *infile=open_file("statements.tsv");
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		fixNewline(line);
+		sscanf(line,"%d\t%d\t%d",&s,&o,&p);
+		addStatement4(wordnet,norm_wordnet_id(s),norm_wordnet_id(p),norm_wordnet_id(o));
+	}
+	fclose(infile); /* Close the file */
+}
+
+
 void importWordnet() {
-	importNodes(); // FIRST! Hardlinked ids overwrite everything!!
+	load_wordnet_synset_map();
+	importAbstracts();
+	importSenses();
+	getContext(wordnet)->nodeCount=synonyms;//200000+117659;//WTH!
+	importSynsets();
+	importLables();
 	importStatements();
+}
+void importWordnet2() {
+	importNodes(); // FIRST! Hardlinked ids overwrite everything!!
+	importStatements2();
 }
 
 void importGeoDB() {
 	importCsv("cities1000.txt",\
-			getThe("city"), '\t', "alternatenames,modificationdate,geonameid",\
+	getThe("city"), '\t', "alternatenames,modificationdate,geonameid",\
 		"latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
 

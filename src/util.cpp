@@ -22,7 +22,7 @@ bool assert(bool test, char* what) {// bool nix gut
 	if (!test) {
 		printf(" Failed\n");
 		printf(" runs : ");
-		pi(runs);
+		p(runs);
 		flush();
 		if (exitOnFailure != false)exit(1);
 	}
@@ -126,7 +126,13 @@ bool quiet = false;
 bool isInteger(char* buf) {
 	return strlen(buf) == strspn(buf, "0123456789");
 }
-
+bool endsWith(const char* x, const char* y) {
+	if(strlen(x)< strlen(y))return false;
+	for (int i = strlen(y)-1; i >=0 ; i--) {
+		if (x[i] != y[i])return false;
+	}
+	return true;
+}
 bool startsWith(const char* x, const char* y) {
 	if(strlen(x)< strlen(y))return false;
 	for (int i = 0; i < strlen(y); i++) {
@@ -221,7 +227,7 @@ void ps(char* s) {
 	fflush(stdout);
 }
 
-void pi(int i) {
+void p(int i) {
 	if (quiet)return;
 	printf("%i\n", i);
 	fflush(stdout);
@@ -389,7 +395,7 @@ unsigned int hash(const char *str) {// unsigned
     unsigned long hash = 5381;
     int c;
     while (c = *str++) hash = ((hash << 5) + hash) + normChar(c); /* hash * 33 + c */
-    int pos=hash % maxNodes;
+    int pos=hash % abstractHashSize/ahashSize;
     return abs(pos);
 }
 

@@ -101,66 +101,129 @@ Node* Contains;
 Node* StartsWith;
 Node* EndsWith;
 
-Node* addRelation(int id, const char* name) {
+Node* addRelation(int id, const char* name,bool transitive=false) {
 	string keep = name;
 	const char* what;
 	what = keep.c_str();
 	Node* n = add_force(wordnet, id, what, _internal);
+//	if(transitive)???  baked into Algorithms, at least four standard relations?
 	return n;
 }
+int _see=0,//50 also, 40 similar
+	_Hypernym=1,//SuperClass
+	_hyponym=2,//SubClass
+	_Type=3,
+	_instance=4,
+	_ENTAILMENT=21,// implies
+	_Owner=13,//??
+	_Member=14,
+	_PartOwner=11,
+	_Part=12,
+	_SubstanceOwner=15,
+	_Substance=16,
+	_PARTICIPLE_OF_VERB=71,
+	_PERTAINYM=80,
+	_antonym=30,
+	_attribute=60,
+	_cause=23,
+	_derived=81,
+//	_derived_from_noun=81,//?
+	_synonym=21,//32?
+	_DOMAIN_CATEGORY=91,
+	_DOMAIN_REGION=93,
+	_DOMAIN_USAGE=95,
+	_MEMBER_DOMAIN_CATEGORY=92,
+	_MEMBER_DOMAIN_REGION=94,
+	_MEMBER_DOMAIN_USAGE=96,
+	_VERB_GROUP=24;
+//int _see=0,
+//	_antonym=1,
+//	_attribute=2,
+//	_cause=3,
+//	_derived=4,
+//	_derived_from_noun=5,
+//	_DOMAIN_CATEGORY=6,
+//	_DOMAIN_REGION=7,
+//	_DOMAIN_USAGE=8,
+//	_ENTAILMENT=9,// implies
+//	_Hypernym=10,//SuperClass
+//	_hyponym=11,//SubClass
+//	_Owner=12,
+//	_Member=13,
+//	_MEMBER_DOMAIN_CATEGORY=14,
+//	_MEMBER_DOMAIN_REGION=15,
+//	_MEMBER_DOMAIN_USAGE=16,
+//	_PartOwner=17,
+//	_Part=18,
+//	_PARTICIPLE_OF_VERB=19,
+//	_PERTAINYM=20,
+//	_synonym=21,//32?
+//	_SubstanceOwner=22,
+//	_Substance=23,
+//	_VERB_GROUP=24,
+//	_Type=33,
+//	_instance=34;
 
+
+
+
+;
 void initRelations() {
-	Unknown = addRelation(0, "see");
-	Antonym = addRelation(1, "antonym");
+	Unknown = addRelation(_see, "see");
+	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
-	Attribute = addRelation(2, "attribute"); // tag
-	Cause = addRelation(3, "cause"); //
-	Derived =addRelation(4, "derived from adjective"); //
-	DerivedFromNoun =addRelation(5, "derived from noun"); //
+	Attribute = addRelation(_attribute, "attribute"); // tag
+	bool is_transitive=true;
+	Cause = addRelation(_cause, "cause",is_transitive); //
+	Derived =addRelation(_derived, "derived from adjective"); //
+//	DerivedFromNoun =addRelation(_derived_from_noun, "derived from noun"); //
 	//        DOMAIN_OF_SYNSET_CATEGORY =
-	addRelation(6, "usage context"); // # sheet @ maths   // think of!! OWNER -> Part
+	addRelation(_DOMAIN_CATEGORY, "usage context"); // # sheet @ maths   // think of!! OWNER -> Part
 	//    DOMAIN_OF_SYNSET_REGION =
-	addRelation(7, "usage region"); // mate @ australia
+	addRelation(_DOMAIN_REGION, "usage region"); // mate @ australia
 	//    DOMAIN_OF_SYNSET_USAGE =
-	Domain=addRelation(8, "usage domain"); // #bitch @ colloquialism  || fin de siecle @ French   # fuck(vulgar)
+	Domain=addRelation(_DOMAIN_USAGE, "usage domain"); // #bitch @ colloquialism  || fin de siecle @ French   # fuck(vulgar)
 	//    ENTAILMENT =
-	addRelation(9, "entails"); //ENTAILMENT  jump implies come down
-	SuperClass = addRelation(10, "superclass"); //Parent ,"Hypernym"
+	addRelation(_ENTAILMENT, "entails",is_transitive); //ENTAILMENT  jump implies come down
+	SuperClass = addRelation(_Hypernym, "superclass",is_transitive); //Parent ,"Hypernym"
 	Parent = SuperClass;
 	//	IsA = SuperClass;
 
-	SubClass = addRelation(11, "subclass"); // hyponym
-	Owner = addRelation(12, "of");
-	Member = addRelation(13, "has");
+	SubClass = addRelation(_hyponym, "subclass",is_transitive); // hyponym
+	Owner = addRelation(_Owner, "of",is_transitive);
+	Member = addRelation(_Member, "has");
 	//	MEMBER_OF_THIS_DOMAIN_CATEGORY=
-	addRelation(14, "contextual word"); //aviation: to overfly
+	addRelation(_MEMBER_DOMAIN_CATEGORY, "contextual word"); //aviation: to overfly
 	//	MEMBER_OF_THIS_DOMAIN_REGION =
-	addRelation(15, "regional word"); //-r  IN Japan :  Sushi
+	addRelation(_MEMBER_DOMAIN_REGION, "regional word"); //-r  IN Japan :  Sushi
 	//	MEMBER_OF_THIS_DOMAIN_USAGE =
-	addRelation(16, "domain word"); // colloquialism: bitch
+	addRelation(_MEMBER_DOMAIN_USAGE, "domain word"); // colloquialism: bitch
 	//    PartOwner =
-	addRelation(17, "part of");
-	Part = addRelation(18, "part");
+	addRelation(_PartOwner, "part of",is_transitive);
+	Part = addRelation(_Part, "part",is_transitive);
 	//	PARTICIPLE_OF_VERB =
-	addRelation(19, "PARTICIPLE_OF_VERB");
+	addRelation(_PARTICIPLE_OF_VERB, "PARTICIPLE_OF_VERB");
 	//	PERTAINYM =
-	addRelation(20, "PERTAINYM"); //  # cellular(a) \ cell(n) 	equally(adv)-equal(adj)
+	addRelation(_PERTAINYM, "PERTAINYM"); //  # cellular(a) \ cell(n) 	equally(adv)-equal(adj)
 
-	Synonym = addRelation(21, "synonym"); // similar?? 32??
+	Synonym = addRelation(_synonym, "synonym",is_transitive); // similar?? 32??
 	//    Similar = addRelation(21, "similar");//synonym ??
 
 	//	SubstanceOwner=
-	addRelation(22, "substance of");
-	Substance = addRelation(23, "substance");
+	addRelation(_SubstanceOwner, "substance of",is_transitive);
+	Substance = addRelation(_Substance, "substance",is_transitive);
 	//	VERB_GROUP=
-	addRelation(24, "VERB_GROUP");
+	addRelation(_VERB_GROUP, "VERB_GROUP");
 	//	RELATIONSHIP_COUNT =
-	addRelation(25, "RELATIONSHIP_COUNT");
+//	addRelation(25, "RELATIONSHIP_COUNT");
+	addRelation(97, "DOMAIN");
+	addRelation(98, "MEMBER");// ??
+
 
 	Weight = addRelation(31, "weight");
 	//	 Synonym = Relation(32, "synonym");// -> 21????? See see | tag
-	Type = addRelation(33, "type"); // (instance->class) !=SuperClass
-	Instance = addRelation(34, "instance");
+	Type = addRelation(_Type, "type");// is_transitive?? // (instance->class) !=SuperClass
+	Instance = addRelation(_instance, "instance",is_transitive);
 	Active = addRelation(35, "active");
 	Passive = addRelation(36, "passive");
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!

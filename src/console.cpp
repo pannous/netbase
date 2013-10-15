@@ -117,7 +117,14 @@ bool parse(const char* data) {
 	//            collectAbstracts2();
 	//            return true;
 	//        }
-	if (startsWith(data, ":iy")) {
+	if (startsWith(data, ":iw")||startsWith(data, ":wi")) {
+		if(endsWith(data,"!"))deleteWord("acceptant");
+		if(!hasWord("acceptant"))
+		importWordnet();
+		return true;
+	}
+	if (startsWith(data, ":iy")||startsWith(data, ":yi")) {
+		if(endsWith(data,"!"))deleteWord("yagoGeoEntity");
 		import("yago");
 		return true;
 		//		importYago()
@@ -147,9 +154,9 @@ bool parse(const char* data) {
 		return true;
 	}
 	if (eq(data, ":ha")) {
-		Context* c=currentContext();
+		Context* c = currentContext();
 		c->nodeCount -= 1000; //hack!
-//		maxNodes += 1000;
+		//		maxNodes += 1000;
 		return true;
 	}
 	if (eq(data, ":s")) {
@@ -357,7 +364,7 @@ void getline(char *buf) {
 #ifdef RL_READLINE_VERSION // USE_READLINE
 	if (!file_read_done)file_read_done = 1 + read_history(0);
 	char *tmp = readline(PROMPT);
-	if (strncmp(tmp, buf, MAXLENGTH)&&strlen(tmp)>0)
+	if (strncmp(tmp, buf, MAXLENGTH) && strlen(tmp) > 0)
 		add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
 	buf[MAXLENGTH - 1] = '\0';

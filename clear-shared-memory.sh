@@ -10,7 +10,11 @@ sudo sysctl -w kern.sysv.shmmax=2147483648
 sudo sysctl -w kern.sysv.shmall=2147483648
 
 ipcclean
-sudo ipcrm -M 0x0410669190
+sudo ipcrm -M "0x00069190"
+sudo ipcrm -M "0x00069191"
+sudo ipcrm -M "0x00069192"
+sudo ipcrm -M "0x00069193"
+sudo ipcrm -M "0x00069194"
 # sudo ipcrm -M 0x57020303 #netbase
 # sudo ipcrm -M 0x00000000
 

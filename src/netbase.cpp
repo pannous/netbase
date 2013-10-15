@@ -38,7 +38,13 @@ using namespace std;
 
 
 int nameBatch = 100;
-char* root_memory = 0;
+char* context_root=0;// Base of shared memory after attached
+char* node_root=0;
+char* statement_root=0;
+char* name_root=0;
+char* abstract_root=0;
+
+
 bool storeTypeExplicitly = true;
 bool exitOnFailure = true;
 bool debug = false; //true;//false;
@@ -226,6 +232,7 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if (s == 0)return false;
 	if (s < contexts[current_context].statements)return false;
 	if (s >= contexts[current_context].statements + maxStatements0)return false;
+	if(s->id==0)return false;// !
 	if (checkSPOs || checkNamesOfSPOs)
 		if (s->Subject == 0 || s->Predicate == 0 || s->Object == 0)return false;
 	if (checkNamesOfSPOs)if (s->Subject->name == 0 || s->Predicate->name == 0 || s->Object->name == 0)return false;
@@ -379,9 +386,9 @@ Statement* nextStatement(Node* n, Statement* current, bool stopAtInstances) {
 //
 //}
 
-void initNode(Node* node, int id, const char* nodeName, int kind, int contextId) {
+Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId) {
 	Context* context = getContext(contextId);
-	if (!checkNode(node, id, false, false))return;
+	if (!checkNode(node, id, false, false))return 0;
 	node->id = id;
 #ifndef inlineName
 	node->name = &context->nodeNames[context->currentNameSlot];
@@ -400,6 +407,7 @@ void initNode(Node* node, int id, const char* nodeName, int kind, int contextId)
 #ifdef inlineStatements
 	node->statements = 0; //nextFreeStatementSlot(context,0);
 #endif
+	return node;
 }
 
 // return false if node not ok
@@ -409,7 +417,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	if (node == 0) {
 		badCount++;
 		p("null node");
-		pi(nodeId);
+		p(nodeId);
 		return false;
 	}
 	Context* c = currentContext(); // getContext(node->context);
@@ -429,9 +437,9 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 		badCount++;
 		p("wrong node context");
 		p("node:");
-		pi(nodeId);
+		p(nodeId);
 		p("context:");
-		pi(node->context);
+		p(node->context);
 		return false;
 	}
 	if (checkNames && node->name == 0) {
@@ -447,14 +455,14 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	if (nodeId > maxNodes) {
 		badCount++;
 		p("nodeId>maxNodes");
-		pi(nodeId);
+		p(nodeId);
 		return false;
 	}
 #ifdef inlineStatements
 	if (checkStatements && node->statements == null) {//
 		badCount++;
 		p("node not loaded");
-		pi(nodeId);
+		p(nodeId);
 		// initNode(subject,subjectId,(char*)NIL_string,0,contextId);
 		return false;
 	}
@@ -498,7 +506,7 @@ Node* add_force(int contextId, int id, const char* nodeName, int kind) {
 		context->nodeCount++; // add one , otherwise : overwrite
 	Node* node = &context->nodes[id];
 	Node* node2 = context->nodes + id;
-	Node* node3 = (Node*) (root_memory + contextOffset + id * nodeSize);
+	Node* node3 = (Node*) (context_root + contextOffset + id * nodeSize);
 	initNode(node, id, nodeName, kind, contextId);
 	return node;
 }
@@ -940,6 +948,7 @@ Node* getThe(const char* thing, Node* type, bool dissect) {
 
 #include <csignal> // or signal.h if C code // Generate an interrupt
 
+// CREATES ABSTRACT!!!?!!!
 Node* hasWord(const char* thingy) {
 	long h = hash(thingy);
 	Ahash* found = &abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
@@ -979,7 +988,8 @@ Node* getAbstract(const char* thing) {// AND CREATE!
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
 	Node* abstract = hasWord(thing);
-	if (abstract)return abstract;
+	if (abstract)
+		return abstract;
 	abstract = add(thing, abstractId, abstractId); // abstract context !!
 	if (!abstract) {
 		p("out of memory!");
@@ -1036,6 +1046,14 @@ void showStatement(Statement* s) {
 
 //, bool showAbstract
 
+char* getLabel(Node* n){
+	Context* context=getContext(current_context);
+	if(n->value.text>context->nodeNames && n->value.text<context->nodeNames+context->currentNameSlot)
+		return n->value.text;
+	Statement* s=findStatement(n,Label,Any,false,false,false);
+	if(s)return s->Object->name;
+		return 0;
+}
 void show(Node* n, bool showStatements) {//=true
 	//	if (quiet)return;
 	if (!checkNode(n))return;
@@ -1044,12 +1062,15 @@ void show(Node* n, bool showStatements) {//=true
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
 	//    printf("%s  (#%d)\n", n->name, n->id);
 	string img = "";
+	char* text="";
 	if (hasWord(n->name))
 		img = getImage(n->name);
+	if(getLabel(n))
+		text=getLabel(n);
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
-		printf("(#%d)\t%s\t%s\n", n->id, n->name, img.data());
+		printf("(#%d)\t%s\t%s\t%s\n", n->id, n->name,text, img.data());
 //	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	//	printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	// else
@@ -1097,17 +1118,19 @@ Node* findWord(int context, const char* word, bool first) {//=false
 	// pi(context);
 	Context* c = getContext(context);
 	Node* found = 0;
-	int max = min(c->nodeCount, maxNodes);
-	for (int i = 0; i < max; i++) {
+	int shown=0;
+	for (int i = 0; i < c->nodeCount; i++) {
 		Node* n = &c->nodes[i];
+//		if(i==1000)
+//			p(n);
 		//		if(n>=maxNodePointer){
 		//			printf("n>=maxNodePointer ???");
 		//			break;
 		//		}
 		if (n == null || n->name == null || word == null || n->id == 0 || n->context == 0)
 			continue;
-		if (n->id >= max) {
-			//			printf("n>=maxNodePointer ???");
+		if (n->id >= maxNodes) {
+						printf("n>=maxNodePointer ???");
 			continue;
 		}
 		if (!checkNode(n, n->id, true, true))
@@ -1238,6 +1261,7 @@ void deleteStatement(Statement* s) {
 }
 
 void deleteWord(const char* data, bool completely) {
+	pf("delete %s \n", data);
 	Context* context = &contexts[current_context];
 	int id = atoi(data);
 	if (id <= 0) {
@@ -1592,7 +1616,7 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation) {
 		show(node, showStatements);
 	}
 	ps("++++++++++ Hits : +++++++++++++++++");
-	pi(size);
+	p(size);
 }
 //NodeVector match_all(string data){
 //}
@@ -1621,7 +1645,7 @@ void initUnits() {
 	//    printf("Abstracts %016llX\n", abstracts);
 	printf("Abstracts %016llX\n", abstracts);
 	Ahash* ah = &abstracts[hash("meter") % abstractHashSize];
-	if ((char*) ah < root_memory || ah > extrahash) {
+	if ((char*) ah < context_root || ah > extrahash) {
 		ps("abstracts kaputt");
 		collectAbstracts();
 	}
@@ -1715,6 +1739,7 @@ Node* getThe(Node* abstract, Node* type) {
 	}
 	Statement* s = 0;
 	while (s = nextStatement(abstract, s)) {
+		if(!checkStatement(s,true,false))continue;
 		//		showStatement(s);
 		if (s == 0) {
 			ps("CORRUPTED Statements for");

@@ -13,7 +13,12 @@ extern bool exitOnFailure;
 extern int maxRecursions;
 extern bool debug; //=true;
 extern bool showAbstract;
-extern char* root_memory; // else: void value not ignored as it ought to be
+extern bool doDissect;
+extern char* context_root; // else: void value not ignored as it ought to be
+extern char* abstract_root;
+extern char* node_root;
+extern char* statement_root;
+extern char* name_root;
 extern int recursions;
 extern int badCount;
 extern int runs; // algorithm metrics
@@ -342,7 +347,7 @@ void showContext(Context* cp);
 void showNodes(NodeVector all, bool showStatements = false,bool showRelation=false); //
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
-void initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
+Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
 Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
 bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
 bool addStatementToNode(Node* node, int statementNr);
@@ -352,7 +357,8 @@ Statement* addStatement4(int contextId, int subjectId, int predicateId, int obje
 Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
 //inline
 		Node* get(const char* node);
-inline Node* get(char* node);
+//inline
+		Node* get(char* node);
 inline Node* get(int NodeId);
 
 //extern "C" /* <== don't mingle name! */ inline
@@ -462,21 +468,21 @@ typedef Node* N;
 typedef NodeVector NV;
 
 //#pragma warnings_off
-static int averageNameLength = 20; // used for malloc
-static int nodeSize=sizeof(Node);
-static int statementSize=sizeof(Statement);
+static int averageNameLength =20;// 20; // used for malloc
+static int nodeSize=sizeof(Node);// 40
+static int statementSize=sizeof(Statement);// 56
 static int ahashSize=16;
-static int million=1000000;
-static int billion=1000000000;
-static int MB=1000000;
-static int GB=1000000000;
+static long million=1000000;
+static long billion=1000000000;
+static long MB=1000000;
+static long GB=1000000000;
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
-static int maxNodes = 9*million;
-static int maxStatements0 = maxNodes*10;// 10 = crude average of Statements per Node  ; max=1000!
-static int abstractHashSize = maxNodes*ahashSize; //~nodes?
-static int contextOffset=0x4000;
-static int abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
-static int bytesPerNode=(nodeSize+averageNameLength+ahashSize*2);
+static long maxNodes = 10*million;
+static long maxStatements0 = 2*maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
+static long abstractHashSize = maxNodes*ahashSize; //~nodes?
+static long contextOffset=0x10000;
+static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
+static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 
