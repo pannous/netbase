@@ -911,6 +911,8 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 			badCount++;
 			continue;
 		};
+		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;
+		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Type);
 		predicateMatch = predicateMatch || s->Predicate == SuperClass;
@@ -924,6 +926,7 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
 
 		if (queue) {
+			printf("-> %d %s\n",s->Object->id, s->Object->name);
 			if (subjectMatch)enqueue(subject, s->Object, queue);
 			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
 		} else {
@@ -987,7 +990,7 @@ NodeVector reconstructPath(Node* from, Node * to) {
 }
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
-	if (enqueued[d->id])return false; // continue;
+	if (enqueued[d->id])return false; // already done -> continue;
 	enqueued[d->id] = current->id;
 	q->push(d);
 	return true;

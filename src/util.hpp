@@ -32,7 +32,7 @@ bool contains(vector<char*>& all,char* node);
 bool contains(string x,const char* y);
 bool isNumber(char* buf);
 bool isInteger(char* buf);
-#define pf printf
+#define pf(x,...) printf(x, __VA_ARGS__)
 void ps(char* s);
 void ps(string s);// string geht nicht!?!
 void ps(string* s);

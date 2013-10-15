@@ -20,6 +20,17 @@ char* nodes_file = "nodes.txt";
 char* statements_file = "statements.txt";
 char* images_file = "images.txt";
 
+FILE *open_file(const char* file){
+	if(!contains(file,"/"))file=concat(import_path.data(),file);
+	printf("Opening File %s\n", (file));
+	FILE *infile;
+	if ((infile = fopen((file), "r")) == NULL) {
+		perror("Error opening file");
+		exit(1);
+	}
+	return infile;
+}
+
 void norm(char* title) {
 	int len = strlen(title);
 	for (int i = len; i >= 0; --i) {
@@ -28,6 +39,31 @@ void norm(char* title) {
 		}
 	}
 }
+//int wordnet_synset_map[117659];
+map<int,int> wordnet_synset_map;
+
+int norm_wordnet_id(int synsetid){
+	if(synsetid<million)return synsetid;
+	int id=wordnet_synset_map[synsetid];
+	if(!id)
+		p("BAD ID!!!");
+//	id=id+10000;// NORM!!!
+	return id;
+//	return (synsetid%million)+200000;
+}
+
+
+void load_wordnet_synset_map(){
+	char line[1000];
+	FILE *infile=open_file("wordnet_synset_map.txt");
+	int s,id;
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		fixNewline(line);
+		sscanf(line,"%d\t%d",&s,&id);
+		wordnet_synset_map[s]=id;
+	}
+}
+
 map<long, string> nodeNameImages;
 map<long, string> nodeNameImages2; // chopped
 //map<long,string> nodeNameImages3;// chopped image name
@@ -715,7 +751,7 @@ char *fixRdfName(char *key) {
 char *cut_wordnet_id(char *key) {
 	for (int i = strlen(key); i > 1; --i) {
 		if (key[i] == '_') {
-			char* id = key + i + 1 + 1;
+			char* id = key + i + 1;
 			key[i] = 0;
 			return id; // <wordnet_album_106591815> ->  06591815 DROP LEADING 1 !!!
 		}
@@ -752,6 +788,7 @@ const char *fixYagoName(char *key) {
 	key = removeHead(key, "wordnetDomain_");
 	char* start = strstr(key, "wordnet_");
 	if (start) {
+		p("SHOULDNT BE REACHED");
 		char* id = cut_wordnet_id(start);
 		key = removeHead(key, "wordnet_");
 	}
@@ -842,6 +879,11 @@ Node* getYagoConcept(char* key) {
 		printf(" bad key %s\n", key);
 		return 0;
 	}
+	char* start = strstr(key, "wordnet_");
+	if (start) {
+		char* id = cut_wordnet_id(start);
+		return get(norm_wordnet_id(atoi(id)));
+	}
 
 	if(eq(key,"<Carding>")||eq(key,"<Los_Angeles_California_Temple>"))
 		return 0;// What the bug???
@@ -851,6 +893,7 @@ Node* getYagoConcept(char* key) {
 
 bool importYago(const char* file) {
 	p("import YAGO start");
+	load_wordnet_synset_map();
 	if (!contains(file, "/"))
 		file = concat("/data/base/BIG/yago/", file);
 //		file = concat("/Users/me/data/base/BIG/yago/", file);
@@ -992,16 +1035,6 @@ void importNames() {
 	addStatement(all(female_firstname), Owner, a(female));
 }
 
-FILE *open_file(const char* file){
-	if(!contains(file,"/"))file=concat(import_path.data(),file);
-	printf("Opening File %s\n", (file));
-	FILE *infile;
-	if ((infile = fopen((file), "r")) == NULL) {
-		perror("Error opening file");
-		exit(1);
-	}
-	return infile;
-}
 
 void importAbstracts() {
 	char line[1000];
@@ -1018,25 +1051,14 @@ void importAbstracts() {
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		sscanf(line,"%d\t%[^\n]s",&id,name);// %[^\n]s == REST OF LINE!
-		if(id<1000||id>10*million)continue;// skip :(
-//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
+		id=id+10000;
+		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 //		printf("%s\n",line);
 		c->nodeCount=id;// hardcoded hack to sync ids!!!
 		Node* a=getAbstract(name);
 		a->context=wordnet;
 	}
 	fclose(infile); /* Close the file */
-}
-//int wordnet_synset_map[117659];
-map<int,int> wordnet_synset_map;
-
-int norm_wordnet_id(int synsetid){
-	if(synsetid<million)return synsetid;
-	int id=wordnet_synset_map[synsetid];
-	if(!id)
-		return synsetid;
-	return id;
-//	return (synsetid%million)+200000;
 }
 
 int synonyms=400000;
@@ -1050,7 +1072,8 @@ void importSenses() {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		fixNewline(line);
 		sscanf(line,"%d\t%d\t%d\t%*d\t%*d\t%*d\t%*d\t%s",&id,&labelid,&synsetid,/*senseid,sensenum,lexid,tags,*/name);
-		if(id<1000)continue;// skip :(
+//		if(id<1000)continue;// skip :(
+		id=id+10000;// NORM!!!
 		Node* word=get(id);
 		synsetid=norm_wordnet_id(synsetid);
 		if(synsetid>200000+117659)
@@ -1100,10 +1123,7 @@ void importSynsets() {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		fixNewline(line);
 		sscanf(line,"%d\t%c\t%*d\t%[^\n]s",&id,&pos,/*&lexdomain,*/definition);
-		if(id<1000)continue;// skip :(
 		id=norm_wordnet_id(id);
-		if(id>200000+117659)
-			p(line);
 		if(pos=='n')get(id)->kind=noun;
 		if(pos=='v')get(id)->kind=verb;
 		if(pos=='a')get(id)->kind=adjective;
@@ -1134,16 +1154,6 @@ void importLables() {
 	fclose(infile); /* Close the file */
 }
 
-void load_wordnet_synset_map(){
-	char line[1000];
-	FILE *infile=open_file("wordnet_synset_map.txt");
-	int s,id;
-	while (fgets(line, sizeof (line), infile) != NULL) {
-		fixNewline(line);
-		sscanf(line,"%d\t%d",&s,&id);
-		wordnet_synset_map[s]=id;
-	}
-}
 void importStatements() {
 	char line[1000];
 	int linecount = 0;

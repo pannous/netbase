@@ -127,9 +127,11 @@ bool isInteger(char* buf) {
 	return strlen(buf) == strspn(buf, "0123456789");
 }
 bool endsWith(const char* x, const char* y) {
-	if(strlen(x)< strlen(y))return false;
-	for (int i = strlen(y)-1; i >=0 ; i--) {
-		if (x[i] != y[i])return false;
+	int xlen=strlen(x);
+	int ylen=strlen(y);
+	if(xlen< xlen)return false;
+	for (int i = 1; i <= ylen; i++) {
+		if (x[xlen-i] != y[ylen-i])return false;
 	}
 	return true;
 }
