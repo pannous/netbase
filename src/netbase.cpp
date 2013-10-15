@@ -374,7 +374,7 @@ Statement* getStatement(int id, int context_id) {
 Statement* nextStatement(Node* n, Statement* current, bool stopAtInstances) {
 	if (current == 0)return firstStatement(n);
 	if (stopAtInstances && current->Predicate == Instance)return null;
-	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null;
+//	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null; PUT TO END!!
 	if (current->Subject == n)return getStatement(current->nextSubjectStatement, n->context);
 	if (current->Predicate == n)return getStatement(current->nextPredicateStatement, n->context);
 	;
@@ -389,6 +389,10 @@ Statement* nextStatement(Node* n, Statement* current, bool stopAtInstances) {
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId) {
 	Context* context = getContext(contextId);
 	if (!checkNode(node, id, false, false))return 0;
+	if(context->currentNameSlot+1000>averageNameLength*maxNodes){
+		p("OUT OF MEMORY!");
+		return node;
+	}
 	node->id = id;
 #ifndef inlineName
 	node->name = &context->nodeNames[context->currentNameSlot];
@@ -416,8 +420,8 @@ Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId
 bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	if (node == 0) {
 		badCount++;
-		p("null node");
-		p(nodeId);
+//		p("null node");
+//		p(nodeId);
 		return false;
 	}
 	Context* c = currentContext(); // getContext(node->context);
@@ -626,6 +630,7 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 // TODO only used in addStatementToNodeWithInstanceGap !!
 
 Statement* getStatementNr(Node* n, int nr, bool firstInstanceGap) {
+//	if(nr==0)return 0;// todo ????
 	if (nr >= maxStatementsPerNode) {
 		badCount++;
 		return null;
@@ -653,6 +658,8 @@ Statement* getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 			badCount++;
 			return null;
 		}
+		if(!checkStatement(statement,true,false))
+			break;
 		if (i > 0 && firstInstanceGap && statement->Predicate == Instance) {
 			return laststatement;
 		}
@@ -1070,9 +1077,10 @@ void show(Node* n, bool showStatements) {//=true
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
-		printf("(#%d)\t%s\t%s\t%s\n", n->id, n->name,text, img.data());
+//		printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
+//		printf("%d\t%s\t%s\t%s\t(%016llX)\n", n->id, n->name,text, img.data(),n);
+	printf("%d\t%s\t%s\t%s\n", n->id, n->name,text, img.data());
 //	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
-	//	printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
 	int i = 0;
@@ -1081,9 +1089,9 @@ void show(Node* n, bool showStatements) {//=true
 	if (showStatements) {
 		Statement* s = 0;
 		while (s = nextStatement(n, s)) {
-			//		for (; i < min(n->statementCount, maxShowStatements); i++) {
-			//			s = getStatementNr(n, i);
-			bool stopAtInstances = i > 10;
+//					for (; i < min(n->statementCount, maxShowStatements); i++) {
+//						s = getStatementNr(n, i);
+			bool stopAtInstances = ++i > maxShowStatements;
 			if (stopAtInstances && s && s->Predicate == Instance)
 				break;
 			//			s=nextStatement(n,s,stopAtInstances);
@@ -1143,7 +1151,7 @@ Node* findWord(int context, const char* word, bool first) {//=false
 				//				else
 				//				printf("found node %s in context %d\n", word, context);
 			}
-			show(n);
+			show(n);//////// <<<<<<<<<<<<<<<
 			if (first)
 				return n;
 		}
@@ -1170,7 +1178,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 		Statement* s = getStatementNr(subject, i);
 		if (s == 0) {
 			badCount++;
-			ps("!s!");
+//			ps("!s!");// deleted
 			return 0;
 		};
 		//		showStatement(s);// debug!!!
@@ -1253,6 +1261,7 @@ void removeStatement(Node* n, Statement* s) {
 }
 
 void deleteStatement(Statement* s) {
+	if(!checkStatement(s,true,false))return;
 	removeStatement(s->Subject, s);
 	removeStatement(s->Predicate, s);
 	removeStatement(s->Object, s);
@@ -1305,7 +1314,7 @@ void deleteNode(Node* n) {
 }
 
 void deleteStatements(Node* n) {
-	for (int i = 0; i < n->statementCount; i++) {
+	for (int i = 0; i < min(n->statementCount,10000); i++) {
 		Statement* s = getStatementNr(n, i);
 		deleteStatement(s);
 	}
@@ -1589,7 +1598,7 @@ Node* has(Node* n, Node* m) {
 	return no;
 }
 
-Node* findRelation(Node* from, Node* to) {
+Node* findRelation(Node* from, Node* to) {// todo : broken Instance !!!
 	Statement* s = findStatement(from, Any, to);
 	if (!s) s = findStatement(to, Any, from);
 	if (s) {

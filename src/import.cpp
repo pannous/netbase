@@ -20,8 +20,8 @@ char* nodes_file = "nodes.txt";
 char* statements_file = "statements.txt";
 char* images_file = "images.txt";
 
-FILE *open_file(const char* file){
-	if(!contains(file,"/"))file=concat(import_path.data(),file);
+FILE *open_file(const char* file) {
+	if (!contains(file, "/"))file = concat(import_path.data(), file);
 	printf("Opening File %s\n", (file));
 	FILE *infile;
 	if ((infile = fopen((file), "r")) == NULL) {
@@ -39,28 +39,58 @@ void norm(char* title) {
 		}
 	}
 }
-//int wordnet_synset_map[117659];
-map<int,int> wordnet_synset_map;
 
-int norm_wordnet_id(int synsetid){
-	if(synsetid<million)return synsetid;
-	int id=wordnet_synset_map[synsetid];
-	if(!id)
-		p("BAD ID!!!");
-//	id=id+10000;// NORM!!!
-	return id;
-//	return (synsetid%million)+200000;
+
+bool lowMemory() {
+	size_t currentSize = getCurrentRSS();
+	size_t peakSize = getPeakRSS();
+	size_t free = getFreeSystemMemory();
+	if (currentSize > 3 * GB) {
+		printf("MEMORY: %L Peak: %d FREE: %L \n", currentSize, peakSize, free);
+		return true;
+	}
+	//		|| currentSize*1.2>sizeOfSharedMemory||
+	if (currentContext()->nodeCount * 1.2 > maxNodes) {
+		pf("%d nodes!", currentContext()->nodeCount);
+		return true;
+	}
+	if (currentContext()->currentNameSlot * 1.2 > maxNodes * averageNameLength) {
+		pf("%d characters!", currentContext()->currentNameSlot);
+		return true;
+	}
+	if (currentContext()->statementCount * 1.2 > maxStatements0) {
+		pf("%d nodes!", currentContext()->statementCount);
+		return true;
+	}
+	if (extrahash + 10000 > abstracts + abstractHashSize * 2) {
+		pf("hashes near %L!", extrahash);
+		return true;
+	}
+	return false;
 }
 
+//int wordnet_synset_map[117659];
+map<int, int> wordnet_synset_map;
 
-void load_wordnet_synset_map(){
+int norm_wordnet_id(int synsetid) {
+	if (synsetid < million)return synsetid;
+	int id = wordnet_synset_map[synsetid];
+	if (!id)
+		p("BAD ID!!!");
+	//	id=id+10000;// NORM!!!
+	return id;
+	//	return (synsetid%million)+200000;
+}
+
+void load_wordnet_synset_map() {
+	if(wordnet_synset_map.size()>0)return;
 	char line[1000];
-	FILE *infile=open_file("wordnet_synset_map.txt");
-	int s,id;
+	FILE *infile = open_file("wordnet_synset_map.txt");
+	int s, id;
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		fixNewline(line);
-		sscanf(line,"%d\t%d",&s,&id);
-		wordnet_synset_map[s]=id;
+		sscanf(line, "%d\t%d", &s, &id);
+		wordnet_synset_map[s] = id;
 	}
 }
 
@@ -500,7 +530,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	char line[1000];
 	char* line0 = (char*) malloc(sizeof (char*) *100);
 	char* field = (char*) malloc(sizeof (char*) *100);
-	char* value = (char*) malloc(sizeof (char*) *10000000);// uiuiui!
+	char* value = (char*) malloc(sizeof (char*) *10000000); // uiuiui!
 
 	Node* root = 0;
 	Node* parent = 0; // keep track of 1 layer
@@ -720,23 +750,17 @@ void importList(const char* file, const char* type) {
 	Node* subject = getClass(type);
 	Node* object;
 	int linecount = 0;
-	FILE *infile;
-	printf("Opening File %s\n", (file));
-	if ((infile = fopen((file), "r")) == NULL) {
-		perror("Error opening file");
-
-		exit(1);
-	}
+	FILE *infile=open_file(file);
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+		if (linecount % 10000 == 0 && lowMemory())break;
 		fixNewline(line);
-		char* objectName = (char*) malloc(100);
 		object = getThe(line);
-		addStatement(subject, Instance, object, false);
-		if (!subject || !object || subject->id > maxNodes || object->id > maxNodes) {
-			printf("Quitting import : id > maxNodes\n");
-			break;
+		 if( !object || object->id > maxNodes) {
+			printf("ERROR %s",line);
+			continue;
 		}
+		addStatement(subject, Instance, object, false);
 	}
 	fclose(infile); /* Close the file */
 	p("import list ok");
@@ -841,35 +865,35 @@ Node* getYagoConcept(char* key) {
 		key = all[0];
 		key++; // ignore quotes "33"
 		free(all);
-		if(eq(unit,",)"))return 0;// LOL_(^^,) BUG!
+		if (eq(unit, ",)"))return 0; // LOL_(^^,) BUG!
 		if (eq(unit, "xsd:integer"))unit = 0; //-> number
 		if (eq(unit, "xsd:decimal"))unit = 0; //-> number
 		if (eq(unit, "xsd:float"))unit = 0; //-> number
 		if (eq(unit, "xsd:nonNegativeInteger"))unit = 0; //-> number
-		else if (eq(unit, "<yago0to100>"))unit=0;
+		else if (eq(unit, "<yago0to100>"))unit = 0;
 		if (!unit)
 			return value(key, atoi(key), unit);
 
-		if (eq(unit, "<m"))unit="Meter";
-		else if (eq(unit, "<m>"))unit="Meter";
-		else if (eq(unit, "<s>"))unit="Seconds";
-		else if (eq(unit, "<g>"))unit="Gram";
-		else if (eq(unit, "</km"))unit="Kilometer";
+		if (eq(unit, "<m"))unit = "Meter";
+		else if (eq(unit, "<m>"))unit = "Meter";
+		else if (eq(unit, "<s>"))unit = "Seconds";
+		else if (eq(unit, "<g>"))unit = "Gram";
+		else if (eq(unit, "</km"))unit = "Kilometer";
 		else if (eq(unit, "xsd:date")); // parse! unit = 0; //-> number
 		else if (eq(unit, "<degrees>")); // ignore
 		else if (eq(unit, "<dollar>")); // ignore
 		else if (eq(unit, "<euro>")); // ignore
-		else if (eq(unit, "<yagoISBN>"))unit="ISBN"; // ignore
+		else if (eq(unit, "<yagoISBN>"))unit = "ISBN"; // ignore
 		else if (eq(unit, "<yagoTLD>"))
-			unit="TLD"; // ???
-		else if (eq(unit, "<yagoMonetaryValue>"))unit="dollar";
-		else if (eq(unit, "<%>"))unit="%";// OK
-		else if (eq(unit, "%"));// OK
+			unit = "TLD"; // ???
+		else if (eq(unit, "<yagoMonetaryValue>"))unit = "dollar";
+		else if (eq(unit, "<%>"))unit = "%"; // OK
+		else if (eq(unit, "%")); // OK
 		else printf("UNIT %s \n", unit);
-//		, current_context, getYagoConcept(unit)->id
+		//		, current_context, getYagoConcept(unit)->id
 		return add(key);
-		Node* unity=getYagoConcept(unit);
-		return getThe(key,unity);
+		Node* unity = getYagoConcept(unit);
+		return getThe(key, unity);
 	}
 	if (!startsWith(key, "<wiki") && contains(key, ":")) {
 		printf(" unknown key %s\n", key);
@@ -885,18 +909,18 @@ Node* getYagoConcept(char* key) {
 		return get(norm_wordnet_id(atoi(id)));
 	}
 
-	if(eq(key,"<Carding>")||eq(key,"<Los_Angeles_California_Temple>"))
-		return 0;// What the bug???
+	if (eq(key, "<Carding>") || eq(key, "<Los_Angeles_California_Temple>"))
+		return 0; // What the bug???
 	return getThe(fixYagoName(key));
 
 }
 
+
 bool importYago(const char* file) {
 	p("import YAGO start");
-	load_wordnet_synset_map();
 	if (!contains(file, "/"))
 		file = concat("/data/base/BIG/yago/", file);
-//		file = concat("/Users/me/data/base/BIG/yago/", file);
+	//		file = concat("/Users/me/data/base/BIG/yago/", file);
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -914,17 +938,11 @@ bool importYago(const char* file) {
 	char* objectName = (char*) malloc(100);
 	while (fgets(line, 1000, infile) != NULL) {
 		fixNewline(line);
-		if (linecount % 10000 == 0) {
-			size_t currentSize = getCurrentRSS();
-			size_t peakSize = getPeakRSS();
-			size_t free = getFreeSystemMemory();
-			//			printf("MEMORY: %L            Peak: %d FREE: %L \n", currentSize, peakSize, free);
-//			currentSize > 3*GB || currentSize*1.2>sizeOfSharedMemory||
-			if (currentContext()->nodeCount*1.2 > maxNodes) {//MEMORY
+		if (linecount % 10000 == 0)
+			if (lowMemory()) {//MEMORY
 				printf("MEMORY safety boarder reached\n");
 				return 0; //exit(0);// 4GB max
 			}
-		}
 		if (++linecount % 10000 == 0)
 			printf("%d\n", linecount);
 		//			sscanf(line, "%s\t%s\t%s\t%s", &id, subjectName,predicateName, objectName /*, &certainty*/);
@@ -936,7 +954,7 @@ bool importYago(const char* file) {
 		if (!ok)ok = sscanf(line, "\t%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
 		if (!ok)ok = sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
 		if (ok < 3) {
-			continue;//todo
+			continue; //todo
 			//			printf("%s\n", line);
 			char** all = splitStringC(line, '\t');
 			if (all[2] == 0) {
@@ -1026,90 +1044,97 @@ bool importFacts(const char* file, const char* predicateName = "population") {
 }
 
 void importNames() {
+	addStatement(all(firstname), are, a(name));
+	addStatement(all(male_firstname), have_the(gender), a(male));
+	addStatement(all(male_firstname), are, a(firstname));
+	addStatement(all(male_firstname), Owner, a(male));
+	addStatement(all(female_firstname), have_the(gender), a(female));
+	addStatement(all(female_firstname), are, a(firstname));
+	addStatement(all(female_firstname), Owner, a(female));
 	importList((import_path + "FrauenVornamen.txt").data(), "female_firstname");
 	importList((import_path + "MaennerVornamen.txt").data(), "male_firstname");
-	addStatement(all(firstname), are, a(name));
-	addStatement(all(male_firstname), a(gender), a(male));
-	addStatement(all(male_firstname), Owner, a(male));
-	addStatement(all(female_firstname), a(gender), a(female));
-	addStatement(all(female_firstname), Owner, a(female));
 }
-
 
 void importAbstracts() {
 	char line[1000];
 	char name[1000];
-//	char* line=(char*) malloc(1000);
-//	char* name=(char*) malloc(1000);
+	//	char* line=(char*) malloc(1000);
+	//	char* name=(char*) malloc(1000);
 	int linecount = 0;
 	int id;
 	doDissect = false;
-	memset(abstracts, 0, abstractHashSize);
-	memset(extrahash, 0, abstractHashSize/2);
-	Context* c=getContext(wordnet);
-	FILE *infile=open_file("abstracts.tsv");
+	memset(abstracts, 0, abstractHashSize * 2);
+	extrahash = (Ahash*) (abstract_root + abstractHashSize);
+	//	memset(extrahash, 0, abstractHashSize-1);// extrahash pointer increases !!!
+	Context* c = getContext(wordnet);
+	FILE *infile = open_file("abstracts.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
-		sscanf(line,"%d\t%[^\n]s",&id,name);// %[^\n]s == REST OF LINE!
-		id=id+10000;
+		sscanf(line, "%d\t%[^\n]s", &id, name); // %[^\n]s == REST OF LINE!
+		id = id + 10000;
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
-//		printf("%s\n",line);
-		c->nodeCount=id;// hardcoded hack to sync ids!!!
-		Node* a=getAbstract(name);
-		a->context=wordnet;
+		//		printf("%s\n",line);
+		c->nodeCount = id; // hardcoded hack to sync ids!!!
+		Node* a = getAbstract(name);
+		a->context = wordnet;
+		a->kind = abstractId;
 	}
 	fclose(infile); /* Close the file */
 }
 
-int synonyms=400000;
+int synonyms = 400000;
+
 void importSenses() {
 	char line[1000];
-	char name[1000];
+	char* name = (char*) malloc(1000);
 	int linecount = 0;
-	int id,labelid,synsetid;
-	FILE *infile=open_file("senses.tsv");
+	int id, labelid, synsetid;
+	FILE *infile = open_file("senses.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		fixNewline(line);
-		sscanf(line,"%d\t%d\t%d\t%*d\t%*d\t%*d\t%*d\t%s",&id,&labelid,&synsetid,/*senseid,sensenum,lexid,tags,*/name);
-//		if(id<1000)continue;// skip :(
-		id=id+10000;// NORM!!!
-		Node* word=get(id);
-		synsetid=norm_wordnet_id(synsetid);
-		if(synsetid>200000+117659)
+		sscanf(line, "%d\t%d\t%d\t%*d\t%*d\t%*d\t%*d\t%s", &id, &labelid, &synsetid, /*senseid,sensenum,lexid,tags,*/name);
+		//		if(id<1000)continue;// skip :(
+		id = id + 10000; // NORM!!!
+		if (130172 == id)
 			p(line);
-		if(synsetid<200000)
+		Node* word = get(id);
+		synsetid = norm_wordnet_id(synsetid);
+		if (synsetid > 200000 + 117659)
+			p(line);
+		if (synsetid < 200000)
 			continue;
-		Node* sense=get(synsetid);
-		for(int i=0;i<strlen(name);i++)if(name[i]=='%')name[i]=0;
-		if(!sense->id){
-			initNode(sense,synsetid,name,0,wordnet);
-			addStatement(word,Instance,sense);// Sense
-		}
-		else if(!eq(sense->name,name)){
-			Node* syno=initNode(get(synonyms),synonyms,name,0,wordnet);
-			addStatement(syno,Synonym,sense);
-			addStatement(word,Instance,syno);// Sense
+		Node* sense = get(synsetid);
+		for (int i = 0; i < strlen(name); i++)if (name[i] == '%')name[i] = 0;
+		if (!sense->id) {
+			initNode(sense, synsetid, name, 0, wordnet);
+		} else if (!eq(sense->name, name)) {
+			Node* syno = initNode(get(synonyms), synonyms, name, 0, wordnet);
+			addStatement(syno, Synonym, sense);
+			//			addStatement(word,Instance,syno);// Sense
+			sense = syno;
 			synonyms++;
 		}
-//		if(!sense->name){
-//		sense->name=fixed;
-//		sense->context=wordnet;
-//		sense->id=synsetid;
-//		}
+		addStatement(word, Instance, sense, false); // Sense
+		//		if(!sense->name){
+		//		sense->name=fixed;
+		//		sense->context=wordnet;
+		//		sense->id=synsetid;
+		//		}
 	}
 	fclose(infile); /* Close the file */
 }
-void addLabel(Node *node,char* text){
+
+void addLabel(Node *node, char* text) {
 	int len = strlen(text);
-	Context* context=currentContext();
-	int slot=context->currentNameSlot;
-	char* label=context->nodeNames+slot;
+	Context* context = currentContext();
+	int slot = context->currentNameSlot;
+	char* label = context->nodeNames + slot;
 	strcpy(label, text); // can be freed now!
-	node->value.text=label;
+	node->value.text = label;
 	context->nodeNames[slot + len] = 0;
-	context->currentNameSlot =slot + len+1;
-//		addStatement(n,Label,getAbstract(definition));
+	context->currentNameSlot = slot + len + 1;
+	//		addStatement(n,Label,getAbstract(definition));
 }
 
 void importSynsets() {
@@ -1118,23 +1143,23 @@ void importSynsets() {
 	int linecount = 0;
 	int id;
 	char pos;
-	FILE *infile=open_file("synsets.tsv");
+	FILE *infile = open_file("synsets.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		fixNewline(line);
-		sscanf(line,"%d\t%c\t%*d\t%[^\n]s",&id,&pos,/*&lexdomain,*/definition);
-		id=norm_wordnet_id(id);
-		if(pos=='n')get(id)->kind=noun;
-		if(pos=='v')get(id)->kind=verb;
-		if(pos=='a')get(id)->kind=adjective;
-		if(pos=='r')get(id)->kind=adverb;
-		if(pos=='s')
-			get(id)->kind=adjective;// satelite !?
-		addLabel(get(id),definition);
+		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/definition);
+		id = norm_wordnet_id(id);
+		if (pos == 'n')addStatement4(id,Type.id,noun);// get(id)->kind = noun;
+		if (pos == 'v')addStatement4(id,Type.id,verb);//get(id)->kind = verb;
+		if (pos == 'a')addStatement4(id,Type.id,adjective);//get(id)->kind = adjective;
+		if (pos == 'r')addStatement4(id,Type.id,adverb);//get(id)->kind = adverb;
+		if (pos == 's')
+			addStatement4(id,Type.id,adjective);
+//			get(id)->kind = adjective; // satelite !?
+		addLabel(get(id), definition);
 	}
 	fclose(infile); /* Close the file */
 }
-
 
 void importLables() {
 	char line[1000];
@@ -1142,14 +1167,19 @@ void importLables() {
 	int linecount = 0;
 	int id;
 	char pos;
-	FILE *infile=open_file("labels.tsv");
+	FILE *infile = open_file("labels.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		fixNewline(line);
-		sscanf(line,"%*d\t%d\t%[^\n]s",&id,/*&lexdomain,*/definition);
-		id=norm_wordnet_id(id);
-		addLabel(get(id),definition);
-//		addStatement(get(id),Label,getAbstract(definition));
+		sscanf(line, "%*d\t%d\t%[^\n]s", &id, /*&lexdomain,*/definition);
+		id = id + 10000; //  label on abstract !?!
+		//		id=norm_wordnet_id(id);
+		if (id >= 200000) {
+			p(line);
+			continue;
+		}
+		addLabel(get(id), definition);
+		//		addStatement(get(id),Label,getAbstract(definition));
 	}
 	fclose(infile); /* Close the file */
 }
@@ -1157,27 +1187,32 @@ void importLables() {
 void importStatements() {
 	char line[1000];
 	int linecount = 0;
-	int s,p,o;
-	FILE *infile=open_file("statements.tsv");
+	int s, p, o;
+	FILE *infile = open_file("statements.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		fixNewline(line);
-		sscanf(line,"%d\t%d\t%d",&s,&o,&p);
-		addStatement4(wordnet,norm_wordnet_id(s),norm_wordnet_id(p),norm_wordnet_id(o));
+		sscanf(line, "%d\t%d\t%d", &s, &o, &p);
+		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
+		//		if (old)return old; // showStatement(old)
+		//
+		if (p == SubClass->id)continue; // Redundant data!
+		if (p == Instance->id)continue; // Redundant data!
+		addStatement4(wordnet, norm_wordnet_id(s), norm_wordnet_id(p), norm_wordnet_id(o));
 	}
 	fclose(infile); /* Close the file */
 }
-
 
 void importWordnet() {
 	load_wordnet_synset_map();
 	importAbstracts();
 	importSenses();
-	getContext(wordnet)->nodeCount=synonyms;//200000+117659;//WTH!
+	getContext(wordnet)->nodeCount = synonyms; //200000+117659;//WTH!
 	importSynsets();
 	importLables();
 	importStatements();
 }
+
 void importWordnet2() {
 	importNodes(); // FIRST! Hardlinked ids overwrite everything!!
 	importStatements2();
@@ -1191,26 +1226,12 @@ void importGeoDB() {
 
 // IMPORTANT: needs manual collectAbstracts() afterwards (for speed reasons??)
 
-void importAll() {
-	//	importFacts()
-	//	importCsv("adressen.txt");
-	importNames();
-	importWordnet();
-	importGeoDB();
-	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
-	//		p("image import done before ...");
-	//	else
-	//		importImages();
-}
-
-void importWikipedia() {
-}
-
 void importAllYago() {
-	if(hasWord("yagoGeoEntity")){
+	if (hasWord("yagoGeoEntity")) {
 		p("importAllYago Already done");
 		return;
 	}
+	load_wordnet_synset_map();
 	import("yago", "yagoStatistics.tsv");
 	import("yago", "yagoSchema.tsv");
 	import("yago", "yagoGeonamesClassIds.tsv");
@@ -1221,7 +1242,7 @@ void importAllYago() {
 	import("yago", "yagoGeonamesEntityIds.tsv");
 	//import("yago","yagoWordnetDomains.tsv");
 	//import("yago","yagoMultilingualClassLabels.tsv");
-//	import("yago", "yagoTaxonomy.tsv");todo
+	//	import("yago", "yagoTaxonomy.tsv");todo
 	//import("yago","yagoDBpediaClasses.tsv");
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
@@ -1229,6 +1250,22 @@ void importAllYago() {
 	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoFacts.tsv");
+}
+
+void importAll() {
+	//	importFacts()
+	//	importCsv("adressen.txt");
+	importWordnet();
+	importNames();
+	importGeoDB();
+	importAllYago();
+	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
+	//		p("image import done before ...");
+	//	else
+	//		importImages();
+}
+
+void importWikipedia() {
 }
 
 void import(const char* type, const char* filename) {

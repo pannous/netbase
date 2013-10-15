@@ -857,7 +857,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 }
 
 NodeVector memberFilter(Node* subject, NodeQueue * queue) {
-	//	NodeVector all;
+	NodeVector all;
 	for (int i = 0; i < subject->statementCount; i++) {
 		Statement* s = getStatementNr(subject, i);
 		if (!checkStatement(s)) {
@@ -893,26 +893,30 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 			if (subjectMatch)enqueue(subject, s->Object, queue);
 			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
 		} else {
-			//			if (subjectMatch && predicateMatch)all.push_back(s->Object);
-			//			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
-			//        if (subjectMatch && s->Predicate>1000)all.push_back(s->Object);
+			if (subjectMatch && predicateMatch)all.push_back(s->Object);
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+			if (subjectMatch && s->Predicate->id>1000)all.push_back(s->Object);
 		}
 	}
-
-	return EMPTY; //hack
-	//	return all;
+	if(queue)// already enqueued
+		return EMPTY; //hack
+	else
+		return all;
 }
 
 NodeVector parentFilter(Node* subject, NodeQueue * queue) {
-	//	NodeVector all;
-	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatementNr(subject, i);
+		NodeVector all;
+	Statement* s = 0;
+	int i = 0;
+	while((i++<1000) && (s=nextStatement(subject,s,true))){
+//	for (int i = 0; i < subject->statementCount; i++) {
+//		Statement* s = getStatementNr(subject, i);
 		if (s == 0) {
 			badCount++;
 			continue;
 		};
 		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;
-		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
+//		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Type);
 		predicateMatch = predicateMatch || s->Predicate == SuperClass;
@@ -926,16 +930,17 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
 
 		if (queue) {
-			printf("-> %d %s\n",s->Object->id, s->Object->name);
-			if (subjectMatch)enqueue(subject, s->Object, queue);
-			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object, queue);
+			if (subjectMatchReverse&& predicateMatchReverse)enqueue(subject, s->Subject, queue);
 		} else {
-			//		if (subjectMatch && predicateMatch)all.push_back(s->Object);
-			//		if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+			if (subjectMatch && predicateMatch)all.push_back(s->Object);
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
 		}
 	}
-	return EMPTY; //hack
-	//	return all;
+	if(queue)// already enqueued
+		return EMPTY; //hack
+	else
+		return all;
 }
 
 
@@ -943,7 +948,7 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 // todo : enqueue instances?
 
 NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
-	//	NodeVector all;
+	NodeVector all;
 	if (!includeRelations && subject->id < 1000)return EMPTY;
 	for (int i = 0; i < subject->statementCount; i++) {
 		Statement* s = getStatementNr(subject, i);
@@ -958,12 +963,14 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 			if (subjectMatch)enqueue(subject, s->Object, queue);
 			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
 		} else {
-			//		if (subjectMatch)all.push_back(s->Object);
-			//		if (subjectMatchReverse)all.push_back(s->Subject);
+			if (subjectMatch)all.push_back(s->Object);
+			if (subjectMatchReverse)all.push_back(s->Subject);
 		}
 	}
-	return EMPTY; //hack
-	//	return all;
+	if(queue)// already enqueued
+		return EMPTY; //hack
+	else
+		return all;
 }
 
 NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue) {
@@ -973,24 +980,36 @@ NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue) {
 NodeVector reconstructPath(Node* from, Node * to) {
 	Node* current = to;
 	NodeVector all;
+	bool ok=true;
 	//	enqueued[from->id]=0;// terminate
 	while (current && current != from) {
 		all.push_back(current);
 		int id = enqueued[current->id];
-		if (id <= 0)break;
+		if (id <= 0){ok=false;break;}
 		current = get(id);
-		//		if (contains(all, current)) {
-		//			ps("LOOOOOP!");
-		//			break;
-		//		}
-		show(current, false);
+		if (contains(all, current))break;//LOOOOOP
 	}
+//	if(!ok){
+//	current = from;
+//	while (current && current != to) {
+//		all.push_back(current);
+//		int id = enqueued[current->id];
+//		if (id <= 0)break;
+//		current = get(id);
+//		if (contains(all, current))break;//LOOOOOP
+//	}
+//	}
 	all.push_back(from); // done
+
+//	if(all.size()>2)p("FOUND PATH");
+	free(enqueued);
 	return all;
 }
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
 	if (enqueued[d->id])return false; // already done -> continue;
+	printf("-> %d %s\n",d->id, d->name);
+	// todo if d==to stop here!
 	enqueued[d->id] = current->id;
 	q->push(d);
 	return true;
@@ -1014,28 +1033,29 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 		enqueued[d->id] = fro->id;
 		q.push(d);
 	}
-	ps("GO!");
+	p("TO");
+	p(to);
+	p("GO!");
 
 	Node* current;
 
 	while (current = q.front()) {
 		if (q.empty())break;
 		q.pop();
-		if (to == current) {
-			free(enqueued);
-			return reconstructPath(fro, to);
-		}
+		if (to == current)return reconstructPath(fro, to);
 		if (!checkNode(current, 0, true))
 			continue;
 		NodeVector all = edgeFilter(current, &q);
-		if (all != EMPTY)
+		if (all != EMPTY)// no queue
 			for (int i = 0; i < all.size(); i++) {
 				Node* d = (Node*) all[i];
+				if (to == current)return reconstructPath(fro, to);// shortcut
 				enqueue(current, d, &q);
 			}
 	}
 	free(enqueued);
-	return EMPTY; //reconstructPath(fro, to);
+	return EMPTY;// NONE FOUND!
+//	return reconstructPath(fro, to);
 }
 
 NodeVector memberPath(Node* from, Node * to) {

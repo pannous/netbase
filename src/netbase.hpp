@@ -38,6 +38,7 @@ extern int current_context;
 #define _(w) getThe(#w)
 #define the(word) getThe(#word)
 #define has_the(word) getThe(#word)// semantic bla
+#define have_the(word) getThe(#word)// semantic bla
 #define all(word) getThe(#word) //todo!
 //#define a(word) Node* word=getThe(#word);
 #define that(word) Node* word=getThe(#word)  ;
@@ -449,7 +450,7 @@ Node* add_force(int contextId, int id, const char* nodeName, int kind);
 
 //extern map<long, Node*>* abstracts;
 extern Ahash* abstracts; // Node name hash
-extern Ahash* extrahash; // for hashes that are not unique, increasing
+extern Ahash* extrahash; // for hashes that are not unique, increasing!!!
 extern map < Node*, bool> yetvisited;
 extern map <double, short> yetvisitedIsA;
 //Ahash* getAbstractHash(int hashkey);
@@ -468,7 +469,7 @@ typedef Node* N;
 typedef NodeVector NV;
 
 //#pragma warnings_off
-static int averageNameLength =20;// 20; // used for malloc
+static int averageNameLength =40;// 20; // used for malloc
 static int nodeSize=sizeof(Node);// 40
 static int statementSize=sizeof(Statement);// 56
 static int ahashSize=16;

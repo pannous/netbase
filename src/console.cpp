@@ -145,6 +145,8 @@ bool parse(const char* data) {
 		load(false);
 		return true;
 	}
+	if (eq(data, ":ca"))
+		collectAbstracts();
 	if (eq(data, "load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
 		load(true);
 		return true;
