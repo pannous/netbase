@@ -59,23 +59,23 @@ Node *parseProperty(const char *data) {
 		sscanf(data, "%s of %s", property, thing);
 	else {
 		//			sscanf(data,"%s.%s",thing,property);
-		char** splat = splitString(data, '.');
+		char** splat = splitStringC(data, '.');
 		thing = splat[0];
 		property = splat[1];
 	}
 	if(!property){
-		char** splat = splitString(data, ' ');
+		char** splat = splitStringC(data, ' ');
 		thing = splat[0];
 		property = splat[2];
 	}
-	pf("does %s have %s?\n",thing,property);
+	pf("does %s have a %s?\n",thing,property);
 	clearAlgorithmHash();
 	Node* found = has(getThe(thing), getAbstract(property));
 	if (found == 0)
 		found = has(getAbstract(thing), getAbstract(property));
 	if(checkNode(found)){
 		show(found);
-		pf("%s\n",found->name);
+		pf("YES: %s\n",found->name);
 	}
 	return found;
 }
