@@ -1015,7 +1015,7 @@ NodeVector reconstructPath(Node* from, Node * to) {
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
 	if (enqueued[d->id])return false; // already done -> continue;
-	printf("-> %d %s\n",d->id, d->name);
+	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
 	enqueued[d->id] = current->id;
 	q->push(d);
@@ -1049,7 +1049,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	while (current = q.front()) {
 		if (q.empty())break;
 		q.pop();
-		pf("? %d %s\n",current->id,current->name);
+		pf("?? %d %s\n",current->id,current->name);
 		if (to == current)
 			return reconstructPath(fro, to);
 		if (!checkNode(current, 0, true))

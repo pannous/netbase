@@ -252,7 +252,7 @@ bool parse(const char* data) {
 		query(data);
 		return true;
 	}
-	if (contains(data, " of ") || contains(data, ".") && !contains(data, " ")) {
+	if (contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
 		parseProperty(data);
 		//        query(data);
 		return true;
@@ -298,10 +298,6 @@ bool parse(const char* data) {
 	if (!isprint(data[0])) {
 		return false;
 	}
-	if (splitString(data, " ").size() > 2) {
-		learn(data); // SPO
-		return true;
-	}
 
 	if (splitString(data, " ").size() == 2) {
 		Node* from = getAbstract(args.at(0));
@@ -310,6 +306,11 @@ bool parse(const char* data) {
 		//		if(all==EMPTY)parentPath(from,to);
 		//		if(all==EMPTY)shortestPath(from,to);
 		return true;
+	}
+	if (splitString(data, " ").size() > 3) {
+		if(data[0]=='!')
+		return learn(data); // SPO
+//		else data=replace(data," ","_");
 	}
 
 	//        query(string("all ")+data);// NO!

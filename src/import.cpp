@@ -44,7 +44,9 @@ bool lowMemory() {
 	size_t currentSize = getCurrentRSS();
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
-	if (currentSize > 3.5L * GB) {
+	if(!free)
+		free=5.5L * GB;
+	if (currentSize > free) {
 		printf("MEMORY: %L Peak: %d FREE: %L \n", currentSize, peakSize, free);
 		return true;
 	}
@@ -813,6 +815,7 @@ const char *fixYagoName(char *key) {
 }
 
 Node* rdfOwl(char* name) {
+	if(!name)return 0;
 	if (eq(name, "rdf:type"))return Type;
 	if (eq(name, "rdfs:subClassOf"))return SuperClass;
 	if (eq(name, "rdfs:label"))return Label;
@@ -843,7 +846,9 @@ Node* rdfOwl(char* name) {
 	if (eq(name, "xsd:nonNegativeInteger"))return getAbstract("natural number");
 	if (eq(name, "owl:FunctionalProperty"))return Label;
 	if (!startsWith(name, "wiki") && contains(name, ":")) {
-		name=strstr(name,":")+2;
+		name=strstr(name,":");
+		if(!name)return 0;// contains(name, ":") WTF????????
+		name=name+2;
 //		printf(" unknown key %s\n", name);
 //		return 0;
 	}
@@ -883,7 +888,7 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "%")); // OK
 	else printf("UNIT %s \n", unit);
 	//		, current_context, getYagoConcept(unit)->id
-	return add(name);
+//	return add(name);
 	Node* unity = rdfOwl(unit);// getThe(unit);//  getYagoConcept(unit);
 	return getThe(name, unity);
 }
@@ -910,10 +915,10 @@ Node* getYagoConcept(char* key) {
 	if (eq(name, "hasWordnetDomain"))return Domain;
 	//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
 	if (contains(name, "^^"))return rdfValue(key);
-	if (contains(name, ".jpg") || contains(name, ".gif") || contains(name, ".svg") || startsWith(name, "#") || startsWith(name, "<#")) {
-		printf(" bad key %s\n", name);
-		return 0;
-	}
+//	if (contains(name, ".jpg") || contains(name, ".gif") || contains(name, ".svg") || startsWith(name, "#") || startsWith(name, "<#")) {
+//		printf(" bad key %s\n", name);
+//		return 0;
+//	}
 	return getThe(name); //fixYagoName(key));
 
 }
@@ -1243,7 +1248,7 @@ void importAllYago() {
 		return;
 	}
 	load_wordnet_synset_map();
-	import("yago", "yagoImportantTypes.tsv");
+	import("yago", "yagoGeonamesEntityIds.tsv");
 	import("yago", "yagoStatistics.tsv");
 	import("yago", "yagoSchema.tsv");
 	import("yago", "yagoGeonamesClassIds.tsv");
@@ -1251,7 +1256,6 @@ void importAllYago() {
 	import("yago", "yagoGeonamesGlosses.tsv");
 	import("yago", "yagoSimpleTaxonomy.tsv");
 	//import("yago","yagoWordnetIds.tsv");// hasSynsetId USELESS!!!
-	import("yago", "yagoGeonamesEntityIds.tsv");
 	//import("yago","yagoWordnetDomains.tsv");
 	//import("yago","yagoMultilingualClassLabels.tsv");
 	//	import("yago", "yagoTaxonomy.tsv");todo
@@ -1259,6 +1263,7 @@ void importAllYago() {
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
 	import("yago", "yagoSimpleTypes.tsv");
+	import("yago", "yagoImportantTypes.tsv");
 	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoFacts.tsv");
 }

@@ -402,17 +402,6 @@ unsigned int hash(const char *str) {// unsigned
     return abs(pos);
 }
 
-
-string stem(string word){
-	word="|^"+word+"$|";
-	word=replace_all(word,"_"," ");
-	word=replace_all(word,"s$","$");
-	word=replace_all(word,"$|","");
-	word=replace_all(word,"|^","");
-	return word;
-}
-
-
 // call by object => destination unmodified!   (how) expensive?!
 void addRange(NodeVector& some, NodeVector more) {// bool keep destination unmodified=TRUE
     for (int i = 0; i < more.size(); i++) {
