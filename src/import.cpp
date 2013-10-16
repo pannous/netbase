@@ -44,25 +44,25 @@ bool lowMemory() {
 	size_t currentSize = getCurrentRSS();
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
-	if (currentSize > 3 * GB) {
+	if (currentSize > 3.5L * GB) {
 		printf("MEMORY: %L Peak: %d FREE: %L \n", currentSize, peakSize, free);
 		return true;
 	}
 	//		|| currentSize*1.2>sizeOfSharedMemory||
-	if (currentContext()->nodeCount * 1.2 > maxNodes) {
-		pf("%d nodes!", currentContext()->nodeCount);
+	if (currentContext()->nodeCount +20000 > maxNodes) {
+		pf("%d nodes!\n", currentContext()->nodeCount);
 		return true;
 	}
-	if (currentContext()->currentNameSlot * 1.2 > maxNodes * averageNameLength) {
-		pf("%d characters!", currentContext()->currentNameSlot);
+	if (currentContext()->currentNameSlot+300000 > maxNodes * averageNameLength) {
+		pf("%d characters!\n", currentContext()->currentNameSlot);
 		return true;
 	}
-	if (currentContext()->statementCount * 1.2 > maxStatements0) {
-		pf("%d nodes!", currentContext()->statementCount);
+	if (currentContext()->statementCount +40000> maxStatements0) {
+		pf("%d nodes!\n", currentContext()->statementCount);
 		return true;
 	}
 	if (extrahash + 10000 > abstracts + abstractHashSize * 2) {
-		pf("hashes near %L!", extrahash);
+		pf("hashes near %L!\n", extrahash);
 		return true;
 	}
 	return false;

@@ -751,20 +751,18 @@ void dissectParent(Node* subject) {
 	if (type < 1)type = str.find(".");
 	if (type >= 0 && len - type > 2) {
 		const char* type_name = str.substr(type + 1).c_str();
-		Node* word = getThe(type_name);
+		Node* word = getAbstract(type_name);//getThe
 		if (!checkNode(word) || !eq(word->name, type_name))return; // HOW???
-		addStatement(subject, Type, word, false); // true expensive!!! check before!!
+		addStatement(word, Instance,subject, false); // true expensive!!! check before!!
+//		addStatement(subject, Type, word, false); // true expensive!!! check before!!
 		dissectParent(word);
-		//		addStatement(word, Instance, subject, false);
 	} else if (plural) {
 		const char* singular = str.substr(0, len - 1).c_str();
-		Node* word = getThe(singular);
+		Node* word = getAbstract(singular);
 		if (!checkNode(word) || !eq(word->name, singular))return; // HOW???
-		addStatement(subject, Type, word, false); // true expensive!!! check before!!
+		addStatement(word, Instance,subject, false); // true expensive!!! check before!!
 		dissectParent(word);
 	}
-	// release str
-	//    str.clear();
 }
 
 // Ausnahmen:
