@@ -602,6 +602,7 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 
 	//	if(isAbstract(object)&&( predicate==Type||predicate==SuperClass))
 	//		object=getThe(object);
+	if(subject==object && predicate.id<1000)return 0;
 
 	Statement* statement = &context->statements[context->statementCount]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
 	Statement* s = statement;
@@ -1094,9 +1095,10 @@ void show(Node* n, bool showStatements) {//=true
 		while (s = nextStatement(n, s)) {
 			//					for (; i < min(n->statementCount, maxShowStatements); i++) {
 			//						s = getStatementNr(n, i);
-			bool stopAtInstances = ++i > maxShowStatements;
-			if (stopAtInstances && s && s->Predicate == Instance || i > 1000)
-				break;
+			if(i++ > defaultLimit)break;
+//			bool stopAtInstances = ++i > maxShowStatements;
+//			if (stopAtInstances && s && s->Predicate == Instance || i > defaultLimit)
+//				break;
 			//			s=nextStatement(n,s,stopAtInstances);
 			if (checkStatement(s))
 				showStatement(s);
@@ -1465,7 +1467,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic) {
 	if (n == match)return true;
 	if (!n || !n->name || !match || !match->name)return false; //!!
 	if (n->kind == match->id)return true; //
-	if (n->id < 100 && match->id < 100)return false; // danger!
+//	if (n->id < 100 && match->id < 100)return false; // danger!
 	if (get(n->kind) && eq(get(n->kind)->name, match->name, true))// danger: instance, noun
 		return true;
 	if (n->kind == match->id)return true;

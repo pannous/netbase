@@ -91,7 +91,7 @@ bool parse(const char* data) {
 	if (eq(data, "more") && lastCommand) {
 		defaultLimit *= 2;
 		return parse(lastCommand);
-	}
+	}else defaultLimit=100;
 	if (eq(data, ":x")) {
 		save();
 		exit(1);
@@ -196,13 +196,13 @@ bool parse(const char* data) {
 		return true;
 	}
 
-	if (args.size() > 1 && (startsWith(data, "has") || startsWith(data, ":h"))) {
+	if (args.size() > 1 && startsWith(data, "has")) {
 		Node* from = getAbstract(args.at(1));
 		Node* to = getAbstract(args.at(2));
 		memberPath(from, to);
 		return true;
 	}
-	if (startsWith(data, "is")) {
+	if(args.size() > 1 && startsWith(data, "is")) {
 		Node* from = getAbstract(args.at(1));
 		Node* to = getAbstract(args.at(2));
 		parentPath(from, to);
@@ -299,7 +299,7 @@ bool parse(const char* data) {
 		return false;
 	}
 
-	if (splitString(data, " ").size() == 2) {
+	if (args.size() == 2) {
 		Node* from = getAbstract(args.at(0));
 		Node* to = getAbstract(args.at(1));
 		NodeVector all = memberPath(from, to);
@@ -307,7 +307,7 @@ bool parse(const char* data) {
 		//		if(all==EMPTY)shortestPath(from,to);
 		return true;
 	}
-	if (splitString(data, " ").size() > 3) {
+	if (args.size() > 3) {
 		if(data[0]=='!')
 		return learn(data); // SPO
 //		else data=replace(data," ","_");

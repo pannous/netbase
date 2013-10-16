@@ -922,7 +922,7 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 			badCount++;
 			continue;
 		};
-		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;
+		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER!
 //		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Type);

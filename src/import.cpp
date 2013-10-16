@@ -1165,7 +1165,7 @@ void importSynsets() {
 		fixNewline(line);
 		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/definition);
 		id = norm_wordnet_id(id);
-		if (pos == 'n')addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun;
+		if (pos == 'n')addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun; DEFAULT!!
 		if (pos == 'v')addStatement4(wordnet, id, Type->id, verb); //get(id)->kind = verb;
 		if (pos == 'a')addStatement4(wordnet, id, Type->id, adjective); //get(id)->kind = adjective;
 		if (pos == 'r')addStatement4(wordnet, id, Type->id, adverb); //get(id)->kind = adverb;
