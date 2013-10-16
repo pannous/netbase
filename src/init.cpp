@@ -163,11 +163,12 @@ void init() {
 	int i;
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key = 0x69190;
+	char* root=(char*)shmat_root;
 	context_root = share_memory(key, contextOffset+maxNodes*nodeSize, context_root, shmat_root);
 	node_root = &context_root[contextOffset];// share_memory(key + 4, maxNodes*nodeSize, node_root, &shmat_root[0x400000000]);
-	abstract_root = share_memory(key + 1, abstractHashSize * 2+1, abstract_root, &shmat_root[0x100000000]);
-	name_root = share_memory(key + 2, maxNodes*averageNameLength, name_root, &shmat_root[0x200000000]);
-	statement_root = share_memory(key + 3,(int) maxStatements0*statementSize, statement_root, &shmat_root[0x300000000]);
+	abstract_root = share_memory(key + 1, abstractHashSize * 2+1, abstract_root, (void*)(root+0x100000000));
+	name_root = share_memory(key + 2, maxNodes*averageNameLength, name_root,(void*)(root+0x200000000));
+	statement_root = share_memory(key + 3,(int) maxStatements0*statementSize, (void*)(root+0x300000000));
 	abstracts = (Ahash*) (abstract_root ); // reuse or reinit
 	extrahash = (Ahash*) (abstract_root + abstractHashSize);
 	contexts = (Context*) context_root;
