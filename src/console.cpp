@@ -66,7 +66,11 @@ Node *parseProperty(const char *data) {
 	Node* found = has(getThe(thing), getAbstract(property));
 	if (found == 0)
 		found = has(getAbstract(thing), getAbstract(property));
-	show(found);
+	if(checkNode(found)){
+		show(found);
+		pf("%s\n",found->name);
+	}
+	return found;
 }
 
 bool parse(const char* data) {
@@ -251,6 +255,12 @@ bool parse(const char* data) {
 	//        if(startsWith(data,"does ")){  check_statement(data);return true;}
 	if (contains(data, " in ")) {
 		query(data);
+		return true;
+	}
+
+	if (args.size()>2&&eq(args[1],"of")) {
+		parseProperty(data);
+		//        query(data);
 		return true;
 	}
 	if (args.size()>2&&args[1]=="of"|| contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
