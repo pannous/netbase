@@ -602,7 +602,7 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 
 	//	if(isAbstract(object)&&( predicate==Type||predicate==SuperClass))
 	//		object=getThe(object);
-	if(subject==object && predicate.id<1000)return 0;
+	if(subject==object && predicate->id<1000)return 0;
 
 	Statement* statement = &context->statements[context->statementCount]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
 	Statement* s = statement;
