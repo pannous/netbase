@@ -602,7 +602,7 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 
 	//	if(isAbstract(object)&&( predicate==Type||predicate==SuperClass))
 	//		object=getThe(object);
-	if(subject==object && predicate->id<1000)return 0;
+	if (subject == object && predicate->id < 1000)return 0;
 
 	Statement* statement = &context->statements[context->statementCount]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
 	Statement* s = statement;
@@ -725,43 +725,53 @@ inline Node* get(int NodeId) {
 	return &currentContext()->nodes[NodeId];
 }
 
+
+//	static
+map < Node*, bool> dissected;
+
 void dissectParent(Node* subject) {
+	if (subject == (Node*) - 1)
+		dissected.clear();
 	if (!checkNode(subject, -1, false, true))return;
 	if (contains(subject->name, "("))return;
 	if (contains(subject->name, ","))return;
-	if (contains(subject->name, "von"))return;
-	if (contains(subject->name, "vor"))return;
-	if (contains(subject->name, "zu"))return;
-	if (contains(subject->name, "of"))return;
-	if (contains(subject->name, "by"))return;
-	if (contains(subject->name, "de"))return;
-	if (contains(subject->name, "am"))return;
-	if (contains(subject->name, "at"))return;
-	if (contains(subject->name, "bei"))return;
-	if (contains(subject->name, "in"))return;
-	if (contains(subject->name, "from"))return;
-	if (contains(subject->name, "for"))return;
 	//if(isAName(s)ret. // noe!
 	string str = replace_all(subject->name, " ", "_");
 	str = replace_all(str, "-", "_");
+	if (!contains(str, "_"))return;
+	if (contains(str, "_von_"))return;
+	if (contains(str, "_vor_"))return;
+	if (contains(str, "_zu_"))return;
+	if (contains(str, "_of_"))return;
+	if (contains(str, "_by_"))return;
+	if (contains(str, "_de_"))return;
+	if (contains(str, "_am_"))return;
+	if (contains(str, "_at_"))return;
+	if (contains(str, "_bei_"))return;
+	if (contains(str, "_in_"))return;
+	if (contains(str, "_from_"))return;
+	if (contains(str, "_for_"))return;
 	//        p("dissectWord");
 	//        p(subject->name);
+	if (dissected[subject])return;
+	dissected[subject] = 1;
+
 	int len = str.length();
 	bool plural = (char) str[len - 1] == 's' && (char) str[len - 2] != 's' && (char) str[len - 2] != 'n';
 	int type = str.find("_");
 	if (type < 1)type = str.find(".");
 	if (type >= 0 && len - type > 2) {
 		const char* type_name = str.substr(type + 1).c_str();
-		Node* word = getAbstract(type_name);//getThe
+		Node* word = getAbstract(type_name); //getThe
 		if (!checkNode(word) || !eq(word->name, type_name))return; // HOW???
-		addStatement(word, Instance,subject, false); // true expensive!!! check before!!
-//		addStatement(subject, Type, word, false); // true expensive!!! check before!!
+		addStatement(word, Instance, subject, false); // true expensive!!! check before!!
+		//		addStatement(subject, Type, word, false); // true expensive!!! check before!!
 		dissectParent(word);
 	} else if (plural) {
 		const char* singular = str.substr(0, len - 1).c_str();
 		Node* word = getAbstract(singular);
 		if (!checkNode(word) || !eq(word->name, singular))return; // HOW???
-		addStatement(word, Instance,subject, false); // true expensive!!! check before!!
+		addStatement(word, Instance, subject, false); // true expensive!!! check before!!
 		dissectParent(word);
 	}
 }
@@ -783,6 +793,8 @@ void dissectParent(Node* subject) {
 //Zeitschriftenverlag     Verlag_Technik
 
 void dissectWord(Node* subject) {
+	if (dissected[subject])return;
+	dissected[subject] = 1;
 	if (!checkNode(subject))return;
 	string str = replace_all(subject->name, " ", "_");
 	str = replace_all(str, "-", "_");
@@ -791,8 +803,10 @@ void dissectWord(Node* subject) {
 	int len = str.length();
 	int type = str.find(",");
 	const char *thing = str.data();
+
 	if (contains(thing, "_") || contains(thing, " ") || contains(thing, "."))
-		dissectParent(subject);
+		dissectParent(subject); // <<
+
 	if (type >= 0 && len - type > 2) {
 		Node* word = getThe((str.substr(type + 2) + "_" + str.substr(0, type)).c_str()); //deCamel
 		addStatement(word, Synonym, subject, true);
@@ -822,21 +836,18 @@ void dissectWord(Node* subject) {
 		//        subject=word;
 	}
 	type = str.find("_in_");
+	if (type < 0)
+		type = str.find("_am_");
+	if (type < 0)
+		type = str.find("_at_");
 	if (type >= 0 && len - type > 2) {
-		Node* in = getThe("location");
-		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
-		Node* ort = getThe(str.substr(type + 4).c_str());
-		addStatement(word, Instance, subject, false);
-		addStatement(subject, in, ort, false);
-	}
-	type = str.find("_at_");
-	type = str.find("_am_");
-	if (type >= 0 && len - type > 2) {
-		Node* at = getThe("at");
+		Node* at = the(location);
 		Node* word = getThe(str.substr(0, type).c_str()); //deCamel
 		Node* ort = getThe(str.substr(type + 4).c_str());
 		addStatement(word, Instance, subject, false);
 		addStatement(subject, at, ort, false);
+		dissectParent(ort);
+		return;
 	}
 	type = str.find("_from_");
 	if (type >= 0 && len - type > 2) {
@@ -1095,14 +1106,14 @@ void show(Node* n, bool showStatements) {//=true
 		while (s = nextStatement(n, s)) {
 			//					for (; i < min(n->statementCount, maxShowStatements); i++) {
 			//						s = getStatementNr(n, i);
-			if(i++ > defaultLimit)break;
-//			bool stopAtInstances = ++i > maxShowStatements;
-//			if (stopAtInstances && s && s->Predicate == Instance || i > defaultLimit)
-//				break;
+			if (i++ > defaultLimit)break;
+			//			bool stopAtInstances = ++i > maxShowStatements;
+			//			if (stopAtInstances && s && s->Predicate == Instance || i > defaultLimit)
+			//				break;
 			//			s=nextStatement(n,s,stopAtInstances);
 			if (checkStatement(s))
 				showStatement(s);
-//			else break;
+			//			else break;
 		}
 		p("--------------");
 	}
@@ -1467,7 +1478,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic) {
 	if (n == match)return true;
 	if (!n || !n->name || !match || !match->name)return false; //!!
 	if (n->kind == match->id)return true; //
-//	if (n->id < 100 && match->id < 100)return false; // danger!
+	//	if (n->id < 100 && match->id < 100)return false; // danger!
 	if (get(n->kind) && eq(get(n->kind)->name, match->name, true))// danger: instance, noun
 		return true;
 	if (n->kind == match->id)return true;

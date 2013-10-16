@@ -931,7 +931,6 @@ bool importYago(const char* file) {
 	Node* subject;
 	Node* predicate;
 	Node* object;
-	map < Node*, bool> dissected;
 	int linecount = 0;
 	FILE *infile;
 	printf("Opening File %s\n", file);
@@ -990,11 +989,7 @@ bool importYago(const char* file) {
 		//			s = addStatement(subject, Member, object, false); // todo: id
 		//		else
 		s = addStatement(subject, predicate, object, false); // todo: id
-		if (!dissected[subject]) {
-			//			dissectWord(subject);
-			dissectParent(subject);
-			dissected[subject] = true;
-		}
+
 		if (lowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
@@ -1002,7 +997,6 @@ bool importYago(const char* file) {
 		//		showStatement(s);
 	}
 	fclose(infile); /* Close the file */
-	dissected.clear();
 	p("import facts ok");
 	return true;
 }
@@ -1266,6 +1260,7 @@ void importAllYago() {
 	import("yago", "yagoImportantTypes.tsv");
 	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoFacts.tsv");
+	dissectParent((Node *)-1);
 }
 
 void importAll() {
