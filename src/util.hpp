@@ -17,14 +17,14 @@ template<typename T> void empty(vector<T,std::allocator<T> >& v);
 
 #define po p("ok");
 string join(char** argv,int argc);
-bool eq(const char* x,const char* y,bool ignoreCase = false);
+bool eq(const char* x,const char* y,bool ignoreCase = true);
 bool eq(string x, const char* y);
 bool eq(string* x, const char* y);
 Node* eq(Node* x, Node* y);
 bool startsWith(const char* x,const char* y);
 bool startsWith(string* x,const char* y);
 bool endsWith(const char* x, const char* y);
-bool contains(const char* x,const char* y,bool ignoreCase=false);
+bool contains(const char* x,const char* y,bool ignoreCase=true);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
 bool contains(NodeVector v, Node* o);
@@ -71,5 +71,3 @@ char* clone(const char* line);
 char* modifyConstChar(char* line);
 const char* concat(const char* a,const  char* b);
 #define check(assertion) ps(#assertion);if(assertion)ps("OK");else{ps("FAILED");exit(0);}
-#define a(word) getThe(#word)
-#define all(word) getThe(#word)

@@ -40,7 +40,6 @@ void norm(char* title) {
 	}
 }
 
-
 bool lowMemory() {
 	size_t currentSize = getCurrentRSS();
 	size_t peakSize = getPeakRSS();
@@ -83,7 +82,7 @@ int norm_wordnet_id(int synsetid) {
 }
 
 void load_wordnet_synset_map() {
-	if(wordnet_synset_map.size()>0)return;
+	if (wordnet_synset_map.size() > 0)return;
 	char line[1000];
 	FILE *infile = open_file("wordnet_synset_map.txt");
 	int s, id;
@@ -128,10 +127,6 @@ void importImages() {// 18 MILLION!   // 18496249
 		sscanf(line, "%s %*s %s", title, image);
 		if (eq(lastTitle, title))
 			continue;
-		if (eq(title, "Alabama")) {
-			printf("A! %s\n", title);
-			//			lastTitle=0;
-		}
 
 		lastTitle = clone(title); // only the first
 		if (!hasWord(title))
@@ -147,8 +142,8 @@ void importImages() {// 18 MILLION!   // 18496249
 		//		if(endswith(image,".ogg")||endswith(image,".mid")||endswith(image,".mp3"))
 		addStatement(subject, wiki_image, object, false);
 		printf("%s\n", title);
-		if (!eq(title, downcase(title)))
-			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
+		//		if (!eq(title, downcase(title),false))
+		//			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
 		if (++good % 10000 == 0) {
 			ps("GOOD images:");
 			p(good);
@@ -427,9 +422,7 @@ int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow = 0) {
 		if (nameRowNr < 0) {
 			if (nameRow == 0) {
 				if (eq("name", token))nameRowNr = row;
-				if (eq("Name", token))nameRowNr = row;
 				if (eq("title", token))nameRowNr = row;
-				if (eq("Title", token))nameRowNr = row;
 			} else if (eq(nameRow, token))nameRowNr = row;
 		}
 	}
@@ -456,9 +449,7 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 		if (nameRowNr < 0) {
 			if (nameRow == 0) {
 				if (eq("name", token))nameRowNr = row;
-				if (eq("Name", token))nameRowNr = row;
 				if (eq("title", token))nameRowNr = row;
-				if (eq("Title", token))nameRowNr = row;
 			} else if (eq(nameRow, token))nameRowNr = row;
 		}
 	}
@@ -652,6 +643,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("import csv start");
 	char line[1000];
+	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?!
 	char** values = (char**) malloc(sizeof (char*) *100);
 	memset(values, 0, 100);
 	//    vector<char*> values;
@@ -712,6 +704,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		// todo more generally : don't dissect special names ...
 
 		subject = getThe(values[nameRowNr], null, dissect);
+		if (!checkNode(subject))continue;
 		if (type && subject->kind != type->id) {
 			//			p("Found one with different type");
 			Node* candidate = subject;
@@ -730,11 +723,15 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			char* vali = values[i];
 			if (!vali || strlen(vali) == 0)continue; //HOW *vali<100??
 			object = getThe(vali);
+			if (!object || object->id > maxNodes) {
+				printf("ERROR %s\n", line);
+				continue;
+			}
 			Statement *s = addStatement(subject, predicate, object, false);
 			//            showStatement(s);
 		}
 
-		if (!subject || !predicate || !object || subject->id > maxNodes || object->id > maxNodes) {
+		if (lowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
@@ -750,26 +747,20 @@ void importList(const char* file, const char* type) {
 	Node* subject = getClass(type);
 	Node* object;
 	int linecount = 0;
-	FILE *infile=open_file(file);
+	FILE *infile = open_file(file);
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		if (linecount % 10000 == 0 && lowMemory())break;
 		fixNewline(line);
 		object = getThe(line);
-		 if( !object || object->id > maxNodes) {
-			printf("ERROR %s",line);
+		if (!object || object->id > maxNodes) {
+			printf("ERROR %s\n", line);
 			continue;
 		}
 		addStatement(subject, Instance, object, false);
 	}
 	fclose(infile); /* Close the file */
 	p("import list ok");
-}
-
-char *fixRdfName(char *key) {
-	if (key[0] == '<')key++;
-	char* start = strstr(key, ".");
-	if (!start)start = key;
 }
 
 char *cut_wordnet_id(char *key) {
@@ -799,8 +790,8 @@ bool hasCamel(char* key) {
 }
 
 char* removeHead(char *key, char *bad) {
-	char* start = strstr(key, bad);
-	if (start)key = key + strlen(bad);
+	if (startsWith(key, bad))
+		return key + strlen(bad);
 	return key;
 }
 
@@ -809,112 +800,123 @@ const char *fixYagoName(char *key) {
 	int len = strlen(key);
 	if (key[len - 1] == '>')key[len - 1] = 0;
 	key = removeHead(key, "wikicategory_");
+	key = removeHead(key, "geoclass_");
 	key = removeHead(key, "wordnetDomain_");
-	char* start = strstr(key, "wordnet_");
-	if (start) {
+	if (startsWith(key, "wordnet_")) {
 		p("SHOULDNT BE REACHED");
-		char* id = cut_wordnet_id(start);
+		char* id = cut_wordnet_id(key);
 		key = removeHead(key, "wordnet_");
 	}
-	//	if(hasCamel(key)) // McBain
+	//	if(hasCamel(key)) // NOO: McBain
 	//		return deCamel(key).data();
 	return key;
 }
 
-Node* getYagoConcept(char* key) {
+Node* rdfOwl(char* name) {
+	if (eq(name, "rdf:type"))return Type;
+	if (eq(name, "rdfs:subClassOf"))return SuperClass;
+	if (eq(name, "rdfs:label"))return Label;
+	if (eq(name, "skos:prefLabel"))return Label;
+	if (eq(name, "rdfs:Property"))return Relation;
+	if (eq(name, "rdf:Property"))return Relation;
+	if (eq(name, "rdfs:subPropertyOf"))return SubClass;
+	if (eq(name, "owl:SymmetricProperty"))return Relation; // symmetric!
+	if (eq(name, "owl:TransitiveProperty"))return Relation; // transitive!
+	if (eq(name, "rdfs:domain"))return Domain;
+	if (eq(name, "rdfs:range"))return Range;
 
-	// Normalized instead of using similar
-	if (eq(key, "rdf:type"))return Type;
-	if (eq(key, "rdfs:subClassOf"))return SuperClass;
-	if (eq(key, "rdfs:label"))return Label;
-	if (eq(key, "isPreferredMeaningOf"))return Label;
-	if (eq(key, "skos:prefLabel"))return Label;
-	if (eq(key, "rdfs:Property"))return Relation;
-	if (eq(key, "rdf:Property"))return Relation;
-	if (eq(key, "rdfs:subPropertyOf"))return SubClass;
-	if (eq(key, "owl:SymmetricProperty"))return Relation; // symmetric!
-	if (eq(key, "owl:TransitiveProperty"))return Relation; // transitive!
-	if (eq(key, "rdfs:domain"))return Domain;
-	if (eq(key, "rdfs:range"))return Range;
-
-	if (eq(key, "rdfs:comment"))return Comment;
-	if (eq(key, "rdf:Statement"))return get(_statement);
-	if (eq(key, "rdfs:Class"))return Class;
-	if (eq(key, "rdfs:class"))return Class;
-	if (eq(key, "rdf:Resource"))return get(_node); // no info!
-	if (eq(key, "rdfs:Resource"))return get(_node); // no info!
-	if (eq(key, "rdfs:Literal"))return get(_node); // no info!
-	if (eq(key, "xsd:string"))return get(_node); // no info!
-	if (eq(key, "owl:Thing"))return get(_node); // no info!
-	if (eq(key, "xsd:date"))return Date;
-	if (eq(key, "xsd:decimal"))return Number;
-	if (eq(key, "xsd:integer"))return Number;
-	if (eq(key, "xsd:boolean"))return getAbstract("boolean"); // !
-	if (eq(key, "xsd:gYear"))return getAbstract("year"); // !
-	if (eq(key, "owl:disjointWith"))return getAbstract("disjoint with"); // symmetric!
+	if (eq(name, "rdfs:comment"))return Comment;
+	if (eq(name, "rdf:Statement"))return get(_statement);
+	if (eq(name, "rdfs:class"))return Class;
+	if (eq(name, "rdf:Resource"))return get(_node); // no info!
+	if (eq(name, "rdfs:Resource"))return get(_node); // no info!
+	if (eq(name, "rdfs:Literal"))return get(_node); // no info!
+	if (eq(name, "xsd:string"))return get(_node); // no info!
+	if (eq(name, "owl:Thing"))return get(_node); // no info!
+	if (eq(name, "xsd:date"))return Date;
+	if (eq(name, "xsd:decimal"))return Number;
+	if (eq(name, "xsd:integer"))return Number;
+	if (eq(name, "xsd:boolean"))return getAbstract("boolean"); // !
+	if (eq(name, "xsd:gYear"))return getAbstract("year"); // !
+	if (eq(name, "owl:disjointWith"))return getAbstract("disjoint with"); // symmetric!
 	//	if(eq(key,"xsd:string"))return Text;// no info!
-	if (eq(key, "xsd:nonNegativeInteger"))return getAbstract("natural number");
-	if (eq(key, "owl:FunctionalProperty"))return Label;
-	if (eq(key, "#label"))return Label;
-	if (eq(key, "<label>"))return Label;
-	if (eq(key, "<hasWordnetDomain>"))return Domain;
-	//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
-	if (contains(key, "^^")) {
-		char** all = splitStringC(key, '^');
-		char* unit = all[2];
-		key = all[0];
-		key++; // ignore quotes "33"
-		free(all);
-		if (eq(unit, ",)"))return 0; // LOL_(^^,) BUG!
-		if (eq(unit, "xsd:integer"))unit = 0; //-> number
-		if (eq(unit, "xsd:decimal"))unit = 0; //-> number
-		if (eq(unit, "xsd:float"))unit = 0; //-> number
-		if (eq(unit, "xsd:nonNegativeInteger"))unit = 0; //-> number
-		else if (eq(unit, "<yago0to100>"))unit = 0;
-		if (!unit)
-			return value(key, atoi(key), unit);
-
-		if (eq(unit, "<m"))unit = "Meter";
-		else if (eq(unit, "<m>"))unit = "Meter";
-		else if (eq(unit, "<s>"))unit = "Seconds";
-		else if (eq(unit, "<g>"))unit = "Gram";
-		else if (eq(unit, "</km"))unit = "Kilometer";
-		else if (eq(unit, "xsd:date")); // parse! unit = 0; //-> number
-		else if (eq(unit, "<degrees>")); // ignore
-		else if (eq(unit, "<dollar>")); // ignore
-		else if (eq(unit, "<euro>")); // ignore
-		else if (eq(unit, "<yagoISBN>"))unit = "ISBN"; // ignore
-		else if (eq(unit, "<yagoTLD>"))
-			unit = "TLD"; // ???
-		else if (eq(unit, "<yagoMonetaryValue>"))unit = "dollar";
-		else if (eq(unit, "<%>"))unit = "%"; // OK
-		else if (eq(unit, "%")); // OK
-		else printf("UNIT %s \n", unit);
-		//		, current_context, getYagoConcept(unit)->id
-		return add(key);
-		Node* unity = getYagoConcept(unit);
-		return getThe(key, unity);
+	if (eq(name, "xsd:nonNegativeInteger"))return getAbstract("natural number");
+	if (eq(name, "owl:FunctionalProperty"))return Label;
+	if (!startsWith(name, "wiki") && contains(name, ":")) {
+		name=strstr(name,":")+2;
+//		printf(" unknown key %s\n", name);
+//		return 0;
 	}
-	if (!startsWith(key, "<wiki") && contains(key, ":")) {
-		printf(" unknown key %s\n", key);
-		return 0;
-	}
-	if (contains(key, ".jpg") || contains(key, ".gif") || contains(key, ".svg") || startsWith(key, "#") || startsWith(key, "<#")) {
-		printf(" bad key %s\n", key);
-		return 0;
-	}
-	char* start = strstr(key, "wordnet_");
-	if (start) {
-		char* id = cut_wordnet_id(start);
-		return get(norm_wordnet_id(atoi(id)));
-	}
-
-	if (eq(key, "<Carding>") || eq(key, "<Los_Angeles_California_Temple>"))
-		return 0; // What the bug???
-	return getThe(fixYagoName(key));
-
+	return getThe(name); //Unknown;
 }
 
+Node* rdfValue(char* name) {
+	char** all = splitStringC(name, '^');
+	char* unit = all[2];
+	name = all[0];
+	name++; // ignore quotes "33"
+	free(all);
+	if (!unit || unit > name + 1000 || unit < name)return 0;
+	if (eq(unit, ",)"))return 0; // LOL_(^^,) BUG!
+	if (eq(unit, "xsd:integer"))unit = 0; //-> number
+	if (eq(unit, "xsd:decimal"))unit = 0; //-> number return value(key, atof(key), Number);; //-> number
+	if (eq(unit, "xsd:float"))unit = 0; //-> number
+	if (eq(unit, "xsd:nonNegativeInteger"))unit = 0; //-> number
+	else if (eq(unit, "<yago0to100>"))unit = 0;
+	if (!unit)
+		return value(name, atof(name), unit);
+
+	if (eq(unit, "<m"))unit = "Meter";
+	else if (eq(unit, "<m>"))unit = "Meter";
+	else if (eq(unit, "<s>"))unit = "Seconds";
+	else if (eq(unit, "<g>"))unit = "Gram";
+	else if (eq(unit, "</km"))unit = "Kilometer";
+	else if (eq(unit, "xsd:date")); // parse! unit = 0; //-> number
+	else if (eq(unit, "<degrees>")); // ignore
+	else if (eq(unit, "<dollar>")); // ignore
+	else if (eq(unit, "<euro>")); // ignore
+	else if (eq(unit, "<yagoISBN>"))unit = "ISBN"; // ignore
+	else if (eq(unit, "<yagoTLD>"))
+		unit = "TLD"; // ???
+	else if (eq(unit, "<yagoMonetaryValue>"))unit = "dollar";
+	else if (eq(unit, "<%>"))unit = "%"; // OK
+	else if (eq(unit, "%")); // OK
+	else printf("UNIT %s \n", unit);
+	//		, current_context, getYagoConcept(unit)->id
+	return add(name);
+	Node* unity = rdfOwl(unit);// getThe(unit);//  getYagoConcept(unit);
+	return getThe(name, unity);
+}
+
+Node* parseWordnetKey(char* key){
+		char* id = cut_wordnet_id(key);
+		int nid = norm_wordnet_id(atoi(id));
+		Node* wn = get(nid);
+		if (wn)
+			return wn;
+		else
+			return initNode(wn, nid, removeHead(key, "<wordnet_"), 0, 0);
+	}
+
+Node* getYagoConcept(char* key) {
+	if (startsWith(key, "<wordnet_"))return parseWordnetKey(key);
+	const char* name = fixYagoName(key);// Normalized instead of using similar
+	if (contains(name, ":"))return rdfOwl(key);
+	if (eq(name, "isPreferredMeaningOf"))return Label;
+	if (eq(name, "#label"))return Label;
+	if (eq(name, "<label>"))return Label;
+	if (eq(name, "label"))return Label;
+	if (eq(name, "hasGloss"))return Label;
+	if (eq(name, "hasWordnetDomain"))return Domain;
+	//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
+	if (contains(name, "^^"))return rdfValue(key);
+	if (contains(name, ".jpg") || contains(name, ".gif") || contains(name, ".svg") || startsWith(name, "#") || startsWith(name, "<#")) {
+		printf(" bad key %s\n", name);
+		return 0;
+	}
+	return getThe(name); //fixYagoName(key));
+
+}
 
 bool importYago(const char* file) {
 	p("import YAGO start");
@@ -924,6 +926,7 @@ bool importYago(const char* file) {
 	Node* subject;
 	Node* predicate;
 	Node* object;
+	map < Node*, bool> dissected;
 	int linecount = 0;
 	FILE *infile;
 	printf("Opening File %s\n", file);
@@ -972,6 +975,8 @@ bool importYago(const char* file) {
 		}
 		if (subject == 0 || predicate == 0 || object == 0) {
 			printf("ERROR %s\n", line);
+			subject = getYagoConcept(subjectName); //
+			object = getYagoConcept(objectName);
 			continue;
 		}
 		//dissectWord(abstract);
@@ -980,13 +985,19 @@ bool importYago(const char* file) {
 		//			s = addStatement(subject, Member, object, false); // todo: id
 		//		else
 		s = addStatement(subject, predicate, object, false); // todo: id
-		if (!subject || !object || subject->id > maxNodes || object->id > maxNodes) {
+		if (!dissected[subject]) {
+			//			dissectWord(subject);
+			dissectParent(subject);
+			dissected[subject] = true;
+		}
+		if (lowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
 		//		showStatement(s);
 	}
 	fclose(infile); /* Close the file */
+	dissected.clear();
 	p("import facts ok");
 	return true;
 }
@@ -1032,7 +1043,7 @@ bool importFacts(const char* file, const char* predicateName = "population") {
 			s = addStatement(subject, Member, object, false); // todo: id
 		else
 			s = addStatement(subject, predicate, object, false); // todo: id
-		if (!subject || !object || subject->id > maxNodes || object->id > maxNodes) {
+		if (lowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
@@ -1149,13 +1160,13 @@ void importSynsets() {
 		fixNewline(line);
 		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/definition);
 		id = norm_wordnet_id(id);
-		if (pos == 'n')addStatement4(id,Type.id,noun);// get(id)->kind = noun;
-		if (pos == 'v')addStatement4(id,Type.id,verb);//get(id)->kind = verb;
-		if (pos == 'a')addStatement4(id,Type.id,adjective);//get(id)->kind = adjective;
-		if (pos == 'r')addStatement4(id,Type.id,adverb);//get(id)->kind = adverb;
+		if (pos == 'n')addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun;
+		if (pos == 'v')addStatement4(wordnet, id, Type->id, verb); //get(id)->kind = verb;
+		if (pos == 'a')addStatement4(wordnet, id, Type->id, adjective); //get(id)->kind = adjective;
+		if (pos == 'r')addStatement4(wordnet, id, Type->id, adverb); //get(id)->kind = adverb;
 		if (pos == 's')
-			addStatement4(id,Type.id,adjective);
-//			get(id)->kind = adjective; // satelite !?
+			addStatement4(wordnet, id, Type->id, adjective);
+		//			get(id)->kind = adjective; // satelite !?
 		addLabel(get(id), definition);
 	}
 	fclose(infile); /* Close the file */
@@ -1232,6 +1243,7 @@ void importAllYago() {
 		return;
 	}
 	load_wordnet_synset_map();
+	import("yago", "yagoImportantTypes.tsv");
 	import("yago", "yagoStatistics.tsv");
 	import("yago", "yagoSchema.tsv");
 	import("yago", "yagoGeonamesClassIds.tsv");
@@ -1246,7 +1258,6 @@ void importAllYago() {
 	//import("yago","yagoDBpediaClasses.tsv");
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
-	import("yago", "yagoImportantTypes.tsv");
 	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoFacts.tsv");

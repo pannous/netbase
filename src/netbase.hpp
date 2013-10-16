@@ -23,7 +23,7 @@ extern int recursions;
 extern int badCount;
 extern int runs; // algorithm metrics
 extern int current_context;
-
+extern bool useYetvisitedIsA;
 // if test or called from other object
 //#define inlineName true // because of char* loss!!!!  TODO!!!
 #define DONT_CHECK_DUPLICATES false
@@ -35,11 +35,13 @@ extern int current_context;
 #define word(w) getAbstract(#w)
 #define some(word) getAbstract(#word)
 #define a(word) getAbstract(#word)
+//#define a(word) getThe(#word)
+#define all(word) getAbstract(#word)
+//#define all(word) getThe(#word) //todo!
 #define _(w) getThe(#w)
 #define the(word) getThe(#word)
 #define has_the(word) getThe(#word)// semantic bla
 #define have_the(word) getThe(#word)// semantic bla
-#define all(word) getThe(#word) //todo!
 //#define a(word) Node* word=getThe(#word);
 #define that(word) Node* word=getThe(#word)  ;
 #define der(word) Node* word=getThe(#word)  ;
@@ -465,6 +467,8 @@ Node* reify(Statement* s);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);
 //bool checkStatement(Statement *s);
 void checkRootContext();
+void dissectParent(Node* subject);
+void dissectWord(Node* subject);
 typedef Node* N;
 typedef NodeVector NV;
 

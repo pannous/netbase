@@ -271,7 +271,6 @@ Statement *parseFilter(string s) {
 	if (!contains(s, ".")&&!contains(s, "="))
 		return parseSentence(s);
 
-
 	Node* Subject = Any;
 	Node* Predicate = Any;
 	Node* Object = Any;
@@ -280,6 +279,16 @@ Statement *parseFilter(string s) {
 	if (s.find(".") > 0) {
 		Subject = getThe(s.substr(0, s.find(".")));
 		s = s.substr(s.find(".") + 1);
+	}
+
+	if (contains(s, " is ")) {
+		Node* p = getThe(s.substr(0, s.find(" is ")));
+		if (Subject != Any)Predicate = p;
+		else {
+			Subject = p;
+			Predicate = Equals;
+		}
+		s = s.substr(s.find(" is ") + 4);
 	}
 	if (contains(s, "=")) {
 		Node* p = getThe(s.substr(0, s.find("=")));
@@ -327,7 +336,7 @@ Query parseQuery(string s, int limit) {
 		s = string("select * from ") + s; // why (int) neccessary???
 	sscanf(s.c_str(), "select %s from %s where %s", fields, type, match);
 	char* where = " where ";
-	char* match2 = (char*) strstr(s.c_str(), where); // remove test.funny->.funny do later!
+	char* match2 = (char*) contains(s.c_str(), where); // remove test.funny->.funny do later!
 	if (match2) {
 		match2 += 7; // wegen 'where' !!!! bad style
 		p(match2);
@@ -373,7 +382,7 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	p(type);
 	//	makeSingular(type);
 	char* where = " where ";
-	char* match2 = (char*) strstr(s.c_str(), where); // remove test.funny->.funny do later!
+	char* match2 = (char*) contains(s.c_str(), where); // remove test.funny->.funny do later!
 	if (match2) {
 		match2 += 7; // wegen 'where' !!!! bad style
 		p(match2);
@@ -392,7 +401,7 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	//    add instance matches
 	for (int i = 0; i < all.size(); i++) {
 		if (found.size() >= limit)goto good;
-		all_instances(0, 0); // clear hack!
+		all.clear(); // hack to reset all_instances
 		NodeVector all2 = all_instances((Node*) all[i], true, limit);
 		found = mergeVectors(found, filter(all2, match2)); //fields)
 	}
@@ -441,7 +450,8 @@ Statement* pattern(Node* subject, Node* predicate, Node* object) {
 	Statement *s = addStatement(subject, predicate, object, false); //todo mark (+reuse?) !
 	Node* pattern = reify(s);
 	addStatement(pattern, is_a, Pattern, false);
-	s->context = queryContext;
+	if(checkStatement(s))
+		s->context = queryContext;
 	return s;
 }
 
@@ -689,10 +699,6 @@ NodeVector& all_instances(Node* type) {
 NodeVector& all_instances(Node* type, int recurse, int max) {
 	static NodeVector& all = *new NodeVector; // empty before!
 	if (type == 0) {
-		if (recurse == 1) {
-			runs = 0;
-			yetvisited.erase(yetvisited.begin(), yetvisited.end()); //erase yetvisited
-		}
 		all.clear(); // hack!!!
 		return all;
 	}
@@ -738,9 +744,10 @@ NodeVector& all_instances(Node* type, int recurse, int max) {
 }
 
 void clearAlgorithmHash() {
-	all_instances(0, 1); //hack!
-	// naa! keep:
-	//    yetvisitedIsA.erase(yetvisitedIsA.begin(),yetvisitedIsA.end());
+			runs = 0;
+			yetvisited.erase(yetvisited.begin(), yetvisited.end()); //erase yetvisited
+			yetvisitedIsA.erase(yetvisitedIsA.begin(), yetvisitedIsA.end()); //erase yetvisited
+			all_instances(0, 0); //hack! //			all.clear();
 }
 
 NodeVector find_all(char* name, int context, int recurse, int limit) {
@@ -770,7 +777,7 @@ NodeVector find_all(char* name, int context, int recurse, int limit) {
 	int alle = all.size();
 	if (recurse)
 		for (int i = 0; i < alle; i++) {
-			all_instances(0, 0); // hack to reset all_instances
+			all.clear(); // hack to reset all_instances
 			Node* node = (Node*) all[i];
 			NodeVector& neu = all_instances(node, true, limit);
 			all = mergeVectors(all, neu);
@@ -1042,7 +1049,9 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	while (current = q.front()) {
 		if (q.empty())break;
 		q.pop();
-		if (to == current)return reconstructPath(fro, to);
+		pf("? %d %s\n",current->id,current->name);
+		if (to == current)
+			return reconstructPath(fro, to);
 		if (!checkNode(current, 0, true))
 			continue;
 		NodeVector all = edgeFilter(current, &q);
@@ -1053,7 +1062,6 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 				enqueue(current, d, &q);
 			}
 	}
-	free(enqueued);
 	return EMPTY;// NONE FOUND!
 //	return reconstructPath(fro, to);
 }

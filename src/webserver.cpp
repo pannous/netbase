@@ -278,7 +278,7 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 	    information supplied - we just assume that if it is
 	    supplied, then it's a full request.                        */
 
-	if ( strstr(buffer, "HTTP/") )
+	if ( contains(buffer, "HTTP/") )
 	    reqinfo->type = FULL;
 	else
 	    reqinfo->type = SIMPLE;

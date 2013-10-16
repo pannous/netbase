@@ -38,17 +38,18 @@ using namespace std;
 
 
 int nameBatch = 100;
-char* context_root=0;// Base of shared memory after attached
-char* node_root=0;
-char* statement_root=0;
-char* name_root=0;
-char* abstract_root=0;
+char* context_root = 0; // Base of shared memory after attached
+char* node_root = 0;
+char* statement_root = 0;
+char* name_root = 0;
+char* abstract_root = 0;
 
 
 bool storeTypeExplicitly = true;
 bool exitOnFailure = true;
 bool debug = false; //true;//false;
 bool showAbstract = false;
+
 int maxRecursions = 7;
 int runs = 0;
 Context* contexts; //[maxContexts];// extern
@@ -83,6 +84,8 @@ map<int, int> wn_map2;
 
 map < Node*, bool> yetvisited;
 map <double, short> yetvisitedIsA;
+bool useYetvisitedIsA = true; // false; EXPENSIVE!!!
+
 //static map < Node*, bool> yetvisited;
 //static map <double, short> yetvisitedIsA;
 //static map < Node*, short> yetvisitedIsA;
@@ -232,7 +235,7 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if (s == 0)return false;
 	if (s < contexts[current_context].statements)return false;
 	if (s >= contexts[current_context].statements + maxStatements0)return false;
-	if(s->id==0)return false;// !
+	if (s->id == 0)return false; // !
 	if (checkSPOs || checkNamesOfSPOs)
 		if (s->Subject == 0 || s->Predicate == 0 || s->Object == 0)return false;
 	if (checkNamesOfSPOs)if (s->Subject->name == 0 || s->Predicate->name == 0 || s->Object->name == 0)return false;
@@ -374,7 +377,7 @@ Statement* getStatement(int id, int context_id) {
 Statement* nextStatement(Node* n, Statement* current, bool stopAtInstances) {
 	if (current == 0)return firstStatement(n);
 	if (stopAtInstances && current->Predicate == Instance)return null;
-//	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null; PUT TO END!!
+	//	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null; PUT TO END!!
 	if (current->Subject == n)return getStatement(current->nextSubjectStatement, n->context);
 	if (current->Predicate == n)return getStatement(current->nextPredicateStatement, n->context);
 	;
@@ -388,8 +391,11 @@ Statement* nextStatement(Node* n, Statement* current, bool stopAtInstances) {
 
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId) {
 	Context* context = getContext(contextId);
-	if (!checkNode(node, id, false, false))return 0;
-	if(context->currentNameSlot+1000>averageNameLength*maxNodes){
+	if (!checkNode(node, id, false, false)) {
+		p("OUT OF MEMORY!");
+		return 0;
+	}
+	if (context->currentNameSlot + 1000 > averageNameLength * maxNodes) {
 		p("OUT OF MEMORY!");
 		return node;
 	}
@@ -420,8 +426,8 @@ Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId
 bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	if (node == 0) {
 		badCount++;
-//		p("null node");
-//		p(nodeId);
+		//		p("null node");
+		//		p(nodeId);
 		return false;
 	}
 	Context* c = currentContext(); // getContext(node->context);
@@ -630,7 +636,7 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 // TODO only used in addStatementToNodeWithInstanceGap !!
 
 Statement* getStatementNr(Node* n, int nr, bool firstInstanceGap) {
-//	if(nr==0)return 0;// todo ????
+	//	if(nr==0)return 0;// todo ????
 	if (nr >= maxStatementsPerNode) {
 		badCount++;
 		return null;
@@ -658,7 +664,7 @@ Statement* getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 			badCount++;
 			return null;
 		}
-		if(!checkStatement(statement,true,false))
+		if (!checkStatement(statement, true, false))
 			break;
 		if (i > 0 && firstInstanceGap && statement->Predicate == Instance) {
 			return laststatement;
@@ -719,41 +725,43 @@ inline Node* get(int NodeId) {
 }
 
 void dissectParent(Node* subject) {
-	if (strstr(subject->name, "("))return;
-	if (strstr(subject->name, ","))return;
-	if (strstr(subject->name, "von"))return;
-	if (strstr(subject->name, "vor"))return;
-	if (strstr(subject->name, "zu"))return;
-	if (strstr(subject->name, "of"))return;
-	if (strstr(subject->name, "by"))return;
-	if (strstr(subject->name, "de"))return;
-	if (strstr(subject->name, "am"))return;
-	if (strstr(subject->name, "at"))return;
-	if (strstr(subject->name, "bei"))return;
-	if (strstr(subject->name, "in"))return;
-	if (strstr(subject->name, "from"))return;
-	if (strstr(subject->name, "for"))return;
+	if (!checkNode(subject, -1, false, true))return;
+	if (contains(subject->name, "("))return;
+	if (contains(subject->name, ","))return;
+	if (contains(subject->name, "von"))return;
+	if (contains(subject->name, "vor"))return;
+	if (contains(subject->name, "zu"))return;
+	if (contains(subject->name, "of"))return;
+	if (contains(subject->name, "by"))return;
+	if (contains(subject->name, "de"))return;
+	if (contains(subject->name, "am"))return;
+	if (contains(subject->name, "at"))return;
+	if (contains(subject->name, "bei"))return;
+	if (contains(subject->name, "in"))return;
+	if (contains(subject->name, "from"))return;
+	if (contains(subject->name, "for"))return;
 	//if(isAName(s)ret. // noe!
 	string str = replace_all(subject->name, " ", "_");
 	str = replace_all(str, "-", "_");
 	//        p("dissectWord");
 	//        p(subject->name);
 	int len = str.length();
-	bool plural = (char) str[len - 1] == 's';
+	bool plural = (char) str[len - 1] == 's' && (char) str[len - 2] != 's' && (char) str[len - 2] != 'n';
 	int type = str.find("_");
 	if (type < 1)type = str.find(".");
 	if (type >= 0 && len - type > 2) {
 		const char* type_name = str.substr(type + 1).c_str();
 		Node* word = getThe(type_name);
-		if (!word || !eq(word->name, type_name))return;
+		if (!checkNode(word) || !eq(word->name, type_name))return; // HOW???
+		addStatement(subject, Type, word, false); // true expensive!!! check before!!
 		dissectParent(word);
-		addStatement(word, Instance, subject, true);
 		//		addStatement(word, Instance, subject, false);
 	} else if (plural) {
-		Node* word = getThe(str.substr(0, len - 2).c_str());
-		if (!word)return;
+		const char* singular = str.substr(0, len - 1).c_str();
+		Node* word = getThe(singular);
+		if (!checkNode(word) || !eq(word->name, singular))return; // HOW???
+		addStatement(subject, Type, word, false); // true expensive!!! check before!!
 		dissectParent(word);
-		addStatement(word, Instance, subject, true);
 	}
 	// release str
 	//    str.clear();
@@ -784,7 +792,7 @@ void dissectWord(Node* subject) {
 	int len = str.length();
 	int type = str.find(",");
 	const char *thing = str.data();
-	if (strstr(thing, "_") || strstr(thing, " ") || strstr(thing, "."))
+	if (contains(thing, "_") || contains(thing, " ") || contains(thing, "."))
 		dissectParent(subject);
 	if (type >= 0 && len - type > 2) {
 		Node* word = getThe((str.substr(type + 2) + "_" + str.substr(0, type)).c_str()); //deCamel
@@ -956,24 +964,20 @@ Node* getThe(const char* thing, Node* type, bool dissect) {
 #include <csignal> // or signal.h if C code // Generate an interrupt
 
 // CREATES ABSTRACT!!!?!!!
+
 Node* hasWord(const char* thingy) {
 	long h = hash(thingy);
 	Ahash* found = &abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
-	if (found && found->abstract && found->next == 0 && eq(found->abstract->name, thingy))// tolower??
+	if (found && found->abstract && found->next == 0 && eq(found->abstract->name, thingy, true))// tolower??
 		return found->abstract;
 	//&&eq(found->abstract->name, thingy)  // debug ; expensive!
 
 	int tries = 0; // cycle bugs
+
+	map < Ahash*, bool> visited;
 	while (found >= abstracts && found<&extrahash[maxNodes] && found->next) {
-		if (tries++ > 100) {
-			p("tries++ > 100 => LOOP???"); // i.e. when deleting!
-			p(thingy);
-			break;
-			//			raise(SIGINT);
-			// or signal.h if C code // Generate an interrupt raise(SIGINT);
-		}
-		//        if (eq(thingy, "near"))
-		//            h = h;
+		if (visited[found])return 0;
+		visited[found] = 1;
 		if (checkNode(found->abstract) && eq(found->abstract->name, thingy))//teuer? nö, if 1.letter differs
 			return found->abstract;
 		if (found->next == found)break;
@@ -1005,7 +1009,7 @@ Node* getAbstract(const char* thing) {// AND CREATE!
 		return 0;
 	}
 	insertAbstractHash(hash(thing), abstract);
-	if (doDissect && (strstr(thing, "_") || strstr(thing, " ") || strstr(thing, ".")))
+	if (doDissect && (contains(thing, "_") || contains(thing, " ") || contains(thing, ".")))
 		dissectParent(abstract);
 
 	//    for(int i=0;i<c->nodeCount;i++){
@@ -1053,14 +1057,15 @@ void showStatement(Statement* s) {
 
 //, bool showAbstract
 
-char* getLabel(Node* n){
-	Context* context=getContext(current_context);
-	if(n->value.text>context->nodeNames && n->value.text<context->nodeNames+context->currentNameSlot)
+char* getLabel(Node* n) {
+	Context* context = getContext(current_context);
+	if (n->value.text > context->nodeNames && n->value.text < context->nodeNames + context->currentNameSlot)
 		return n->value.text;
-	Statement* s=findStatement(n,Label,Any,false,false,false);
-	if(s)return s->Object->name;
-		return 0;
+	Statement* s = findStatement(n, Label, Any, false, false, false);
+	if (s)return s->Object->name;
+	return 0;
 }
+
 void show(Node* n, bool showStatements) {//=true
 	//	if (quiet)return;
 	if (!checkNode(n))return;
@@ -1069,18 +1074,18 @@ void show(Node* n, bool showStatements) {//=true
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
 	//    printf("%s  (#%d)\n", n->name, n->id);
 	string img = "";
-	char* text="";
+	char* text = "";
 	if (hasWord(n->name))
 		img = getImage(n->name);
-	if(getLabel(n))
-		text=getLabel(n);
+	if (getLabel(n))
+		text = getLabel(n);
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
-//		printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
-//		printf("%d\t%s\t%s\t%s\t(%016llX)\n", n->id, n->name,text, img.data(),n);
-	printf("%d\t%s\t%s\t%s\n", n->id, n->name,text, img.data());
-//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
+	//		printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
+	//		printf("%d\t%s\t%s\t%s\t(%016llX)\n", n->id, n->name,text, img.data(),n);
+	printf("%d\t%s\t%s\t%s\n", n->id, n->name, text, img.data());
+	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
 	int i = 0;
@@ -1089,10 +1094,10 @@ void show(Node* n, bool showStatements) {//=true
 	if (showStatements) {
 		Statement* s = 0;
 		while (s = nextStatement(n, s)) {
-//					for (; i < min(n->statementCount, maxShowStatements); i++) {
-//						s = getStatementNr(n, i);
+			//					for (; i < min(n->statementCount, maxShowStatements); i++) {
+			//						s = getStatementNr(n, i);
 			bool stopAtInstances = ++i > maxShowStatements;
-			if (stopAtInstances && s && s->Predicate == Instance)
+			if (stopAtInstances && s && s->Predicate == Instance || i > 1000)
 				break;
 			//			s=nextStatement(n,s,stopAtInstances);
 			if (checkStatement(s))
@@ -1126,11 +1131,11 @@ Node* findWord(int context, const char* word, bool first) {//=false
 	// pi(context);
 	Context* c = getContext(context);
 	Node* found = 0;
-	int shown=0;
+	int shown = 0;
 	for (int i = 0; i < c->nodeCount; i++) {
 		Node* n = &c->nodes[i];
-//		if(i==1000)
-//			p(n);
+		//		if(i==1000)
+		//			p(n);
 		//		if(n>=maxNodePointer){
 		//			printf("n>=maxNodePointer ???");
 		//			break;
@@ -1138,7 +1143,7 @@ Node* findWord(int context, const char* word, bool first) {//=false
 		if (n == null || n->name == null || word == null || n->id == 0 || n->context == 0)
 			continue;
 		if (n->id >= maxNodes) {
-						printf("n>=maxNodePointer ???");
+			printf("n>=maxNodePointer ???");
 			continue;
 		}
 		if (!checkNode(n, n->id, true, true))
@@ -1151,7 +1156,7 @@ Node* findWord(int context, const char* word, bool first) {//=false
 				//				else
 				//				printf("found node %s in context %d\n", word, context);
 			}
-			show(n);//////// <<<<<<<<<<<<<<<
+			show(n); //////// <<<<<<<<<<<<<<<
 			if (first)
 				return n;
 		}
@@ -1178,7 +1183,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 		Statement* s = getStatementNr(subject, i);
 		if (s == 0) {
 			badCount++;
-//			ps("!s!");// deleted
+			//			ps("!s!");// deleted
 			return 0;
 		};
 		//		showStatement(s);// debug!!!
@@ -1261,11 +1266,11 @@ void removeStatement(Node* n, Statement* s) {
 }
 
 void deleteStatement(Statement* s) {
-	if(!checkStatement(s,true,false))return;
+	if (!checkStatement(s, true, false))return;
 	removeStatement(s->Subject, s);
 	removeStatement(s->Predicate, s);
 	removeStatement(s->Object, s);
-//	currentContext()->statements[s->id]=0;
+	//	currentContext()->statements[s->id]=0;
 	memset(s, 0, sizeof (Statement));
 }
 
@@ -1314,7 +1319,7 @@ void deleteNode(Node* n) {
 }
 
 void deleteStatements(Node* n) {
-	for (int i = 0; i < min(n->statementCount,10000); i++) {
+	for (int i = 0; i < min(n->statementCount, 10000); i++) {
 		Statement* s = getStatementNr(n, i);
 		deleteStatement(s);
 	}
@@ -1333,7 +1338,7 @@ Node* parseValue(const char* aname) {
 
 Node* value(const char* aname, double v, const char* unit) {
 	char name[1000];
-	if (aname)strcpy(name, aname);
+	//	if (aname)strcpy(name, aname);// IGNORED!!!?
 	if (unit) {
 		sprintf(name, "%g %s", v, unit); //Use the shorter of %e or %f  3.14 or 24E+35
 	} else {
@@ -1461,17 +1466,18 @@ bool hasValue(Node* n) {
 bool isA4(Node* n, Node* match, int recurse, bool semantic) {
 	if (n == match)return true;
 	if (!n || !n->name || !match || !match->name)return false; //!!
-	if (eq(n->name, match->name))return true;
 	if (n->kind == match->id)return true; //
 	if (n->id < 100 && match->id < 100)return false; // danger!
 	if (get(n->kind) && eq(get(n->kind)->name, match->name, true))// danger: instance, noun
 		return true;
 	if (n->kind == match->id)return true;
-	if (eq(n->name, match->name, true))return true; //&& n->name==match
 	if (n->id == match->id)return true; // how so??? "Type" overwritten by "kind" !!!!
+	if (eq(n->name, match->name, true))return true;
 	long badHash = n->id + match->id * 10000000;
-	if (yetvisitedIsA[badHash] == 1)return true;
-	if (yetvisitedIsA[badHash] == -1)return false;
+	if (useYetvisitedIsA) {
+		if (yetvisitedIsA[badHash] == 1)return true;
+		if (yetvisitedIsA[badHash] == -1)return false;
+	}
 	//        else if (yetvisitedIsA[n]==null)yetvisitedIsA[n]=true;
 	//        else yetvisitedIsA[n]++;
 
@@ -1529,10 +1535,12 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic) {
 
 
 	//    if(isA(n,match->name,false,false))return true;// compare by name
-	if (n->kind == Abstract->id && recurse < 3) {//|| isA(n,List)
-		for (int i = 0; i < n->statementCount; i++) {
-			Statement* s = getStatementNr(n, i);
-			if (s == 0)continue; //todo: why!!??
+	if (isAbstract(n) && recurse < 3) {//|| isA(n,List)
+		Statement* s = 0;
+		map < Statement*, bool> visited;
+		while (s = nextStatement(n, s, false)) {
+			if (visited[s])return 0;
+			visited[s] = 1;
 			if (s->Predicate == Instance)
 				if (recurse && isA4(s->Object, match, recurse, semantic)) {
 					yetvisitedIsA[badHash] = true;
@@ -1738,8 +1746,8 @@ int collectAbstracts3() {
 
 Node* getThe(Node* abstract, Node* type) {
 	if (!abstract)return 0;
-	if (type == 0) {// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
-		if (abstract->value.node)return abstract->value.node; // NODE!!!
+	if (type == 0 || type->id == abstractId) {// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
+		//		if (abstract->value.node)return abstract->value.node; // NODE!!! OR LABELS?? DANGER!!!
 		Statement* last = &(currentContext()->statements[abstract->lastStatement]);
 		if (last->Predicate == Instance) {
 			abstract->value.node = last->Object; // + cace!
@@ -1747,15 +1755,12 @@ Node* getThe(Node* abstract, Node* type) {
 		} else return 0; // NO SUCH!!
 	}
 	Statement* s = 0;
+	map < Statement*, bool> visited; // You don't have to do anything. Just let the variable go out of scope.
 	while (s = nextStatement(abstract, s)) {
-		if(!checkStatement(s,true,false))continue;
-		//		showStatement(s);
-		if (s == 0) {
-			ps("CORRUPTED Statements for");
-			showStatement(s);
-			badCount++;
-			break;
-		};
+		if (visited[s])
+			return 0;
+		visited[s] = 1;
+		if (!checkStatement(s, true, false))continue;
 		bool subjectMatch = (s->Subject == abstract || abstract == Any);
 		bool predicateMatch = (s->Predicate == Instance);
 		bool typeMatch = (type == 0 || s->Object == type || s->Object->kind == type->id);

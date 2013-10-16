@@ -375,6 +375,7 @@ char** splitStringC(const char* line0, char separator) {
 
 char** splitStringC(char* line0, char separator,int maxRows) {
 	char** tokens=(char**) malloc(maxRows);
+//	memset(tokens,0,maxRows);
 	splitStringC(line0,tokens,separator);
 	return tokens;
 }

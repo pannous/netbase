@@ -966,9 +966,13 @@ void tests() {
 }
 void testBrandNewStuff() {
 	ps("test brand new stuff");
+//	parentPath(a(insect),a(bug));// reverse 1 level !!!
+//	parentPath(a(bug),a(insect));
+//	parentPath(a(depeche_mode),a(Depeche_Mode));
+//	parentPath(a(Banco_de_Gaia),a(group));
 //	import("yago");
-	if(!hasWord("acceptant"))
-	import("wordnet");
+//	if(!hasWord("acceptant"))
+//	import("wordnet");
 //yagoGeonamesData.tsv nah
 //	yagoLiteralFacts.tsv // <Glen_Smith_(cricketer)>	<wasBornOnDate>	"1973-##-##"^^xsd:date	1973.0000 !
 //	yagoSchema.tsv
