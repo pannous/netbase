@@ -266,8 +266,14 @@ bool parse(const char* data) {
 	}
 
 	if (args.size()>2&&eq(args[1],"of")) {
-		parseProperty(data);
-		//        query(data);
+
+	clearAlgorithmHash();
+	Node* found = has(getThe(args[2]), getAbstract(args[0]));
+	if (found == 0)found = has(getAbstract(args[2]), getAbstract(args[0]));
+	if(checkNode(found)){
+		show(found);
+		pf("YES: %s\n",found->name);
+	}
 		return true;
 	}
 	if (args.size()>2&&args[1]=="of"|| contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {

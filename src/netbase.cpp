@@ -755,10 +755,10 @@ void dissectParent(Node* subject) {
 	//        p(subject->name);
 	if (dissected[subject])return;
 	dissected[subject] = 1;
-//	if(startsWith(str,"the_")){// the end ... NAH!
-//		addStatement(subject,Synonym,getThe(str.substr(4).data()));
-//		return;
-//	}
+	//	if(startsWith(str,"the_")){// the end ... NAH!
+	//		addStatement(subject,Synonym,getThe(str.substr(4).data()));
+	//		return;
+	//	}
 
 	int len = str.length();
 	bool plural = (char) str[len - 1] == 's' && (char) str[len - 2] != 's' && (char) str[len - 2] != 'n';
@@ -1194,13 +1194,14 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 	if (recurse > maxRecursions || subject == 0)
 		return false;
 	//    if(recurse>maxRecursions/3)semantic = false;
-	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatementNr(subject, i);
-		if (s == 0) {
-			badCount++;
-			//			ps("!s!");// deleted
-			return 0;
-		};
+
+	Statement* s = 0;
+	map < Statement*, bool> visited;
+	while (s = nextStatement(subject, s, predicate!=Instance)) {
+		if (visited[s])return 0;
+		visited[s] = 1;
+		//	for (int i = 0; i < subject->statementCount; i++) {
+		//		Statement* s = getStatementNr(subject, i);
 		//		showStatement(s);// debug!!!
 		//        if(s->context != current_context)continue;// only queryContext
 #ifdef use_instance_gap
@@ -1607,9 +1608,8 @@ Node* has(const char* n, const char* m) {
 Node* has(Node* n, Node* m) {
 	Node *no = 0;
 	Node* save = n; // heap data loss !?!
-	//	if(m->value!=0)// hasloh population:3000
-	//		if (!no)no = has(n, m, m->value); // TODO: test
-	//	else
+//	if (m->value.text != 0)// hasloh population:3000
+//		no = has(n, m, m->value); // TODO: test
 	if (!no)no = has(n, m, Any); // TODO: test
 	//    findPath(n,m,hasFilter);// Todo new algoritym
 	if (!no)no = has(n, Member, m);
