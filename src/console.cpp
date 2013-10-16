@@ -92,6 +92,7 @@ bool parse(const char* data) {
 		defaultLimit *= 2;
 		return parse(lastCommand);
 	}else defaultLimit=100;
+
 	if (eq(data, ":x")) {
 		save();
 		exit(1);
@@ -252,7 +253,7 @@ bool parse(const char* data) {
 		query(data);
 		return true;
 	}
-	if (contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
+	if (args.size()>2&&args[2]=="of"|| contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
 		parseProperty(data);
 		//        query(data);
 		return true;
