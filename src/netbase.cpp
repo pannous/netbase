@@ -1100,7 +1100,7 @@ void show(Node* n, bool showStatements) {//=true
 			//			s=nextStatement(n,s,stopAtInstances);
 			if (checkStatement(s))
 				showStatement(s);
-			else break;
+//			else break;
 		}
 		p("--------------");
 	}
