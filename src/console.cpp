@@ -253,7 +253,7 @@ bool parse(const char* data) {
 		query(data);
 		return true;
 	}
-	if (args.size()>2&&args[2]=="of"|| contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
+	if (args.size()>2&&args[1]=="of"|| contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
 		parseProperty(data);
 		//        query(data);
 		return true;

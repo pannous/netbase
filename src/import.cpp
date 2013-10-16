@@ -1242,6 +1242,8 @@ void importAllYago() {
 		return;
 	}
 	load_wordnet_synset_map();
+	import("yago", "yagoFacts.tsv");
+	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoGeonamesEntityIds.tsv");
 	import("yago", "yagoStatistics.tsv");
 	import("yago", "yagoSchema.tsv");
@@ -1258,8 +1260,6 @@ void importAllYago() {
 	//import("yago","yagoMetaFacts.tsv");
 	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoImportantTypes.tsv");
-	import("yago", "yagoLiteralFacts.tsv");
-	import("yago", "yagoFacts.tsv");
 	dissectParent((Node *)-1);
 }
 

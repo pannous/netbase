@@ -755,6 +755,10 @@ void dissectParent(Node* subject) {
 	//        p(subject->name);
 	if (dissected[subject])return;
 	dissected[subject] = 1;
+//	if(startsWith(str,"the_")){// the end ... NAH!
+//		addStatement(subject,Synonym,getThe(str.substr(4).data()));
+//		return;
+//	}
 
 	int len = str.length();
 	bool plural = (char) str[len - 1] == 's' && (char) str[len - 2] != 's' && (char) str[len - 2] != 'n';
