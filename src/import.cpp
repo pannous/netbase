@@ -1062,8 +1062,8 @@ void importNames() {
 	addStatement(all(female_firstname), have_the(gender), a(female));
 	addStatement(all(female_firstname), are, a(firstname));
 	addStatement(all(female_firstname), Owner, a(female));
-	importList((import_path + "FrauenVornamen.txt").data(), "female_firstname");
-	importList((import_path + "MaennerVornamen.txt").data(), "male_firstname");
+	importList( "FrauenVornamen.txt", "female_firstname");
+	importList( "MaennerVornamen.txt", "male_firstname");
 }
 
 void importAbstracts() {
