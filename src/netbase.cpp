@@ -749,12 +749,19 @@ void dissectParent(Node* subject) {
 	if (subject == (Node*) - 1)
 		dissected.clear();
 	if (!checkNode(subject, -1, false, true))return;
-	if (contains(subject->name, "("))return;
-	if (contains(subject->name, ","))return;
 	//if(isAName(s)ret. // noe!
 	string str = replace_all(subject->name, " ", "_");
 	str = replace_all(str, "-", "_");
-	if (!contains(str, "_"))return;
+
+	if (dissected[subject])return;
+	dissected[subject] = 1;
+
+	int len = str.length();
+	bool plural = (char) str[len - 1] == 's' && (char) str[len - 2] != 's' &&( (char) str[len - 2] != 'n'|| (char) str[len - 3] == 'o') ;
+
+	if (!contains(str, "_")&&!plural)return;
+	if (contains(subject->name, "("))return;
+	if (contains(subject->name, ","))return;
 	if (contains(str, "_von_"))return;
 	if (contains(str, "_vor_"))return;
 	if (contains(str, "_zu_"))return;
@@ -769,24 +776,21 @@ void dissectParent(Node* subject) {
 	if (contains(str, "_for_"))return;
 	//        p("dissectWord");
 	//        p(subject->name);
-	if (dissected[subject])return;
-	dissected[subject] = 1;
 	//	if(startsWith(str,"the_")){// the end ... NAH!
 	//		addStatement(subject,Synonym,getThe(str.substr(4).data()));
 	//		return;
 	//	}
 
-	int len = str.length();
-	bool plural = (char) str[len - 1] == 's' && (char) str[len - 2] != 's' && (char) str[len - 2] != 'n';
 	int type = str.find("_");
 	if (type < 1)type = str.find(".");
 	if (type >= 0 && len - type > 2) {
-		const char* type_name = str.substr(type + 1).c_str();
+		string xx=str.substr(type + 1);
+		const char* type_name = xx.data();
 		Node* word = getAbstract(type_name); //getThe
+		dissectParent(word);
 		if (!checkNode(word) || !eq(word->name, type_name))return; // HOW???
 		addStatement(word, Instance, subject, false); // true expensive!!! check before!!
 		//		addStatement(subject, Type, word, false); // true expensive!!! check before!!
-		dissectParent(word);
 	} else if (plural) {
 		const char* singular = str.substr(0, len - 1).c_str();
 		Node* word = getAbstract(singular);
@@ -814,18 +818,19 @@ void dissectParent(Node* subject) {
 
 void dissectWord(Node* subject) {
 	if (dissected[subject])return;
-	dissected[subject] = 1;
-	if (!checkNode(subject))return;
 	string str = replace_all(subject->name, " ", "_");
 	str = replace_all(str, "-", "_");
-	int len = str.length();
-	const char *thing = str.data();
 	//        p("dissectWord");
 	//        p(subject->name);
 
-	if (contains(thing, "_") || contains(thing, " ") || contains(thing, "."))
+	const char *thing = str.data();
+	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".")||endsWith(thing,"s"))
 		dissectParent(subject); // <<
 
+	dissected[subject] = 1;
+	if (!checkNode(subject))return;
+
+	int len = str.length();
 	int type = str.find(",");
 	if (type >= 0 && len - type > 2) {
 //		char* t=(str.substr(type + 2) + "_" + str.substr(0, type)).c_str();
@@ -1689,16 +1694,14 @@ Node* findRelation(Node* from, Node* to) {// todo : broken Instance !!!
 	if (!s) s = findStatement(to, Any, from,false,false,false,false);
 	if (s) {
 		if (s->Object == from)return s->Predicate;
-		else if (s->Subject == from) return invert(s->Predicate);
+		if (s->Subject == from) return invert(s->Predicate);
 		if (s->Subject == to)return s->Predicate;
-		else if (s->Object == to) return invert(s->Predicate);
+		if (s->Object == to) return invert(s->Predicate);
 			//		if(s->Subject==from)return s->Predicate;
 			//		else if(s->Object==from) return invert(s->Predicate);
 			//		if(s->Object==to)return s->Predicate;
 			//		else if(s->Subject==to) return invert(s->Predicate);
-		else return null;
-	}
-	if (!s)return null;
+	}return null;
 }
 
 void showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {

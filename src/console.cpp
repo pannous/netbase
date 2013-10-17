@@ -90,6 +90,7 @@ bool parse(const char* data) {
 	}
 	clearAlgorithmHash(true); //  maybe messed up
 	string arg = next(string(data));
+	std::remove(arg.begin(), arg.end(), ' ');
 	vector<char*> args = splitString(data, " "); // WITH 0==cmd!!!
 
 	//		scanf ( "%s", data );
