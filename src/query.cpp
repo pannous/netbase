@@ -1079,6 +1079,7 @@ NodeVector memberPath(Node* from, Node * to) {
 
 NodeVector parentPath(Node* from, Node * to) {
 	NodeVector all = findPath(from, to, parentFilter);
+	if(all.size()>0)p("+++++++++++++++++++++++++++++++++");
 	showNodes(all, false, true);
 	return all;
 }

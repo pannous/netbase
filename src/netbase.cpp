@@ -1207,7 +1207,9 @@ Node* findWord(int context, const char* word, bool first) {//=false
 }
 
 
+	// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse, bool semantic, bool symmetric, bool semanticPredicate) {
+	// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 	if (recurse > 0)
 		recurse++;
 	else recurse = maxRecursions;
@@ -1220,12 +1222,12 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 	while (s = nextStatement(subject, s, predicate != Instance)) {
 		if (visited[s])return 0;
 		visited[s] = 1;
-		if(debug&&s->id>0)
-			showStatement(s);// debug!!!
+
 		if(subject==s->Predicate){
 			ps("NO predicate statements!");
 			break;
 		}
+
 		//        if(s->context != current_context)continue;// only queryContext
 #ifdef use_instance_gap
 		if (s->Predicate == subject || i > 1 && s->Predicate == Instance && predicate != Instance || i > 1 && s->Predicate == Type && predicate != Type) {
@@ -1234,11 +1236,12 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 			break; // todo : make sure statements are ordered!
 		}
 #endif
-		if (s->Predicate == Instance && predicate != Instance) return 0;
+//		if(debug&&s->id>0)
 		//        showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
 
-		//quick isA4 DONT CHANGE
-		bool subjectMatch = s->Subject == subject || subject == Any || isA4(s->Subject, subject, false,false);
+		if (s->Predicate == Instance && predicate != Instance) return 0;
+		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
+		bool subjectMatch = s->Subject == subject || subject == Any || isA4(s->Subject, subject, false,false);		//DONT CHANGE quick isA4
 		bool predicateMatch = (s->Predicate == predicate || predicate == Any);
 		predicateMatch = predicateMatch || predicate == Instance && s->Predicate == SubClass;
 		predicateMatch = predicateMatch || predicate == SubClass && s->Predicate == Instance;
@@ -1261,6 +1264,8 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 		predicateMatchReverse = predicateMatchReverse || predicate == Synonym && s->Predicate == Synonym;
 		predicateMatchReverse = predicateMatchReverse || predicate == Any;
 		predicateMatchReverse = predicateMatchReverse || predicateMatch&&symmetric;
+		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
+
 //		predicateMatchReverse = predicateMatchReverse || predicate == invert(s->Predicate);// invert properties ?? NAH!!
 //		predicateMatchReverse = predicateMatchReverse || invert(predicate) == s->Predicate;// invert properties ?? NAH!!
 		// sick:
@@ -1273,6 +1278,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 
 		if (!semantic)continue;
 		///////////////////////// SEMANTIC /////////////////////////////
+		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	
 		subjectMatch = subjectMatch || semantic && isA4(s->Subject, subject, recurse, semantic);
 		if (subjectMatch)
 			objectMatch = objectMatch || semantic && isA4(s->Object, object, recurse, semantic);
@@ -1283,20 +1289,12 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 				predicateMatch = predicateMatch || semantic && isA4(s->Predicate, predicate, false, false);
 		}
 		if (subjectMatch && predicateMatch && objectMatch)return s;
-
+		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 		predicateMatchReverse = predicateMatchReverse || (symmetric && predicateMatch);
 		if(predicateMatchReverse){
 			subjectMatchReverse = subjectMatchReverse || isA4(s->Object, subject, recurse, semantic);
 			objectMatchReverse = objectMatchReverse || isA4(s->Subject,object, recurse, semantic);
 		}
-//		if (subjectMatchReverse && objectMatchReverse) {
-			// || inverse //isA4 recurse, semantic)
-//			if (semanticPredicate)
-//				predicateMatchReverse = predicateMatchReverse || semantic && isA4(s->Predicate, predicate, recurse, semantic);
-//			else
-//				predicateMatchReverse = predicateMatchReverse || semantic && isA4(s->Predicate, predicate, false, false);
-//		}
-		//			if(!semantic &&!recurse){
 		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse)
 			return s;
 		///////////////////////// END SEMANTIC /////////////////////////////
