@@ -289,7 +289,7 @@ bool parse(const char* data) {
 		return true;
 	}
 	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
-		parseProperty(data);
+		parseProperty(data);// ownerpath
 		return true;
 	}
 
@@ -337,7 +337,8 @@ bool parse(const char* data) {
 	if (args.size() == 2) {
 		Node* from = getAbstract(args.at(0));
 		Node* to = getAbstract(args.at(1));
-		NodeVector all = memberPath(from, to);
+		shortestPath(from,to);
+//		NodeVector all = memberPath(from, to);
 		//		if(all==EMPTY)parentPath(from,to);
 		//		if(all==EMPTY)shortestPath(from,to);
 		return true;

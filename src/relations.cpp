@@ -329,8 +329,18 @@ Node* invert(Node* relation) {
 	if (relation == SubContext)return SuperContext;
 	if (relation == SuperContext)return SubContext;
 
+	if (relation->id==97)return get(98);
+	if (relation->id==98)return get(97);
+	if (relation->id==_DOMAIN_CATEGORY)return get(_MEMBER_DOMAIN_CATEGORY);
+	if (relation->id==_DOMAIN_REGION)return get(_MEMBER_DOMAIN_REGION);
+	if (relation->id==_DOMAIN_USAGE)return get(_MEMBER_DOMAIN_USAGE);
+	if (relation->id==_MEMBER_DOMAIN_CATEGORY)return get(_DOMAIN_CATEGORY);
+	if (relation->id==_MEMBER_DOMAIN_REGION)return get(_DOMAIN_REGION);
+	if (relation->id==_MEMBER_DOMAIN_USAGE)return get(_DOMAIN_USAGE);
 
-	if (relation == Derived)return Adjective;
+
+	if (relation == Derived)return Derived;
+//	if (relation == Derived)return Adjective;
 //	if (relation == DerivedFromNoun)return Noun;
 
 	if (relation == Equals)return Not;

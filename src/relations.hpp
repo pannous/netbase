@@ -39,6 +39,7 @@ extern Node* Category;
 extern Node* SubContext;
 extern Node* SuperContext;
 extern Node* Domain;
+extern Node* Derived;
 // Types
 extern Node* Internal;
 extern Node* _Node;

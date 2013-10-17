@@ -960,14 +960,15 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 // todo : enqueue instances?
 
 NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
-	NodeVector all;
 	if (!includeRelations && subject->id < 1000)return EMPTY;
-	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatementNr(subject, i);
-		if (s == 0 || !checkStatement(s)) {
+	NodeVector all;
+	int i = 0;
+	Statement* s = 0;
+	while(i++<10000 && (s=nextStatement(subject,s,false))){
+		if (!checkStatement(s)) {
 			badCount++;
 			continue;
-		};
+		}
 
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool subjectMatchReverse = s->Object == subject;
@@ -988,17 +989,22 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue) {
 	return anyFilter(subject, queue, false);
 }
+NodeVector anyFilterRandom(Node* subject, NodeQueue * queue) {
+	return anyFilter(subject, queue, true);
+}
 
 NodeVector reconstructPath(Node* from, Node * to) {
 	Node* current = to;
 	NodeVector all;
 	bool ok=true;
+//	p("++++++++ FOUND PATH ++++++++++++++");
 	//	enqueued[from->id]=0;// terminate
 	while (current && current != from) {
 		all.push_back(current);
 		int id = enqueued[current->id];
 		if (id <= 0){ok=false;break;}
 		current = get(id);
+//		show(current,false);
 		if (contains(all, current))break;//LOOOOOP
 	}
 //	if(!ok){
@@ -1012,18 +1018,18 @@ NodeVector reconstructPath(Node* from, Node * to) {
 //	}
 //	}
 	all.push_back(from); // done
-
-//	if(all.size()>2)p("FOUND PATH");
+//	if(all.size()>2)
 	free(enqueued);
 	return all;
 }
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
 	if (enqueued[d->id])return false; // already done -> continue;
-	printf("? %d %s\n",d->id, d->name);
+//	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
 	enqueued[d->id] = current->id;
 	q->push(d);
+	runs++;
 	return true;
 }
 
@@ -1039,7 +1045,12 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 
 	ps("LOAD!");
 	q.push(fro);
-	NodeVector instances = all_instances(fro);
+	runs=0;
+
+	// NOT neccessary for anyPath , ...
+	NodeVector instances;
+	if(edgeFilter!=anyFilterNoKinds && edgeFilter!=instanceFilter &&edgeFilter!=anyFilterRandom) // && edgeFilter!=
+		instances = all_instances(fro);
 	for (int i = 0; i < instances.size(); i++) {
 		Node* d = instances[i];
 		enqueued[d->id] = fro->id;
@@ -1054,7 +1065,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	while (current = q.front()) {
 		if (q.empty())break;
 		q.pop();
-		pf("?? %d %s\n",current->id,current->name);
+//		pf("?? %d %s\n",current->id,current->name);
 		if (to == current)
 			return reconstructPath(fro, to);
 		if (!checkNode(current, 0, true))
@@ -1067,6 +1078,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 				enqueue(current, d, &q);
 			}
 	}
+	pf("Touched nodes: %d\n",runs);
 	return EMPTY;// NONE FOUND!
 //	return reconstructPath(fro, to);
 }
@@ -1086,6 +1098,7 @@ NodeVector parentPath(Node* from, Node * to) {
 
 NodeVector shortestPath(Node* from, Node * to) {
 	NodeVector all = findPath(from, to, anyFilterNoKinds);
+	if(all.size()==0)all = findPath(from, to, anyFilterRandom);
 	showNodes(all, false, true);
 	return all;
 }

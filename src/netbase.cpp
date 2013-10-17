@@ -1223,6 +1223,9 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 		if (visited[s])return 0;
 		visited[s] = 1;
 
+		if(s->Predicate==Derived)
+			continue;// Derived bug !!
+
 		if(subject==s->Predicate){
 			ps("NO predicate statements!");
 			break;
@@ -1239,14 +1242,15 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 //		if(debug&&s->id>0)
 		//        showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
 
-		if (s->Predicate == Instance && predicate != Instance) return 0;
+		if (s->Predicate == Instance && predicate != Instance && predicate!=Any) return 0;// DANGER!
+
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 		bool subjectMatch = s->Subject == subject || subject == Any || isA4(s->Subject, subject, false,false);		//DONT CHANGE quick isA4
 		bool predicateMatch = (s->Predicate == predicate || predicate == Any);
 		predicateMatch = predicateMatch || predicate == Instance && s->Predicate == SubClass;
 		predicateMatch = predicateMatch || predicate == SubClass && s->Predicate == Instance;
 		predicateMatch = predicateMatch || isA4(s->Predicate, predicate, false, false);
-		bool objectMatch = s->Object == object || object == Any || isA4(s->Subject, subject, false,false);
+		bool objectMatch = s->Object == object || object == Any || isA4(s->Object, object, false,false);
 		if (subjectMatch && predicateMatch && objectMatch)
 			return s;
 
@@ -1278,7 +1282,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 
 		if (!semantic)continue;
 		///////////////////////// SEMANTIC /////////////////////////////
-		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	
+		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM
 		subjectMatch = subjectMatch || semantic && isA4(s->Subject, subject, recurse, semantic);
 		if (subjectMatch)
 			objectMatch = objectMatch || semantic && isA4(s->Object, object, recurse, semantic);
@@ -1677,8 +1681,8 @@ Node* has(Node* n, Node* m) {
 }
 
 Node* findRelation(Node* from, Node* to) {// todo : broken Instance !!!
-	Statement* s = findStatement(from, Any, to);
-	if (!s) s = findStatement(to, Any, from);
+	Statement* s = findStatement(from, Any, to,false,false,false,false);
+	if (!s) s = findStatement(to, Any, from,false,false,false,false);
 	if (s) {
 		if (s->Object == from)return s->Predicate;
 		else if (s->Subject == from) return invert(s->Predicate);
