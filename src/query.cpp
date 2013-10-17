@@ -913,16 +913,12 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 }
 
 NodeVector parentFilter(Node* subject, NodeQueue * queue) {
-		NodeVector all;
+	NodeVector all;
 	Statement* s = 0;
 	int i = 0;
-	while((i++<1000) && (s=nextStatement(subject,s,true))){
-//	for (int i = 0; i < subject->statementCount; i++) {
-//		Statement* s = getStatementNr(subject, i);
-		if (s == 0) {
-			badCount++;
-			continue;
-		};
+	if(subject->id==440252)
+		p("OK");
+	while(i++<1000 && (s=nextStatement(subject,s,false))){// true !!!!
 //		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 //		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);

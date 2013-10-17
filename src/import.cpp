@@ -759,7 +759,8 @@ void importList(const char* file, const char* type) {
 			printf("ERROR %s\n", line);
 			continue;
 		}
-		addStatement(subject, Instance, object, false);
+		addStatement(object, Type, subject, false);// This should still be skipped If approached by subject!!! not object
+//		addStatement(subject, Instance, object, false);// This would not be detected with the instant gap
 	}
 	fclose(infile); /* Close the file */
 	p("import list ok");
