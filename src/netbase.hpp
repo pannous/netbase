@@ -379,7 +379,7 @@ Node* getThe(Node* abstract, Node* type=0);
 Node* getClass(const char* word);// ?  apple vs Apple ! same as getThe NOW
 //Node* getClass(string word);
 void showStatement(Statement* s);
-void show(Node* n, bool showStatements = true);
+bool show(Node* n, bool showStatements = true);
 Node* showNr(int context, int id);
 void testBrandNewStuff();
 Node* findWord(int context, const char* word, bool first = false);
@@ -401,7 +401,6 @@ bool isA4(Node* n, Node* match, int recurse = false, bool semantic = false);
 bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit = 0);
 Node* parseValue(const char* aname);
-void clearAlgorithmHash();
 
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement

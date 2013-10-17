@@ -48,6 +48,7 @@ void showHelp() {
 	ps("select * from dogs where terrier");
 	ps("all city with countrycode ZW");
 	ps("Population of Gehren");
+	ps("opposite of bad");
 }
 
 //bool parse(string* data) {
@@ -70,7 +71,6 @@ Node *parseProperty(const char *data) {
 		property = splat[2];
 	}
 	pf("does %s have a %s?\n", thing, property);
-	clearAlgorithmHash();
 	Node* found = has(getThe(thing), getAbstract(property));
 	if (found == 0)
 		found = has(getAbstract(thing), getAbstract(property));
@@ -88,7 +88,7 @@ bool parse(const char* data) {
 	if (eq(data, "")) {
 		return true;
 	}
-
+	clearAlgorithmHash(true); //  maybe messed up
 	string arg = next(string(data));
 	vector<char*> args = splitString(data, " "); // WITH 0==cmd!!!
 
@@ -102,8 +102,8 @@ bool parse(const char* data) {
 
 	if (eq(data, "more")) {
 		resultLimit = resultLimit * 2;
-		if(lastCommand)
-		return parse(lastCommand);
+		if (lastCommand)
+			return parse(lastCommand);
 		else return true;
 	}
 
@@ -153,9 +153,9 @@ bool parse(const char* data) {
 		return true;
 	}
 	if (contains(data, " limit"))
-		sscanf(data, "%s limit %d", &resultLimit,data);
+		sscanf(data, "%s limit %d", &resultLimit, data);
 	if (contains(data, "limit"))
-		sscanf(data, "limit %d %s", &resultLimit,data);
+		sscanf(data, "limit %d %s", &resultLimit, data);
 	if (eq(data, "load") || eq(data, ":l")) {
 		load(false);
 		return true;
@@ -244,10 +244,8 @@ bool parse(const char* data) {
 		return true;
 	}
 
-	if (startsWith(data, "the ") || startsWith(data, "my ")) {
-		show(getThe(data)); // -> query
-		return true;
-	}
+	if (args.size() == 2 && (eq(args[0], "the") || eq(args[0], "my")))
+		return show(getThe(args[1]));
 	if (startsWith(data, "an ")) {
 		query(data);
 		return true;
@@ -270,8 +268,20 @@ bool parse(const char* data) {
 
 	if (args.size() > 2 && eq(args[1], "of")) {
 		clearAlgorithmHash();
-		Node* found = has(getThe(args[2]), getAbstract(args[0]));
-		if (found == 0)found = has(getAbstract(args[2]), getAbstract(args[0]));
+		Node* property = getThe(args[0]);
+		Node* propertyA = getAbstract(args[0]);
+		Node* node = getThe(args[2]);
+		Node* nodeA = getAbstract(args[2]);
+		Node* found = has(node, property);
+		if (found == 0)found = has(node, property);
+		if (found == 0)found = has(nodeA, property);
+		if (found == 0)found = has(node, propertyA);
+		if (found == 0)found = has(nodeA, propertyA);
+		if (found == 0)found = has(Any, property, node);
+		if (found == 0)found = has(Any, propertyA, node);
+		if (found == 0)found = has(Any, property, nodeA);
+		if (found == 0)found = has(Any, propertyA, nodeA);
+		if (found == 0)found = has(nodeA, propertyA,Any,true,true,true,true);
 		if (checkNode(found)) {
 			show(found);
 			pf("ANSWER: %s\n", found->name);
@@ -320,7 +330,7 @@ bool parse(const char* data) {
 		query(data);
 		return true;
 	}
-	if (!isprint(data[0])) {
+	if (!isprint(data[0])) {// ??
 		return false;
 	}
 
@@ -333,19 +343,23 @@ bool parse(const char* data) {
 		return true;
 	}
 	if (args.size() > 3) {
-//		if (data[0] == '!')
-			return learn(data); // SPO
+		//		if (data[0] == '!')
+		return learn(data); // SPO
 		//		else data=replace(data," ","_");
 	}
 
 	//        query(string("all ")+data);// NO!
 	//        query(data);// NOO!
-	dissectWord(get(data));
-	findWord(currentContext()->id, data);
 	int i = atoi(data);
 	if (i > 0) {
-		if (i < 1000)showContext(i);
-		showNr(currentContext()->id, i);
+		//		if (i < 1000)showContext(i);
+		if (endsWith(data, "s") || endsWith(data, "S") || endsWith(data, "$"))
+			showStatement(getStatement(i));
+		else
+			showNr(currentContext()->id, i);
+	} else {
+		findWord(currentContext()->id, data);
+		dissectWord(get(data));
 	}
 }
 

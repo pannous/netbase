@@ -220,7 +220,6 @@ void ps(NodeVector v){
 	for(int i=0;i<v.size();i++)
 		show(v[i]);
 }
-
 void ps(string* s) {
 	if (quiet)return;
 	printf("%s\n", s->c_str());
@@ -268,6 +267,10 @@ void p(string s) {
 
 void p(Node* n){
 	show(n);
+}
+
+void p(Statement* n){
+	showStatement(n);
 }
 
 void p(Query& q){

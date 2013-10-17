@@ -44,6 +44,7 @@ void px(void* p);// 64 bit hex
 extern void p(char* s);
 void p(Query& q);
 void p(Node* n);
+void p(Statement* n);
 void p(string s);
 //char* next(char* data);
 string next(string data);
@@ -71,4 +72,4 @@ char* match(char* input, char* pattern);
 char* clone(const char* line);
 char* modifyConstChar(char* line);
 const char* concat(const char* a,const  char* b);
-#define check(assertion) ps(#assertion);if(assertion)ps("OK");else{ps("FAILED");exit(0);}
+#define check(assertion) ps(#assertion);if(assertion)pf("PASSED %s \n",#assertion);else{pf("FAILED %s \n",#assertion);exit(0);}

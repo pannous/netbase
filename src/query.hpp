@@ -21,7 +21,7 @@ int countInstances(Node* node);
 string query2(string s,int limit=resultLimit);
 Query parseQuery(string s,int limit=resultLimit);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
-void clearAlgorithmHash();
+void clearAlgorithmHash(bool all=false);
 NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
 NodeVector find_all(char* name, int context=1, int recurse=0, int limit=resultLimit);

@@ -245,7 +245,13 @@ Statement* parseSentence(string sentence, bool learn = false) {
 		string word = matches[i];
 		//		word=stem(word);
 		bool getPredicate = subject&&!predicate;
-		Node* node = getThe(word);
+		int id=atoi(word.data());
+		Node* node;
+		if(id>0)
+			node=get(id);
+		else
+			node= getAbstract(word.data());
+//		Node* node = getThe(word); TODO getThe for relation!!!
 		//		Node* abstract=getAbstract(f);// ,getPredicate?Verb:0
 		//		NodeVector& instances=all_instances(abstract, recurse,limit);
 		//		if(instances->size()<=0)word=abstract;
@@ -750,11 +756,13 @@ Query& getQuery(Node* keyword) {
 }
 
 
-void clearAlgorithmHash() {
+void clearAlgorithmHash(bool all) {
 			runs = 0;
 			yetvisited.erase(yetvisited.begin(), yetvisited.end()); //erase yetvisited
+			yetvisited.clear();
 //			only if low mem!!~:::
-//			yetvisitedIsA.erase(yetvisitedIsA.begin(), yetvisitedIsA.end()); //erase yetvisited
+			yetvisitedIsA.erase(yetvisitedIsA.begin(), yetvisitedIsA.end()); //erase yetvisited
+			yetvisitedIsA.clear();
 			all_instances(0, 0); //hack! //			all.clear();
 }
 

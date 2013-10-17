@@ -913,28 +913,128 @@ void testCities(){
 //	check(has(the(Mersing),value("population",22007))) todo
 }
 
-void testOpposite(){
+void testSplit(){
 	char** splat=splitStringC("a.a",".");
 		char*	thing=splat[0];
 		char*	property=splat[1];
 		check(eq(thing,property));
-//	learn("Antonym Synonym opposite");
-//	check(isA(Antonym,a(opposite))); //OK
-//	check(isA(a(opposite),Antonym));
-	check(isA4(Antonym,a(opposite),false,true));
-	check(isA4(a(opposite),Antonym,false,true));
-	check(isA4(Antonym,a(opposite),false));
-	check(isA4(a(opposite),Antonym,false));
+}
+
+void testOpposite(){
+	check(has(the(evil),the(opposite)));
+	check(!isA4(Synonym,the(evil)));
+	check(!isA4(Synonym,the(evil),1,1));
+	check(!has(the(opposite),the(evil)));
+//	check(!);
+//	check(!isA(,a(derived)));
+
+	p(Antonym);
+	Node* anto=getThe("Antonym");
+	check(anto==Antonym);
+	check(getThe("antonym")==Antonym);
+	checkWordnet();
+	Node* opposite0=getAbstract("opposite");
+	Node* the_opposite0=getThe(opposite0);
+	Node* the_opposite0a=getThe("opposite");
+	check(the_opposite0a==the_opposite0);
+	Node* the_opposite0b=getThe(the_opposite0);
+	p(the_opposite0);
+	p(the_opposite0b);
+	check(the_opposite0b==the_opposite0);
+	Node* the_opposite0c=getThe(opposite0);
+	check(the_opposite0c==the_opposite0);
+//	checkWordnet();// messes with abstract !!!
+	Node* opposite=getAbstract("opposite");
+	Node* the_opposite=getThe("opposite");
+	Node* the_oppositea=getThe(opposite);
+	Node* the_oppositeb=getThe(the_opposite);
+	p(opposite);
+	p(opposite0);
+	check(opposite==opposite0);
+	check(the_opposite==the_opposite0);
+	check(the_oppositea==the_opposite0);
+	check(the_opposite==the_opposite0a);
+	check(the_opposite==the_opposite0b);
+	check(the_oppositeb==the_opposite0);
+	p(opposite);
+	p(the_opposite);
+
+		Node* property = the_opposite;
+		Node* propertyA = opposite;
+		Node* node = getThe("good");
+		Node* nodeA = getAbstract("good");
+		clearAlgorithmHash();
+		Node *pa=get(307229);
+		findStatement(node, property, Any,3, true, 0,true);
+		has(node, property);
+//		check(isA4(pa,Antonym, false, false));
+//		check(isA4(Antonym,pa, false, false));
+check(has(node, property));
+
+
+//	Statement* s=addStatement(Antonym,Synonym,opposite,false);
+//	p(s);
+//	s=addStatement(Antonym,Synonym,the_opposite,false);
+//	p(s);
+//	s=addStatement(opposite,Synonym,Antonym,false);
+//	p(s);
+//	s=addStatement(the_opposite,Synonym,Antonym,false);
+//	p(s);
+
+
+//	p(getThe("antonym"));
+//	check(getThe("antonym")==Antonym); no, wordnet now!!
+
+//	check(getAbstract("Synonym")==Synonym); NAH
+//	check(getAbstract("synonym")==Synonym); NAH
+
+	clearAlgorithmHash(true);
+	p(opposite);
+	p(the_opposite);
+//30      antonym
+//<786073>        antonym         synonym         opposite                30->21->103493
+//489284  opposite
+//<786078>        opposite                instance                opposite                103493->4->489284
+	check(isA(Antonym,opposite)); //OK
+	check(isA(opposite,Antonym));
+	check(isA(Antonym,the_opposite)); //OK
+	check(isA(the_opposite,Antonym));
+//		p(Antonym);
+	clearAlgorithmHash(true);
+	p(opposite);
+	check(isA4(Antonym,opposite,false,true));
+	check(isA4(opposite,Antonym,false,true));
+	p(the_opposite);
+	check(isA4(Antonym,the_opposite,false,true));
+	check(isA4(the_opposite,Antonym,false,true));
+//	check(isA4(Antonym,a(opposite),false,false));// has to check Synonym Statement
+//	check(isA4(a(opposite),Antonym,false,false));
 	check(has(a(good),Antonym));
 //	check(has(the(good),Antonym));
 	check(has(a(good),Antonym,a(evil)));
-	addStatement(Antonym,Synonym,a(opposite));
-	addStatement(Antonym,Synonym,the(opposite));
-	addStatement(the(opposite),Synonym,Antonym);
-	check(has(a(good),a(opposite),a(evil)));
-//	check(has(a(good),the(opposite),a(evil)));
-//	check(has(the(good),Antonym,a(evil)));
+//	addStatement(Antonym,Synonym,a(opposite));
+//	addStatement(Antonym,Synonym,the(opposite));
+//	addStatement(the(opposite),Synonym,Antonym);
+	check(has(the(good),Antonym,a(bad)));
+
+check(has(nodeA, property));
+check(has(node, propertyA));
+check(has(nodeA, propertyA));
+//check(has(Any, property, node));
+//check(has(Any, propertyA, node));
+//check(has(Any, property, nodeA));
+//check(has(Any, propertyA, nodeA));
+//check(has(nodeA, propertyA,Any,true,true,true,true));
+
+	check(has(the(good),a(opposite),a(bad)));
+	check(has(a(good),the(opposite),a(bad)));
+	check(has(a(good),a(opposite),a(bad)));
+	// TODO:
 //	check(has(the(good),a(opposite),a(evil)));
+//	check(has(a(good),the(opposite),a(evil)));
+//	check(has(a(good),a(opposite),a(evil)));
+	p("opposite test OK");
+//	learn("Antonym Synonym opposite2");// needs checkWordnet
 }
 
 
@@ -946,9 +1046,9 @@ void tests() {
 
 //    test();
 //    testHash();
-	clearTestContext();
+//	clearTestContext();
 //    testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
-	testBrandNewStuff();
+//	testBrandNewStuff();
 	testOpposite();
     testValueLogic();
     testStringLogic();
@@ -966,8 +1066,11 @@ void tests() {
     //    testLoop();
 }
 void testBrandNewStuff() {
+//	tests();
+//	testOpposite();
 	ps("test brand new stuff");
-	parse("all bug");
+//	parse("opposite of bad");
+//	parse("all bug");
 //	showNodes(all_instances(a(bug)));
 //	parentPath(a(insect),a(bug));// reverse 1 level !!!
 //	parentPath(a(bug),a(insect));
@@ -976,13 +1079,6 @@ void testBrandNewStuff() {
 //	import("yago");
 //	if(!hasWord("acceptant"))
 //	import("wordnet");
-//yagoGeonamesData.tsv nah
-//	yagoLiteralFacts.tsv // <Glen_Smith_(cricketer)>	<wasBornOnDate>	"1973-##-##"^^xsd:date	1973.0000 !
-//	yagoSchema.tsv
-//	yagoMetaFacts.tsv// redundant
-//	testImages() ;
-//	testCities();
-
 //	parentPath(a(bee),a(insect));
 //	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug
 //	parentPath(a(insect),a(bug));

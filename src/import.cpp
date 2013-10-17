@@ -1074,18 +1074,17 @@ void importAbstracts() {
 	int linecount = 0;
 	int id;
 	doDissect = false;
-	memset(abstracts, 0, abstractHashSize * 2);
-	extrahash = (Ahash*) (abstract_root + abstractHashSize);
-	//	memset(extrahash, 0, abstractHashSize-1);// extrahash pointer increases !!!
+//	memset(abstracts, 0, abstractHashSize * 2);
 	Context* c = getContext(wordnet);
 	FILE *infile = open_file("abstracts.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		sscanf(line, "%d\t%[^\n]s", &id, name); // %[^\n]s == REST OF LINE!
-		id = id + 10000;
+		id = id + 10000;// KILL ERVERYTHING!!!
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 		//		printf("%s\n",line);
-		c->nodeCount = id; // hardcoded hack to sync ids!!!
+		if(hasWord(name))continue;
+		c->nodeCount= id; // hardcoded hack to sync ids!!!
 		Node* a = getAbstract(name);
 		a->context = wordnet;
 		a->kind = abstractId;
@@ -1194,7 +1193,33 @@ void importLables() {
 	}
 	fclose(infile); /* Close the file */
 }
+void importLexlinks(){
+	char line[1000];
+	int linecount = 0;
+	int s, p, o;
+	int ss, so;
+	FILE *infile = open_file("lexlinks.tsv");
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0)printf("%d\n", linecount);
+//			printf(line);
+		fixNewline(line);
+		sscanf(line, "%d\t%d\t%d\t%d\t%d", &ss,&s,&so, &o, &p);
+		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
+		//		if (old)return old; // showStatement(old)
+		//
+		s=s+10000;
+		o=o+10000;
+		if (p == SubClass->id)continue; // Redundant data!
+		if (p == Instance->id)continue; // Redundant data!
 
+		Statement* x;
+		if(ss!=so)x=addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
+		if(!x)pf("ERROR %s\n",line);
+//		if(s!=o)x=addStatement4(wordnet, s, p, o); not on abstracts! hmm, for antonym properties? nah!
+//		if(!x)printf("ERROR %s\n",line);
+	}
+	fclose(infile); /* Close the file */
+}
 void importStatements() {
 	char line[1000];
 	int linecount = 0;
@@ -1216,12 +1241,19 @@ void importStatements() {
 
 void importWordnet() {
 	load_wordnet_synset_map();
-	importAbstracts();
+	importAbstracts();// MESSES WITH ABSTRACTS!!
 	importSenses();
 	getContext(wordnet)->nodeCount = synonyms; //200000+117659;//WTH!
 	importSynsets();
 	importLables();
 	importStatements();
+	importLexlinks();
+	addStatement(getThe("opposite"),SuperClass,Antonym);// Correct but doesn't work
+	addStatement(Antonym,SuperClass,getThe("opposite"));// Correct but doesn't work
+	addStatement(getThe("opposite"),Synonym,Antonym);
+	addStatement(getAbstract("opposite"),Synonym,Antonym);
+	addStatement(Antonym,Synonym,getThe("opposite"));
+	addStatement(Antonym,Synonym,getAbstract("opposite"));
 }
 
 void importWordnet2() {
@@ -1262,6 +1294,20 @@ void importAllYago() {
 	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoImportantTypes.tsv");
 	dissectParent((Node *)-1);
+
+
+//	addStatement(Number,Synonym,getThe("xsd:decimal"));
+//	addStatement(Number,Synonym,getThe("xsd:integer"));
+//	addStatement(Date,Synonym,getThe("xsd:date"));
+//	addStatement(getThe("xsd:date"),SuperClass,Date);
+//	addStatement(getThe("xsd:decimal"),SuperClass,Number);
+//	addStatement(getThe("xsd:integer"),SuperClass,Number);
+//	addStatement(get("xsd:date"),SuperClass,Date);
+//	addStatement(get("xsd:decimal"),SuperClass,Number);
+//	addStatement(get("xsd:integer"),SuperClass,Number);
+	addStatement(getAbstract("xsd:date"),SuperClass,Date);
+	addStatement(getAbstract("xsd:decimal"),SuperClass,Number);
+	addStatement(getAbstract("xsd:integer"),SuperClass,Number);
 }
 
 void importAll() {

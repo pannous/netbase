@@ -101,14 +101,6 @@ Node* Contains;
 Node* StartsWith;
 Node* EndsWith;
 
-Node* addRelation(int id, const char* name,bool transitive=false) {
-	string keep = name;
-	const char* what;
-	what = keep.c_str();
-	Node* n = add_force(wordnet, id, what, _internal);
-//	if(transitive)???  baked into Algorithms, at least four standard relations?
-	return n;
-}
 int _see=0,//50 also, 40 similar
 	_Hypernym=1,//SuperClass
 	_hyponym=2,//SubClass
@@ -167,7 +159,17 @@ int _see=0,//50 also, 40 similar
 
 
 
-;
+Node* addRelation(int id, const char* name,bool transitive=false) {
+	string keep = name;
+	const char* what;
+	what = keep.c_str();
+	Node* n = add_force(wordnet, id, what, _internal);
+	if(n->statementCount==0)// IT BETTER BE!!!
+		addStatement4(wordnet, getAbstract(name)->id,_instance,id);// Internal
+//	if(transitive)???  baked into Algorithms, at least four standard relations?
+	return n;
+}
+
 void initRelations() {
 	Unknown = addRelation(_see, "see");
 	Antonym = addRelation(_antonym, "antonym");
@@ -175,7 +177,7 @@ void initRelations() {
 	Attribute = addRelation(_attribute, "attribute"); // tag
 	bool is_transitive=true;
 	Cause = addRelation(_cause, "cause",is_transitive); //
-	Derived =addRelation(_derived, "derived from adjective"); //
+	Derived =addRelation(_derived, "derived"); //
 //	DerivedFromNoun =addRelation(_derived_from_noun, "derived from noun"); //
 	//        DOMAIN_OF_SYNSET_CATEGORY =
 	addRelation(_DOMAIN_CATEGORY, "usage context"); // # sheet @ maths   // think of!! OWNER -> Part
@@ -229,6 +231,8 @@ void initRelations() {
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "label");
 	BackLabel = addRelation(39, "label of");
+	addRelation(40, "similar");// hypernym?? no synonym
+	addRelation(50, "also");// hypernym??
 	//	Labels = addRelation(40, "Label");//??
 	//	LabeledNode = addRelation(41, "LabeledNode");// ?? ugly!!
 	Category = addRelation(43, "category"); // tag
@@ -296,22 +300,6 @@ void initRelations() {
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
 	Range = addRelation(_range, "Range");
-
-	addStatement(getThe("opposite"),SuperClass,Antonym);
-//	addStatement(Antonym,Synonym,getThe("opposite"));
-
-//	addStatement(Number,Synonym,getThe("xsd:decimal"));
-//	addStatement(Number,Synonym,getThe("xsd:integer"));
-//	addStatement(Date,Synonym,getThe("xsd:date"));
-//	addStatement(getThe("xsd:date"),SuperClass,Date);
-//	addStatement(getThe("xsd:decimal"),SuperClass,Number);
-//	addStatement(getThe("xsd:integer"),SuperClass,Number);
-//	addStatement(get("xsd:date"),SuperClass,Date);
-//	addStatement(get("xsd:decimal"),SuperClass,Number);
-//	addStatement(get("xsd:integer"),SuperClass,Number);
-	addStatement(getAbstract("xsd:date"),SuperClass,Date);
-	addStatement(getAbstract("xsd:decimal"),SuperClass,Number);
-	addStatement(getAbstract("xsd:integer"),SuperClass,Number);
 }
 
 Node* invert(Node* relation) {
@@ -350,7 +338,7 @@ Node* invert(Node* relation) {
 	if (relation == Less)return Greater;
 	if (relation == Much)return Little;
 	if (relation == Little)return Much;
-	if (has(relation, Antonym, null, false, false, false, false))
+	if (has(relation, Antonym, Any, false, false, false, false))
 		return has(relation, Antonym);
 	else return Unknown;// null; //! or relation .name + "OF" ?  weight => weight OF
 }
