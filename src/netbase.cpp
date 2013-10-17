@@ -818,23 +818,27 @@ void dissectWord(Node* subject) {
 	if (!checkNode(subject))return;
 	string str = replace_all(subject->name, " ", "_");
 	str = replace_all(str, "-", "_");
+	int len = str.length();
+	const char *thing = str.data();
 	//        p("dissectWord");
 	//        p(subject->name);
-	int len = str.length();
-	int type = str.find(",");
-	const char *thing = str.data();
 
 	if (contains(thing, "_") || contains(thing, " ") || contains(thing, "."))
 		dissectParent(subject); // <<
 
+	int type = str.find(",");
 	if (type >= 0 && len - type > 2) {
-		Node* word = getThe((str.substr(type + 2) + "_" + str.substr(0, type)).c_str()); //deCamel
-		addStatement(word, Synonym, subject, true);
+//		char* t=(str.substr(type + 2) + "_" + str.substr(0, type)).c_str();
+//		Node* word = getThe(t); //deCamel
+//		addStatement(word, Synonym, subject, true);
 		Node* a = getThe((str.substr(0, type).c_str()));
 		Node* b = getThe((str.substr(type + 2).c_str()));
 		addStatement(a, Instance, subject, true);
 		addStatement(b, Instance, subject, true);
-		str = word->name;
+		dissectWord(a);
+		dissectWord(b);
+		return;
+//		str = word->name;
 		//        subject=word;
 	}
 	type = str.find("(");

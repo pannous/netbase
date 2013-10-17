@@ -356,49 +356,16 @@ bool parse(const char* data) {
 		//		if (i < 1000)showContext(i);
 		if (endsWith(data, "s") || endsWith(data, "S") || endsWith(data, "$"))
 			showStatement(getStatement(i));
-		else
+		else{
+			dissectWord(get(i));
 			showNr(currentContext()->id, i);
+		}
 	} else {
-		findWord(currentContext()->id, data);
 		dissectWord(get(data));
+		findWord(currentContext()->id, data);
 	}
 }
 
-
-#ifdef signal
-// CATCH signal and try recovery!
-#include <setjmp.h>
-#include <execinfo.h>
-jmp_buf try_context;
-jmp_buf loop_context;
-jmp_buf loop_context1;
-
-void print_trace(const char * msg) {
-	void *array[100];
-	size_t size;
-	char **strings;
-	size_t i;
-
-	size = backtrace(array, 100);
-	strings = backtrace_symbols(array, size);
-	printf("%s Obtained %zd stack frames.\n", msg, size);
-	for (i = 0; i < size; i++)
-		printf("--> %s\n", strings[i]);
-	free(strings);
-}
-
-void SIGINT_handler(int sig) {
-	print_trace("SIGINT!\n");
-	flush();
-	longjmp(loop_context, 128);
-}
-
-void handler(int sig) {
-	print_trace("EXC_BAD_ACCESS !\n");
-	flush();
-	longjmp(try_context, 128);
-}
-#endif
 bool file_read_done = false;
 
 void getline(char *buf) {
