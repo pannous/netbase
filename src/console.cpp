@@ -63,19 +63,19 @@ Node *parseProperty(const char *data) {
 		thing = splat[0];
 		property = splat[1];
 	}
-	if(!property){
+	if (!property) {
 		char** splat = splitStringC(data, ' ');
 		thing = splat[0];
 		property = splat[2];
 	}
-	pf("does %s have a %s?\n",thing,property);
+	pf("does %s have a %s?\n", thing, property);
 	clearAlgorithmHash();
 	Node* found = has(getThe(thing), getAbstract(property));
 	if (found == 0)
 		found = has(getAbstract(thing), getAbstract(property));
-	if(checkNode(found)){
+	if (checkNode(found)) {
 		show(found);
-		pf("YES: %s\n",found->name);
+		pf("YES: %s\n", found->name);
 	}
 	return found;
 }
@@ -102,7 +102,7 @@ bool parse(const char* data) {
 	if (eq(data, "more") && lastCommand) {
 		defaultLimit *= 2;
 		return parse(lastCommand);
-	}else defaultLimit=100;
+	} else defaultLimit = 100;
 
 	if (eq(data, ":x")) {
 		save();
@@ -129,14 +129,14 @@ bool parse(const char* data) {
 	//            collectAbstracts2();
 	//            return true;
 	//        }
-	if (startsWith(data, ":iw")||startsWith(data, ":wi")) {
-		if(endsWith(data,"!"))deleteWord("acceptant");
-		if(!hasWord("acceptant"))
-		importWordnet();
+	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
+		if (endsWith(data, "!"))deleteWord("acceptant");
+		if (!hasWord("acceptant"))
+			importWordnet();
 		return true;
 	}
-	if (startsWith(data, ":iy")||startsWith(data, ":yi")) {
-		if(endsWith(data,"!"))deleteWord("yagoGeoEntity");
+	if (startsWith(data, ":iy") || startsWith(data, ":yi")) {
+		if (endsWith(data, "!"))deleteWord("yagoGeoEntity");
 		import("yago");
 		return true;
 		//		importYago()
@@ -214,7 +214,7 @@ bool parse(const char* data) {
 		memberPath(from, to);
 		return true;
 	}
-	if(args.size() > 1 && startsWith(data, "is")) {
+	if (args.size() > 1 && startsWith(data, "is")) {
 		Node* from = getAbstract(args.at(1));
 		Node* to = getAbstract(args.at(2));
 		parentPath(from, to);
@@ -265,20 +265,18 @@ bool parse(const char* data) {
 		return true;
 	}
 
-	if (args.size()>2&&eq(args[1],"of")) {
-
-	clearAlgorithmHash();
-	Node* found = has(getThe(args[2]), getAbstract(args[0]));
-	if (found == 0)found = has(getAbstract(args[2]), getAbstract(args[0]));
-	if(checkNode(found)){
-		show(found);
-		pf("YES: %s\n",found->name);
-	}
+	if (args.size() > 2 && eq(args[1], "of")) {
+		clearAlgorithmHash();
+		Node* found = has(getThe(args[2]), getAbstract(args[0]));
+		if (found == 0)found = has(getAbstract(args[2]), getAbstract(args[0]));
+		if (checkNode(found)) {
+			show(found);
+			pf("ANSWER: %s\n", found->name);
+		}
 		return true;
 	}
-	if (args.size()>2&&args[1]=="of"|| contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
+	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
 		parseProperty(data);
-		//        query(data);
 		return true;
 	}
 
@@ -332,9 +330,9 @@ bool parse(const char* data) {
 		return true;
 	}
 	if (args.size() > 3) {
-		if(data[0]=='!')
-		return learn(data); // SPO
-//		else data=replace(data," ","_");
+//		if (data[0] == '!')
+			return learn(data); // SPO
+		//		else data=replace(data," ","_");
 	}
 
 	//        query(string("all ")+data);// NO!

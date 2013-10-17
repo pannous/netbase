@@ -1200,8 +1200,6 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 	while (s = nextStatement(subject, s, predicate!=Instance)) {
 		if (visited[s])return 0;
 		visited[s] = 1;
-		//	for (int i = 0; i < subject->statementCount; i++) {
-		//		Statement* s = getStatementNr(subject, i);
 		//		showStatement(s);// debug!!!
 		//        if(s->context != current_context)continue;// only queryContext
 #ifdef use_instance_gap
