@@ -116,6 +116,10 @@ string replace_all(string str, string what, string with) {
 	}
 	return str;
 }
+string cut_to(string str, string what) {
+	int idx = str.find(what);
+	return str.substr(idx+ what.length());
+}
 
 bool quiet = false;
 

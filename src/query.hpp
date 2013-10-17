@@ -9,24 +9,23 @@
 #ifndef QUERY_H
 #define	QUERY_H
 
-static int defaultLimit = 100;
-
+extern int resultLimit;
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
 NodeVector query(Query& q);
-NodeVector query(string s, int limit=defaultLimit);
+NodeVector query(string s, int limit=resultLimit);
 Node* match(string data);
 Node* findMatch(Node* n, const char* match);
 Statement* evaluate(string data);
 int countInstances(Node* node);
-string query2(string s,int limit=defaultLimit);
-Query parseQuery(string s,int limit=defaultLimit);
+string query2(string s,int limit=resultLimit);
+Query parseQuery(string s,int limit=resultLimit);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 void clearAlgorithmHash();
 NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
-NodeVector find_all(char* name, int context=1, int recurse=0, int limit=defaultLimit);
-NodeVector& all_instances(Node* type, int recurse, int max= defaultLimit);
+NodeVector find_all(char* name, int context=1, int recurse=0, int limit=resultLimit);
+NodeVector& all_instances(Node* type, int recurse, int max= resultLimit);
 NodeVector& all_instances(Node* type);
 NodeVector& all_instances(Query& q);
 

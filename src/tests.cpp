@@ -13,6 +13,7 @@
 #include "relations.hpp"
 #include "query.hpp"
 #include "init.hpp"
+#include "console.hpp"
 //#define assert(cond) ((cond)?(0): (fprintf (stderr,"FAILED: \ %s, file %s, line %d \n",#cond,__FILE__,__LINE__), abort()))
 
 void clearTestContext(){
@@ -966,6 +967,8 @@ void tests() {
 }
 void testBrandNewStuff() {
 	ps("test brand new stuff");
+	parse("all bug");
+//	showNodes(all_instances(a(bug)));
 //	parentPath(a(insect),a(bug));// reverse 1 level !!!
 //	parentPath(a(bug),a(insect));
 //	parentPath(a(depeche_mode),a(Depeche_Mode));
@@ -987,4 +990,6 @@ void testBrandNewStuff() {
 	//	importCsv("import/wins.csv");
 	//	if(!hasWord("zip"))
 	//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
+			p("TEST OK!");
+
 }

@@ -47,7 +47,7 @@ char* abstract_root = 0;
 
 bool storeTypeExplicitly = true;
 bool exitOnFailure = true;
-bool debug = false; //true;//false;
+bool debug = true; //true;//false; //  checkNode, checkStatements ...
 bool showAbstract = false;
 
 int maxRecursions = 7;
@@ -232,6 +232,7 @@ Node* reify(Statement* s) {
 }
 
 bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
+//	if(!debug)return true; bad idea!
 	if (s == 0)return false;
 	if (s < contexts[current_context].statements)return false;
 	if (s >= contexts[current_context].statements + maxStatements0)return false;
@@ -424,9 +425,10 @@ Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId
 // remove when optimized!!!!!!!!!!
 
 bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
+//	if(!debug)return true;
 	if (node == 0) {
 		badCount++;
-		//		p("null node");
+		if(debug)p("null node");
 		//		p(nodeId);
 		return false;
 	}
@@ -1110,9 +1112,9 @@ void show(Node* n, bool showStatements) {//=true
 		while (s = nextStatement(n, s)) {
 			//					for (; i < min(n->statementCount, maxShowStatements); i++) {
 			//						s = getStatementNr(n, i);
-			if (i++ > defaultLimit)break;
+			if (i++ > resultLimit)break;
 			//			bool stopAtInstances = ++i > maxShowStatements;
-			//			if (stopAtInstances && s && s->Predicate == Instance || i > defaultLimit)
+			//			if (stopAtInstances && s && s->Predicate == Instance || i > resultLimit)
 			//				break;
 			//			s=nextStatement(n,s,stopAtInstances);
 			if (checkStatement(s))
@@ -1572,14 +1574,15 @@ Node* findMember(Node* n, string match, int recurse, bool semantic) {
 	if (!n)return 0;
 	if (recurse > 0)recurse++;
 	if (recurse > maxRecursions)return false;
-	if (debug)show(n);
+//	if (debug&&!eq(match.data(),"wiki_image"))
+//		show(n);
 	for (int i = 0; i < n->statementCount; i++) {
 		Statement* s = getStatementNr(n, i); // Not using instant gap
 		if (!s) {
 			badCount++;
 			continue;
 		}
-		if (debug)showStatement(s);
+//		if (debug)showStatement(s);
 		if (isA4(s->Predicate, match, recurse, semantic))
 			if (s->Subject == n)return s->Object;
 			else return s->Subject;
@@ -1636,7 +1639,7 @@ Node* findRelation(Node* from, Node* to) {// todo : broken Instance !!!
 	if (!s)return null;
 }
 
-void showNodes(NodeVector all, bool showStatements, bool showRelation) {
+void showNodes(NodeVector all, bool showStatements, bool showRelation,bool showAbstracts) {
 	int size = all.size();
 	ps("+++++++++++++++++++++++++++++++++++");
 	for (int i = 0; i < size; i++) {
@@ -1870,24 +1873,17 @@ int main(int argc, char *argv[]) {
 		quiet = true;
 	if (checkParams(argc, argv, "quit"))
 		exit(0);
-	if (checkParams(argc, argv, "exit"))
-		exit(0);
 
 	init();
 	//    import();
 	if (checkParams(argc, argv, "query")) {
 		load();
-		string q = replace_all(join(argv, argc), "query ", "");
+		string q = cut_to(join(argv, argc), "query ");
 		parse(q.c_str());
 		exit(0);
 		//        import();
 	}
-	if (checkParams(argc, argv, "export"))
-		export_csv();
-	if (checkParams(argc, argv, "load"))
-		load(false);
-	if (checkParams(argc, argv, "load_files"))
-		load(true);
+
 	if (checkParams(argc, argv, "server")
 			|| checkParams(argc, argv, "daemon")
 			|| checkParams(argc, argv, "demon")) {
@@ -1902,13 +1898,11 @@ int main(int argc, char *argv[]) {
 		if (checkParams(argc, argv, "save"))
 			save(); // danger
 	}
-
-	if (checkParams(argc, argv, "test")) {
-		tests();
-		p("TEST OK!");
-	}
-
-	if (checkParams(argc, argv, "debug")) {
+	if (checkParams(argc, argv, "load"))
+		load(false);
+	else if (checkParams(argc, argv, "load_files"))
+		load(true);
+	else if (checkParams(argc, argv, "debug")) {
 		printf("debugging\n");
 		//        load();
 		//		clean();
@@ -1921,7 +1915,17 @@ int main(int argc, char *argv[]) {
 		parse(join(argv, argc).c_str()); // <<< HERE
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+	if (checkParams(argc, argv, "export"))
+		export_csv();
+
+	if (checkParams(argc, argv, "test"))
+		tests();
+
+
 	printf("Warnings: %d\n", badCount);
+
+	if (checkParams(argc, argv, "exit"))
+		exit(0);
 	//	testBrandNewStuff();
 	console();
 	//    } catch (std::exception const& ex) {

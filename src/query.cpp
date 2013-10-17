@@ -6,9 +6,10 @@
 #include <cstdlib>
 #include <string.h>
 
-
+int resultLimit=100;// != lookuplimit
 int* enqueued; // 'parents'
 NodeVector EMPTY;
+
 
 string select(string s) {
 	if (contains(s, "select"))
@@ -16,7 +17,6 @@ string select(string s) {
 	else
 		return "select * from ";
 }
-
 string fixQuery(string s) {
 	s = s + string(" $");
 	s = replace_all(s, "types of ", select(s)); //todo .*types of regex
@@ -201,14 +201,10 @@ NodeVector query(string s, int limit) {
 }
 
 NodeVector query(Query& q) {
-	clearAlgorithmHash();
 	NodeVector all = all_instances(q);
-	for (int i = 0; i < q.keywords.size(); i++) {// remove
+	for (int i = 0; i < q.keywords.size(); i++) // remove
 		all = all_instances(q.keywords[i]); // bad
-		//        clearAlgorithmHash();
-		//        NodeVector all2 = all_instances(q.keywords[i]);// bad
-		//        all = intersect(all, all2);// nonsense!
-	}
+
 	q.instances = all;
 	for (int i = 0; i < q.filters.size(); i++) {
 		Statement* _filter = q.filters[i];
@@ -640,59 +636,60 @@ NodeVector& all_instances(Query& q) {
 	p(q);
 	enqueueClass(q, classQueue, q.keyword);
 	q.instances.push_back(q.keyword); // really?? joain. joa!
-	for (int i = 0; i < q.keywords.size(); i++) {
+	for (int i = 0; i < q.keywords.size(); i++)
 		classQueue.push(q.keywords[i]);
-	}
 	Node* c;
 	int j = 0;
 	while (classQueue.size() > 0) {
 		c = classQueue.front();
 		classQueue.pop();
 		if (!checkNode(c))continue;
+		pf("all %d %s\n",c->id,c->name);
 		for (int i = 0; i < c->statementCount; i++) {
-			if (i + j++ >= q.lookuplimit) break; //lookuplimit reached
-			//    pi(i);
 			Statement* s = getStatementNr(c, i);
-			if (!s) continue;
 			if (!checkStatement(s))continue;
-			//    	showStatement(s);
+			if (q.instances.size() >= resultLimit)
+				return q.instances;
+			if ( j++ >= q.lookuplimit){
+//				p("lookuplimit reached");
+				break;
+			}
+//			showStatement(s);
 			if (s->Subject == q.keyword) {
-				if (isA4(s->Predicate, Instance, false, false))
+				if(contains(q.instances,s->Object))continue;
+				if (isA4(s->Predicate, Instance, false, false)){
 					q.instances.push_back(s->Object);
-				continue; // found one!
+//					if(q.depth>0)// q.depth-- >0 ==7  ? todo !
+						enqueueClass(q,classQueue,s->Object);
+					continue; // found one!
+				}
 				//            if (isA4(s->Predicate, Instance, false, false))if (!contains(q.instances, s->Object))q.instances.push_back(s->Object);
 				if (isA4(s->Predicate, SubClass, false, false))enqueueClass(q, classQueue, s->Object);
 				if (isA4(s->Predicate, Plural, false, false))enqueueClass(q, classQueue, s->Object);
 				if (isA4(s->Predicate, Synonym, false, false))enqueueClass(q, classQueue, s->Object);
 			} else {
-				if (isA4(s->Predicate, Type, false, false))
+				if(contains(q.instances,s->Subject))continue;
+				if (isA4(s->Predicate, Type, false, false)){
 					q.instances.push_back(s->Subject);
+					pf("%d %s\n",s->Subject->id,s->Subject->name);
+//					if(q.depth>0)
+					enqueueClass(q,classQueue,s->Subject);
+					continue; // found one!
+				}
 				if (isA4(s->Predicate, SuperClass, false, false))enqueueClass(q, classQueue, s->Subject);
 				if (isA4(s->Predicate, Plural, false, false))enqueueClass(q, classQueue, s->Subject);
 				if (isA4(s->Predicate, Synonym, false, false))enqueueClass(q, classQueue, s->Subject);
 			}
 		}
-		if (q.instances.size() >= q.lookuplimit)return q.instances;
+
 	}
 	//    q.instances = addRange(q.instances, q.classes); //nee
 	return q.instances;
 }
 
-Query& getQuery(Node* keyword) {
-	Query& q = *new Query();
-	q.keywords.clear(); // =new NodeVector();
-	q.keyword = keyword;
-	q.classes.clear();
-	//    q.recursion = recurse;
-	q.depth = maxRecursions; //ja?
-	//    q.limit = max;
-	q.runs = 0;
-	return q;
-}
-
 // EXCLUDING classes and direct instances!
-
 NodeVector& all_instances(Node* type) {
+	clearAlgorithmHash();
 	return all_instances(getQuery(type));
 }
 
@@ -713,11 +710,7 @@ NodeVector& all_instances(Node* type, int recurse, int max) {
 	subtypes.push_back(type);
 	for (int i = 0; i < type->statementCount; i++) {
 		Statement* s = getStatementNr(type, i);
-		if (!s) {
-			badCount++;
-			ps("!s");
-			continue;
-		}
+		if (!checkStatement(s))continue;
 		//    	showStatement(s);
 		//    	po
 		if (s->Subject == type) {
@@ -742,6 +735,20 @@ NodeVector& all_instances(Node* type, int recurse, int max) {
 		}
 	return all;
 }
+
+
+Query& getQuery(Node* keyword) {
+	Query& q = *new Query();
+	q.keywords.clear(); // =new NodeVector();
+	q.keyword = keyword;
+	q.classes.clear();
+	//    q.recursion = recurse;
+	q.depth = maxRecursions; //ja?
+	//    q.limit = max;
+	q.runs = 0;
+	return q;
+}
+
 
 void clearAlgorithmHash() {
 			runs = 0;
@@ -842,10 +849,9 @@ int countInstances(Node* node) {
 NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 	NodeVector all;
 
-	Statement* s = getStatement(subject->firstStatement);
-	int nr=0;
-	while (s && nr++ < subject->statementCount) {
-		if(!checkStatement(s))continue;
+	int i = 0;
+	Statement* s = 0;
+	while(i++<resultLimit*2 && (s=nextStatement(subject,s,false))){// true !!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Instance);
 
@@ -859,19 +865,15 @@ NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object);
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
 		}
-		s = nextStatement(subject, s);
 	}
 	return all;
 }
 
 NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 	NodeVector all;
-	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatementNr(subject, i);
-		if (!checkStatement(s)) {
-			badCount++;
-			continue;
-		};
+	int i = 0;
+	Statement* s = 0;
+	while(i++<1000 && (s=nextStatement(subject,s,false))){// true !!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Member);
 		predicateMatch = predicateMatch || s->Predicate == Part;
@@ -914,10 +916,8 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 
 NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	NodeVector all;
-	Statement* s = 0;
 	int i = 0;
-	if(subject->id==440252)
-		p("OK");
+	Statement* s = 0;
 	while(i++<1000 && (s=nextStatement(subject,s,false))){// true !!!!
 //		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 //		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!

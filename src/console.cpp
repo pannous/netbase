@@ -24,6 +24,7 @@
 #include <readline/readline.h>
 #endif
 
+
 using namespace std;
 // static struct termios stored_settings;
 
@@ -99,10 +100,12 @@ bool parse(const char* data) {
 		return true;
 	}
 
-	if (eq(data, "more") && lastCommand) {
-		defaultLimit *= 2;
+	if (eq(data, "more")) {
+		resultLimit = resultLimit * 2;
+		if(lastCommand)
 		return parse(lastCommand);
-	} else defaultLimit = 100;
+		else return true;
+	}
 
 	if (eq(data, ":x")) {
 		save();
@@ -149,10 +152,10 @@ bool parse(const char* data) {
 			importAll();
 		return true;
 	}
-	if (startsWith(data, "limit")) {
-		sscanf(data, "limit %d", &defaultLimit);
-		return true;
-	}
+	if (contains(data, " limit"))
+		sscanf(data, "%s limit %d", &resultLimit,data);
+	if (contains(data, "limit"))
+		sscanf(data, "limit %d %s", &resultLimit,data);
 	if (eq(data, "load") || eq(data, ":l")) {
 		load(false);
 		return true;

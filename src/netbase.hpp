@@ -347,7 +347,7 @@ char* name(Node* node);
 Context* getContext(int contextId);
 void showContext(int nr);
 void showContext(Context* cp);
-void showNodes(NodeVector all, bool showStatements = false,bool showRelation=false); //
+void showNodes(NodeVector all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false); // bool justTitles==showStatements
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
