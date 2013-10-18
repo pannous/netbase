@@ -22,4 +22,5 @@ g++ $options -MF build/NetbaseJNI.o.d -o build/NetbaseJNI.o src/jni/NetbaseJNI.c
 #g++ -g -w src/*.cpp /usr/lib/libsqlite3.dylib -o netbase  && ./netbase $@ 
 
 g++  -I$JAVA_HOME/include/darwin -I$JAVA_HOME/include -lreadline -g -w src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase $@ 
+cp netbase src/jni # todo
 # ln -s /usr/lib/x86_64-linux-gnu/libsqlite3.so libsqlite3.dylib
