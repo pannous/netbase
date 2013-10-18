@@ -1,4 +1,3 @@
-
 SHELL = /bin/sh
 
 # V=0 quiet, V=1 verbose.  other values don't work.
@@ -153,8 +152,8 @@ extout_prefix =
 target_prefix = 
 LOCAL_LIBS = 
 LIBS = -lrice -lruby.1.9.1 -lpthread -ldl -lobjc 
-SRCS = console.cpp export.cpp import.cpp init.cpp md5.cpp netbase-ruby.cpp netbase.cpp query.cpp relations.cpp tests.cpp util.cpp webserver.cpp
-OBJS = console.o export.o import.o init.o md5.o netbase-ruby.o netbase.o query.o relations.o tests.o util.o webserver.o
+SRCS = console.cpp export.cpp import.cpp init.cpp md5.cpp netbase.cpp query.cpp reflection.cpp relations.cpp tests.cpp util.cpp webserver.cpp
+OBJS = console.o export.o import.o init.o md5.o netbase.o query.o reflection.o relations.o tests.o util.o webserver.o
 TARGET = netbase
 DLLIB = $(TARGET).bundle
 EXTSTATIC = 

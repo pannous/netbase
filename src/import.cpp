@@ -920,8 +920,10 @@ Node* getYagoConcept(char* key) {
 //		printf(" bad key %s\n", name);
 //		return 0;
 //	}
-	return getThe(name); //fixYagoName(key));
-
+	Node *n=getThe(name); //fixYagoName(key));
+//	dissectWord(n);
+	dissectParent(n);
+	return n;
 }
 
 bool importYago(const char* file) {
@@ -984,7 +986,6 @@ bool importYago(const char* file) {
 			object = getYagoConcept(objectName);
 			continue;
 		}
-		//dissectWord(abstract);
 		Statement* s;
 		//		if (contains(objectName, subjectName, true))
 		//			s = addStatement(subject, Member, object, false); // todo: id

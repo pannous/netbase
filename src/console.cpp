@@ -63,7 +63,7 @@ Node *parseProperty(const char *data) {
 		//			sscanf(data,"%s.%s",thing,property);
 		char** splat = splitStringC(data, '.');
 		thing = splat[0];
-		property = splat[1];
+		property =	 splat[1];
 	}
 	if (!property) {
 		char** splat = splitStringC(data, ' ');
@@ -76,7 +76,7 @@ Node *parseProperty(const char *data) {
 		found = has(getAbstract(thing), getAbstract(property));
 	if (checkNode(found)) {
 		show(found);
-		pf("YES: %s\n", found->name);
+		pf("ANSWER: %s\n", found->name);
 	}
 	return found;
 }

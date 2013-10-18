@@ -22,7 +22,8 @@
 #ifdef i386
 const void * shmat_root = (const void *) 0x10000000; // just higher than system Recommendation
 #else
-const void * shmat_root = (const void *) 0x110000000; // just higher than system Recommendation
+const void * shmat_root = (const void *) 0x300000000; // just higher than system Recommendation
+//const void * shmat_root = (const void *) 0x110000000; // just higher than system Recommendation
 #endif
 //const void * shmat_root = (const void *)0x105800000;//test
 
@@ -154,9 +155,13 @@ void checkRootContext() {
 	if (rootContext->nodes != (Node*) node_root){//  &context_root[contextOffset]) {
 		showContext(rootContext);
 		fixPointers();
+		rootContext->nodes = (Node*)node_root;
+		currentContext()->nodes = rootContext->nodes;// hack
 	}
-	if (currentContext()->nodes != rootContext->nodes)
+	else if (currentContext()->nodes != rootContext->nodes){
 		fixPointers();
+		currentContext()->nodes = rootContext->nodes;
+	}
 }
 
 void init() {
@@ -321,8 +326,8 @@ int collectAbstracts() {
 	initRelations();
 //	abstracts = (Ahash*) (&context_root[abstractsOffset]);
 //	extrahash = (Ahash*) (&context_root[abstractsOffset + abstractHashSize]);
-	memset(abstracts, 0, abstractHashSize);
-	memset(extrahash, 0, abstractHashSize);
+	memset(abstracts, 0, abstractHashSize*2);
+//	memset(extrahash, 0, abstractHashSize);
 	Context* c = currentContext();
 	int max = c->nodeCount; // maxNodes;
 	int count = 0;
