@@ -258,6 +258,7 @@ Node* invert(Node* relation) {
 	if (relation == Owner)return Member;
 	if (relation == Member)return Owner;
 	if (relation == Part)return Owner;
+	if (relation == PartOwner)return Part;
 	if (relation == Substance)return Owner; //?
 	if (relation == Synonym)return Synonym;
 	//if(relation==Weight)return ??;

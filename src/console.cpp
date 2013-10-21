@@ -174,7 +174,7 @@ bool parse(const char* data) {
 	}
 	if (startsWith(data, ":i") || startsWith(data, "import")) {
 		string arg = next(string(data));
-		if (arg.length() > 2) 
+		if (arg.length() > 2)
 			import(arg.c_str());
 		else
 			importAll();
@@ -380,9 +380,12 @@ bool parse(const char* data) {
 	//        query(string("all ")+data);// NO!
 	//        query(data);// NOO!
 	int i = atoi(data);
+	if(i==0)i=atoi(data+1);
 	if (i > 0) {
 		//		if (i < 1000)showContext(i);
 		if (endsWith(data, "s") || endsWith(data, "S") || endsWith(data, "$"))
+			showStatement(getStatement(i));
+		else if (startsWith(data, "s") || startsWith(data, "S") || startsWith(data, "$"))
 			showStatement(getStatement(i));
 		else{
 			dissectWord(get(i));

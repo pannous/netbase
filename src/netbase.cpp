@@ -1244,7 +1244,6 @@ Node* findWord(int context, const char* word, bool first) {//=false
 
 
 // DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
-
 Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse, bool semantic, bool symmetric, bool semanticPredicate) {
 	// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 	if (recurse > 0)
@@ -1262,13 +1261,14 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 		if(!checkStatement(s))continue;
 		if(s->context==_pattern)continue;
 
-
+//		if(s->Predicate!=Any){
 		if (s->Object == Adjective && object!=Adjective)continue; // bug !!
 		if (s->Predicate == Derived)continue; // Derived bug !!
 		if (s->Predicate == get(_attribute))continue; // Derived bug !!
 		if (s->Predicate == get(50))continue; // also bug !!
 		if (s->Predicate == get(91))continue; // also bug !!
 		if (s->Predicate == get(92))continue; // also bug !!
+//		}
 		// ^^ todo
 //		X any X error
 //		native		derived		native		301562->81->251672
@@ -1480,31 +1480,8 @@ Node* value(const char* aname, double v, const char* unit) {
 	return n;
 }
 
-Statement* findStatement(Node* subject, string predicate, string object, int recurse, bool semantic, bool symmetric) {
-	if (recurse > 0)recurse++;
-	else recurse = maxRecursions;
-	if (recurse > maxRecursions)return false;
-	for (int i = 0; i < subject->statementCount; i++) {
-		Statement* s = getStatementNr(subject, i);
-		if (isA4(s->Predicate, predicate, recurse, semantic))
-			if (s->Subject == subject)
-				if (isA4(s->Object, object))return s;
-				else
-
-					if (isA4(s->Subject, object))return s; // TODO! if Predicate^-1 !
-	}/// ?? unresolved!?
-	return null;
-}
-
 Node* has(Node* n, string predicate, string object, int recurse, bool semantic, bool symmetric) {
-	if (recurse > 0)recurse++;
-	else recurse = maxRecursions - 1;
-	if (recurse > maxRecursions)return false;
-	Statement * s = findStatement(n, predicate, object, recurse, semantic, symmetric);
-	if (s != null && s->Subject == n) return s->Object;
-	if (s != null && s->Object == n) return s->Subject;
-
-	return 0;
+	return has(n,getAbstract(predicate.data()),getAbstract(object.data()),recurse,semantic,symmetric);
 }
 
 Node* has(Node* subject, Node* predicate, Node* object, int recurse, bool semantic, bool symmetric, bool predicatesemantic) {
@@ -1752,7 +1729,7 @@ Node* has(const char* n, const char* m) {
 }
 
 Node* has(Node* n, Node* m) {
-	clearAlgorithmHash();
+	clearAlgorithmHash(true);
 	int tmp=resultLimit;
 	resultLimit=1;
 	NodeVector all=memberPath(n,m);
@@ -1789,6 +1766,11 @@ Node* has(Node* n, Node* m) {
 	return no;
 }
 
+Statement* findRelations(Node* from, Node* to) {
+	Statement* s = findStatement(from, Any, to, false, false, false, false);
+	if (!s) return findStatement(to, Any, from, false, false, false, false);
+	else return s;
+}
 Node* findRelation(Node* from, Node* to) {// todo : broken Instance !!!
 	Statement* s = findStatement(from, Any, to, false, false, false, false);
 	if (!s) s = findStatement(to, Any, from, false, false, false, false);
@@ -1811,12 +1793,15 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation, bool show
 	for (int i = 0; i < size; i++) {
 		Node* node = (Node*) all[i];
 
-		if (i > 0 && showRelation)
-			show(findRelation(all[i - 1],node), false);
+		if (i > 0 && showRelation){
+			pf("$%d-> ",findRelations(all[i - 1],node)->id);
+			pf("%s\n",findRelation(all[i - 1],node)->name);
+		}
 		show(node, showStatements);
 	}
-	ps("++++++++++ Hits : +++++++++++++++++");
-	p(size);
+	if(!showRelation){
+	pf("++++++++++ Hits : %d +++++++++++++++++",size);
+	}else ps("+++++++++++++++++++++++++++++++++++");
 }
 //NodeVector match_all(string data){
 //}

@@ -760,7 +760,8 @@ NodeVector& all_instances(Node* type, int recurse, int max,bool includeClasses) 
 //	subtypes.push_back(type); NOT AGAIN
 	if (recurse)
 		for (int i = 0; i < subtypes.size(); i++) {// subtypes
-			if (subtypes.size() >= max)return all;
+			if (all.size() >= max)
+				return all;
 			Node* x=(Node*) subtypes[i];
 			pf("all %d %s\n",x->id,x->name);
 			if(!checkNode(x))continue;// how??
@@ -882,7 +883,7 @@ Node* findMatch(Node* n, const char* match) {//
 		p("n[a=b]");
 		if (!quiet)
 			printf("show(findStatement(%s,%s,%s))", n->name, a, b);
-		Statement* statement = findStatement(n, a, b);
+		Statement* statement = findStatement(n,getAbstract(a), getAbstract(b));
 		if (statement) {
 			showStatement(statement);
 			return n; //statement->Subject;
@@ -946,6 +947,10 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 	Statement* s = 0;
 	while(i++<1000 && (s=nextStatement(subject,s,false))){// true !!!!
 //		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
+		if(subject->id==213112)
+//		if(s->id==467484)
+			p(s);
+		if (s->Predicate==subject)break;
 		if (s->Object==Adjective)continue;
 		if (s->Object==Adverb)continue;
 		if (s->Object==Noun)continue;
@@ -955,7 +960,8 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		if (s->Predicate==get(_attribute))continue;
 		if (s->Predicate==get(40))continue;// similar
 		if (s->Predicate==get(50))continue;// also
-//		p(s);
+		if (s->Predicate == get(91))continue; // also bug !!
+		if (s->Predicate == get(92))continue; // also bug !!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Member);
 		predicateMatch = predicateMatch || s->Predicate == Part;
@@ -978,6 +984,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		bool predicateMatchReverse = s->Predicate == Owner; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == By;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == From;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate == PartOwner;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == UsageContext;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_CATEGORY;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_REGION;
@@ -986,17 +993,15 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == Plural;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == Synonym;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate == Instance;
 //		predicateMatchReverse = predicateMatchReverse || isA4(s->Predicate)
 		if (queue) {
 			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object, queue);
-			if (subjectMatchReverse&& predicateMatchReverse){
-				p(s);
-				enqueue(subject, s->Subject, queue);
-			}
+			if (subjectMatchReverse&& predicateMatchReverse)enqueue(subject, s->Subject, queue);
 		} else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object);
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
-			if (subjectMatch && s->Predicate->id>1000)all.push_back(s->Object);
+//			if (subjectMatch && s->Predicate->id>1000)all.push_back(s->Object);// properties how to?
 		}
 	}
 	if(queue)// already enqueued
@@ -1058,7 +1063,6 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 			badCount++;
 			continue;
 		}
-
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool subjectMatchReverse = s->Object == subject;
 		if (queue) {
@@ -1133,6 +1137,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 		Node* d = instances[i];
 		enqueued[d->id] = fro->id;
 		q.push(d);
+		pf("FROM %d %s\n",d->id,d->name);
 	}
 	pf("TO %d %s\n",to->id,to->name);
 //	p(to);
@@ -1143,7 +1148,8 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	while (current = q.front()) {
 		if (q.empty())break;
 		q.pop();
-//		pf("?? %d %s\n",current->id,current->name);
+//		if(current->id==230608)
+//			pf("?? %d %s\n",current->id,current->name);
 		if (to == current)
 			return reconstructPath(fro, to);
 		if (!checkNode(current, 0, true))
@@ -1156,7 +1162,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 				enqueue(current, d, &q);
 			}
 	}
-	pf("Touched nodes: %d\n",runs);
+	pf("NO PATH FOUND! Touched nodes: %d\n",runs);
 	return EMPTY;// NONE FOUND!
 //	return reconstructPath(fro, to);
 }
