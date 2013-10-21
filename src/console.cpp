@@ -115,8 +115,9 @@ bool parse(const char* data) {
 		return true;
 	}
 	clearAlgorithmHash(true); //  maybe messed up
+	data=fixQuotesAndTrim(modifyConstChar(data));
 	string arg = next(string(data));
-	std::remove(arg.begin(), arg.end(), ' ');
+//	std::remove(arg.begin(), arg.end(), ' ');
 	vector<char*> args = splitString(data, " "); // WITH 0==cmd!!!
 
 	//		scanf ( "%s", data );
