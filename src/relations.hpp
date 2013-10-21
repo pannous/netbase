@@ -117,7 +117,7 @@ static const int _object = 104;
 //int Object=104;
 static const int _relation = 105;
 static const int _person = 106;
-static const int _reification=107;
+static const int _reification=107;//== _statement ??
 static const int _pattern = 108;
 static const int _statement = 109;
 

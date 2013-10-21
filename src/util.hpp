@@ -65,11 +65,14 @@ NodeVector intersect(NodeVector a,NodeVector b);
 unsigned int hash(const char *str);
 inline int normChar(int c);
 string stem(string word);
-void addRange(NodeVector& some, NodeVector more);
+void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
 NodeVector mergeVectors(NodeVector some, NodeVector more);
 char* substr(char* what,int from,int to);
 char* match(char* input, char* pattern);
 char* clone(const char* line);
-char* modifyConstChar(char* line);
+char* modifyConstChar(const char* line);
 const char* concat(const char* a,const  char* b);
-#define check(assertion) ps(#assertion);if(assertion)pf("PASSED %s \n",#assertion);else{pf("FAILED %s \n",#assertion);exit(0);}
+char* fixQuotesAndTrim(char* tmp);
+
+
+#define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}

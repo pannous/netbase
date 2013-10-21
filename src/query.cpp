@@ -372,23 +372,17 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	NodeVector found;
 	static char fields[10000];
 	static char type[10000];
-	static char match[10000];
-	ps(s);
+	static char where[10000];
 	if ((int) s.find("from") < 0)
 		s = string("select * from ") + s; // why (int) neccessary???
 	//	s=stem_singular(s)/
 	//    s=replace_all(s,"ies","y");//singular
 	ps(s);
-	sscanf(s.c_str(), "select %s from %s where %s", fields, type, match);
+	sscanf(s.c_str(), "select %s from %s where %[^\n]s", fields, type, where);
+//	makeSingular(type);
 	p(fields);
 	p(type);
-	//	makeSingular(type);
-	char* where = " where ";
-	char* match2 = (char*) contains(s.c_str(), where); // remove test.funny->.funny do later!
-	if (match2) {
-		match2 += 7; // wegen 'where' !!!! bad style
-		p(match2);
-	}
+	p(where);
 
 	int batch = limit * 10; // 200000000;//// dont limit wegen filter!! limit + 100;
 	//    while (found.size() < limit && batch < 200000000) {
@@ -398,14 +392,15 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	NodeVector all = all_instances(getAbstract(type));
 	//  find_all(type, current_context, true, batch); // dont limit wegen filter!!
 
-	found = filter(all, match2); //fields
+	if(where[0])
+	found = filter(all, where); //fields
 
 	//    add instance matches
 	for (int i = 0; i < all.size(); i++) {
 		if (found.size() >= limit)goto good;
 		all.clear(); // hack to reset all_instances
 		NodeVector all2 = all_instances((Node*) all[i], true, limit);
-		found = mergeVectors(found, filter(all2, match2)); //fields)
+		found = mergeVectors(found, filter(all2, where)); //fields)
 	}
 	batch = 200000000;
 
@@ -421,12 +416,13 @@ good:
 
 Statement* evaluate(string data) {
 	Statement* s = parseFilter(data); //Hypothesis Aim Objective supposition assumption
+	// TODO MARK + CLEAR PATTERNS!!!
 	Statement* result = findStatement(s->Subject, s->Predicate, s->Object);
 	if (result)return result;
 		//     Node* n=has(s->Subject,s->Predicate,s->Object);
 		//     if(n)return n;
 	else
-		return addStatement(s->Subject, s->Predicate, s->Object);
+		return addStatement(s->Subject, s->Predicate, s->Object,true);
 }
 
 Node* match(string data) {
@@ -444,17 +440,17 @@ NodeVector exclude(NodeVector some, NodeVector less) {// bool keep destination u
 	return some;
 }
 
-int queryContext = 0; // hypothesis
+int queryContext = _pattern; // hypothesis
 
 // TODO MARK + CLEAR PATTERNS!!!
-
 Statement* pattern(Node* subject, Node* predicate, Node* object) {
 	Statement *s = addStatement(subject, predicate, object, false); //todo mark (+reuse?) !
-	Node* pattern = reify(s);
-	addStatement(pattern, is_a, Pattern, false);
 	if(checkStatement(s))
-		s->context = queryContext;
-	return s;
+		s->context = _pattern;
+	Node* pattern = reify(s);// why here?
+	pattern->kind=_pattern;
+	addStatement(pattern, is_a, Pattern, false);
+	return s;// pattern?
 }
 
 NodeVector filter(NodeVector all, char* matches) {
@@ -631,24 +627,36 @@ NodeVector filter(Query& q, Node* _filter) {
 
 void enqueueClass(Query& q, queue<Node*>& classQueue, Node* c) {
 	if (!checkNode(c))return;
-	//    if(!contains(q.classes, c)){// cyclesave!
+	//    if(!contains(classQueue | q.classes, c)){// cyclesave!
 	classQueue.push(c);
 	q.classes.push_back(c);
 	//    }
 }
 
+NodeVector& nodesOfDirectType(int kind){
+	NodeVector all;
+	for (int i = 0; i < currentContext()->nodeCount; i++) {
+		Node* n = &currentContext()->nodes[i];
+		if(checkNode(n,i,false,false)&&n->kind==kind)
+			all.push_back(n);
+	}
+	return all;
+}
 NodeVector& all_instances(Query& q) {
 	queue<Node*> classQueue;
 	p(q);
 	enqueueClass(q, classQueue, q.keyword);
 	q.instances.push_back(q.keyword); // really?? joain. joa!
 	for (int i = 0; i < q.keywords.size(); i++)
+//		if(!classQueue.contains)
 		classQueue.push(q.keywords[i]);
 	Node* c;
 	int j = 0;
 	while (classQueue.size() > 0) {
 		c = classQueue.front();
 		classQueue.pop();
+		if (yetvisited[c])continue;
+		yetvisited[c] = true;
 		if (!checkNode(c))continue;
 		pf("all %d %s\n",c->id,c->name);
 		for (int i = 0; i < c->statementCount; i++) {
@@ -687,23 +695,25 @@ NodeVector& all_instances(Query& q) {
 				if (isA4(s->Predicate, Synonym, false, false))enqueueClass(q, classQueue, s->Subject);
 			}
 		}
-
 	}
+	NodeVector allOfType0=nodesOfDirectType(q.keyword->id);
+	addRange(q.instances,allOfType0,false);
 	//    q.instances = addRange(q.instances, q.classes); //nee
 	return q.instances;
 }
 
-// EXCLUDING classes and direct instances!
 NodeVector& all_instances(Node* type) {
 	clearAlgorithmHash();
 	return all_instances(getQuery(type));
+//	return all_instances(type,true,resultLimit);
 }
 
+// EXCLUDING classes and direct instances!
 NodeVector& all_instances(Node* type, int recurse, int max) {
 	static NodeVector& all = *new NodeVector; // empty before!
 	if (type == 0) {
 		all.clear(); // hack!!!
-		return all;
+		return EMPTY;
 	}
 	if (recurse > 0)recurse = recurse + 2; // recurse++; dont descend too deep! todo: as iterator anyways!
 	if (yetvisited[type])
@@ -717,7 +727,7 @@ NodeVector& all_instances(Node* type, int recurse, int max) {
 	for (int i = 0; i < type->statementCount; i++) {
 		Statement* s = getStatementNr(type, i);
 		if (!checkStatement(s))continue;
-		//    	showStatement(s);
+		showStatement(s);
 		//    	po
 		if (s->Subject == type) {
 			if (isA4(s->Predicate, Instance, false, false))if (!contains(all, s->Object))all.push_back(s->Object);
@@ -927,6 +937,7 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	int i = 0;
 	Statement* s = 0;
 	while(i++<1000 && (s=nextStatement(subject,s,false))){// true !!!!
+		if(s->context==_pattern)continue;
 //		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 //		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);

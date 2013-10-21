@@ -19,7 +19,7 @@ require "mkmf"
 
 # require 'mkmf'
 # dir_config("netbase")
-# dir_config("../../")
+dir_config("../../")
 # have_library("netbase")
-# have_library("../../netbase")
+have_library("../../netbase")
 create_makefile("netbase")

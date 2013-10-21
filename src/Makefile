@@ -1,3 +1,4 @@
+
 SHELL = /bin/sh
 
 # V=0 quiet, V=1 verbose.  other values don't work.
@@ -15,75 +16,40 @@ topdir = /Users/me/.rvm/rubies/ruby-1.9.3-p125/include/ruby-1.9.1
 hdrdir = /Users/me/.rvm/rubies/ruby-1.9.3-p125/include/ruby-1.9.1
 arch_hdrdir = /Users/me/.rvm/rubies/ruby-1.9.3-p125/include/ruby-1.9.1/$(arch)
 VPATH = $(srcdir):$(arch_hdrdir)/ruby:$(hdrdir)/ruby
-
 prefix = $(DESTDIR)/Users/me/.rvm/rubies/ruby-1.9.3-p125
-
 rubylibprefix = $(libdir)/$(RUBY_BASE_NAME)
-
 exec_prefix = $(prefix)
-
 vendorhdrdir = $(rubyhdrdir)/vendor_ruby
-
 sitehdrdir = $(rubyhdrdir)/site_ruby
-
 rubyhdrdir = $(includedir)/$(RUBY_BASE_NAME)-$(ruby_version)
-
 vendordir = $(rubylibprefix)/vendor_ruby
-
 sitedir = $(rubylibprefix)/site_ruby
-
 ridir = $(datarootdir)/$(RI_BASE_NAME)
-
 mandir = $(datarootdir)/man
-
 localedir = $(datarootdir)/locale
-
 libdir = $(exec_prefix)/lib
-
 psdir = $(docdir)
-
 pdfdir = $(docdir)
-
 dvidir = $(docdir)
-
 htmldir = $(docdir)
-
 infodir = $(datarootdir)/info
-
 docdir = $(datarootdir)/doc/$(PACKAGE)
-
 oldincludedir = $(DESTDIR)/usr/include
-
 includedir = $(prefix)/include
-
 localstatedir = $(prefix)/var
-
 sharedstatedir = $(prefix)/com
-
 sysconfdir = $(prefix)/etc
-
 datadir = $(datarootdir)
-
 datarootdir = $(prefix)/share
-
 libexecdir = $(exec_prefix)/libexec
-
 sbindir = $(exec_prefix)/sbin
-
 bindir = $(exec_prefix)/bin
-
 rubylibdir = $(rubylibprefix)/$(ruby_version)
-
 archdir = $(rubylibdir)/$(arch)
-
 sitelibdir = $(sitedir)/$(ruby_version)
-
 sitearchdir = $(sitelibdir)/$(sitearch)
-
 vendorlibdir = $(vendordir)/$(ruby_version)
-
 vendorarchdir = $(vendorlibdir)/$(sitearch)
-
 
 NULLCMD = :
 
@@ -92,7 +58,7 @@ CXX = clang++
 LIBRUBY = $(LIBRUBY_SO)
 LIBRUBY_A = lib$(RUBY_SO_NAME)-static.a
 LIBRUBYARG_SHARED = -l$(RUBY_SO_NAME)
-LIBRUBYARG_STATIC = -lruby.1.9.1-static
+LIBRUBYARG_STATIC = -l$(RUBY_SO_NAME)-static
 OUTFLAG = -o 
 COUTFLAG = -o 
 
@@ -101,16 +67,16 @@ cflags   =  $(optflags) $(debugflags) $(warnflags)
 optflags = -O3
 debugflags = -g
 warnflags = -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wshorten-64-to-32 -Wimplicit-function-declaration
-CFLAGS   = -fno-common $(cflags)  -fno-common -pipe-Wall $(ARCH_FLAG)
+CFLAGS   = -fno-common $(cflags)  -fno-common -pipe $(ARCH_FLAG)
 INCFLAGS = -I. -I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)
 DEFS     = 
-CPPFLAGS =  -I/Users/me/.rvm/usr/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE $(DEFS) $(cppflags)  -I/Users/me/.rvm/gems/ruby-1.9.3-p125/gems/rice-1.4.3/ruby/lib/include
-CXXFLAGS = $(CFLAGS)  -Wall -g
-ldflags  = -L.   -L/Users/me/.rvm/gems/ruby-1.9.3-p125/gems/rice-1.4.3/ruby/lib/lib
+CPPFLAGS =  -I/Users/me/.rvm/usr/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE $(DEFS) $(cppflags)
+CXXFLAGS = $(CFLAGS) $(cxxflags)
+ldflags  = -L. 
 dldflags = -Wl,-undefined,dynamic_lookup -Wl,-multiply_defined,suppress -Wl,-flat_namespace
 ARCH_FLAG = 
 DLDFLAGS = $(ldflags) $(dldflags) $(ARCH_FLAG)
-LDSHARED = g++ -dynamic -bundle
+LDSHARED = $(CC) -dynamic -bundle
 LDSHAREDXX = $(CXX) -dynamic -bundle
 AR = ar
 EXEEXT = 
@@ -136,9 +102,6 @@ COPY = cp
 
 preload = 
 
-
-CXX = g++
-
 libpath = . $(libdir) /Users/me/.rvm/usr/lib
 LIBPATH =  -L. -L$(libdir) -L/Users/me/.rvm/usr/lib
 DEFFILE = 
@@ -151,9 +114,9 @@ extout =
 extout_prefix = 
 target_prefix = 
 LOCAL_LIBS = 
-LIBS = -lrice -lruby.1.9.1 -lpthread -ldl -lobjc 
-SRCS = console.cpp export.cpp import.cpp init.cpp md5.cpp netbase.cpp query.cpp reflection.cpp relations.cpp tests.cpp util.cpp webserver.cpp
-OBJS = console.o export.o import.o init.o md5.o netbase.o query.o reflection.o relations.o tests.o util.o webserver.o
+LIBS = $(LIBRUBYARG_SHARED)  -lpthread -ldl -lobjc 
+SRCS = console.cpp export.cpp import.cpp init.cpp md5.cpp netbase-ruby.cpp netbase.cpp query.cpp reflection.cpp relations.cpp tests.cpp util.cpp webserver.cpp
+OBJS = console.o export.o import.o init.o md5.o netbase-ruby.o netbase.o query.o reflection.o relations.o tests.o util.o webserver.o
 TARGET = netbase
 DLLIB = $(TARGET).bundle
 EXTSTATIC = 

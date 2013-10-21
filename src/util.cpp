@@ -388,15 +388,25 @@ char** splitStringC(char* line0, char separator,int maxRows) {
 }
 
 inline int normChar(int c) {
-    switch (c) {
-        case '_':return 0;
-            break;
-        case ' ':return 0;
-            break;
-        case '-':return 0;
-            break;
-        default: return tolower(c);
-    }
+	if(c >= 'a' && c <= 'z')return c;
+	if(c >= '0' && c <= '9')return c;
+	if(c >= 'A' && c <= 'Z')return tolower(c);
+	return 0;
+//    switch (c) {
+//        case '"':return 0;
+//            break;
+//        case '\'':return 0;
+//            break;
+//        case '(':return 0;
+//            break;
+//        case '_':return 0;
+//            break;
+//        case ' ':return 0;
+//            break;
+//        case '-':return 0;
+//            break;
+//        default: return tolower(c);
+//    }
 }
 
 //unsigned long hash(const char *str) {// unsigned
@@ -410,10 +420,12 @@ unsigned int hash(const char *str) {// unsigned
 }
 
 // call by object => destination unmodified!   (how) expensive?!
-void addRange(NodeVector& some, NodeVector more) {// bool keep destination unmodified=TRUE
+void addRange(NodeVector& some, NodeVector more,bool checkDuplicates) {// bool keep destination unmodified=TRUE
     for (int i = 0; i < more.size(); i++) {
-        if (!contains(some, (Node*) more[i]))
-            some.push_back(more[i]);
+		Node*n= (Node*) more[i];
+		if(!checkNode(n))continue;
+        if (!checkDuplicates||!contains(some, n))
+            some.push_back(n);
     }
 }
 
@@ -459,4 +471,22 @@ char* match(char* input, char* pattern) {
 	char *group = substr(input, from, to);
 	regfree(&regex);
 	return group;
+}
+
+char* fixQuotesAndTrim(char* tmp){
+	bool head=true;
+	bool quote=false;
+	while(tmp[0]==' '||tmp[0]=='_'||tmp[0]=='"'){
+		if(tmp[0]=='"')quote=true;
+		tmp=tmp+1;
+	}
+	int len=strlen(tmp);
+	for(int i=0;i<len;i++){
+		if(quote&&tmp[i]==' ')tmp[i]=='_';
+		if(quote&&tmp[i]=='"'){quote=false;tmp[i]==' ';}
+	}
+	len--;
+	while(len>=0&&(tmp[len]==' '||tmp[len]=='_'||tmp[len]=='"'))
+		tmp[len--]=0;
+	return tmp;
 }

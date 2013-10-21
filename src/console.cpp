@@ -48,8 +48,34 @@ void showHelp() {
 	ps("select * from dogs where terrier");
 	ps("all city with countrycode ZW");
 	ps("Population of Gehren");
-	ps("opposite of bad");
+    ps("opposite of bad");
+//	ps("update city set type=town where population<10000");
 }
+
+
+bool file_read_done = false;
+
+void getline(char *buf) {
+	int MAXLENGTH = 1000;
+	const char* PROMPT = "netbase> ";
+#ifdef RL_READLINE_VERSION // USE_READLINE
+	if (!file_read_done)file_read_done = 1 + read_history(0);
+	char *tmp = readline(PROMPT);
+	tmp =fixQuotesAndTrim(tmp);
+	if (strncmp(tmp, buf, MAXLENGTH) && strlen(tmp) > 0)
+		add_history(tmp); // only add new content
+	strncpy(buf, tmp, MAXLENGTH);
+	buf[MAXLENGTH - 1] = '\0';
+	write_history(0);
+	//	append_history(1,0);
+	//            free(tmp);
+#else
+	std::cout << PROMPT;
+	std::cin.get(buf, MAXLENGTH);
+	std::cin.ignore(); // delete CR
+#endif
+}
+
 
 //bool parse(string* data) {
 static char* lastCommand;
@@ -365,28 +391,6 @@ bool parse(const char* data) {
 		dissectWord(get(data));
 		findWord(currentContext()->id, data);
 	}
-}
-
-bool file_read_done = false;
-
-void getline(char *buf) {
-	int MAXLENGTH = 1000;
-	const char* PROMPT = "netbase> ";
-#ifdef RL_READLINE_VERSION // USE_READLINE
-	if (!file_read_done)file_read_done = 1 + read_history(0);
-	char *tmp = readline(PROMPT);
-	if (strncmp(tmp, buf, MAXLENGTH) && strlen(tmp) > 0)
-		add_history(tmp); // only add new content
-	strncpy(buf, tmp, MAXLENGTH);
-	buf[MAXLENGTH - 1] = '\0';
-	write_history(0);
-	//	append_history(1,0);
-	//            free(tmp);
-#else
-	std::cout << PROMPT;
-	std::cin.get(buf, MAXLENGTH);
-	std::cin.ignore(); // delete CR
-#endif
 }
 
 void console() {
