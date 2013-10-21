@@ -21,7 +21,7 @@ echo using server $server
 
 
 ssh "$server" "cd /root/netbase/;git pull"
-ssh "$server" "cd /root/netbase/;./compile.sh exit $@"
+ssh "$server" "source .bash_profile; cd /root/netbase/;./compile.sh exit $@"
 
 # rm to_update.tmp                       
 date
