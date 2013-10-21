@@ -17,7 +17,7 @@ template<typename T> void empty(vector<T,std::allocator<T> >& v);
 
 #define po p("ok");
 string join(char** argv,int argc);
-bool eq(const char* x,const char* y,bool ignoreCase = true);
+bool eq(const char* x,const char* y,bool ignoreCase = true,bool ignoreUnderscore=true);
 bool eq(string x, const char* y);
 bool eq(string* x, const char* y);
 Node* eq(Node* x, Node* y);
@@ -28,7 +28,11 @@ string cut_to(string str, string what);
 bool contains(const char* x,const char* y,bool ignoreCase=true);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
-bool contains(NodeVector v, Node* o);
+bool contains(NodeVector& v, Node* o,bool fuzzy=false);
+//bool contains(NodeVector* v, Node* o,bool fuzzy=false);
+//bool contains(NodeVector* v, Node* o);
+//bool contains(NodeVector v, Node* o);
+//bool contains(NodeVector& v, Node* o);
 bool contains(vector<char*>& all,char* node);
 bool contains(string x,const char* y);
 bool isNumber(char* buf);
@@ -66,13 +70,15 @@ unsigned int hash(const char *str);
 inline int normChar(int c);
 string stem(string word);
 void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
-NodeVector mergeVectors(NodeVector some, NodeVector more);
+//NodeVector mergeVectors(NodeVector some, NodeVector more);
+void mergeVectors(NodeVector* some, NodeVector more);
 char* substr(char* what,int from,int to);
 char* match(char* input, char* pattern);
 char* clone(const char* line);
 char* modifyConstChar(const char* line);
 const char* concat(const char* a,const  char* b);
 char* fixQuotesAndTrim(char* tmp);
-
+//inline
+bool isAbstract(Node* object);
 
 #define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}

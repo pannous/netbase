@@ -19,6 +19,7 @@ Node* Entailment; // Implication
 Node* Owner; //Owner inverse Member   (Prince of Persia) <=> (Persia has Prince)
 Node* Member;
 Node* Part;
+Node* PartOwner;
 Node* Substance;
 Node* Synonym;
 Node* Domain;
@@ -101,61 +102,7 @@ Node* Contains;
 Node* StartsWith;
 Node* EndsWith;
 
-int _see=0,//50 also, 40 similar
-	_Hypernym=1,//SuperClass
-	_hyponym=2,//SubClass
-	_Type=3,
-	_instance=4,
-	_ENTAILMENT=21,// implies
-	_Part=11,
-	_PartOwner=12,
-	_Member=13,
-	_Owner=14,
-	_Substance=15,
-	_SubstanceOwner=16,
-	_PARTICIPLE_OF_VERB=71,
-	_PERTAINYM=80,
-	_antonym=30,
-	_attribute=60,
-	_cause=23,
-	_derived=81,
-//	_derived_from_noun=81,//?
-	_synonym=21,//32?
-	_DOMAIN_CATEGORY=91,
-	_DOMAIN_REGION=93,
-	_DOMAIN_USAGE=95,
-	_MEMBER_DOMAIN_CATEGORY=92,
-	_MEMBER_DOMAIN_REGION=94,
-	_MEMBER_DOMAIN_USAGE=96,
-	_VERB_GROUP=70;
-//int _see=0,
-//	_antonym=1,
-//	_attribute=2,
-//	_cause=3,
-//	_derived=4,
-//	_derived_from_noun=5,
-//	_DOMAIN_CATEGORY=6,
-//	_DOMAIN_REGION=7,
-//	_DOMAIN_USAGE=8,
-//	_ENTAILMENT=9,// implies
-//	_Hypernym=10,//SuperClass
-//	_hyponym=11,//SubClass
-//	_Owner=12,
-//	_Member=13,
-//	_MEMBER_DOMAIN_CATEGORY=14,
-//	_MEMBER_DOMAIN_REGION=15,
-//	_MEMBER_DOMAIN_USAGE=16,
-//	_PartOwner=17,
-//	_Part=18,
-//	_PARTICIPLE_OF_VERB=19,
-//	_PERTAINYM=20,
-//	_synonym=21,//32?
-//	_SubstanceOwner=22,
-//	_Substance=23,
-//	_VERB_GROUP=24,
-//	_Type=33,
-//	_instance=34;
-
+Node* UsageContext;
 
 
 
@@ -180,7 +127,7 @@ void initRelations() {
 	Derived =addRelation(_derived, "derived"); //
 //	DerivedFromNoun =addRelation(_derived_from_noun, "derived from noun"); //
 	//        DOMAIN_OF_SYNSET_CATEGORY =
-	addRelation(_DOMAIN_CATEGORY, "usage context"); // # sheet @ maths   // think of!! OWNER -> Part
+	UsageContext=addRelation(_DOMAIN_CATEGORY, "usage context"); // # sheet @ maths   // think of!! OWNER -> Part
 	//    DOMAIN_OF_SYNSET_REGION =
 	addRelation(_DOMAIN_REGION, "usage region"); // mate @ australia
 	//    DOMAIN_OF_SYNSET_USAGE =
@@ -200,8 +147,7 @@ void initRelations() {
 	addRelation(_MEMBER_DOMAIN_REGION, "regional word"); //-r  IN Japan :  Sushi
 	//	MEMBER_OF_THIS_DOMAIN_USAGE =
 	addRelation(_MEMBER_DOMAIN_USAGE, "domain word"); // colloquialism: bitch
-	//    PartOwner =
-	addRelation(_PartOwner, "part of",is_transitive);
+	PartOwner = addRelation(_PartOwner, "part of",is_transitive);
 	Part = addRelation(_Part, "part",is_transitive);
 	//	PARTICIPLE_OF_VERB =
 	addRelation(_PARTICIPLE_OF_VERB, "PARTICIPLE_OF_VERB");
@@ -274,7 +220,7 @@ void initRelations() {
 	Number = addRelation(number, "number");
 	Unit = addRelation(unit, "unit");
 
-	Plural = addRelation(plural, "plural");
+	Plural = addRelation(_plural, "plural");
 	Translation = addRelation(translation, "translation");
 
 	And = addRelation(_And, "and");

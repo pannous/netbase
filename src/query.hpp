@@ -25,9 +25,11 @@ void clearAlgorithmHash(bool all=false);
 NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
 NodeVector find_all(char* name, int context=1, int recurse=0, int limit=resultLimit);
-NodeVector& all_instances(Node* type, int recurse, int max= resultLimit);
+NodeVector& all_instances(Node* type, int recurse, int max= resultLimit,bool includeClasses=true);
 NodeVector& all_instances(Node* type);
 NodeVector& all_instances(Query& q);
+
+NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*));
 
 NodeVector filter(Query& q, Node* _filter);
 NodeVector filter(Query& q, Statement* filterTree);

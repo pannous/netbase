@@ -21,6 +21,7 @@ extern Node* Entailment; // Implication
 extern Node* Owner;//Owner inverse Member   (Prince of Persia) <=> (Persia has Prince)
 extern Node* Member;
 extern Node* Part;
+extern Node* PartOwner;
 extern Node* Substance;
 extern Node* Synonym;
 extern Node* Weight;
@@ -40,6 +41,7 @@ extern Node* SubContext;
 extern Node* SuperContext;
 extern Node* Domain;
 extern Node* Derived;
+extern Node* UsageContext;
 // Types
 extern Node* Internal;
 extern Node* _Node;
@@ -138,7 +140,7 @@ static const int _range = 129;
 
 // syntactic relations:
 static const int singular = 130;
-static const int plural = 131;
+static const int _plural = 131;
 static const int present_tense = 132;
 static const int past_tense = 133;
 static const int future_tense = 134;
@@ -157,6 +159,62 @@ static const int _Very = 156;
 static const int _Contains = 157;
 static const int _StartsWith = 158;
 static const int _EndsWith = 159;
+
+
+static const int _see=0,//50 also, 40 similar
+	_Hypernym=1,//SuperClass
+	_hyponym=2,//SubClass
+	_Type=3,
+	_instance=4,
+	_ENTAILMENT=21,// implies
+	_Part=11,
+	_PartOwner=12,
+	_Member=13,
+	_Owner=14,
+	_Substance=15,
+	_SubstanceOwner=16,
+	_PARTICIPLE_OF_VERB=71,
+	_PERTAINYM=80,
+	_antonym=30,
+	_attribute=60,
+	_cause=23,
+	_derived=81,
+//	_derived_from_noun=81,//?
+	_synonym=21,//32?
+	_DOMAIN_CATEGORY=91,
+	_DOMAIN_REGION=93,
+	_DOMAIN_USAGE=95,
+	_MEMBER_DOMAIN_CATEGORY=92,
+	_MEMBER_DOMAIN_REGION=94,
+	_MEMBER_DOMAIN_USAGE=96,
+	_VERB_GROUP=70;
+//int _see=0,
+//	_antonym=1,
+//	_attribute=2,
+//	_cause=3,
+//	_derived=4,
+//	_derived_from_noun=5,
+//	_DOMAIN_CATEGORY=6,
+//	_DOMAIN_REGION=7,
+//	_DOMAIN_USAGE=8,
+//	_ENTAILMENT=9,// implies
+//	_Hypernym=10,//SuperClass
+//	_hyponym=11,//SubClass
+//	_Owner=12,
+//	_Member=13,
+//	_MEMBER_DOMAIN_CATEGORY=14,
+//	_MEMBER_DOMAIN_REGION=15,
+//	_MEMBER_DOMAIN_USAGE=16,
+//	_PartOwner=17,
+//	_Part=18,
+//	_PARTICIPLE_OF_VERB=19,
+//	_PERTAINYM=20,
+//	_synonym=21,//32?
+//	_SubstanceOwner=22,
+//	_Substance=23,
+//	_VERB_GROUP=24,
+//	_Type=33,
+//	_instance=34;
 
 
 void initRelations();

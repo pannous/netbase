@@ -98,6 +98,12 @@ void flush() {
 	fflush(stdout);
 }
 
+
+//inline
+bool isAbstract(Node* object) {
+	return object->kind == abstractId;
+}
+
 inline Statement* firstStatement(Node* abstract) {
 	return getStatement(abstract->firstStatement);
 }
@@ -125,7 +131,7 @@ Ahash* insertAbstractHash(int pos, Node* a) {
 	//		p(a->name);
 	int i = 0;
 	while (ah->next) {
-		if (i++ > 100) {
+		if (i++ > 100&&a->name[1]!=0) {// allow 65536 One letter nodes
 			p("insertAbstractHash FULL!");
 			show(a);
 			break;
@@ -604,11 +610,6 @@ Statement* addStatement4(int contextId, int subjectId, int predicateId, int obje
 }
 
 
-//inline
-
-bool isAbstract(Node* object) {
-	return object->kind == abstractId;
-}
 
 Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate) {
 	if (!checkNode(subject))return 0;
@@ -1740,20 +1741,39 @@ Node* has(const char* n, const char* m) {
 
 Node* has(Node* n, Node* m) {
 	clearAlgorithmHash();
-	Node *no = 0;
-	Node* save = n; // heap data loss !?!
-	//	if (m->value.text != 0)// hasloh population:3000
-	//		no = has(n, m, m->value); // TODO: test
-	if (!no)no = has(n, m, Any); // TODO: test
-	//    findPath(n,m,hasFilter);// Todo new algoritym
-	if (!no)no = has(n, Member, m);
-	if (!no)no = has(n, Attribute, m);
-	if (!no)no = has(n, Substance, m);
-	if (!no)no = has(n, Part, m);
-	//    if(!n)n=has(n,Predicate,m);// TODO!
-	//	if (!no)no = has(save, Any, m); //TODO: really?
+	int tmp=resultLimit;
+	resultLimit=1;
+	NodeVector all=memberPath(n,m);
+	resultLimit=tmp;
+	if(all.size()==0)return 0;
+	return all.front();
 
-	return no;
+	// deprecated:
+//	Node *no = 0;
+//	Node* save = n; // heap data loss !?!
+//	//	if (m->value.text != 0)// hasloh population:3000
+//	//		no = has(n, m, m->value); // TODO: test
+//	//    findPath(n,m,hasFilter);// Todo new algoritym
+//	if (!no)no = has(n, Part, m);
+//	if (!no)no = has(n, Attribute, m);
+//	if (!no)no = has(n, Substance, m);
+//	if (!no)no = has(n, Member, m);
+//	if (!no)no = has(n, UsageContext, m);
+//	if (!no)no = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
+//	if (!no)no = has(n, get(_MEMBER_DOMAIN_REGION), m);
+//	if (!no)no = has(n, get(_MEMBER_DOMAIN_USAGE), m);
+//	//inverse
+//	if (!no)no = has(m, Owner, n);
+//	if (!no)no = has(m, PartOwner, n);
+//	if (!no)no = has(m, get(_DOMAIN_CATEGORY), n);
+//	if (!no)no = has(m, get(_DOMAIN_REGION), n);
+//	if (!no)no = has(m, get(_DOMAIN_USAGE), n);
+//
+//	if (!no)no = has(n, m, Any); // TODO: test
+//	//    if(!n)n=has(n,Predicate,m);// TODO!
+//	//	if (!no)no = has(save, Any, m); //TODO: really?
+//
+//	return no;
 }
 
 Node* findRelation(Node* from, Node* to) {// todo : broken Instance !!!

@@ -116,7 +116,6 @@ bool parse(const char* data) {
 	}
 	clearAlgorithmHash(true); //  maybe messed up
 	data=fixQuotesAndTrim(modifyConstChar(data));
-	string arg = next(string(data));
 //	std::remove(arg.begin(), arg.end(), ' ');
 	vector<char*> args = splitString(data, " "); // WITH 0==cmd!!!
 
@@ -174,7 +173,8 @@ bool parse(const char* data) {
 		//		  importAllYago();
 	}
 	if (startsWith(data, ":i") || startsWith(data, "import")) {
-		if (arg.length() > 2) // && arg<0x7fff00000000
+		string arg = next(string(data));
+		if (arg.length() > 2) 
 			import(arg.c_str());
 		else
 			importAll();

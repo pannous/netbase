@@ -373,6 +373,8 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	static char fields[10000];
 	static char type[10000];
 	static char where[10000];
+	if(s.find("all ")==0)
+		s=s.replace(0,4,"");
 	if ((int) s.find("from") < 0)
 		s = string("select * from ") + s; // why (int) neccessary???
 	//	s=stem_singular(s)/
@@ -384,23 +386,24 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	p(type);
 	p(where);
 
-	int batch = limit * 10; // 200000000;//// dont limit wegen filter!! limit + 100;
+	int batch = limit * 50; // 200000000;//// dont limit wegen filter!! limit + 100;
 	//    while (found.size() < limit && batch < 200000000) {
 	//        batch = batch * 100; //=> max 9 runs
 	// what if all==1000000 but limit==3?
 
 	NodeVector all = all_instances(getAbstract(type));
 	//  find_all(type, current_context, true, batch); // dont limit wegen filter!!
-
+	pf("%d so far\n",all.size());
 	if(where[0])
-	found = filter(all, where); //fields
+		found = filter(all, where); //fields
 
 	//    add instance matches
 	for (int i = 0; i < all.size(); i++) {
 		if (found.size() >= limit)goto good;
 		all.clear(); // hack to reset all_instances
 		NodeVector all2 = all_instances((Node*) all[i], true, limit);
-		found = mergeVectors(found, filter(all2, where)); //fields)
+		if(where)
+			mergeVectors(&found, filter(all2, where)); //fields)
 	}
 	batch = 200000000;
 
@@ -454,9 +457,10 @@ Statement* pattern(Node* subject, Node* predicate, Node* object) {
 }
 
 NodeVector filter(NodeVector all, char* matches) {
+	if(!matches||strlen(matches)==0|| all.size() == 0)return all;
+
 	Query& q = *new Query();
 	q.instances = all;
-	if (!matches || all.size() == 0)return all;
 	static int calls = 0;
 	// !! method static declaration will still increase with: !!!
 	calls++;
@@ -546,6 +550,8 @@ NodeVector filter(NodeVector all, char* matches) {
 
 NodeVector filter(Query& q, Statement* filterTree) {
 	NodeVector all = q.instances;
+	if(!checkStatement(filterTree))
+		p("filterTree broken!\n");
 	N subject = filterTree->Subject;
 	N predicate = filterTree->Predicate;
 	N object = filterTree->Object;
@@ -558,7 +564,8 @@ NodeVector filter(Query& q, Statement* filterTree) {
 	} else if (predicate == Or) {
 		NV a = filter(q, subject);
 		NV b = filter(q, object);
-		return mergeVectors(a, b);
+		mergeVectors(&a, b);
+		return a;
 	} else if (predicate == Not) {// todo test
 		NV a = all; //.clone()!
 		NV b = filter(q, object);
@@ -702,14 +709,19 @@ NodeVector& all_instances(Query& q) {
 	return q.instances;
 }
 
+
+// todo: EXCLUDING classes and direct instances on demand!
 NodeVector& all_instances(Node* type) {
 	clearAlgorithmHash();
-	return all_instances(getQuery(type));
-//	return all_instances(type,true,resultLimit);
+
+//	NodeVector all=instanceFilter(type);
+//	return all;//  all_instances(getQuery(type));
+	// COMPARE: !!
+	return all_instances(type,true,resultLimit);
+//	return recurseFilter(type,true,resultLimit,instanceFilter);
 }
 
-// EXCLUDING classes and direct instances!
-NodeVector& all_instances(Node* type, int recurse, int max) {
+NodeVector& all_instances(Node* type, int recurse, int max,bool includeClasses) {
 	static NodeVector& all = *new NodeVector; // empty before!
 	if (type == 0) {
 		all.clear(); // hack!!!
@@ -723,14 +735,16 @@ NodeVector& all_instances(Node* type, int recurse, int max) {
 	runs++;
 	if (runs > maxNodes)return all; // no infinite loops!
 	NodeVector subtypes;
-	subtypes.push_back(type);
+	// todo : via instanceFilter see below
 	for (int i = 0; i < type->statementCount; i++) {
 		Statement* s = getStatementNr(type, i);
 		if (!checkStatement(s))continue;
-		showStatement(s);
+		if(s->Predicate==type)continue;// NO Predicate matches!!
+//		showStatement(s);
 		//    	po
 		if (s->Subject == type) {
-			if (isA4(s->Predicate, Instance, false, false))if (!contains(all, s->Object))all.push_back(s->Object);
+			if(isAbstract(type)&&isA4(s->Predicate, Instance, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
+			if (!isAbstract(type)&&isA4(s->Predicate, Instance, false, false))if (!contains(all, s->Object))all.push_back(s->Object);
 			if (isA4(s->Predicate, SubClass, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
 			if (isA4(s->Predicate, Plural, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
 			if (isA4(s->Predicate, Synonym, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
@@ -741,14 +755,50 @@ NodeVector& all_instances(Node* type, int recurse, int max) {
 			if (isA4(s->Predicate, Synonym, false, false))if (!contains(subtypes, s->Subject))subtypes.push_back(s->Subject);
 		}
 		if (all.size() >= max || subtypes.size() >= max)break;
-
 	}
-	all = mergeVectors(all, subtypes);
+
+//	subtypes.push_back(type); NOT AGAIN
 	if (recurse)
-		for (int i = 0; i < subtypes.size(); i++) {
-			if (all.size() >= max)return all;
-			all_instances((Node*) subtypes[i], recurse, max);
+		for (int i = 0; i < subtypes.size(); i++) {// subtypes
+			if (subtypes.size() >= max)return all;
+			Node* x=(Node*) subtypes[i];
+			pf("all %d %s\n",x->id,x->name);
+			if(!checkNode(x))continue;// how??
+			NodeVector more=instanceFilter(x);//   all_instances(x, recurse-1, max);
+			mergeVectors(&all, more);
 		}
+	subtypes.push_back(type);
+	if(includeClasses)
+	mergeVectors(&all, subtypes);// ja?
+	return all;
+}
+
+NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
+	static NodeVector& all = *new NodeVector; // empty before!
+	if (type == 0) {
+		all.clear(); // hack!!!
+		return EMPTY;
+	}
+	if (recurse > 0)recurse = recurse + 2; // recurse++; dont descend too deep! todo: as iterator anyways!
+	if (yetvisited[type])
+		return all;
+	yetvisited[type] = true;
+	if (recurse > maxRecursions)return all;
+	runs++;
+	if (runs > maxNodes)return all; // no infinite loops!
+
+	NodeVector more=edgeFilter(type,null);
+	mergeVectors(&all, more);
+
+		for (int i = 0; i < more.size(); i++) {// subtypes
+			if (all.size() >= max)return all;
+			Node* x=(Node*) more[i];
+			if(!checkNode(x))continue;// how??
+			pf("all %d %s\n",x->id,x->name);
+			recurseFilter(x,recurse, max,edgeFilter);// recurse++ above OK, adds to 'all'
+//			mergeVectors(all,recurseFilter(x,recurse, max,edgeFilter));// recurse++ above
+		}
+	all.push_back(type);
 	return all;
 }
 
@@ -774,6 +824,7 @@ void clearAlgorithmHash(bool all) {
 			yetvisitedIsA.erase(yetvisitedIsA.begin(), yetvisitedIsA.end()); //erase yetvisited
 			yetvisitedIsA.clear();
 			all_instances(0, 0); //hack! //			all.clear();
+			recurseFilter(0,0,0,0);
 }
 
 NodeVector find_all(char* name, int context, int recurse, int limit) {
@@ -806,7 +857,7 @@ NodeVector find_all(char* name, int context, int recurse, int limit) {
 			all.clear(); // hack to reset all_instances
 			Node* node = (Node*) all[i];
 			NodeVector& neu = all_instances(node, true, limit);
-			all = mergeVectors(all, neu);
+			mergeVectors(&all, neu);
 		}
 	return all;
 }
@@ -905,12 +956,19 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		predicateMatch = predicateMatch || s->Predicate == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate == Synonym;
 		predicateMatch = predicateMatch || s->Predicate == Plural;
+		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_CATEGORY;
+		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_REGION;
+		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_USAGE;
 
 
 		bool subjectMatchReverse = s->Object == subject;
 		bool predicateMatchReverse = s->Predicate == Owner; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == By;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == From;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate == UsageContext;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_CATEGORY;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_REGION;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_USAGE;
 		// MORE :
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == Plural;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == Synonym;
@@ -1067,8 +1125,8 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 		enqueued[d->id] = fro->id;
 		q.push(d);
 	}
-	p("TO");
-	p(to);
+	pf("TO %d %s\n",to->id,to->name);
+//	p(to);
 	p("GO!");
 
 	Node* current;

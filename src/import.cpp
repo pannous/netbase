@@ -419,14 +419,16 @@ char guessSeparator(char* line) {
 int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow = 0) {
 	int row = 0;
 	while (true) {
-		char* token = tokens[row++];
+		char* token = tokens[row];
 		if (!token)break;
 		if (nameRowNr < 0) {
 			if (nameRow == 0) {
 				if (eq("name", token))nameRowNr = row;
 				if (eq("title", token))nameRowNr = row;
-			} else if (eq(nameRow, token))nameRowNr = row;
+			}
+			else if (eq(nameRow, token))nameRowNr = row;
 		}
+		row++;
 	}
 	return nameRowNr;
 }
@@ -675,17 +677,14 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		if (linecount == 0) {
 			columnTitles = line;
 			if (!separator)
-				separator = guessSeparator(line);
+				separator = guessSeparator(modifyConstChar(line));// would kill fieldCount
 			fieldCount = splitStringC(line, values, separator);
 			nameRowNr = getNameRow(values, nameRowNr, nameRow);
-			//						getFields(line, fields, separator, nameRowNr, nameRow);// vector ok, only once!
-
-			//			check(fields.size() == fieldCount)
-			//				if (fields.size() == 0)
 			for (int i = 0; i < fieldCount; i++) {
 				char* field = values[i];
-				//				char* field = fields.at(i);
-				predicates.push_back(getThe(field));
+				Node* fielt=getThe(field);// Firma		instance		Terror_Firma LOL
+				dissectWord(fielt);
+				predicates.push_back(fielt);
 			}
 			++linecount;
 			continue;
@@ -695,15 +694,14 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
 
-		int size = splitStringC(line, values, separator);
+		int size = splitStringC(modifyConstChar(line), values, separator);
 		if (fieldCount != size) {
 			printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
 			//            ps(columnTitles); // only 1st word:
-			//            ps(line);// split! :{
 			continue;
 		}
 
-		bool dissect = type && !eq(type->name, "city"); // city special: too many!
+		bool dissect =true;// type && !eq(type->name, "city"); // city special: too many!
 		// todo more generally : don't dissect special names ...
 
 		subject = getThe(values[nameRowNr], null, dissect);
@@ -731,7 +729,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				continue;
 			}
 			Statement *s = addStatement(subject, predicate, object, false);
-			//            showStatement(s);
+			showStatement(s);
 		}
 
 		if (lowMemory()) {

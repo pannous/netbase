@@ -67,14 +67,6 @@ char* downcase(char* x) {
 	return x;
 }
 
-bool contains(const char* x, const char* y, bool ignoreCase) {
-	// Sonderfall: contains("abc","")==false
-	if(!x || !y)return false;
-	if (strlen(y) == 0)return false;
-	if (ignoreCase)return strstr(tolower(x), tolower(y));
-	return strstr(x, y);
-}
-
 template<typename T>
 void empty(vector<T, std::allocator<T> > &v) {
 	v.erase(v.begin(), v.end());
@@ -88,13 +80,50 @@ template void empty(vector<Statement*, std::allocator<Statement* > > &v);
 //    return false;
 //}
 
-bool contains(vector<Node*> all, Node* node) {
+
+
+bool contains(const char* x, const char* y, bool ignoreCase) {
+	// Sonderfall: contains("abc","")==false
+	if(!x || !y)return false;
+	if (strlen(y) == 0)return false;
+	if (ignoreCase)return strstr(tolower(x), tolower(y));
+	return strstr(x, y);
+}
+
+bool contains(NodeVector& all, Node* node,bool fuzzy) {
 	for (int i = 0; i < all.size(); i++) {
 		if ((Node*) all[i] == node)return true;
-		if (eq(all[i], node))return true;
+		if(fuzzy && eq(all[i], node))return true;
 	}
 	return false;
 }
+//
+//bool contains(NodeVector* v, Node* node,bool fuzzy) {
+//    for (int i = 0; i < v->size(); i++)
+//        if (v->at(i) == node)return true;
+//		if(fuzzy && eq(v->at(i), node))return true;
+//    return false;
+//}
+//bool contains(NodeVector* v, Node* o) {
+//    for (int i = 0; i < v->size(); i++)
+//        if (v->at(i) == o)return true;
+//    return false;
+//}
+//bool contains(NodeVector v, Node* o) {
+//    for (int i = 0; i < v.size(); i++) {
+//        Node* n = (Node*) v[i];
+//        if (n == o)return true;
+//    }
+//    return false;
+//}
+//bool contains(NodeVector& v, Node* o) {
+//    for (int i = 0; i < v.size(); i++) {
+//        Node* n = (Node*) v[i];
+//        if (n == o)return true;
+//    }
+//    return false;
+//}
+//
 
 bool contains(vector<char*>& all, char* node) {
 	for (int i = 0; i < all.size(); i++) {
@@ -153,7 +182,7 @@ bool startsWith(string* x, const char* y) {
 
 // tolower
 
-bool eq(const char* x, const char* y, bool ignoreCase) {
+bool eq(const char* x, const char* y, bool ignoreCase,bool ignoreUnderscore) {//
 	if (!x && !y)return true; //danger better: undefined?
 	if (!x || !y)return false; //danger better: undefined?
 //	Context* c=currentContext();
@@ -174,7 +203,12 @@ bool eq(const char* x, const char* y, bool ignoreCase) {
 	if (xl != strlen(y))return false; // xl!=strlen(y) != !xl==strlen(y) !!!!!
 	int i = 0;
 	for (; i < xl; i++) {
-		if (y[i] == 0 || tolower(x[i]) != tolower(y[i]))
+		if (y[i] == 0)return false;
+		if(ignoreUnderscore && normChar(x[i])==normChar(y[i]))
+			continue;
+		if (!ignoreCase&& x[i] != y[i])
+			return false;// not reached, see line under strcmp
+		if (tolower(x[i]) != tolower(y[i]))
 			return false;
 	}
 	//    for(int i=0;i<strlen(y);i++)y0[i]=tolower(y[i]);
@@ -429,23 +463,20 @@ void addRange(NodeVector& some, NodeVector more,bool checkDuplicates) {// bool k
     }
 }
 
-NodeVector mergeVectors(NodeVector some, NodeVector more) {// bool keep destination unmodified=TRUE
-    for (int i = 0; i < more.size(); i++) {
-        if (!contains(some, (Node*) more[i]))
-            some.push_back(more[i]);
-    }
-    return some;
-}
-
-
-//bool contains(NodeVector v, Node* o) {
-//    for (int i = 0; i < v.size(); i++) {
-//        Node* n = (Node*) v[i];
-//        if (n == o)return true;
+//NodeVector mergeVectors(NodeVector some, NodeVector more) {// bool keep destination unmodified=TRUE
+//    for (int i = 0; i < more.size(); i++) {
+//        if (!contains(some, (Node*) more[i],false))
+//            some.push_back(more[i]);
 //    }
-//    return false;
+//    return some;
 //}
 
+void mergeVectors(NodeVector* some, NodeVector more) {// bool keep destination unmodified=TRUE
+    for (int i = 0; i < more.size(); i++) {
+        if (!contains(*some, (Node*) more[i],false))
+            some->push_back(more[i]);
+    }
+}
 
 int charCount(char*__, char c) {
 	int ___ = 0;
@@ -490,3 +521,5 @@ char* fixQuotesAndTrim(char* tmp){
 		tmp[len--]=0;
 	return tmp;
 }
+
+
