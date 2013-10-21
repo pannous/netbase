@@ -1021,7 +1021,7 @@ Node* getThe(const char* thing, Node* type, bool dissect) {
 //}
 
 Node* hasWord(const char* thingy) {
-	if(thingy[0]==0)return 0;
+	if(thingy&&thingy[0]==0)return 0;
 	if(thingy[0]==' '||thingy[0]=='_'||thingy[0]=='"')// get rid of "'" leading spaces etc!
 		thingy=(const char*)fixQuotesAndTrim(modifyConstChar(thingy));// free!!!
 	long h = hash(thingy);

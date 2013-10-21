@@ -21,7 +21,7 @@ g++ $options -L/Users/me/.rvm/usr/lib -I$ruby_include  -MF build/NetbaseRuby.o.d
 
 #g++ -g -w src/*.cpp /usr/lib/libsqlite3.dylib -o netbase  && ./netbase $@ 
 
-g++ -L/Users/me/.rvm/usr/lib -I$ruby_include  -I$JAVA_HOME/include/darwin -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase $@ 
+g++ -L/Users/me/.rvm/usr/lib -I$ruby_include -Ibuild/  -I$JAVA_HOME/include/darwin -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase $@ 
 # cp netbase src/jni # todo
  # --exclude src/netbase-ruby.cpp
 # ln -s /usr/lib/x86_64-linux-gnu/libsqlite3.so libsqlite3.dylib

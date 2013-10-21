@@ -1006,7 +1006,7 @@ bool importYago(const char* file) {
 
 bool importFacts(const char* file, const char* predicateName = "population") {
 	p("import facts start");
-	printf("WARNING: SETTING predicateName %s", predicateName);
+	printf("WARNING: SETTING predicateName %s\n", predicateName);
 	Node* subject;
 	Node* predicate;
 	Node* object;

@@ -893,7 +893,7 @@ void testReification(){
 	Node* re=reify(p);
 	show(re);
 
-	check(isA(re,_statement));
+	check(isA(re,get(_statement)));
 //	check(isA(re,Pattern));
 //	check(isA(re,_(pattern)));
 }
@@ -1096,8 +1096,6 @@ void tests() {
 //    testStringLogic2();
 //    testLogic();// test wordnet intersection
 
-	testFactLearning();
-	testReification();
 	testPaths();
 	// shaky
     testImportExport();
@@ -1107,7 +1105,9 @@ void tests() {
 	// OK
     testWordnet();
     testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
+	testFactLearning();
 	testOpposite();
+	testReification();
     testValueLogic();
     testStringLogic();
     testHash();
