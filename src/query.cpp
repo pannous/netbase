@@ -5,6 +5,7 @@
 
 #include <cstdlib>
 #include <string.h>
+#include <algorithm> // std:reverse
 
 int resultLimit=100;// != lookuplimit
 int* enqueued; // 'parents'

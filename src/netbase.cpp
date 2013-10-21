@@ -1154,7 +1154,7 @@ bool show(Node* n, bool showStatements) {//=true
 	//    else
 	//		printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%016llX)\n", n->id, n->name,text, img.data(),n);
-	printf("%d\t%s\t%s\t%s\n", n->id, n->name, text, img.data());
+	printf("%d\t%s\t\t%s\t%s\n", n->id, n->name, text, img.data());
 	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
