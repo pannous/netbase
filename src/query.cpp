@@ -938,11 +938,24 @@ NodeVector instanceFilter(Node* subject, NodeQueue* queue) {
 	return all;
 }
 
+
+// how to find paths with property predicates??
 NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 	NodeVector all;
 	int i = 0;
 	Statement* s = 0;
 	while(i++<1000 && (s=nextStatement(subject,s,false))){// true !!!!
+//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
+		if (s->Object==Adjective)continue;
+		if (s->Object==Adverb)continue;
+		if (s->Object==Noun)continue;
+		if (s->Predicate==PERTAINYM)continue;
+		if (s->Predicate==Derived)continue;
+//		if (s->Predicate==DerivedFromNoun)continue;
+		if (s->Predicate==get(_attribute))continue;
+		if (s->Predicate==get(40))continue;// similar
+		if (s->Predicate==get(50))continue;// also
+//		p(s);
 		bool subjectMatch = (s->Subject == subject || subject == Any);
 		bool predicateMatch = (s->Predicate == Member);
 		predicateMatch = predicateMatch || s->Predicate == Part;
@@ -959,7 +972,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_CATEGORY;
 		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_REGION;
 		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_USAGE;
-
+//		predicateMatch = predicateMatch || isA4(s->Predicate,)
 
 		bool subjectMatchReverse = s->Object == subject;
 		bool predicateMatchReverse = s->Predicate == Owner; // || inverse
@@ -973,11 +986,13 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == Plural;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == Synonym;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
-
-
+//		predicateMatchReverse = predicateMatchReverse || isA4(s->Predicate)
 		if (queue) {
-			if (subjectMatch)enqueue(subject, s->Object, queue);
-			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object, queue);
+			if (subjectMatchReverse&& predicateMatchReverse){
+				p(s);
+				enqueue(subject, s->Subject, queue);
+			}
 		} else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object);
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
@@ -996,6 +1011,11 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	Statement* s = 0;
 	while(i++<1000 && (s=nextStatement(subject,s,false))){// true !!!!
 		if(s->context==_pattern)continue;
+		if (s->Object == Adjective)continue; // bug !!
+		if (s->Predicate==PERTAINYM)continue;
+		if (s->Predicate==Derived)continue;
+//		if (s->Predicate==DerivedFromNoun)continue;
+		if (s->Predicate==get(_attribute))continue;
 //		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 //		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject == subject || subject == Any);
@@ -1067,7 +1087,6 @@ NodeVector reconstructPath(Node* from, Node * to) {
 	NodeVector all;
 	bool ok=true;
 //	p("++++++++ FOUND PATH ++++++++++++++");
-	//	enqueued[from->id]=0;// terminate
 	while (current && current != from) {
 		all.push_back(current);
 		int id = enqueued[current->id];
@@ -1076,24 +1095,14 @@ NodeVector reconstructPath(Node* from, Node * to) {
 //		show(current,false);
 		if (contains(all, current))break;//LOOOOOP
 	}
-//	if(!ok){
-//	current = from;
-//	while (current && current != to) {
-//		all.push_back(current);
-//		int id = enqueued[current->id];
-//		if (id <= 0)break;
-//		current = get(id);
-//		if (contains(all, current))break;//LOOOOOP
-//	}
-//	}
 	all.push_back(from); // done
-//	if(all.size()>2)
+	std::reverse(all.begin(),all.end());
 	free(enqueued);
 	return all;
 }
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
-	if (enqueued[d->id])return false; // already done -> continue;
+	if (!d||enqueued[d->id])return false; // already done -> continue;
 //	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
 	enqueued[d->id] = current->id;

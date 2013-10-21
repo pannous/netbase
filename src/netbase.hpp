@@ -466,6 +466,7 @@ Node* reify(Statement* s);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);
 //bool checkStatement(Statement *s);
 void checkRootContext();
+Node* findRelation(Node* from, Node* to);
 void dissectParent(Node* subject);
 void dissectWord(Node* subject);
 typedef Node* N;

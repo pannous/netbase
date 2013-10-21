@@ -23,7 +23,7 @@ Node* PartOwner;
 Node* Substance;
 Node* Synonym;
 Node* Domain;
-
+Node* PERTAINYM;
 Node* Weight;
 Node* Type;
 Node* Instance;
@@ -151,8 +151,7 @@ void initRelations() {
 	Part = addRelation(_Part, "part",is_transitive);
 	//	PARTICIPLE_OF_VERB =
 	addRelation(_PARTICIPLE_OF_VERB, "PARTICIPLE_OF_VERB");
-	//	PERTAINYM =
-	addRelation(_PERTAINYM, "PERTAINYM"); //  # cellular(a) \ cell(n) 	equally(adv)-equal(adj)
+	PERTAINYM =addRelation(_PERTAINYM, "PERTAINYM"); //  # cellular(a) \ cell(n) 	equally(adv)-equal(adj)
 
 	Synonym = addRelation(_synonym, "synonym",is_transitive); // similar?? 32??
 	//    Similar = addRelation(21, "similar");//synonym ??
@@ -275,8 +274,13 @@ Node* invert(Node* relation) {
 	if (relation == SubContext)return SuperContext;
 	if (relation == SuperContext)return SubContext;
 
+	if (relation->id==40)return get(50);
+	if (relation->id==50)return get(40);
+
+
 	if (relation->id==97)return get(98);
 	if (relation->id==98)return get(97);
+
 	if (relation->id==_DOMAIN_CATEGORY)return get(_MEMBER_DOMAIN_CATEGORY);
 	if (relation->id==_DOMAIN_REGION)return get(_MEMBER_DOMAIN_REGION);
 	if (relation->id==_DOMAIN_USAGE)return get(_MEMBER_DOMAIN_USAGE);

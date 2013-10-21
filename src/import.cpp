@@ -729,7 +729,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				continue;
 			}
 			Statement *s = addStatement(subject, predicate, object, false);
-			showStatement(s);
+//			showStatement(s);
 		}
 
 		if (lowMemory()) {

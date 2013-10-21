@@ -55,7 +55,7 @@ int runs = 0;
 Context* contexts; //[maxContexts];// extern
 string path; // extern
 string data_path;
-string import_path;
+string import_path="./import/";
 
 //int maxNodes() {
 //    return maxNodes;
@@ -1259,11 +1259,25 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 	while (s = nextStatement(subject, s, predicate != Instance)) {
 		if (visited[s])return 0;
 		visited[s] = 1;
-
+		if(!checkStatement(s))continue;
 		if(s->context==_pattern)continue;
 
-		if (s->Predicate == Derived)continue; // Derived bug !!
 
+		if (s->Object == Adjective && object!=Adjective)continue; // bug !!
+		if (s->Predicate == Derived)continue; // Derived bug !!
+		if (s->Predicate == get(_attribute))continue; // Derived bug !!
+		if (s->Predicate == get(50))continue; // also bug !!
+		if (s->Predicate == get(91))continue; // also bug !!
+		if (s->Predicate == get(92))continue; // also bug !!
+		// ^^ todo
+//		X any X error
+//		native		derived		native		301562->81->251672
+//		good		also		good		302044->50->302076
+//		evil		attribute		evil		226940->60->302081
+
+
+
+//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject == s->Predicate) {
 //			ps("NO predicate statements!");
 			break;
@@ -1279,7 +1293,6 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 #endif
 		//		if(debug&&s->id>0)
 //		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
-
 		if (s->Predicate == Instance && predicate != Instance && predicate != Any) return 0; // DANGER!
 
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
@@ -1498,7 +1511,7 @@ Node* has(Node* subject, Node* predicate, Node* object, int recurse, bool semant
 	if (recurse > 0)recurse++;
 	else recurse = maxRecursions - 1;
 	if (recurse > maxRecursions)return false;
-	if (subject->kind == Abstract->id) {
+	if (recurse<=2 && subject->kind == Abstract->id) {
 		NodeVector all = instanceFilter(subject);
 		for (int i = 0; i < all.size(); i++) {
 			Node* insta = (Node*) all[i];
@@ -1735,7 +1748,6 @@ Statement* isStatement(Node* n) {
 }
 
 Node* has(const char* n, const char* m) {
-
 	return has(getAbstract(n), getAbstract(m));
 }
 
@@ -1745,46 +1757,46 @@ Node* has(Node* n, Node* m) {
 	resultLimit=1;
 	NodeVector all=memberPath(n,m);
 	resultLimit=tmp;
-	if(all.size()==0)return 0;
-	return all.front();
+	if(all.size()>0)return all.front();
+
+// how to find paths with property predicates?? so:
+	clearAlgorithmHash();
+	Node *no = 0;
+	if (!no)no = has(n, m, Any); // TODO: test
+	return no;// others already done!!
 
 	// deprecated:
-//	Node *no = 0;
-//	Node* save = n; // heap data loss !?!
-//	//	if (m->value.text != 0)// hasloh population:3000
-//	//		no = has(n, m, m->value); // TODO: test
-//	//    findPath(n,m,hasFilter);// Todo new algoritym
-//	if (!no)no = has(n, Part, m);
-//	if (!no)no = has(n, Attribute, m);
-//	if (!no)no = has(n, Substance, m);
-//	if (!no)no = has(n, Member, m);
-//	if (!no)no = has(n, UsageContext, m);
-//	if (!no)no = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
-//	if (!no)no = has(n, get(_MEMBER_DOMAIN_REGION), m);
-//	if (!no)no = has(n, get(_MEMBER_DOMAIN_USAGE), m);
-//	//inverse
-//	if (!no)no = has(m, Owner, n);
-//	if (!no)no = has(m, PartOwner, n);
-//	if (!no)no = has(m, get(_DOMAIN_CATEGORY), n);
-//	if (!no)no = has(m, get(_DOMAIN_REGION), n);
-//	if (!no)no = has(m, get(_DOMAIN_USAGE), n);
-//
-//	if (!no)no = has(n, m, Any); // TODO: test
-//	//    if(!n)n=has(n,Predicate,m);// TODO!
-//	//	if (!no)no = has(save, Any, m); //TODO: really?
-//
-//	return no;
+	//	if (m->value.text != 0)// hasloh population:3000
+	//		no = has(n, m, m->value); // TODO: test
+	//    findPath(n,m,hasFilter);// Todo new algoritym
+	if (!no)no = has(n, Part, m);
+	if (!no)no = has(n, Attribute, m);
+	if (!no)no = has(n, Substance, m);
+	if (!no)no = has(n, Member, m);
+	if (!no)no = has(n, UsageContext, m);
+	if (!no)no = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
+	if (!no)no = has(n, get(_MEMBER_DOMAIN_REGION), m);
+	if (!no)no = has(n, get(_MEMBER_DOMAIN_USAGE), m);
+	//inverse
+	if (!no)no = has(m, Owner, n);
+	if (!no)no = has(m, PartOwner, n);
+	if (!no)no = has(m, get(_DOMAIN_CATEGORY), n);
+	if (!no)no = has(m, get(_DOMAIN_REGION), n);
+	if (!no)no = has(m, get(_DOMAIN_USAGE), n);
+
+	//    if(!n)n=has(n,Predicate,m);// TODO!
+	//	if (!no)no = has(save, Any, m); //TODO: really?
+	return no;
 }
 
 Node* findRelation(Node* from, Node* to) {// todo : broken Instance !!!
 	Statement* s = findStatement(from, Any, to, false, false, false, false);
 	if (!s) s = findStatement(to, Any, from, false, false, false, false);
 	if (s) {
-		if (s->Object == from)return s->Predicate;
-		if (s->Subject == from) return invert(s->Predicate);
-		if (s->Subject == to)return s->Predicate;
-
-		if (s->Object == to) return invert(s->Predicate);
+		if (s->Subject == from)return s->Predicate;
+		if (s->Object == to)return s->Predicate;
+		if (s->Subject == to) return invert(s->Predicate);
+		if (s->Object == from) return invert(s->Predicate);
 		//		if(s->Subject==from)return s->Predicate;
 		//		else if(s->Object==from) return invert(s->Predicate);
 		//		if(s->Object==to)return s->Predicate;
@@ -1800,7 +1812,7 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation, bool show
 		Node* node = (Node*) all[i];
 
 		if (i > 0 && showRelation)
-			show(findRelation(node, all[i - 1]), false);
+			show(findRelation(all[i - 1],node), false);
 		show(node, showStatements);
 	}
 	ps("++++++++++ Hits : +++++++++++++++++");

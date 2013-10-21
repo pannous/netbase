@@ -433,16 +433,16 @@ void testWordnet() {
     showContext(wordnet);
     p("contexts[wordnet].nodeCount:");
     p(c.nodeCount);
-    show(&c.nodes[38749]);
+//    show(&c.nodes[38749]);
     // assert(strcmp(c.nodes[38749].name,"disposal")==0,"contexts[wordnet].nodes[38749].name=disposal");
-    assert(checkNode(&c.nodes[38749], 38749), "checkNode(c.nodes[38749],38749)");
+//    assert(checkNode(&c.nodes[38749], 38749), "checkNode(c.nodes[38749],38749)");
     // assert(strcmp(c.nodes[38749].name,"fall")==0,"contexts[wordnet].nodes[38749].name=fall");
     //    assert(findWord(wordnet, "fall") > 0, "find(wordnet,fall)>0");
-    assert(findWord(wordnet, "fall", true) > 0, "find(wordnet,fall)>0");
+//    assert(findWord(wordnet, "fall", true) > 0, "find(wordnet,fall)>0");
     // Node: context:wordnet id=4919 name=test statementCount=17 kind=wordnet
-    Node* test = findWord(wordnet, "test", true);
+//    Node* test = findWord(wordnet, "test", true);
     // assert(test->id==4919)
-    assert(strcmp(test->name, "test") == 0, "test->name==test");
+//    assert(strcmp(test->name, "test") == 0, "test->name==test");
     //	assert(test->statementCount==17,"test->statementCount==17");
 //    show(the(duck));
 //    show(a(duck));
@@ -457,8 +457,12 @@ void testWordnet() {
         assert(has("duck","beak"),"has(duck,beak)");
         assert(has("duck","head"),"has(duck,head)");
         assert(has("duck","tail"),"has(duck,tail)");
-        assert(has("duck","feed"),"has(duck,feed)");
+        assert(has("duck","foot"),"has(duck,foot)");
+		addStatement(the(foot),Plural,the(feet));
+        assert(has("duck","feet"),"has(duck,feet)");
 		check(has(a(duck),a(feather)));
+
+		addStatement(the(feather),Plural,the(feathers));
         assert(has(get("duck"),get("feathers")),"has(duck,feathers)");
 //    assert(contains(all_instances(getAbstract("bird")), getThe("sea_duck")), "bird has instance duck");
 
@@ -544,14 +548,7 @@ void testHash() {
 #endif
 }
 
-void testImportExport() {
-
-    //    load();
-    //    virgin_memory=1;
-    //    init();// reset !
-    //    check(eq(normTitle("a_- b"),"ab")==1);
-    //    check(!eq(normTitle("a_- b"),"ac")==1);
-    //    memset(root_memory, 0, sizeOfSharedMemory);
+void testImportContacts(){
 	if(!hasWord("Alexandra Neumann"))
 		importCsv("/Users/pannous/data/base/contacts/adressen.txt"); //,","
     check(a(Alexandra_Neumann) == a(Alexandra Neumann));
@@ -563,9 +560,14 @@ void testImportExport() {
     check(the(Alexandra Neumann) != null);
     check(the(Alexandra_Neumann) != null);
     show(the(Alexandra Neumann));
+
+    check(has(the(Alexandra_Neumann), plz, a(12167)));
     check(has(the(Alexandra_Neumann), a(Postleitzahl), a(12167)));
     check(has(the(Alexandra_Neumann), pattern(a(Postleitzahl), Greater, a(12166))));
 
+}
+void testImportExport() {
+	testImportContacts();
     //    show(word(female_firstname));
     //    check(isA(word(James), _(male_name)));
     //    check(query("all firstnames starting with 'a'").size() > 0);
@@ -586,13 +588,13 @@ void testImportExport() {
 //	addStatement(a(female_firstname),Instance,the(female_firstname),false);// bug hack
 //	addStatement(a(female_firstname),Instance,get(489285),false);// bug hack
 //	addStatement(get(9028726),Synonym,get(9025182),false);// bug hack
+	if(!hasWord("female_firstname"))
+		importList("FrauenVornamen.txt", "female_firstname");
 	check(all_instances(a(female_firstname)).size()>5);//
     check(query("all female_firstnames", 10).size() > 5);
 
 	p(a(female_firstname));
 	p(the(female_firstname));
-	if(!hasWord("female_firstname"))
-		importList("FrauenVornamen.txt", "female_firstname");
 ////    find_all("Jenny");
 //	check(findStatement(a(female_firstname),Instance,the(female_firstname),0,0,0,0));
 ////	exit(1);
@@ -929,10 +931,8 @@ void testReification(){
 void testFactLearning(){
 	Statement* s=learn("Peter loves Jule");
 	Statement* s2=learn("Peter loves Jule");
-	check(isA(the(Milan),a(son)));
-	check(isA(a(Milan),a(son)));
-	check(s==s2);
 	check(s->Subject==the(Peter)||s->Subject==a(Peter));
+	check(s==s2);
 	p(s);
 	check(isA(s->Predicate,a(loves)));
 	check(s->Object==the(Jule)||s->Object==a(Jule));
@@ -944,12 +944,14 @@ void testFactLearning(){
 
 	addStatement(the(german_translation),is_a,Translation,true);
 	addStatement(the(son),the(german_translation),the(Sohn),true);
+//	check(has(the(Peter),a(sons),the(Milan)));
 	s=learn("Peter.son=Milan");
 	check(s->Subject==the(Peter));
 	check(isA(s->Predicate,a(son)));
 	check(s->Object==the(Milan));
 	check(has(the(Peter),a(son),the(Milan)));
-//	check(has(the(Peter),a(sons),the(Milan)));
+	check(isA(the(Milan),a(son)));
+	check(isA(a(Milan),a(son)));
 
 //	check(has(the(Peter),a(Sohn),the(Milan)));
 }
@@ -998,9 +1000,12 @@ void testSplit(){
 }
 
 void testOpposite(){
+	check(has(a(good),Antonym,Any));
+
 	check(!findStatement(the(evil), Instance,Synonym ,6, 1, 0,0));
 //	check(!findStatement(the(evil), Instance,Synonym ,1, 1, 0,1));
-	check(!has(the(evil), Instance,Synonym ,1, 1, false));
+
+	check(!has(the(evil),Instance,Synonym,1,1,false));// ARGH!!!!
 	check(!isA4(Synonym,the(evil),1,1));
 	check(has(the(evil),the(opposite)));
 	check(!isA4(Synonym,the(evil)));
@@ -1118,6 +1123,13 @@ check(has(nodeA, propertyA));
 }
 
 
+void testYago(){
+//	parentPath(a(insect),a(bug));// reverse 1 level !!!
+//	parentPath(a(bug),a(insect));
+//	parentPath(a(depeche_mode),a(Depeche_Mode));
+//	parentPath(a(Banco_de_Gaia),a(group));
+}
+
 void tests() {
     //    share_memory();
 //    init();
@@ -1128,48 +1140,34 @@ void tests() {
 //    testStringLogic2();
 //    testLogic();// test wordnet intersection
 
-	// shaky
 
+
+	// shaky
+	testOpposite();
     testQuery();
     testFacets();
 //	testDummyLogic();// too big
 	// OK
-    testWordnet();
     testImportExport();
     testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
 	testFactLearning();
-	testOpposite();
 	testReification();
     testValueLogic();
     testStringLogic();
     testHash();
 	testPaths();
-        testOutput();
-    	testScanf();
+    testOutput();
+    testScanf();
+	testYago();
+    testWordnet();// PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
 	p("ALL TESTS SUCCESSFUL!");
     //    testLoop();
 }
 void testBrandNewStuff() {
-	tests();
+//	tests();
 //	testOpposite();
-	ps("test brand new stuff");
+//	ps("test brand new stuff");
 //	parse("opposite of bad");
 //	parse("all bug");
 //	showNodes(all_instances(a(bug)));
-//	parentPath(a(insect),a(bug));// reverse 1 level !!!
-//	parentPath(a(bug),a(insect));
-//	parentPath(a(depeche_mode),a(Depeche_Mode));
-//	parentPath(a(Banco_de_Gaia),a(group));
-//	import("yago");
-//	if(!hasWord("acceptant"))
-//	import("wordnet");
-//	parentPath(a(bee),a(insect));
-//	addStatement4(current_context,440792,Synonym->id, 441226);// insect  bug
-//	parentPath(a(insect),a(bug));
-//	shortestPath(a(bug), a(frog));
-	//	importCsv("import/wins.csv");
-	//	if(!hasWord("zip"))
-	//	importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
-			p("TEST OK!");
-
 }

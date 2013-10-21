@@ -42,6 +42,7 @@ extern Node* SuperContext;
 extern Node* Domain;
 extern Node* Derived;
 extern Node* UsageContext;
+extern Node* PERTAINYM;
 // Types
 extern Node* Internal;
 extern Node* _Node;
