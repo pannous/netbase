@@ -86,8 +86,8 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
 	if(!x || !y)return false;
 	if (strlen(y) == 0)return false;
+	if(strstr(x, y)>=x)return true;
 	if (ignoreCase)return strstr(tolower(x), tolower(y));
-	return strstr(x, y);
 }
 
 bool contains(NodeVector& all, Node* node,bool fuzzy) {
