@@ -307,20 +307,10 @@ NodeVector parse(const char* data) {
 		Node* propertyA = getAbstract(args[0]);
 		Node* node = getThe(args[2]);
 		Node* nodeA = getAbstract(args[2]);
-
-		NodeVector all = memberPath(nodeA, propertyA);
-		if (all.size() > 0)return all;
-
-		Node* found = has(node, property);
-		if (found == 0)found = has(node, property);
-		if (found == 0)found = has(nodeA, property);
-		if (found == 0)found = has(node, propertyA);
+		Node* found;
 		if (found == 0)found = has(nodeA, propertyA);
-		if (found == 0)found = has(Any, property, node);
-		if (found == 0)found = has(Any, propertyA, node);
-		if (found == 0)found = has(Any, property, nodeA);
 		if (found == 0)found = has(Any, propertyA, nodeA);
-		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
+//		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
 		if (checkNode(found)) {
 			show(found);
 			pf("ANSWER: %s\n", found->name);
