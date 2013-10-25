@@ -119,7 +119,7 @@ int Service_Request(int conn) {
 		sprintf(buff, entity_format, node->name, node->id);
 		Writeline(conn, buff);
 		Statement* s = 0;
-		if (verbosity == verbose || verbosity == longer || all.size() == 1) {
+		if (verbosity == verbose || verbosity == longer || all.size() == 1 && !verbosity == shorter) {
 			if (format == json)Writeline(conn, ",'statements':[\n");
 			while (s = nextStatement(node, s)) {
 				if (!checkStatement(s))continue;
