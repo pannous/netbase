@@ -1181,7 +1181,7 @@ void tests() {
 
 void testBrandNewStuff() {
 //	import("yago");
-	tests();
+//	tests();
 	//	testOpposite();
 	//	ps("test brand new stuff");
 	//	parse("opposite of bad");

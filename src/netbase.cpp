@@ -1277,7 +1277,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 //		evil		attribute		evil		226940->60->302081
 
 
-		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
+//		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
 
 //		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject == s->Predicate) {
