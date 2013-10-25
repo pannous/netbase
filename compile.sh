@@ -21,12 +21,12 @@ options="-m64 --debug -c -g -w -s -MMD -MP" #-MF #64bit
 #g++ $options -MF build/NetbaseJNI.o.d -o build/NetbaseJNI.o src/jni/NetbaseJNI.cpp -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include
 #g++ $options -L/Users/me/.rvm/usr/lib -I$ruby_include  -MF build/NetbaseRuby.o.d -o build/NetbaseRuby.o src/netbase-ruby.cpp
 
-mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
+# mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
 g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase $@
 
 # --exclude src/netbase-ruby.cpp TODO
-mv src/netbase-ruby.cpp.x src/netbase-ruby.cpp
+# mv src/netbase-ruby.cpp.x src/netbase-ruby.cpp
 
 
 # cp netbase src/jni # todo

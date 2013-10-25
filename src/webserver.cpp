@@ -123,7 +123,7 @@ int Service_Request(int conn) {
 			if (format == json)Writeline(conn, ",'statements':[\n");
 			while (s = nextStatement(node, s)) {
 				if (!checkStatement(s))continue;
-				if(!verbose&&(s->Predicate==Instance||s->Predicate==Type))continue;
+				if(verbosity!=verbose && (s->Predicate==Instance||s->Predicate==Type))continue;
 				sprintf(buff, statement_format, s->id, s->Subject->name, s->Predicate->name, s->Object->name, s->Subject->id, s->Predicate->id, s->Object->id);
 				p(buff);
 				Writeline(conn, buff);
