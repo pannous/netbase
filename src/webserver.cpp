@@ -39,7 +39,7 @@ enum result_format {
 };
 
 enum result_verbosity {
-	normal, shorter, verbose
+	shorter, normal, longer,verbose
 };
 // WORKS FINE, but not when debugging
 
@@ -86,7 +86,7 @@ int Service_Request(int conn) {
 		q = q + 6;
 	}
 	if (startsWith(q, "long/")) {
-		verbosity = verbose;
+		verbosity = longer;
 		q = q + 5;
 	}
 	if (startsWith(q, "verbose/")) {
@@ -97,8 +97,8 @@ int Service_Request(int conn) {
 	char buff[10000];
 	if (format == xml)Writeline(conn, "<results>\n");
 	if (format == json)Writeline(conn, "{'results':[\n");
-	char* statement_format_xml = "<statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
-	char* statement_format_text = "$%d %s %s %s %d->%d->%d\n";
+	char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
+	char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	char* statement_format_json = "      { 'id:%d, 'subject':%s', 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
 	char* statement_format;
 	if (format == xml)statement_format = statement_format_xml;
@@ -119,10 +119,11 @@ int Service_Request(int conn) {
 		sprintf(buff, entity_format, node->name, node->id);
 		Writeline(conn, buff);
 		Statement* s = 0;
-		if (verbosity == verbose || all.size() == 1) {
+		if (verbosity == verbose || verbosity == longer || all.size() == 1) {
 			if (format == json)Writeline(conn, ",'statements':[\n");
 			while (s = nextStatement(node, s)) {
 				if (!checkStatement(s))continue;
+				if(!verbose&&(s->Predicate==Instance||s->Predicate==Type))continue;
 				sprintf(buff, statement_format, s->id, s->Subject->name, s->Predicate->name, s->Object->name, s->Subject->id, s->Predicate->id, s->Object->id);
 				p(buff);
 				Writeline(conn, buff);
