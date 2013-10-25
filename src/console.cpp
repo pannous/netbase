@@ -226,9 +226,9 @@ bool parse(const char* data) {
 		return true;
 	}
 	if (startsWith(data, ":d ") || startsWith(data, "delete ") || startsWith(data, "del ") || startsWith(data, "remove ")) {
-		const char* what = next(data).c_str();
-		printf("deleting %s\n", what);
-		deleteWord(what);
+//		const char* what = next(data)->data();
+//		printf("deleting %s\n", what);
+//		deleteWord(what);
 		return true;
 	}
 

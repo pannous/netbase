@@ -905,8 +905,8 @@ Node* findMatch(Node* n, const char* match) {//
 int countInstances(Node* node) {
 	int j = instanceFilter(node).size();
 	int i = all_instances(node).size();
-	set(node, the("direct instance count"), value(0, j));
-	set(node, the("total instance count"), value(0, i));
+	setValue(node, the("direct instance count"), value(0, j));
+	setValue(node, the("total instance count"), value(0, i));
 	show(node, false);
 	ps("statement count");
 	p(node->statementCount);
@@ -1118,7 +1118,7 @@ bool enqueue(Node* current, Node* d, NodeQueue * q) {
 
 NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	//    map<Node*, Node*>enqueued;
-	enqueued = (int*) malloc(currentContext()->nodeCount * sizeof (int));
+	enqueued = (int*) malloc(maxNodes * sizeof (int));//currentContext()->nodeCount * 2
 	NodeQueue q;
 	if (enqueued == 0) {
 		p("out of memory for findPath");

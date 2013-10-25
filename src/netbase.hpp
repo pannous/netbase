@@ -395,7 +395,7 @@ Node* has(Node* n, Node* m);
 Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);//naja!!!
 Node* has(Node* subject, string predicate, string object, int recurse = true, bool semantic = true, bool symmetric = false);
 Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);
-void set(Node* node, Node* property, Node* value);
+void setValue(Node* node, Node* property, Node* value);
 bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
 bool isA4(Node* n, Node* match, int recurse = false, bool semantic = false);
 bool isA(Node* fro, Node* to);
@@ -470,6 +470,7 @@ Node* findRelation(Node* from, Node* to);
 void dissectParent(Node* subject);
 void dissectWord(Node* subject);
 typedef Node* N;
+typedef Statement* S;
 typedef NodeVector NV;
 
 //#pragma warnings_off

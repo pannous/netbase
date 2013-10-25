@@ -53,8 +53,8 @@ bool showAbstract = false;
 int maxRecursions = 7;
 int runs = 0;
 Context* contexts; //[maxContexts];// extern
-string path; // extern
-string data_path;
+string path=""; // extern
+string data_path="";
 string import_path="./import/";
 
 //int maxNodes() {
@@ -120,7 +120,7 @@ bool checkHash(Ahash* ah) {
 }
 
 Ahash* insertAbstractHash(Node* a) {
-	return insertAbstractHash(hash(a->name), a);
+	return insertAbstractHash(wordhash(a->name), a);
 }
 
 Ahash* insertAbstractHash(int pos, Node* a) {
@@ -178,7 +178,8 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 	} else {
 		Context* context = getContext(node->context);
 		Statement* to_insert = &context->statements[statementNr];
-		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
+//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
+		if (to_insert->Predicate == Instance || to_insert->Predicate == Type) {// ALL!
 			Statement* add_here = &context->statements[node->lastStatement];
 			appendLinkedListOfStatements(add_here, node, statementNr); // append new to old
 			node->lastStatement = statementNr;
@@ -1022,10 +1023,10 @@ Node* getThe(const char* thing, Node* type, bool dissect) {
 //}
 
 Node* hasWord(const char* thingy) {
-	if(thingy&&thingy[0]==0)return 0;
+	if(!thingy||thingy[0]==0)return 0;
 	if(thingy[0]==' '||thingy[0]=='_'||thingy[0]=='"')// get rid of "'" leading spaces etc!
 		thingy=(const char*)fixQuotesAndTrim(modifyConstChar(thingy));// free!!!
-	long h = hash(thingy);
+	long h = wordhash(thingy);
 	Ahash* found = &abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
 	if (found && found->abstract && found->next == 0)
 //		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
@@ -1075,7 +1076,7 @@ Node* getAbstract(const char* thing) {// AND CREATE!
 		//		throw "out of memory exception";
 		return 0;
 	}
-	insertAbstractHash(hash(thing), abstract);
+	insertAbstractHash(wordhash(thing), abstract);
 	if (doDissect && (contains(thing, "_") || contains(thing, " ") || contains(thing, ".")))
 		dissectParent(abstract);
 
@@ -1276,6 +1277,7 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 //		evil		attribute		evil		226940->60->302081
 
 
+		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
 
 //		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject == s->Predicate) {
@@ -1291,9 +1293,11 @@ Statement* findStatement(Node* subject, Node* predicate, Node* object, int recur
 			break; // todo : make sure statements are ordered!
 		}
 #endif
+		if (s->Predicate == Instance && predicate != Instance && predicate != Any)
+			continue;//  return 0; // DANGER!
+//		NOT COMPATIBLE WITH DISSECTED WORDS!!!!! PUT TO END!!!
+
 		//		if(debug&&s->id>0)
-//		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
-		if (s->Predicate == Instance && predicate != Instance && predicate != Any) return 0; // DANGER!
 
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 		bool subjectMatch = s->Subject == subject || subject == Any || isA4(s->Subject, subject, false, false); //DONT CHANGE quick isA4
@@ -1794,8 +1798,13 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation, bool show
 		Node* node = (Node*) all[i];
 
 		if (i > 0 && showRelation){
-			pf("$%d-> ",findRelations(all[i - 1],node)->id);
-			pf("%s\n",findRelation(all[i - 1],node)->name);
+			S r=findRelations(all[i - 1],node);
+			N n=findRelation(all[i - 1],node);
+			if(!r||!n)p("???->??? \n");
+			else{
+			pf("$%d-> ",r->id);
+			pf("%s\n",n->name);
+			}
 		}
 		show(node, showStatements);
 	}
@@ -1831,7 +1840,7 @@ Node* last(NodeVector rows) {
 void initUnits() {
 	//    printf("Abstracts %016llX\n", abstracts);
 	printf("Abstracts %016llX\n", abstracts);
-	Ahash* ah = &abstracts[hash("meter") % abstractHashSize];
+	Ahash* ah = &abstracts[wordhash("meter") % abstractHashSize];
 	if ((char*) ah < context_root || ah > extrahash) {
 
 		ps("abstracts kaputt");
@@ -1980,7 +1989,7 @@ bool isA(Node* fro, Node* to) {
 // all mountains higher than Krakatao
 // todo:wordnet bugs: vulgar
 
-void set(Node* node, Node* property, Node* value) {
+void setValue(Node* node, Node* property, Node* value) {
 	Statement *s = findStatement(node, property, value);
 	if (s) {
 		if (!eq(s->Object, value)) {
@@ -2045,6 +2054,7 @@ int main(int argc, char *argv[]) {
 	system(string("cd " + path).c_str());
 	data_path = path + "/data/";
 	import_path = path + "/import/";
+
 	//	path=sprintf("%s/data",path);
 	if (checkParams(argc, argv, "quiet"))
 		quiet = true;

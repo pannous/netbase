@@ -32,6 +32,9 @@ documentation and/or software.
 
 /* interface header */
 #include "md5.h"
+#include <string>
+#include <vector>
+using namespace std;
 
 /* system implementation headers */
 #include <stdio.h>

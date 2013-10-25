@@ -27,7 +27,11 @@
 /*  Service an HTTP request  */
 
 #define SERVER_PORT            (3333)
-
+string itoa(int i){
+std::stringstream ss;
+ss << i;
+return ss.str();
+}
 // WORKS FINE, but not when debugging
 int Service_Request(int conn) {
 
@@ -48,24 +52,30 @@ int Service_Request(int conn) {
 
 	init();// for each forked process!
 	char* q=substr(reqinfo.resource,1,-1);
-	Writeline(conn,q);
-	char* buff="\nthinking...\n";
-	Writeline(conn,buff);
+//	Writeline(conn,q);
+	Writeline(conn,"<results>\n");
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	parse(q);// <<<<<<<< NETBASE!
 	NodeVector all=query(q);
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
+		Writeline(conn,"<entity name='");
 		Writeline(conn,node->name);
-		Writeline(conn," \t");
-		Writeline(conn,"<img src='"+getImage(node->name)+"'/>");
-		Writeline(conn,"\n");
+		Writeline(conn,"'>");
+		Statement* s=0;
+		while(s=nextStatement(node,s)){
+		Writeline(conn,"<statement id='");
+		Writeline(conn,itoa(s->id));
+		Writeline(conn,"'/>");
+		}
+		string img=getImage(node->name);
+		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
+		Writeline(conn,"</entity>\n");
 	}
+	Writeline(conn,"</result>\n");
 //	if()
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	buff="\nOK\n";
-	Writeline(conn,buff);//,strlen(buff)
     FreeReqInfo(&reqinfo);
     return 0;
 }
@@ -112,16 +122,21 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
     return n;
 }
 
-
+void Writeline(char* s) {
+	Writeline(0,s,0);
+}
 /*  Write a line to a socket  */
 ssize_t Writeline(int sockd, string s) {
 	return Writeline(sockd,s.data(),s.length());
 }
-//ssize_t Writeline(int sockd, const void *vptr, size_t n) {
+int lastSockd=0;
 ssize_t Writeline(int sockd, const char *vptr, size_t n) {
     size_t      nleft;
     ssize_t     nwritten;
     const char *buffer;
+
+	if(sockd==0)sockd=lastSockd;//not thread safe!
+	lastSockd=sockd;
 
     buffer = vptr;
 	if(n==0||n==-1)

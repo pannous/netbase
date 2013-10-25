@@ -26,7 +26,7 @@ int     StrUpper  (char * buffer);
 void    CleanURL  (char * buffer);
 ssize_t Readline  (int sockd, void *vptr, size_t maxlen);
 //ssize_t Writeline (int sockd, const void *vptr, size_t n=-1);
-
+void Writeline(char* s);// debug to server
 ssize_t Writeline(int sockd, std::string s);
 ssize_t Writeline (int sockd, const char *vptr, size_t n=-1);
 

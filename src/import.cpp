@@ -21,7 +21,7 @@ char* statements_file = "statements.txt";
 char* images_file = "images.txt";
 
 FILE *open_file(const char* file) {
-	if (!contains(file, "/"))file = concat(import_path.data(), file);
+	if (!contains(file, "/"))file = (import_path+file).data();// concat(import_path.data(), file);
 	printf("Opening File %s\n", (file));
 	FILE *infile;
 	if ((infile = fopen((file), "r")) == NULL) {
@@ -86,7 +86,7 @@ int norm_wordnet_id(int synsetid) {
 void load_wordnet_synset_map() {
 	if (wordnet_synset_map.size() > 0)return;
 	char line[1000];
-	FILE *infile = open_file("wordnet_synset_map.txt");
+	FILE *infile = open_file("import/wordnet_synset_map.txt");
 	int s, id;
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		fixNewline(line);
@@ -905,7 +905,7 @@ Node* parseWordnetKey(char* key){
 
 Node* getYagoConcept(char* key) {
 	if (startsWith(key, "<wordnet_"))return parseWordnetKey(key);
-	const char* name = fixYagoName(key);// Normalized instead of using similar
+	const char* name = fixYagoName(key);// Normalized instead of using similar, key not touched
 	if (contains(name, ":"))return rdfOwl(key);
 	if (eq(name, "isPreferredMeaningOf"))return Label;
 	if (eq(name, "#label"))return Label;
@@ -928,7 +928,7 @@ Node* getYagoConcept(char* key) {
 bool importYago(const char* file) {
 	p("import YAGO start");
 	if (!contains(file, "/"))
-		file = concat("/data/base/BIG/yago/", file);
+		file = (((string)"/data/base/BIG/yago/")+file).data();
 	//		file = concat("/Users/me/data/base/BIG/yago/", file);
 	Node* subject;
 	Node* predicate;
@@ -978,6 +978,8 @@ bool importYago(const char* file) {
 			subject = getYagoConcept(subjectName); //
 			predicate = getYagoConcept(predicateName);
 			object = getYagoConcept(objectName);
+			if(subject==0)subject = getYagoConcept(modifyConstChar(subjectName));// wth ???
+			if(subject==0)subject = getYagoConcept(subjectName);// wth ???
 		}
 		if (subject == 0 || predicate == 0 || object == 0) {
 			printf("ERROR %s\n", line);
@@ -1275,6 +1277,7 @@ void importAllYago() {
 		return;
 	}
 	load_wordnet_synset_map();
+	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoFacts.tsv");
 	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoGeonamesEntityIds.tsv");
@@ -1291,7 +1294,6 @@ void importAllYago() {
 	//import("yago","yagoDBpediaClasses.tsv");
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
-	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoImportantTypes.tsv");
 	dissectParent((Node *)-1);
 

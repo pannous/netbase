@@ -216,11 +216,11 @@ bool eq(const char* x, const char* y, bool ignoreCase,bool ignoreUnderscore) {//
 	return true;
 }
 
-const char* concat(const char* a,const  char* b) {
-	string c="";
-	c=a+c+b;
-	return c.data();
-}
+//const char* concat(const char* a,const  char* b) {
+//	string c="";
+//	c=a+c+b;
+//	return c.data();// LOST POINTER!
+//}
 
 string join(char** argv, int argc) {
 	string a;
@@ -444,7 +444,7 @@ inline int normChar(int c) {
 }
 
 //unsigned long hash(const char *str) {// unsigned
-unsigned int hash(const char *str) {// unsigned
+unsigned int wordhash(const char *str) {// unsigned
     if (!str)return 0;
     unsigned long hash = 5381;
     int c;
