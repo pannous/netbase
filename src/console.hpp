@@ -1,4 +1,6 @@
 //void console();
+#include "netbase.hpp"
 char* getaline();
 void console();
-bool parse(const char* data);// and act
+void showHelp();
+NodeVector parse(const char* data);// and act

@@ -2097,11 +2097,12 @@ int main(int argc, char *argv[]) {
 		//		start_server();
 		//		return 0;
 		//		tests();
-	} else
+	} else{
+		showHelp();
 		// *******************************
 		parse(join(argv, argc).c_str()); // <<< HERE
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
+	}
 	if (checkParams(argc, argv, "export"))
 		export_csv();
 

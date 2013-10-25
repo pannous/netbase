@@ -53,26 +53,26 @@ int Service_Request(int conn) {
 	init();// for each forked process!
 	char* q=substr(reqinfo.resource,1,-1);
 //	Writeline(conn,q);
+	char buff[10000];
 	Writeline(conn,"<results>\n");
+	char* statement_format="<statement id='%d' subject='%s' predicate='%s' object='%s' sid='%d' pid='%d' oid='%d'/>\n";
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	parse(q);// <<<<<<<< NETBASE!
-	NodeVector all=query(q);
+	NodeVector all=parse(q);// <<<<<<<< NETBASE!
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
-		Writeline(conn,"<entity name='");
-		Writeline(conn,node->name);
-		Writeline(conn,"'>");
+		sprintf(buff,"<entity name='%s' id='%d'>\n",node->name,node->id);
+		Writeline(conn,buff);
 		Statement* s=0;
 		while(s=nextStatement(node,s)){
-		Writeline(conn,"<statement id='");
-		Writeline(conn,itoa(s->id));
-		Writeline(conn,"'/>");
+			if(!checkStatement(s))continue;
+			sprintf(buff,statement_format,s->id,s->Subject->name,s->Predicate->name,s->Object->name,s->Subject->id,s->Predicate->id,s->Object->id);
+		Writeline(conn,buff);
 		}
 		string img=getImage(node->name);
 		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
 		Writeline(conn,"</entity>\n");
 	}
-	Writeline(conn,"</result>\n");
+	Writeline(conn,"</results>\n");
 //	if()
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!

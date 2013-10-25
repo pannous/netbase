@@ -5,3 +5,5 @@
 #
 # Debug configuration
 # Release configuration
+# Test configuration
+# Server configuration

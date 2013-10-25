@@ -22,6 +22,14 @@
                     <name>Release</name>
                     <type>1</type>
                 </confElem>
+                <confElem>
+                    <name>Test</name>
+                    <type>1</type>
+                </confElem>
+                <confElem>
+                    <name>Server</name>
+                    <type>1</type>
+                </confElem>
             </confList>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">

@@ -241,5 +241,197 @@
       <item path="src/util.hpp" ex="false" tool="3" flavor2="0">
       </item>
     </conf>
+    <conf name="Test" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>true</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <stripSymbols>true</stripSymbols>
+          <incDir>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include</pElem>
+          </incDir>
+          <warningLevel>0</warningLevel>
+        </ccTool>
+        <linkerTool>
+          <output>netbase</output>
+          <commandLine>-lreadline</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="/Users/me/dev/cpp/netbase/src/init.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/Users/me/dev/cpp/netbase/src/init.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/me/dev/cpp/netbase/src/webserver.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/Users/me/dev/cpp/netbase/src/webserver.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="src/console.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/console.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/export.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/export.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/extconf.rb" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/import.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/import.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/jni/NetbaseJNI.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/jni/NetbaseJNI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/jni/NetbaseJNI.java" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/md5.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/md5.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/netbase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/netbase.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/query.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/query.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/reflection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/reflection.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/relations.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/relations.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/tests.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/tests.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/util.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/util.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Server" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>true</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <stripSymbols>true</stripSymbols>
+          <incDir>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include/darwin</pElem>
+            <pElem>/Library/Java/JavaVirtualMachines/1.7.0.jdk/Contents/Home/include</pElem>
+          </incDir>
+          <warningLevel>0</warningLevel>
+        </ccTool>
+        <linkerTool>
+          <output>netbase</output>
+          <commandLine>-lreadline</commandLine>
+        </linkerTool>
+      </compileType>
+      <item path="/Users/me/dev/cpp/netbase/src/init.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/Users/me/dev/cpp/netbase/src/init.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="/Users/me/dev/cpp/netbase/src/webserver.cpp"
+            ex="false"
+            tool="1"
+            flavor2="0">
+      </item>
+      <item path="/Users/me/dev/cpp/netbase/src/webserver.hpp"
+            ex="false"
+            tool="3"
+            flavor2="0">
+      </item>
+      <item path="src/console.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/console.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/export.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/export.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/extconf.rb" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/import.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/import.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/jni/NetbaseJNI.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/jni/NetbaseJNI.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/jni/NetbaseJNI.java" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/md5.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/md5.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/netbase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/netbase.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/query.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/query.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/reflection.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/reflection.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/relations.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/relations.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/tests.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/tests.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/util.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/util.hpp" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
   </confs>
 </configurationDescriptor>
