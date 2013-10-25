@@ -97,21 +97,21 @@ int Service_Request(int conn) {
 	char buff[10000];
 	if (format == xml)Writeline(conn, "<results>\n");
 	if (format == json)Writeline(conn, "{'results':[\n");
-	char* statement_format_xml = "<statement id='%d' subject='%s' predicate='%s' object='%s' sid='%d' pid='%d' oid='%d'/>\n";
+	char* statement_format_xml = "<statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	char* statement_format_text = "$%d %s %s %s %d->%d->%d\n";
-	char* statement_format_json = "      { 'id:'%d', 'subject':%s', 'predicate':'%s', 'object':'%s', 'sid':'%d', 'pid':'%d', 'oid':'%d'},\n";
+	char* statement_format_json = "      { 'id:%d, 'subject':%s', 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
 	char* statement_format;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
 
 	char* entity_format_txt = "%s (%d)\n";
-	char* entity_format_xml = "<entity name='%s' id='%d'>\n";
-	char* entity_format_json = "   {'name':'%s', 'id':'%d'";
+	char* entity_format_xml = "<entity name=\"%s\" id='%d'>\n";
+	char* entity_format_json = "   {'name':\"%s\", 'id':%d";
 	char* entity_format;
 	if (format == xml)entity_format = entity_format_xml;
 	if (format == json)entity_format = entity_format_json;
-	if (format == xml)entity_format = entity_format_txt;
+	if (format == txt)entity_format = entity_format_txt;
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	NodeVector all = parse(q); // <<<<<<<< NETBASE!
 	for (int i = 0; i < all.size(); i++) {
