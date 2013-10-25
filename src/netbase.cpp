@@ -451,7 +451,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	void* maxNodePointer = &c->nodes[maxNodes];
 	if (node < c->nodes) {
 		badCount++;
-		printf("node* < maxNodes!!! %016llX < %016llX \n", node, c->nodes);
+		printf("node* < c->nodes!!! %016llX < %016llX \n", node, c->nodes);
 		return false;
 	}
 	if (node >= maxNodePointer) {

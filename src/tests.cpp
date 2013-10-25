@@ -1182,7 +1182,7 @@ void tests() {
 void testBrandNewStuff() {
 //	import("yago");
 //	tests();
-	//	testOpposite();
+		testOpposite();
 	//	ps("test brand new stuff");
 	//	parse("opposite of bad");
 	//	parse("all bug");

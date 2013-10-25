@@ -85,9 +85,10 @@ template void empty(vector<Statement*, std::allocator<Statement* > > &v);
 bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
 	if(!x || !y)return false;
-	if (strlen(y) == 0)return false;
+	if (x[0]==0 || y[0]==0)return false;
 	if(strstr(x, y)>=x)return true;
 	if (ignoreCase)return strstr(tolower(x), tolower(y));
+	return false;
 }
 
 bool contains(NodeVector& all, Node* node,bool fuzzy) {
