@@ -251,30 +251,27 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (startsWith(data, ":d ") || startsWith(data, "delete ") || startsWith(data, "del ") || startsWith(data, "remove ")) {
-		//		const char* what = next(data)->data();
-		//		printf("deleting %s\n", what);
-		//		deleteWord(what);
-		return OK;
+		string d = next(data);
+		const char* what = d.data();
+		printf("deleting %s\n", what);
+		deleteWord(what);
 	}
 
 	if (startsWith(data, "path") || startsWith(data, ":p")) {
 		Node* from = getAbstract(args.at(1));
 		Node* to = getAbstract(args.at(2));
-		shortestPath(from, to);
-		return OK;
+		return shortestPath(from, to);
 	}
 
 	if (args.size() > 1 && startsWith(data, "has")) {
 		Node* from = getAbstract(args.at(1));
 		Node* to = getAbstract(args.at(2));
-		memberPath(from, to);
-		return OK;
+		return memberPath(from, to);
 	}
 	if (args.size() > 1 && startsWith(data, "is")) {
 		Node* from = getAbstract(args.at(1));
 		Node* to = getAbstract(args.at(2));
-		parentPath(from, to);
-		return OK;
+		return parentPath(from, to);
 	}
 	if (startsWith(data, "select "))
 		return query(data);
@@ -310,6 +307,10 @@ NodeVector parse(const char* data) {
 		Node* propertyA = getAbstract(args[0]);
 		Node* node = getThe(args[2]);
 		Node* nodeA = getAbstract(args[2]);
+
+		NodeVector all = memberPath(nodeA, propertyA);
+		if (all.size() > 0)return all;
+
 		Node* found = has(node, property);
 		if (found == 0)found = has(node, property);
 		if (found == 0)found = has(nodeA, property);
