@@ -301,25 +301,24 @@ NodeVector parse(const char* data) {
 	if (contains(data, " in "))
 		return query(data);
 
-	if (args.size() > 2 && eq(args[1], "of")) {
-		clearAlgorithmHash();
-		Node* property = getThe(args[0]);
-		Node* propertyA = getAbstract(args[0]);
-		Node* node = getThe(args[2]);
-		Node* nodeA = getAbstract(args[2]);
-		Node* found;
-		if (found == 0)found = has(nodeA, propertyA);
-		if (found == 0)found = has(Any, propertyA, nodeA);
-//		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
-		if (checkNode(found)) {
-			show(found);
-			pf("ANSWER: %s\n", found->name);
-		}
-		return nodeVectorWrap(found);
-	}
+//	if (args.size() > 2 && eq(args[1], "of")) {
+//		clearAlgorithmHash();
+//		Node* property = getThe(args[0]);
+//		Node* propertyA = getAbstract(args[0]);
+//		Node* node = getThe(args[2]);
+//		Node* nodeA = getAbstract(args[2]);
+//		Node* found;
+//		if (found == 0)found = has(nodeA, propertyA);
+//		if (found == 0)found = has(Any, propertyA, nodeA);
+////		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
+//		if (checkNode(found)) {
+//			show(found);
+//			pf("ANSWER: %s\n", found->name);
+//		}
+//		return nodeVectorWrap(found);
+//	}
 	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
-		parseProperty(data); // ownerpath
-		return OK;
+		return nodeVectorWrap(parseProperty(data)); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
 		printf("starting server\n");

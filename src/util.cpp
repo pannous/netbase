@@ -47,14 +47,16 @@ char* substr(char* what,int from,int to){
 	if(from>to)
 		return what;// ERROR!!
 #endif
-	char *result = (char*) malloc(to-from+1);
+	char *result = (char*) malloc(sizeof(char)*(to-from+1));
 	strncpy(result, what + from, to-from);
 	result[to-from]=0;// In case of unclean malloc
 	return result;
 }
 
+
+// todo : FREEEEEE!!!!
 char* tolower(const char* x) {//const
-	char* neu=(char*)malloc(strlen(x));
+	char* neu=(char*)malloc(sizeof(char)*strlen(x));
 	for (int i = 0; i < strlen(x); i++) {
 		neu[i] = tolower(x[i]);
 	}
