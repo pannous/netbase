@@ -378,12 +378,12 @@ Query parseQuery(string s, int limit) {
 	s=fixQuery(s);
 	if ((int) s.find("from") < 0)
 		s = string("select * from ") + s; // why (int) neccessary???
-	sscanf(s.c_str(), "select %s from %s where %[^\0]s", fields, type, match); //[^\n]
+	sscanf(s.c_str(), "select %s from %s where %s", fields, type, match); //[^\n] // [^\0]
 	char* match2 = (char*) strstr(s.c_str(), " where "); // remove test.funny->.funny do later!
 	if (match2) {
 		match2 += 7; // wegen 'where' !!!! bad style
 		p(match2);
-		match=match2;
+		strcpy(match,match2);
 	}
 	p(fields);
 	p(type);
@@ -395,9 +395,10 @@ Query parseQuery(string s, int limit) {
 	q.fields = nodeVector(splitString(fields, ","));
 	vector<char*> matches = splitString(replace_all(match, " and ", ","), ",");
 	for (int i = 0; i < matches.size(); i++) {
-		string f = matches[i];
+		string f = matches[i];4
 		p(f);
 		Statement *s = parseFilter(f);
+		p(s);
 		if (s)q.filters.push_back(s);
 	}
 	return q;
