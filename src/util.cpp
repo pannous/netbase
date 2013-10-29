@@ -316,7 +316,7 @@ void p(Statement* n){
 
 void p(Query& q){
 	p("Query:");
-	show(q.keyword);
+	show(q.keyword,false);
 	ps(q.keywords);
 }
 

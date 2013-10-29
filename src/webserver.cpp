@@ -95,8 +95,8 @@ int Service_Request(int conn) {
 	}
 	//	Writeline(conn,q);
 	char buff[10000];
+	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
-	if (format == xml && startsWith(q,"select"))Writeline(conn,query2(q));
 	if (format == json)Writeline(conn, "{'results':[\n");
 	char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";

@@ -21,7 +21,7 @@ char* statements_file = "statements.txt";
 char* images_file = "images.txt";
 
 FILE *open_file(const char* file) {
-	if (!contains(file, "/"))file = (import_path+file).data();// concat(import_path.data(), file);
+	if (!contains(file, "/"))file = (import_path + file).data(); // concat(import_path.data(), file);
 	printf("Opening File %s\n", (file));
 	FILE *infile;
 	if ((infile = fopen((file), "r")) == NULL) {
@@ -44,22 +44,22 @@ bool lowMemory() {
 	size_t currentSize = getCurrentRSS();
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
-	if(!free)
-		free=5.5L * GB;
+	if (!free)
+		free = 5.5L * GB;
 	if (currentSize > free) {
 		printf("MEMORY: %L Peak: %d FREE: %L \n", currentSize, peakSize, free);
 		return true;
 	}
 	//		|| currentSize*1.2>sizeOfSharedMemory||
-	if (currentContext()->nodeCount +20000 > maxNodes) {
+	if (currentContext()->nodeCount + 20000 > maxNodes) {
 		pf("%d nodes!\n", currentContext()->nodeCount);
 		return true;
 	}
-	if (currentContext()->currentNameSlot+300000 > maxNodes * averageNameLength) {
+	if (currentContext()->currentNameSlot + 300000 > maxNodes * averageNameLength) {
 		pf("%d characters!\n", currentContext()->currentNameSlot);
 		return true;
 	}
-	if (currentContext()->statementCount +40000> maxStatements0) {
+	if (currentContext()->statementCount + 40000 > maxStatements0) {
 		pf("%d nodes!\n", currentContext()->statementCount);
 		return true;
 	}
@@ -425,8 +425,7 @@ int getNameRow(char** tokens, int nameRowNr = -1, const char* nameRow = 0) {
 			if (nameRow == 0) {
 				if (eq("name", token))nameRowNr = row;
 				if (eq("title", token))nameRowNr = row;
-			}
-			else if (eq(nameRow, token))nameRowNr = row;
+			} else if (eq(nameRow, token))nameRowNr = row;
 		}
 		row++;
 	}
@@ -474,7 +473,6 @@ void fixNewline(char* line) {
 char* extractTagName(char* line) {
 	return match(line, "<([^>]+)>");
 }
-
 
 char* extractTagValue(char* line) {
 	return match(line, ">([^<]+)<");
@@ -677,12 +675,12 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		if (linecount == 0) {
 			columnTitles = line;
 			if (!separator)
-				separator = guessSeparator(modifyConstChar(line));// would kill fieldCount
+				separator = guessSeparator(modifyConstChar(line)); // would kill fieldCount
 			fieldCount = splitStringC(line, values, separator);
 			nameRowNr = getNameRow(values, nameRowNr, nameRow);
 			for (int i = 0; i < fieldCount; i++) {
 				char* field = values[i];
-				Node* fielt=getThe(field);// Firma		instance		Terror_Firma LOL
+				Node* fielt = getThe(field); // Firma		instance		Terror_Firma LOL
 				dissectWord(fielt);
 				predicates.push_back(fielt);
 			}
@@ -701,20 +699,16 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 
-		bool dissect =true;// type && !eq(type->name, "city"); // city special: too many!
+		bool dissect = true; // type && !eq(type->name, "city"); // city special: too many!
 		// todo more generally : don't dissect special names ...
 
-		subject = getThe(values[nameRowNr], null, dissect);
+
+		subject = getNew(values[nameRowNr], null, dissect);
 		if (!checkNode(subject))continue;
 		if (type && subject->kind != type->id) {
-			//			p("Found one with different type");
-			Node* candidate = subject;
+			p("Found one with different type");
 			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
-			addStatement4(type->context, candidate->id, Synonym->id, subject->id, true);
-			//			addStatement4(type->context,candidate->id,Unknown->id,subject->id,false);
 		}
-		//		if(eq(subject->name,"Hasloh"))
-		//			linecount++;
 		for (int i = 0; i < size; i++) {
 			if (i == nameRowNr)continue;
 			predicate = predicates[i];
@@ -729,7 +723,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				continue;
 			}
 			Statement *s = addStatement(subject, predicate, object, false);
-//			showStatement(s);
+			//			showStatement(s);
 		}
 
 		if (lowMemory()) {
@@ -758,8 +752,8 @@ void importList(const char* file, const char* type) {
 			printf("ERROR %s\n", line);
 			continue;
 		}
-		addStatement(object, Type, subject, false);// This should still be skipped If approached by subject!!! not object
-//		addStatement(subject, Instance, object, false);// This would not be detected with the instant gap
+		addStatement(object, Type, subject, false); // This should still be skipped If approached by subject!!! not object
+		//		addStatement(subject, Instance, object, false);// This would not be detected with the instant gap
 	}
 	fclose(infile); /* Close the file */
 	p("import list ok");
@@ -815,7 +809,7 @@ const char *fixYagoName(char *key) {
 }
 
 Node* rdfOwl(char* name) {
-	if(!name)return 0;
+	if (!name)return 0;
 	if (eq(name, "rdf:type"))return Type;
 	if (eq(name, "rdfs:subClassOf"))return SuperClass;
 	if (eq(name, "rdfs:label"))return Label;
@@ -846,11 +840,11 @@ Node* rdfOwl(char* name) {
 	if (eq(name, "xsd:nonNegativeInteger"))return getAbstract("natural number");
 	if (eq(name, "owl:FunctionalProperty"))return Label;
 	if (!startsWith(name, "wiki") && contains(name, ":")) {
-		name=strstr(name,":");
-		if(!name)return 0;// contains(name, ":") WTF????????
-		name=name+2;
-//		printf(" unknown key %s\n", name);
-//		return 0;
+		name = strstr(name, ":");
+		if (!name)return 0; // contains(name, ":") WTF????????
+		name = name + 2;
+		//		printf(" unknown key %s\n", name);
+		//		return 0;
 	}
 	return getThe(name); //Unknown;
 }
@@ -888,24 +882,24 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "%")); // OK
 	else printf("UNIT %s \n", unit);
 	//		, current_context, getYagoConcept(unit)->id
-//	return add(name);
-	Node* unity = rdfOwl(unit);// getThe(unit);//  getYagoConcept(unit);
+	//	return add(name);
+	Node* unity = rdfOwl(unit); // getThe(unit);//  getYagoConcept(unit);
 	return getThe(name, unity);
 }
 
-Node* parseWordnetKey(char* key){
-		char* id = cut_wordnet_id(key);
-		int nid = norm_wordnet_id(atoi(id));
-		Node* wn = get(nid);
-		if (wn)
-			return wn;
-		else
-			return initNode(wn, nid, removeHead(key, "<wordnet_"), 0, 0);
-	}
+Node* parseWordnetKey(char* key) {
+	char* id = cut_wordnet_id(key);
+	int nid = norm_wordnet_id(atoi(id));
+	Node* wn = get(nid);
+	if (wn)
+		return wn;
+	else
+		return initNode(wn, nid, removeHead(key, "<wordnet_"), 0, 0);
+}
 
 Node* getYagoConcept(char* key) {
 	if (startsWith(key, "<wordnet_"))return parseWordnetKey(key);
-	const char* name = fixYagoName(key);// Normalized instead of using similar, key not touched
+	const char* name = fixYagoName(key); // Normalized instead of using similar, key not touched
 	if (contains(name, ":"))return rdfOwl(key);
 	if (eq(name, "isPreferredMeaningOf"))return Label;
 	if (eq(name, "#label"))return Label;
@@ -915,12 +909,12 @@ Node* getYagoConcept(char* key) {
 	if (eq(name, "hasWordnetDomain"))return Domain;
 	//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
 	if (contains(name, "^^"))return rdfValue(key);
-//	if (contains(name, ".jpg") || contains(name, ".gif") || contains(name, ".svg") || startsWith(name, "#") || startsWith(name, "<#")) {
-//		printf(" bad key %s\n", name);
-//		return 0;
-//	}
-	Node *n=getThe(name); //fixYagoName(key));
-//	dissectWord(n);
+	//	if (contains(name, ".jpg") || contains(name, ".gif") || contains(name, ".svg") || startsWith(name, "#") || startsWith(name, "<#")) {
+	//		printf(" bad key %s\n", name);
+	//		return 0;
+	//	}
+	Node *n = getThe(name); //fixYagoName(key));
+	//	dissectWord(n);
 	dissectParent(n);
 	return n;
 }
@@ -928,7 +922,7 @@ Node* getYagoConcept(char* key) {
 bool importYago(const char* file) {
 	p("import YAGO start");
 	if (!contains(file, "/"))
-		file = (((string)"/data/base/BIG/yago/")+file).data();
+		file = (((string) "/data/base/BIG/yago/") + file).data();
 	//		file = concat("/Users/me/data/base/BIG/yago/", file);
 	Node* subject;
 	Node* predicate;
@@ -978,8 +972,8 @@ bool importYago(const char* file) {
 			subject = getYagoConcept(subjectName); //
 			predicate = getYagoConcept(predicateName);
 			object = getYagoConcept(objectName);
-			if(subject==0)subject = getYagoConcept(modifyConstChar(subjectName));// wth ???
-			if(subject==0)subject = getYagoConcept(subjectName);// wth ???
+			if (subject == 0)subject = getYagoConcept(modifyConstChar(subjectName)); // wth ???
+			if (subject == 0)subject = getYagoConcept(subjectName); // wth ???
 		}
 		if (subject == 0 || predicate == 0 || object == 0) {
 			printf("ERROR %s\n", line);
@@ -1064,8 +1058,8 @@ void importNames() {
 	addStatement(all(female_firstname), have_the(gender), a(female));
 	addStatement(all(female_firstname), are, a(firstname));
 	addStatement(all(female_firstname), Owner, a(female));
-	importList( "FrauenVornamen.txt", "female_firstname");
-	importList( "MaennerVornamen.txt", "male_firstname");
+	importList("FrauenVornamen.txt", "female_firstname");
+	importList("MaennerVornamen.txt", "male_firstname");
 }
 
 void importAbstracts() {
@@ -1076,17 +1070,17 @@ void importAbstracts() {
 	int linecount = 0;
 	int id;
 	doDissect = false;
-//	memset(abstracts, 0, abstractHashSize * 2);
+	//	memset(abstracts, 0, abstractHashSize * 2);
 	Context* c = getContext(wordnet);
 	FILE *infile = open_file("abstracts.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
 		sscanf(line, "%d\t%[^\n]s", &id, name); // %[^\n]s == REST OF LINE!
-		id = id + 10000;// KILL ERVERYTHING!!!
+		id = id + 10000; // KILL ERVERYTHING!!!
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 		//		printf("%s\n",line);
-		if(hasWord(name))continue;
-		c->nodeCount= id; // hardcoded hack to sync ids!!!
+		if (hasWord(name))continue;
+		c->nodeCount = id; // hardcoded hack to sync ids!!!
 		Node* a = getAbstract(name);
 		a->context = wordnet;
 		a->kind = abstractId;
@@ -1195,7 +1189,8 @@ void importLables() {
 	}
 	fclose(infile); /* Close the file */
 }
-void importLexlinks(){
+
+void importLexlinks() {
 	char line[1000];
 	int linecount = 0;
 	int s, p, o;
@@ -1203,25 +1198,26 @@ void importLexlinks(){
 	FILE *infile = open_file("lexlinks.tsv");
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
-//			printf(line);
+		//			printf(line);
 		fixNewline(line);
-		sscanf(line, "%d\t%d\t%d\t%d\t%d", &ss,&s,&so, &o, &p);
+		sscanf(line, "%d\t%d\t%d\t%d\t%d", &ss, &s, &so, &o, &p);
 		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		//		if (old)return old; // showStatement(old)
 		//
-		s=s+10000;
-		o=o+10000;
+		s = s + 10000;
+		o = o + 10000;
 		if (p == SubClass->id)continue; // Redundant data!
 		if (p == Instance->id)continue; // Redundant data!
 
 		Statement* x;
-		if(ss!=so)x=addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
-		if(!x)pf("ERROR %s\n",line);
-//		if(s!=o)x=addStatement4(wordnet, s, p, o); not on abstracts! hmm, for antonym properties? nah!
-//		if(!x)printf("ERROR %s\n",line);
+		if (ss != so)x = addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
+		if (!x)pf("ERROR %s\n", line);
+		//		if(s!=o)x=addStatement4(wordnet, s, p, o); not on abstracts! hmm, for antonym properties? nah!
+		//		if(!x)printf("ERROR %s\n",line);
 	}
 	fclose(infile); /* Close the file */
 }
+
 void importStatements() {
 	char line[1000];
 	int linecount = 0;
@@ -1243,19 +1239,19 @@ void importStatements() {
 
 void importWordnet() {
 	load_wordnet_synset_map();
-	importAbstracts();// MESSES WITH ABSTRACTS!!
+	importAbstracts(); // MESSES WITH ABSTRACTS!!
 	importSenses();
 	getContext(wordnet)->nodeCount = synonyms; //200000+117659;//WTH!
 	importSynsets();
 	importLables();
 	importStatements();
 	importLexlinks();
-	addStatement(getThe("opposite"),SuperClass,Antonym);// Correct but doesn't work
-	addStatement(Antonym,SuperClass,getThe("opposite"));// Correct but doesn't work
-	addStatement(getThe("opposite"),Synonym,Antonym);
-	addStatement(getAbstract("opposite"),Synonym,Antonym);
-	addStatement(Antonym,Synonym,getThe("opposite"));
-	addStatement(Antonym,Synonym,getAbstract("opposite"));
+	addStatement(getThe("opposite"), SuperClass, Antonym); // Correct but doesn't work
+	addStatement(Antonym, SuperClass, getThe("opposite")); // Correct but doesn't work
+	addStatement(getThe("opposite"), Synonym, Antonym);
+	addStatement(getAbstract("opposite"), Synonym, Antonym);
+	addStatement(Antonym, Synonym, getThe("opposite"));
+	addStatement(Antonym, Synonym, getAbstract("opposite"));
 }
 
 void importWordnet2() {
@@ -1295,21 +1291,21 @@ void importAllYago() {
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
 	import("yago", "yagoImportantTypes.tsv");
-	dissectParent((Node *)-1);
+	dissectParent((Node *) - 1);
 
 
-//	addStatement(Number,Synonym,getThe("xsd:decimal"));
-//	addStatement(Number,Synonym,getThe("xsd:integer"));
-//	addStatement(Date,Synonym,getThe("xsd:date"));
-//	addStatement(getThe("xsd:date"),SuperClass,Date);
-//	addStatement(getThe("xsd:decimal"),SuperClass,Number);
-//	addStatement(getThe("xsd:integer"),SuperClass,Number);
-//	addStatement(get("xsd:date"),SuperClass,Date);
-//	addStatement(get("xsd:decimal"),SuperClass,Number);
-//	addStatement(get("xsd:integer"),SuperClass,Number);
-	addStatement(getAbstract("xsd:date"),SuperClass,Date);
-	addStatement(getAbstract("xsd:decimal"),SuperClass,Number);
-	addStatement(getAbstract("xsd:integer"),SuperClass,Number);
+	//	addStatement(Number,Synonym,getThe("xsd:decimal"));
+	//	addStatement(Number,Synonym,getThe("xsd:integer"));
+	//	addStatement(Date,Synonym,getThe("xsd:date"));
+	//	addStatement(getThe("xsd:date"),SuperClass,Date);
+	//	addStatement(getThe("xsd:decimal"),SuperClass,Number);
+	//	addStatement(getThe("xsd:integer"),SuperClass,Number);
+	//	addStatement(get("xsd:date"),SuperClass,Date);
+	//	addStatement(get("xsd:decimal"),SuperClass,Number);
+	//	addStatement(get("xsd:integer"),SuperClass,Number);
+	addStatement(getAbstract("xsd:date"), SuperClass, Date);
+	addStatement(getAbstract("xsd:decimal"), SuperClass, Number);
+	addStatement(getAbstract("xsd:integer"), SuperClass, Number);
 }
 
 void importAll() {

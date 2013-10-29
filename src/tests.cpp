@@ -902,15 +902,22 @@ void testComparisonQuery() {
 	int limit = 10;
 	NodeVector nv;
 	Query q;
+	q.instances = all_instances(the(city));
+	q.limit = limit;
+	q.lookuplimit = limit * 2;
+	nv = filter(q, pattern(the(population), Less, the(1200)));
+	p(nv.size());
+	check(nv.size() > 10);
 
 
-	//	q.instances = all_instances(the(city));// again??
-	q.instances = all_instances(the(city), true, defaultLookupLimit); // again??
-	p(q.instances.size());
-	check(q.instances.size() >= defaultLookupLimit);
-	defaultLookupLimit = 1000000;
+	nv = filter(q, pattern(the(population), Greater, the(11300)));
+	p(nv.size());
+	check(nv.size() > 10);
 
-	q.instances = all_instances(the(city), true, defaultLookupLimit, false); // again??
+	//	defaultLookupLimit = 1000000;
+	//	q.instances = all_instances(the(city), true, defaultLookupLimit, false); // again??
+	//	check(q.instances.size() >= defaultLookupLimit);
+
 	//	p(q.instances);
 	check(contains(q.instances, get(669587)));
 	check(contains(q.instances, get(613424)));
@@ -924,13 +931,9 @@ void testComparisonQuery() {
 
 	//	q.instances = all_instances(the(city));
 
-	NV dummy;
-	dummy.push_back(get(669587));
-	q.instances = dummy;
-	q.instances.push_back(get(669587));
-	clearAlgorithmHash(true);
 
-	Statement* filter1 = pattern(the(population), Equals, a(1140));
+	//	Statement* filter1 = pattern(the(population), Equals, a(1140));
+	Statement* filter1 = pattern(a(population), Equals, a(1140));
 	q.semantic = true;
 	nv = filter(q, filter1);
 	p(nv.size());
@@ -942,73 +945,94 @@ void testComparisonQuery() {
 	check(nv.size() > 0);
 
 
-	and_filter = andStatement( pattern(the(population), Less, the(1140)),pattern(the(population), More, the(1139)));
+	and_filter = andStatement(pattern(the(population), Less, the(1141)), pattern(the(population), More, the(1139)));
 	nv = filter(q, and_filter);
 	p(nv.size());
 	check(nv.size() >= 1);
 
-	and_filter = andStatement(pattern(the(population), More, the(1139)), pattern(the(population), Less, the(1140)));
+	and_filter = andStatement(pattern(the(population), More, the(1139)), pattern(the(population), Less, the(1141)));
 	nv = filter(q, and_filter);
 	p(nv.size());
 	check(nv.size() > 0);
 
+}
 
-
-	nv = filter(q, pattern(the(population), Less, the(1200)));
-	p(nv.size());
-	check(nv.size() > 10);
-
-
-	nv = filter(q, pattern(the(population), Greater, the(11300)));
-	p(nv.size());
-	check(nv.size() > 10);
-
-
-
-
+Node* getProperty(Node* n, char* s) {
+	return findStatement(n, getAbstract(s), Any)->Object;
 }
 
 void testComparisonQueryString() {
 	Query q;
 	NV nv;
-	string s = "select * from city where population<11300";
+	q = parseQuery("city where population=1140", 100);
+	q.lookuplimit = 10000;
+	nv = query(q);
+	check(nv.size() > 0);
+	p(nv[0]);
+	N population = getProperty(nv[0], "population");
+	p(population);
+	check(eq(population->name, "1140"));
+	check(atoi(population->name) == 1140);
+	//	check(population->value.number==1140);
+	//	showNodes(q.instances, false);
+}
+
+void testComparisonQueryString2() {
+	Query q = parseQuery("city where countrycode=de", 100);
+	NV nv = query(q);
+	check(nv.size() > 0);
+	N countrycode = getProperty(nv[0], "countrycode");
+	check(eq(countrycode->name, "de"));
+}
+
+void testQueryAnd(){
+	Query q = parseQuery("city where countrycode=\"us\" and population<2000", 100);
+	NV nv = query(q);
+	check(nv.size() > 0);
+	N countrycode = getProperty(nv[0], "countrycode");
+	N population = getProperty(nv[0], "population");
+	p(nv[0]);
+	check(eq(countrycode->name, "us"));
+	check(atoi(population->name)>0 && atoi(population->name) < 2000);
+
+}
+
+void testComparisonQueryStringLess() {
+	Query q;
+	NV nv;
+	string s = "select * from city where population<1100";
 	q = parseQuery(s);
 	check(eq(q.keyword->name, "city"));
 	check(q.filters.size() == 1);
 	check(checkStatement(q.filters[0]));
-	//		query(q);
-	q.instances = all_instances(the(city)); // schummel !!
-	check(q.instances.size() >= q.lookuplimit);
-
-
-
-	string result = query2("city where population=3460");
-	ps(result);
-	q = parseQuery("city where population=3460", 100);
-	query(q);
-	showNodes(q.instances, false);
-	query2("city where population<11300");
-	query2("city where population>1300");
-	query2("city where population<1300");
-
+	nv = query(q);
+	check(nv.size() > 0);
+	p(nv[0]);
+	N population = getProperty(nv[0], "population");
+	p(population);
+	check(atoi(population->name)>0 && atoi(population->name) < 1100);
 }
 
 void testSelectQuery() {
 	query2("select population from city limit 1000");
 	//	query2("select population from city where population=400914");//  limit 10 where population=400914
-
+	query2("select population from city where population>20000 and countrycode=us");
 
 	//		query2("select population,latitude from city");
 }
 
-void testQuery() {
-	//	testPropertyQuery();
-	testComparisonQuery();
-	//	testComparisonQueryString();
-	//	testSelectQuery();
+void testFacets() {
+	query2("select population from city limit 1000");
 }
 
-void testFacets() {
+void testQuery() {
+	testQueryAnd();
+//	testComparisonQueryString2();
+//	testComparisonQueryStringLess();
+	//	testPropertyQuery();
+	//	testComparisonQuery();
+	//	testSelectQuery();
+//	testFacets();
 }
 
 
@@ -1240,12 +1264,12 @@ void tests() {
 
 
 
+	testFacets();
 	// shaky
-	testQuery();
 	testStringLogic2();
 	testPaths();
 	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
-	testFacets();
+	testQuery();
 	//	testDummyLogic();// too big
 	// OK
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
@@ -1266,8 +1290,9 @@ void tests() {
 
 void testBrandNewStuff() {
 	//	import("yago");
-	//	tests();
+	//		tests();
 	testQuery();
+//	testFacets();
 	//		testOpposite();
 	//	ps("test brand new stuff");
 	//	parse("opposite of bad");

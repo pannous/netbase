@@ -210,6 +210,8 @@ public:
         limit = 100; // was mit facetten???
         lookuplimit = 10000;// defaultLookupLimit;// INF!
         maxFacets=10;
+		recursion=0;
+//		recursions=0;
         autoFacet = true;
         semantic = false;
         predicatesemantic=false;
@@ -376,6 +378,7 @@ unsigned int hash(const char *str); //unsigned
 Node* getThe(const char* word, Node* type = 0,bool dissect=false);
 Node* getThe(string thing, Node* type=0,bool dissect=false);
 Node* getThe(Node* abstract, Node* type=0);
+Node* getNew(const char* thing, Node* type, bool dissect);
 Node* getClass(const char* word);// ?  apple vs Apple ! same as getThe NOW
 //Node* getClass(string word);
 void showStatement(Statement* s);
