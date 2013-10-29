@@ -83,6 +83,8 @@ int getFieldNr(Query& q, Node* predicate) {
 	}
 	for (int i = 0; i < q.fields.size(); i++) {
 		Node* field = q.fields[i];
+		if (eq(predicate->name, field->name))
+			return i;
 		if (isA4(predicate, field, false, false))
 			return i;
 		if (isA4(field, predicate, false, false))
@@ -119,8 +121,11 @@ void collectFacets(Query& q) {
 				}
 				NodeList& nl = q.values[n];
 				int fieldNr = getFieldNr(q, predicate);
-				if (fieldNr >= 0 && nl[fieldNr]==0)// don't Over wright todo : multiple values?
+				if(fieldNr>nrFields)p("fieldNr>nrFields!?!!?");
+				if (fieldNr >= 0)// && nl[fieldNr]==0 don't Over wright todo : multiple values?nl[fieldNr]
 					nl[fieldNr] = value;
+				else
+					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
 			}
 		}
 

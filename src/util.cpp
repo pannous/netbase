@@ -520,8 +520,10 @@ char* fixQuotesAndTrim(char* tmp){
 	}
 	int len=strlen(tmp);
 	for(int i=0;i<len;i++){
-		if(quote&&tmp[i]==' ')tmp[i]=='_';
-		if(quote&&tmp[i]=='"'){quote=false;tmp[i]==' ';}
+		char c=tmp[i];
+		if(c=='+'||c==0x2b)tmp[i]=' ';
+		if(quote&&c==' ')tmp[i]='_';
+		if(quote&&c=='"'){quote=false;tmp[i]=' ';}
 	}
 	len--;
 	while(len>=0&&(tmp[len]==' '||tmp[len]=='_'||tmp[len]=='"'))

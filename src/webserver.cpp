@@ -676,13 +676,11 @@ void start_server() {
 
 
 	/*  Create socket  */
-
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		Error_Quit("Couldn't create listening socket.");
 
 
 	/*  Populate socket address structure  */
-
 	memset(&servaddr, 0, sizeof (servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -690,13 +688,11 @@ void start_server() {
 
 
 	/*  Assign socket address to socket  */
-
 	if (bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr)) < 0)
 		Error_Quit("Couldn't bind listening socket.");
 
 
 	/*  Make socket a listening socket  */
-
 	if (listen(listener, LISTENQ) < 0)
 		Error_Quit("Call to listen failed.");
 
@@ -704,11 +700,8 @@ void start_server() {
 	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
 
 	/*  Loop infinitely to accept and service connections  */
-
 	while (1) {
-
 		/*  Wait for connection  */
-
 		if ((conn = accept(listener, NULL, NULL)) < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
 		// WORKS FINE, but not when debugging
