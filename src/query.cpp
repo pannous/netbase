@@ -119,7 +119,7 @@ void collectFacets(Query& q) {
 				}
 				NodeList& nl = q.values[n];
 				int fieldNr = getFieldNr(q, predicate);
-				if (fieldNr >= 0)
+				if (fieldNr >= 0 && nl[fieldNr]==0)// don't Over wright todo : multiple values?
 					nl[fieldNr] = value;
 			}
 		}
