@@ -306,6 +306,10 @@ void p(Node* n){
 	show(n);
 }
 
+void p(NodeVector& n){
+	showNodes(n);
+}
+
 void p(Statement* n){
 	showStatement(n);
 }

@@ -10,6 +10,7 @@
 #define	QUERY_H
 
 extern int resultLimit;
+extern int defaultLookupLimit;
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
 NodeVector query(Query& q);
@@ -31,14 +32,13 @@ NodeVector& all_instances(Query& q);
 
 NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*));
 
-NodeVector filter(Query& q, Node* _filter);
-NodeVector filter(Query& q, Statement* filterTree);
+NodeVector filter(Query& q, Node* _filter,int limit=0);
+NodeVector filter(Query& q, Statement* filterTree,int limit=0);
 NodeVector filter(NodeVector all, char* matches);
 
 
 NodeVector filter(NodeVector all, Node* filterTree);
 //NodeVector filter(NodeVector all, Statement* filterTree);
-NodeVector filter(Query& q, Statement* filterTree);
 
 bool enqueue(Node* current, Node* d, NodeQueue* q);
 //typedef (NodeVector (*edgeFilter)(Node*)) NodeFilter;

@@ -208,7 +208,7 @@ public:
         page = 0;
         hitsPerPage = 10; //rows=10;
         limit = 100; // was mit facetten???
-        lookuplimit = 10000;// INF!
+        lookuplimit = 10000;// defaultLookupLimit;// INF!
         maxFacets=10;
         autoFacet = true;
         semantic = false;

@@ -453,9 +453,9 @@ void testWordnet() {
 	assert(isA(getAbstract("duck"), getAbstract("bird")), "duck isA bird"); // yuhu! 2010-02-07
 	clearAlgorithmHash();
 	return;
-//	assert(has("duck", "beak"), "has(duck,beak)");// 241531	duck	flesh of a duck   confusion?
+	//	assert(has("duck", "beak"), "has(duck,beak)");// 241531	duck	flesh of a duck   confusion?
 	assert(has("duck", "tail"), "has(duck,tail)");
-	assert(has("duck", "head"), "has(duck,head)");// fails but not in console !?! wtf???
+	assert(has("duck", "head"), "has(duck,head)"); // fails but not in console !?! wtf???
 	assert(has("duck", "foot"), "has(duck,foot)");
 	addStatement(the(foot), Plural, the(feet));
 	assert(has("duck", "feet"), "has(duck,feet)");
@@ -502,17 +502,19 @@ void testStringLogic() {
 	check(isA(Schlacht_von_Kleverhamm, Schlacht));
 	check(has(Kleverhamm, Schlacht_von_Kleverhamm));
 }
-void testInstancesAtEnd(){
-	Node* t=getThe("testInstancesAtEnd1");
-	Node* p=getThe("testInstancesAtEndP");
-	Node* o=getThe("testInstancesAtEndO");
-	addStatement(t,Type,o);
-	addStatement(t,Instance,o);
-	S s=addStatement(t,p,o,false);
-	addStatement(t,Type,o,false);
-	addStatement(t,Instance,o,false);
-	check(t->firstStatement==s->id);
+
+void testInstancesAtEnd() {
+	Node* t = getThe("testInstancesAtEnd1");
+	Node* p = getThe("testInstancesAtEndP");
+	Node* o = getThe("testInstancesAtEndO");
+	addStatement(t, Type, o);
+	addStatement(t, Instance, o);
+	S s = addStatement(t, p, o, false);
+	addStatement(t, Type, o, false);
+	addStatement(t, Instance, o, false);
+	check(t->firstStatement == s->id);
 }
+
 void testStringLogic2() {
 	eine(Schlacht);
 	Node* Schlacht_bei_Guinegate = getThe("Guinegate_(14791),_Schlacht_bei"); // intellij display bug!
@@ -818,7 +820,7 @@ Statement* orStatement(Statement* s1, Statement* s2) {
 	return addStatement(reify(s1), Or, reify(s2));
 }
 
-void testQuery() {
+void testValueQuery() {
 	deleteNode(the(Booot));
 	deleteNode(a(Booot));
 	das(Booot);
@@ -863,7 +865,9 @@ void testQuery() {
 	q.filters.push_back(s4);
 	ps(query(q));
 	check(!contains(q.instances, Booot));
+}
 
+void testPropertyQuery() {
 	if (!hasWord("Sheberghan"))
 		importCsv("/Users/me/data/base/geo/geonames/cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid", "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 
@@ -892,25 +896,91 @@ void testQuery() {
 	//    Node *p=has(the(Hasloh),the(population));
 	//    show(p);
 	return; // todo:
-	int limit = 200;
-	string s = "select * from city where population<11300";
-	q = parseQuery(s, limit);
-	check(eq(q.keyword->name, "city"));
-	if (!checkStatement(q.filters[0]))
-		p("filterTree broken!\n");
-	else
-		query(q);
-	q.instances = all_instances(the(city));
-	NodeVector nv = filter(q, pattern(the(population), Equals, the(8022)));
-	p(nv.size());
+}
 
-	q.instances = all_instances(the(city));
-	nv = filter(q, pattern(the(population), Less, the(12300)));
-	p(nv.size());
+void testComparisonQuery() {
+	int limit = 10;
+	NodeVector nv;
+	Query q;
 
-	q.instances = all_instances(the(city));
+
+	//	q.instances = all_instances(the(city));// again??
+	q.instances = all_instances(the(city), true, defaultLookupLimit); // again??
+	p(q.instances.size());
+	check(q.instances.size() >= defaultLookupLimit);
+	defaultLookupLimit = 1000000;
+
+	q.instances = all_instances(the(city), true, defaultLookupLimit, false); // again??
+	//	p(q.instances);
+	check(contains(q.instances, get(669587)));
+	check(contains(q.instances, get(613424)));
+	check(contains(q.instances, get(589768)));
+	//	check(contains(q.instances,get(708772)));// limit !?
+
+	//	q.instances = all_instances(get(35329),true,defaultLookupLimit,false);// again??
+	//	check(contains(q.instances ,get(708772)));
+	//	show(get(708772));
+	//	check(contains(q.instances ,get(708772)));
+
+	//	q.instances = all_instances(the(city));
+
+	NV dummy;
+	dummy.push_back(get(669587));
+	q.instances = dummy;
+	q.instances.push_back(get(669587));
+	clearAlgorithmHash(true);
+
+	Statement* filter1 = pattern(the(population), Equals, a(1140));
+	q.semantic = true;
+	nv = filter(q, filter1);
+	p(nv.size());
+	check(nv.size() >= 1);
+
+	Statement* and_filter = andStatement(pattern(the(population), Less, the(1200)), pattern(the(population), More, the(1100)));
+	nv = filter(q, and_filter);
+	p(nv.size());
+	check(nv.size() > 0);
+
+
+	and_filter = andStatement( pattern(the(population), Less, the(1140)),pattern(the(population), More, the(1139)));
+	nv = filter(q, and_filter);
+	p(nv.size());
+	check(nv.size() >= 1);
+
+	and_filter = andStatement(pattern(the(population), More, the(1139)), pattern(the(population), Less, the(1140)));
+	nv = filter(q, and_filter);
+	p(nv.size());
+	check(nv.size() > 0);
+
+
+
+	nv = filter(q, pattern(the(population), Less, the(1200)));
+	p(nv.size());
+	check(nv.size() > 10);
+
+
 	nv = filter(q, pattern(the(population), Greater, the(11300)));
 	p(nv.size());
+	check(nv.size() > 10);
+
+
+
+
+}
+
+void testComparisonQueryString() {
+	Query q;
+	NV nv;
+	string s = "select * from city where population<11300";
+	q = parseQuery(s);
+	check(eq(q.keyword->name, "city"));
+	check(q.filters.size() == 1);
+	check(checkStatement(q.filters[0]));
+	//		query(q);
+	q.instances = all_instances(the(city)); // schummel !!
+	check(q.instances.size() >= q.lookuplimit);
+
+
 
 	string result = query2("city where population=3460");
 	ps(result);
@@ -923,6 +993,21 @@ void testQuery() {
 
 }
 
+void testSelectQuery() {
+	query2("select population from city limit 1000");
+	//	query2("select population from city where population=400914");//  limit 10 where population=400914
+
+
+	//		query2("select population,latitude from city");
+}
+
+void testQuery() {
+	//	testPropertyQuery();
+	testComparisonQuery();
+	//	testComparisonQueryString();
+	//	testSelectQuery();
+}
+
 void testFacets() {
 }
 
@@ -933,10 +1018,10 @@ void testReification() {
 	Statement* p = pattern(_(karsten), Attribute, _(cool));
 	Node* re = reify(p);
 	show(re);
-	check(_statement==109);
-//	show(get(_statement));
-//	check(get(_statement)->id==109);
-//	check(isA(re, get(_statement)));
+	check(_statement == 109);
+	//	show(get(_statement));
+	//	check(get(_statement)->id==109);
+	//	check(isA(re, get(_statement)));
 	//	check(isA(re,Pattern));
 	//	check(isA(re,_(pattern)));
 }
@@ -1156,10 +1241,10 @@ void tests() {
 
 
 	// shaky
+	testQuery();
 	testStringLogic2();
 	testPaths();
 	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
-	testQuery();
 	testFacets();
 	//	testDummyLogic();// too big
 	// OK
@@ -1180,9 +1265,10 @@ void tests() {
 }
 
 void testBrandNewStuff() {
-//	import("yago");
-//	tests();
-		testOpposite();
+	//	import("yago");
+	//	tests();
+	testQuery();
+	//		testOpposite();
 	//	ps("test brand new stuff");
 	//	parse("opposite of bad");
 	//	parse("all bug");

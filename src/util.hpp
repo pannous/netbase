@@ -49,6 +49,7 @@ extern void p(char* s);
 void p(Query& q);
 void p(Node* n);
 void p(Statement* n);
+void p(NodeVector& n);
 void p(string s);
 //char* next(char* data);
 string next(string data);

@@ -92,6 +92,8 @@ Node* On;
 
 Node* Equals;
 Node* Greater;
+Node* More;
+Node* Smaller;
 Node* Less; //smaller
 Node* Between;
 Node* Circa;
@@ -230,7 +232,9 @@ void initRelations() {
 
 	Equals = addRelation(_Equals, "=");
 	Greater = addRelation(_Greater, ">");
+	More=Greater;
 	Less = addRelation(_Less, "<"); //smaller
+	Smaller=Less;
 	Between = addRelation(_Between, "Between");
 	Circa = addRelation(_Circa, "Circa");
 	Much = addRelation(_Much, "much");

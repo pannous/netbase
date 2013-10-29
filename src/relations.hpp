@@ -95,6 +95,8 @@ extern Node* On;
 extern Node* Equals;
 extern Node* Greater;
 extern Node* Less; //smaller
+extern Node* More;
+extern Node* Smaller;
 extern Node* Between;
 extern Node* Circa;
 extern Node* Much;

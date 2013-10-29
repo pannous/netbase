@@ -443,7 +443,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	//	if(!debug)return true;
 	if (node == 0) {
 		badCount++;
-		if (debug)p("null node");
+		if (debug)printf("ø");// p("null node");
 		//		p(nodeId);
 		return false;
 	}
@@ -1155,7 +1155,7 @@ bool show(Node* n, bool showStatements) {//=true
 	//    else
 	//		printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%016llX)\n", n->id, n->name,text, img.data(),n);
-	printf("%d\t%s\t\t%s\t%s\n", n->id, n->name, text, img.data());
+	printf("%d\t%s\t\t%s\t%s\t%d statements\n", n->id, n->name, text, img.data(),n->statementCount);
 	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
@@ -1809,7 +1809,7 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation, bool show
 		show(node, showStatements);
 	}
 	if(!showRelation){
-	pf("++++++++++ Hits : %d +++++++++++++++++",size);
+	pf("++++++++++ Hits : %d +++++++++++++++++\n",size);
 	}else ps("+++++++++++++++++++++++++++++++++++");
 }
 //NodeVector match_all(string data){

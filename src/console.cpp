@@ -207,8 +207,10 @@ NodeVector parse(const char* data) {
 	}
 	if (contains(data, " limit"))
 		sscanf(data, "%s limit %d", &resultLimit, data);
-	if (contains(data, "limit"))
+	if (contains(data, "limit")){
 		sscanf(data, "limit %d %s", &resultLimit, data);
+		p(resultLimit);
+	}
 	if (eq(data, "load") || eq(data, ":l")) {
 		load(false);
 		return OK;
