@@ -184,7 +184,7 @@ string renderResults(Query& q) {
 				buffer << "    <" << kind << " name='" << f->name << "' field_id='" << f->id << "' missing='true'/>\n";
 				continue;
 			} else
-				buffer << "    <" << kind << " name=\"" << f->name << "\" field_id=\"" << f->id << "\" value_id='" << v->id << ">" << v->name << "</" << kind << ">\n";
+				buffer << "    <" << kind << " name=\"" << f->name << "\" field_id=\"" << f->id << "\" value_id='" << v->id << "'>" << v->name << "</" << kind << ">\n";
 		}
 		buffer << "</entity>\n";
 		//		buffer << "</tr>\n";
