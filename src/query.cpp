@@ -379,12 +379,15 @@ Query parseQuery(string s, int limit) {
 	if ((int) s.find("from") < 0)
 		s = string("select * from ") + s; // why (int) neccessary???
 	sscanf(s.c_str(), "select %s from %s where %[^\0]s", fields, type, match); //[^\n]
-	char* where = " where ";
-	char* match2 = (char*) strstr(s.c_str(), where); // remove test.funny->.funny do later!
+	char* match2 = (char*) strstr(s.c_str(), " where "); // remove test.funny->.funny do later!
 	if (match2) {
 		match2 += 7; // wegen 'where' !!!! bad style
 		p(match2);
+		match=match2;
 	}
+	p(fields);
+	p(type);
+	p(match);
 	q.keyword = getThe(type);
 	//    q.keywords=nodeVector(splitString(type, ","));
 	//    if(q.keywords.size()>0)
