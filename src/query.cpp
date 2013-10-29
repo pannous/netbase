@@ -143,7 +143,8 @@ string renderResults(Query& q) {
 	buffer << "</lst>\n";
 	buffer << "</lst>\n";
 
-	buffer << "<table name=\"response\" numFound=" << q.instances.size() << " start=" << q.start << " rows=" << q.hitsPerPage << ">\n";
+//	buffer << "<table name=\"response\" numFound=" << q.instances.size() << " start=" << q.start << " rows=" << q.hitsPerPage << ">\n";
+	buffer << "<results numFound='" << q.instances.size() << "' start='" << q.start << "' rows='" << q.hitsPerPage << "'>\n";
 	//    buffer << "<result name=\"response\" numFound=\"559\" start=\"0\">\n";
 
 	// Field header
@@ -181,22 +182,23 @@ string renderResults(Query& q) {
 
 			string kind = "field"; // "td"; // "str"
 			if (!checkNode(v)) {
-				buffer << "    <" << kind << " name='" << f->name << "' field_id='" << f->id << "' missing='true'/>\n";
+				buffer << "    <" << kind << " name='" << f->name << "' missing='true'/>\n";
 				continue;
 			} else
-				buffer << "    <" << kind << " name=\"" << f->name << "\" field_id=\"" << f->id << "\" value_id='" << v->id << "'>" << v->name << "</" << kind << ">\n";
+				buffer << "    <" << kind << " name=\"" << f->name << "\" value_id='" << v->id << "'>" << v->name << "</" << kind << ">\n";
 		}
 		buffer << "</entity>\n";
 		//		buffer << "</tr>\n";
 		//    buffer << "</doc>\n";
 	}
 	//	buffer << "</table>\n";
-	buffer << "</result>\n";
+	buffer << "</results>\n";
 
 	// renderFacets
 	//	buffer << "<lst name=\"facet_counts\"/>\n";
 	//    buffer << "<lst name=\"facet_queries\"/>\n";
 	//	buffer << "<lst name=\"facet_fields\"/>\n";
+	buffer << "<facets>\n";
 	for (int i = 0; i < q.facets.size(); i++) {
 		Facet& f = *q.facets[i];
 		if (f.field == Synonym)continue;
@@ -223,7 +225,7 @@ string renderResults(Query& q) {
 		}
 		buffer << "</facet>\n";
 	}
-	buffer << "</lst>\n";
+	buffer << "</facets>\n";
 	buffer << "</response>\n";
 	return buffer.str();
 }
