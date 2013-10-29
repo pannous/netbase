@@ -581,7 +581,6 @@ void testImportContacts() {
 }
 
 void testImportExport() {
-	testImportContacts();
 	//    show(word(female_firstname));
 	//    check(isA(word(James), _(male_name)));
 	//    check(query("all firstnames starting with 'a'").size() > 0);
@@ -648,9 +647,10 @@ void testImportExport() {
 
 	check(query("all firstnames", 10).size() > 5);
 	check(query("all names", 10).size() > 5);
+
 	//	check(isA(a(Zilla), _(name)));
 	clearAlgorithmHash();
-
+	testImportContacts();
 }
 
 void testImages() {
@@ -908,28 +908,24 @@ void testComparisonQuery() {
 	nv = filter(q, pattern(the(population), Less, the(1200)));
 	p(nv.size());
 	check(nv.size() > 10);
+	check(atoi(getProperty(nv[0], "population")->name) < 1200);
 
 
-	nv = filter(q, pattern(the(population), Greater, the(11300)));
+	nv = filter(q, pattern(the(population), Greater, the(1300)));
 	p(nv.size());
 	check(nv.size() > 10);
+	check(atoi(getProperty(nv[0], "population")->name) > 1300);
 
-	//	defaultLookupLimit = 1000000;
-	//	q.instances = all_instances(the(city), true, defaultLookupLimit, false); // again??
+	defaultLookupLimit = 1000000;
+	q.instances = all_instances(the(city), true, defaultLookupLimit, false); // again??
+	q.limit = 10;
 	//	check(q.instances.size() >= defaultLookupLimit);
-
-	//	p(q.instances);
-	check(contains(q.instances, get(669587)));
-	check(contains(q.instances, get(613424)));
-	check(contains(q.instances, get(589768)));
-	//	check(contains(q.instances,get(708772)));// limit !?
+	p(q.instances.size());
 
 	//	q.instances = all_instances(get(35329),true,defaultLookupLimit,false);// again??
 	//	check(contains(q.instances ,get(708772)));
 	//	show(get(708772));
 	//	check(contains(q.instances ,get(708772)));
-
-	//	q.instances = all_instances(the(city));
 
 
 	//	Statement* filter1 = pattern(the(population), Equals, a(1140));
@@ -938,27 +934,28 @@ void testComparisonQuery() {
 	nv = filter(q, filter1);
 	p(nv.size());
 	check(nv.size() >= 1);
+	check(atoi(getProperty(nv[0], "population")->name) == 1140);
+	p(nv[0]);
 
-	Statement* and_filter = andStatement(pattern(the(population), Less, the(1200)), pattern(the(population), More, the(1100)));
+
+	q.limit=1000;
+	Statement* and_filter = andStatement(pattern(the(population), Less, the(1141)), pattern(the(population), More, the(1139)));
+	nv = filter(q, and_filter);
+	p(nv.size());
+	check(nv.size() >= 1);
+
+
+	and_filter = andStatement(pattern(the(population), Less, the(1200)), pattern(the(population), More, the(1100)));
 	nv = filter(q, and_filter);
 	p(nv.size());
 	check(nv.size() > 0);
 
-
-	and_filter = andStatement(pattern(the(population), Less, the(1141)), pattern(the(population), More, the(1139)));
-	nv = filter(q, and_filter);
-	p(nv.size());
-	check(nv.size() >= 1);
 
 	and_filter = andStatement(pattern(the(population), More, the(1139)), pattern(the(population), Less, the(1141)));
 	nv = filter(q, and_filter);
 	p(nv.size());
 	check(nv.size() > 0);
 
-}
-
-Node* getProperty(Node* n, char* s) {
-	return findStatement(n, getAbstract(s), Any)->Object;
 }
 
 void testComparisonQueryString() {
@@ -985,7 +982,7 @@ void testComparisonQueryString2() {
 	check(eq(countrycode->name, "de"));
 }
 
-void testQueryAnd(){
+void testQueryAnd() {
 	Query q = parseQuery("city where countrycode=\"us\" and population<2000", 100);
 	NV nv = query(q);
 	check(nv.size() > 0);
@@ -993,9 +990,25 @@ void testQueryAnd(){
 	N population = getProperty(nv[0], "population");
 	p(nv[0]);
 	check(eq(countrycode->name, "us"));
-	check(atoi(population->name)>0 && atoi(population->name) < 2000);
-
+	check(atoi(population->name) > 0 && atoi(population->name) < 2000);
 }
+
+
+void testQueryMore() {
+	Query q = parseQuery("city where population>10000000", 100);
+	S filterTree=q.filters[0];
+	N node=get(657649);
+	N ok=has(node, filterTree, q.recursion, q.semantic, false, q.predicatesemantic);
+	p(ok);
+	check(!ok);
+	q.limit=1;
+	NV nv = query(q);
+	check(nv.size() > 0);
+	N population = getProperty(nv[0], "population");
+	p(nv[0]);
+	check(atoi(population->name) > 0 && atoi(population->name) > 10000000);
+}
+
 
 void testComparisonQueryStringLess() {
 	Query q;
@@ -1010,7 +1023,7 @@ void testComparisonQueryStringLess() {
 	p(nv[0]);
 	N population = getProperty(nv[0], "population");
 	p(population);
-	check(atoi(population->name)>0 && atoi(population->name) < 1100);
+	check(atoi(population->name) > 0 && atoi(population->name) < 1100);
 }
 
 void testSelectQuery() {
@@ -1026,13 +1039,14 @@ void testFacets() {
 }
 
 void testQuery() {
+	testQueryMore();
+	testComparisonQuery();
 	testQueryAnd();
-//	testComparisonQueryString2();
-//	testComparisonQueryStringLess();
-	//	testPropertyQuery();
-	//	testComparisonQuery();
-	//	testSelectQuery();
-//	testFacets();
+	testComparisonQueryString2();
+	testComparisonQueryStringLess();
+	testPropertyQuery();
+	testSelectQuery();
+	testFacets();
 }
 
 
@@ -1281,9 +1295,9 @@ void tests() {
 	testOutput();
 	testScanf();
 	testYago();
-	testImportExport();
 	testOpposite();
 	testInstancesAtEnd();
+	testImportExport();
 	p("ALL TESTS SUCCESSFUL!");
 	//    testLoop();
 }
@@ -1291,8 +1305,9 @@ void tests() {
 void testBrandNewStuff() {
 	//	import("yago");
 	//		tests();
-	testQuery();
-//	testFacets();
+	testQueryMore();
+//	testQuery();
+	//	testFacets();
 	//		testOpposite();
 	//	ps("test brand new stuff");
 	//	parse("opposite of bad");

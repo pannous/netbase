@@ -1487,7 +1487,6 @@ Node* value(const char* aname, double v, const char* unit) {
 	} else
 		n->kind = number;
 	n->value.number = v;
-
 	return n;
 }
 
@@ -1531,24 +1530,23 @@ Node* isEqual(Node* subject, Node* object) {
 	//    if (isA4(subject, object))return subject;
 	//    if(subject->kind==object->kind)
 	if (subject->value.number == object->value.number)return subject;
-	if (atof(subject->name) > 0 && atof(subject->name) > atof(object->name))return subject;
+	if (atof(subject->name) > 0 && atof(subject->name) == atof(object->name))return subject;
 
 	return 0;
 }
 
 Node* isGreater(Node* subject, Node* object) {
 	//            if(subject->kind!=object->kind)return 0;
-	if (subject->value.number > object->value.number)return subject;
+	if (subject->kind!=0 && subject->kind==object->kind && subject->value.number > object->value.number)return subject;
 	int v = atof(subject->name);
 	int w = atof(object->name);
 	if (v && w && v > w)return subject;
-
 	return 0;
 }
 
 Node* isLess(Node* subject, Node* object) {
 	//            if(subject->kind!=object->kind)return 0;
-	if (subject->value.number < object->value.number)return subject;
+	if (subject->kind==object->kind && subject->value.number < object->value.number)return subject;
 	int v = atof(subject->name);
 	int w = atof(object->name);
 	if (v && w && v < w)return subject;
@@ -1974,6 +1972,10 @@ Node* getThe(Node* abstract, Node* type) {
 		if (subjectMatchReverse && predicateMatchReverse && typeMatchReverse)return s->Subject;
 	}
 	return 0;
+}
+
+Node* getProperty(Node* n, char* s) {
+	return findStatement(n, getAbstract(s), Any)->Object;
 }
 
 bool isA(Node* fro, Node* to) {

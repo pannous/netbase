@@ -204,13 +204,13 @@ public:
 
     Query() {
         depth = maxRecursions;
+		recursion=0;
         start = 0;
         page = 0;
         hitsPerPage = 10; //rows=10;
         limit = 100; // was mit facetten???
         lookuplimit = 10000;// defaultLookupLimit;// INF!
-        maxFacets=10;
-		recursion=0;
+        maxFacets=20;
 //		recursions=0;
         autoFacet = true;
         semantic = false;
@@ -469,6 +469,8 @@ Node* reify(Statement* s);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);
 //bool checkStatement(Statement *s);
 void checkRootContext();
+
+Node* getProperty(Node* n, char* s);
 Node* findRelation(Node* from, Node* to);
 void dissectParent(Node* subject);
 void dissectWord(Node* subject);
