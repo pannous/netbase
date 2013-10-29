@@ -1264,12 +1264,12 @@ void tests() {
 
 
 
+	testQuery();
 	testFacets();
 	// shaky
 	testStringLogic2();
 	testPaths();
 	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
-	testQuery();
 	//	testDummyLogic();// too big
 	// OK
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap

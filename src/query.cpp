@@ -395,7 +395,7 @@ Query parseQuery(string s, int limit) {
 	q.fields = nodeVector(splitString(fields, ","));
 	vector<char*> matches = splitString(replace_all(match, " and ", ","), ",");
 	for (int i = 0; i < matches.size(); i++) {
-		string f = matches[i];4
+		string f = matches[i];
 		p(f);
 		Statement *s = parseFilter(f);
 		p(s);
