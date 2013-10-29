@@ -226,6 +226,7 @@ string renderResults(Query& q) {
 		while (ti-- != sorted.begin() && max++<q.maxFacets) {
 			Node *slot = ti->second;
 			int count = ti->first; // same as (*it).first   (the key value)
+			if(count>1)// todo : switch
 			buffer << "   <int name=\"" << slot->name << "\">" << count << "</int>\n";
 		}
 		buffer << "</facet>\n";
