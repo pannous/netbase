@@ -375,10 +375,10 @@ unsigned int hash(const char *str); //unsigned
 //unsigned long hash(const char *str); //unsigned
 //Node* getThe(const char* word, Node* type = 0,bool dissect=true);
 //Node* getThe(string thing, Node* type=0,bool dissect=true);
+Node* getThe(Node* abstract, Node* type=0);
 Node* getThe(const char* word, Node* type = 0,bool dissect=false);
 Node* getThe(string thing, Node* type=0,bool dissect=false);
-Node* getThe(Node* abstract, Node* type=0);
-Node* getNew(const char* thing, Node* type, bool dissect);
+Node* getNew(const char* thing, Node* type=0, bool dissect=false);
 Node* getClass(const char* word);// ?  apple vs Apple ! same as getThe NOW
 //Node* getClass(string word);
 void showStatement(Statement* s);

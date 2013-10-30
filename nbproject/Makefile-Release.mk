@@ -35,19 +35,18 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/1881278108/init.o \
-	${OBJECTDIR}/_ext/1881278108/webserver.o \
 	${OBJECTDIR}/src/console.o \
 	${OBJECTDIR}/src/export.o \
 	${OBJECTDIR}/src/import.o \
-	${OBJECTDIR}/src/jni/NetbaseJNI.o \
+	${OBJECTDIR}/src/init.o \
 	${OBJECTDIR}/src/md5.o \
 	${OBJECTDIR}/src/netbase.o \
 	${OBJECTDIR}/src/query.o \
 	${OBJECTDIR}/src/reflection.o \
 	${OBJECTDIR}/src/relations.o \
 	${OBJECTDIR}/src/tests.o \
-	${OBJECTDIR}/src/util.o
+	${OBJECTDIR}/src/util.o \
+	${OBJECTDIR}/src/webserver.o
 
 
 # C Compiler Flags
@@ -74,70 +73,53 @@ ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/netbase: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
 	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/netbase ${OBJECTFILES} ${LDLIBSOPTIONS}
 
-${OBJECTDIR}/_ext/1881278108/init.o: /Users/me/dev/cpp/netbase/src/init.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1881278108
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1881278108/init.o /Users/me/dev/cpp/netbase/src/init.cpp
-
-${OBJECTDIR}/_ext/1881278108/webserver.o: /Users/me/dev/cpp/netbase/src/webserver.cpp 
-	${MKDIR} -p ${OBJECTDIR}/_ext/1881278108
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/1881278108/webserver.o /Users/me/dev/cpp/netbase/src/webserver.cpp
-
 ${OBJECTDIR}/src/console.o: src/console.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/console.o src/console.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/console.o src/console.cpp
 
 ${OBJECTDIR}/src/export.o: src/export.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/export.o src/export.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/export.o src/export.cpp
 
 ${OBJECTDIR}/src/import.o: src/import.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/import.o src/import.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/import.o src/import.cpp
 
-${OBJECTDIR}/src/jni/NetbaseJNI.o: src/jni/NetbaseJNI.cpp 
-	${MKDIR} -p ${OBJECTDIR}/src/jni
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/jni/NetbaseJNI.o src/jni/NetbaseJNI.cpp
+${OBJECTDIR}/src/init.o: src/init.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/init.o src/init.cpp
 
 ${OBJECTDIR}/src/md5.o: src/md5.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/md5.o src/md5.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/md5.o src/md5.cpp
 
 ${OBJECTDIR}/src/netbase.o: src/netbase.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/netbase.o src/netbase.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/netbase.o src/netbase.cpp
 
 ${OBJECTDIR}/src/query.o: src/query.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/query.o src/query.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/query.o src/query.cpp
 
 ${OBJECTDIR}/src/reflection.o: src/reflection.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reflection.o src/reflection.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/reflection.o src/reflection.cpp
 
 ${OBJECTDIR}/src/relations.o: src/relations.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/relations.o src/relations.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/relations.o src/relations.cpp
 
 ${OBJECTDIR}/src/tests.o: src/tests.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tests.o src/tests.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/tests.o src/tests.cpp
 
 ${OBJECTDIR}/src/util.o: src/util.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/util.o src/util.cpp
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/util.o src/util.cpp
+
+${OBJECTDIR}/src/webserver.o: src/webserver.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/webserver.o src/webserver.cpp
 
 # Subprojects
 .build-subprojects:
@@ -149,8 +131,3 @@ ${OBJECTDIR}/src/util.o: src/util.cpp
 
 # Subprojects
 .clean-subprojects:
-
-# Enable dependency checking
-.dep.inc: .depcheck-impl
-
-include .dep.inc

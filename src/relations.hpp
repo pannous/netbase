@@ -43,6 +43,10 @@ extern Node* Domain;
 extern Node* Derived;
 extern Node* UsageContext;
 extern Node* PERTAINYM;
+
+extern Node* Cause;
+extern Node* Substance;
+
 // Types
 extern Node* Internal;
 extern Node* _Node;
@@ -53,6 +57,7 @@ extern Node* Class;
 extern Node* Object;
 extern Node* Relation;
 extern Node* Reification;
+extern Node* Property;
 extern Node* Pattern;// temporary
 
 extern Node* Any;
@@ -73,8 +78,9 @@ extern Node* Integer;
 extern Node* Range;
 extern Node* Unit;
 
-extern Node* Cause;
-extern Node* Substance;
+extern Node* True;
+extern Node* False;
+
 
 extern Node* Translation;
 extern Node* Plural;

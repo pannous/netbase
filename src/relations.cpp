@@ -50,6 +50,7 @@ Node* Class;
 Node* Object;
 Node* Relation;
 Node* Reification;
+Node* Property;
 Node* Pattern; // temporary
 
 Node* Any;
@@ -73,6 +74,9 @@ Node* Float;
 Node* Integer;
 Node* Range;
 Node* Unit;
+
+Node* True;
+Node* False;
 
 Node* Translation;
 Node* Plural;
@@ -124,6 +128,7 @@ void initRelations() {
 	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "attribute"); // tag
+	Property=Attribute;
 	bool is_transitive=true;
 	Cause = addRelation(_cause, "cause",is_transitive); //
 	Derived =addRelation(_derived, "derived"); //
@@ -249,6 +254,9 @@ void initRelations() {
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
 	Range = addRelation(_range, "Range");
+
+	True=add("true");
+	False=add("false");// todo
 }
 
 Node* invert(Node* relation) {

@@ -124,20 +124,24 @@ Ahash* insertAbstractHash(Node* a) {
 	return insertAbstractHash(wordhash(a->name), a);
 }
 
-Ahash* insertAbstractHash(int pos, Node* a) {
-	Ahash* ah = &abstracts[pos];
+Ahash* insertAbstractHash(int position, Node* a) {
+	Ahash* ah = &abstracts[position];
 	if (!checkHash(ah))
 		return 0;
 	//    if(pos==hash("city"))
 	//		p(a->name);
 	int i = 0;
 	while (ah->next) {
-		if (i++ > 100 && a->name[1] != 0) {// allow 65536 One letter nodes
+		if (i++ > 1000 && a->name[1] != 0) {// allow 65536 One letter nodes
 			p("insertAbstractHash FULL!");
 			show(a);
 			break;
 		}
 
+                if(ah->next==ah){
+                    p("insertAbstractHash");
+                    break;
+                }
 		if (ah->abstract == a || eq(ah->abstract->name, a->name, true))
 			return ah; //schon da
 		else
@@ -501,6 +505,12 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	}
 #endif
 	return true;
+}
+
+Node* add(const char* key,const char* nodeName){
+	N node=add(nodeName);
+	insertAbstractHash(wordhash(key), node);
+	return node;
 }
 
 Node* add(const char* nodeName, int kind, int contextId) {//=node =current_context
@@ -980,9 +990,9 @@ void dissectWord(Node* subject) {
 
 bool abstractsLoaded = true;
 
-Node* getNew(const char* thing, Node* type, bool dissect){
-	if(type==0)type=Object;
-	N n= add(thing, type->id);
+Node* getNew(const char* thing, Node* type, bool dissect) {
+	if (type == 0)type = Object;
+	N n = add(thing, type->id);
 	return n;
 }
 
@@ -990,13 +1000,31 @@ Node* getThe(string thing, Node* type, bool dissect) {
 	return getThe(thing.data(), type, dissect);
 }
 
+Node* getRelation(const char* thing) {
+	if (thing[0]=='#')thing++;
+	if (eq(thing, "is"))	return Type;
+	if (eq(thing, "has"))	return Member;
+	if (eq(thing, "of"))	return Owner;
+	if (eq(thing, "by"))	return Owner; // creator
+	if (eq(thing, "instance"))	return Instance;
+	if (eq(thing, "type"))		return Type;
+	if (eq(thing, "property"))	return Attribute; // Property;
+	if (eq(thing, "true"))	return True;
+	if (eq(thing, "false"))	return False;
+	if (eq(thing, "label"))	return Label;
+	if (eq(thing, "range"))	return Range;
+	if (eq(thing, "domain"))return Domain;
+	//	if (eq(thing, "in"))return Loc;
+	return 0;
+}
+
 Node* getThe(const char* thing, Node* type, bool dissect) {
-	if (thing == 0) {
+	if (thing == 0||thing[0]==0) {
 		badCount++;
 		return 0;
 	}
-	if (eq(thing, "of"))// Todo: all relations
-		return Owner;
+	if (getRelation(thing))// not here!
+		return getRelation(thing);
 
 
 	Node* abstract = getAbstract(thing);
@@ -1537,7 +1565,7 @@ Node* isEqual(Node* subject, Node* object) {
 
 Node* isGreater(Node* subject, Node* object) {
 	//            if(subject->kind!=object->kind)return 0;
-	if (subject->kind!=0 && subject->kind==object->kind && subject->value.number > object->value.number)return subject;
+	if (subject->kind != 0 && subject->kind == object->kind && subject->value.number > object->value.number)return subject;
 	int v = atof(subject->name);
 	int w = atof(object->name);
 	if (v && w && v > w)return subject;
@@ -1546,7 +1574,7 @@ Node* isGreater(Node* subject, Node* object) {
 
 Node* isLess(Node* subject, Node* object) {
 	//            if(subject->kind!=object->kind)return 0;
-	if (subject->kind==object->kind && subject->value.number < object->value.number)return subject;
+	if (subject->kind == object->kind && subject->value.number < object->value.number)return subject;
 	int v = atof(subject->name);
 	int w = atof(object->name);
 	if (v && w && v < w)return subject;
@@ -2061,7 +2089,7 @@ int main(int argc, char *argv[]) {
 	}
 	system(string("cd " + path).c_str());
 	data_path = path + "/data/";
-	import_path = path + "/import/";
+	import_path = path + "import/";
 
 	//	path=sprintf("%s/data",path);
 	if (checkParams(argc, argv, "quiet"))

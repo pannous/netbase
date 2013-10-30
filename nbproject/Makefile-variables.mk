@@ -22,14 +22,6 @@ CND_ARTIFACT_PATH_Release=dist/Release/GNU-MacOSX/netbase
 CND_PACKAGE_DIR_Release=dist/Release/GNU-MacOSX/package
 CND_PACKAGE_NAME_Release=netbase.tar
 CND_PACKAGE_PATH_Release=dist/Release/GNU-MacOSX/package/netbase.tar
-# Test configuration
-CND_PLATFORM_Test=GNU-MacOSX
-CND_ARTIFACT_DIR_Test=
-CND_ARTIFACT_NAME_Test=netbase
-CND_ARTIFACT_PATH_Test=netbase
-CND_PACKAGE_DIR_Test=dist/Test/GNU-MacOSX/package
-CND_PACKAGE_NAME_Test=netbase.tar
-CND_PACKAGE_PATH_Test=dist/Test/GNU-MacOSX/package/netbase.tar
 # Server configuration
 CND_PLATFORM_Server=GNU-MacOSX
 CND_ARTIFACT_DIR_Server=

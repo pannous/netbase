@@ -23,26 +23,13 @@
                     <type>1</type>
                 </confElem>
                 <confElem>
-                    <name>Test</name>
-                    <type>1</type>
-                </confElem>
-                <confElem>
                     <name>Server</name>
                     <type>1</type>
                 </confElem>
             </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
-        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
-            <word>Abkürzung</word>
-            <word>csv</word>
-            <word>gif</word>
-            <word>jpg</word>
-            <word>netbase</word>
-            <word>tsv</word>
-            <word>wiki</word>
-            <word>wordnet</word>
-            <word>xml</word>
-            <word>yago</word>
-        </spellchecker-wordlist>
     </configuration>
 </project>

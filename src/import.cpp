@@ -21,7 +21,11 @@ char* statements_file = "statements.txt";
 char* images_file = "images.txt";
 
 FILE *open_file(const char* file) {
-	if (!contains(file, "/"))file = (import_path + file).data(); // concat(import_path.data(), file);
+	if(import_path.length()==0)
+		import_path="import/";
+	p(import_path);
+	if (!startsWith(file, "/"))
+		file = (import_path + file).data(); // concat(import_path.data(), file);
 	printf("Opening File %s\n", (file));
 	FILE *infile;
 	if ((infile = fopen((file), "r")) == NULL) {
@@ -40,7 +44,7 @@ void norm(char* title) {
 	}
 }
 
-bool lowMemory() {
+bool checkLowMemory() {
 	size_t currentSize = getCurrentRSS();
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
@@ -86,7 +90,7 @@ int norm_wordnet_id(int synsetid) {
 void load_wordnet_synset_map() {
 	if (wordnet_synset_map.size() > 0)return;
 	char line[1000];
-	FILE *infile = open_file("import/wordnet_synset_map.txt");
+	FILE *infile = open_file("wordnet_synset_map.txt");
 	int s, id;
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		fixNewline(line);
@@ -703,7 +707,11 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		// todo more generally : don't dissect special names ...
 
 
-		subject = getNew(values[nameRowNr], null, dissect);
+		//		subject = getNew(values[nameRowNr], null, dissect);
+		subject = getThe(values[nameRowNr], null, dissect);
+		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
+		// 2 objects, 4 relations, 1 name
+
 		if (!checkNode(subject))continue;
 		if (type && subject->kind != type->id) {
 			p("Found one with different type");
@@ -726,7 +734,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			//			showStatement(s);
 		}
 
-		if (lowMemory()) {
+		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
@@ -745,7 +753,7 @@ void importList(const char* file, const char* type) {
 	FILE *infile = open_file(file);
 	while (fgets(line, sizeof (line), infile) != NULL) {
 		if (++linecount % 10000 == 0)printf("%d\n", linecount);
-		if (linecount % 10000 == 0 && lowMemory())break;
+		if (linecount % 10000 == 0 && checkLowMemory())break;
 		fixNewline(line);
 		object = getThe(line);
 		if (!object || object->id > maxNodes) {
@@ -805,6 +813,17 @@ const char *fixYagoName(char *key) {
 	}
 	//	if(hasCamel(key)) // NOO: McBain
 	//		return deCamel(key).data();
+	return key;
+}
+
+const char *fixFreebaseName(char *key) {
+	key = (char *) fixYagoName(key);
+	int len = strlen(key);
+	for (int i = len - 1; i > 0; --i)
+		if (key[i] == '.')
+			return &key[i + 1];
+		else if (key[i] == '#')
+			return &key[i + 1];
 	return key;
 }
 
@@ -942,7 +961,7 @@ bool importYago(const char* file) {
 	while (fgets(line, 1000, infile) != NULL) {
 		fixNewline(line);
 		if (linecount % 10000 == 0)
-			if (lowMemory()) {//MEMORY
+			if (checkLowMemory()) {//MEMORY
 				printf("MEMORY safety boarder reached\n");
 				return 0; //exit(0);// 4GB max
 			}
@@ -987,7 +1006,7 @@ bool importYago(const char* file) {
 		//		else
 		s = addStatement(subject, predicate, object, false); // todo: id
 
-		if (lowMemory()) {
+		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
@@ -995,6 +1014,83 @@ bool importYago(const char* file) {
 	}
 	fclose(infile); /* Close the file */
 	p("import facts ok");
+	return true;
+}
+
+
+map<string,Node*> freebaseKeys;
+//map<const char*,Node*> freebaseKeys;
+bool importFreebaseLabels() {
+	Node* subject;
+	Node* predicate;
+	Node* object;
+	char line[1000];
+	char* label = (char*) malloc(100);
+	char* key = (char*) malloc(100);
+	char* test = (char*) malloc(100);
+	FILE *infile = open_file("freebase.labels.en.txt");
+	int linecount = 0;
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0) printf("%d\n", linecount);
+		sscanf(line, "%s\t%s\t%[^\t]s\t.", key, test, label);
+		if(eq("<m.0101l_7>",key))
+			p(line);
+		if(!startsWith(key,"<m."))continue;
+		if(!startsWith(test,"<#label"))continue;
+		if(strlen(label)<6)continue;
+		key=key+3;// <m.
+		label++;// "..."@en
+		key[strlen(key)-1]=0;
+		label[strlen(label)-4]=0;
+		N n=getNew(label);
+		if(n)
+		freebaseKeys[key]=n;
+
+//		add(key,label);
+	}
+	fclose(infile); /* Close the file */
+	p("import Freebase labels ok");
+}
+
+Node* getFreebaseEntity(char* name) {
+	if(startsWith(name,"<m."))
+		return freebaseKeys[fixFreebaseName(name)];
+	const char* fixed = fixFreebaseName(name);
+	//dissectWord(abstract);
+	return getThe(fixed);
+}
+
+bool importFreebase() {
+	importFreebaseLabels();
+	Node* subject;
+	Node* predicate;
+	Node* object;
+	char line[1000];
+	char* objectName = (char*) malloc(100);
+	char* predicateName = (char*) malloc(100);
+	char* subjectName = (char*) malloc(100);
+	FILE *infile = open_file("freebase.data.txt");
+	int linecount = 0;
+	while (fgets(line, sizeof (line), infile) != NULL) {
+		if (++linecount % 10000 == 0) {
+			printf("%d\n", linecount);
+			if (checkLowMemory()) {
+				printf("Quitting import : id > maxNodes\n");
+				break;
+			}
+		}
+		// printf(line);
+		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);
+		subject = getFreebaseEntity(subjectName); //
+		object = getFreebaseEntity(objectName);
+		predicate = getFreebaseEntity(predicateName);
+		Statement* s = addStatement(subject, predicate, object, false); // todo: id
+
+//		showStatement(s);
+	}
+	fclose(infile); /* Close the file */
+	p("import Freebase ok");
+	freebaseKeys.clear();
 	return true;
 }
 
@@ -1039,7 +1135,7 @@ bool importFacts(const char* file, const char* predicateName = "population") {
 			s = addStatement(subject, Member, object, false); // todo: id
 		else
 			s = addStatement(subject, predicate, object, false); // todo: id
-		if (lowMemory()) {
+		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
@@ -1239,6 +1335,7 @@ void importStatements() {
 
 void importWordnet() {
 	load_wordnet_synset_map();
+//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
 	importSenses();
 	getContext(wordnet)->nodeCount = synonyms; //200000+117659;//WTH!
@@ -1273,8 +1370,9 @@ void importAllYago() {
 		return;
 	}
 	load_wordnet_synset_map();
-	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoFacts.tsv");
+	check(hasWord("Tom_Hartley"));
+	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoGeonamesEntityIds.tsv");
 	import("yago", "yagoStatistics.tsv");
@@ -1314,7 +1412,8 @@ void importAll() {
 	importWordnet();
 	importNames();
 	importGeoDB();
-	importAllYago();
+	//	importAllYago();
+	importFreebase();
 	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
 	//		p("image import done before ...");
 	//	else
@@ -1337,6 +1436,8 @@ void import(const char* type, const char* filename) {
 		importCsv(filename);
 	} else if (eq(type, "wordnet")) {
 		importWordnet();
+	} else if (eq(type, "freebase")) {
+		importFreebase();
 	} else if (eq(type, "names")) {
 		importNames();
 	} else if (eq(type, "images")) {

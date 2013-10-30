@@ -1278,6 +1278,8 @@ void tests() {
 
 
 
+	checkWordnet();
+	import("freebase");
 	testQuery();
 	testFacets();
 	// shaky
@@ -1303,9 +1305,11 @@ void tests() {
 }
 
 void testBrandNewStuff() {
-	//	import("yago");
+	checkWordnet();
+	import("freebase");
+//		import("yago");
 	//		tests();
-	testQueryMore();
+//	testQueryMore();
 //	testQuery();
 	//	testFacets();
 	//		testOpposite();
