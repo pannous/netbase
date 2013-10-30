@@ -16,6 +16,7 @@
         </gdb_interceptlist>
         <gdb_options>
           <DebugOptions>
+            <option name="gdb_detach_on_fork" value="off"/>
           </DebugOptions>
         </gdb_options>
         <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>

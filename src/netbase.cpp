@@ -126,22 +126,21 @@ Ahash* insertAbstractHash(Node* a) {
 
 Ahash* insertAbstractHash(int position, Node* a) {
 	Ahash* ah = &abstracts[position];
-	if (!checkHash(ah))
+	if (!checkHash(ah) || !checkNode(a) || a->name[0] == 0)
 		return 0;
 	//    if(pos==hash("city"))
 	//		p(a->name);
 	int i = 0;
 	while (ah->next) {
-		if (i++ > 1000 && a->name[1] != 0) {// allow 65536 One letter nodes
+		if (i++ > 1000) {// allow 65536 One letter nodes
 			p("insertAbstractHash FULL!");
 			show(a);
 			break;
 		}
-
-                if(ah->next==ah){
-                    p("insertAbstractHash");
-                    break;
-                }
+		if (ah->next == ah) {
+			p("insertAbstractHash");
+			break;
+		}
 		if (ah->abstract == a || eq(ah->abstract->name, a->name, true))
 			return ah; //schon da
 		else
@@ -507,8 +506,8 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	return true;
 }
 
-Node* add(const char* key,const char* nodeName){
-	N node=add(nodeName);
+Node* add(const char* key, const char* nodeName) {
+	N node = add(nodeName);
 	insertAbstractHash(wordhash(key), node);
 	return node;
 }
@@ -1001,25 +1000,25 @@ Node* getThe(string thing, Node* type, bool dissect) {
 }
 
 Node* getRelation(const char* thing) {
-	if (thing[0]=='#')thing++;
-	if (eq(thing, "is"))	return Type;
-	if (eq(thing, "has"))	return Member;
-	if (eq(thing, "of"))	return Owner;
-	if (eq(thing, "by"))	return Owner; // creator
-	if (eq(thing, "instance"))	return Instance;
-	if (eq(thing, "type"))		return Type;
-	if (eq(thing, "property"))	return Attribute; // Property;
-	if (eq(thing, "true"))	return True;
-	if (eq(thing, "false"))	return False;
-	if (eq(thing, "label"))	return Label;
-	if (eq(thing, "range"))	return Range;
+	if (thing[0] == '#')thing++;
+	if (eq(thing, "is")) return Type;
+	if (eq(thing, "has")) return Member;
+	if (eq(thing, "of")) return Owner;
+	if (eq(thing, "by")) return Owner; // creator
+	if (eq(thing, "instance")) return Instance;
+	if (eq(thing, "type")) return Type;
+	if (eq(thing, "property")) return Attribute; // Property;
+	if (eq(thing, "true")) return True;
+	if (eq(thing, "false")) return False;
+	if (eq(thing, "label")) return Label;
+	if (eq(thing, "range")) return Range;
 	if (eq(thing, "domain"))return Domain;
 	//	if (eq(thing, "in"))return Loc;
 	return 0;
 }
 
 Node* getThe(const char* thing, Node* type, bool dissect) {
-	if (thing == 0||thing[0]==0) {
+	if (thing == 0 || thing[0] == 0) {
 		badCount++;
 		return 0;
 	}
