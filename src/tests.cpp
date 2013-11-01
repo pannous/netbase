@@ -26,6 +26,11 @@ void checkWordnet() {
 	else importWordnet();
 }
 
+void checkGeo(){
+	if (hasWord("Canillo")) return;
+	else importGeoDB();
+}
+
 bool assert(bool test, string what) { // bool nix gut
 	printf("----\n");
 	printf(what.c_str());
@@ -1031,7 +1036,6 @@ void testFacets() {
 }
 
 void testQuery() {
-	testQueryMore();
 	testComparisonQuery();
 	testQueryAnd();
 	testComparisonQueryString2();
@@ -1039,6 +1043,7 @@ void testQuery() {
 	testPropertyQuery();
 	testSelectQuery();
 	testFacets();
+//	testQueryMore();
 }
 
 //#define sn showNode
@@ -1268,7 +1273,7 @@ void tests() {
 	//    testLogic();// test wordnet intersection
 
 	checkWordnet();
-	import("freebase");
+    checkGeo();
 	testQuery();
 	testFacets();
 	// shaky
@@ -1297,11 +1302,11 @@ void tests() {
 void testBrandNewStuff() {
 	int var=0;
 //	testHash();
-	checkWordnet();
-	import("freebase");
+//	checkWordnet();
+//	import("freebase");
 //	importFreebase();
 //	import("yago");
-	//		tests();
+	tests();
 	//	testQueryMore();
 	//	testQuery();
 	//	testFacets();

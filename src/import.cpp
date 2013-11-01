@@ -618,6 +618,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	char line[1000];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?!
 	char** values=(char**) malloc(sizeof(char*) * 100);
+	char* lastValue=0;
 	memset(values, 0, 100);
 	//    vector<char*> values;
 
@@ -662,8 +663,12 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 
-		//		subject = getNew(values[nameRowNr], null, dissect);
-		subject=getThe(values[nameRowNr]);
+		if(values[nameRowNr]!=lastValue)
+            subject=getNew(values[nameRowNr],type);
+//        else //keep subject
+        lastValue=values[nameRowNr];
+//		subject=getThe(values[nameRowNr]);
+        
 		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
 		// 2 objects, 4 relations, 1 name
 
@@ -1007,7 +1012,7 @@ bool importFreebaseLabels() {
 	int linecount=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 //		if (linecount > 10000000) break;
-//   		if (linecount > 0) break;
+   		if (linecount > 0) break;
 //		if (linecount % 100 == 0 && linecount>20000)
 //			p(linecount);
 		if (++linecount % 1000 == 0) {
@@ -1423,8 +1428,8 @@ void importAll() {
 	importWordnet();
 //	doDissectAbstracts=true;// already? why not
 	importNames();
-//	importGeoDB();
-//	importAllYago();
+	importGeoDB();
+	importAllYago();
 	importFreebase();
 	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
 	//		p("image import done before ...");

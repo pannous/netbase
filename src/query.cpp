@@ -124,8 +124,8 @@ void collectFacets(Query& q) {
 				if(fieldNr>nrFields)p("fieldNr>nrFields!?!!?");
 				if (fieldNr >= 0 && !checkNode(nl[fieldNr]))// && nl[fieldNr]==0 don't Over wright todo : multiple values?nl[fieldNr]
 					nl[fieldNr] = value;
-				else
-					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
+//				else
+//					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
 			}
 		}
 
@@ -372,9 +372,10 @@ Statement *parseFilter(string s) {
 
 Query parseQuery(string s, int limit) {
 	Query q;
-	static char fields[10000];
-	static char type[10000];
-	static char match[10000];
+    // static  ???
+	char fields[10000];
+	char type[10000];
+	char match[10000];
 	int li = s.find("limit");
 	if (li > 0) {
 		limit = atoi(s.substr(li + 5).c_str());

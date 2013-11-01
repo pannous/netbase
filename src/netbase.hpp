@@ -500,10 +500,10 @@ static long GB=1024*MB;
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
 
 // FREEBASE: 600.000.000 Statements !!!
-static long maxNodes = 20*MB;
-static long maxStatements0 = 2*maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
+static long maxNodes = 40*MB;
+static long maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?
-static long contextOffset=0x10000;
+static long contextOffset=0x800000;//0x10000;
 static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */

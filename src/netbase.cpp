@@ -52,7 +52,8 @@ bool exitOnFailure=true;
 bool debug=true;
 //bool debug=false;
 #else
-bool debug=false;
+bool debug=true;
+//bool debug=false;
 #endif
 
 bool showAbstract=false;
@@ -517,16 +518,6 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 		return false;
 	}
 #endif
-	if (checkNames && node->name == 0) {
-		badCount++;
-		printf("node->name == 0 %d\n", node);
-		return false;
-	}
-	if (checkNames && (node->name < c->nodeNames || node->name >= &c->nodeNames[averageNameLength * maxNodes])) {
-		badCount++;
-		printf("node->name out of bounds %d\n", node);
-		return false;
-	}
 	if (nodeId > maxNodes) {
 		badCount++;
 		pf("nodeId>maxNodes %d>%d", nodeId, maxNodes);
@@ -536,6 +527,17 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	if (nodeId > 1 && node->id > 0 && node->id != nodeId) {
 		badCount++;
 		pf("node->id!=nodeId %d!=%d", node->id, nodeId);
+		return false;
+	}
+    
+	if (checkNames && node->name == 0) {// WHY AGAIN??
+		badCount++;
+		printf("node->name == 0 %d\n", node);
+		return false;
+	}
+	if (checkNames && (node->name < c->nodeNames || node->name >= &c->nodeNames[averageNameLength * maxNodes])) {
+		badCount++;
+		printf("node->name out of bounds %d\n", node);
 		return false;
 	}
 #ifdef inlineStatements
@@ -1111,12 +1113,13 @@ Node * hasWord(const char* thingy) {
 //	thingy=(const char*) fixQuotesAndTrim(fixed);// NOT HERE!
 	long h=wordhash(thingy);
 	Ahash* found=&abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
-	if (found && found->abstract)
+    Node* first;
+	if (found && (first=get(found->abstract))){
 	//		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
 	//			return found->abstract;
-		if (eq(get(found->abstract)->name, thingy, true))	// tolower
-			return get(found->abstract);
-    
+		if (eq(first->name, thingy, true))	// tolower
+			return first;
+    }
 	int tries=0; // cycle bugs
 
 //	map<Node*, bool> visited;
@@ -1299,7 +1302,7 @@ Node * findWord(int context, const char* word, bool first) {	//=false
 	int shown=0;
 	for (int i=0; i < c->nodeCount; i++) {
 		Node* n=&c->nodes[i];
-		if (!checkNode(n, 0, true, true)) continue;
+		if (n->id==0||!checkNode(n, i, true, false)) continue;
 		if (eq(n->name, word, true)) {
 			found=n;
 			if (!quiet) {
@@ -1899,7 +1902,7 @@ void initUnits() {
 	Ahash* ah=&abstracts[wordhash("meter") % abstractHashSize];
 	if (ah < abstracts || ah > extrahash /**2*/) {
 		ps("abstracts kaputt");
-		collectAbstracts();
+//		collectAbstracts();
 	}
 	Node* u=getThe("meter", Unit);
 	addStatement(a(length), has_the("unit"), u);

@@ -21,8 +21,10 @@
 #ifdef i386
 const void * shmat_root = (const void *) 0x10000000; // just higher than system Recommendation
 #else
-const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
+//const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0101000000; // just higher than system Recommendation
+const void * shmat_root = (const void *) 0x0101800000; // just higher than system Recommendation
+//const void * shmat_root = (const void *) 0x0100137000;
 #endif
 //const void * shmat_root = (const void *)0x105800000;//test
 
@@ -158,6 +160,7 @@ void checkRootContext() {
 
 	p("USING SHARED MEMORY");
 	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
+        p("rootContext->nodes != (Node*) node_root");
 		showContext(rootContext);
 		fixPointers();
 		rootContext->nodes=(Node*) node_root;
@@ -180,13 +183,15 @@ void init() {
 	long statement_size=maxStatements0 * statementSize;
 //	node_root=&context_root[contextOffset];
 	context_root=(Context*) share_memory(key,context_size , context_root, root);
-	abstract_root = (Node*) share_memory(key + 1, abstract_size * 2, abstract_root, root + context_size);
-	name_root=(char*)share_memory(key + 2, name_size, name_root, root+context_size+ abstract_size);
-	p("node_root:\n");
+   	p("abstract_root:");
+	abstract_root = (Node*) share_memory(key + 1, abstract_size * 2, abstract_root, ((char*) context_root) + context_size);
+   	p("name_root:");
+	name_root=(char*)share_memory(key + 2, name_size, name_root, ((char*) abstract_root) + abstract_size*2);
+	p("node_root:");
 	node_root=(Node*) share_memory(key + 4, node_size,node_root, name_root + name_size);
-	p("statement_root:\n");
+	p("statement_root:");
 	statement_root = (Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
-	p("keyhash_root:\n");
+	p("keyhash_root:");
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 	keyhash_root = (int*) share_memory(key + 5, 1 * billion * sizeof (int), keyhash_root, ((char*) statement_root) + statement_size);
@@ -317,6 +322,7 @@ void load(bool force) {
 }
 
 void fixPointers() {
+	p("ADJUSTING SHARED MEMORY");
 	Context* context=currentContext();
 //	if(!checkC)
 	//	showContext(context);
@@ -330,7 +336,7 @@ void fixPointers() {
 }
 
 void fixPointers(Context* context) {
-	p("ADJUSTING SHARED MEMORY");
+	p("ADJUSTING Context");
 	Node* oldNodes=context->nodes;
 	char* oldNames=context->nodeNames;
 	initContext(context);
