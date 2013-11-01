@@ -108,7 +108,7 @@ typedef struct Node {
     int statementCount; //implicit, can be replaced with iterator KEEP!
     int firstStatement;
 	int lastStatement;
-    Value value; // for statements, numbers
+    Value value; // for statements, numbers  WASTE!!!
 
 //    int firstPredicateStatement; // 'usages' OR: sort statements!
 //    Hope_Valley             kind            City
@@ -129,8 +129,10 @@ typedef struct Node {
 // beth age '29 years'
 // oldest -> sort by old
 typedef struct Ahash {
-    Node* abstract;
-    Ahash* next;
+    int abstract;
+    int next;
+//    Node* abstract;
+//    Ahash* next;
 }Ahash ;
 
 // safe:
@@ -263,7 +265,8 @@ typedef struct Context {
     char name[100];
     char* nodeNames;
     int currentNameSlot;
-    int nodeCount;
+    int nodeCount=0;
+    int extrahashNr=0;
     int statementCount; //first 1000 reserved!
     // Node nodes[maxNodes];
     // Statement statements[maxStatements];
@@ -359,6 +362,7 @@ void showNodes(NodeVector all, bool showStatements = false,bool showRelation=fal
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
 Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
+bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
 bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
 bool addStatementToNode(Node* node, int statementNr);
 bool addStatementToNodeDirect(Node* node, int statementNr);

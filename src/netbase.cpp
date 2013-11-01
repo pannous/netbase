@@ -141,23 +141,29 @@ void debugAhash(int position) {
 	while (ah->next) {
 		if (i++ > 100) break;
 		char* n="ERROR";
-		if (checkNode(ah->abstract)) n=ah->abstract->name;
+		if (checkNode(ah->abstract)) n=get(ah->abstract)->name;
 		pf("%d | %d | >>%s<< |", position, i, n);
-		if (checkNode(ah->abstract)) show(ah->abstract, false);
+		if (checkNode(ah->abstract)) show(get(ah->abstract), false);
 		else p("XXX");
-		ah=ah->next;
+        if(ah->next<0||ah->next>maxNodes)break;
+		ah=&abstracts[ah->next];
 	}
 	p("////4");
 }
 
+Ahash *getAhash(int position){
+    if(position<0||position>maxNodes*2)return false;
+    return &abstracts[position];
+}
 // ./clear-shared-memory.sh After changing anything here!!
+//int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Ahash * insertAbstractHash(int position, Node * a) {
-	Ahash* ah=&abstracts[position];
+	Ahash* ah=getAhash(position);
 	if (!checkHash(ah) || !checkNode(a) || a->name[0] == 0) return 0;
 	//    if(pos==hash("city"))
 	//		p(a->name);
 	int i=0;
-	while (ah->next) {
+	while (ah&&ah->next) {
 		if (i++ > 100) {	// allow 65536 One letter nodes
 //			debugAhash(position);
 			p("insertAbstractHash FULL!");
@@ -165,26 +171,25 @@ Ahash * insertAbstractHash(int position, Node * a) {
 			return 0;
 //			return ah;
 		}
-		if (ah->next == ah) {
-			debugAhash(position);
-			p("insertAbstractHash LOOP");
-			show(a);
-			return 0;
-		}
-		if (ah->abstract == a || eq(ah->abstract->name, a->name, true)) return ah; //schon da
-		ah=ah->next;
+//		if (ah->next == ah) {
+//			debugAhash(position);
+//			p("insertAbstractHash LOOP");
+//			show(a);
+//			return 0;
+//		}
+		if (get(ah->abstract) == a || eq(get(ah->abstract)->name, a->name, true)) return ah; //schon da
+		ah=getAhash(ah->next);
 	}
 
 	if (ah->abstract) { //schon voll
-		if (ah->abstract == a || eq(ah->abstract->name, a->name, true))
+		if (get(ah->abstract) == a || eq(get(ah->abstract)->name, a->name, true))
 			return ah;
-		Ahash* na=extrahash;
-		extrahash++;
-		ah->next=na;
-		ah=na;
+//        ah->next=extrahash++;
+        ah->next=maxNodes+ currentContext()->extrahashNr++;
+        ah=getAhash(ah->next);
 	}
 	if(!checkHash(ah))return 0;
-	ah->abstract=a;
+	ah->abstract=a->id;
 	return ah;
 }
 
@@ -476,7 +481,10 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 
 // return false if node not ok
 // remove when optimized!!!!!!!!!!
-
+bool checkNode(int nodeId, bool checkStatements, bool checkNames) {
+    if(nodeId<0||nodeId>=maxNodes)return false;
+    return checkNode(get(nodeId),nodeId , checkStatements,  checkNames);
+}
 bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	if (node == 0) {
 		badCount++;
@@ -1106,8 +1114,8 @@ Node * hasWord(const char* thingy) {
 	if (found && found->abstract)
 	//		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
 	//			return found->abstract;
-		if (eq(found->abstract->name, thingy, true))	// tolower
-			return found->abstract;
+		if (eq(get(found->abstract)->name, thingy, true))	// tolower
+			return get(found->abstract);
     
 	int tries=0; // cycle bugs
 
@@ -1126,15 +1134,16 @@ Node * hasWord(const char* thingy) {
 		if (checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
-			if (eq(found->abstract->name, thingy, true))			//teuer? nö, if 1.letter differs
-				return found->abstract;
+			if (eq(get(found->abstract)->name, thingy, true))			//teuer? nö, if 1.letter differs
+				return get(found->abstract);
 		}
-		if (found->next == found) {
-			debugAhash(h);
-			p("found->next == found How the hell can that even be? ");
-			break;
-		}
-		found=found->next;
+//		if (get(found->next) == found) {
+//			debugAhash(h);
+//			p("found->next == found How the hell can that even be? ");
+//			break;
+//		}
+        if(found->next<0||found->next>maxNodes*2)break;
+		found=&abstracts[found->next];
 	}
 	return 0;
 }
