@@ -1194,7 +1194,7 @@ void importAbstracts() {
 		if (hasWord(name)) continue;
 		c->nodeCount=id; // hardcoded hack to sync ids!!!
 		Node* a=getAbstract(name);
-		a->context=wordnet;
+//		a->context=wordnet;
 		a->kind=abstractId;
 	}
 	fclose(infile); /* Close the file */

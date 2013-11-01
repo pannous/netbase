@@ -210,6 +210,9 @@ void init() {
 }
 
 void fixNodes(Context* context, Node* oldNodes) {
+    #ifndef explicitNodes
+    return;
+    #endif
 	int max=context->statementCount; // maxStatements;
 	for (int i=0; i < max; i++) {
 		Statement* n=&context->statements[i];
@@ -218,15 +221,12 @@ void fixNodes(Context* context, Node* oldNodes) {
 			showStatement(n);
 			continue;
 		}
-		//		if(n==null || n->id==0 || n->context==0)
-		//			continue;
-		//			n->Subject=n->Subject-oldNodes+context->nodes;
-		//			n->Predicate=n->Predicate-oldNodes+context->nodes;
-		//			n->Object=n->Object-oldNodes+context->nodes;
+#ifdef explicitNodes
 		n->Subject=&context->nodes[n->subject];
 		n->Predicate=&context->nodes[n->predicate];
 		n->Object=&context->nodes[n->object];
-		//		    n->name=n->name-oldnodeNames+c->nodeNames;
+#endif
+	
 	}
 }
 
@@ -354,7 +354,7 @@ int collectAbstracts() {
 	for (int i=0; i < max; i++) {
 		Node* n=&c->nodes[i];
 		if (i > 1000 && !checkNode(n)) break;
-		if (n == null || n->name == null || n->id == 0 || n->context == 0) continue;
+		if (n == null || n->name == null || n->id == 0 ) continue;
 		if (n->kind == Abstract->id) {
 			//			if(eq(n->name,"city"))
 			//				max--;
@@ -376,7 +376,7 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 	for (int i=0; i < max; i++) {
 		Node* n=&context->nodes[i];
 		//		show(n,true);
-		if (n == null || n->name == null || n->id == 0 || n->context == 0) continue;
+		if(!checkNode(n))continue;
 #ifndef inlineName
 		n->name=n->name + newOffset;
 #endif

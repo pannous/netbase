@@ -101,9 +101,9 @@ void collectFacets(Query& q) {
 		q.values[n] = (NodeList) malloc(sizeof (Node*) * nrFields);
 		Statement* s = 0;
 		while (s = nextStatement(n, s, true)) {
-			if (s->Subject == n) {
-				Node* predicate = s->Predicate;
-				Node* value = s->Object;
+			if (s->Subject() == n) {
+				Node* predicate = s->Predicate();
+				Node* value = s->Object();
 				//                addHit(q,predicate)
 				Facet& f = findFacet(q, predicate);
 				f.hits++;
@@ -474,12 +474,12 @@ good:
 Statement* evaluate(string data) {
 	Statement* s = parseFilter(data); //Hypothesis Aim Objective supposition assumption
 	// TODO MARK + CLEAR PATTERNS!!!
-	Statement* result = findStatement(s->Subject, s->Predicate, s->Object);
+	Statement* result = findStatement(s->Subject(), s->Predicate(), s->Object());
 	if (result)return result;
 		//     Node* n=has(s->Subject,s->Predicate,s->Object);
 		//     if(n)return n;
 	else
-		return addStatement(s->Subject, s->Predicate, s->Object, true);
+		return addStatement(s->Subject(), s->Predicate(), s->Object(), true);
 }
 
 Node* match(string data) {
@@ -610,9 +610,9 @@ NodeVector filter(Query& q, Statement* filterTree, int limit) {
 	if (limit == 0)limit = q.limit;
 	if (!checkStatement(filterTree))
 		p("filterTree broken!\n");
-	N subject = filterTree->Subject;
-	N predicate = filterTree->Predicate;
-	N object = filterTree->Object;
+	N subject = filterTree->Subject();
+	N predicate = filterTree->Predicate();
+	N object = filterTree->Object();
 
 	if (predicate == And) {
 		NV a = filter(q, subject, q.lookuplimit);
@@ -812,24 +812,24 @@ NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses
 	for (int i = 0; i < type->statementCount; i++) {
 		Statement* s = getStatementNr(type, i);
 		if (!checkStatement(s))continue;
-		if (s->Predicate == type)continue; // NO Predicate matches!!
+		if (s->Predicate() == type)continue; // NO Predicate matches!!
 		//		if (s->subject == 613424) {
 		//			showStatement(s);
 		//			show((Node*) (all.end() - 1).base());
 		//		}
 		//    	po
-		if (s->Subject == type) {// todo contains SLOW!!!
-			if (isAbstract(type) && isA4(s->Predicate, Instance, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
-			if (!isAbstract(type) && isA4(s->Predicate, Instance, false, false))if (!contains(all, s->Object))all.push_back(s->Object);
-			if (isA4(s->Predicate, SubClass, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
-			if (isA4(s->Predicate, Plural, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
-			if (isA4(s->Predicate, Synonym, false, false))if (!contains(subtypes, s->Object))subtypes.push_back(s->Object);
+		if (s->Subject() == type) {// todo contains SLOW!!!
+			if (isAbstract(type) && isA4(s->Predicate(), Instance, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (!isAbstract(type) && isA4(s->Predicate(), Instance, false, false))if (!contains(all, s->Object()))all.push_back(s->Object());
+			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 		} else {
-			if (isA4(s->Predicate, Type, false, false))
-				all.push_back(s->Subject);
-			if (isA4(s->Predicate, SuperClass, false, false))subtypes.push_back(s->Subject);
-			if (isA4(s->Predicate, Plural, false, false))if (!contains(subtypes, s->Subject))subtypes.push_back(s->Subject);
-			if (isA4(s->Predicate, Synonym, false, false))if (!contains(subtypes, s->Subject))subtypes.push_back(s->Subject);
+			if (isA4(s->Predicate(), Type, false, false))
+				all.push_back(s->Subject());
+			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
 		}
 
 
@@ -1003,18 +1003,18 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue) {
 	int i = 0;
 	Statement* s = 0;
 	while (i++<resultLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
-		bool subjectMatch = (s->Subject == subject || subject == Any);
-		bool predicateMatch = (s->Predicate == Instance);
+		bool subjectMatch = (s->Subject() == subject || subject == Any);
+		bool predicateMatch = (s->Predicate() == Instance);
 
-		bool subjectMatchReverse = s->Object == subject;
-		bool predicateMatchReverse = s->Predicate == Type; // || inverse
+		bool subjectMatchReverse = s->Object() == subject;
+		bool predicateMatchReverse = s->Predicate() == Type; // || inverse
 
 		if (queue) {
-			if (subjectMatch)enqueue(subject, s->Object, queue);
-			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+			if (subjectMatch)enqueue(subject, s->Object(), queue);
+			if (subjectMatchReverse)enqueue(subject, s->Subject(), queue);
 		} else {
-			if (subjectMatch && predicateMatch)all.push_back(s->Object);
-			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+			if (subjectMatch && predicateMatch)all.push_back(s->Object());
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
 		}
 	}
 	return all;
@@ -1032,57 +1032,57 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		if (subject->id == 213112)
 			//		if(s->id==467484)
 			p(s);
-		if (s->Predicate == subject)break;
-		if (s->Object == Adjective)continue;
-		if (s->Object == Adverb)continue;
-		if (s->Object == Noun)continue;
-		if (s->Predicate == PERTAINYM)continue;
-		if (s->Predicate == Derived)continue;
+		if (s->Predicate() == subject)break;
+		if (s->Object() == Adjective)continue;
+		if (s->Object() == Adverb)continue;
+		if (s->Object() == Noun)continue;
+		if (s->Predicate() == PERTAINYM)continue;
+		if (s->Predicate() == Derived)continue;
 		//		if (s->Predicate==DerivedFromNoun)continue;
-		if (s->Predicate == get(_attribute))continue;
-		if (s->Predicate == get(40))continue; // similar
-		if (s->Predicate == get(50))continue; // also
-		if (s->Predicate == get(91))continue; // also bug !!
-		if (s->Predicate == get(92))continue; // also bug !!
-		bool subjectMatch = (s->Subject == subject || subject == Any);
-		bool predicateMatch = (s->Predicate == Member);
-		predicateMatch = predicateMatch || s->Predicate == Part;
-		predicateMatch = predicateMatch || s->Predicate == Attribute;
-		predicateMatch = predicateMatch || s->Predicate == Substance;
-		predicateMatch = predicateMatch || s->Predicate == Active;
-		predicateMatch = predicateMatch || s->Predicate == To;
-		predicateMatch = predicateMatch || s->Predicate == For;
+		if (s->Predicate() == get(_attribute))continue;
+		if (s->Predicate() == get(40))continue; // similar
+		if (s->Predicate() == get(50))continue; // also
+		if (s->Predicate() == get(91))continue; // also bug !!
+		if (s->Predicate() == get(92))continue; // also bug !!
+		bool subjectMatch = (s->Subject() == subject || subject == Any);
+		bool predicateMatch = (s->Predicate() == Member);
+		predicateMatch = predicateMatch || s->Predicate() == Part;
+		predicateMatch = predicateMatch || s->Predicate() == Attribute;
+		predicateMatch = predicateMatch || s->Predicate() == Substance;
+		predicateMatch = predicateMatch || s->Predicate() == Active;
+		predicateMatch = predicateMatch || s->Predicate() == To;
+		predicateMatch = predicateMatch || s->Predicate() == For;
 		// include Parents!
-		predicateMatch = predicateMatch || s->Predicate == Type;
-		predicateMatch = predicateMatch || s->Predicate == SuperClass;
-		predicateMatch = predicateMatch || s->Predicate == Synonym;
-		predicateMatch = predicateMatch || s->Predicate == Plural;
-		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_CATEGORY;
-		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_REGION;
-		predicateMatch = predicateMatch || s->Predicate->id == _MEMBER_DOMAIN_USAGE;
+		predicateMatch = predicateMatch || s->Predicate() == Type;
+		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
+		predicateMatch = predicateMatch || s->Predicate() == Synonym;
+		predicateMatch = predicateMatch || s->Predicate() == Plural;
+		predicateMatch = predicateMatch || s->Predicate()->id == _MEMBER_DOMAIN_CATEGORY;
+		predicateMatch = predicateMatch || s->Predicate()->id == _MEMBER_DOMAIN_REGION;
+		predicateMatch = predicateMatch || s->Predicate()->id == _MEMBER_DOMAIN_USAGE;
 		//		predicateMatch = predicateMatch || isA4(s->Predicate,)
 
-		bool subjectMatchReverse = s->Object == subject;
-		bool predicateMatchReverse = s->Predicate == Owner; // || inverse
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == By;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == From;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == PartOwner;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == UsageContext;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_CATEGORY;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_REGION;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate->id == _DOMAIN_USAGE;
+		bool subjectMatchReverse = s->Object() == subject;
+		bool predicateMatchReverse = s->Predicate() == Owner; // || inverse
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == By;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == From;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == PartOwner;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == UsageContext;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate()->id == _DOMAIN_CATEGORY;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate()->id == _DOMAIN_REGION;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate()->id == _DOMAIN_USAGE;
 		// MORE :
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == Plural;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == Synonym;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == Instance;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Plural;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Synonym;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Instance;
 		//		predicateMatchReverse = predicateMatchReverse || isA4(s->Predicate)
 		if (queue) {
-			if (subjectMatch && predicateMatch)enqueue(subject, s->Object, queue);
-			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject, queue);
+			if (subjectMatch && predicateMatch)enqueue(subject, s->Object(), queue);
+			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject(), queue);
 		} else {
-			if (subjectMatch && predicateMatch)all.push_back(s->Object);
-			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+			if (subjectMatch && predicateMatch)all.push_back(s->Object());
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
 			//			if (subjectMatch && s->Predicate->id>1000)all.push_back(s->Object);// properties how to?
 		}
 	}
@@ -1098,31 +1098,31 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	Statement* s = 0;
 	while (i++ < 1000 && (s = nextStatement(subject, s, false))) {// true !!!!
 		if (s->context == _pattern)continue;
-		if (s->Object == Adjective)continue; // bug !!
-		if (s->Predicate == PERTAINYM)continue;
-		if (s->Predicate == Derived)continue;
+		if (s->Object() == Adjective)continue; // bug !!
+		if (s->Predicate() == PERTAINYM)continue;
+		if (s->Predicate() == Derived)continue;
 		//		if (s->Predicate==DerivedFromNoun)continue;
-		if (s->Predicate == get(_attribute))continue;
+		if (s->Predicate() == get(_attribute))continue;
 		//		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 		//		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
-		bool subjectMatch = (s->Subject == subject || subject == Any);
-		bool predicateMatch = (s->Predicate == Type);
-		predicateMatch = predicateMatch || s->Predicate == SuperClass;
-		predicateMatch = predicateMatch || s->Predicate == Synonym;
-		predicateMatch = predicateMatch || s->Predicate == Plural;
+		bool subjectMatch = (s->Subject() == subject || subject == Any);
+		bool predicateMatch = (s->Predicate() == Type);
+		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
+		predicateMatch = predicateMatch || s->Predicate() == Synonym;
+		predicateMatch = predicateMatch || s->Predicate() == Plural;
 
-		bool subjectMatchReverse = s->Object == subject;
-		bool predicateMatchReverse = s->Predicate == Instance; // || inverse
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == Plural;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == Synonym;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate == SubClass;
+		bool subjectMatchReverse = s->Object() == subject;
+		bool predicateMatchReverse = s->Predicate() == Instance; // || inverse
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Plural;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Synonym;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
 
 		if (queue) {
-			if (subjectMatch && predicateMatch)enqueue(subject, s->Object, queue);
-			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject, queue);
+			if (subjectMatch && predicateMatch)enqueue(subject, s->Object(), queue);
+			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject(), queue);
 		} else {
-			if (subjectMatch && predicateMatch)all.push_back(s->Object);
-			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject);
+			if (subjectMatch && predicateMatch)all.push_back(s->Object());
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
 		}
 	}
 	if (queue)// already enqueued
@@ -1145,14 +1145,14 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 			badCount++;
 			continue;
 		}
-		bool subjectMatch = (s->Subject == subject || subject == Any);
-		bool subjectMatchReverse = s->Object == subject;
+		bool subjectMatch = (s->Subject() == subject || subject == Any);
+		bool subjectMatchReverse = s->Object() == subject;
 		if (queue) {
-			if (subjectMatch)enqueue(subject, s->Object, queue);
-			if (subjectMatchReverse)enqueue(subject, s->Subject, queue);
+			if (subjectMatch)enqueue(subject, s->Object(), queue);
+			if (subjectMatchReverse)enqueue(subject, s->Subject(), queue);
 		} else {
-			if (subjectMatch)all.push_back(s->Object);
-			if (subjectMatchReverse)all.push_back(s->Subject);
+			if (subjectMatch)all.push_back(s->Object());
+			if (subjectMatchReverse)all.push_back(s->Subject());
 		}
 	}
 	if (queue)// already enqueued

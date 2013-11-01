@@ -68,8 +68,8 @@ bool export_csv(){
     for (int i = 0; i < c->statementCount; i++) {
         Statement* n= &c->statements[i];
 		if(!checkStatement(n,true,true))continue;
-		if(n->Predicate==Instance)continue;
-        fprintf(fp,"%s\t%s\t%s\n",n->Subject->name,n->Predicate->name,n->Object->name);//,n->kind);//n->context
+		if(n->Predicate()==Instance)continue;
+        fprintf(fp,"%s\t%s\t%s\n",n->Subject()->name,n->Predicate()->name,n->Object()->name);//,n->kind);//n->context
     }
     fclose(fp);
 

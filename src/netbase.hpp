@@ -94,7 +94,7 @@ typedef struct Node {
     //class Node{
     //public:
     int id; //implicit -> redundant
-    int context; //implicit   | short context_id or int node_id
+//    int context; //implicit   | short context_id or int node_id
 
 #ifdef inlineName
     char name[100];
@@ -140,15 +140,25 @@ typedef struct Ahash {
 // S      karsten agrees <Node3254>
 // S      Node3254/S13425 is wrong
 // 1 Stit == 3 words
-//typedef class Statement { OK!!
-typedef struct Statement {
+//typedef struct Context;
+//Context* getContext(int contextId);
+Node * get(int NodeId);
+
+typedef class Statement { //OK!!
+//typedef struct Statement {
 public:
     int id; // implicit?
     int context; // implicit?  NODE!?!
     //        Node* meta;
+#ifdef explicitNodes
     Node* Subject; // as function? nee as it is!! transpose on context load
     Node* Predicate;
     Node* Object;
+#else
+    Node* Subject(){return get(subject);}
+    Node* Predicate(){return get(predicate);}
+    Node* Object(){return get(object);}
+#endif
     int nextSubjectStatement;
     int nextPredicateStatement;
     int nextObjectStatement;
@@ -264,10 +274,6 @@ typedef struct Context {
     //	int lastStatementArray;
 } Context;
 
-//const ?
-//static Context contexts[maxContexts]; save geht nicht
-extern Context* contexts; //[maxContexts];
-//Context contexts[maxContexts];
 
 
 // Relations
@@ -502,6 +508,10 @@ static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatemen
 int main(int argc, char *argv[]);
 int test2();
 
+//const ?
+//static Context contexts[maxContexts]; save geht nicht
+extern Context* contexts; //[maxContexts];
+//Context contexts[maxContexts];
 extern Context* context_root; // else: void value not ignored as it ought to be
 extern Node* abstract_root;
 extern Node* node_root;

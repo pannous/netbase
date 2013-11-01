@@ -155,14 +155,14 @@ void test() {
 	p(c->statementCount);
 	//	assert(c->statementCount==statementCount+1,"c.statementCount==1");// if not yet there
 	assert(s->subject == test->id, "s->subject==test->id");
-	assert(s->Subject == test, "s->Subject==test");
-	assert(s->Predicate == is, "s->predicate==is");
-	assert(s->Object == good, "s->object==good");
+	assert(s->Subject() == test, "s->Subject==test");
+	assert(s->Predicate() == is, "s->predicate==is");
+	assert(s->Object() == good, "s->object==good");
 
-	check(getStatementNr(test, 0)->Subject == a(test));
-	check(getStatementNr(good, 0)->Subject == a(good));
-	check(getStatementNr(test, 1)->Object == &c->nodes[(noun)]);
-	check(getStatementNr(good, 1)->Object == &c->nodes[(adjective)]);
+	check(getStatementNr(test, 0)->Subject() == a(test));
+	check(getStatementNr(good, 0)->Subject() == a(good));
+	check(getStatementNr(test, 1)->Object() == &c->nodes[(noun)]);
+	check(getStatementNr(good, 1)->Object() == &c->nodes[(adjective)]);
 	check(getStatementNr(test, 2) == s);
 	check(getStatementNr(is, 2) == s);
 	check(getStatementNr(good, 2) == s);
@@ -687,9 +687,9 @@ void testInstanceLogic() {
 	addStatement(Baum, the(colour), _(pink));
 	show(Baum);
 	Statement *c=getStatementNr(Baum, 1);
-	check(c->Predicate != Instance);
+	check(c->Predicate() != Instance);
 	c=getStatementNr(Baum, 2);
-	check(c->Predicate != Instance);
+	check(c->Predicate() != Instance);
 }
 
 void testValueLogic() {
@@ -777,11 +777,11 @@ void testValueLogic() {
 	//    show(m143);
 	Statement *s=findStatement(Booot, a(length), Any);
 	check(checkStatement(s));
-	Node *n2=s->Object;
+	Node *n2=s->Object();
 	check(isEqual(n2, m143));
 	check(n2 == m143);
 	Statement *s2=findStatement(Booot, the(length), Any, 1, 1, 1);
-	n2=s2->Object;
+	n2=s2->Object();
 	check(n2 == m143);
 	//    show(m143); //   417287
 	//    show(has(Booot, a(length)));
@@ -1058,11 +1058,11 @@ void testReification() {
 void testFactLearning() {
 	Statement* s=learn("Peter loves Jule");
 	Statement* s2=learn("Peter loves Jule");
-	check(s->Subject == the(Peter) || s->Subject == a(Peter));
+	check(s->Subject() == the(Peter) || s->Subject() == a(Peter));
 	check(s == s2);
 	p(s);
-	check(isA(s->Predicate, a(loves)));
-	check(s->Object == the(Jule) || s->Object == a(Jule));
+	check(isA(s->Predicate(), a(loves)));
+	check(s->Object() == the(Jule) || s->Object() == a(Jule));
 	check(has(a(Peter), a(loves), a(Jule)));
 	check(has(the(Peter), a(loves), a(Jule)));
 	//	check(has(the(Peter),a(loves),the(Jule))); how could he? todo : NO, but MAYBE!
@@ -1073,9 +1073,9 @@ void testFactLearning() {
 	addStatement(the(son), the(german_translation), the(Sohn), true);
 	//	check(has(the(Peter),a(sons),the(Milan)));
 	s=learn("Peter.son=Milan");
-	check(s->Subject == the(Peter));
-	check(isA(s->Predicate, a(son)));
-	check(s->Object == the(Milan));
+	check(s->Subject() == the(Peter));
+	check(isA(s->Predicate(), a(son)));
+	check(s->Object() == the(Milan));
 	check(has(the(Peter), a(son), the(Milan)));
 	check(isA(the(Milan), a(son)));
 	check(isA(a(Milan), a(son)));
