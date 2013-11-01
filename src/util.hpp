@@ -68,7 +68,7 @@ char* tolower(const char* x);
 void fixNewline(char* line);
 NodeVector intersect(NodeVector a,NodeVector b);
 unsigned int wordhash(const char *str);
-inline int normChar(int c);
+inline short normChar(char c);
 string stem(string word);
 void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
 //NodeVector mergeVectors(NodeVector some, NodeVector more);

@@ -387,6 +387,7 @@ NodeVector parse(const char* data) {
 		findWord(currentContext()->id, data);
 		return nodeVectorWrap(get(data));
 	}
+    return OK;
 }
 
 void console() {

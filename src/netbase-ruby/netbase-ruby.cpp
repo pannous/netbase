@@ -1,3 +1,4 @@
+#ifdef ruby
 #include "ruby.h"
 #include "../netbase.hpp"
 static VALUE rb_netbase_module=Qnil;
@@ -41,3 +42,4 @@ void Init_netbase()
 
 	rb_define_method(rb_netbase_module, "test1", method_test1, 0);
 }
+#endif

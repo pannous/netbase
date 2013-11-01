@@ -688,8 +688,8 @@ void start_server() {
 
 
 	/*  Assign socket address to socket  */
-	if (bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr)) < 0)
-		Error_Quit("Couldn't bind listening socket.");
+//	if (bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr)) < 0)
+//		Error_Quit("Couldn't bind listening socket.");
 
 
 	/*  Make socket a listening socket  */

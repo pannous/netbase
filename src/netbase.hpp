@@ -13,12 +13,7 @@ extern bool exitOnFailure;
 extern int maxRecursions;
 extern bool debug; //=true;
 extern bool showAbstract;
-extern bool doDissect;
-extern char* context_root; // else: void value not ignored as it ought to be
-extern char* abstract_root;
-extern char* node_root;
-extern char* statement_root;
-extern char* name_root;
+extern bool doDissectAbstracts;
 extern int recursions;
 extern int badCount;
 extern int runs; // algorithm metrics
@@ -72,9 +67,6 @@ extern map<int, int> wn_map2;
 static const char* NIL_string = "NIL";
 
 struct Statement;
-// why not just save ints as string?
-// 1) faster comparison   bottleneck factor n==nr digits or is atoi part of cpu?
-// 2) memory. really?? only if value field is used >80% of the time!
 
 typedef struct Node;
 typedef union Value {
@@ -85,9 +77,12 @@ typedef union Value {
     long datetime; // milliseconds? Date*? HOW really?
     //    long longValue;// 8 bytes
     double number; // 8 bytes OK
-    //    Statement statement;// too long
+    // why not just save ints as string?
+    // 1) faster comparison   bottleneck factor n==nr digits or is atoi part of cpu?
+    // 2) memory. really?? only if value field is used >80% of the time!
+
 	Node* node; // THE ONE in abstracts type --- cycle !---
-    Statement* statement; // overhead OK!!! 8 bytes on 64bit machines
+    Statement* statement; // overhead OK!!! 8 bytes on 64bit machines  (Statement too long, pointer OK)
 }Value;
 
 
@@ -138,12 +133,16 @@ typedef struct Ahash {
     Ahash* next;
 }Ahash ;
 
+// safe:
+
 // S13425 beth likes apple
 // Node3254 value=S13425
 // S      karsten agrees <Node3254>
 // S      Node3254/S13425 is wrong
 // 1 Stit == 3 words
+//typedef class Statement { OK!!
 typedef struct Statement {
+public:
     int id; // implicit?
     int context; // implicit?  NODE!?!
     //        Node* meta;
@@ -364,7 +363,8 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 		Node* get(const char* node);
 //inline
 		Node* get(char* node);
-inline Node* get(int NodeId);
+//inline
+Node* get(int NodeId);
 
 //extern "C" /* <== don't mingle name! */ inline
 Context* currentContext();
@@ -376,9 +376,9 @@ unsigned int hash(const char *str); //unsigned
 //Node* getThe(const char* word, Node* type = 0,bool dissect=true);
 //Node* getThe(string thing, Node* type=0,bool dissect=true);
 Node* getThe(Node* abstract, Node* type=0);
-Node* getThe(const char* word, Node* type = 0,bool dissect=false);
-Node* getThe(string thing, Node* type=0,bool dissect=false);
-Node* getNew(const char* thing, Node* type=0, bool dissect=false);
+Node* getThe(const char* word, Node* type = 0);//,bool dissect=false);
+Node* getThe(string thing, Node* type=0);//,bool dissect=false);
+Node* getNew(const char* thing, Node* type=0);//, bool dissect=false);
 Node* getClass(const char* word);// ?  apple vs Apple ! same as getThe NOW
 //Node* getClass(string word);
 void showStatement(Statement* s);
@@ -485,10 +485,12 @@ static int statementSize=sizeof(Statement);// 56
 static int ahashSize=16;
 static long million=1000000;
 static long billion=1000000000;
-static long MB=1000000;
-static long GB=1000000000;
+static long MB=1048576;
+static long GB=1024*MB;
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
-static long maxNodes = 10*million;
+
+// FREEBASE: 600.000.000 Statements !!!
+static long maxNodes = 20*MB;
 static long maxStatements0 = 2*maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?
 static long contextOffset=0x10000;
@@ -499,3 +501,11 @@ static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatemen
 
 int main(int argc, char *argv[]);
 int test2();
+
+extern Context* context_root; // else: void value not ignored as it ought to be
+extern Node* abstract_root;
+extern Node* node_root;
+extern Statement* statement_root;
+extern char* name_root;
+extern int* keyhash_root;// keyhash-> NodeId 'map'
+//extern Node** keyhash_root;

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- <itemPath>src/jni/NetbaseJNI.h</itemPath> -->
-<configurationDescriptor version="90">
+<configurationDescriptor version="89">
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
@@ -16,7 +16,9 @@
         </gdb_interceptlist>
         <gdb_options>
           <DebugOptions>
+            <option name="gdb_follow_fork_mode" value="child"/>
             <option name="gdb_detach_on_fork" value="off"/>
+            <option name="gdb_source_dirs" value="/Users/me/netbase/src"/>
           </DebugOptions>
         </gdb_options>
         <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>

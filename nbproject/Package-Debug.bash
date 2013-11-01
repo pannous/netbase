@@ -68,7 +68,7 @@ copyFileToTmpDir "${OUTPUT_PATH}" "${NBTMPDIR}/${PACKAGE_TOP_DIR}bin/${OUTPUT_BA
 cd "${TOP}"
 rm -f ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/netbase.tar
 cd ${NBTMPDIR}
-tar -vcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/netbase.tar *
+tar -v -gcf ../../../../${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/package/netbase.tar *
 checkReturnCode
 
 # Cleanup

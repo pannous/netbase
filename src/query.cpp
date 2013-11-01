@@ -486,7 +486,7 @@ Node* match(string data) {
 	//    size_type t=data.find("[");
 	const char* match = data.substr(data.find("[") + 1, data.find("]") - 1).c_str();
 	const char* word = data.substr(0, data.find("[")).c_str();
-	findMatch(getAbstract(word), match);
+       return  findMatch(getAbstract(word), match);
 }
 
 NodeVector exclude(NodeVector some, NodeVector less) {// bool keep destination unmodified=TRUE

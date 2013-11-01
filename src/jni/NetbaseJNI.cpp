@@ -1,3 +1,4 @@
+#ifdef jni
 #include <jni.h>
 #include <stdio.h>
 #include "../netbase.hpp"
@@ -11,3 +12,4 @@ JNIEXPORT void JNICALL Java_NetbaseJNI_query(JNIEnv *env, jobject thisObj) {
    parse("all fruit");
    return;
 }
+#endif

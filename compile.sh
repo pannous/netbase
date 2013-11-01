@@ -5,7 +5,8 @@ sudo killall -SIGKILL netbase
 
 ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
-options="-m64 --debug -c -g -w -s -MMD -MP" #-MF #64bit
+options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
+#   -s
 #  -L$RVM_HOME/usr/lib -I$ruby_include -Ibuild/
 
 #g++ $options -MF build/query.o.d -o build/query.o src/query.cpp

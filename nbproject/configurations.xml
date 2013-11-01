@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- <itemPath>src/jni/NetbaseJNI.h</itemPath> -->
-<configurationDescriptor version="90">
+<configurationDescriptor version="89">
   <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
     <logicalFolder name="HeaderFiles"
                    displayName="Header Files"
@@ -46,7 +46,6 @@
       <itemPath>nbproject/Makefile-Release.mk</itemPath>
     </logicalFolder>
   </logicalFolder>
-  <sourceFolderFilter>^(nbproject|import|data|dist|build|test|data|bins)$</sourceFolderFilter>
   <sourceRootList>
     <Elem>.</Elem>
   </sourceRootList>
@@ -54,29 +53,49 @@
   <confs>
     <conf name="Debug" type="1">
       <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>true</rebuildPropChanged>
       </toolsSet>
       <compileType>
         <cTool>
+          <architecture>2</architecture>
           <incDir>
             <pElem>/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin</pElem>
             <pElem>/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include</pElem>
           </incDir>
+          <commandLine>-g</commandLine>
         </cTool>
         <ccTool>
+          <architecture>2</architecture>
           <incDir>
             <pElem>/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin</pElem>
             <pElem>/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include</pElem>
           </incDir>
+          <commandLine>-g</commandLine>
           <warningLevel>0</warningLevel>
         </ccTool>
+        <asmTool>
+          <architecture>2</architecture>
+        </asmTool>
         <linkerTool>
           <output>netbase</output>
-          <commandLine>-lreadline</commandLine>
+          <commandLine>-lreadline -g</commandLine>
         </linkerTool>
       </compileType>
+      <packaging>
+        <packType>Tar</packType>
+        <additionalOptions>-v -g</additionalOptions>
+        <packFileList>
+          <packFileListElem type="File"
+                            to="${PACKAGE_TOP_DIR}bin/${OUTPUT_BASENAME}"
+                            from="${OUTPUT_PATH}"
+                            perm="755"
+                            owner="root"
+                            group="bin"/>
+        </packFileList>
+      </packaging>
       <item path="src/console.cpp" ex="false" tool="1" flavor2="0">
       </item>
       <item path="src/console.hpp" ex="false" tool="3" flavor2="0">
@@ -128,6 +147,7 @@
     </conf>
     <conf name="Release" type="1">
       <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>false</dependencyChecking>
         <rebuildPropChanged>false</rebuildPropChanged>
@@ -142,6 +162,10 @@
         <fortranCompilerTool>
           <developmentMode>5</developmentMode>
         </fortranCompilerTool>
+        <linkerTool>
+          <stripSymbols>true</stripSymbols>
+          <commandLine>-lreadline -s</commandLine>
+        </linkerTool>
       </compileType>
       <item path="src/console.cpp" ex="false" tool="1" flavor2="0">
       </item>
@@ -194,6 +218,7 @@
     </conf>
     <conf name="Server" type="1">
       <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
         <compilerSet>GNU|GNU</compilerSet>
         <dependencyChecking>true</dependencyChecking>
         <rebuildPropChanged>true</rebuildPropChanged>

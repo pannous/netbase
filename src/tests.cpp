@@ -22,20 +22,18 @@ void clearTestContext() {
 }
 
 void checkWordnet() {
-	if (hasWord("effloresce"))
-		return;
-	else
-		importWordnet();
+	if (hasWord("effloresce")) return;
+	else importWordnet();
 }
 
-bool assert(bool test, string what) {// bool nix gut
+bool assert(bool test, string what) { // bool nix gut
 	printf("----\n");
 	printf(what.c_str());
 	if (test) printf(" OK\n");
 	if (!test) {
 		printf(" Failed\n");
 		flush();
-		if (exitOnFailure != false)exit(1);
+		if (exitOnFailure != false) exit(1);
 	}
 	return test;
 }
@@ -43,12 +41,12 @@ bool assert(bool test, string what) {// bool nix gut
 void testScanf() {
 	//FALSCH!!: A feature with sscanf is that you can define variables inside it:
 	//sscanf("foo % 1 2 3 fum","%s %% %{%d%} %s",string s1, array(string) as, string s2);
-	char buf[] = "string1 string2 string3";
+	char buf[]="string1 string2 string3";
 	char array[100];
 	if (sscanf(buf, "%*s%*s%99s", array) == 1) {
 		p(array);
 	}
-	char* as = (char*) malloc(1000);
+	char* as=(char*) malloc(1000);
 	sscanf("foo abdf fum", "{%s}", as);
 	p(as);
 
@@ -67,13 +65,13 @@ void testScanf() {
 	char c[100000];
 	char d[100000];
 	bool matching; // leider immer !? --
-	char* match = "abc=er [sdaf=er ] =fe";
-	matching = sscanf(match, "%s [%s ] =%s", a, b, c);
+	char* match="abc=er [sdaf=er ] =fe";
+	matching=sscanf(match, "%s [%s ] =%s", a, b, c);
 	p(matching);
 	p(a);
 	p(b);
 	p(c);
-	string x = "a[b=c]=d";
+	string x="a[b=c]=d";
 	ps(x);
 	//	p(x.replace("["," ["));
 	//	exit(1);
@@ -81,9 +79,9 @@ void testScanf() {
 
 void test() {
 	//you have a pointer to some read-only characters
-	char* a = "abc";
+	char* a="abc";
 
-	char b[] = "abc";
+	char b[]="abc";
 	//you have an element array of characters that you can do what you like with.
 
 	check(wordhash("abc") == wordhash(a));
@@ -109,9 +107,9 @@ void test() {
 	check(!contains("abCd", "bd", true));
 	check(!contains("abCd", "Bc", false));
 	//    assert(!contains("abcd",""),"gr");
-	int testContext = 1;
-	Context* c = getContext(testContext);
-	Node* syn = &c->nodes[(21)];
+	int testContext=1;
+	Context* c=getContext(testContext);
+	Node* syn=&c->nodes[(21)];
 	show(syn);
 	check(syn == Synonym);
 	p(Synonym->name);
@@ -121,26 +119,24 @@ void test() {
 #endif
 	showStatement(getStatementNr(syn, 0));
 	//    initContext(c);
-	int initialNodeCount = c->nodeCount;
-	int initialStatementCount = c->statementCount;
-	c->nodeCount = initialNodeCount; // reset for tests! dont save!
-	c->statementCount = initialStatementCount;
+	int initialNodeCount=c->nodeCount;
+	int initialStatementCount=c->statementCount;
+	c->nodeCount=initialNodeCount; // reset for tests! dont save!
+	c->statementCount=initialStatementCount;
 
 	//    memset(&c->nodes[initialNodeCount], 0, sizeof (Node) *( maxNodes() - initialNodeCount -1)); //calloc!
 	//    memset(c->statements, 0, sizeof (Statement) * maxStatements() - 1);
 	//    memset(0,c->statements,maxStatementsPerNode)
 
-	Node* good = add("good", adjective, 1);
-	Node* is = add("is", verb, 1);
-	Node* test = add("test", noun, 1);
+	Node* good=add("good", adjective, 1);
+	Node* is=add("is", verb, 1);
+	Node* test=add("test", noun, 1);
 	assert(is != null, "is!=null");
 
 	showContext(current_context);
 	//	c->name="Public";
-	if (multipleContexts)
-		assert(c->id == 1, "c.id==1 multipleContexts");
-	else
-		assert(c->id == wordnet, "c.id==wordnet"); //wordnet if
+	if (multipleContexts) assert(c->id == 1, "c.id==1 multipleContexts");
+	else assert(c->id == wordnet, "c.id==wordnet"); //wordnet if
 
 	//	assert(c->name=="Public","c.name==Public");
 	assert(c->nodeCount >= initialNodeCount + 3, "c.nodes==3"); //3+abstracts
@@ -152,10 +148,10 @@ void test() {
 	//	assert(eq(c->nodes[3].name,null),"c.nodes[3].name==null");
 	//    assert(findWord(testContext, "good",true)==good), "find(wordnet,good)==good");
 	//    assert(eq(findWord(testContext, "good",true)->name,good), "find(wordnet,good)==good");
-	Node* dead = &c->nodes[999];
+	Node* dead=&c->nodes[999];
 	// Statement* s=addStatement4(c.id, test->id,is->id,good->id);
-	int statementCount = c->statementCount;
-	Statement* s = addStatement(test, is, good);
+	int statementCount=c->statementCount;
+	Statement* s=addStatement(test, is, good);
 	p(c->statementCount);
 	//	assert(c->statementCount==statementCount+1,"c.statementCount==1");// if not yet there
 	assert(s->subject == test->id, "s->subject==test->id");
@@ -173,13 +169,13 @@ void test() {
 	show(test);
 	show(is);
 	show(dead);
-	statementCount = c->statementCount;
+	statementCount=c->statementCount;
 	// sonderf√§lle
 	addStatement4(-1, -2, -3, -4);
 	assert(c->statementCount == statementCount, "c.statementCount==1");
 
-	Node* instance = getThe("instance");
-	Node* instance2 = getThe("instance");
+	Node* instance=getThe("instance");
+	Node* instance2=getThe("instance");
 #ifdef inlineName // todo!
 	assert(instance == instance2, "instance==instance2"); //  it failes when strings are lost
 #endif
@@ -208,40 +204,40 @@ void testDummyLogic() {
 	//    Node* cute = add("cute", adjective);
 	//    Node* people = add("people", noun);
 	//	}else{
-	Node* testDummy = getThe("testDummy");
-	Node* size = getThe("size");
-	Node* funny = getThe("funny");
-	Node* eleven = getThe("11");
-	Node* testDummy2 = add("testDummy");
-	Node* beth = getThe("Beth");
-	Node* CEO = getThe("CEO");
-	Node* manager = getThe("manager");
-	Node* karsten = getThe("karsten");
-	Node* is = Type; // Kind;// add("is",verb);
-	Node* cute = getThe("cute");
-	Node* people = getThe("people");
+	Node* testDummy=getThe("testDummy");
+	Node* size=getThe("size");
+	Node* funny=getThe("funny");
+	Node* eleven=getThe("11");
+	Node* testDummy2=add("testDummy");
+	Node* beth=getThe("Beth");
+	Node* CEO=getThe("CEO");
+	Node* manager=getThe("manager");
+	Node* karsten=getThe("karsten");
+	Node* is=Type; // Kind;// add("is",verb);
+	Node* cute=getThe("cute");
+	Node* people=getThe("people");
 	//	}
 
 	learn("testDummy.funny");
 	learn("testDummy.size=11");
 	// assert(*testDummy.is(funny));
 	//    Statement* s1 = addStatement(beth, is, cute);
-	Statement* s1 = addStatement(beth, Attribute, cute);
-	Statement* s2 = addStatement4(current_context, _person, _plural, people->id);
-	Statement* s2a = addStatement4(current_context, _person, _plural, people->id);
-	Statement* s2b = addStatement(Person, Plural, people);
-	Statement* s2c = addStatement(Person, Plural, people);
+	Statement* s1=addStatement(beth, Attribute, cute);
+	Statement* s2=addStatement4(current_context, _person, _plural, people->id);
+	Statement* s2a=addStatement4(current_context, _person, _plural, people->id);
+	Statement* s2b=addStatement(Person, Plural, people);
+	Statement* s2c=addStatement(Person, Plural, people);
 
 	//	assert(s2==s2a,"dont duplicate edges 4");??
 	assert(s2c == s2b, "dont duplicate edges");
 	//	assert(s2==s2b,"dont duplicate edges");// replace abstract with item!!
-	Statement* s3 = addStatement(testDummy, Attribute, funny);
+	Statement* s3=addStatement(testDummy, Attribute, funny);
 	//    Statement* s4 = addStatement(Person, Instance, karsten);
-	Statement* s4 = addStatement(CEO, Instance, karsten);
+	Statement* s4=addStatement(CEO, Instance, karsten);
 	check(eq(karsten->name, "karsten"));
-	Statement* s4a = addStatement(manager, SubClass, CEO);
+	Statement* s4a=addStatement(manager, SubClass, CEO);
 	//    Statement* s4a = addStatement(CEO, SuperClass, manager);
-	Statement* s4b = addStatement(manager, is, a(worker));
+	Statement* s4b=addStatement(manager, is, a(worker));
 
 	check(isA(CEO, manager));
 	clearAlgorithmHash();
@@ -267,75 +263,74 @@ void testDummyLogic() {
 	check(findMember(beth, "cute"))
 	assert(findMember(testDummy, "funny") != null, "findMember(testDummy,funny)");
 	assert(findMember(testDummy, "funny") == funny, "findMember(testDummy,funny)");
-	Node* t = findMatch(testDummy, "funny");
+	Node* t=findMatch(testDummy, "funny");
 	assert(t == testDummy, "findMatch(testDummy,funny)");
-	t = findMatch(testDummy, "bunny");
+	t=findMatch(testDummy, "bunny");
 	assert(t == 0, "findMatch(testDummy,bunny)");
 	assert(findMatch(testDummy, "size=11") == testDummy, "findMember(testDummy,size=11)");
 	assert(findMatch(testDummy, "size=12") == 0, "findMember(testDummy,size=12)");
 	/* How can this have ever passed, when not using parseFilter ? didn't
-	check(findMember(testDummy, "size>10") == testDummy);
-	check(findMatch(testDummy, "size>10") == testDummy);
-	assert(findMatch(testDummy, "size<12") == testDummy, "findMember(testDummy,size<12)");
-	assert(findMatch(testDummy, "size>=11") == testDummy, "findMember(testDummy,size>=11)");
-	assert(findMatch(testDummy, "size<=11") == testDummy, "findMember(testDummy,size<=11)");
+	 check(findMember(testDummy, "size>10") == testDummy);
+	 check(findMatch(testDummy, "size>10") == testDummy);
+	 assert(findMatch(testDummy, "size<12") == testDummy, "findMember(testDummy,size<12)");
+	 assert(findMatch(testDummy, "size>=11") == testDummy, "findMember(testDummy,size>=11)");
+	 assert(findMatch(testDummy, "size<=11") == testDummy, "findMember(testDummy,size<=11)");
 	 */
 	// get data
 	//	vector<Node*> rows1=query("select * from testDummy where size=11 and testDummy.funny");
 	//	Node* n = (Node *)rows1[0];
 	p(testDummy);
 	clearAlgorithmHash();
-	NodeVector& testDummys = all_instances(testDummy);
+	NodeVector& testDummys=all_instances(testDummy);
 	check(contains(testDummys, testDummy));
 	//	check(getThe("testDummy")==testDummy);
 	//	testDummys=all_instances(getThe("testDummy"));
 	//	check(contains(testDummys,testDummy));
-	testDummys = all_instances(getAbstract("testDummy"));
+	testDummys=all_instances(getAbstract("testDummy"));
 	check(contains(testDummys, testDummy));
-	NodeVector funnys = filter(testDummys, "funny");
+	NodeVector funnys=filter(testDummys, "funny");
 	check(contains(testDummys, testDummy));
-	char* sql = "select * from testDummy where funny";
-	NodeVector list = query(sql);
+	char* sql="select * from testDummy where funny";
+	NodeVector list=query(sql);
 	//	show((Node *)(list[0]));
 	//	show((Node *)list[1]);
 	showNodes(list, true);
 	assert(contains(list, testDummy), sql);
 	//	sql="select * from testDummy funny";
 	//	assert(last(query(sql)) == 0,sql);
-	sql = "select * from testDummy where size=11";
-	list = query(sql);
+	sql="select * from testDummy where size=11";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "select * from testDummy where size=11 and testDummy.bunny";
-	list = query(sql);
+	sql="select * from testDummy where size=11 and testDummy.bunny";
+	list=query(sql);
 	assert(false == contains(list, testDummy), sql);
-	sql = "select * from testDummy where size=11 and funny";
-	list = query(sql);
+	sql="select * from testDummy where size=11 and funny";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "select * from testDummy where size=11 and testDummy.funny";
-	list = query(sql);
+	sql="select * from testDummy where size=11 and testDummy.funny";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "testDummy that are funny";
-	list = query(sql);
+	sql="testDummy that are funny";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "all testDummys";
-	list = query(sql);
+	sql="all testDummys";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "testDummy where size=11";
-	list = query(sql);
+	sql="testDummy where size=11";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "testDummy with size=11";
-	list = query(sql);
+	sql="testDummy with size=11";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "testDummys with size=11";
-	list = query(sql);
+	sql="testDummys with size=11";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "testDummys with size=11 and testDummy.funny";
-	list = query(sql);
+	sql="testDummys with size=11 and testDummy.funny";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-	sql = "testDummy with size>10";
-	list = query(sql);
+	sql="testDummy with size>10";
+	list=query(sql);
 	assert(contains(list, testDummy), sql);
-
 
 	assert(isA(beth, Person), "isA(beth,Person->name)");
 	// deprecated:
@@ -356,11 +351,11 @@ void testDummyLogic() {
 	addStatement(beth, Type, Person);
 	assert(findStatement(cute, Type, Person) == 0, "findStatement(cute,Type,Person)==0 b");
 	clearAlgorithmHash();
-	vector<Node*> persons = all_instances(Person);
+	vector<Node*> persons=all_instances(Person);
 	assert(persons.size() > 0, "all_instances(Person).size()>0");
 	assert(contains(persons, beth), "contains(persons,Beth)");
 	//    check(contains(people, karsten));
-	vector<Node*> managers = all_instances(manager);
+	vector<Node*> managers=all_instances(manager);
 	//    todo:
 	//    check(contains(managers, karsten));
 	//    vector<Node*>
@@ -369,26 +364,25 @@ void testDummyLogic() {
 	check(findMember(beth, "cute"));
 	check(findMatch(beth, "cute"));
 	clearAlgorithmHash();
-	sql = "select * from person where cute";
-	vector<Node*> cuties = query(sql);
+	sql="select * from person where cute";
+	vector<Node*> cuties=query(sql);
 	check(contains(cuties, beth));
 	check(last(cuties) == beth);
 	assert(all_instances(people).size() > 0, "all_instances(people)>0");
 	assert(find_all("people", current_context, true).size() > 1, "find_all(people)>1");
 	check(contains(all_instances(people), beth));
-	NodeVector all = find_all("people", current_context, true);
+	NodeVector all=find_all("people", current_context, true);
 	check(contains(all, beth));
 	//    check(isA(beth,cute));
 
-	NodeVector peoples = query("select * from people");
+	NodeVector peoples=query("select * from people");
 	check(contains(peoples, beth));
-	sql = "select * from people where cute";
-	all = query(sql);
+	sql="select * from people where cute";
+	all=query(sql);
 	check(contains(all, beth));
 	check(last(all) == beth);
 
-
-	persons = find_all("person", current_context, true);
+	persons=find_all("person", current_context, true);
 	assert(persons.size() > 1, "find_all(person)>1");
 	showNodes(persons); // could be over 100 !!! NOT containing person #35325
 	check(contains(persons, beth));
@@ -399,16 +393,16 @@ void testDummyLogic() {
 	//    Statement* learned=learn("beth is cute");
 	//    evaluate("beth is cute");
 	/*
-		assert(match("testDummy[funny]")==testDummy,"match('testDummy[funny]')==testDummy");
-		assert(match("testDummy[size=11]")==testDummy,"match('testDummy[size=11]')==testDummy");
-		assert(match("testDummy[size=11,funny]")==testDummy,"match('testDummy[size=11,funny]')==testDummy");
-		assert(match("testDummy[size=11 and funny]")==testDummy,"match('testDummy[size=11,funny]')==testDummy");
-		assert(match("testDummy[size>10]")==testDummy,"match('testDummy[size>10]')==testDummy");
-		assert(match("testDummy[size<12]")==testDummy,"match('testDummy[size<12]')==testDummy");
-		assert(match("testDummy[size>10,funny]")==testDummy,"match('testDummy[size>10,funny]')==testDummy");
-		assert(match("testDummy[size<12,funny]")==testDummy,"match('testDummy[size<12,funny]')==testDummy");
-		assert(match("testDummy[size>10 and funny]")==testDummy,"match('testDummy[size>10,funny]')==testDummy");
-		assert(match("testDummy[size<12 And funny]")==testDummy,"match('testDummy[size<12,funny]')==testDummy");
+	 assert(match("testDummy[funny]")==testDummy,"match('testDummy[funny]')==testDummy");
+	 assert(match("testDummy[size=11]")==testDummy,"match('testDummy[size=11]')==testDummy");
+	 assert(match("testDummy[size=11,funny]")==testDummy,"match('testDummy[size=11,funny]')==testDummy");
+	 assert(match("testDummy[size=11 and funny]")==testDummy,"match('testDummy[size=11,funny]')==testDummy");
+	 assert(match("testDummy[size>10]")==testDummy,"match('testDummy[size>10]')==testDummy");
+	 assert(match("testDummy[size<12]")==testDummy,"match('testDummy[size<12]')==testDummy");
+	 assert(match("testDummy[size>10,funny]")==testDummy,"match('testDummy[size>10,funny]')==testDummy");
+	 assert(match("testDummy[size<12,funny]")==testDummy,"match('testDummy[size<12,funny]')==testDummy");
+	 assert(match("testDummy[size>10 and funny]")==testDummy,"match('testDummy[size>10,funny]')==testDummy");
+	 assert(match("testDummy[size<12 And funny]")==testDummy,"match('testDummy[size<12,funny]')==testDummy");
 	 */
 	// get data
 	//    	find_english("people that are cute");
@@ -418,7 +412,6 @@ void testDummyLogic() {
 	//    	find_english("persons which are cute");
 	//    	find_english("all persons which are cute");
 	//    	find_english("the person that is cute");
-
 	// kinds of x => ?->parent->x | ?->parent->x
 	// wie sp√§t=
 }
@@ -427,7 +420,7 @@ void testWordnet() {
 	//    load();
 	checkWordnet();
 	//    importAll();
-	Context c = *getContext(wordnet);
+	Context c=*getContext(wordnet);
 	showContext(wordnet);
 	p("contexts[wordnet].nodeCount:");
 	p(c.nodeCount);
@@ -492,10 +485,10 @@ void testOutput() {
 //#define new(word) Node* word=getThe(#word);
 
 void testStringLogic() {
-	Node* Schlacht_von_Kleverhamm = getThe("Schlacht_von_Kleverhamm");
+	Node* Schlacht_von_Kleverhamm=getThe("Schlacht_von_Kleverhamm");
 	//    die(Schlacht_von_Kleverhamm);
 	eine(Schlacht);
-	Node* Kleverhamm = getThe("Kleverhamm");
+	Node* Kleverhamm=getThe("Kleverhamm");
 	dissectWord(Schlacht_von_Kleverhamm);
 	show(Schlacht_von_Kleverhamm);
 	show(Kleverhamm);
@@ -504,12 +497,12 @@ void testStringLogic() {
 }
 
 void testInstancesAtEnd() {
-	Node* t = getThe("testInstancesAtEnd1");
-	Node* p = getThe("testInstancesAtEndP");
-	Node* o = getThe("testInstancesAtEndO");
+	Node* t=getThe("testInstancesAtEnd1");
+	Node* p=getThe("testInstancesAtEndP");
+	Node* o=getThe("testInstancesAtEndO");
 	addStatement(t, Type, o);
 	addStatement(t, Instance, o);
-	S s = addStatement(t, p, o, false);
+	S s=addStatement(t, p, o, false);
 	addStatement(t, Type, o, false);
 	addStatement(t, Instance, o, false);
 	check(t->firstStatement == s->id);
@@ -517,10 +510,10 @@ void testInstancesAtEnd() {
 
 void testStringLogic2() {
 	eine(Schlacht);
-	Node* Schlacht_bei_Guinegate = getThe("Guinegate_(14791),_Schlacht_bei"); // intellij display bug!
+	Node* Schlacht_bei_Guinegate=getThe("Guinegate_(14791),_Schlacht_bei"); // intellij display bug!
 	//    deleteNode(Schlacht_bei_Guinegate);
 	//    Schlacht_bei_Guinegate=getThe("Guinegate_(1479),_Schlacht_bei");
-	Schlacht_bei_Guinegate = getThe("Schlacht_bei_Guinegate_(14791)");
+	Schlacht_bei_Guinegate=getThe("Schlacht_bei_Guinegate_(14791)");
 	//	deleteNode(Schlacht_bei_Guinegate);
 	//	Schlacht_bei_Guinegate=getThe("Schlacht_bei_Guinegate_(1479)");
 	dissectWord(Schlacht_bei_Guinegate);
@@ -528,14 +521,14 @@ void testStringLogic2() {
 	check(eq(getThe("near")->name, "near"));
 	show(Schlacht_bei_Guinegate);
 	check(findStatement(Schlacht_bei_Guinegate, a(near), a(Guinegate)));
-	NV all = instanceFilter(a(Guinegate));
+	NV all=instanceFilter(a(Guinegate));
 	check(contains(all, the(Guinegate)));
 	check(findStatement(Schlacht_bei_Guinegate, _(near), a(Guinegate)));
 	check(has(Schlacht_bei_Guinegate, _(near), a(Guinegate)));
 	check(has(Schlacht_bei_Guinegate, _(near), the(Guinegate)));
 	// TODO !!!
 	//    check(has(a(Schlacht_bei_Guinegate), _(near), a(Guinegate)));
-	Node* Armagnac_Weinbrand = getThe("Armagnac_(Weinbrand)");
+	Node* Armagnac_Weinbrand=getThe("Armagnac_(Weinbrand)");
 	dissectWord(Armagnac_Weinbrand);
 	show(Armagnac_Weinbrand);
 	check(isA(word(Armagnac), word(Weinbrand)));
@@ -549,24 +542,31 @@ void testStringLogic2() {
 }
 
 void testHash() {
-	char* thing = "city";
-	Node* city = getAbstract(thing);
+	check(wordhash("Stefanie_Zweig")!=wordhash("MC_Zwieback"));
+	check(wordhash("Stefanie_Zweig")>0);
+
+	int a=wordhash("Harr");
+	int b=wordhash("Harz");
+	int c=wordhash("Hart");
+	check(a != b != c);
+
+	char* thing="city";
+	Node* city=getAbstract(thing);
 	ps(city->name);
 	check(eq(city->name, "city"));
-	insertAbstractHash(wordhash(Circa->name), Member);
-	insertAbstractHash(Circa);
-#ifdef inlineName
-	Node* a2 = getAbstract(Circa->name);
-	check(a2 == Circa);
-#endif
+//	insertAbstractHash(wordhash(Circa->name), Domain);
+//	insertAbstractHash(Circa);
+//#ifdef inlineName
+//	Node* a2 = getAbstract(Circa->name);
+//	check(a2 == Circa);
+//#endif
 }
 
 void testImportContacts() {
-	if (!hasWord("Alexandra Neumann"))
-		importCsv("/Users/pannous/data/base/contacts/adressen.txt"); //,","
+	if (!hasWord("Alexandra Neumann")) importCsv("/Users/pannous/data/base/contacts/adressen.txt"); //,","
 	check(a(Alexandra_Neumann) == a(Alexandra Neumann));
 	check(the(Alexandra_Neumann) == the(Alexandra Neumann));
-	N plz = getAbstract("Postleitzahl (privat)");
+	N plz=getAbstract("Postleitzahl (privat)");
 	dissectWord(plz);
 	check(isA(plz, a(Postleitzahl)));
 
@@ -586,14 +586,14 @@ void testImportExport() {
 	//    check(query("all firstnames starting with 'a'").size() > 0);
 
 	/* NOO dont overwrite nodes.bin ...
-	Context* c=currentContext();
-	int nodeCount=c->nodeCount;
-	c->nodeCount=9999;
-	save();
-	load();
-	check(c->nodeCount==9999);
-	c->nodeCount=nodeCount;
-	save();
+	 Context* c=currentContext();
+	 int nodeCount=c->nodeCount;
+	 c->nodeCount=9999;
+	 save();
+	 load();
+	 check(c->nodeCount==9999);
+	 c->nodeCount=nodeCount;
+	 save();
 	 */
 	//    importList("MaennerVornamen.txt", "male_firstname");
 	//	deleteStatements(a(female_firstname));
@@ -601,8 +601,7 @@ void testImportExport() {
 	//	addStatement(a(female_firstname),Instance,the(female_firstname),false);// bug hack
 	//	addStatement(a(female_firstname),Instance,get(489285),false);// bug hack
 	//	addStatement(get(9028726),Synonym,get(9025182),false);// bug hack
-	if (!hasWord("female_firstname"))
-		importList("FrauenVornamen.txt", "female_firstname");
+	if (!hasWord("female_firstname")) importList("FrauenVornamen.txt", "female_firstname");
 	check(all_instances(a(female_firstname)).size() > 5); //
 	check(query("all female_firstnames", 10).size() > 5);
 
@@ -674,22 +673,22 @@ void testImages() {
 void testInstanceLogic() {
 	// needs addStatementToNodeWithInstanceGap instead of addStatementToNode
 	// why was that important? to skip 100000 instances (cities)
-	Node* test3 = getThe("test", Adjective); //add("test", adjective);
-	Node* test4 = getThe("test", Adjective);
+	Node* test3=getThe("test", Adjective); //add("test", adjective);
+	Node* test4=getThe("test", Adjective);
 	check(getThe("test", Adjective) == test3);
 
 	//	exit(0);//test make!!
 	//    Node* aBaum=getAbstract("Baum");
 	ein(Baum);
-	Statement* s = addStatement(Baum, the(colour), _(blue));
+	Statement* s=addStatement(Baum, the(colour), _(blue));
 	addStatement(Baum, Instance, the(Ulme));
 	show(Baum);
 	addStatement(Baum, the(colour), _(green));
 	addStatement(Baum, the(colour), _(pink));
 	show(Baum);
-	Statement *c = getStatementNr(Baum, 1);
+	Statement *c=getStatementNr(Baum, 1);
 	check(c->Predicate != Instance);
-	c = getStatementNr(Baum, 2);
+	c=getStatementNr(Baum, 2);
 	check(c->Predicate != Instance);
 }
 
@@ -702,26 +701,25 @@ void testValueLogic() {
 	deleteNode(a("14.32 meter"));
 	ein(Booot);
 	check(eq(Booot->name, "Booot"));
-	NodeVector alle = all_instances(Booot);
+	NodeVector alle=all_instances(Booot);
 	//    check(contains(alle, Booot)); // Nee, all_classes ja, all_instances nicht. oder?
-	Node* m14 = value("", 14, "m");
-	Node* m15 = value("", 15, "m");
-	Node* mm14 = value("", 14000, "mm");
-	Node* mm15 = value("", 15000, "mm");
-	Node* m143 = value("14.3", 14.3, "meter");
-	Node* m1430 = value("14.30", 14.30, "meter");
-	Node* m1433 = value("14.330", 14.330, "meter");
-	Node* m1433_duplicate = value("14.330", 14.330, "meter");
+	Node* m14=value("", 14, "m");
+	Node* m15=value("", 15, "m");
+	Node* mm14=value("", 14000, "mm");
+	Node* mm15=value("", 15000, "mm");
+	Node* m143=value("14.3", 14.3, "meter");
+	Node* m1430=value("14.30", 14.30, "meter");
+	Node* m1433=value("14.330", 14.330, "meter");
+	Node* m1433_duplicate=value("14.330", 14.330, "meter");
 	check(m1433_duplicate == m1433);
 
-
-	Statement* boot_length = addStatement(Booot, a(length), m143);
+	Statement* boot_length=addStatement(Booot, a(length), m143);
 	show(Booot);
 	countInstances(m143);
 	show(m143);
 	check(findStatement(Booot, a(length), m143, 1, 1, 1));
 	check(findStatement(Booot, a(length), m143, 0, 0, 0));
-	Statement* boot_length2 = addStatement(Booot, a(length), m143);
+	Statement* boot_length2=addStatement(Booot, a(length), m143);
 	check(boot_length == boot_length2); // duplicate
 
 	show(m14);
@@ -760,8 +758,8 @@ void testValueLogic() {
 	//    check(has(Booot,a(length),matcher(Less,mm15)));
 	//    check(has(Booot,a(length),m14));
 
-	Node *kind = the(kind);
-	Node *length = the(length);
+	Node *kind=the(kind);
+	Node *length=the(length);
 	check(eq(length->name, "length")); //60350
 	clearAlgorithmHash();
 	show(length);
@@ -777,17 +775,17 @@ void testValueLogic() {
 	check(!has(kind, SuperClass, length, 1, 1, false));
 	check(!isA4(kind, length, true, true));
 	//    show(m143);
-	Statement *s = findStatement(Booot, a(length), Any);
+	Statement *s=findStatement(Booot, a(length), Any);
 	check(checkStatement(s));
-	Node *n2 = s->Object;
+	Node *n2=s->Object;
 	check(isEqual(n2, m143));
 	check(n2 == m143);
-	Statement *s2 = findStatement(Booot, the(length), Any, 1, 1, 1);
-	n2 = s2->Object;
+	Statement *s2=findStatement(Booot, the(length), Any, 1, 1, 1);
+	n2=s2->Object;
 	check(n2 == m143);
 	//    show(m143); //   417287
 	//    show(has(Booot, a(length)));
-	Node *n = has(Booot, the(length));
+	Node *n=has(Booot, the(length));
 	//    show(n); // 413730
 	//    check(has(Booot,the(length))==m143);
 	check(eq(has(Booot, a(length)), m143));
@@ -824,24 +822,24 @@ void testValueQuery() {
 	deleteNode(the(Booot));
 	deleteNode(a(Booot));
 	das(Booot);
-	Node* m14 = value("", 14, "m");
-	Node* m15 = value("", 15, "m");
-	Node* m143 = value("14.320", 14.32, "meter");
+	Node* m14=value("", 14, "m");
+	Node* m15=value("", 15, "m");
+	Node* m143=value("14.320", 14.32, "meter");
 	show(Booot);
 	check(isA4(m14, getThe("14 m")));
 	//    check(isA4(m14, getThe("14 meter")));
 	addStatement(Booot, a(length), m143);
 	check(findStatement(Booot, a(length), m143));
 	Query q;
-	q.keyword = Booot;
-	q.autoFacet = true;
+	q.keyword=Booot;
+	q.autoFacet=true;
 	//    q.fields.push_back(the(length));
 	q.fields.push_back(a(length));
-	Statement *s1 = pattern(a(length), Greater, m14);
-	Statement *s2 = pattern(a(length), Less, m15);
-	Statement *s3 = andStatement(s1, s2);
-	Statement *s4 = pattern(a(length), Less, m14);
-	Statement *s5 = orStatement(s3, s4);
+	Statement *s1=pattern(a(length), Greater, m14);
+	Statement *s2=pattern(a(length), Less, m15);
+	Statement *s3=andStatement(s1, s2);
+	Statement *s4=pattern(a(length), Less, m14);
+	Statement *s5=orStatement(s3, s4);
 	//    q.filters.push_back(s4);
 	//    ps(query(q));
 	//    check(!contains(q.instances, Booot));
@@ -869,7 +867,8 @@ void testValueQuery() {
 
 void testPropertyQuery() {
 	if (!hasWord("Sheberghan"))
-		importCsv("/Users/me/data/base/geo/geonames/cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid", "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
+		importCsv("/Users/me/data/base/geo/geonames/cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid",
+				"latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 
 	//	show(the(Sheberghan));
 	//    check(has(the(Sheberghan),the(population),the(55641)));// ?
@@ -881,13 +880,13 @@ void testPropertyQuery() {
 
 	//    show(the(city));
 	countInstances(the(city));
-	Node* hasloh = the(Hasloh); // todo match addressbook Hasloh with geoname Hasloh in importCsv!
+	Node* hasloh=the(Hasloh); // todo match addressbook Hasloh with geoname Hasloh in importCsv!
 	show(the(Hasloh));
 	//    check(eq(the("Hasloh"),the(Hasloh)))
 	//    check(has(the(Hasloh),the(population),the(3460)));// SLOW!!
 
 	//    check(!areAll(the("latitude"),the(population)));
-	Node *n = parseValue("3.4 mg");
+	Node *n=parseValue("3.4 mg");
 	check(n->value.number == 3.4);
 	//    has(n,Unit,a("mg"));
 	//    check(isEqual(n,parseValue("3400 µg"))
@@ -895,30 +894,29 @@ void testPropertyQuery() {
 	//    Node *pp=has(the(Hasloh),the(population), Any);
 	//    Node *p=has(the(Hasloh),the(population));
 	//    show(p);
-	return; // todo:
+	return;// todo:
 }
 
 void testComparisonQuery() {
-	int limit = 10;
+	int limit=10;
 	NodeVector nv;
 	Query q;
-	q.instances = all_instances(the(city));
-	q.limit = limit;
-	q.lookuplimit = limit * 2;
-	nv = filter(q, pattern(the(population), Less, the(1200)));
+	q.instances=all_instances(the(city));
+	q.limit=limit;
+	q.lookuplimit=limit * 2;
+	nv=filter(q, pattern(the(population), Less, the(1200)));
 	p(nv.size());
 	check(nv.size() > 10);
 	check(atoi(getProperty(nv[0], "population")->name) < 1200);
 
-
-	nv = filter(q, pattern(the(population), Greater, the(1300)));
+	nv=filter(q, pattern(the(population), Greater, the(1300)));
 	p(nv.size());
 	check(nv.size() > 10);
 	check(atoi(getProperty(nv[0], "population")->name) > 1300);
 
-	defaultLookupLimit = 1000000;
-	q.instances = all_instances(the(city), true, defaultLookupLimit, false); // again??
-	q.limit = 10;
+	defaultLookupLimit=1000000;
+	q.instances=all_instances(the(city), true, defaultLookupLimit, false); // again??
+	q.limit=10;
 	//	check(q.instances.size() >= defaultLookupLimit);
 	p(q.instances.size());
 
@@ -927,32 +925,28 @@ void testComparisonQuery() {
 	//	show(get(708772));
 	//	check(contains(q.instances ,get(708772)));
 
-
 	//	Statement* filter1 = pattern(the(population), Equals, a(1140));
-	Statement* filter1 = pattern(a(population), Equals, a(1140));
-	q.semantic = true;
-	nv = filter(q, filter1);
+	Statement* filter1=pattern(a(population), Equals, a(1140));
+	q.semantic=true;
+	nv=filter(q, filter1);
 	p(nv.size());
 	check(nv.size() >= 1);
 	check(atoi(getProperty(nv[0], "population")->name) == 1140);
 	p(nv[0]);
 
-
 	q.limit=1000;
-	Statement* and_filter = andStatement(pattern(the(population), Less, the(1141)), pattern(the(population), More, the(1139)));
-	nv = filter(q, and_filter);
+	Statement* and_filter=andStatement(pattern(the(population), Less, the(1141)), pattern(the(population), More, the(1139)));
+	nv=filter(q, and_filter);
 	p(nv.size());
 	check(nv.size() >= 1);
 
-
-	and_filter = andStatement(pattern(the(population), Less, the(1200)), pattern(the(population), More, the(1100)));
-	nv = filter(q, and_filter);
+	and_filter=andStatement(pattern(the(population), Less, the(1200)), pattern(the(population), More, the(1100)));
+	nv=filter(q, and_filter);
 	p(nv.size());
 	check(nv.size() > 0);
 
-
-	and_filter = andStatement(pattern(the(population), More, the(1139)), pattern(the(population), Less, the(1141)));
-	nv = filter(q, and_filter);
+	and_filter=andStatement(pattern(the(population), More, the(1139)), pattern(the(population), Less, the(1141)));
+	nv=filter(q, and_filter);
 	p(nv.size());
 	check(nv.size() > 0);
 
@@ -961,12 +955,12 @@ void testComparisonQuery() {
 void testComparisonQueryString() {
 	Query q;
 	NV nv;
-	q = parseQuery("city where population=1140", 100);
-	q.lookuplimit = 10000;
-	nv = query(q);
+	q=parseQuery("city where population=1140", 100);
+	q.lookuplimit=10000;
+	nv=query(q);
 	check(nv.size() > 0);
 	p(nv[0]);
-	N population = getProperty(nv[0], "population");
+	N population=getProperty(nv[0], "population");
 	p(population);
 	check(eq(population->name, "1140"));
 	check(atoi(population->name) == 1140);
@@ -975,53 +969,51 @@ void testComparisonQueryString() {
 }
 
 void testComparisonQueryString2() {
-	Query q = parseQuery("city where countrycode=de", 100);
-	NV nv = query(q);
+	Query q=parseQuery("city where countrycode=de", 100);
+	NV nv=query(q);
 	check(nv.size() > 0);
-	N countrycode = getProperty(nv[0], "countrycode");
+	N countrycode=getProperty(nv[0], "countrycode");
 	check(eq(countrycode->name, "de"));
 }
 
 void testQueryAnd() {
-	Query q = parseQuery("city where countrycode=\"us\" and population<2000", 100);
-	NV nv = query(q);
+	Query q=parseQuery("city where countrycode=\"us\" and population<2000", 100);
+	NV nv=query(q);
 	check(nv.size() > 0);
-	N countrycode = getProperty(nv[0], "countrycode");
-	N population = getProperty(nv[0], "population");
+	N countrycode=getProperty(nv[0], "countrycode");
+	N population=getProperty(nv[0], "population");
 	p(nv[0]);
 	check(eq(countrycode->name, "us"));
 	check(atoi(population->name) > 0 && atoi(population->name) < 2000);
 }
 
-
 void testQueryMore() {
-	Query q = parseQuery("city where population>10000000", 100);
+	Query q=parseQuery("city where population>10000000", 100);
 	S filterTree=q.filters[0];
 	N node=get(657649);
 	N ok=has(node, filterTree, q.recursion, q.semantic, false, q.predicatesemantic);
 	p(ok);
 	check(!ok);
 	q.limit=1;
-	NV nv = query(q);
+	NV nv=query(q);
 	check(nv.size() > 0);
-	N population = getProperty(nv[0], "population");
+	N population=getProperty(nv[0], "population");
 	p(nv[0]);
 	check(atoi(population->name) > 0 && atoi(population->name) > 10000000);
 }
 
-
 void testComparisonQueryStringLess() {
 	Query q;
 	NV nv;
-	string s = "select * from city where population<1100";
-	q = parseQuery(s);
+	string s="select * from city where population<1100";
+	q=parseQuery(s);
 	check(eq(q.keyword->name, "city"));
 	check(q.filters.size() == 1);
 	check(checkStatement(q.filters[0]));
-	nv = query(q);
+	nv=query(q);
 	check(nv.size() > 0);
 	p(nv[0]);
-	N population = getProperty(nv[0], "population");
+	N population=getProperty(nv[0], "population");
 	p(population);
 	check(atoi(population->name) > 0 && atoi(population->name) < 1100);
 }
@@ -1049,12 +1041,11 @@ void testQuery() {
 	testFacets();
 }
 
-
 //#define sn showNode
 
 void testReification() {
-	Statement* p = pattern(_(karsten), Attribute, _(cool));
-	Node* re = reify(p);
+	Statement* p=pattern(_(karsten), Attribute, _(cool));
+	Node* re=reify(p);
 	show(re);
 	check(_statement == 109);
 	//	show(get(_statement));
@@ -1065,8 +1056,8 @@ void testReification() {
 }
 
 void testFactLearning() {
-	Statement* s = learn("Peter loves Jule");
-	Statement* s2 = learn("Peter loves Jule");
+	Statement* s=learn("Peter loves Jule");
+	Statement* s2=learn("Peter loves Jule");
 	check(s->Subject == the(Peter) || s->Subject == a(Peter));
 	check(s == s2);
 	p(s);
@@ -1081,7 +1072,7 @@ void testFactLearning() {
 	addStatement(the(german_translation), is_a, Translation, true);
 	addStatement(the(son), the(german_translation), the(Sohn), true);
 	//	check(has(the(Peter),a(sons),the(Milan)));
-	s = learn("Peter.son=Milan");
+	s=learn("Peter.son=Milan");
 	check(s->Subject == the(Peter));
 	check(isA(s->Predicate, a(son)));
 	check(s->Object == the(Milan));
@@ -1095,7 +1086,7 @@ void testFactLearning() {
 void testPaths() {
 	checkWordnet();
 	check(has(a(man), a(hand)));
-	NodeVector path = memberPath(a(human), a(hand));
+	NodeVector path=memberPath(a(human), a(hand));
 	check(path.size() > 2);
 	check(has(a(animal), a(foot)));
 	check(has(a(man), Part, a(hand)));
@@ -1109,8 +1100,9 @@ void testPaths() {
 }
 
 void testCities() {
-	char* line = "geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n";
-	int nr = splitStringC(line, 0, '\t');
+	char* line=
+			"geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n";
+	int nr=splitStringC(line, 0, '\t');
 	//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n",0,"\t",true);
 	check(nr > 4);
 	vector<char*> fields;
@@ -1118,7 +1110,8 @@ void testCities() {
 	//	check(fields.size()==nr);
 	clearMemory();
 	if (!hasWord("Mersing")) {
-		char* ignore = "alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
+		char* ignore=
+				"alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
 		importCsv("cities1000.txt", the(city), '\t', ignore);
 	}
 	p(the(Mersing));
@@ -1126,13 +1119,13 @@ void testCities() {
 	check(has(the(Mersing), a(population), the(22007)))
 	check(!has(the(Mersing), a(population), the(22008)))
 	check(!has(the(Mersing), value("population", 22008)))
-			//	check(has(the(Mersing),value("population",22007))) todo
+	//	check(has(the(Mersing),value("population",22007))) todo
 }
 
 void testSplit() {
-	char** splat = splitStringC("a.a", ".");
-	char* thing = splat[0];
-	char* property = splat[1];
+	char** splat=splitStringC("a.a", ".");
+	char* thing=splat[0];
+	char* property=splat[1];
 	check(eq(thing, property));
 }
 
@@ -1151,25 +1144,25 @@ void testOpposite() {
 	//	check(!isA(,a(derived)));
 
 	p(Antonym);
-	Node* anto = getThe("Antonym");
+	Node* anto=getThe("Antonym");
 	check(anto == Antonym);
 	check(getThe("antonym") == Antonym);
 	checkWordnet();
-	Node* opposite0 = getAbstract("opposite");
-	Node* the_opposite0 = getThe(opposite0);
-	Node* the_opposite0a = getThe("opposite");
+	Node* opposite0=getAbstract("opposite");
+	Node* the_opposite0=getThe(opposite0);
+	Node* the_opposite0a=getThe("opposite");
 	check(the_opposite0a == the_opposite0);
-	Node* the_opposite0b = getThe(the_opposite0);
+	Node* the_opposite0b=getThe(the_opposite0);
 	p(the_opposite0);
 	p(the_opposite0b);
 	check(the_opposite0b == the_opposite0);
-	Node* the_opposite0c = getThe(opposite0);
+	Node* the_opposite0c=getThe(opposite0);
 	check(the_opposite0c == the_opposite0);
 	//	checkWordnet();// messes with abstract !!!
-	Node* opposite = getAbstract("opposite");
-	Node* the_opposite = getThe("opposite");
-	Node* the_oppositea = getThe(opposite);
-	Node* the_oppositeb = getThe(the_opposite);
+	Node* opposite=getAbstract("opposite");
+	Node* the_opposite=getThe("opposite");
+	Node* the_oppositea=getThe(opposite);
+	Node* the_oppositeb=getThe(the_opposite);
 	p(opposite);
 	p(opposite0);
 	check(opposite == opposite0);
@@ -1181,18 +1174,17 @@ void testOpposite() {
 	p(opposite);
 	p(the_opposite);
 
-	Node* property = the_opposite;
-	Node* propertyA = opposite;
-	Node* node = getThe("good");
-	Node* nodeA = getAbstract("good");
+	Node* property=the_opposite;
+	Node* propertyA=opposite;
+	Node* node=getThe("good");
+	Node* nodeA=getAbstract("good");
 	clearAlgorithmHash();
-	Node *pa = get(307229);
+	Node *pa=get(307229);
 	findStatement(node, property, Any, 3, true, 0, true);
 	has(node, property);
 	//		check(isA4(pa,Antonym, false, false));
 	//		check(isA4(Antonym,pa, false, false));
 	check(has(node, property));
-
 
 	//	Statement* s=addStatement(Antonym,Synonym,opposite,false);
 	//	p(s);
@@ -1202,7 +1194,6 @@ void testOpposite() {
 	//	p(s);
 	//	s=addStatement(the_opposite,Synonym,Antonym,false);
 	//	p(s);
-
 
 	//	p(getThe("antonym"));
 	//	check(getThe("antonym")==Antonym); no, wordnet now!!
@@ -1276,8 +1267,6 @@ void tests() {
 	//    testStringLogic2();
 	//    testLogic();// test wordnet intersection
 
-
-
 	checkWordnet();
 	import("freebase");
 	testQuery();
@@ -1300,17 +1289,21 @@ void tests() {
 	testOpposite();
 	testInstancesAtEnd();
 	testImportExport();
+	testHash();
 	p("ALL TESTS SUCCESSFUL!");
 	//    testLoop();
 }
 
 void testBrandNewStuff() {
+	int var=0;
+//	testHash();
 	checkWordnet();
 	import("freebase");
-//		import("yago");
+//	importFreebase();
+//	import("yago");
 	//		tests();
-//	testQueryMore();
-//	testQuery();
+	//	testQueryMore();
+	//	testQuery();
 	//	testFacets();
 	//		testOpposite();
 	//	ps("test brand new stuff");
