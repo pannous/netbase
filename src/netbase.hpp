@@ -490,14 +490,18 @@ static int averageNameLength =40;// 20; // used for malloc
 static int nodeSize=sizeof(Node);// 40
 static int statementSize=sizeof(Statement);// 56
 static int ahashSize=16;
-static long million=1000000;
-static long billion=1000000000;
 static long MB=1048576;
 static long GB=1024*MB;
+static long million=MB;
+static long billion=GB;
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
 
 // FREEBASE: 600.000.000 Statements !!!
-static long maxNodes = 40*MB;
+#if defined(__APPLE__)
+static long maxNodes = 40*million;
+#else
+static long maxNodes = 400*million;
+#endif
 static long maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?
 static long contextOffset=0x800000;//0x10000;
