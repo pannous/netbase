@@ -23,7 +23,7 @@ const void * shmat_root = (const void *) 0x10000000; // just higher than system 
 #else
 //const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0101000000; // just higher than system Recommendation
-const void * shmat_root = (const void *) 0x0101800000; // just higher than system Recommendation
+const void * shmat_root=(const void *) 0x0101800000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0100137000;
 #endif
 //const void * shmat_root = (const void *)0x105800000;//test
@@ -107,7 +107,7 @@ void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void *
 		printf("FYI: root_memory != desired shmat_root %016llX!=%016llX \n", root, desired);
 //		fixPointers();
 	}
-	char* msg="share_memory at %016llX	size = %x	max = %016llX\n";// root address =
+	char* msg="share_memory at %016llX	size = %x	max = %016llX\n"; // root address =
 	printf(msg, root, sizeOfSharedMemory, (char*) root + sizeOfSharedMemory);
 	return root;
 }
@@ -116,7 +116,7 @@ long getMemory() {
 	//long phypz = sysconf(_SC_PHYS_PAGES);
 	//long psize = sysconf(_SC_PAGE_SIZE);
 	//return phypz*psize;
-    return 0;
+	return 0;
 }
 
 long GetAvailableMemory(void) {
@@ -160,7 +160,7 @@ void checkRootContext() {
 
 	p("USING SHARED MEMORY");
 	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
-        p("rootContext->nodes != (Node*) node_root");
+		p("rootContext->nodes != (Node*) node_root");
 		showContext(rootContext);
 		fixPointers();
 		rootContext->nodes=(Node*) node_root;
@@ -177,30 +177,30 @@ void init() {
 	int key=0x69190;
 	char* root=(char*) shmat_root;
 	long context_size=contextOffset;
-	long node_size=  maxNodes * nodeSize;
+	long node_size=maxNodes * nodeSize;
 	long abstract_size=abstractHashSize * 2;
 	long name_size=maxNodes * averageNameLength;
 	long statement_size=maxStatements0 * statementSize;
 //	node_root=&context_root[contextOffset];
-	context_root=(Context*) share_memory(key,context_size , context_root, root);
-   	p("abstract_root:");
-	abstract_root = (Node*) share_memory(key + 1, abstract_size * 2, abstract_root, ((char*) context_root) + context_size);
-   	p("name_root:");
-	name_root=(char*)share_memory(key + 2, name_size, name_root, ((char*) abstract_root) + abstract_size*2);
+	context_root=(Context*) share_memory(key, context_size, context_root, root);
+	p("abstract_root:");
+	abstract_root=(Node*) share_memory(key + 1, abstract_size * 2, abstract_root, ((char*) context_root) + context_size);
+	p("name_root:");
+	name_root=(char*) share_memory(key + 2, name_size, name_root, ((char*) abstract_root) + abstract_size * 2);
 	p("node_root:");
-	node_root=(Node*) share_memory(key + 4, node_size,node_root, name_root + name_size);
+	node_root=(Node*) share_memory(key + 4, node_size, node_root, name_root + name_size);
 	p("statement_root:");
-	statement_root = (Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
+	statement_root=(Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
 	p("keyhash_root:");
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
-	keyhash_root = (int*) share_memory(key + 5, 1 * billion * sizeof (int), keyhash_root, ((char*) statement_root) + statement_size);
+	keyhash_root=(int*) share_memory(key + 5, 1 * billion * sizeof(int), keyhash_root, ((char*) statement_root) + statement_size);
 //	abstract_root=share_memory(key + 1,abstract_size , abstract_root, root + 0x100000000);
 //	name_root=share_memory(key + 2, name_size, name_root, root + 0x200000000);
 //	statement_root=share_memory(key + 3, statement_size, statement_root, root + 0x300000000);
 //	node_root= share_memory(key + 4, node_size,node_root, root + 0x400000000);
 	abstracts=(Ahash*) (abstract_root); // reuse or reinit
-	extrahash=(Ahash*) &abstracts[maxNodes];// (((char*)abstract_root + abstractHashSize);
+	extrahash=(Ahash*) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts=(Context*) context_root;
 	checkRootContext();
 	getContext(current_context);
@@ -215,9 +215,9 @@ void init() {
 }
 
 void fixNodes(Context* context, Node* oldNodes) {
-    #ifndef explicitNodes
-    return;
-    #endif
+#ifndef explicitNodes
+	return;
+#endif
 	int max=context->statementCount; // maxStatements;
 	for (int i=0; i < max; i++) {
 		Statement* n=&context->statements[i];
@@ -231,7 +231,7 @@ void fixNodes(Context* context, Node* oldNodes) {
 		n->Predicate=&context->nodes[n->predicate];
 		n->Object=&context->nodes[n->object];
 #endif
-	
+
 	}
 }
 
@@ -361,7 +361,7 @@ int collectAbstracts() {
 	for (int i=0; i < max; i++) {
 		Node* n=&c->nodes[i];
 		if (i > 1000 && !checkNode(n)) break;
-		if (n == null || n->name == null || n->id == 0 ) continue;
+		if (n == null || n->name == null || n->id == 0) continue;
 		if (n->kind == Abstract->id) {
 			//			if(eq(n->name,"city"))
 			//				max--;
@@ -383,7 +383,7 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 	for (int i=0; i < max; i++) {
 		Node* n=&context->nodes[i];
 		//		show(n,true);
-		if(!checkNode(n))continue;
+		if (!checkNode(n)) continue;
 #ifndef inlineName
 		n->name=n->name + newOffset;
 #endif
@@ -392,17 +392,19 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 }
 
 bool clearMemory() {
-	ps("Cleansing Memory!");
-	if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
-	else {
-		memset(context_root, 0, contextOffset);
-		memset(node_root, 0, nodeSize * maxNodes); //calloc!
-		memset(statement_root, 0, statementSize * maxStatements0);
-		memset(name_root, 0, maxNodes * averageNameLength);
-		memset(abstracts, 0, abstractHashSize * 2);
-		//		memset(extrahash, 0, abstractHashSize / 2);
+	if (!virgin_memory) {
+		ps("Cleansing Memory!");
+		if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
+		else {
+			memset(context_root, 0, contextOffset);
+			memset(node_root, 0, nodeSize * maxNodes); //calloc!
+			memset(statement_root, 0, statementSize * maxStatements0);
+			memset(name_root, 0, maxNodes * averageNameLength);
+			memset(abstracts, 0, abstractHashSize * 2);
+			//		memset(extrahash, 0, abstractHashSize / 2);
+		}
+		virgin_memory=false;
 	}
-	virgin_memory=false;
 	initRootContext();
 	initRelations();
 	return true;
