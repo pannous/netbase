@@ -1052,9 +1052,13 @@ bool importFreebaseLabels() {
     Node* testA=getThe("Most Precious Days");
     int testI=freebaseKeys[testE];
     Node* testN=get(testI);
+    pf("%X %X",testN,testA);
+    p(testA);
+    p(testN);
+//    pf("%d %d",)
     check(testN==testA);
     check(freebaseKeys[testE]==testA->id);
-    check(freebaseKeys[freebaseHash("0c21rgr>")]!=0);
+//    check(freebaseKeys[freebaseHash("0c21rgr>")]!=0);
 	p("import Freebase labels ok");
     return true;
 }
