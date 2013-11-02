@@ -1034,9 +1034,11 @@ bool importFreebaseLabels() {
 //		key[strlen(key) - 1]=0;
 		Node* n=getNew(label + 1);		//get(1);//
 		try {
-			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
+			int h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
 			p(n);
+			p("X");
 			p(h);
+			p("Y");
 			if (n && h >= 0 && h < 1 * billion)
 				freebaseKeys[h]=n->id;
             else
@@ -1051,11 +1053,15 @@ bool importFreebaseLabels() {
 	fclose(infile); /* Close the file */
     int testE=freebaseHash("01000m1>");
     p(testE);
+	p("Z");
 //    Node* testA=getAbstract("Most Precious Days");
     Node* testA=getThe("Most Precious Days");
     int testI=freebaseKeys[testE];
+    p(testI);
+    p("A");
+    p(testA->id);
     Node* testN=get(testI);
-    pf("%X %X",testN,testA);
+    pf("%X %X\n",testN,testA);
     p(testA);
     p(testN);
 //    pf("%d %d",)
