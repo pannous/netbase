@@ -1,4 +1,4 @@
-#pragma once
+extrahashNr#pragma once
 #include <stdio.h>
 #include <string>
 #include <sstream>
@@ -262,8 +262,8 @@ typedef struct Context {
     char name[100];
     char* nodeNames;
     int currentNameSlot;
-    int nodeCount=0;
-    int extrahashNr=0;
+    int nodeCount;
+    int extrahashNr;
     int statementCount; //first 1000 reserved!
     // Node nodes[maxNodes];
     // Statement statements[maxStatements];

@@ -335,6 +335,7 @@ Context * getContext(int contextId) {
 	printf("Reset context %d: %s", context->id, context->name);
 	context->id=contextId;
 	context->currentNameSlot=0; //context->nodeNames;
+	context->extrahashNr=0;
 #ifdef statementArrays
 			context->statementArrays = (int*) malloc(maxStatements());
 #endif
