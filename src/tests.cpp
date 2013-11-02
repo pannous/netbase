@@ -510,7 +510,11 @@ void testInstancesAtEnd() {
 	S s=addStatement(t, p, o, false);
 	addStatement(t, Type, o, false);
 	addStatement(t, Instance, o, false);
-	check(t->firstStatement == s->id);
+    showStatement(s);
+    printf("%d %d\n",t->firstStatement,s->id());
+    show(t);
+    printf("%X %X\n",getStatement(t->firstStatement),s);
+	check(t->firstStatement == s->id());
 }
 
 void testStringLogic2() {
@@ -600,13 +604,13 @@ void testImportExport() {
 	 c->nodeCount=nodeCount;
 	 save();
 	 */
-	//    importList("MaennerVornamen.txt", "male_firstname");
+    if (!hasWord("male_firstname")||!hasWord("female_firstname"))
+        importNames();
 	//	deleteStatements(a(female_firstname));
 	//	p(a(female_firstname));
 	//	addStatement(a(female_firstname),Instance,the(female_firstname),false);// bug hack
 	//	addStatement(a(female_firstname),Instance,get(489285),false);// bug hack
 	//	addStatement(get(9028726),Synonym,get(9025182),false);// bug hack
-	if (!hasWord("female_firstname")) importList("FrauenVornamen.txt", "female_firstname");
 	check(all_instances(a(female_firstname)).size() > 5); //
 	check(query("all female_firstnames", 10).size() > 5);
 
@@ -626,13 +630,13 @@ void testImportExport() {
 	show(getAbstract("Zilla")); //51566;
 	show(getThe("Zilla"));
 
-	addStatement(all(female_firstname), a(gender), a(female));
-	addStatement(all(female_firstname), Owner, a(female));
-	addStatement(all(male_firstname), are, a(firstname));
-	addStatement(all(male_firstname), a(gender), a(male));
-	addStatement(all(firstname), are, a(name));
-	//    check(isA(word(James), _(male_firstname)));
-	//    check(isA(word(James), _(name)));
+//	addStatement(all(female_firstname), a(gender), a(female));
+//	addStatement(all(female_firstname), Owner, a(female));
+//	addStatement(all(male_firstname), are, a(firstname));
+//	addStatement(all(male_firstname), a(gender), a(male));
+//	addStatement(all(firstname), are, a(name));
+	check(isA(a(Ahney), a(female_firstname)));
+   	check(isA(a(Ahney), the(female_firstname)));
 	check(isA(a(Zilla), _(female_firstname)));
 	clearAlgorithmHash();
 	check(isA(a(female_firstname), a(name)));
@@ -648,6 +652,10 @@ void testImportExport() {
 	//	clearAlgorithmHash(true);
 	//    check(isA(a(Zilla), _(firstname)));// OK, not 'THE'
 	check(isA(a(Zilla), a(name)));
+    
+    clearAlgorithmHash(true);
+    check(isA(word(James), _(male_firstname)));
+    check(isA(word(James), _(name)));
 
 	check(query("all firstnames", 10).size() > 5);
 	check(query("all names", 10).size() > 5);
@@ -1072,7 +1080,7 @@ void testFactLearning() {
 	check(has(the(Peter), a(loves), a(Jule)));
 	//	check(has(the(Peter),a(loves),the(Jule))); how could he? todo : NO, but MAYBE!
 	addStatement(the(love), Plural, the(loves)); //the(tense) ??
-	check(has(the(Peter), a(love), the(Jule), 1, 1, 1));
+//	check(has(the(Peter), a(love), the(Jule), 1, 1, 1));// todo
 
 	addStatement(the(german_translation), is_a, Translation, true);
 	addStatement(the(son), the(german_translation), the(Sohn), true);
@@ -1093,13 +1101,13 @@ void testPaths() {
 	check(has(a(man), a(hand)));
 	NodeVector path=memberPath(a(human), a(hand));
 	check(path.size() > 2);
-	check(has(a(animal), a(foot)));
 	check(has(a(man), Part, a(hand)));
 	//	check(has(a(human),Member, a(hand)));// WTH wordnet!
 	//	check(has(a(human),a(hand)));
 	check(has(a(bird), a(feather)));
 	check(!memberPath(a(animal), a(body)).empty());
 	check(has(a(animal), a(body)));
+	check(has(a(animal), a(foot)));
 	check(!memberPath(a(mouse), a(foot)).empty());
 	check(has(a(mouse), a(foot)));
 }
@@ -1273,15 +1281,19 @@ void tests() {
 	//    testLogic();// test wordnet intersection
 
 	checkWordnet();
-    checkGeo();
-	testQuery();
-	testFacets();
+    checkGeo();	//	testDummyLogic();// too big
+
 	// shaky
-	testStringLogic2();
-	testPaths();
 	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
-	//	testDummyLogic();// too big
+	testFacets();
+	testImportExport();
+	testQuery();
+   	testPaths();
 	// OK
+    
+	testStringLogic2();
+	testInstancesAtEnd();
+	testHash();
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
 	testFactLearning();
 	testReification();
@@ -1292,9 +1304,6 @@ void tests() {
 	testScanf();
 	testYago();
 	testOpposite();
-	testInstancesAtEnd();
-	testImportExport();
-	testHash();
 	p("ALL TESTS SUCCESSFUL!");
 	//    testLoop();
 }

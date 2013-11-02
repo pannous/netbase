@@ -196,7 +196,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 
 bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statementNr) {
 	//    Statement* statement1=&c->statements[statementNr];
-	if (add_here->id == statementNr){
+	if (add_here->id() == statementNr){
 //		if(debug)
 //		pf("BUG add_here->id==statementNr %d in %d %s\n", statementNr, node->id, node->name);
 		return false;
@@ -288,7 +288,11 @@ char* statementString(Statement * s) {
 
 Node * reify(Statement * s) {
 	if (!checkStatement(s)) return 0;
+#ifdef useContext
 	Node* reified=add(statementString(s), _reification, s->context);
+#else
+	Node* reified=add(statementString(s), _reification, current_context);
+#endif
 	reified->value.statement=s;
 	reified->kind=_statement;
 	return reified;
@@ -299,7 +303,7 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if (s == 0) return false;
 	if (s < contexts[current_context].statements) return false;
 	if (s >= contexts[current_context].statements + maxStatements0) return false;
-	if (s->id == 0) return false; // !
+	if (s->id() == 0) return false; // !
 	if (checkSPOs || checkNamesOfSPOs) if (s->Subject() == 0 || s->Predicate() == 0 || s->Object() == 0) return false;
 	if (checkNamesOfSPOs) if (s->Subject()->name == 0 || s->Predicate()->name == 0 || s->Object()->name == 0) return false;
 	return true;
@@ -650,8 +654,9 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 	if (check && !checkNode(object, objectId)) return 0;
 	if (check && !checkNode(predicate, predicateId)) return 0;
 
-	Statement* statement=&context->statements[context->statementCount]; // union of statement, node??? nee
-	statement->id=context->statementCount;
+    int id=context->statementCount;
+	Statement* statement=&context->statements[id]; // union of statement, node??? nee
+//	statement->id()=context->statementCount;
 	context->statementCount++;
 #ifdef explicitNodes
 	statement->Subject=subject;
@@ -662,9 +667,9 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 	statement->subject=subjectId;
 	statement->predicate=predicateId;
 	statement->object=objectId;
-	if (!addStatementToNode(subject, statement->id)) return statement;
-	if (!addStatementToNode(object, statement->id)) return statement;
-	if (!addStatementToNode(predicate, statement->id)) return statement;
+	if (!addStatementToNode(subject, id)) return statement;
+	if (!addStatementToNode(object, id)) return statement;
+	if (!addStatementToNode(predicate, id)) return statement;
 
 	// predicate->statementCount++;
 	// context->nodeCount++;
@@ -689,11 +694,14 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	Statement* last_statement=&context->statements[context->statementCount-1];
 //	if(context->statementCount>1000&&last_statement->Subject=subject&&last_statement->Predicate=predicate&&last_statement->Object=object)
 //		return last_statement;// direct duplicate!
-
-	Statement* statement=&context->statements[context->statementCount]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
+    int id=context->statementCount;
+	Statement* statement=&context->statements[id]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
 	Statement* s=statement;
-	statement->id=context->statementCount;
+//	statement->id=context->statementCount;
+#ifdef useContext
 	statement->context=current_context; //todo!!
+#endif
+
 #ifdef explicitNodes
 	statement->Subject=subject;
 	statement->Predicate=predicate;
@@ -704,9 +712,9 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	statement->predicate=predicate->id;
 	statement->object=object->id;
 
-	addStatementToNode(subject, statement->id);
-	addStatementToNode(predicate, statement->id);
-	addStatementToNode(object, statement->id);
+	addStatementToNode(subject, id);
+	addStatementToNode(predicate, id);
+	addStatementToNode(object, id);
 	//	subject->statements[subject->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
 	//	subject->statementCount++;
 	//	predicate->statements[predicate->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
@@ -1209,14 +1217,14 @@ void showStatement(Statement * s) {
 		return;
 	}
 	if (s == null) return;
-	if (s->id != null && checkNode(s->Subject(), s->subject) && checkNode(s->Predicate(), s->predicate) && checkNode(s->Object(), s->object))
+	if (checkNode(s->Subject(), s->subject) && checkNode(s->Predicate(), s->predicate) && checkNode(s->Object(), s->object))
 	//        if(s->Object->value.number)
 	//            printf("%d\t%s\t\t%s\t\t%g %s\t%d\t%d\t%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->value.number,s->Object->name, s->subject, s->predicate, s->object);
 	//        else
-	printf("<%d>\t%s\t\t%s\t\t%s\t\t%d->%d->%d\n", s->id, s->Subject()->name, s->Predicate()->name, s->Object()->name, s->subject, s->predicate,
+	printf("<%d>\t%s\t\t%s\t\t%s\t\t%d->%d->%d\n", s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->subject, s->predicate,
 			s->object);
 
-	else printf("#%d %d->%d->%d  [%016llX]\n", s->id, s->subject, s->predicate, s->object, s);
+	else printf("#%d %d->%d->%d  [%016llX]\n", s->id(), s->subject, s->predicate, s->object, s);
 	flush();
 	// printf("%s->%s->%s\n",s->Subject->name,s->Predicate->name,s->Object->name);
 
@@ -1338,7 +1346,9 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		if (visited[s]) return 0;
 		visited[s]=1;
 		if (!checkStatement(s)) continue;
+//#ifdef useContext
 		if (s->context == _pattern) continue;
+//#endif
 
 		//		if(s->Predicate!=Any){
 		if (s->Object() == Adjective && object != Adjective) continue; // bug !!
@@ -1597,18 +1607,22 @@ Node * isEqual(Node* subject, Node * object) {
 
 Node * isGreater(Node* subject, Node * object) {
 	//            if(subject->kind!=object->kind)return 0;
-	if (subject->kind != 0 && subject->kind == object->kind && subject->value.number > object->value.number) return subject;
-	int v=atof(subject->name);
-	int w=atof(object->name);
-	if (v && w && v > w) return subject;
+	double v=subject->value.number;
+    if(!v)v=atof(subject->name);
+	double w=object->value.number;
+    if(!v)v=atof(object->name);
+	if (subject->kind != 0 && subject->kind == object->kind && v > w) return subject;
+	if (v > w) return subject;// todo !!
 	return 0;
 }
 
 Node * isLess(Node* subject, Node * object) {
 	//            if(subject->kind!=object->kind)return 0;
-	if (subject->kind == object->kind && subject->value.number < object->value.number) return subject;
-	int v=atof(subject->name);
-	int w=atof(object->name);
+    double v=subject->value.number;
+    if(!v)v=atof(subject->name);
+	double w=object->value.number;
+    if(!v)v=atof(object->name);
+	if (subject->kind == object->kind && v < w) return subject;
 	if (v && w && v < w) return subject;
 
 	return 0;
@@ -1861,7 +1875,7 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation, bool show
 			N n=findRelation(all[i - 1], node);
 			if (!r || !n) p("???->??? \n");
 			else {
-				pf("$%d-> ", r->id);
+				pf("$%d-> ", r->id());
 				pf("%s\n", n->name);
 			}
 		}

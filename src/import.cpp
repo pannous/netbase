@@ -1169,6 +1169,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 
 void importNames() {
 	addStatement(all(firstname), are, a(name));
+   	addStatement(all(firstname), Synonym, a(first_name));
 	addStatement(all(male_firstname), have_the(gender), a(male));
 	addStatement(all(male_firstname), are, a(firstname));
 	addStatement(all(male_firstname), Owner, a(male));

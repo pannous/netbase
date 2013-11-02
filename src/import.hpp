@@ -9,6 +9,7 @@ using namespace std;
 void importAll();
 void importWordnet();
 void importGeoDB();
+void importNames();
 bool importFreebase();
 //void import(const char* file);
 void import(const char* type,const char* filename=0);

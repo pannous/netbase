@@ -94,29 +94,20 @@ typedef struct Node {
     //class Node{
     //public:
     int id; //implicit -> redundant
-//    int context; //implicit   | short context_id or int node_id
-
-#ifdef inlineName
-    char name[100];
-#else
     char* name; // see value for float etc
-#endif
-    int kind; // abstract,node,person,year, m^2
-    //Node* kind;
-
+    int kind; // abstract,node,person,year, m^2     // via first slot? nah
+    //int context; //implicit   | short context_id or int node_id
     //float rank;
-    int statementCount; //implicit, can be replaced with iterator KEEP!
+    int statementCount; //implicit, can be replaced with iterator
     int firstStatement;
-	int lastStatement;
-    Value value; // for statements, numbers  WASTE!!!
-
-//    int firstPredicateStatement; // 'usages' OR: sort statements!
-//    Hope_Valley             kind            City
+	int lastStatement;// remove
+    Value value; // for statements, numbers  WASTE!!! remove
 
     // INDEX
+    // Node* index;//nur #properties+1 Nits!!
     // class country{ population{property:0} capital{property:1} }
     // germany.index[0]=80Mio .index[1]=Berlin
-    //        Node* index;//nur #properties+1 Nits!!
+
 }Node ;
 
 
@@ -137,19 +128,25 @@ typedef struct Ahash {
 
 // safe:
 
+//typedef struct Context;
+//Context* getContext(int contextId);
+Node* get(int NodeId);
+
+
 // S13425 beth likes apple
 // Node3254 value=S13425
 // S      karsten agrees <Node3254>
 // S      Node3254/S13425 is wrong
 // 1 Stit == 3 words
-//typedef struct Context;
-//Context* getContext(int contextId);
-Node * get(int NodeId);
 
+extern Statement* statement_root;
 typedef class Statement { //OK!!
 //typedef struct Statement {
 public:
-    int id; // implicit?
+//    int id; // implicit?
+    int id(){ // implicit
+        return ((long)this-(long)statement_root)/sizeof(Statement);
+    }
     int context; // implicit?  NODE!?!
     //        Node* meta;
 #ifdef explicitNodes
@@ -519,7 +516,6 @@ extern Context* contexts; //[maxContexts];
 extern Context* context_root; // else: void value not ignored as it ought to be
 extern Node* abstract_root;
 extern Node* node_root;
-extern Statement* statement_root;
 extern char* name_root;
 extern int* keyhash_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;

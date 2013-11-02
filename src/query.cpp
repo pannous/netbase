@@ -504,8 +504,10 @@ int queryContext = _pattern; // hypothesis
 
 Statement* pattern(Node* subject, Node* predicate, Node* object) {
 	Statement *s = addStatement(subject, predicate, object, false); //todo mark (+reuse?) !
+//#ifdef useContext
 	if (checkStatement(s))
 		s->context = _pattern;
+//#endif
 	Node* pattern = reify(s); // why here?
 	pattern->kind = _pattern;
 	addStatement(pattern, is_a, Pattern, false);
@@ -1098,7 +1100,9 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	int i = 0;
 	Statement* s = 0;
 	while (i++ < 1000 && (s = nextStatement(subject, s, false))) {// true !!!!
-		if (s->context == _pattern)continue;
+//#ifdef useContext
+		if (s->context == _pattern)continue;// important!!//        else it always matches!!!
+//#endif
 		if (s->Object() == Adjective)continue; // bug !!
 		if (s->Predicate() == PERTAINYM)continue;
 		if (s->Predicate() == Derived)continue;
