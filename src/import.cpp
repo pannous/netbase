@@ -1,6 +1,6 @@
 //#pragma once
 
-//#include <string.h> // strcmp
+#include <string.h> // strcmp ...
 #include <cstdlib>
 #include <string>
 #include <map>
