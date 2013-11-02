@@ -1012,7 +1012,7 @@ bool importFreebaseLabels() {
 	int linecount=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 //		if (linecount > 10000000) break;
-   		if (linecount > 0) break;
+//   		if (linecount > 0) break;
 //		if (linecount % 100 == 0 && linecount>20000)
 //			p(linecount);
 		if (++linecount % 1000 == 0) {
@@ -1052,22 +1052,13 @@ bool importFreebaseLabels() {
 	}
 	fclose(infile); /* Close the file */
     int testE=freebaseHash("01000m1>");
-    p(testE);
-	p("Z");
-//    Node* testA=getAbstract("Most Precious Days");
     Node* testA=getThe("Most Precious Days");
     int testI=freebaseKeys[testE];
-    p(testI);
-    p("A");
-    p(testA->id);
     Node* testN=get(testI);
-    pf("%X %X\n",testN,testA);
-    p(testA);
-    p(testN);
-//    pf("%d %d",)
     check(testN==testA);
     check(freebaseKeys[testE]==testA->id);
-//    check(freebaseKeys[freebaseHash("0c21rgr>")]!=0);
+    if(linecount>40000000)
+    check(freebaseKeys[freebaseHash("0c21rgr>")]!=0);
 	p("import Freebase labels ok");
     return true;
 }
