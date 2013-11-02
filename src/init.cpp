@@ -210,7 +210,7 @@ void init() {
 	//    if(!hasWord("m^2"))
 	//        initUnits();
 	if (currentContext()->nodeCount < 100) currentContext()->nodeCount=10000;
-	showContext(current_context);
+//	showContext(current_context);
 	//    }if (i == 128) {printf("recovered EXC_BAD_ACCESS !\n");}// catch
 }
 
@@ -255,7 +255,8 @@ void load(bool force) {
 	if (!force && context_root) {	//&&root_memory[1000]!=0){// first id==0
 		//        pi(root_memory[0]);
 		ps("loaded from shared memory");
-		if (virgin_memory || !hasWord("instance")) collectAbstracts(); //or load abstracts->bin
+//		if (virgin_memory || !hasWord("instance"))
+//			collectAbstracts(); //or load abstracts->bin
 		showContext(wordnet);
 		return;
 	}
