@@ -15,8 +15,7 @@
 #include <stdlib.h>// itoa
 // exit, malloc:
 #include <cstdlib>
-// strcmp
-//#include <string.h>
+#include <string.h> // strcmp
 
 #include "netbase.hpp"
 #include "util.hpp"
