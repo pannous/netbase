@@ -1034,11 +1034,7 @@ bool importFreebaseLabels() {
 //		key[strlen(key) - 1]=0;
 		Node* n=getNew(label + 1);		//get(1);//
 		try {
-			int h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
-			p(n);
-			p("X");
-			p(h);
-			p("Y");
+			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
 			if (n && h >= 0 && h < 1 * billion)
 				freebaseKeys[h]=n->id;
             else
@@ -1112,11 +1108,11 @@ bool importFreebase() {
 		object=getFreebaseEntity(objectName);
 		if (!subject || !predicate || !object) {
 			badCount++;
-			if (debug) {
-				p(linecount);
-				p(line);
-				p("ERROR");
-			}
+//			if (debug) {
+//				p(linecount);
+//				p(line);
+//				p("ERROR");
+//			}
 		}
 		Statement* s=addStatement(subject, predicate, object, false); // todo: id
 
