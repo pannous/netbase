@@ -184,6 +184,12 @@ NodeVector parse(const char* data) {
 	//            collectAbstracts2();
 	//            return OK;
 	//        }
+	if (startsWith(data, ":if")) {
+//			if (endsWith(data, "!"))deleteWord("acceptant");
+//			if (!hasWord("acceptant"))
+				importFreebase();
+			return OK;
+		}
 	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
 		if (endsWith(data, "!"))deleteWord("acceptant");
 		if (!hasWord("acceptant"))
