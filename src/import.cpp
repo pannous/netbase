@@ -93,7 +93,7 @@ int norm_wordnet_id(int synsetid) {
 void load_wordnet_synset_map() {
 	if (wordnet_synset_map.size() > 0) return;
 	char line[1000];
-	FILE *infile=open_file("wordnet_synset_map.txt");
+	FILE *infile=open_file("wordnet/synset_map.txt");
 	int s, id;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		fixNewline(line);

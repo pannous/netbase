@@ -1320,7 +1320,8 @@ void testBrandNewStuff() {
     //	import("freebase");
     //	importFreebase();
     //	import("yago");
-	tests();
+    importAll();
+//	tests();
 	//	testQueryMore();
 	//	testQuery();
 	//	testFacets();
