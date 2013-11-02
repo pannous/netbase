@@ -24,7 +24,7 @@ echo using server $server
 
 
 ssh -A "$server" "cd /root/netbase/;git pull"
-ssh -A "$server" "scp /root/netbase/* quasiris.big:/root/netbase/"
+ssh -A "$server" "scp /root/netbase/* root@quasiris.big:/root/netbase/"
 ssh "$server" "source .bash_profile; cd /root/netbase/;./compile.sh exit $@"
 
 # rm to_update.tmp                       
