@@ -1003,7 +1003,7 @@ unsigned int freebaseHash(char* x) {
 int* freebaseKeys;// Node*
 bool importFreebaseLabels() {
 	freebaseKeys=keyhash_root; //  (Node**)malloc(1*billion*sizeof(Node*));
-    char line[100000];
+    char line[10000000];
 	char* label=(char*) malloc(100);
 	char* key=(char*) malloc(100);
 	char* test=(char*) malloc(100);
@@ -1053,6 +1053,7 @@ bool importFreebaseLabels() {
     Node* testN=get(testI);
     check(testN==testA);
     check(freebaseKeys[testE]==testA->id);
+    free(line);
     if(linecount>40000000)
     check(freebaseKeys[freebaseHash("0c21rgr>")]!=0);
 	p("import Freebase labels ok");
