@@ -907,7 +907,8 @@ int countRows(char* line) {
 
 bool importYago(const char* file) {
 	p("import YAGO start");
-	if (!contains(file, "/")) file=(((string) "/data/base/BIG/yago/") + file).data();
+//	if (!contains(file, "/")) file=(((string) "/data/base/BIG/yago/") + file).data();
+	if (!contains(file, "/")) file=(((string) "~/netbase/import/yago/") + file).data();
 	//		file = concat("/Users/me/data/base/BIG/yago/", file);
 	Node* subject;
 	Node* predicate;
