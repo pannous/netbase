@@ -627,19 +627,22 @@ void testImportExport() {
 	//	addStatement(a(female_firstname),Plural,the(female_firstnames),true);
 	//	check(all_instances(a(female_firstnames)).size()>5);// plural in system OK
 
-	show(getAbstract("Zilla")); //51566;
-	show(getThe("Zilla"));
 
 //	addStatement(all(female_firstname), a(gender), a(female));
 //	addStatement(all(female_firstname), Owner, a(female));
 //	addStatement(all(male_firstname), are, a(firstname));
 //	addStatement(all(male_firstname), a(gender), a(male));
 //	addStatement(all(firstname), are, a(name));
+	check(isA(a(female_firstname), a(name)));
 	check(isA(a(Ahney), a(female_firstname)));
    	check(isA(a(Ahney), the(female_firstname)));
-	check(isA(a(Zilla), _(female_firstname)));
+	check(isA(a(Ahney), a(name)));
 	clearAlgorithmHash();
-	check(isA(a(female_firstname), a(name)));
+
+	show(getAbstract("Zilla")); //51566;
+	show(getThe("Zilla"));
+	check(isA(a(Zilla), _(female_firstname)));
+
 	clearAlgorithmHash();
 	check(isA(a(firstname), a(name)));
 	clearAlgorithmHash(true);
