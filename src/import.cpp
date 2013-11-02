@@ -1409,6 +1409,7 @@ void importAllYago() {
 	//import("yago","yagoDBpediaInstances.tsv");
 	//import("yago","yagoMetaFacts.tsv");
 	import("yago", "yagoImportantTypes.tsv");
+	import("yago", "yagoLabels.tsv");
 //	dissectParent((Node *) -1);
 
 	//	addStatement(Number,Synonym,getThe("xsd:decimal"));
