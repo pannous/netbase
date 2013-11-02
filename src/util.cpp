@@ -192,8 +192,8 @@ bool startsWith(string* x, const char* y) {
 const char* concat(const char* a,const  char* b){
 	int la=strlen(a);
 	int lb=strlen(b);
-	char c[la+lb];
-    //	char* malloc((la+lb)*sizeof(char));
+//	char c[la+lb];
+    char* c=(char*)malloc((la+lb)*sizeof(char));
 	strcpy(c,a);
 	strcpy(&c[la],b);
 	return c;
