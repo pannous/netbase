@@ -5,8 +5,8 @@ git commit -a --allow-empty-message -m \"''\" && git push --all && git status
 
 # server="kfluegge@pannous.jo"
 # server="root@quasiris.com"
-# server="root@quasiris.dev"
-server="root@quasiris.big"
+server="root@quasiris.dev"
+# server="root@quasiris.big"
 # server="root@87.118.71.24"
 
 
@@ -23,7 +23,8 @@ echo using server $server
 # done      
 
 
-ssh "$server" "cd /root/netbase/;git pull"
+ssh -A "$server" "cd /root/netbase/;git pull"
+ssh -A "$server" "scp /root/netbase/* quasiris.big:/root/netbase/"
 ssh "$server" "source .bash_profile; cd /root/netbase/;./compile.sh exit $@"
 
 # rm to_update.tmp                       
