@@ -113,6 +113,7 @@ bool isAbstract(Node* object) {
 }
 
 inline Statement* firstStatement(Node* abstract) {
+    if(abstract->firstStatement==0)return 0;
 	return getStatement(abstract->firstStatement);
 }
 

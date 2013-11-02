@@ -69,6 +69,7 @@ static const char* NIL_string = "NIL";
 struct Statement;
 
 typedef struct Node;
+//class Node;
 typedef union Value {
     char* text; // wiki abstracts etc
     //    char* name;
@@ -91,8 +92,8 @@ typedef union Value {
 // reduce from 0x20 bytes to name,kind, firstStatement == 0x0b bytes!
 // 1 nit == 4+1 words =20bytes
 typedef struct Node {
-    //class Node{
-    //public:
+//    class Node{
+//    public:
     int id; //implicit -> redundant
     char* name; // see value for float etc
     int kind; // abstract,node,person,year, m^2     // via first slot? nah

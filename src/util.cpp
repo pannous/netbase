@@ -88,6 +88,16 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 	return false;
 }
 
+
+
+bool contains(NodeVector& all, Node& node, bool fuzzy) {
+	for (int i=0; i < all.size(); i++) {
+		if ((Node*) all[i] == &node) return true;
+		if (fuzzy && eq(all[i], &node)) return true;
+	}
+	return false;
+}
+//
 bool contains(NodeVector& all, Node* node, bool fuzzy) {
 	for (int i=0; i < all.size(); i++) {
 		if ((Node*) all[i] == node) return true;
@@ -178,7 +188,16 @@ bool startsWith(string* x, const char* y) {
 	return x->find(y) >= 0;
 }
 
-// tolower
+
+const char* concat(const char* a,const  char* b){
+	int la=strlen(a);
+	int lb=strlen(b);
+	char c[la+lb];
+    //	char* malloc((la+lb)*sizeof(char));
+	strcpy(c,a);
+	strcpy(&c[la],b);
+	return c;
+}
 
 bool eq(const char* x, const char* y, bool ignoreCase, bool ignoreUnderscore) { //
 	if (!x && !y) return true; //danger better: undefined?

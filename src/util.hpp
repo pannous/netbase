@@ -28,7 +28,7 @@ string cut_to(string str, string what);
 bool contains(const char* x,const char* y,bool ignoreCase=true);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
-bool contains(NodeVector& v, Node* o,bool fuzzy=false);
+
 //bool contains(NodeVector* v, Node* o,bool fuzzy=false);
 //bool contains(NodeVector* v, Node* o);
 //bool contains(NodeVector v, Node* o);
@@ -81,5 +81,6 @@ const char* concat(const char* a,const  char* b);
 char* fixQuotesAndTrim(char* tmp);
 //inline
 bool isAbstract(Node* object);
-
+//bool contains(NodeVector& v, Node& o,bool fuzzy=false);
+bool contains(NodeVector& v, Node* o,bool fuzzy=false);
 #define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}
