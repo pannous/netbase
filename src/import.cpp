@@ -1192,7 +1192,7 @@ void importAbstracts() {
 	doDissectAbstracts=false;
 	//	memset(abstracts, 0, abstractHashSize * 2);
 	Context* c=getContext(wordnet);
-	FILE *infile=open_file("abstracts.tsv");
+	FILE *infile=open_file("wordnet/abstracts.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) printf("%d\n", linecount);
 		sscanf(line, "%d\t%[^\n]s", &id, name); // %[^\n]s == REST OF LINE!
@@ -1215,7 +1215,7 @@ void importSenses() {
 	char* name=(char*) malloc(1000);
 	int linecount=0;
 	int id, labelid, synsetid;
-	FILE *infile=open_file("senses.tsv");
+	FILE *infile=open_file("wordnet/senses.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) printf("%d\n", linecount);
 		fixNewline(line);
@@ -1268,7 +1268,7 @@ void importSynsets() {
 	int linecount=0;
 	int id;
 	char pos;
-	FILE *infile=open_file("synsets.tsv");
+	FILE *infile=open_file("wordnet/synsets.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) printf("%d\n", linecount);
 		fixNewline(line);
@@ -1292,7 +1292,7 @@ void importLables() {
 	int linecount=0;
 	int id;
 	char pos;
-	FILE *infile=open_file("labels.tsv");
+	FILE *infile=open_file("wordnet/labels.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) printf("%d\n", linecount);
 		fixNewline(line);
@@ -1314,7 +1314,7 @@ void importLexlinks() {
 	int linecount=0;
 	int s, p, o;
 	int ss, so;
-	FILE *infile=open_file("lexlinks.tsv");
+	FILE *infile=open_file("wordnet/lexlinks.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) printf("%d\n", linecount);
 		//			printf(line);
@@ -1342,7 +1342,7 @@ void importStatements() {
 	char line[1000];
 	int linecount=0;
 	int s, p, o;
-	FILE *infile=open_file("statements.tsv");
+	FILE *infile=open_file("wordnet/statements.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) printf("%d\n", linecount);
 		fixNewline(line);

@@ -154,7 +154,7 @@ void checkRootContext() {
 	if (rootContext->id != 1) {
 		p("STARTING WITH CLEAN MEMORY");
 		initRootContext();
-		//		clear();
+//        clearMemory();
 		return;
 	}
 
@@ -457,7 +457,7 @@ char* initContext(Context* context) {
 			// negotiate memory cleverly!!
 		}
 	} while (nodes == 0 || statements == 0);
-	if (!context_root || virgin_memory) clearMemory();
+//	if (!context_root || virgin_memory) clearMemory();
 	Statement* oldstatements=context->statements;
 	char* oldnodeNames=context->nodeNames;
 	Node* oldnodes=context->nodes;

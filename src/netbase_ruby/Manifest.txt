@@ -1,0 +1,7 @@
+.autotest
+Manifest.txt
+README.txt
+Rakefile
+bin/netbase
+lib/netbase.rb
+test/test_netbase.rb
