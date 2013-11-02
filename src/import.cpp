@@ -1003,7 +1003,7 @@ unsigned int freebaseHash(char* x) {
 int* freebaseKeys;// Node*
 bool importFreebaseLabels() {
 	freebaseKeys=keyhash_root; //  (Node**)malloc(1*billion*sizeof(Node*));
-    char line[1000];
+    char line[100000];
 	char* label=(char*) malloc(100);
 	char* key=(char*) malloc(100);
 	char* test=(char*) malloc(100);
