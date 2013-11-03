@@ -451,7 +451,7 @@ Node* isGreater(Node* subject, Node* object);
 Node* isLess(Node* subject, Node* object);
 Node* isAproxymately(Node* subject, Node* object);
 
-void dissectWord(Node* subject);
+
 Context* currentContext();
 //void initRelations();
 void init();
@@ -484,8 +484,8 @@ void checkRootContext();
 
 Node* getProperty(Node* n, char* s);
 Node* findRelation(Node* from, Node* to);
-void dissectParent(Node* subject);
-void dissectWord(Node* subject);
+void dissectParent(Node* subject,bool checkDuplicates=false);
+void dissectWord(Node* subject,bool checkDuplicates=false);
 typedef Node* N;
 typedef Statement* S;
 typedef NodeVector NV;

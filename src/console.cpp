@@ -352,12 +352,12 @@ NodeVector parse(const char* data) {
 			return nodeVectorWrap(reify(getStatement(i)));
 		} else if (startsWith(data, "s") || startsWith(data, "S") || startsWith(data, "$")) showStatement(getStatement(i));
 		else {
-			dissectWord(get(i));
+			dissectWord(get(i),true);
 			showNr(currentContext()->id, i);
 			return nodeVectorWrap(get(i));
 		}
 	} else {
-		dissectWord(get(data));
+		dissectWord(get(data),true);
 		findWord(currentContext()->id, data);
 		return nodeVectorWrap(get(data));
 	}

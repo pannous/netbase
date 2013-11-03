@@ -927,7 +927,7 @@ bool importYago(const char* file) {
 			if (checkLowMemory()) //MEMORY
 				return 0; //exit(0);// 4GB max
 		}
-		if (++linecount % 10000 == 0) printf("%d\n", linecount);
+		if (++linecount % 10000 == 0) printf("%d %s\n", linecount,file);
 		//			sscanf(line, "%s\t%s\t%s\t%s", &id, subjectName,predicateName, objectName /*, &certainty*/);
 		int ok=rows=countRows(line);
 		if (rows == 4)
@@ -1433,8 +1433,8 @@ void importAll() {
 //	doDissectAbstracts=true;// already? why not
 	importNames();
 	importGeoDB();
-	importAllYago();
 	importFreebase();
+	importAllYago();
 	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
 	//		p("image import done before ...");
 	//	else
