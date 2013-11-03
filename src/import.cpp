@@ -1002,9 +1002,9 @@ unsigned int freebaseHash(char* x) {
 int* freebaseKeys; // Node*
 bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 	char line[10000];
-	char* label=(char*) malloc(100);
-	char* key=(char*) malloc(100);
-	char* test=(char*) malloc(100);
+	char* label=(char*) malloc(10000);
+	char* key=(char*) malloc(10000);
+	char* test=(char*) malloc(10000);
 	FILE *infile=open_file("freebase.labels.en.txt");
 
 	int linecount=0;
@@ -1018,16 +1018,10 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 			if (checkLowMemory()) break;
 		}
 		sscanf(line, "%s\t%s\t%[^\t]s\t.", key, test, label);
-
 		if (!startsWith(key, "<m.")) continue;
 		if (!startsWith(test, "<#label")) continue;
-//		if (eq("<m.0101l_7>", key) || eq("<m.0101m5t>", key) || eq("<m.0101qvm>", key)) {
-//		if (startsWith(key, "<m.0101")) {
-		// whyy??? because 10000 entries for <m.010 !
-		//					p(line);
-//			continue;
-//		}
-		if (strlen(label) < 6) continue;
+		if (strlen(label) < 6||strlen(label)>100) continue;
+
 		label[strlen(label) - 4]=0;		// "@en
 //		key[strlen(key) - 1]=0;
 		Node* n=getNew(label + 1);		//get(1);//
@@ -1081,10 +1075,10 @@ bool importFreebase() {
 	Node* subject;
 	Node* predicate;
 	Node* object;
-	char line[1000];
-	char* objectName=(char*) malloc(100);
-	char* predicateName=(char*) malloc(100);
-	char* subjectName=(char*) malloc(100);
+	char line[10000];
+	char* objectName=(char*) malloc(10000);
+	char* predicateName=(char*) malloc(10000);
+	char* subjectName=(char*) malloc(10000);
 	FILE *infile=open_file("freebase.data.txt");
 	int linecount=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
