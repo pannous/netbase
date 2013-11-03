@@ -131,7 +131,7 @@ typedef struct Ahash {
 
 //typedef struct Context;
 //Context* getContext(int contextId);
-Node* get(int NodeId);
+
 
 
 // S13425 beth likes apple
@@ -140,13 +140,16 @@ Node* get(int NodeId);
 // S      Node3254/S13425 is wrong
 // 1 Stit == 3 words
 
-extern Statement* statement_root;
-typedef class Statement { //OK!!
+Node* get(int NodeId);
+int getStatementId(long pointer);
+
+typedef class Statement {
+//class Statement { //OK!!
 //typedef struct Statement {
 public:
 //    int id; // implicit?
     int id(){ // implicit
-        return ((long)this-(long)statement_root)/sizeof(Statement);
+    		return getStatementId((long)this);
     }
     int context; // implicit?  NODE!?!
     //        Node* meta;
@@ -205,8 +208,9 @@ public:
 
 //You cannot create an array of references (or anything similar) in C++.
 //typedef vector<Facet&> FacetVector;
-typedef vector<Facet*> FacetVector;
+
 typedef vector<Statement*> StatementVector;
+typedef vector<Facet*> FacetVector;
 
 class Query {
 public:
@@ -518,6 +522,7 @@ int test2();
 //static Context contexts[maxContexts]; save geht nicht
 extern Context* contexts; //[maxContexts];
 //Context contexts[maxContexts];
+extern Statement* statement_root;
 extern Context* context_root; // else: void value not ignored as it ought to be
 extern Node* abstract_root;
 extern Node* node_root;

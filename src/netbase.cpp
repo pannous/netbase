@@ -286,17 +286,6 @@ char* statementString(Statement * s) {
 	return name;
 }
 
-Node * reify(Statement * s) {
-	if (!checkStatement(s)) return 0;
-#ifdef useContext
-	Node* reified=add(statementString(s), _reification, s->context);
-#else
-	Node* reified=add(statementString(s), _reification, current_context);
-#endif
-	reified->value.statement=s;
-	reified->kind=_statement;
-	return reified;
-}
 
 bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if(!debug)return true;// bad idea!
@@ -307,6 +296,19 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if (checkSPOs || checkNamesOfSPOs) if (s->Subject() == 0 || s->Predicate() == 0 || s->Object() == 0) return false;
 	if (checkNamesOfSPOs) if (s->Subject()->name == 0 || s->Predicate()->name == 0 || s->Object()->name == 0) return false;
 	return true;
+}
+
+
+Node * reify(Statement * s) {
+	if (!checkStatement(s,0,0)) return 0;
+#ifdef useContext
+	Node* reified=add(statementString(s), _reification, s->context);
+#else
+	Node* reified=add(statementString(s), _reification, current_context);
+#endif
+	reified->value.statement=s;
+	reified->kind=_statement;
+	return reified;
 }
 
 char* name(Node * node) {
@@ -1889,7 +1891,9 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation, bool show
 }
 //NodeVector match_all(string data){
 //}
-
+int getStatementId(long pointer){
+	return (pointer-(long)statement_root)/sizeof(Statement);
+}
 //NodeVector find_english(string& data) {
 //}
 

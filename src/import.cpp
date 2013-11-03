@@ -759,7 +759,7 @@ char* removeHead(char *key, char *bad) {
 	return key;
 }
 
-const char *fixYagoName(char *key) {
+char *fixYagoName(char *key) {
 	if (key[0] == '<') key++;
 	int len=strlen(key);
 	if (key[len - 1] == '>') key[len - 1]=0;
@@ -833,28 +833,27 @@ Node* rdfValue(char* name) {
 	name++; // ignore quotes "33"
 	free(all);
 	if (!unit || unit > name + 1000 || unit < name) return 0;
+	if(unit[0]=='<')unit++;
 	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
 	if (eq(unit, "xsd:integer")) unit=0; //-> number
 	if (eq(unit, "xsd:decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
 	if (eq(unit, "xsd:float")) unit=0; //-> number
 	if (eq(unit, "xsd:nonNegativeInteger")) unit=0; //-> number
-	else if (eq(unit, "<yago0to100>")) unit=0;
+	else if (eq(unit, "yago0to100")) unit=0;
 	if (!unit) return value(name, atof(name), unit);
 
-	if (eq(unit, "<m")) unit="Meter";
-	else if (eq(unit, "<m>")) unit="Meter";
-	else if (eq(unit, "<s>")) unit="Seconds";
-	else if (eq(unit, "<g>")) unit="Gram";
-	else if (eq(unit, "</km")) unit="Kilometer";
+	if (eq(unit, "m")) unit="Meter";
+	else if (eq(unit, "s")) unit="Seconds";
+	else if (eq(unit, "g")) unit="Gram";
+	else if (eq(unit, "/km")) unit="Kilometer";
+	else if (eq(unit, "km")) unit="Kilometer";
 	else if (eq(unit, "xsd:date")) ; // parse! unit = 0; //-> number
-	else if (eq(unit, "<degrees>")) ; // ignore
-	else if (eq(unit, "<dollar>")) ; // ignore
-	else if (eq(unit, "<euro>")) ; // ignore
-	else if (eq(unit, "<yagoISBN>")) unit="ISBN"; // ignore
-	else if (eq(unit, "<yagoTLD>")) unit="TLD"; // ???
-	else if (eq(unit, "<yagoTLD")) unit="TLD"; // ???
-	else if (eq(unit, "<yagoMonetaryValue>")) unit="dollar";
-	else if (eq(unit, "<%>")) unit="%"; // OK
+	else if (eq(unit, "degrees")) ; // ignore
+	else if (eq(unit, "dollar")) ; // ignore
+	else if (eq(unit, "euro")) ; // ignore
+	else if (eq(unit, "yagoISBN")) unit="ISBN"; // ignore
+	else if (eq(unit, "yagoTLD")) unit="TLD"; // ???
+	else if (eq(unit, "yagoMonetaryValue")) unit="dollar";
 	else if (eq(unit, "%")) ; // OK
 	else {
 		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
@@ -876,11 +875,10 @@ Node* parseWordnetKey(char* key) {
 
 Node* getYagoConcept(char* key) {
 	if (startsWith(key, "<wordnet_")) return parseWordnetKey(key);
-	const char* name=fixYagoName(key); // Normalized instead of using similar, key not touched
+	char* name=fixYagoName(key); // Normalized instead of using similar, key POINTER not touched
 	if (contains(name, ":")) return rdfOwl(key);
 	if (eq(name, "isPreferredMeaningOf")) return Label;
 	if (eq(name, "#label")) return Label;
-	if (eq(name, "<label>")) return Label;
 	if (eq(name, "label")) return Label;
 	if (eq(name, "hasGloss")) return Label;
 	if (eq(name, "hasWordnetDomain")) return Domain;
@@ -1002,9 +1000,8 @@ unsigned int freebaseHash(char* x) {
 //map<const char*, Node*> freebaseKeys;
 //static map<int, Node*> freebaseKeys=new std::map();
 int* freebaseKeys;// Node*
-bool importFreebaseLabels() {
-	freebaseKeys=keyhash_root; //  (Node**)malloc(1*billion*sizeof(Node*));
-    char line[10000000];
+bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
+    char line[10000];
 	char* label=(char*) malloc(100);
 	char* key=(char*) malloc(100);
 	char* test=(char*) malloc(100);
@@ -1016,7 +1013,7 @@ bool importFreebaseLabels() {
 //   		if (linecount > 0) break;
 //		if (linecount % 100 == 0 && linecount>20000)
 //			p(linecount);
-		if (++linecount % 1000 == 0) {
+		if (++linecount % 10000 == 0) {
 			printf("%d freebase labels\n", linecount);
 			if (checkLowMemory()) break;
 		}
@@ -1079,9 +1076,11 @@ Node* getFreebaseEntity(char* name) {
 }
 
 bool importFreebase() {
+    
+	freebaseKeys=keyhash_root;
 //	if (!hasWord("01000m1>"))
-    if(!freebaseKeys)
-        importFreebaseLabels();
+//    if(!freebaseKeys[934111643])//1
+//        importFreebaseLabels();
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -1092,7 +1091,7 @@ bool importFreebase() {
 	FILE *infile=open_file("freebase.data.txt");
 	int linecount=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
+//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
 			printf("%d freebase\n", linecount);
 			if (checkLowMemory()) {
@@ -1394,11 +1393,12 @@ void importAllYago() {
 	check(hasWord("Tom_Hartley"));
 	import("yago", "yagoSimpleTypes.tsv");
 	import("yago", "yagoLiteralFacts.tsv");
-	import("yago", "yagoGeonamesEntityIds.tsv");
 	import("yago", "yagoStatistics.tsv");
 	import("yago", "yagoSchema.tsv");
-	import("yago", "yagoGeonamesClassIds.tsv");
-	//import("yago","yagoGeonamesClasses.tsv");
+    //	import("yago", "yagoGeonamesEntityIds.tsv");
+//	import("yago", "yagoGeonamesClassIds.tsv");
+    import("yago","yagoGeonamesClasses.tsv");
+	import("yago", "yagoGeonamesData.tsv");
 	import("yago", "yagoGeonamesGlosses.tsv");
 	import("yago", "yagoSimpleTaxonomy.tsv");
 	//import("yago","yagoWordnetIds.tsv");// hasSynsetId USELESS!!!

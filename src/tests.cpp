@@ -1313,22 +1313,23 @@ void tests() {
 
 void testBrandNewStuff() {
 	int var=0;
+	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();
     //	checkWordnet();
 //    const char* x=concat("ab","cde");
 //    check(eq(x,"abcde"));
     //	import("freebase");
-    //	importFreebase();
+//    importFreebase();// needs /Volumes/Data/BIG/ !
     //	import("yago");
-    check(hasWord("Tom_Hartley"));
-    N a=    getAbstract("Tom_Hartley");
-    N b=   getThe("Tom_Hartley");
-    N a1=    getAbstract("Tom Hartley");
-    N b1=   getThe("Tom Hartley");
-    N a2=    getAbstract("Tom_Hartley");
-    N b2=   getThe("Tom_Hartley");
-    check(a==a2);
-        check(b==b2);
+//    check(hasWord("Tom_Hartley"));
+//    N a=    getAbstract("Tom_Hartley");
+//    N b=   getThe("Tom_Hartley");
+//    N a1=    getAbstract("Tom Hartley");
+//    N b1=   getThe("Tom Hartley");
+//    N a2=    getAbstract("Tom_Hartley");
+//    N b2=   getThe("Tom_Hartley");
+//    check(a==a2);
+//        check(b==b2);
 //    importAll();
 //	tests();
 	//	testQueryMore();
