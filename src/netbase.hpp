@@ -414,7 +414,8 @@ void setValue(Node* node, Node* property, Node* value);
 bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
 bool isA4(Node* n, Node* match, int recurse = false, bool semantic = false);
 bool isA(Node* fro, Node* to);
-Node* value(const char* name, double v,const char* unit = 0);
+Node* value(const char* name, double v,const char* unit);
+Node * value(const char* aname, double v, Node* unit = 0);
 Node* parseValue(const char* aname);
 
 Statement* pattern(Node* subject, Node* predicate, Node* object);

@@ -663,12 +663,11 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 
-		if(values[nameRowNr]!=lastValue)
-            subject=getNew(values[nameRowNr],type);
+		if (values[nameRowNr] != lastValue) subject=getNew(values[nameRowNr], type);
 //        else //keep subject
-        lastValue=values[nameRowNr];
+		lastValue=values[nameRowNr];
 //		subject=getThe(values[nameRowNr]);
-        
+
 		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
 		// 2 objects, 4 relations, 1 name
 
@@ -788,7 +787,8 @@ const char *fixFreebaseName(char *key) {
 Node* rdfOwl(char* name) {
 	if (!name) return 0;
 	if (eq(name, "rdf:type")) return Type;
-	if (eq(name, "rdfs:subClassOf")) return SuperClass;
+	if (eq(name, "rdfs:superClassOf")) return SuperClass;
+	if (eq(name, "rdfs:subClassOf")) return SubClass;
 	if (eq(name, "rdfs:label")) return Label;
 	if (eq(name, "skos:prefLabel")) return Label;
 	if (eq(name, "rdfs:Property")) return Relation;
@@ -833,14 +833,14 @@ Node* rdfValue(char* name) {
 	name++; // ignore quotes "33"
 	free(all);
 	if (!unit || unit > name + 1000 || unit < name) return 0;
-	if(unit[0]=='<')unit++;
+	if (unit[0] == '<') unit++;
 	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
 	if (eq(unit, "xsd:integer")) unit=0; //-> number
 	if (eq(unit, "xsd:decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
 	if (eq(unit, "xsd:float")) unit=0; //-> number
 	if (eq(unit, "xsd:nonNegativeInteger")) unit=0; //-> number
 	else if (eq(unit, "yago0to100")) unit=0;
-	if (!unit) return value(name, atof(name), unit);
+	if (!unit) return value(name, atof(name), Number);
 
 	if (eq(unit, "m")) unit="Meter";
 	else if (eq(unit, "s")) unit="Seconds";
@@ -862,7 +862,6 @@ Node* rdfValue(char* name) {
 	//		, current_context, getYagoConcept(unit)->id
 	//	return add(name);
 	Node* unity=rdfOwl(unit); // getThe(unit);//  getYagoConcept(unit);
-	return getThe(name, unity);
 }
 
 Node* parseWordnetKey(char* key) {
@@ -906,7 +905,7 @@ int countRows(char* line) {
 bool importYago(const char* file) {
 	p("import YAGO start");
 //	if (!contains(file, "/")) file=(((string) "/data/base/BIG/yago/") + file).data();
-	if (!contains(file, "/")) file=concat("yago/" , file);
+	if (!contains(file, "/")) file=concat("yago/", file);
 	//		file = concat("/Users/me/data/base/BIG/yago/", file);
 	Node* subject;
 	Node* predicate;
@@ -919,6 +918,7 @@ bool importYago(const char* file) {
 	char* predicateName=(char*) malloc(100);
 	char* objectName=(char*) malloc(100);
 	int rows=0;
+	int leadingId=!contains(file, "Data");
 	while (fgets(line, 1000, infile) != NULL) {
 		fixNewline(line);
 		if (line[0] == '\t') line[0]=' '; // don't line++ , else nothing left!!!
@@ -927,12 +927,10 @@ bool importYago(const char* file) {
 			if (checkLowMemory()) //MEMORY
 				return 0; //exit(0);// 4GB max
 		}
-		if (++linecount % 10000 == 0) printf("%d %s\n", linecount,file);
-		//			sscanf(line, "%s\t%s\t%s\t%s", &id, subjectName,predicateName, objectName /*, &certainty*/);
+		if (++linecount % 10000 == 0) printf("%d %s\n", linecount, file);
 		int ok=rows=countRows(line);
-		if (rows == 4)
-//			ok = sscanf(line, "%s\t%[^\t]s\t%s\t%[^\t]s", id, subjectName, predicateName,objectName);
-		ok=sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
+		if (rows == 4 && leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
+		else if (rows == 4 && !leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", subjectName, predicateName, objectName, id); // data
 		else ok=sscanf(line, "%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
 		if (ok < 3) {
 			printf("MISMATCH %s\n", line);
@@ -947,20 +945,22 @@ bool importYago(const char* file) {
 			object=getYagoConcept(all[3]);
 			free(all);
 		} else {
+			if(eq(predicateName,"<hasGeonamesEntityId>"))continue;
 //			if(eq("<Tommaso_Caudera>",subjectName))
 //							p(subjectName);// subject==0 bug Disappears when debugging!!!
 			subject=getYagoConcept(subjectName); //
 			predicate=getYagoConcept(predicateName);
 			object=getYagoConcept(objectName);
-			if (subject == 0) subject=getYagoConcept(modifyConstChar(subjectName)); // wth ???
-			if (object == 0) object=getYagoConcept(objectName); // wth ???
+//			if (subject == 0) subject=getYagoConcept(modifyConstChar(subjectName)); // wth ???
+//			if (object == 0) object=getYagoConcept(objectName); // wth ???
 		}
 		if (subject == 0 || predicate == 0 || object == 0) {
-			if (debug) printf("ERROR %s\n", line);
+//			if (debug) printf("ERROR %s\n", line);
 //			subject==0 bug Disappears when debugging!!!
 //			subject = getYagoConcept(subjectName); //
 //			object = getYagoConcept(objectName);
 			badCount++;
+			pf(">%d<",linecount);
 			continue;
 		}
 		Statement* s;
@@ -999,9 +999,9 @@ unsigned int freebaseHash(char* x) {
 //map<string, Node*> freebaseKeys;
 //map<const char*, Node*> freebaseKeys;
 //static map<int, Node*> freebaseKeys=new std::map();
-int* freebaseKeys;// Node*
+int* freebaseKeys; // Node*
 bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
-    char line[10000];
+	char line[10000];
 	char* label=(char*) malloc(100);
 	char* key=(char*) malloc(100);
 	char* test=(char*) malloc(100);
@@ -1033,10 +1033,9 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		Node* n=getNew(label + 1);		//get(1);//
 		try {
 			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
-			if (n && h >= 0 && h < 1 * billion)
-				freebaseKeys[h]=n->id;
-            else
-                pf("WRONG KEY! %d %s %s",h,key,label);
+			if (n && h >= 0 && h < 1 * billion) freebaseKeys[h]=n->id;
+			else
+			pf("WRONG KEY! %d %s %s", h, key, label);
 		} catch (...) {
 			p("XXXXXXXXXXXXXXXXXXXXXXXXX");
 		}
@@ -1045,29 +1044,27 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		//		add(key,label);
 	}
 	fclose(infile); /* Close the file */
-    int testE=freebaseHash("01000m1>");
-    Node* testA=getThe("Most Precious Days");
-    int testI=freebaseKeys[testE];
-    Node* testN=get(testI);
-    check(testN==testA);
-    check(freebaseKeys[testE]==testA->id);
-    free(line);
-    if(linecount>40000000)
-    check(freebaseKeys[freebaseHash("0c21rgr>")]!=0);
+	int testE=freebaseHash("01000m1>");
+	Node* testA=getThe("Most Precious Days");
+	int testI=freebaseKeys[testE];
+	Node* testN=get(testI);
+	check(testN == testA);
+	check(freebaseKeys[testE] == testA->id);
+	free(line);
+	if (linecount > 40000000)
+	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
 	p("import Freebase labels ok");
-    return true;
+	return true;
 }
 
 Node* getFreebaseEntity(char* name) {
 	if (startsWith(name, "<m.")) {
 
 		uint h=freebaseHash(name + 3);
-        int got=freebaseKeys[h];
-		if (h >= 0 && h < 1 * billion && got && get(got)->id!=0)
-			return get(freebaseKeys[h]);
+		int got=freebaseKeys[h];
+		if (h >= 0 && h < 1 * billion && got && get(got)->id != 0) return get(freebaseKeys[h]);
 		// skip <m. but  LEAVE THE >
-		if (hasWord(name + 3))
-            return getThe(name + 3);
+		if (hasWord(name + 3)) return getThe(name + 3);
 		return getAbstract(name + 3);
 	}
 	const char* fixed=fixFreebaseName(name);
@@ -1076,11 +1073,11 @@ Node* getFreebaseEntity(char* name) {
 }
 
 bool importFreebase() {
-    
+
 	freebaseKeys=keyhash_root;
 //	if (!hasWord("01000m1>"))
-//    if(!freebaseKeys[934111643])//1
-//        importFreebaseLabels();
+    if(!freebaseKeys[934111643])//1
+        importFreebaseLabels();
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -1170,7 +1167,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 
 void importNames() {
 	addStatement(all(firstname), are, a(name));
-   	addStatement(all(firstname), Synonym, a(first_name));
+	addStatement(all(firstname), Synonym, a(first_name));
 	addStatement(all(male_firstname), have_the(gender), a(male));
 	addStatement(all(male_firstname), are, a(firstname));
 	addStatement(all(male_firstname), Owner, a(male));
@@ -1388,6 +1385,7 @@ void importGeoDB() {
 
 void importAllYago() {
 //	Is
+	import("yago", "yagoGeonamesData.tsv");
 	load_wordnet_synset_map();
 	import("yago", "yagoFacts.tsv");
 	check(hasWord("Tom_Hartley"));
@@ -1395,10 +1393,9 @@ void importAllYago() {
 	import("yago", "yagoLiteralFacts.tsv");
 	import("yago", "yagoStatistics.tsv");
 	import("yago", "yagoSchema.tsv");
-    //	import("yago", "yagoGeonamesEntityIds.tsv");
+	//	import("yago", "yagoGeonamesEntityIds.tsv");
 //	import("yago", "yagoGeonamesClassIds.tsv");
-    import("yago","yagoGeonamesClasses.tsv");
-	import("yago", "yagoGeonamesData.tsv");
+	import("yago", "yagoGeonamesClasses.tsv");
 	import("yago", "yagoGeonamesGlosses.tsv");
 	import("yago", "yagoSimpleTaxonomy.tsv");
 	//import("yago","yagoWordnetIds.tsv");// hasSynsetId USELESS!!!

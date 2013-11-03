@@ -1313,14 +1313,14 @@ void tests() {
 
 void testBrandNewStuff() {
 	int var=0;
-	if(currentContext()->nodeCount<10000)importAll();
+//	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();
     //	checkWordnet();
 //    const char* x=concat("ab","cde");
 //    check(eq(x,"abcde"));
     //	import("freebase");
 //    importFreebase();// needs /Volumes/Data/BIG/ !
-    //	import("yago");
+    	import("yago");
 //    check(hasWord("Tom_Hartley"));
 //    N a=    getAbstract("Tom_Hartley");
 //    N b=   getThe("Tom_Hartley");

@@ -1541,26 +1541,28 @@ Node * parseValue(const char* aname) {
 		string s=(aname);
 		string unit=s.substr(s.find(" ") + 1);
 		return value(aname, atof(aname), unit.data());
-	} else return value(aname, atof(aname), 0);
+	} else return value(aname, atof(aname), Number);
 }
 
 //#include <stdlib.h>
 //#include <math.h> //floor
-
 Node * value(const char* aname, double v, const char* unit) {
-	char name[1000];
+	return value(aname,v,unit);
+}
+
+Node * value(const char* aname, double v, Node* unit) {
+	char* name=(char*)malloc(1000);
 	//	if (aname)strcpy(name, aname);// IGNORED!!!?
 	if (unit) {
-		sprintf(name, "%g %s", v, unit); //Use the shorter of %e or %f  3.14 or 24E+35
+		sprintf(name, "%g %s", v, unit->name); //Use the shorter of %e or %f  3.14 or 24E+35
 	} else {
 		sprintf(name, "%g", v); //Use the shorter of %e or %f  3.14 or 24E+35
-	}
-	Node *n=getThe(name);
-	if (unit) {
-		//		if(eq(unit,"<degrees>"))n->kind=...
-		n->kind=getThe(unit)->id;
-	} else n->kind=number;
+	}///
+	Node *n= getThe(name,unit);
+	if (unit)n->kind=unit->id;
+	 else n->kind=number;
 	n->value.number=v;
+	free(name);
 	return n;
 }
 
