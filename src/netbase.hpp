@@ -504,18 +504,20 @@ static long billion=GB;
 
 // FREEBASE: 600.000.000 Statements !!!
 #if defined(__APPLE__)
-static long maxNodes = 40*million;
-#else
-static long maxNodes = 400*million;
-#endif
+static long maxNodes = 80*million;
 static long maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
+#else
+static long maxNodes = 100*million;
+static long maxStatements0 = maxNodes*8;
+#endif
+
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?
 static long contextOffset=0x800000;//0x10000;
 static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
-
+static long freebaseHashSize=1*MB;// 1*GB;// 51.705.469 keys! + abstacts !  *  sizeof(int) => 4GB!
 int main(int argc, char *argv[]);
 int test2();
 
@@ -528,5 +530,5 @@ extern Context* context_root; // else: void value not ignored as it ought to be
 extern Node* abstract_root;
 extern Node* node_root;
 extern char* name_root;
-extern int* keyhash_root;// keyhash-> NodeId 'map'
+extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;

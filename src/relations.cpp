@@ -117,7 +117,7 @@ Node* addRelation(int id, const char* name,bool transitive=false) {
 	const char* what;
 	what = keep.c_str();
 	Node* n = add_force(wordnet, id, what, _internal);
-	if(n->statementCount==0)// IT BETTER BE!!!
+	if(n->statementCount==0&&id>0)// IT BETTER BE!!!
 		addStatement4(wordnet, getAbstract(name)->id,_instance,id);// Internal
 //	if(transitive)???  baked into Algorithms, at least four standard relations?
 	return n;
@@ -314,4 +314,25 @@ Node* invert(Node* relation) {
 	if (has(relation, Antonym, Any, false, false, false, false))
 		return has(relation, Antonym);
 	else return Unknown;// null; //! or relation .name + "OF" ?  weight => weight OF
+}
+
+
+Node * getRelation(const char* thing) {
+	if (thing[0] == '#') thing++;
+	if (eq(thing, "instance")) return Instance;
+	if (eq(thing, "type")) return Type;
+	if (eq(thing, "is")) return Type;
+	if (eq(thing, "has")) return Member;
+	if (eq(thing, "of")) return Owner;
+	if (eq(thing, "by")) return Owner; // creator
+	if (eq(thing, "type")) return Type;
+	if (eq(thing, "property")) return Attribute; // Property;
+	if (eq(thing, "true"))
+		return True;
+	if (eq(thing, "false")) return False;
+	if (eq(thing, "label")) return Label;
+	if (eq(thing, "range")) return Range;
+	if (eq(thing, "domain")) return Domain;
+	//	if (eq(thing, "in"))return Loc;
+	return 0;
 }

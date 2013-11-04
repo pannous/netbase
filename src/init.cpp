@@ -80,8 +80,10 @@ void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void *
 				system("sudo ipcrm -M '0x69194'");
 				//				system("sudo sysctl -w kern.sysv.shmmax=2147483648"); // # 2GB !!
 				//				system("sudo sysctl -w kern.sysv.shmall=2147483648");
-				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB !!
-				system("sudo sysctl -w kern.sysv.shmall=4294967296");
+//				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB !!
+//				system("sudo sysctl -w kern.sysv.shmall=4294967296");
+				system("sudo sysctl -w kern.sysv.shmmax=6442450944"); // # 6GB !!
+				system("sudo sysctl -w kern.sysv.shmall=6442450944");
 //				system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
 //				system("sudo sysctl -w kern.sysv.shmall=8589934592");
 //				system("sudo sysctl -w kern.sysv.shmmax=34359738368"); // # 32GB !!
@@ -159,16 +161,19 @@ void checkRootContext() {
 	}
 
 	p("USING SHARED MEMORY");
-	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
+//	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
+	if (currentContext()->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
 		p("rootContext->nodes != (Node*) node_root");
+		pf("%X != %X\n",rootContext->nodes,node_root);
 		showContext(rootContext);
 		fixPointers();
 		rootContext->nodes=(Node*) node_root;
 		currentContext()->nodes=rootContext->nodes;	// hack
-	} else if (currentContext()->nodes != rootContext->nodes) {
-		fixPointers();
-		currentContext()->nodes=rootContext->nodes;
 	}
+//	else if (currentContext()->nodes != rootContext->nodes) {
+//		fixPointers();
+//		currentContext()->nodes=rootContext->nodes;
+//	}
 }
 
 void init() {
@@ -182,19 +187,21 @@ void init() {
 	long name_size=maxNodes * averageNameLength;
 	long statement_size=maxStatements0 * statementSize;
 //	node_root=&context_root[contextOffset];
-	context_root=(Context*) share_memory(key, context_size, context_root, root);
 	p("abstract_root:");
-	abstract_root=(Node*) share_memory(key + 1, abstract_size * 2, abstract_root, ((char*) context_root) + context_size);
+	abstract_root=(Node*) share_memory(key , abstract_size * 2, abstract_root,root);//  ((char*) context_root) + context_size
 	p("name_root:");
-	name_root=(char*) share_memory(key + 2, name_size, name_root, ((char*) abstract_root) + abstract_size * 2);
+	name_root=(char*) share_memory(key + 1, name_size, name_root, ((char*) abstract_root) + abstract_size * 2);
 	p("node_root:");
-	node_root=(Node*) share_memory(key + 4, node_size, node_root, name_root + name_size);
+	node_root=(Node*) share_memory(key + 2, node_size, node_root, name_root + name_size);
 	p("statement_root:");
 	statement_root=(Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
-	p("keyhash_root:");
+//	p("keyhash_root:");
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
-	keyhash_root=(int*) share_memory(key + 5, 1 * billion * sizeof(int), keyhash_root, ((char*) statement_root) + statement_size);
+	context_root=(Context*) share_memory(key+4, context_size, context_root,  ((char*) statement_root) + statement_size);
+
+//	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
+//	context_root=(Context*) share_memory(key, context_size, context_root, root);
 //	abstract_root=share_memory(key + 1,abstract_size , abstract_root, root + 0x100000000);
 //	name_root=share_memory(key + 2, name_size, name_root, root + 0x200000000);
 //	statement_root=share_memory(key + 3, statement_size, statement_root, root + 0x300000000);
@@ -217,7 +224,7 @@ void init() {
 void fixNodes(Context* context, Node* oldNodes) {
 #ifndef explicitNodes
 	return;
-#endif
+#else
 	int max=context->statementCount; // maxStatements;
 	for (int i=0; i < max; i++) {
 		Statement* n=&context->statements[i];
@@ -226,13 +233,11 @@ void fixNodes(Context* context, Node* oldNodes) {
 			showStatement(n);
 			continue;
 		}
-#ifdef explicitNodes
 		n->Subject=&context->nodes[n->subject];
 		n->Predicate=&context->nodes[n->predicate];
 		n->Object=&context->nodes[n->object];
-#endif
-
 	}
+#endif
 }
 
 void load(bool force) {
@@ -373,22 +378,20 @@ int collectAbstracts() {
 }
 
 void fixNodeNames(Context* context, char* oldnodeNames) {
-
 #ifdef inlineName
 	printf("inlineNames!");
 	return;
-#endif
-	int max=context->nodeCount; // maxNodes;
+#else
 	long newOffset=context->nodeNames - oldnodeNames;
+	if(newOffset==0)return;
+	int max=context->nodeCount; // maxNodes;
 	for (int i=0; i < max; i++) {
 		Node* n=&context->nodes[i];
 		//		show(n,true);
 		if (!checkNode(n)) continue;
-#ifndef inlineName
 		n->name=n->name + newOffset;
-#endif
-
 	}
+#endif
 }
 
 bool clearMemory() {

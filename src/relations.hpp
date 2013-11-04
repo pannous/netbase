@@ -115,7 +115,7 @@ extern Context* Wordnet;
 static const int abstractId = 102;
 
 
-static const int wordnet = 303; //context==Class??   TODO!
+static const int wordnet = 0;// 303; //context==Class??   TODO!
 // DANGER!!
 static const int _internal = 100;
 static const int _node = 101;// dont change
@@ -227,6 +227,7 @@ static const int _see=0,//50 also, 40 similar
 
 
 void initRelations();
+Node * getRelation(const char* thing);
 Node* invert(Node* relation);
 #endif	/* RELATIONS_HPP */
 

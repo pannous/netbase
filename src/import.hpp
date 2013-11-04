@@ -21,3 +21,4 @@ void importXml(const char* facts_file, char* nameField=0, const char* ignoredFie
 int getFields(char* line, vector<char*>& fields, char separator = 0, int nameRowNr = -1, const char* nameRow = 0);
 char* extractTagName(char* line);
 char* extractTagValue(char* line);
+Node* getFreebaseEntity(char* name);

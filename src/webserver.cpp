@@ -28,12 +28,6 @@
 
 #define SERVER_PORT            (3333)
 
-string itoa(int i) {
-	std::stringstream ss;
-	ss << i;
-	return ss.str();
-}
-
 enum result_format {
 	xml, json, txt
 };

@@ -41,7 +41,7 @@ Node* node_root=0;
 Statement* statement_root=0;
 char* name_root=0;
 Node* abstract_root=0;
-int* keyhash_root=0;
+int* freebaseKey_root=0;
 //Node** keyhash_root=0;
 
 bool doDissectAbstracts=false;
@@ -165,11 +165,11 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	//		p(a->name);
 	int i=0;
 	while (ah&&ah->next) {
-		if (i++ > 100) {	// allow 65536 One letter nodes
+		if (i++ > 200) {	// allow 65536 One letter nodes
 //			debugAhash(position);
-			p("insertAbstractHash FULL!");
-			show(a);
-			return 0;
+//			p("insertAbstractHash FULL!");
+//			show(a);
+//			return 0;
 //			return ah;
 		}
 //		if (ah->next == ah) {
@@ -210,6 +210,12 @@ bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statement
 bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int statementNr) {
 	return  appendLinkedListOfStatements(to_insert, node, statementNr); // append old to new
 }
+inline bool eq(Statement* s,Statement* s2){
+	return (s->subject==s2->subject&&s->predicate==s2->predicate&&s->object==s2->object);
+}
+inline bool eq(Statement* s,int statementNr){
+	return eq(s,getStatement(statementNr));
+}
 
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 	int n=node->statementCount;
@@ -228,9 +234,11 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
 		if (to_insert->Predicate() == Instance || to_insert->Predicate() == Type) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
+			if(eq(add_here,statementNr))return false;
 			appendLinkedListOfStatements(add_here, node, statementNr); // append new to old
 			node->lastStatement=statementNr;
 		} else {
+			if(eq(to_insert,node->firstStatement))return false;
 			prependLinkedListOfStatements(to_insert, node, node->firstStatement); // append old to new
 			node->firstStatement=statementNr;
 		}
@@ -321,9 +329,9 @@ char* name(Node * node) {
 // Context* contexts;
 
 Context * getContext(int contextId) {
-	if (contextId == 0) {
-        p("Context#0!");
-	}
+//	if (contextId == 0) {
+//        p("Context#0!");
+//	}
 	if (!multipleContexts) contextId=wordnet; // just one context
 
 	Context* context=&(contexts[contextId]); //*(Context*)malloc(sizeof(Context*));
@@ -424,11 +432,11 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 // don't use! iterate via nextStatement
 
 Statement * getStatement(int id, int context_id) {
-	if (id >= maxStatements0) {
+	if (id <= 0) {
 		badCount++;
 		return null;
 	}
-	if (id < 0) {
+	if (id >= maxStatements0) {
 		badCount++;
 		return null;
 	}
@@ -573,8 +581,9 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 	Context* context=getContext(contextId);
 	Node* node=&(context->nodes[context->nodeCount]);
 	if (context->nodeCount > maxNodes) {
+		pf("context->nodeCount > maxNodes %d>%d",context->nodeCount ,maxNodes);
 		p("MEMORY FULL!!!");
-		exit(1);
+//		exit(1);
 		return 0;
 	}
 	initNode(node, context->nodeCount, nodeName, kind, contextId);
@@ -626,7 +635,7 @@ bool addStatementToNode2(Node* node, int statement) {
 }
 #endif
 
-Statement * addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check) {
+Statement * addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool checkNodes) {
 	if (contextId < 0 || subjectId < 0 || predicateId < 0 || objectId < 0) {
 		p("WARNING contextId<0||subjectId<0||predicateId<0||objectId<0");
 		return 0;
@@ -654,9 +663,13 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 	//	if(predicate==Antonym)
 	//		p("SD");
 
-	if (check && !checkNode(subject, subjectId)) return 0;
-	if (check && !checkNode(object, objectId)) return 0;
-	if (check && !checkNode(predicate, predicateId)) return 0;
+	if (checkNodes && !checkNode(subject, subjectId)) return 0;
+	if (checkNodes && !checkNode(object, objectId)) return 0;
+	if (checkNodes && !checkNode(predicate, predicateId)) return 0;
+
+	Statement* s=getStatement( subject->lastStatement);
+	if(s&&s->subject==subjectId&&s->predicate==predicateId&&s->object==objectId)
+		return s;// quick checkDuplicate!
 
     int id=context->statementCount;
 	Statement* statement=&context->statements[id]; // union of statement, node??? nee
@@ -684,6 +697,11 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	if (!checkNode(subject)) return 0;
 	if (!checkNode(object)) return 0;
 	if (!checkNode(predicate)) return 0;
+
+	Statement* s=getStatement( subject->lastStatement);
+	if(s&&s->Subject()==subject&&s->Predicate()==predicate&&s->Object()==object)
+		return s;// quick checkDuplicate!
+
 	if (checkDuplicate) {	//todo: add specifications but not generalizations?
 		Statement* old=findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		if (old) return old; // showStatement(old)
@@ -700,7 +718,6 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 //		return last_statement;// direct duplicate!
     int id=context->statementCount;
 	Statement* statement=&context->statements[id]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
-	Statement* s=statement;
 //	statement->id=context->statementCount;
 #ifdef useContext
 	statement->context=current_context; //todo!!
@@ -1057,31 +1074,17 @@ void dissectWord(Node * subject,bool checkDuplicates) {
 bool abstractsLoaded=true;
 
 Node * getNew(const char* thing, Node* type) {
-	if (type == 0) type=Object;
-	N n=add(thing, type->id);
+//	if (type == 0) type=Object;
+	Node* abstract=getAbstract(thing);// order!
+	if(type==Abstract)return abstract;//||type==Singleton
+	int type_id=0;
+	if(type!=null)type_id=type->id;
+	N n=add(thing, type_id);
 	return n;
 }
 
 Node * getThe(string thing, Node* type) {
 	return getThe(thing.data(), type);
-}
-
-Node * getRelation(const char* thing) {
-	if (thing[0] == '#') thing++;
-	if (eq(thing, "is")) return Type;
-	if (eq(thing, "has")) return Member;
-	if (eq(thing, "of")) return Owner;
-	if (eq(thing, "by")) return Owner; // creator
-	if (eq(thing, "instance")) return Instance;
-	if (eq(thing, "type")) return Type;
-	if (eq(thing, "property")) return Attribute; // Property;
-	if (eq(thing, "true")) return True;
-	if (eq(thing, "false")) return False;
-	if (eq(thing, "label")) return Label;
-	if (eq(thing, "range")) return Range;
-	if (eq(thing, "domain")) return Domain;
-	//	if (eq(thing, "in"))return Loc;
-	return 0;
 }
 
 Node * getThe(const char* thing, Node* type){//, bool dissect) {
@@ -2011,7 +2014,9 @@ Node * getThe(Node* abstract, Node * type) {
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		//		if (abstract->value.node)return abstract->value.node; // NODE!!! OR LABELS?? DANGER!!!
 		// CAREFUL: firstStatement INSTANCE MUST STAY FIRST~~~!!!
-		Statement* s=0;
+		Statement* s=getStatement(abstract->lastStatement);
+		if(s&&s->Predicate()==Instance)return s->Object();
+		else s=0;
 		while (s=nextStatement(abstract, s))
 			if (s->Predicate() == Instance) {		// ASSUME RIGHT ORDER!?
 				if (s->Subject() == abstract)

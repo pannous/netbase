@@ -1319,8 +1319,8 @@ void testBrandNewStuff() {
 //    const char* x=concat("ab","cde");
 //    check(eq(x,"abcde"));
     //	import("freebase");
-//    importFreebase();// needs /Volumes/Data/BIG/ !
-    	import("yago");
+    importFreebase();// needs /Volumes/Data/BIG/ !
+//    	import("yago");
 //    check(hasWord("Tom_Hartley"));
 //    N a=    getAbstract("Tom_Hartley");
 //    N b=   getThe("Tom_Hartley");

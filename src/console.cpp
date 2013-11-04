@@ -304,7 +304,7 @@ NodeVector parse(const char* data) {
 //		}
 //		return nodeVectorWrap(found);
 //	}
-	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
+	if (args.size() > 2 && args[1] == "of" || contains(data, " of ")){// || (contains(data, ".") && !contains(data, " "))) {
 		return nodeVectorWrap(parseProperty(data)); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
@@ -345,7 +345,13 @@ NodeVector parse(const char* data) {
 	//        query(data);// NOO!
 	int i=atoi(data);
 	if (i == 0) i=atoi(data + 1);
-	if (i > 0) {
+	bool oki=itoa(i)==data;
+	if(startsWith(data,"<m.")||startsWith(data,"<g.")){
+		Node* n=getFreebaseEntity((char*)data);
+		show(n);//<g.11vjx36lj>
+		return OK;
+	}
+	if (i > 0 && oki) {
 		//		if (i < 1000)showContext(i);
 		if (endsWith(data, "s") || endsWith(data, "S") || endsWith(data, "$")) {
 			showStatement(getStatement(i));

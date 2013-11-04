@@ -83,4 +83,5 @@ char* fixQuotesAndTrim(char* tmp);
 bool isAbstract(Node* object);
 //bool contains(NodeVector& v, Node& o,bool fuzzy=false);
 bool contains(NodeVector& v, Node* o,bool fuzzy=false);
+string itoa(int i);
 #define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}

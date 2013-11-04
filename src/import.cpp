@@ -48,7 +48,7 @@ bool checkLowMemory() {
 	size_t peakSize=getPeakRSS();
 	size_t free=getFreeSystemMemory();
 //	if (!free) free=5.5L * GB;// 2 GB + work
-	if (!free) free=7.5L * GB; // 4 GB + work
+	if (!free) free=9.5L * GB; // 4 GB + work
 	if (currentSize > free) {
 		p("OUT OF MEMORY!");
 		printf("MEMORY: %X Peak: %X FREE: %X \n", (long) currentSize, (long) peakSize, (long) free);
@@ -775,15 +775,6 @@ char *fixYagoName(char *key) {
 	return key;
 }
 
-const char *fixFreebaseName(char *key) {
-	key=(char *) fixYagoName(key);
-	int len=strlen(key);
-	for (int i=len - 1; i > 0; --i)
-		if (key[i] == '.') return &key[i + 1];
-		else if (key[i] == '#') return &key[i + 1];
-	return key;
-}
-
 Node* rdfOwl(char* name) {
 	if (!name) return 0;
 	if (eq(name, "rdf:type")) return Type;
@@ -826,6 +817,16 @@ Node* rdfOwl(char* name) {
 	return getThe(name); //Unknown;
 }
 
+Node* dateValue(const char* val) {
+	return value(val, atoi(val), Date);
+}
+/*
+ <g.11vjx3759>   <measurement_unit.dated_percentage.source>      <g.11x1gf2m6>   .
+ <g.11vjx3759>   <#type> <measurement_unit.dated_percentage>     .
+ <g.11vjx3759>   <measurement_unit.dated_percentage.date>        "2005-04"^^<#gYearMonth>        .
+ <g.11vjx3759>   <measurement_unit.dated_percentage.rate>        4.5     .
+ <g.11vjx3759>   <#type> <measurement_unit.dated_percentage>     .
+ */
 Node* rdfValue(char* name) {
 	char** all=splitStringC(name, '^');
 	char* unit=all[2];
@@ -834,6 +835,7 @@ Node* rdfValue(char* name) {
 	free(all);
 	if (!unit || unit > name + 1000 || unit < name) return 0;
 	if (unit[0] == '<') unit++;
+	if (unit[0] == '#') unit++;
 	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
 	if (eq(unit, "xsd:integer")) unit=0; //-> number
 	if (eq(unit, "xsd:decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
@@ -843,7 +845,9 @@ Node* rdfValue(char* name) {
 	if (!unit) return value(name, atof(name), Number);
 
 	if (eq(unit, "m")) unit="Meter";
+	else if (eq(unit, "%")) ; // OK
 	else if (eq(unit, "s")) unit="Seconds";
+	else if (eq(unit, "r")) unit="Seconds";
 	else if (eq(unit, "g")) unit="Gram";
 	else if (eq(unit, "/km")) unit="Kilometer";
 	else if (eq(unit, "km")) unit="Kilometer";
@@ -854,14 +858,18 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "yagoISBN")) unit="ISBN"; // ignore
 	else if (eq(unit, "yagoTLD")) unit="TLD"; // ???
 	else if (eq(unit, "yagoMonetaryValue")) unit="dollar";
-	else if (eq(unit, "%")) ; // OK
+	else if (eq(unit, "gYear")) unit="year"; //Date;
+	else if (eq(unit, "date")) return dateValue(name);
+	else if (eq(unit, "dateTime")) return dateValue(name);
+	else if (eq(unit, "gYearMonth")) return dateValue(name);
 	else {
 		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
 		return 0;
 	}
 	//		, current_context, getYagoConcept(unit)->id
 	//	return add(name);
-	Node* unity=rdfOwl(unit); // getThe(unit);//  getYagoConcept(unit);
+	Node* unity=getThe(unit); // getThe(unit);//  getYagoConcept(unit);
+	return value(name, atof(name), unity);
 }
 
 Node* parseWordnetKey(char* key) {
@@ -912,14 +920,14 @@ bool importYago(const char* file) {
 	Node* object;
 	int linecount=0;
 	FILE *infile=open_file(file);
-	char* line=(char*) malloc(1000);
-	char* id=(char*) malloc(100);
-	char* subjectName=(char*) malloc(100);
-	char* predicateName=(char*) malloc(100);
-	char* objectName=(char*) malloc(100);
+	char* line=(char*) malloc(10000);
+	char* id=(char*) malloc(10000);
+	char* subjectName=(char*) malloc(10000);
+	char* predicateName=(char*) malloc(10000);
+	char* objectName=(char*) malloc(10000);
 	int rows=0;
 	int leadingId=!contains(file, "Data");
-	while (fgets(line, 1000, infile) != NULL) {
+	while (fgets(line, 10000, infile) != NULL) {
 		fixNewline(line);
 		if (line[0] == '\t') line[0]=' '; // don't line++ , else nothing left!!!
 		if (linecount % 10000 == 0) {
@@ -945,7 +953,7 @@ bool importYago(const char* file) {
 			object=getYagoConcept(all[3]);
 			free(all);
 		} else {
-			if(eq(predicateName,"<hasGeonamesEntityId>"))continue;
+			if (eq(predicateName, "<hasGeonamesEntityId>")) continue;
 //			if(eq("<Tommaso_Caudera>",subjectName))
 //							p(subjectName);// subject==0 bug Disappears when debugging!!!
 			subject=getYagoConcept(subjectName); //
@@ -960,7 +968,7 @@ bool importYago(const char* file) {
 //			subject = getYagoConcept(subjectName); //
 //			object = getYagoConcept(objectName);
 			badCount++;
-			pf(">%d<",linecount);
+			pf(">%d<", linecount);
 			continue;
 		}
 		Statement* s;
@@ -980,29 +988,84 @@ bool importYago(const char* file) {
 	return true;
 }
 
-//
-//inline short normChar(char c) {// 0..36 damn ;)
-//	if (c >= '0' && c <= '9') return c-'0'+26;
-//	if (c >= 'a' && c <= 'z') return c-'a';
-//	if (c >= 'A' && c <= 'Z') return c-'A';
-//	return 0;
-//}
-unsigned int freebaseHash(char* x) {
-	unsigned int hash=0;
-	char c;
-	x++;
-	while (c=*x++)
-		if (c == '>') return hash % billion;
-		else hash=hash * 32 + normChar(c);
-	return hash % billion;
+const char *fixFreebaseName(char *key) {
+	key=(char *) fixYagoName(key);
+	int len=strlen(key);
+	for (int i=len - 1; i > 0; --i)
+		if (key[i] == '.') {
+			key[i]=0;
+			if (!eq(&key[i + 1], "topic")) return &key[i + 1];
+		} else if (key[i] == '#') return &key[i + 1];
+	return key;
 }
+long freebaseHash(char* x) {
+	long hash=0;
+	if (x[0] == '1') hash=1;
+	if (x[0] == '2') hash=2;
+	x++;
+	char c;
+	while (c=*x++) {
+		if (c == '>') break;
+		int n=normChar(c);
+		if (c == '_') n=36;
+		hash=hash * 64 + n;
+	}
+	return hash;
+}
+
+unsigned int freebaseHash2(char* x) {
+	long hash=0;
+	char* o=x;
+	char c;
+//	p(x);
+	x++;
+	if (x[0] == '1') hash=1;
+	if (x[0] == '2') hash=2;
+	x++;
+	int z=0; // number extra bits
+	int f=0;
+	int pos=0;
+	while (c=*x++) {
+		if (c == '>') break;
+		int n=normChar(c);
+		if (c == '_') n=36;
+		if (n >= 32) z+=(8 * f++) + (n / 32 + 1) + pos;
+//		p(n);
+		hash=hash * 32 + n % 32;
+//		p(hash);
+		pos++;
+	}
+	if (z > 0) {
+		long diff=z * billion; // / (f * 8);
+		hash=hash + diff;
+	}
+	if (hash < 0) hash=-hash;
+	return hash; // % freebaseHashSize;
+}
+
 //map<string, Node*> freebaseKeys;
 //map<const char*, Node*> freebaseKeys;
 //static map<int, Node*> freebaseKeys=new std::map();
-int* freebaseKeys; // Node*
+//map<long, Node*> freebaseKeys;
+map<long, int> freebaseKeys;
+int freebaseKeysConflicts=0;
+
+void testPrecious() {
+	long testE=freebaseHash("01000m1>");
+	Node* testA=getAbstract("Most Precious Days");
+//	Node* testA=getThe("Most Precious Days");
+	long testI=freebaseKeys[testE];
+	Node* testN=get(testI);
+	p(testA);
+	p(testN);
+	check(testN == testA);
+	check(freebaseKeys[testE] == testA->id);
+}
+
 bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 	char line[10000];
-	char* label=(char*) malloc(10000);
+	char* label0=(char*) malloc(10000);
+	char* label;
 	char* key=(char*) malloc(10000);
 	char* test=(char*) malloc(10000);
 	FILE *infile=open_file("freebase.labels.en.txt");
@@ -1010,26 +1073,46 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 	int linecount=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 //		if (linecount > 10000000) break;
-//   		if (linecount > 0) break;
+		if (linecount > 1000000) break;
 //		if (linecount % 100 == 0 && linecount>20000)
 //			p(linecount);
-		if (++linecount % 10000 == 0) {
-			printf("%d freebase labels\n", linecount);
+		if (++linecount % 100000 == 0) {
+			printf("%d freebase labels, %d duplicates \n", linecount, freebaseKeysConflicts);
 			if (checkLowMemory()) break;
+//			testPrecious();
 		}
-		sscanf(line, "%s\t%s\t%[^\t]s\t.", key, test, label);
-		if (!startsWith(key, "<m.")) continue;
+		sscanf(line, "%s\t%s\t%[^\t]s\t.", key, test, label0);
+		label=label0;
+		if (!startsWith(key, "<m.") && !startsWith(key, "<g.")) continue;
 		if (!startsWith(test, "<#label")) continue;
-		if (strlen(label) < 6||strlen(label)>100) continue;
-
-		label[strlen(label) - 4]=0;		// "@en
-//		key[strlen(key) - 1]=0;
-		Node* n=getNew(label + 1);		//get(1);//
+		if (startsWith(label, "\"")) label++;
+		int len=strlen(label);
+		if (len < 6 || len > 100) continue;
+		label[len - 4]=0;		// "@en
+		key[strlen(key) - 1]=0;
 		try {
-			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
-			if (n && h >= 0 && h < 1 * billion) freebaseKeys[h]=n->id;
-			else
-			pf("WRONG KEY! %d %s %s", h, key, label);
+//			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
+			long h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
+//			if (h < 0 || h >= 1 * billion)
+//				pf("WRONG KEY! %d %s %s", h, key, label);
+			if(eq(key,"<m.0101rlg>"))
+				p("K");
+//			if (h == 0 || h == 32||h==6161797)//03f2bmf 03f27mf
+//				h=freebaseHash(key + 3);
+			if (freebaseKeys[h] != 0) {
+//				if(!eq(get(freebaseKeys[h])->name, label))
+//					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+//				else
+//					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+				freebaseKeysConflicts++;
+			} else {
+				Node* n;
+				if (hasWord(label)) n=getNew(label);		//get(1);//
+				else n=getAbstract(label);
+				//		n->value.text=...
+				if (n) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
+			}
+
 		} catch (...) {
 			p("XXXXXXXXXXXXXXXXXXXXXXXXX");
 		}
@@ -1038,40 +1121,66 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		//		add(key,label);
 	}
 	fclose(infile); /* Close the file */
-	int testE=freebaseHash("01000m1>");
-	Node* testA=getThe("Most Precious Days");
-	int testI=freebaseKeys[testE];
-	Node* testN=get(testI);
-	check(testN == testA);
-	check(freebaseKeys[testE] == testA->id);
-	free(line);
-	if (linecount > 40000000)
-	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
+	p("freebaseKeysConflicts:");
+	p(freebaseKeysConflicts);
+//	testPrecious();
+//	if (linecount > 40000000)
+//	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
 	p("import Freebase labels ok");
 	return true;
 }
 
-Node* getFreebaseEntity(char* name) {
-	if (startsWith(name, "<m.")) {
-
-		uint h=freebaseHash(name + 3);
-		int got=freebaseKeys[h];
-		if (h >= 0 && h < 1 * billion && got && get(got)->id != 0) return get(freebaseKeys[h]);
-		// skip <m. but  LEAVE THE >
-		if (hasWord(name + 3)) return getThe(name + 3);
-		return getAbstract(name + 3);
+Node *dissectFreebase(char* name) {
+	if (!contains(name, ".")) {
+		N a=getRelation((const char*)name);
+		if(a)return a;
+		a=getAbstract(name);
+		if (a->lastStatement&&getStatement(a->lastStatement)->predicate==_instance)
+			return getStatement(a->lastStatement)->Object();
+		else
+			return a;
 	}
+	// reuse freebaseHash for <organization.organization.parent> etc
+	long h=freebaseHash(name);
+	int got=freebaseKeys[h];
+	if (got && get(got)->id != 0) return get(freebaseKeys[h]);
 	const char* fixed=fixFreebaseName(name);
-	//dissectWord(abstract);
-	return getThe(fixed);
+	N n=getThe(fixed);
+	if(!n)return 0;// howtf "" ?
+	freebaseKeys[h]=n->id;
+	N o=dissectFreebase(name);
+	addStatement(n, Domain, o, true);
+	return n;
+}
+
+Node* getFreebaseEntity(char* name) {
+	if (name[0] == '<') name++;
+	// skip <m. but  LEAVE THE >
+	if (startsWith(name, "m.") || startsWith(name, "g.")) {
+		long h=freebaseHash(name + 3);
+		int got=freebaseKeys[h];
+		if (got && get(got)->id != 0) return get(freebaseKeys[h]);
+		else {
+//			pf("MISSING %s\n", name);
+			return getThe(name);
+		}
+	}
+	name=(char *) fixYagoName(name);
+	if (contains(name, "^^")) return rdfValue(name);
+	return dissectFreebase(name);
 }
 
 bool importFreebase() {
-
-	freebaseKeys=keyhash_root;
+//	freebaseKeys=freebaseKey_root;
+//	long x=freebaseHash("03f2bmf");
+//	long y=freebaseHash("03f27mf");
+//	check(x != y);
 //	if (!hasWord("01000m1>"))
-    if(!freebaseKeys[934111643])//1
-        importFreebaseLabels();
+//	if (!freebaseKeys[freebaseHash("0c21rgr>")])		//1
+//		importFreebaseLabels();
+	if (!freebaseKeys[freebaseHash("0zzxc3>")])		//1
+	importFreebaseLabels();
+	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -1095,19 +1204,34 @@ bool importFreebase() {
 		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);
 
 //		if(filterFreebase(subjectName, predicateName, objectName))continue;
-		subject=getFreebaseEntity(subjectName); //
+
 		predicate=getFreebaseEntity(predicateName);
+
+		subject=getFreebaseEntity(subjectName); //
 		object=getFreebaseEntity(objectName);
+		if (predicate == Instance) {
+			predicate=Type;
+			N t=subject;
+			subject=object;
+			object=t;
+		}
+
 		if (!subject || !predicate || !object) {
+			printf("_");
 			badCount++;
 //			if (debug) {
 //				p(linecount);
 //				p(line);
 //				p("ERROR");
 //			}
+		} else {
+			if (1147 == subject->id || 1147 == predicate->id){// || 1147 == object->id) {
+				badCount++;
+				p(line);
+				subject=getFreebaseEntity(subjectName); //
+//				object=getFreebaseEntity(objectName);
+			} else Statement* s=addStatement(subject, predicate, object, false); // todo: id
 		}
-		Statement* s=addStatement(subject, predicate, object, false); // todo: id
-
 		//		showStatement(s);
 	}
 	fclose(infile); /* Close the file */

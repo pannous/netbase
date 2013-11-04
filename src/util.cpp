@@ -53,10 +53,12 @@ char* substr(char* what, int from, int to) {
 
 // todo : FREEEEEE!!!!
 char* tolower(const char* x) { //const
-	char* neu=(char*) malloc(sizeof(char) * strlen(x));
-	for (int i=0; i < strlen(x); i++) {
+	int len=strlen(x);
+	char* neu=(char*) malloc(sizeof(char) * len+1);
+	for (int i=0; i < len; i++) {
 		neu[i]=tolower(x[i]);
 	}
+	neu[len]=0;
 	return neu;
 }
 char* downcase(char* x) {
@@ -84,7 +86,14 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 	if (!x || !y) return false;
 	if (x[0] == 0 || y[0] == 0) return false;
 	if (strstr(x, y) >= x) return true;
-	if (ignoreCase) return strstr(tolower(x), tolower(y));
+	if (ignoreCase){
+		char* mx=tolower(x);
+		char* my=tolower(y);
+		bool does_contain=strstr(mx, my)>=mx;
+		free(mx);
+		free(my);
+		return does_contain;
+	}
 	return false;
 }
 
@@ -543,3 +552,8 @@ char* fixQuotesAndTrim(char* tmp) {
 	return tmp;
 }
 
+string itoa(int i) {
+	std::stringstream ss;
+	ss << i;
+	return ss.str();
+}
