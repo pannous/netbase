@@ -1079,7 +1079,8 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 //		if (linecount % 100 == 0 && linecount>20000)
 //			p(linecount);
 		if (++linecount % 100000 == 0) {
-			printf("%d freebase labels, %d duplicates \n", linecount, freebaseKeysConflicts);
+			printf("%d freebase labels, %d duplicates \r", linecount, freebaseKeysConflicts);
+            fflush(stdout);
 			if (checkLowMemory()) break;
 //			testPrecious();
 		}
@@ -1195,7 +1196,8 @@ bool importFreebase() {
 	while (fgets(line, sizeof(line), infile) != NULL) {
 //		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
-			printf("%d freebase\n", linecount);
+			printf("%d freebase\r", linecount);
+            fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
 				break;

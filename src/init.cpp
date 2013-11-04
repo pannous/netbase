@@ -23,7 +23,7 @@ const void * shmat_root = (const void *) 0x10000000; // just higher than system 
 #else
 //const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0101000000; // just higher than system Recommendation
-const void * shmat_root=(const void *) 0x0101800000; // just higher than system Recommendation
+const void * shmat_root=(const void *) 0x0110000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0100137000;
 #endif
 //const void * shmat_root = (const void *)0x105800000;//test
@@ -328,6 +328,8 @@ void load(bool force) {
 }
 
 void fixPointers() {
+    if(currentContext()->nodeNames==name_root)
+        return;// all INT now, no more pointers!!! except chars
 	p("ADJUSTING SHARED MEMORY");
 	Context* context=currentContext();
 //	if(!checkC)
@@ -353,7 +355,7 @@ void fixPointers(Context* context) {
 }
 
 int collectAbstracts() {
-	ps("collecting abstracts");
+	ps("collecting abstracts");// int now
 	initRelations();
 //	abstracts = (Ahash*) (&context_root[abstractsOffset]);
 //	extrahash = (Ahash*) (&context_root[abstractsOffset + abstractHashSize]);

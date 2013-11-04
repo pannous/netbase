@@ -55,11 +55,13 @@ void showHelp() {
 bool file_read_done=false;
 
 void getline(char *buf) {
+    if(buf==0)return;// end
 	int MAXLENGTH=1000;
 	const char* PROMPT="netbase> ";
 #ifdef RL_READLINE_VERSION // USE_READLINE
 	if (!file_read_done) file_read_done=1 + read_history(0);
 	char *tmp=readline(PROMPT);
+    if(tmp==0||strlen(tmp)==0){return;}
 	tmp=fixQuotesAndTrim(tmp);
 	if (strncmp(tmp, buf, MAXLENGTH) && strlen(tmp) > 0) add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);

@@ -212,6 +212,7 @@ bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int stateme
 	return  appendLinkedListOfStatements(to_insert, node, statementNr); // append old to new
 }
 inline bool eq(Statement* s,Statement* s2){
+    if(!s || !s2)return false;
 	return (s->subject==s2->subject&&s->predicate==s2->predicate&&s->object==s2->object);
 }
 inline bool eq(Statement* s,int statementNr){
@@ -337,7 +338,7 @@ Context * getContext(int contextId) {
 
 	Context* context=&(contexts[contextId]); //*(Context*)malloc(sizeof(Context*));
 
-	if (context->nodes != null && context->id == contextId) {
+	if (context->nodes != null){// && context->id == contextId) {
 		//		printf("Found context %d: %s\n",context->id,context->name);
 		//		flush();
 		return context;
