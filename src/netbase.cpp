@@ -140,10 +140,10 @@ void debugAhash(int position) {
 	//		p(a->name);
 	int i=0;
 	while (ah->next) {
-		if (i++ > 100) break;
+        if (i++ > 100) break;
 		char* n="ERROR";
 		if (checkNode(ah->abstract)) n=get(ah->abstract)->name;
-		pf("%d | %d | >>%s<< |", position, i, n);
+		pf("%d | %d | >>%s<< | ", position, i, n);
 		if (checkNode(ah->abstract)) show(get(ah->abstract), false);
 		else p("XXX");
         if(ah->next<0||ah->next>maxNodes)break;
@@ -166,11 +166,12 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	int i=0;
 	while (ah&&ah->next) {
 		if (i++ > 200) {	// allow 65536 One letter nodes
-//			debugAhash(position);
-//			p("insertAbstractHash FULL!");
-//			show(a);
+            badCount++;
+			debugAhash(position);
+			p("insertAbstractHash FULL!");
+			show(a);
 //			return 0;
-//			return ah;
+			return ah;
 		}
 //		if (ah->next == ah) {
 //			debugAhash(position);
@@ -1137,17 +1138,18 @@ Node * hasWord(const char* thingy) {
     }
 	int tries=0; // cycle bugs
 
-//	map<Node*, bool> visited;
+//    	map<Node*, bool> visited;
+	map<int, bool> visited;
 //	map<Ahash*, bool> visited;
 	// ./clear-shared-memory.sh After changing anything here!!
 	while (found >= abstracts && found < &extrahash[maxNodes] && found->next) {
-//		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
-//			debugAhash(h);
-//			p("visited[found] == 1 How the hell can that even be??? ");
-//			p(found->abstract);
-//			return 0;
-//		}
-//		visited[found->abstract]=1;
+		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
+			debugAhash(h);
+			p("visited[found] == 1 How the hell can that even be??? ");
+			p(found->abstract);
+			return 0;
+		}
+		visited[found->abstract]=1;
 
 		if (checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
@@ -1160,7 +1162,7 @@ Node * hasWord(const char* thingy) {
 //			p("found->next == found How the hell can that even be? ");
 //			break;
 //		}
-        if(found->next<0||found->next>maxNodes*2)break;
+        if(found->next<=0||found->next>maxNodes*2||found==&abstracts[found->next])break;
 		found=&abstracts[found->next];
 	}
 	return 0;

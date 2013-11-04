@@ -1073,7 +1073,9 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 	int linecount=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 //		if (linecount > 10000000) break;
+#ifdef __APPLE__
 		if (linecount > 1000000) break;
+#endif
 //		if (linecount % 100 == 0 && linecount>20000)
 //			p(linecount);
 		if (++linecount % 100000 == 0) {
@@ -1149,7 +1151,7 @@ Node *dissectFreebase(char* name) {
 	if(!n)return 0;// howtf "" ?
 	freebaseKeys[h]=n->id;
 	N o=dissectFreebase(name);
-	addStatement(n, Domain, o, true);
+	addStatement(n, Domain, o, false);
 	return n;
 }
 
