@@ -49,7 +49,13 @@ int semrm(key_t key, int id=0) {
 	if (id == -1) return -1;
 	return semctl(id, 0, IPC_RMID, arg);
 }
-
+void detach_shared_memory(){
+    system("sudo ipcrm -M '0x69190'");
+    system("sudo ipcrm -M '0x69191'");
+    system("sudo ipcrm -M '0x69192'");
+    system("sudo ipcrm -M '0x69193'");
+    system("sudo ipcrm -M '0x69194'");
+}
 void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void * desired) {
 	if (root) {
 		ps("root_memory already attached!");
@@ -73,11 +79,7 @@ void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void *
 				//			printf("try calling ./clear-shared-memory.sh\n");
 				//			perror(strerror(errno)); <= ^^ redundant !!!
 				printf("try ipcclean && sudo ipcrm -M 0x69190 ... \n./clear-shared-memory.sh\n");
-				system("sudo ipcrm -M '0x69190'");
-				system("sudo ipcrm -M '0x69191'");
-				system("sudo ipcrm -M '0x69192'");
-				system("sudo ipcrm -M '0x69193'");
-				system("sudo ipcrm -M '0x69194'");
+                detach_shared_memory();
 				//				system("sudo sysctl -w kern.sysv.shmmax=2147483648"); // # 2GB
 				//				system("sudo sysctl -w kern.sysv.shmall=2147483648");
 //				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB
@@ -400,18 +402,20 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 bool clearMemory() {
 	if (!virgin_memory) {
 		ps("Cleansing Memory!");
-		if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
-		else {
-			memset(context_root, 0, contextOffset);
-			memset(node_root, 0, nodeSize * maxNodes); //calloc!
-			memset(statement_root, 0, statementSize * maxStatements0);
-			memset(name_root, 0, maxNodes * averageNameLength);
-			memset(abstracts, 0, abstractHashSize * 2);
-			//		memset(extrahash, 0, abstractHashSize / 2);
-		}
-		virgin_memory=false;
+        detach_shared_memory();
+        init();
+        //		if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
+//		else {
+//			memset(context_root, 0, contextOffset);
+//			memset(node_root, 0, nodeSize * maxNodes); //calloc!
+//			memset(statement_root, 0, statementSize * maxStatements0);
+//			memset(name_root, 0, maxNodes * averageNameLength);
+//			memset(abstracts, 0, abstractHashSize * 2);
+//			//		memset(extrahash, 0, abstractHashSize / 2);
+//		}
+        virgin_memory=false;
 	}
-	initRootContext();
+    initRootContext();
 	initRelations();
 	return true;
 	//		Context* context=currentContext();

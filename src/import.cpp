@@ -1227,11 +1227,11 @@ Node* getFreebaseEntity(char* name) {
         int got=freebaseKeys[h];
         if (got && get(got)->id != 0) return get(freebaseKeys[h]);
         else {
-            pf("MISSING %s\n", name);
+//            pf("MISSING %s\n", name);
             MISSING++;
             return 0;
 //            m.0dpsmdq
-            return getThe(name);
+//            return getThe(name);
         }
     }
     name=(char *) fixYagoName(name);
