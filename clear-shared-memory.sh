@@ -11,10 +11,10 @@ sudo /sbin/sysctl -w kernel.shmall=34359738368
 echo mac
 # sudo sysctl -w kern.sysv.shmmax=4294967296 #4GB
 # sudo sysctl -w kern.sysv.shmall=4294967296
-sudo sysctl -w kern.sysv.shmmax=6442450944 #6GB
-sudo sysctl -w kern.sysv.shmall=6442450944
-# sudo sysctl -w kern.sysv.shmmax=8589934592 # 8GB
-# sudo sysctl -w kern.sysv.shmall=8589934592
+# sudo sysctl -w kern.sysv.shmmax=6442450944 #6GB
+# sudo sysctl -w kern.sysv.shmall=6442450944
+sudo sysctl -w kern.sysv.shmmax=8589934592 # 8GB
+sudo sysctl -w kern.sysv.shmall=8589934592
 # sudo sysctl -w kern.sysv.shmmax=34359738368 # 32GB
 # sudo sysctl -w kern.sysv.shmall=34359738368
 

@@ -504,7 +504,7 @@ static long billion=GB;
 
 // FREEBASE: 600.000.000 Statements !!!
 #if defined(__APPLE__)
-static long maxNodes = 80*million;
+static long maxNodes = 100*million;
 static long maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 #else
 static long maxNodes = 100*million;

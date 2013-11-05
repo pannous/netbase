@@ -48,7 +48,7 @@ bool checkLowMemory() {
 	size_t peakSize=getPeakRSS();
 	size_t free=getFreeSystemMemory();
     //	if (!free) free=5.5L * GB;// 2 GB + work
-	if (!free) free=9.5L * GB; // 4 GB + work
+	if (!free) free=9.0L * GB; // 4 GB + work
 	if (currentSize > free) {
 		p("OUT OF MEMORY!");
 		printf("MEMORY: %X Peak: %X FREE: %X \n", (long) currentSize, (long) peakSize, (long) free);
@@ -70,7 +70,7 @@ bool checkLowMemory() {
 		pf("%d nodes!\n", currentContext()->statementCount);
 		return true;
 	}
-	if (extrahash + 10000 > abstracts + abstractHashSize * 2) {
+	if (extrahash + 20000 > abstracts + abstractHashSize * 2) {
 		p("OUT OF MEMORY!");
 		pf("hashes near %L!\n", extrahash);
 		return true;
@@ -669,7 +669,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
         
 		int size=splitStringC(modifyConstChar(line), values, separator);
 		if (fieldCount != size) {
-//			if(debug) printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
+            //			if(debug) printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
 			//            ps(columnTitles); // only 1st word:
 			continue;
 		}
@@ -1064,8 +1064,26 @@ unsigned int freebaseHash2(char* x) {
 //map<const char*, Node*> freebaseKeys;
 //static map<int, Node*> freebaseKeys=new std::map();
 //map<long, Node*> freebaseKeys;
-map<long, int> freebaseKeys;
+//map<long, int> freebaseKeys;
+#include "shared_map.hpp"
+shared_map freebaseKeys;
 int freebaseKeysConflicts=0;
+
+
+void testPrecious2() {
+	long testE=freebaseHash("023gm0>");
+    //	Node* testA=getAbstract("Most Precious Days");
+    //	Node* testA=getThe("Most Precious Days");
+	long testI=freebaseKeys[testE];
+	Node* testN=get(testI);
+    check(startsWith( testN->name,"Christen"));
+    //	p(testA);
+    //	p(testN);
+    //	check(testN == testA);
+    //	check(freebaseKeys[testE] == testA->id);
+}
+
+
 
 void testPrecious() {
 	long testE=freebaseHash("01000m1>");
@@ -1091,7 +1109,7 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 	while (fgets(line, sizeof(line), infile) != NULL) {
         //		if (linecount > 10000000) break;
 #ifdef __APPLE__
-//		if (linecount > 1000000) break;
+        //		if (linecount > 1000000) break;
 #endif
         //		if (linecount % 100 == 0 && linecount>20000)
         //			p(linecount);
@@ -1105,7 +1123,7 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		label=label0;
 		if (!startsWith(key, "<m.") && !startsWith(key, "<g.")) continue;
 		if (!startsWith(test, "<#label")) continue;
-//        if (startsWith(label, "http"))continue;
+        //        if (startsWith(label, "http"))continue;
 		if (startsWith(label, "\"")) label++;
 		int len=strlen(label);
 		if (len < 6) continue;
@@ -1115,37 +1133,44 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
                 if(label[i]==' ')spaces++;
                 if(spaces==6||label[i]=='('||label[i]==':'){label[i]=label[i+1]=label[i+2]='.';label[i+3]=0;break;}
             }
-//            p(label);
+            //            p(label);
         }
 		label[len - 4]=0;		// "@en
 		key[strlen(key) - 1]=0;
-		try {
+//		try {
             //			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
 			long h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
             //			if (h < 0 || h >= 1 * billion)
             //				pf("WRONG KEY! %d %s %s", h, key, label);
-//			if(eq(key,"<m.0101rlg>"))
-//				p("K");
-            //			if (h == 0 || h == 32||h==6161797)//03f2bmf 03f27mf
-            //				h=freebaseHash(key + 3);
-//			if (freebaseKeys[h] != 0) {
-//        freebaseKeysConflicts:2305228 not worth It
-                //				if(!eq(get(freebaseKeys[h])->name, label))
-                //					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
-                //				else
-                //					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
-//				freebaseKeysConflicts++;
-//			} else {
-				Node* n;
-				if (hasWord(label)) n=getNew(label);		//get(1);//
-				else n=getAbstract(label);
-				//		n->value.text=...
-				if (n) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
-//			}
+            //			if(eq(key,"<m.0101rlg>"))
+            //				p("K");
+
+			h=freebaseHash(key + 3);
+			if (freebaseKeys[h] != 0) {
+//       freebaseKeysConflicts:2305228 not worth It
+				if(!eq(get(freebaseKeys[h])->name, label,false))
+					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+//				else
+//					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+				freebaseKeysConflicts++;
+			} else {
+            Node* n;
+            if (hasWord(label)) n=getNew(label);		//get(1);//
+            else n=getAbstract(label);
+            //		n->value.text=...
+                if (n) {
+                    freebaseKeys.insert(pair<long,int>(h,n->id));
+//                    freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
+                }
             
-		} catch (...) {
-			p("XXXXXXXXXXXXXXXXXXXXXXXXX");
-		}
+            if (h==477389594)//023gm0
+                testPrecious2();
+			}
+            
+//		} catch (...) {
+//            perror("XXX");
+//			p("XXXXXXXXXXXXXXXXXXXXXXXXX");
+//		}
         //		addStatement(getAbstract(goodKey), Instance, n,false);
         //		freebaseKeys[wordhash(goodKey)] = n;
 		//		add(key,label);
@@ -1153,7 +1178,7 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 	fclose(infile); /* Close the file */
 	p("freebase duplicates removed:");
 	p(freebaseKeysConflicts);
-    //	testPrecious();
+    testPrecious();
     //	if (linecount > 40000000)
     //	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
 	p("import Freebase labels ok");
@@ -1177,7 +1202,8 @@ Node *dissectFreebase(char* name) {
 	const char* fixed=fixFreebaseName(name);
 	N n=getThe(fixed);
 	if(!n)return 0;// howtf "" ?
-	freebaseKeys[h]=n->id;
+//	freebaseKeys[h]=n->id;
+    freebaseKeys.insert(pair<long,int>(h,n->id));
 	N o=dissectFreebase(name);
 	addStatement(n, Domain, o, false);
 	return n;
@@ -1187,11 +1213,11 @@ Node* getFreebaseEntity(char* name) {
 	if (name[0] == '<') name++;
 	// skip <m. but  LEAVE THE >
 	if (startsWith(name, "m.") || startsWith(name, "g.")) {
-		long h=freebaseHash(name + 3);
+		long h=freebaseHash(name + 2);
 		int got=freebaseKeys[h];
 		if (got && get(got)->id != 0) return get(freebaseKeys[h]);
 		else {
-            //			pf("MISSING %s\n", name);
+            pf("MISSING %s\n", name);
 			return getThe(name);
 		}
 	}
@@ -1201,6 +1227,8 @@ Node* getFreebaseEntity(char* name) {
 }
 
 bool importFreebase() {
+//    return 0;
+    //long x=   freebaseHash("023gm0>");
     //	freebaseKeys=freebaseKey_root;
     //	long x=freebaseHash("03f2bmf");
     //	long y=freebaseHash("03f27mf");
@@ -1208,8 +1236,11 @@ bool importFreebase() {
     //	if (!hasWord("01000m1>"))
     //	if (!freebaseKeys[freebaseHash("0c21rgr>")])		//1
     //		importFreebaseLabels();
-	if (!freebaseKeys[freebaseHash("0zzxc3>")])		//1
+    freebaseKeys.test();
+    if (!freebaseKeys[freebaseHash("0zzxc3>")])		//1
         importFreebaseLabels();
+    testPrecious2();
+//    if(hasWord("vote_value"))return true;
 	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
 	Node* subject;
 	Node* predicate;
@@ -1374,7 +1405,7 @@ void importSenses() {
                name);
 		//		if(id<1000)continue;// skip :(
 		id=id + 10000; // NORM!!!
-//		if (130172 == id) p(line);
+        //		if (130172 == id) p(line);
 		Node* word=get(id);
 		synsetid=norm_wordnet_id(synsetid);
 		if (synsetid > 200000 + 117659) p(line);

@@ -25,7 +25,7 @@ bool startsWith(const char* x,const char* y);
 bool startsWith(string* x,const char* y);
 bool endsWith(const char* x, const char* y);
 string cut_to(string str, string what);
-bool contains(const char* x,const char* y,bool ignoreCase=true);
+bool contains(const char* x,const char* y,bool ignoreCase=false);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
 

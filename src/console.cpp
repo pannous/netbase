@@ -349,6 +349,7 @@ NodeVector parse(const char* data) {
 	if (i == 0) i=atoi(data + 1);
 	bool oki=itoa(i)==data;
 	if(startsWith(data,"<m.")||startsWith(data,"<g.")){
+        p("<m.0c21rgr> needs showered memory or boost ");
 		Node* n=getFreebaseEntity((char*)data);
 		show(n);//<g.11vjx36lj>
 		return OK;

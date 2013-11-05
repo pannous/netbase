@@ -78,14 +78,14 @@ void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void *
 				system("sudo ipcrm -M '0x69192'");
 				system("sudo ipcrm -M '0x69193'");
 				system("sudo ipcrm -M '0x69194'");
-				//				system("sudo sysctl -w kern.sysv.shmmax=2147483648"); // # 2GB !!
+				//				system("sudo sysctl -w kern.sysv.shmmax=2147483648"); // # 2GB
 				//				system("sudo sysctl -w kern.sysv.shmall=2147483648");
-//				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB !!
+//				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB
 //				system("sudo sysctl -w kern.sysv.shmall=4294967296");
-				system("sudo sysctl -w kern.sysv.shmmax=6442450944"); // # 6GB !!
-				system("sudo sysctl -w kern.sysv.shmall=6442450944");
-//				system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
-//				system("sudo sysctl -w kern.sysv.shmall=8589934592");
+//				system("sudo sysctl -w kern.sysv.shmmax=6442450944"); // # 6GB !
+//				system("sudo sysctl -w kern.sysv.shmall=6442450944");
+				system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
+				system("sudo sysctl -w kern.sysv.shmall=8589934592");
 //				system("sudo sysctl -w kern.sysv.shmmax=34359738368"); // # 32GB !!
 //				system("sudo sysctl -w kern.sysv.shmall=34359738368");
 			}
@@ -198,6 +198,7 @@ void init() {
 //	p("keyhash_root:");
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
+   	p("context_root:");
 	context_root=(Context*) share_memory(key+4, context_size, context_root,  ((char*) statement_root) + statement_size);
 
 //	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
@@ -469,12 +470,12 @@ char* initContext(Context* context) {
 	context->nodes=nodes;
 	context->statements=statements;
 	context->nodeNames=nodeNames;
-	px(context);
-	px(nodes);
-	px(nodeNames);
-	px(statements);
-	px(abstracts);
-	px(extrahash);
+//	px(context);
+//	px(nodes);
+//	px(nodeNames);
+//	px(statements);
+//	px(abstracts);
+//	px(extrahash);
 	//		check((Node*)nodeNames==&context->nodes[maxNodes]);// statements == bounds of nodes
 	return oldnodeNames;
 }

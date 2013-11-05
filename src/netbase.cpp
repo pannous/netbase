@@ -165,7 +165,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	//		p(a->name);
 	int i=0;
 	while (ah&&ah->next) {
-		if (i++ > 200) {	// allow 65536 One letter nodes
+		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
             badCount++;
 			debugAhash(position);
 			p("insertAbstractHash FULL!");
