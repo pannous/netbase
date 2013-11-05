@@ -7,6 +7,7 @@
 
 
 #include "shared_map.hpp"
+#include <stdio.h>
 ////  g++ -I/opt/local/include/ test-boost-unordered_map.cpp
 
 using namespace boost::interprocess;
