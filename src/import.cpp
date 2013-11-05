@@ -1077,15 +1077,12 @@ int freebaseKeysConflicts=0;
 
 void testPrecious2() {
 	long testE=freebaseHash("023gm0>");
-    //	Node* testA=getAbstract("Most Precious Days");
-    //	Node* testA=getThe("Most Precious Days");
+    check(477389594==testE);
 	long testI=freebaseKeys[testE];
+    p(testI);
 	Node* testN=get(testI);
+    p(testN);
     check(startsWith( testN->name,"Christen"));
-    //	p(testA);
-    //	p(testN);
-    //	check(testN == testA);
-    //	check(freebaseKeys[testE] == testA->id);
 }
 
 
@@ -1142,98 +1139,110 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
         }
 		label[len - 4]=0;		// "@en
 		key[strlen(key) - 1]=0;
-//		try {
-            //			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
-			long h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
-            //			if (h < 0 || h >= 1 * billion)
-            //				pf("WRONG KEY! %d %s %s", h, key, label);
-            //			if(eq(key,"<m.0101rlg>"))
-            //				p("K");
-
-			h=freebaseHash(key + 3);
-			if (freebaseKeys[h] != 0) {
-//       freebaseKeysConflicts:2305228 not worth It
-				if(!eq(get(freebaseKeys[h])->name, label,false))
-					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
-//				else
-//					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
-				freebaseKeysConflicts++;
-			} else {
+        //		try {
+        //			uint h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
+        long h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
+        //			if (h < 0 || h >= 1 * billion)
+        //				pf("WRONG KEY! %d %s %s", h, key, label);
+        //			if(eq(key,"<m.0101rlg>"))
+        //				p("K");
+        
+        h=freebaseHash(key + 3);
+        if (h==477389594||h==28394677018){//023gm0
+            p("x");
+        }
+        
+        if (freebaseKeys[h] != 0) {
+            //       freebaseKeysConflicts:2305228 not worth It
+            //				if(!eq(get(freebaseKeys[h])->name, label,false))
+            //					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+            //				else
+            //					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+            freebaseKeysConflicts++;
+        } else {
             Node* n;
             if (hasWord(label)) n=getNew(label);		//get(1);//
             else n=getAbstract(label);
             //		n->value.text=...
-                if (n) {
-                    freebaseKeys.insert(pair<long,int>(h,n->id));
-//                    freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
-                }
-            
-            if (h==477389594)//023gm0
-                testPrecious2();
-			}
-            
-//		} catch (...) {
-//            perror("XXX");
-//			p("XXXXXXXXXXXXXXXXXXXXXXXXX");
-//		}
-        //		addStatement(getAbstract(goodKey), Instance, n,false);
-        //		freebaseKeys[wordhash(goodKey)] = n;
-		//		add(key,label);
-	}
-	fclose(infile); /* Close the file */
-	p("freebase duplicates removed:");
-	p(freebaseKeysConflicts);
+            if (n) {
+//                freebaseKeys.insert(pair<long,int>(h,n->id));
+                freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
+            }
+        }
+        
+        if (h==477389594||h==28394677018){//023gm0
+            p("x");
+            testPrecious2();
+        }
+    }
+    
+    //		} catch (...) {
+    //            perror("XXX");
+    //			p("XXXXXXXXXXXXXXXXXXXXXXXXX");
+    //		}
+    //		addStatement(getAbstract(goodKey), Instance, n,false);
+    //		freebaseKeys[wordhash(goodKey)] = n;
+    //		add(key,label);
+    //	}
+    fclose(infile); /* Close the file */
+    p("freebase duplicates removed:");
+    p(freebaseKeysConflicts);
     testPrecious();
     //	if (linecount > 40000000)
     //	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
-	p("import Freebase labels ok");
-	return true;
+    p("import Freebase labels ok");
+    return true;
 }
 
 Node *dissectFreebase(char* name) {
-	if (!contains(name, ".")) {
-		N a=getRelation((const char*)name);
-		if(a)return a;
-		a=getAbstract(name);
-		if (a->lastStatement&&getStatement(a->lastStatement)->predicate==_instance)
-			return getStatement(a->lastStatement)->Object();
-		else
-			return a;
-	}
-	// reuse freebaseHash for <organization.organization.parent> etc
-	long h=freebaseHash(name);
-	int got=freebaseKeys[h];
-	if (got && get(got)->id != 0) return get(freebaseKeys[h]);
-	const char* fixed=fixFreebaseName(name);
-	N n=getThe(fixed);
-	if(!n)return 0;// howtf "" ?
-//	freebaseKeys[h]=n->id;
-    freebaseKeys.insert(pair<long,int>(h,n->id));
-	N o=dissectFreebase(name);
-	addStatement(n, Domain, o, false);
-	return n;
+    if (!contains(name, ".")) {
+        N a=getRelation((const char*)name);
+        if(a)return a;
+        a=getAbstract(name);
+        if (a->lastStatement&&getStatement(a->lastStatement)->predicate==_instance)
+            return getStatement(a->lastStatement)->Object();
+        else
+            return a;
+    }
+    // reuse freebaseHash for <organization.organization.parent> etc
+    long h=freebaseHash(name);
+    int got=freebaseKeys[h];
+    if (got && get(got)->id != 0) return get(freebaseKeys[h]);
+    const char* fixed=fixFreebaseName(name);
+    N n=getThe(fixed);
+    if(!n)return 0;// howtf "" ?
+    freebaseKeys[h]=n->id;
+//    freebaseKeys.insert(pair<long,int>(h,n->id));
+    N o=dissectFreebase(name);
+    addStatement(n, Domain, o, false);
+    return n;
 }
 
+int MISSING=0;
 Node* getFreebaseEntity(char* name) {
-	if (name[0] == '<') name++;
-	// skip <m. but  LEAVE THE >
-	if (startsWith(name, "m.") || startsWith(name, "g.")) {
-		long h=freebaseHash(name + 2);
-		int got=freebaseKeys[h];
-		if (got && get(got)->id != 0) return get(freebaseKeys[h]);
-		else {
+    if (name[0] == '<') name++;
+    // skip <m. but  LEAVE THE >
+    if (startsWith(name, "m.") || startsWith(name, "g.")) {
+        long h=freebaseHash(name + 2);
+        int got=freebaseKeys[h];
+        if (got && get(got)->id != 0) return get(freebaseKeys[h]);
+        else {
             pf("MISSING %s\n", name);
-			return getThe(name);
-		}
-	}
-	name=(char *) fixYagoName(name);
-	if (contains(name, "^^")) return rdfValue(name);
-	return dissectFreebase(name);
+            MISSING++;
+            return 0;
+//            m.0dpsmdq
+            return getThe(name);
+        }
+    }
+    name=(char *) fixYagoName(name);
+    if (contains(name, "^^")) return rdfValue(name);
+    return dissectFreebase(name);
 }
 
 bool importFreebase() {
-//    return 0;
-    //long x=   freebaseHash("023gm0>");
+    //    return 0;
+    long x=   freebaseHash("0023gm0>");
+    //    long x=   freebaseHash("023gm0>");
     //	freebaseKeys=freebaseKey_root;
     //	long x=freebaseHash("03f2bmf");
     //	long y=freebaseHash("03f27mf");
@@ -1241,334 +1250,337 @@ bool importFreebase() {
     //	if (!hasWord("01000m1>"))
     //	if (!freebaseKeys[freebaseHash("0c21rgr>")])		//1
     //		importFreebaseLabels();
-//    freebaseKeys.test();
+    //    freebaseKeys.test();
+//        testPrecious2();
     if (!freebaseKeys[freebaseHash("0zzxc3>")])		//1
         importFreebaseLabels();
     testPrecious2();
-//    if(hasWord("vote_value"))return true;
-	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
-	Node* subject;
-	Node* predicate;
-	Node* object;
-	char line[10000];
-	char* objectName=(char*) malloc(10000);
-	char* predicateName=(char*) malloc(10000);
-	char* subjectName=(char*) malloc(10000);
-	FILE *infile=open_file("freebase.data.txt");
-	int linecount=0;
-	while (fgets(line, sizeof(line), infile) != NULL) {
+    //    if(hasWord("vote_value"))return true;
+    pf("Current nodeCount: %d\n", currentContext()->nodeCount);
+    Node* subject;
+    Node* predicate;
+    Node* object;
+    char line[10000];
+    char* objectName=(char*) malloc(10000);
+    char* predicateName=(char*) malloc(10000);
+    char* subjectName=(char*) malloc(10000);
+    FILE *infile=open_file("freebase.data.txt");
+    int linecount=0;
+    while (fgets(line, sizeof(line), infile) != NULL) {
         //		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
-		if (++linecount % 10000 == 0) {
-			printf("\r%d freebase       ", linecount);
+        if (++linecount % 10000 == 0) {
+            printf("\r%d freebase       ", linecount);
             fflush(stdout);
-			if (checkLowMemory()) {
-				printf("Quitting import : id > maxNodes\n");
-				break;
-			}
-		}
+            if (checkLowMemory()) {
+                printf("Quitting import : id > maxNodes\n");
+                break;
+            }
+        }
         //		if(linecount<140000)continue;
-		// printf(line);
-		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);
+        // printf(line);
+        sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);
         
         //		if(filterFreebase(subjectName, predicateName, objectName))continue;
         
-		predicate=getFreebaseEntity(predicateName);
+        predicate=getFreebaseEntity(predicateName);
         
-		subject=getFreebaseEntity(subjectName); //
-		object=getFreebaseEntity(objectName);
-		if (predicate == Instance) {
-			predicate=Type;
-			N t=subject;
-			subject=object;
-			object=t;
-		}
+        subject=getFreebaseEntity(subjectName); //
+        object=getFreebaseEntity(objectName);
+        if (predicate == Instance) {
+            predicate=Type;
+            N t=subject;
+            subject=object;
+            object=t;
+        }
         
-		if (!subject || !predicate || !object) {
-			printf("_");
-			badCount++;
+        if (!subject || !predicate || !object) {
+            printf("_");
+            badCount++;
             //			if (debug) {
             //				p(linecount);
             //				p(line);
             //				p("ERROR");
             //			}
-		} else {
-			if (1147 == subject->id || 1147 == predicate->id){// || 1147 == object->id) {
-				badCount++;
-				p(line);
-				subject=getFreebaseEntity(subjectName); //
+        } else {
+            if (1147 == subject->id || 1147 == predicate->id){// || 1147 == object->id) {
+                badCount++;
+                p(line);
+                subject=getFreebaseEntity(subjectName); //
                 //				object=getFreebaseEntity(objectName);
-			} else Statement* s=addStatement(subject, predicate, object, false); // todo: id
-		}
-		//		showStatement(s);
-	}
-	fclose(infile); /* Close the file */
-	p("import Freebase ok");
+            } else Statement* s=addStatement(subject, predicate, object, false); // todo: id
+        }
+        //		showStatement(s);
+    }
+    fclose(infile); /* Close the file */
+    p("import Freebase ok");
+
+    pf("MISSING %d\n", MISSING);
     //	freebaseKeys.clear();
     //	free(freebaseKeys);
-	return true;
+    return true;
 }
 
 bool importFacts(const char* file, const char* predicateName="population") {
-	p("import facts start");
-	printf("WARNING: SETTING predicateName %s\n", predicateName);
-	Node* subject;
-	Node* predicate;
-	Node* object;
-	char line[1000];
-	//    char* predicateName=(char*) malloc(100);
-	predicate=getClass(predicateName);
-	int linecount=0;
-	FILE *infile=open_file(file);
-	char* objectName=(char*) malloc(100);
-	char* subjectName=(char*) malloc(100);
-	while (fgets(line, sizeof(line), infile) != NULL) {
-		/* Get each line from the infile */
-		if (++linecount % 10000 == 0) {
+    p("import facts start");
+    printf("WARNING: SETTING predicateName %s\n", predicateName);
+    Node* subject;
+    Node* predicate;
+    Node* object;
+    char line[1000];
+    //    char* predicateName=(char*) malloc(100);
+    predicate=getClass(predicateName);
+    int linecount=0;
+    FILE *infile=open_file(file);
+    char* objectName=(char*) malloc(100);
+    char* subjectName=(char*) malloc(100);
+    while (fgets(line, sizeof(line), infile) != NULL) {
+        /* Get each line from the infile */
+        if (++linecount % 10000 == 0) {
             printf("%d %s    \r", linecount, file);
             fflush(stdout);
         }
-		if (!eq(predicateName, "population")) sscanf(line, "%s\t%s", subjectName, objectName); // no contextId? cause this db assumes GLOBAL id!
-		else sscanf(line, "%*d\t%s\t%s\t%*d", /*&id,*/subjectName, objectName /*, &certainty*/); // no contextId? cause this db assumes GLOBAL id!
-		// printf(line);
-		//	 printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
-		//		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abkürzung") || contains(subjectName, ":") || contains(subjectName, "#"))
-		//			continue;
-		if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#")
+        if (!eq(predicateName, "population")) sscanf(line, "%s\t%s", subjectName, objectName); // no contextId? cause this db assumes GLOBAL id!
+        else sscanf(line, "%*d\t%s\t%s\t%*d", /*&id,*/subjectName, objectName /*, &certainty*/); // no contextId? cause this db assumes GLOBAL id!
+        // printf(line);
+        //	 printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
+        //		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abkürzung") || contains(subjectName, ":") || contains(subjectName, "#"))
+        //			continue;
+        if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#")
             || contains(objectName, ":")) continue;
         
-		subject=getAbstract(subjectName); //
-		object=getAbstract(objectName);
-		//dissectWord(abstract);
-		Statement* s;
-		if (contains(objectName, subjectName, true)) s=addStatement(subject, Member, object, false); // todo: id
-		else s=addStatement(subject, predicate, object, false); // todo: id
-		if (checkLowMemory()) {
-			printf("Quitting import : id > maxNodes\n");
-			break;
-		}
-		showStatement(s);
-	}
-	fclose(infile); /* Close the file */
-	p("import facts ok");
-	return true;
+        subject=getAbstract(subjectName); //
+        object=getAbstract(objectName);
+        //dissectWord(abstract);
+        Statement* s;
+        if (contains(objectName, subjectName, true)) s=addStatement(subject, Member, object, false); // todo: id
+        else s=addStatement(subject, predicate, object, false); // todo: id
+        if (checkLowMemory()) {
+            printf("Quitting import : id > maxNodes\n");
+            break;
+        }
+        showStatement(s);
+    }
+    fclose(infile); /* Close the file */
+    p("import facts ok");
+    return true;
 }
 
 void importNames() {
-	addStatement(all(firstname), are, a(name));
-	addStatement(all(firstname), Synonym, a(first_name));
-	addStatement(all(male_firstname), have_the(gender), a(male));
-	addStatement(all(male_firstname), are, a(firstname));
-	addStatement(all(male_firstname), Owner, a(male));
-	addStatement(all(female_firstname), have_the(gender), a(female));
-	addStatement(all(female_firstname), are, a(firstname));
-	addStatement(all(female_firstname), Owner, a(female));
-	importList("FrauenVornamen.txt", "female_firstname");
-	importList("MaennerVornamen.txt", "male_firstname");
+    addStatement(all(firstname), are, a(name));
+    addStatement(all(firstname), Synonym, a(first_name));
+    addStatement(all(male_firstname), have_the(gender), a(male));
+    addStatement(all(male_firstname), are, a(firstname));
+    addStatement(all(male_firstname), Owner, a(male));
+    addStatement(all(female_firstname), have_the(gender), a(female));
+    addStatement(all(female_firstname), are, a(firstname));
+    addStatement(all(female_firstname), Owner, a(female));
+    importList("FrauenVornamen.txt", "female_firstname");
+    importList("MaennerVornamen.txt", "male_firstname");
 }
 
 void importAbstracts() {
-	char line[1000];
-	char name[1000];
-	//	char* line=(char*) malloc(1000);
-	//	char* name=(char*) malloc(1000);
-	int linecount=0;
-	int id;
-	doDissectAbstracts=false;
-	//	memset(abstracts, 0, abstractHashSize * 2);
-	Context* c=getContext(wordnet);
-	FILE *infile=open_file("wordnet/abstracts.tsv");
-	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (++linecount % 10000 == 0){
+    char line[1000];
+    char name[1000];
+    //	char* line=(char*) malloc(1000);
+    //	char* name=(char*) malloc(1000);
+    int linecount=0;
+    int id;
+    doDissectAbstracts=false;
+    //	memset(abstracts, 0, abstractHashSize * 2);
+    Context* c=getContext(wordnet);
+    FILE *infile=open_file("wordnet/abstracts.tsv");
+    while (fgets(line, sizeof(line), infile) != NULL) {
+        if (++linecount % 10000 == 0){
             printf("importAbstracts %d               \r", linecount);
             fflush(stdout);
         }
-		sscanf(line, "%d\t%[^\n]s", &id, name); // %[^\n]s == REST OF LINE!
-		id=id + 10000; // KILL ERVERYTHING!!!
-		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
-		//		printf("%s\n",line);
-		if (hasWord(name)) continue;
-		c->nodeCount=id; // hardcoded hack to sync ids!!!
-		Node* a=getAbstract(name);
+        sscanf(line, "%d\t%[^\n]s", &id, name); // %[^\n]s == REST OF LINE!
+        id=id + 10000; // KILL ERVERYTHING!!!
+        //		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
+        //		printf("%s\n",line);
+        if (hasWord(name)) continue;
+        c->nodeCount=id; // hardcoded hack to sync ids!!!
+        Node* a=getAbstract(name);
         //		a->context=wordnet;
-		a->kind=abstractId;
-	}
-	fclose(infile); /* Close the file */
+        a->kind=abstractId;
+    }
+    fclose(infile); /* Close the file */
 }
 
 int synonyms=400000;
 
 void importSenses() {
-	char line[1000];
-	char* name=(char*) malloc(1000);
-	int linecount=0;
-	int id, labelid, synsetid;
-	FILE *infile=open_file("wordnet/senses.tsv");
-	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (++linecount % 10000 == 0){ printf("importSenses %d    \r", linecount);fflush(stdout);}
-		fixNewline(line);
-		sscanf(line, "%d\t%d\t%d\t%*d\t%*d\t%*d\t%*d\t%s", &id, &labelid, &synsetid, /*senseid,sensenum,lexid,tags,*/
+    char line[1000];
+    char* name=(char*) malloc(1000);
+    int linecount=0;
+    int id, labelid, synsetid;
+    FILE *infile=open_file("wordnet/senses.tsv");
+    while (fgets(line, sizeof(line), infile) != NULL) {
+        if (++linecount % 10000 == 0){ printf("importSenses %d    \r", linecount);fflush(stdout);}
+        fixNewline(line);
+        sscanf(line, "%d\t%d\t%d\t%*d\t%*d\t%*d\t%*d\t%s", &id, &labelid, &synsetid, /*senseid,sensenum,lexid,tags,*/
                name);
-		//		if(id<1000)continue;// skip :(
-		id=id + 10000; // NORM!!!
+        //		if(id<1000)continue;// skip :(
+        id=id + 10000; // NORM!!!
         //		if (130172 == id) p(line);
-		Node* word=get(id);
-		synsetid=norm_wordnet_id(synsetid);
-		if (synsetid > 200000 + 117659) p(line);
-		if (synsetid < 200000) continue;
-		Node* sense=get(synsetid);
-		for (int i=0; i < strlen(name); i++)
-			if (name[i] == '%') name[i]=0;
-		if (!sense->id) {
-			initNode(sense, synsetid, name, 0, wordnet);
-		} else if (!eq(sense->name, name)) {
-			Node* syno=initNode(get(synonyms), synonyms, name, 0, wordnet);
-			addStatement(syno, Synonym, sense);
-			//			addStatement(word,Instance,syno);// Sense
-			sense=syno;
-			synonyms++;
-		}
-		addStatement(word, Instance, sense, false); // Sense
-		//		if(!sense->name){
-		//		sense->name=fixed;
-		//		sense->context=wordnet;
-		//		sense->id=synsetid;
-		//		}
-	}
-	fclose(infile); /* Close the file */
+        Node* word=get(id);
+        synsetid=norm_wordnet_id(synsetid);
+        if (synsetid > 200000 + 117659) p(line);
+        if (synsetid < 200000) continue;
+        Node* sense=get(synsetid);
+        for (int i=0; i < strlen(name); i++)
+            if (name[i] == '%') name[i]=0;
+        if (!sense->id) {
+            initNode(sense, synsetid, name, 0, wordnet);
+        } else if (!eq(sense->name, name)) {
+            Node* syno=initNode(get(synonyms), synonyms, name, 0, wordnet);
+            addStatement(syno, Synonym, sense);
+            //			addStatement(word,Instance,syno);// Sense
+            sense=syno;
+            synonyms++;
+        }
+        addStatement(word, Instance, sense, false); // Sense
+        //		if(!sense->name){
+        //		sense->name=fixed;
+        //		sense->context=wordnet;
+        //		sense->id=synsetid;
+        //		}
+    }
+    fclose(infile); /* Close the file */
 }
 
 void addLabel(Node *node, char* text) {
-	int len=strlen(text);
-	Context* context=currentContext();
-	int slot=context->currentNameSlot;
-	char* label=context->nodeNames + slot;
-	strcpy(label, text); // can be freed now!
-	node->value.text=label;
-	context->nodeNames[slot + len]=0;
-	context->currentNameSlot=slot + len + 1;
-	//		addStatement(n,Label,getAbstract(definition));
+    int len=strlen(text);
+    Context* context=currentContext();
+    int slot=context->currentNameSlot;
+    char* label=context->nodeNames + slot;
+    strcpy(label, text); // can be freed now!
+    node->value.text=label;
+    context->nodeNames[slot + len]=0;
+    context->currentNameSlot=slot + len + 1;
+    //		addStatement(n,Label,getAbstract(definition));
 }
 
 void importSynsets() {
-	char line[1000];
-	char definition[1000];
-	int linecount=0;
-	int id;
-	char pos;
-	FILE *infile=open_file("wordnet/synsets.tsv");
-	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (++linecount % 1000 == 0){ printf("importSynsets %d    \r", linecount);fflush(stdout);}
-		fixNewline(line);
-		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/
+    char line[1000];
+    char definition[1000];
+    int linecount=0;
+    int id;
+    char pos;
+    FILE *infile=open_file("wordnet/synsets.tsv");
+    while (fgets(line, sizeof(line), infile) != NULL) {
+        if (++linecount % 1000 == 0){ printf("importSynsets %d    \r", linecount);fflush(stdout);}
+        fixNewline(line);
+        sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/
                definition);
-		id=norm_wordnet_id(id);
-		if (pos == 'n') addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun; DEFAULT!!
-		if (pos == 'v') addStatement4(wordnet, id, Type->id, verb); //get(id)->kind = verb;
-		if (pos == 'a') addStatement4(wordnet, id, Type->id, adjective); //get(id)->kind = adjective;
-		if (pos == 'r') addStatement4(wordnet, id, Type->id, adverb); //get(id)->kind = adverb;
-		if (pos == 's') addStatement4(wordnet, id, Type->id, adjective);
-		//			get(id)->kind = adjective; // satelite !?
-		addLabel(get(id), definition);
-	}
-	fclose(infile); /* Close the file */
+        id=norm_wordnet_id(id);
+        if (pos == 'n') addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun; DEFAULT!!
+        if (pos == 'v') addStatement4(wordnet, id, Type->id, verb); //get(id)->kind = verb;
+        if (pos == 'a') addStatement4(wordnet, id, Type->id, adjective); //get(id)->kind = adjective;
+        if (pos == 'r') addStatement4(wordnet, id, Type->id, adverb); //get(id)->kind = adverb;
+        if (pos == 's') addStatement4(wordnet, id, Type->id, adjective);
+        //			get(id)->kind = adjective; // satelite !?
+        addLabel(get(id), definition);
+    }
+    fclose(infile); /* Close the file */
 }
 
 void importLables() {
-	char line[1000];
-	char definition[1000];
-	int linecount=0;
-	int id;
-	char pos;
-	FILE *infile=open_file("wordnet/labels.tsv");
-	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (++linecount % 10000 == 0){ printf("importLables %d    \r", linecount);fflush(stdout);}
-		fixNewline(line);
-		sscanf(line, "%*d\t%d\t%[^\n]s", &id, /*&lexdomain,*/definition);
-		id=id + 10000; //  label on abstract !?!
-		//		id=norm_wordnet_id(id);
-		if (id >= 200000) {
-			p(line);
-			continue;
-		}
-		addLabel(get(id), definition);
-		//		addStatement(get(id),Label,getAbstract(definition));
-	}
-	fclose(infile); /* Close the file */
+    char line[1000];
+    char definition[1000];
+    int linecount=0;
+    int id;
+    char pos;
+    FILE *infile=open_file("wordnet/labels.tsv");
+    while (fgets(line, sizeof(line), infile) != NULL) {
+        if (++linecount % 10000 == 0){ printf("importLables %d    \r", linecount);fflush(stdout);}
+        fixNewline(line);
+        sscanf(line, "%*d\t%d\t%[^\n]s", &id, /*&lexdomain,*/definition);
+        id=id + 10000; //  label on abstract !?!
+        //		id=norm_wordnet_id(id);
+        if (id >= 200000) {
+            p(line);
+            continue;
+        }
+        addLabel(get(id), definition);
+        //		addStatement(get(id),Label,getAbstract(definition));
+    }
+    fclose(infile); /* Close the file */
 }
 
 void importLexlinks() {
-	char line[1000];
-	int linecount=0;
-	int s, p, o;
-	int ss, so;
-	FILE *infile=open_file("wordnet/lexlinks.tsv");
-	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (++linecount % 10000 == 0){ printf("importLexlinks %d    \r", linecount);fflush(stdout);}
-		//			printf(line);
-		fixNewline(line);
-		sscanf(line, "%d\t%d\t%d\t%d\t%d", &ss, &s, &so, &o, &p);
-		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
-		//		if (old)return old; // showStatement(old)
-		//
-		s=s + 10000;
-		o=o + 10000;
-		if (p == SubClass->id) continue; // Redundant data!
-		if (p == Instance->id) continue; // Redundant data!
+    char line[1000];
+    int linecount=0;
+    int s, p, o;
+    int ss, so;
+    FILE *infile=open_file("wordnet/lexlinks.tsv");
+    while (fgets(line, sizeof(line), infile) != NULL) {
+        if (++linecount % 10000 == 0){ printf("importLexlinks %d    \r", linecount);fflush(stdout);}
+        //			printf(line);
+        fixNewline(line);
+        sscanf(line, "%d\t%d\t%d\t%d\t%d", &ss, &s, &so, &o, &p);
+        //		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
+        //		if (old)return old; // showStatement(old)
+        //
+        s=s + 10000;
+        o=o + 10000;
+        if (p == SubClass->id) continue; // Redundant data!
+        if (p == Instance->id) continue; // Redundant data!
         
-		Statement* x;
-		if (ss != so) x=addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
-		if (debug && !x)
+        Statement* x;
+        if (ss != so) x=addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
+        if (debug && !x)
             pf("ERROR %s\n", line);
-		//		if(s!=o)x=addStatement4(wordnet, s, p, o); not on abstracts! hmm, for antonym properties? nah!
-		//		if(!x)printf("ERROR %s\n",line);
-	}
-	fclose(infile); /* Close the file */
+        //		if(s!=o)x=addStatement4(wordnet, s, p, o); not on abstracts! hmm, for antonym properties? nah!
+        //		if(!x)printf("ERROR %s\n",line);
+    }
+    fclose(infile); /* Close the file */
 }
 
 void importStatements() {
-	char line[1000];
-	int linecount=0;
-	int s, p, o;
-	FILE *infile=open_file("wordnet/statements.tsv");
-	while (fgets(line, sizeof(line), infile) != NULL) {
+    char line[1000];
+    int linecount=0;
+    int s, p, o;
+    FILE *infile=open_file("wordnet/statements.tsv");
+    while (fgets(line, sizeof(line), infile) != NULL) {
         if (++linecount % 1000 == 0){ printf("importStatements %d    \r", linecount);fflush(stdout);}
-		fixNewline(line);
-		sscanf(line, "%d\t%d\t%d", &s, &o, &p);
-		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
-		//		if (old)return old; // showStatement(old)
-		//
-		if (p == SubClass->id) continue; // Redundant data!
-		if (p == Instance->id) continue; // Redundant data!
-		addStatement4(wordnet, norm_wordnet_id(s), norm_wordnet_id(p), norm_wordnet_id(o));
-	}
-	fclose(infile); /* Close the file */
+        fixNewline(line);
+        sscanf(line, "%d\t%d\t%d", &s, &o, &p);
+        //		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
+        //		if (old)return old; // showStatement(old)
+        //
+        if (p == SubClass->id) continue; // Redundant data!
+        if (p == Instance->id) continue; // Redundant data!
+        addStatement4(wordnet, norm_wordnet_id(s), norm_wordnet_id(p), norm_wordnet_id(o));
+    }
+    fclose(infile); /* Close the file */
 }
 
 void importWordnet() {
-	load_wordnet_synset_map();
-	//	if(hasWord()) checkWordnet()
-	importAbstracts(); // MESSES WITH ABSTRACTS!!
-	importSenses();
-	getContext(wordnet)->nodeCount=synonyms; //200000+117659;//WTH!
-	importSynsets();
-	importLables();
-	importStatements();
-	importLexlinks();
-	addStatement(getThe("opposite"), SuperClass, Antonym); // Correct but doesn't work
-	addStatement(Antonym, SuperClass, getThe("opposite")); // Correct but doesn't work
-	addStatement(getThe("opposite"), Synonym, Antonym);
-	addStatement(getAbstract("opposite"), Synonym, Antonym);
-	addStatement(Antonym, Synonym, getThe("opposite"));
-	addStatement(Antonym, Synonym, getAbstract("opposite"));
+    load_wordnet_synset_map();
+    //	if(hasWord()) checkWordnet()
+    importAbstracts(); // MESSES WITH ABSTRACTS!!
+    importSenses();
+    getContext(wordnet)->nodeCount=synonyms; //200000+117659;//WTH!
+    importSynsets();
+    importLables();
+    importStatements();
+    importLexlinks();
+    addStatement(getThe("opposite"), SuperClass, Antonym); // Correct but doesn't work
+    addStatement(Antonym, SuperClass, getThe("opposite")); // Correct but doesn't work
+    addStatement(getThe("opposite"), Synonym, Antonym);
+    addStatement(getAbstract("opposite"), Synonym, Antonym);
+    addStatement(Antonym, Synonym, getThe("opposite"));
+    addStatement(Antonym, Synonym, getAbstract("opposite"));
 }
 
 void importWordnet2() {
-	importNodes(); // FIRST! Hardlinked ids overwrite everything!!
-	importStatements2();
+    importNodes(); // FIRST! Hardlinked ids overwrite everything!!
+    importStatements2();
 }
 
 void importGeoDB() {
-	importCsv("cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid",
+    importCsv("cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid",
               "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
 
@@ -1576,108 +1588,108 @@ void importGeoDB() {
 
 void importAllYago() {
     //	Is
-	import("yago", "yagoGeonamesData.tsv");
-	load_wordnet_synset_map();
-	import("yago", "yagoFacts.tsv");
-	check(hasWord("Tom_Hartley"));
-	import("yago", "yagoSimpleTypes.tsv");
-	import("yago", "yagoLiteralFacts.tsv");
-	import("yago", "yagoStatistics.tsv");
-	import("yago", "yagoSchema.tsv");
-	//	import("yago", "yagoGeonamesEntityIds.tsv");
+    import("yago", "yagoGeonamesData.tsv");
+    load_wordnet_synset_map();
+    import("yago", "yagoFacts.tsv");
+    check(hasWord("Tom_Hartley"));
+    import("yago", "yagoSimpleTypes.tsv");
+    import("yago", "yagoLiteralFacts.tsv");
+    import("yago", "yagoStatistics.tsv");
+    import("yago", "yagoSchema.tsv");
+    //	import("yago", "yagoGeonamesEntityIds.tsv");
     //	import("yago", "yagoGeonamesClassIds.tsv");
-	import("yago", "yagoGeonamesClasses.tsv");
-	import("yago", "yagoGeonamesGlosses.tsv");
-	import("yago", "yagoSimpleTaxonomy.tsv");
-	//import("yago","yagoWordnetIds.tsv");// hasSynsetId USELESS!!!
-	//import("yago","yagoWordnetDomains.tsv");
-	//import("yago","yagoMultilingualClassLabels.tsv");
-	//	import("yago", "yagoTaxonomy.tsv");todo
-	//import("yago","yagoDBpediaClasses.tsv");
-	//import("yago","yagoDBpediaInstances.tsv");
-	//import("yago","yagoMetaFacts.tsv");
-	import("yago", "yagoImportantTypes.tsv");
-	import("yago", "yagoLabels.tsv");
+    import("yago", "yagoGeonamesClasses.tsv");
+    import("yago", "yagoGeonamesGlosses.tsv");
+    import("yago", "yagoSimpleTaxonomy.tsv");
+    //import("yago","yagoWordnetIds.tsv");// hasSynsetId USELESS!!!
+    //import("yago","yagoWordnetDomains.tsv");
+    //import("yago","yagoMultilingualClassLabels.tsv");
+    //	import("yago", "yagoTaxonomy.tsv");todo
+    //import("yago","yagoDBpediaClasses.tsv");
+    //import("yago","yagoDBpediaInstances.tsv");
+    //import("yago","yagoMetaFacts.tsv");
+    import("yago", "yagoImportantTypes.tsv");
+    import("yago", "yagoLabels.tsv");
     //	dissectParent((Node *) -1);
     
-	//	addStatement(Number,Synonym,getThe("xsd:decimal"));
-	//	addStatement(Number,Synonym,getThe("xsd:integer"));
-	//	addStatement(Date,Synonym,getThe("xsd:date"));
-	//	addStatement(getThe("xsd:date"),SuperClass,Date);
-	//	addStatement(getThe("xsd:decimal"),SuperClass,Number);
-	//	addStatement(getThe("xsd:integer"),SuperClass,Number);
-	//	addStatement(get("xsd:date"),SuperClass,Date);
-	//	addStatement(get("xsd:decimal"),SuperClass,Number);
-	//	addStatement(get("xsd:integer"),SuperClass,Number);
-	addStatement(getAbstract("xsd:date"), SuperClass, Date);
-	addStatement(getAbstract("xsd:decimal"), SuperClass, Number);
-	addStatement(getAbstract("xsd:integer"), SuperClass, Number);
+    //	addStatement(Number,Synonym,getThe("xsd:decimal"));
+    //	addStatement(Number,Synonym,getThe("xsd:integer"));
+    //	addStatement(Date,Synonym,getThe("xsd:date"));
+    //	addStatement(getThe("xsd:date"),SuperClass,Date);
+    //	addStatement(getThe("xsd:decimal"),SuperClass,Number);
+    //	addStatement(getThe("xsd:integer"),SuperClass,Number);
+    //	addStatement(get("xsd:date"),SuperClass,Date);
+    //	addStatement(get("xsd:decimal"),SuperClass,Number);
+    //	addStatement(get("xsd:integer"),SuperClass,Number);
+    addStatement(getAbstract("xsd:date"), SuperClass, Date);
+    addStatement(getAbstract("xsd:decimal"), SuperClass, Number);
+    addStatement(getAbstract("xsd:integer"), SuperClass, Number);
 }
 
 void importAll() {
-	//	importFacts()
-	//	importCsv("adressen.txt");
-	importWordnet();
+    //	importFacts()
+    //	importCsv("adressen.txt");
+    importWordnet();
     //	doDissectAbstracts=true;// already? why not
-	importNames();
-	importGeoDB();
-	importFreebase();
-	importAllYago();
-	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
-	//		p("image import done before ...");
-	//	else
-	//		importImages();
+    importNames();
+    importGeoDB();
+    importFreebase();
+    importAllYago();
+    //	if (getImage("alabama") != "" && getImage("Alabama") != "")
+    //		p("image import done before ...");
+    //	else
+    //		importImages();
 }
 
 void importWikipedia() {
 }
 
 void import(const char* type, const char* filename) {
-	clock_t start;
-	double diff;
-	//  start = clock();
-	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
-	if (filename == 0) filename=type;
-	if (eq(type, "all")) {
-		importAll();
-	} else if (eq(type, "csv")) {
-		importCsv(filename);
-	} else if (eq(type, "wordnet")) {
-		importWordnet();
-	} else if (eq(type, "freebase")) {
-		importFreebase();
-	} else if (eq(type, "names")) {
-		importNames();
-	} else if (eq(type, "images")) {
-		importImages();
-	} else if (eq(type, "wiki")) {
-		importWikipedia();
-	} else if (eq(type, "topic")) {
-		importWikipedia();
-	} else if (eq(type, "yago")) {
-		if (eq(filename, "yago")) importAllYago();
+    clock_t start;
+    double diff;
+    //  start = clock();
+    //  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
+    if (filename == 0) filename=type;
+    if (eq(type, "all")) {
+        importAll();
+    } else if (eq(type, "csv")) {
+        importCsv(filename);
+    } else if (eq(type, "wordnet")) {
+        importWordnet();
+    } else if (eq(type, "freebase")) {
+        importFreebase();
+    } else if (eq(type, "names")) {
+        importNames();
+    } else if (eq(type, "images")) {
+        importImages();
+    } else if (eq(type, "wiki")) {
+        importWikipedia();
+    } else if (eq(type, "topic")) {
+        importWikipedia();
+    } else if (eq(type, "yago")) {
+        if (eq(filename, "yago")) importAllYago();
         //		else if (contains(filename, "fact"))
         //			importFacts(filename, filename);
         //		else
-		importYago(filename);
-	} else if (contains(filename, "txt")) {
-		importCsv(filename);
-	} else if (contains(filename, "csv")) {
-		importCsv(filename);
-	} else if (contains(filename, "tsv")) {
-		importCsv(filename);
-	} else if (contains(filename, "xml")) {
-		importXml(filename);
-	} else {
-		//if (!importFacts(filename, filename))
-		printf("Unsupported file type %s %s", type, filename);
-		importAll();
-	}
-	//  cout<<"nanoseconds "<< diff <<'\n';
+        importYago(filename);
+    } else if (contains(filename, "txt")) {
+        importCsv(filename);
+    } else if (contains(filename, "csv")) {
+        importCsv(filename);
+    } else if (contains(filename, "tsv")) {
+        importCsv(filename);
+    } else if (contains(filename, "xml")) {
+        importXml(filename);
+    } else {
+        //if (!importFacts(filename, filename))
+        printf("Unsupported file type %s %s", type, filename);
+        importAll();
+    }
+    //  cout<<"nanoseconds "<< diff <<'\n';
     
-	// importSqlite(filename);
-	//    importNodes();
-	//    importStatements();
+    // importSqlite(filename);
+    //    importNodes();
+    //    importStatements();
 }
 /*root@h1642655:~/netbase# l facts/
  actedIn           during              hasChild           hasISBN                hasRevenue       interestedIn    isSubstanceOf    subClassOf
