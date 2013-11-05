@@ -923,10 +923,10 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 //Zeitschriftenverlag     Verlag_Otto_Beyer
 //Zeitschriftenverlag     Verlag_Technik
 
-void dissectWord(Node * subject,bool checkDuplicates) {
+Node* dissectWord(Node * subject,bool checkDuplicates) {
 	Node* original=subject;
 //	if (dissected[subject]) return;
-	if (!checkNode(subject, true, true, true)) return;
+	if (!checkNode(subject, true, true, true)) return original;
 
 	string str=replace_all(subject->name, " ", "_");
 	str=replace_all(str, "-", "_");
@@ -950,7 +950,7 @@ void dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(b, Instance, subject, true);
 		dissectWord(a,checkDuplicates);
 		dissectWord(b,checkDuplicates);
-		return;
+		return original;
 		//		str = word->name;
 		//        subject=word;
 	}
@@ -980,7 +980,7 @@ void dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, at, ort,checkDuplicates);
 		dissectParent(ort,checkDuplicates);
-		return;
+		return word;
 	}
 	type=str.find("_from_");
 	if (type >= 0 && len - type > 2) {
@@ -1068,7 +1068,7 @@ void dissectWord(Node * subject,bool checkDuplicates) {
 		Node* word=getThe(str.substr(type + 1).c_str());
 		addStatement(word, Instance, subject, checkDuplicates);
 	}
-
+    return original;
 	// todo: zu (ort/name) _der_ (nicht:name) bei von auf_der auf am (Angriff_)gegen (Schlacht_)um...
 	//    free(str);
 }
@@ -1094,6 +1094,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		badCount++;
 		return 0;
 	}
+    if(isInteger(thing))return get(atoi(thing));
 	if (getRelation(thing)) // not here!
 		return getRelation(thing);
 
@@ -1178,6 +1179,7 @@ Node * getAbstract(const char* thing) {			// AND CREATE!
 		badCount++;
 		return 0;
 	}
+     if(isInteger(thing))return get(atoi(thing));
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
@@ -1269,6 +1271,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	//		printf("Node#%016llX: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%016llX)\n", n->id, n->name,text, img.data(),n);
 	printf("%d\t%s\t\t%s\t%s\t%d statements\n", n->id, n->name, text, img.data(), n->statementCount);
+    if(n->statementCount<=1)return false;
 	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
@@ -1289,8 +1292,8 @@ bool show(Node* n, bool showStatements) {		//=true
 			if (checkStatement(s)) showStatement(s);
 			//			else break;
 		}
-		pf("------------------- %d %s ----------------------\n", n->id, n->name);
 	}
+    pf("--------------------------- ^^ %d %s ^^\n", n->id, n->name);
 	return 1; // daisy
 }
 

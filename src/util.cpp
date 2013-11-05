@@ -30,7 +30,12 @@ bool assert(bool test, char* what) { // bool nix gut
 	return test;
 }
 
-bool isNumber(char* buf) {
+
+bool isInteger(const char* buf) {
+	return strlen(buf) == strspn(buf, "0123456789");
+}
+
+bool isNumber(const char* buf) {
 	return strlen(buf) == strspn(buf, "0123456789,.");
 }
 
@@ -173,9 +178,6 @@ bool quiet=false;
 //   fflush(stdout);
 //}
 
-bool isInteger(char* buf) {
-	return strlen(buf) == strspn(buf, "0123456789");
-}
 bool endsWith(const char* x, const char* y) {
 	int xlen=strlen(x);
 	int ylen=strlen(y);

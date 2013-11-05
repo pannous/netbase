@@ -486,7 +486,7 @@ void checkRootContext();
 Node* getProperty(Node* n, char* s);
 Node* findRelation(Node* from, Node* to);
 void dissectParent(Node* subject,bool checkDuplicates=false);
-void dissectWord(Node* subject,bool checkDuplicates=false);
+Node* dissectWord(Node* subject,bool checkDuplicates=false);
 typedef Node* N;
 typedef Statement* S;
 typedef NodeVector NV;

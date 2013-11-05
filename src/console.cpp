@@ -113,9 +113,10 @@ NodeVector nodeVectorWrap(Node* n) {
 NodeVector OK;
 
 NodeVector parse(const char* data) {
-	if (eq(data, null)) {
+	if (eq(data, null))
 		return OK;
-	}
+    if (!isprint(data[0])) // ??
+		return OK;
 	if (eq(data, "")) {
 		return OK;
 	}
@@ -123,7 +124,7 @@ NodeVector parse(const char* data) {
 	data=fixQuotesAndTrim(modifyConstChar(data));
 	//	std::remove(arg.begin(), arg.end(), ' ');
 	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
-
+    
 	//		scanf ( "%s", data );
 	if (eq(data, "exit")) return OK;
 	if (eq(data, "help") || eq(data, "?")) {
@@ -131,13 +132,13 @@ NodeVector parse(const char* data) {
 		//        printf("type exit or word");
 		return OK;
 	}
-
+    
 	if (eq(data, "more")) {
 		resultLimit=resultLimit * 2;
 		if (lastCommand) return parse(lastCommand);
 		else return OK;
 	}
-
+    
 	if (eq(data, ":x")) {
 		save();
 		exit(1);
@@ -145,7 +146,7 @@ NodeVector parse(const char* data) {
 	lastCommand=clone(data);
 	if (eq(data, ":w")) save();
 	if (eq(data, ":q")) exit(1);
-
+    
 	if (eq(data, "q")) return OK;
 	if (eq(data, "x")) return OK;
 	if (eq(data, "export")) {
@@ -154,34 +155,26 @@ NodeVector parse(const char* data) {
 	}
 	if (eq(data, ":cl")) {
 		clearMemory();
-		;
 		return OK;
 	}
 	if (eq(data, "clear")) {
 		clearMemory();
-		;
 		return OK;
 	}
 	if (eq(data, "./clear-shared-memory.sh")) {
 		clearMemory();
-		;
 		return OK;
 	}
 	if (eq(data, ":e")) {
 		export_csv();
-		;
 		return OK;
 	}
 	if (eq(data, "quit")) return OK;
 	if (eq(data, "quiet")) quiet=!quiet;
-
-	//        if (eq(data, "collect abstracts")) {
-	//            collectAbstracts2();
-	//            return OK;
-	//        }
+    
 	if (startsWith(data, ":if")) {
-//			if (endsWith(data, "!"))deleteWord("acceptant");
-//			if (!hasWord("acceptant"))
+        //			if (endsWith(data, "!"))deleteWord("acceptant");
+        //			if (!hasWord("acceptant"))
 		importFreebase();
 		return OK;
 	}
@@ -192,10 +185,8 @@ NodeVector parse(const char* data) {
 	}
 	if (startsWith(data, ":iy") || startsWith(data, ":yi")) {
 		if (endsWith(data, "!")) deleteWord("yagoGeoEntity");
-		import("yago");
+		importAllYago();
 		return OK;
-		//		importYago()
-		//		  importAllYago();
 	}
 	if (startsWith(data, ":i") || startsWith(data, "import")) {
 		string arg=next(string(data));
@@ -254,13 +245,13 @@ NodeVector parse(const char* data) {
 		printf("deleting %s\n", what);
 		deleteWord(what);
 	}
-
+    
 	if (startsWith(data, "path") || startsWith(data, ":p")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
 	}
-
+    
 	if (args.size() > 1 && startsWith(data, "has")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
@@ -277,7 +268,7 @@ NodeVector parse(const char* data) {
 	if (contains(data, "that ")) return query(data);
 	if (contains(data, "who")) // who loves jule
 		return query(data);
-
+    
 	if (args.size() == 2 && (eq(args[0], "the") || eq(args[0], "my"))) {
 		show(getThe(args[1]));
 		return nodeVectorWrap(getThe(args[1]));
@@ -285,28 +276,35 @@ NodeVector parse(const char* data) {
 	if (startsWith(data, "an ")) return query(data);
 	if (startsWith(data, "a ")) return query(data);
 	if (startsWith(data, "any ")) return query(data);
-
+    
 	//        if(startsWith(data,"is ")){  check_statement(data);return OK;}
 	//        if(startsWith(data,"does ")){  check_statement(data);return OK;}
 	if (contains(data, " in ")) return query(data);
-
-//	if (args.size() > 2 && eq(args[1], "of")) {
-//		clearAlgorithmHash();
-//		Node* property = getThe(args[0]);
-//		Node* propertyA = getAbstract(args[0]);
-//		Node* node = getThe(args[2]);
-//		Node* nodeA = getAbstract(args[2]);
-//		Node* found;
-//		if (found == 0)found = has(nodeA, propertyA);
-//		if (found == 0)found = has(Any, propertyA, nodeA);
-////		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
-//		if (checkNode(found)) {
-//			show(found);
-//			pf("ANSWER: %s\n", found->name);
-//		}
-//		return nodeVectorWrap(found);
-//	}
-	if (args.size() > 2 && args[1] == "of" || contains(data, " of ")){// || (contains(data, ".") && !contains(data, " "))) {
+    
+    //	if (args.size() > 2 && eq(args[1], "of")) {
+    //		clearAlgorithmHash();
+    //		Node* property = getThe(args[0]);
+    //		Node* propertyA = getAbstract(args[0]);
+    //		Node* node = getThe(args[2]);
+    //		Node* nodeA = getAbstract(args[2]);
+    //		Node* found;
+    //		if (found == 0)found = has(nodeA, propertyA);
+    //		if (found == 0)found = has(Any, propertyA, nodeA);
+    ////		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
+    //		if (checkNode(found)) {
+    //			show(found);
+    //			pf("ANSWER: %s\n", found->name);
+    //		}
+    //		return nodeVectorWrap(found);
+    //	}
+    
+	if(startsWith(data,"<m.")||startsWith(data,"<g.")){
+        p("<m.0c21rgr> needs showered memory or boost ");
+		Node* n=getFreebaseEntity((char*)data);
+		show(n);//<g.11vjx36lj>
+		return OK;
+	}
+	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
 		return nodeVectorWrap(parseProperty(data)); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
@@ -314,7 +312,7 @@ NodeVector parse(const char* data) {
 		start_server();
 		return OK;
 	}
-
+    
 	if (contains(data, " with ")) return query(data);
 	if (contains(data, " where ")) return query(data);
 	if (contains(data, " from ")) return query(data);
@@ -322,12 +320,10 @@ NodeVector parse(const char* data) {
 	if (contains(data, " which ")) return query(data);
 	if (contains(data, " without ")) return query(data);
 	if (contains(data, "ing ")) return query(data);
-
+    
 	if (contains(data, " that ")) return query(data);
 	if (contains(data, "who ")) return query(data);
-	if (!isprint(data[0])) // ??
-		return OK;
-
+	
 	if (args.size() == 2) {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(1));
@@ -335,42 +331,23 @@ NodeVector parse(const char* data) {
 		//		NodeVector all = memberPath(from, to);
 		//		if(all==EMPTY)parentPath(from,to);
 		//		if(all==EMPTY)shortestPath(from,to);
-
+        
 	}
-	if (args.size() > 3) {
-		//		if (data[0] == '!')
+	if (args.size() >= 3||args[1]=="is") {
+            if (data[0] == '!')
 		return nodeVectorWrap(reify(learn(data))); // SPO
 		//		else data=replace(data," ","_");
 	}
-
-	//        query(string("all ")+data);// NO!
-	//        query(data);// NOO!
 	int i=atoi(data);
-	if (i == 0) i=atoi(data + 1);
-	bool oki=itoa(i)==data;
-	if(startsWith(data,"<m.")||startsWith(data,"<g.")){
-        p("<m.0c21rgr> needs showered memory or boost ");
-		Node* n=getFreebaseEntity((char*)data);
-		show(n);//<g.11vjx36lj>
-		return OK;
-	}
-	if (i > 0 && oki) {
-		//		if (i < 1000)showContext(i);
-		if (endsWith(data, "s") || endsWith(data, "S") || endsWith(data, "$")) {
-			showStatement(getStatement(i));
-			return nodeVectorWrap(reify(getStatement(i)));
-		} else if (startsWith(data, "s") || startsWith(data, "S") || startsWith(data, "$")) showStatement(getStatement(i));
-		else {
-			dissectWord(get(i),true);
-			showNr(currentContext()->id, i);
-			return nodeVectorWrap(get(i));
-		}
-	} else {
-		dissectWord(get(data),true);
-		findWord(currentContext()->id, data);
-		return nodeVectorWrap(get(data));
-	}
-	return OK;
+    if(i>0)
+        if (startsWith(data, "$")) showStatement(getStatement(i));
+    
+    Node* a=dissectWord(get(data),true);
+    show(a);
+    return instanceFilter(a);
+    //		findWord(currentContext()->id, data);
+//    return nodeVectorWrap(get(data));
+//	return OK;
 }
 
 void console() {

@@ -35,8 +35,8 @@ bool contains(const char* x,const char* y,bool ignoreCase=false);
 //bool contains(NodeVector& v, Node* o);
 bool contains(vector<char*>& all,char* node);
 bool contains(string x,const char* y);
-bool isNumber(char* buf);
-bool isInteger(char* buf);
+bool isNumber(const char* buf);
+bool isInteger(const char* buf);
 #define pf(x,...) printf(x, __VA_ARGS__)
 void ps(char* s);
 void ps(string s);// string geht nicht!?!
