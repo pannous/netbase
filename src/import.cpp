@@ -669,7 +669,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
         
 		int size=splitStringC(modifyConstChar(line), values, separator);
 		if (fieldCount != size) {
-			printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
+//			if(debug) printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
 			//            ps(columnTitles); // only 1st word:
 			continue;
 		}
@@ -1091,11 +1091,11 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 	while (fgets(line, sizeof(line), infile) != NULL) {
         //		if (linecount > 10000000) break;
 #ifdef __APPLE__
-		if (linecount > 1000000) break;
+//		if (linecount > 1000000) break;
 #endif
         //		if (linecount % 100 == 0 && linecount>20000)
         //			p(linecount);
-		if (++linecount % 100000 == 0) {
+		if (++linecount % 10000 == 0) {
 			printf("%d freebase labels, %d duplicates     \r", linecount, freebaseKeysConflicts);
             fflush(stdout);
 			if (checkLowMemory()) break;
@@ -1105,9 +1105,18 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		label=label0;
 		if (!startsWith(key, "<m.") && !startsWith(key, "<g.")) continue;
 		if (!startsWith(test, "<#label")) continue;
+//        if (startsWith(label, "http"))continue;
 		if (startsWith(label, "\"")) label++;
 		int len=strlen(label);
-		if (len < 6 || len > 100) continue;
+		if (len < 6) continue;
+        if(len > 50){
+            int spaces=0;
+            for(int i=0;i<len;i++){
+                if(label[i]==' ')spaces++;
+                if(spaces==6||label[i]=='('||label[i]==':'){label[i]=label[i+1]=label[i+2]='.';label[i+3]=0;break;}
+            }
+//            p(label);
+        }
 		label[len - 4]=0;		// "@en
 		key[strlen(key) - 1]=0;
 		try {
@@ -1115,23 +1124,24 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 			long h=freebaseHash(key + 3);		// skip <m. but // LEAVE THE >
             //			if (h < 0 || h >= 1 * billion)
             //				pf("WRONG KEY! %d %s %s", h, key, label);
-			if(eq(key,"<m.0101rlg>"))
-				p("K");
+//			if(eq(key,"<m.0101rlg>"))
+//				p("K");
             //			if (h == 0 || h == 32||h==6161797)//03f2bmf 03f27mf
             //				h=freebaseHash(key + 3);
-			if (freebaseKeys[h] != 0) {
+//			if (freebaseKeys[h] != 0) {
+//        freebaseKeysConflicts:2305228 not worth It
                 //				if(!eq(get(freebaseKeys[h])->name, label))
                 //					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
                 //				else
                 //					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
-				freebaseKeysConflicts++;
-			} else {
+//				freebaseKeysConflicts++;
+//			} else {
 				Node* n;
 				if (hasWord(label)) n=getNew(label);		//get(1);//
 				else n=getAbstract(label);
 				//		n->value.text=...
 				if (n) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
-			}
+//			}
             
 		} catch (...) {
 			p("XXXXXXXXXXXXXXXXXXXXXXXXX");
@@ -1141,7 +1151,7 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		//		add(key,label);
 	}
 	fclose(infile); /* Close the file */
-	p("freebaseKeysConflicts:");
+	p("freebase duplicates removed:");
 	p(freebaseKeysConflicts);
     //	testPrecious();
     //	if (linecount > 40000000)
@@ -1213,7 +1223,7 @@ bool importFreebase() {
 	while (fgets(line, sizeof(line), infile) != NULL) {
         //		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
-			printf("%d freebase           \r ", linecount);
+			printf("\r%d freebase       ", linecount);
             fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -1364,7 +1374,7 @@ void importSenses() {
                name);
 		//		if(id<1000)continue;// skip :(
 		id=id + 10000; // NORM!!!
-		if (130172 == id) p(line);
+//		if (130172 == id) p(line);
 		Node* word=get(id);
 		synsetid=norm_wordnet_id(synsetid);
 		if (synsetid > 200000 + 117659) p(line);

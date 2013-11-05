@@ -30,13 +30,13 @@ using namespace std;
 void showHelp() {
 	ps("available commands");
 	ps("help :h or ?");
-	ps("save :s or :w");
 	ps("load :l [force]\tfetch the graph from disk or mem");
 	//	ps("load_files :lf");
 	ps("import :i [<file>]");
 	ps("export :e (all to csv)");
 	//    ps("print :p");
 	ps("delete :d <node|statement|id|name>");
+	ps("save :s or :w");
 	//	ps("save and exit :x");
 	ps("server");
 	ps("quit :q");

@@ -23,7 +23,7 @@ const void * shmat_root = (const void *) 0x10000000; // just higher than system 
 #else
 //const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0101000000; // just higher than system Recommendation
-const void * shmat_root=(const void *) 0x0110000000; // just higher than system Recommendation
+const void * shmat_root=(const void *) 0x0120000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0100137000;
 #endif
 //const void * shmat_root = (const void *)0x105800000;//test
@@ -143,7 +143,7 @@ void initRootContext() {
 	initContext(rootContext);
 	//	if(rootContext)
 	strcpy(rootContext->name, "ROOT CONTEXT");
-	rootContext->id=1; // not virgin_memory any more
+//	rootContext->id=1; // not virgin_memory any more
 	//	rootContext->nodes=(Node*)&context_root[contextOffset];
 	//	rootContext->statements=(Statement*)&context_root[contextOffset+nodeSize * maxNodes];
 	rootContext->nodes=(Node*) node_root;
@@ -153,7 +153,7 @@ void initRootContext() {
 
 void checkRootContext() {
 	Context* rootContext=(Context*) context_root;
-	if (rootContext->id != 1) {
+	if (rootContext->nodeCount==0) {
 		p("STARTING WITH CLEAN MEMORY");
 		initRootContext();
 //        clearMemory();
