@@ -1,3 +1,4 @@
+#ifdef use_boost
 #include <boost/interprocess/managed_shared_memory.hpp>
 #include <boost/interprocess/allocators/allocator.hpp>
 
@@ -7,7 +8,6 @@
 
 
 #include "shared_map.hpp"
-#include <sys/shm.h>
 #include <iostream>
 ////  g++ -I/opt/local/include/ test-boost-unordered_map.cpp
 
@@ -142,3 +142,4 @@ void shared_map::load ()
     }
 }
 
+#endif

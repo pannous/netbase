@@ -1064,9 +1064,14 @@ unsigned int freebaseHash2(char* x) {
 //map<const char*, Node*> freebaseKeys;
 //static map<int, Node*> freebaseKeys=new std::map();
 //map<long, Node*> freebaseKeys;
-//map<long, int> freebaseKeys;
+//
+#ifdef use_boost
 #include "shared_map.hpp"
 shared_map freebaseKeys;
+#else
+map<long, int> freebaseKeys;
+#endif
+
 int freebaseKeysConflicts=0;
 
 
@@ -1236,7 +1241,7 @@ bool importFreebase() {
     //	if (!hasWord("01000m1>"))
     //	if (!freebaseKeys[freebaseHash("0c21rgr>")])		//1
     //		importFreebaseLabels();
-    freebaseKeys.test();
+//    freebaseKeys.test();
     if (!freebaseKeys[freebaseHash("0zzxc3>")])		//1
         importFreebaseLabels();
     testPrecious2();
