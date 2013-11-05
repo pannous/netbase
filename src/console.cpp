@@ -344,8 +344,10 @@ NodeVector parse(const char* data) {
     
     Node* a=dissectWord(get(data),true);
     show(a);
+    if(i==0)
+        findWord(currentContext()->id, data);
     return instanceFilter(a);
-    //		findWord(currentContext()->id, data);
+
 //    return nodeVectorWrap(get(data));
 //	return OK;
 }
