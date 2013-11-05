@@ -7,6 +7,7 @@
 
 
 #include "shared_map.hpp"
+#include <sys/shm.h>
 #include <iostream>
 ////  g++ -I/opt/local/include/ test-boost-unordered_map.cpp
 
