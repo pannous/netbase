@@ -925,14 +925,13 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 
 Node* dissectWord(Node * subject,bool checkDuplicates) {
 	Node* original=subject;
-//	if (dissected[subject]) return;
+    //	if (dissected[subject]) return;
 	if (!checkNode(subject, true, true, true)) return original;
 
 	string str=replace_all(subject->name, " ", "_");
 	str=replace_all(str, "-", "_");
 	//        p("dissectWord");
 	//        p(subject->name);
-
 	const char *thing=str.data();
 	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".") || endsWith(thing, "s")) dissectParent(subject); // <<
 
