@@ -502,7 +502,8 @@ void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool
 
 void mergeVectors(NodeVector* some, NodeVector more) { // bool keep destination unmodified=TRUE
 	for (int i=0; i < more.size(); i++) {
-		if (!contains(*some, (Node*) more[i], false)) some->push_back(more[i]);
+		if (!contains(*some, (Node*) more[i], false))
+            some->push_back(more[i]);
 	}
 }
 
@@ -559,4 +560,11 @@ string itoa(int i) {
 	std::stringstream ss;
 	ss << i;
 	return ss.str();
+}
+
+
+char* replace(char* data,char what,char with){
+    for (int i=0; i<strlen(data); i++)
+        if(data[i]==what)data[i]=with;
+    return data;// chain
 }

@@ -138,6 +138,7 @@ NodeVector nodeVectorWrap(Node* n) {
 
 NodeVector OK;
 
+
 NodeVector parse(const char* data) {
 	if (eq(data, null))
 		return OK;
@@ -351,9 +352,11 @@ NodeVector parse(const char* data) {
 	if (contains(data, " that ")) return query(data);
 	if (contains(data, "who ")) return query(data);
 	
-	if (args.size() == 2) {
+	if (args.size() == 2)
+        data=replace(data,' ','_');
+        if (args[1]=="to") {
 		Node* from=getAbstract(args.at(0));
-		Node* to=getAbstract(args.at(1));
+		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
 		//		NodeVector all = memberPath(from, to);
 		//		if(all==EMPTY)parentPath(from,to);

@@ -1821,8 +1821,12 @@ NodeVector findProperties(Node* n, const char* m){
     NodeVector good;
     Statement* s=0;
     while (s=nextStatement(n,s)) {
-        if(eq(s->Predicate()->name,m,true))
+        if(eq(s->Predicate()->name,m,true)){
+            if(s->Object()==n)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
+                good.push_back(s->Subject());
+            else if (!contains(good, s->Object(), false))
             good.push_back(s->Object());
+        }
     }
     return good;
 }
@@ -1849,7 +1853,7 @@ NodeVector findProperties(const char* n, const char* m){
         NV more=findProperties(all[i],m);
         mergeVectors(&good, more);
     }
-    return good;
+    return good;// dedup(good);
 }
 
 Node * has(const char* n, const char* m) {
