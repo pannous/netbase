@@ -332,7 +332,7 @@ NodeVector parse(const char* data) {
 		show(n);//<g.11vjx36lj>
 		return OK;
 	}
-	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
+	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, "."))){// && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
@@ -352,22 +352,20 @@ NodeVector parse(const char* data) {
 	if (contains(data, " that ")) return query(data);
 	if (contains(data, "who ")) return query(data);
 	
-	if (args.size() == 2)
-        data=replace(data,' ','_');
-        if (args[1]=="to") {
+    if (args[1]=="to") {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
 		//		NodeVector all = memberPath(from, to);
 		//		if(all==EMPTY)parentPath(from,to);
 		//		if(all==EMPTY)shortestPath(from,to);
-        
 	}
-	if (args.size() >= 3||args[1]=="is") {
-            if (data[0] == '!')
-		return nodeVectorWrap(reify(learn(data))); // SPO
-		//		else data=replace(data," ","_");
-	}
+    
+    if (data[0] == '!'||args[1]=="is")
+        return nodeVectorWrap(reify(learn(data)));
+    
+    data=replace((char*)data,' ','_');
+    
 	int i=atoi(data);
     if (startsWith(data, "$")) showStatement(getStatement(atoi(data+1)));
     if (endsWith(data, "$")) showStatement(getStatement(i));
@@ -375,11 +373,11 @@ NodeVector parse(const char* data) {
     Node* a=dissectWord(get(data),true);
     show(a);
     if(i==0)showNodes(instanceFilter(a),true);
-//        findWord(currentContext()->id, data);
+    //        findWord(currentContext()->id, data);
     return instanceFilter(a);
-
-//    return nodeVectorWrap(get(data));
-//	return OK;
+    
+    //    return nodeVectorWrap(get(data));
+    //	return OK;
 }
 
 void console() {
