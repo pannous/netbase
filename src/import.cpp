@@ -1315,6 +1315,7 @@ bool importFreebase() {
     p("import Freebase ok");
 
     pf("MISSING %d\n", MISSING);
+    currentContext()->use_logic=false;
     //	freebaseKeys.clear();
     //	free(freebaseKeys);
     return true;
@@ -1572,6 +1573,7 @@ void importWordnet() {
     addStatement(getAbstract("opposite"), Synonym, Antonym);
     addStatement(Antonym, Synonym, getThe("opposite"));
     addStatement(Antonym, Synonym, getAbstract("opposite"));
+    currentContext()->use_logic=true;
 }
 
 void importWordnet2() {

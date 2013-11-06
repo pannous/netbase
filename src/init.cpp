@@ -163,15 +163,18 @@ void checkRootContext() {
 	}
 
 	p("USING SHARED MEMORY");
-//	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
-	if (currentContext()->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
-		p("rootContext->nodes != (Node*) node_root");
-		pf("%X != %X\n",rootContext->nodes,node_root);
-		showContext(rootContext);
-		fixPointers();
-		rootContext->nodes=(Node*) node_root;
-		currentContext()->nodes=rootContext->nodes;	// hack
-	}
+////	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
+//	if (currentContext()->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
+//		p("rootContext->nodes != (Node*) node_root");
+//		pf("%X != %X\n",rootContext->nodes,node_root);
+//		showContext(rootContext);
+//		
+////		currentContext()->nodes=rootContext->nodes;	// hack
+//	}
+    if (currentContext()->nodeNames!=name_root)
+        fixPointers();
+    rootContext->nodes=(Node*) node_root;
+    rootContext->statements=statement_root;
 //	else if (currentContext()->nodes != rootContext->nodes) {
 //		fixPointers();
 //		currentContext()->nodes=rootContext->nodes;

@@ -16,6 +16,7 @@
 #include "tests.hpp"
 #include "query.hpp"
 #include "init.hpp"
+#include "relations.hpp"
 
 #define USE_READLINE
 // compile with -lreadline !
@@ -94,7 +95,7 @@ Node *parseProperty(const char *data) {
 		thing=splat[0];
 		property=splat[2];
 	}
-	pf("does %s have a %s?\n", thing, property);
+ 	pf("does %s have a %s?\n", thing, property);
 	Node* found=has(getThe(thing), getAbstract(property));
 	if (found == 0) found=has(getAbstract(thing), getAbstract(property));
 	if (checkNode(found)) {
@@ -103,6 +104,31 @@ Node *parseProperty(const char *data) {
 	}
 	return found;
 }
+
+NodeVector parseProperties(const char *data) {
+	char *thing=(char *) malloc(1000);
+	char *property=(char *) malloc(1000);
+	if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
+	else {
+		//			sscanf(data,"%s.%s",thing,property);
+		char** splat=splitStringC(data, '.');
+		thing=splat[0];
+		property=splat[1];
+	}
+	if (!property) {
+		char** splat=splitStringC(data, ' ');
+		thing=splat[0];
+		property=splat[2];
+	}
+    if(property[strlen(property)-1]=='s')
+        property[strlen(property)-1]=0;
+    
+    pf("does %s have %s?\n", thing, property);
+    NodeVector all=findProperties(thing, property);
+    showNodes(all);
+	return all;
+}
+
 
 NodeVector nodeVectorWrap(Node* n) {
 	NodeVector r;
@@ -270,8 +296,9 @@ NodeVector parse(const char* data) {
 		return query(data);
     
 	if (args.size() == 2 && (eq(args[0], "the") || eq(args[0], "my"))) {
-		show(getThe(args[1]));
-		return nodeVectorWrap(getThe(args[1]));
+        N da=getThe(args[1],More);
+		show(da);
+		return nodeVectorWrap(da);
 	}
 	if (startsWith(data, "an ")) return query(data);
 	if (startsWith(data, "a ")) return query(data);
@@ -305,7 +332,7 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, ".") && !contains(data, " "))) {
-		return nodeVectorWrap(parseProperty(data)); // ownerpath
+		return parseProperties(data); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
 		printf("starting server\n");
@@ -339,13 +366,13 @@ NodeVector parse(const char* data) {
 		//		else data=replace(data," ","_");
 	}
 	int i=atoi(data);
-    if(i>0)
-        if (startsWith(data, "$")) showStatement(getStatement(i));
+    if (startsWith(data, "$")) showStatement(getStatement(atoi(data+1)));
+    if (endsWith(data, "$")) showStatement(getStatement(i));
     
     Node* a=dissectWord(get(data),true);
     show(a);
-    if(i==0)
-        findWord(currentContext()->id, data);
+    if(i==0)showNodes(instanceFilter(a),true);
+//        findWord(currentContext()->id, data);
     return instanceFilter(a);
 
 //    return nodeVectorWrap(get(data));

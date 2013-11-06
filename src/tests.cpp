@@ -1311,15 +1311,27 @@ void tests() {
 	//    testLoop();
 }
 
+void testFreebase(){
+    N m=getThe("Madonna",More);
+    check(m->statementCount>100);
+    m=getThe(getAbstract("Madonna"),More);
+    check(m->statementCount>100);
+    NV all=findProperties("Carlos Barbot","type");
+    check(all.size()>0);
+        showNodes(all);
+}
+
 void testBrandNewStuff() {
+    p("Test Brand New Stuff");
 	int var=0;
+    testFreebase();
 //	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();
     //	checkWordnet();
 //    const char* x=concat("ab","cde");
 //    check(eq(x,"abcde"));
     //	import("freebase");
-    importFreebase();// needs /Volumes/Data/BIG/ !
+//    importFreebase();// needs /Volumes/Data/BIG/ !
 //    	import("yago");
 //    check(hasWord("Tom_Hartley"));
 //    N a=    getAbstract("Tom_Hartley");

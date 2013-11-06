@@ -168,7 +168,8 @@ static const int _Very = 156;
 static const int _Contains = 157;
 static const int _StartsWith = 158;
 static const int _EndsWith = 159;
-
+static const int _false = 200;// not '0' by design!
+static const int _true = 201;
 
 static const int _see=0,//50 also, 40 similar
 	_Hypernym=1,//SuperClass

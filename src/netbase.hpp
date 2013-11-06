@@ -270,6 +270,7 @@ typedef struct Context {
     int nodeCount;
     int extrahashNr;
     int statementCount; //first 1000 reserved!
+    bool use_logic;
     // Node nodes[maxNodes];
     // Statement statements[maxStatements];
     Node* nodes;
@@ -399,7 +400,7 @@ Node* showNr(int context, int id);
 void testBrandNewStuff();
 Node* findWord(int context, const char* word, bool first = false);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
-Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false);
+Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
 Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = false, bool symmetric = false);
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
@@ -409,10 +410,10 @@ Node* has(const char* n, const char* m);
 Node* has(Node* n, Node* m);
 Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);//naja!!!
 Node* has(Node* subject, string predicate, string object, int recurse = true, bool semantic = true, bool symmetric = false);
-Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);
+Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true, bool matchName=false);
 void setValue(Node* node, Node* property, Node* value);
 bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
-bool isA4(Node* n, Node* match, int recurse = false, bool semantic = false);
+bool isA4(Node* n, Node* match, int recurse = false, bool semantic = false, bool matchName=false);
 bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);
@@ -485,6 +486,7 @@ void checkRootContext();
 
 Node* getProperty(Node* n, char* s);
 Node* findRelation(Node* from, Node* to);
+NodeVector findProperties(const char* n, const char* m);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 typedef Node* N;

@@ -113,10 +113,7 @@ Node* UsageContext;
 
 
 Node* addRelation(int id, const char* name,bool transitive=false) {
-	string keep = name;
-	const char* what;
-	what = keep.c_str();
-	Node* n = add_force(wordnet, id, what, _internal);
+	Node* n = add_force(wordnet, id, name, _internal);
 	if(n->statementCount==0&&id>0)// IT BETTER BE!!!
 		addStatement4(wordnet, getAbstract(name)->id,_instance,id);// Internal
 //	if(transitive)???  baked into Algorithms, at least four standard relations?
@@ -255,8 +252,8 @@ void initRelations() {
 	Integer = addRelation(_integer, "Integer");
 	Range = addRelation(_range, "Range");
 
-	True=add("true");
-	False=add("false");// todo
+	True= addRelation(_true,"true");
+	False=addRelation(_false,"false");// todo
 }
 
 Node* invert(Node* relation) {
@@ -324,6 +321,7 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "is")) return Type;
 	if (eq(thing, "has")) return Member;
 	if (eq(thing, "of")) return Owner;
+   	if (eq(thing, "containedby")) return Owner;
 	if (eq(thing, "by")) return Owner; // creator
 	if (eq(thing, "type")) return Type;
 	if (eq(thing, "property")) return Attribute; // Property;
