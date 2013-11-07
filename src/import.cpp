@@ -847,7 +847,7 @@ Node* rdfValue(char* name) {
 	char** all=splitStringC(name, '^');
 	cchar* unit=all[2];
 	name=all[0];
-	name++; // ignore quotes "33"
+    if(name[0]=='"')name++; // ignore quotes "33"
 	free(all);
 	if (!unit || unit > name + 1000 || unit < name) return 0;
 	if (unit[0] == '<') unit++;
@@ -1262,7 +1262,7 @@ bool importFreebase() {
             }
         }
 //        subjectName=line;
-        int i=0;
+//        int i=0;
 //        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
 //        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;objectName=line+i+1;break;}
 //        for (;i<10000;i++)if(line[i]=='\t')line[i]=0;
@@ -1446,7 +1446,7 @@ void importSenses() {
 void addLabel(Node *node, char* text) {
     int len=(int)strlen(text);
     Context* context=currentContext();
-    int slot=context->currentNameSlot;
+    long slot=context->currentNameSlot;
     char* label=context->nodeNames + slot;
     strcpy(label, text); // can be freed now!
     node->value.text=label;
