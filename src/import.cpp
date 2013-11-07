@@ -61,7 +61,7 @@ bool checkLowMemory() {
 	}
 	if (currentContext()->currentNameSlot + 300000 > maxNodes * averageNameLength) {
 		p("OUT OF MEMORY!");
-		pf("%d characters!\n", currentContext()->currentNameSlot);
+		pf("%ld characters!\n", currentContext()->currentNameSlot);
 		return true;
 	}
 	if (currentContext()->statementCount + 40000 > maxStatements) {
@@ -1077,13 +1077,14 @@ void testPrecious() {
 	check(freebaseKeys[testE] == testA->id);
 }
 
-bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
-	char line[10000];
+bool importFreebaseLabels(cchar* file) {
+    //  (Node**)malloc(1*billion*sizeof(Node*));
+	char* line=(char*) malloc(100000);//[10000];
 	char* label0=(char*) malloc(10000);
 	char* label;
 	char* key=(char*) malloc(10000);
 	char* test=(char*) malloc(10000);
-	FILE *infile=open_file("freebase.labels.en.txt");
+	FILE *infile=open_file(file);
     
 	int linecount=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -1104,8 +1105,12 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		if (!startsWith(key, "<m.") && !startsWith(key, "<g.")) continue;
 		if (!startsWith(test, "<#label")) continue;
         if (startsWith(label, "http"))continue;
+        if (startsWith(label, "\"http"))continue;
+        if (startsWith(label, "<http"))continue;
 		if (startsWith(label, "\"")) label++;
 		int len=(int)strlen(label);
+        if(label[len-1]=='"')label[len-1]=0;
+        if(label[len-1]=='>')label[len-1]=0;
 		if (len < 6) continue;
         if(len > 50){
             int spaces=0;
@@ -1149,6 +1154,12 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
     //	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
     p("import Freebase labels ok");
     return true;
+}
+
+
+void importFreebaseLabels() {
+    importFreebaseLabels("freebase.labels.de.txt");
+    importFreebaseLabels("freebase.labels.en.txt");
 }
 
 Node *dissectFreebase(char* name) {
@@ -1230,7 +1241,8 @@ bool importFreebase() {
     Node* subject;
     Node* predicate;
     Node* object;
-    char line[10000];
+//    char line[10000];
+    char* line=(char*) malloc(100000);
     int ignored=0;
     badCount=0;
     char* objectName=(char*) malloc(10000);

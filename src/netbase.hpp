@@ -266,7 +266,7 @@ typedef struct Context {
     int id;
     char name[100];
     char* nodeNames;
-    int currentNameSlot;
+    long currentNameSlot;
     int nodeCount;
     int extrahashNr;
     int statementCount; //first 1000 reserved!

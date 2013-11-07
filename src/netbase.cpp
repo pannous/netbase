@@ -118,7 +118,7 @@ inline Statement* firstStatement(Node* abstract) {
 bool checkHash(Ahash* ah) {
 	if(!debug)return true;
 	//    if(pos>maxNodes*2)
-	if (ah < abstracts || ah > (void*) &abstracts[maxNodes * 2]) { // times 2 because it can be an extraHash outside of abstracts!!
+	if (ah < abstracts || ah >&abstracts[maxNodes * 2]) { // times 2 because it can be an extraHash outside of abstracts!!
 		p("ILLEGAL HASH!");
 		//	pi(pos);
 		px(ah);

@@ -448,22 +448,21 @@ inline short normChar(char c) {// 0..36 damn ;)
 	if (c >= '0' && c <= '9') return c-'0'+26;
 	if (c >= 'a' && c <= 'z') return c-'a';
 	if (c >= 'A' && c <= 'Z') return c-'A';
-	return 0;
-//    switch (c) {
-//        case '"':return 0;
-//            break;
-//        case '\'':return 0;
-//            break;
-//        case '(':return 0;
-//            break;
-//        case '_':return 0;
-//            break;
-//        case ' ':return 0;
-//            break;
-//        case '-':return 0;
-//            break;
-//        default: return tolower(c);
-//    }
+    switch (c) {
+        case '"':return 0;
+            break;
+        case '\'':return 0;
+            break;
+        case '(':return 0;
+            break;
+        case '_':return 0;
+            break;
+        case ' ':return 0;
+            break;
+        case '-':return 0;
+            break;
+        default: return c;// for asian etc!
+    }
 }
 
 //unsigned int hashMod=(int)abstractHashSize / ahashSize;
@@ -473,7 +472,7 @@ unsigned int wordhash(const char *str) { // unsigned
 	if (!str) return 0;
 	unsigned int c,hash=5381; // long
 	while ((c=*str++)) {
-		int next=normChar(c);
+		int next=normChar(c);//a_b-c==AbC
 		if (next <= 0)continue;
 		hash=hash*33 + next;// ((hash << 5) + hash
 		hash=hash % maxNodes;
