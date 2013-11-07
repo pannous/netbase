@@ -190,7 +190,7 @@ void init() {
 	char* root=(char*) shmat_root;
 	long context_size=contextOffset;
 	long node_size=maxNodes * nodeSize;
-	long abstract_size=abstractHashSize * 2;
+	long abstract_size=maxNodes * ahashSize * 2;
 	long name_size=maxNodes * averageNameLength;
 	long statement_size=maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
@@ -209,24 +209,14 @@ void init() {
 	context_root=(Context*) share_memory(key+4, context_size, context_root,  ((char*) statement_root) + statement_size);
 
 //	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
-//	context_root=(Context*) share_memory(key, context_size, context_root, root);
-//	abstract_root=share_memory(key + 1,abstract_size , abstract_root, root + 0x100000000);
-//	name_root=share_memory(key + 2, name_size, name_root, root + 0x200000000);
-//	statement_root=share_memory(key + 3, statement_size, statement_root, root + 0x300000000);
-//	node_root= share_memory(key + 4, node_size,node_root, root + 0x400000000);
+
 	abstracts=(Ahash*) (abstract_root); // reuse or reinit
 	extrahash=(Ahash*) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts=(Context*) context_root;
 	checkRootContext();
 	getContext(current_context);
-	//    initContext(&contexts[current_context]);
 	initRelations();
-	//	collectAbstracts();// zur sicherheit
-	//    if(!hasWord("m^2"))
-	//        initUnits();
 	if (currentContext()->nodeCount < 100) currentContext()->nodeCount=10000;
-//	showContext(current_context);
-	//    }if (i == 128) {printf("recovered EXC_BAD_ACCESS !\n");}// catch
 }
 
 void fixNodes(Context* context, Node* oldNodes) {
@@ -365,10 +355,7 @@ void fixPointers(Context* context) {
 int collectAbstracts() {
 	ps("collecting abstracts");// int now
 	initRelations();
-//	abstracts = (Ahash*) (&context_root[abstractsOffset]);
-//	extrahash = (Ahash*) (&context_root[abstractsOffset + abstractHashSize]);
-	memset(abstracts, 0, abstractHashSize * 2);
-//	memset(extrahash, 0, abstractHashSize);
+	memset(abstracts, 0, maxNodes*ahashSize * 2);
 	Context* c=currentContext();
 	int max=c->nodeCount; // maxNodes;
 	int count=0;
@@ -378,8 +365,6 @@ int collectAbstracts() {
 		if (i > 1000 && !checkNode(n)) break;
 		if (n == null || n->name == null || n->id == 0) continue;
 		if (n->kind == Abstract->id) {
-			//			if(eq(n->name,"city"))
-			//				max--;
 			insertAbstractHash(n);
 			count++;
 		}
@@ -446,7 +431,7 @@ char* initContext(Context* context) {
 		statements=(Statement*) statement_root;
 	} else if (context_root) {
 		p("ONE shared memory segment");
-		if (contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize > sizeOfSharedMemory + abstractHashSize * 2) { //
+		if (contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize > sizeOfSharedMemory + ahashSize * 2) { //
 			ps("ERROR sizeOfSharedMemory TOO SMALL!");
 			ps("contextOffset+nodeSegmentSize+nameSegmentSize+statementSegmentSizeabstractSegment > sizeOfSharedMemory !");
 			p(contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize);
@@ -456,8 +441,6 @@ char* initContext(Context* context) {
 		nodes=(Node*) (context_root + contextOffset);
 		nodeNames=(char*) &context_root[contextOffset + nodeSegmentSize];
 		statements=(Statement*) &context_root[contextOffset + nodeSegmentSize + nameSegmentSize];
-		//        abstracts = (Ahash*) &root_memory[abstractOffset]; global via root_memory2 !
-		//        extrahash = (Ahash*) &root_memory[abstractOffset + abstractHashSize];// noch mal so viele: im ø 2 Ahashs / wort?
 	} else do {
 		p("malloc memory segments");
 		statements=(Statement*) malloc(statementSegmentSize + 1);

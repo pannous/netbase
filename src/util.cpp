@@ -466,7 +466,7 @@ inline short normChar(char c) {// 0..36 damn ;)
 //    }
 }
 
-unsigned int hashMod=(int)abstractHashSize / ahashSize;
+//unsigned int hashMod=(int)abstractHashSize / ahashSize;
 
 // ./clear-shared-memory.sh After changing anything here!!
 unsigned int wordhash(const char *str) { // unsigned
@@ -476,7 +476,7 @@ unsigned int wordhash(const char *str) { // unsigned
 		int next=normChar(c);
 		if (next <= 0)continue;
 		hash=hash*33 + next;// ((hash << 5) + hash
-		hash=hash % hashMod;
+		hash=hash % maxNodes;
 	}
 	return hash;
 }

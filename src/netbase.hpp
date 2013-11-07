@@ -513,26 +513,19 @@ static long maxNodes = 300*million;
 static long maxStatements = maxNodes*3;
 #endif
 
-static long abstractHashSize = maxNodes*ahashSize; //~nodes?
+//static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;
-//static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements*statementSize;// can groooow!
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
-static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
-//static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
-//static long freebaseHashSize=1*MB;// 1*GB;// 51.705.469 keys! + abstacts !  *  sizeof(int) => 4GB!
+static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
+
 int main(int argc, char *argv[]);
-static long stupidCompiler=billion+abstractHashSize+sizeOfSharedMemory;
-//stupidCompiler=0;
+static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize
 
 int test2();
-//const ?
-//static Context contexts[maxContexts]; save geht nicht
 extern Context* contexts; //[maxContexts];
-//Context contexts[maxContexts];
 extern Statement* statement_root;
 extern Context* context_root; // else: void value not ignored as it ought to be
 extern Node* abstract_root;
 extern Node* node_root;
 extern char* name_root;
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
-//extern Node** keyhash_root;

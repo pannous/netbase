@@ -1974,7 +1974,7 @@ Node * last(NodeVector rows) {
 void initUnits() {
 	//    printf("Abstracts %p\n", abstracts);
 	printf("Abstracts %p\n", abstracts);
-	Ahash* ah=&abstracts[wordhash("meter") % abstractHashSize];
+	Ahash* ah=&abstracts[wordhash("meter") % maxNodes];//???;
 	if (ah < abstracts || ah > extrahash /**2*/) {
 		ps("abstracts kaputt");
         //		collectAbstracts();
