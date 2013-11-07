@@ -1279,7 +1279,7 @@ bool importFreebase() {
     FILE *infile=open_file("freebase.data.txt");
     int linecount=0;
     while (fgets(line, sizeof(line), infile) != NULL) {
-        if(linecount > 1000)break;//test!
+//        if(linecount > 1000)break;//test!
         //		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
         if (++linecount % 10000 == 0) {
             printf("\r%d freebase   ( %d ignored )       ", linecount,badCount);
