@@ -967,8 +967,15 @@ bool importYago(const char* file) {
 				if (debug) printf("ERROR %s\n", line);
 				continue;
 			}
+            char* predicateName= all[2];
+            if(startsWith(predicateName, "has")){
+                char next=predicateName[3];
+                if(next==' ')predicateName=predicateName+4;
+                if('A'<=next && next<='Z')predicateName=predicateName+3;
+            }
+            
 			subject=getYagoConcept(all[1]); //
-			predicate=getYagoConcept(all[2]);
+			predicate=getYagoConcept(predicateName);
 			object=getYagoConcept(all[3]);
 			free(all);
 		} else {
@@ -1251,7 +1258,7 @@ bool filterFreebase(char* name){
 }
 
 bool importFreebase() {
-    if(hasWord("vote_value"))return true;
+//    if(hasWord("vote_value"))return true;
     
     if (!freebaseKeys[freebaseHash("0zzxc3>")]){		//1
         importFreebaseLabels();
@@ -1282,21 +1289,6 @@ bool importFreebase() {
                 break;
             }
         }
-        //		if(linecount<140000)continue;
-        // printf(line);
-        
-//        subjectName=predicateName=objectName=line;
-//        for (int i=0;i<10000;i++){
-//            if(line[i]=='\t'){
-//                line[i]=0;
-//                if(objectName==line)
-//                    predicateName=line+i+1;
-//                else if(predicateName==line)
-//                    predicateName=line+i+1;
-//                else break;
-//            }
-//        }
-
         subjectName=line;
         int i=0;
         for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
@@ -1623,8 +1615,7 @@ void importGeoDB() {
 // IMPORTANT: needs manual collectAbstracts() afterwards (for speed reasons??)
 
 void importAllYago() {
-    //	Is
-    import("yago", "yagoGeonamesData.tsv");
+//    import("yago", "yagoGeonamesData.tsv");// expansive !!! don't dissect!
     load_wordnet_synset_map();
     import("yago", "yagoFacts.tsv");
     check(hasWord("Tom_Hartley"));

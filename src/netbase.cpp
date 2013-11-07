@@ -923,6 +923,8 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	Node* original=subject;
     //	if (dissected[subject]) return;
 	if (!checkNode(subject, true, true, true)) return original;
+    if(subject->statementCount>1000)checkDuplicates=false;// expansive isA4 !!!!
+//    => todo dissectWord befor loading data!!!!!
     
 	string str=replace_all(subject->name, " ", "_");
 	str=replace_all(str, "-", "_");
