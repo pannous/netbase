@@ -26,10 +26,10 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT            (3333)
+#define SERVER_PORT  (3333)
 
 enum result_format {
-	xml, json, txt
+	xml, json, txt,csv
 };
 
 enum result_verbosity {
@@ -71,6 +71,10 @@ int Service_Request(int conn) {
 		format = xml;
 		q = q + 4;
 	}
+	if (startsWith(q, "csv/")) {
+		format = csv;
+		q = q + 4;
+	}
 	if (startsWith(q, "json/")) {
 		format = json;
 		q = q + 5;
@@ -87,6 +91,14 @@ int Service_Request(int conn) {
 		verbosity = verbose;
 		q = q + 8;
 	}
+    
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//
+    NodeVector all = parse(q); // <<<<<<<< NETBASE!
+    //
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	
+    
 	//	Writeline(conn,q);
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
@@ -95,28 +107,32 @@ int Service_Request(int conn) {
 	char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	char* statement_format_json = "      { 'id:%d, 'subject':%s', 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	char* statement_format;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
-
+	if (format == csv)statement_format = statement_format_csv;
+    
+   	char* entity_format;
 	char* entity_format_txt = "%s (%d)\n";
 	char* entity_format_xml = "<entity name=\"%s\" id='%d'>\n";
 	char* entity_format_json = "   {'name':\"%s\", 'id':%d";
-	char* entity_format;
+   	char* entity_format_csv = "%s\t%d\n";
+    if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
 	if (format == json)entity_format = entity_format_json;
 	if (format == txt)entity_format = entity_format_txt;
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	NodeVector all = parse(q); // <<<<<<<< NETBASE!
+	if (format == csv)entity_format = entity_format_csv;
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
 		sprintf(buff, entity_format, node->name, node->id);
 		Writeline(conn, buff);
 		Statement* s = 0;
-		if (verbosity == verbose || verbosity == longer || all.size() == 1 && !verbosity == shorter) {
+		if (format==csv|| verbosity == verbose || verbosity == longer || all.size() == 1 && !verbosity == shorter) {
 			if (format == json)Writeline(conn, ",'statements':[\n");
 			while (s = nextStatement(node, s)) {
+                if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
@@ -131,7 +147,6 @@ int Service_Request(int conn) {
 	}
 	if (format == json)Writeline(conn, "]}\n");
 	if (format == xml)Writeline(conn, "</results>\n");
-	//	if()
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	FreeReqInfo(&reqinfo);
@@ -666,6 +681,7 @@ void start_server() {
 	flush();
 	int listener, conn;
 	pid_t pid;
+//    socklen_t
 	struct sockaddr_in servaddr;
 
 
@@ -682,22 +698,27 @@ void start_server() {
 
 
 	/*  Assign socket address to socket  */
-//	if (bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr)) < 0)
-//		Error_Quit("Couldn't bind listening socket.");
+//	__bind<int&,sockaddr *,unsigned long> x=
+    bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr));
+    if(listener<0)
+		Error_Quit("Couldn't bind listening socket.");
 
 
 	/*  Make socket a listening socket  */
+    
+//    	if (listen(listener, BACKLOG) < 0)
 	if (listen(listener, LISTENQ) < 0)
 		Error_Quit("Call to listen failed.");
 
 
-	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
+	printf("listening on %d port %d [doesn't work in xcode]\n", INADDR_ANY, SERVER_PORT);
 
 	/*  Loop infinitely to accept and service connections  */
 	while (1) {
 		/*  Wait for connection  */
 		if ((conn = accept(listener, NULL, NULL)) < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
+        else p("conn = accept OK");
 		// WORKS FINE, but not when debugging
 
 		/*  Fork child process to service connection  */

@@ -317,11 +317,13 @@ Node* invert(Node* relation) {
 Node * getRelation(const char* thing) {
 	if (thing[0] == '#') thing++;
 	if (eq(thing, "instance")) return Instance;
+    if (eq(thing, "Contains")) return Part;
 	if (eq(thing, "type")) return Type;
+   	if (eq(thing, "has type")) return Type;    
 	if (eq(thing, "is")) return Type;
 	if (eq(thing, "has")) return Member;
 	if (eq(thing, "of")) return Owner;
-   	if (eq(thing, "containedby")) return Owner;
+   	if (eq(thing, "containedby")) return PartOwner;
 	if (eq(thing, "by")) return Owner; // creator
 	if (eq(thing, "type")) return Type;
 	if (eq(thing, "property")) return Attribute; // Property;

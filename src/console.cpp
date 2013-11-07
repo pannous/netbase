@@ -84,6 +84,7 @@ Node *parseProperty(const char *data) {
 	char *thing=(char *) malloc(1000);
 	char *property=(char *) malloc(1000);
 	if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
+	if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
 	else {
 		//			sscanf(data,"%s.%s",thing,property);
 		char** splat=splitStringC(data, '.');
@@ -109,6 +110,7 @@ NodeVector parseProperties(const char *data) {
 	char *thing=(char *) malloc(1000);
 	char *property=(char *) malloc(1000);
 	if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
+	if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
 	else {
 		//			sscanf(data,"%s.%s",thing,property);
 		char** splat=splitStringC(data, '.');
@@ -332,7 +334,7 @@ NodeVector parse(const char* data) {
 		show(n);//<g.11vjx36lj>
 		return OK;
 	}
-	if (args.size() > 2 && args[1] == "of" || contains(data, " of ") || (contains(data, "."))){// && !contains(data, " "))) {
+	if (args.size() > 2 && args[1] == "of" || contains(data, " of ")  || contains(data, " by ") || (contains(data, "."))){// && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
