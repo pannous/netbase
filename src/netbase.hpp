@@ -509,8 +509,8 @@ static int billion=GB;
 static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
 static long maxStatements = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 #else
-static long maxNodes = 200*million;
-static long maxStatements = maxNodes*2;
+static long maxNodes = 300*million;
+static long maxStatements = maxNodes*3;
 #endif
 
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?
@@ -525,7 +525,6 @@ static long stupidCompiler=billion+abstractHashSize+sizeOfSharedMemory;
 //stupidCompiler=0;
 
 int test2();
-
 //const ?
 //static Context contexts[maxContexts]; save geht nicht
 extern Context* contexts; //[maxContexts];

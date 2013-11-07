@@ -16,7 +16,6 @@
 
 using namespace std;
 
-// 64 BIT : %x -> %016llX
 cchar* nodes_file="nodes.txt";
 cchar* statements_file="statements.txt";
 cchar* images_file="images.txt";
@@ -72,6 +71,7 @@ bool checkLowMemory() {
 	}
 	if (extrahash + 20000 > abstracts + abstractHashSize * 2) {
 		p("OUT OF MEMORY!");
+        // 64 BIT : %x -> %016llX or %p for POINTER!
 		pf("hashes near %p\n", extrahash);
 		return true;
 	}
@@ -1210,37 +1210,72 @@ Node* getFreebaseEntity(char* name) {
     return dissectFreebase(name);
 }
 
+inline bool endsWith(const char* x, const char* y) {
+	int xlen=(int)strlen(x);
+	int ylen=(int)strlen(y);
+	if (xlen < ylen) return false;
+	for (int i=1; i <= ylen; i++)
+		if (x[xlen - i] != y[ylen - i]) return false;
+	return true;
+}
+inline bool startsWith(const char* x, const char* y) {
+    short len=strlen(y);
+	if (strlen(x) < len) return false;
+	for (int i=0; i < len; i++) {
+		if (x[i] != y[i]) return false;
+	}
+	return true;
+}
+bool filterFreebase(char* name){
+    if (startsWith(name, "<book.isbn")) return true;
+    if (startsWith(name, "<biology.gene")) return true;
+    if (startsWith(name, "<freebase.")) return true;
+    if (eq(name, "<common.topic>")) return true;
+    // nutrition_information
+    if (eq(name, "\"/#type\"")) return true;
+    
+    if (endsWith(name, "controls>")) return true;
+    if (endsWith(name, "webpage>")) return true;
+    if (endsWith(name, "uploaded_by>")) return true;
+    if (endsWith(name, "notable_for>")) return true;
+    if (endsWith(name, "permission>")) return true;
+    if (endsWith(name, "key>")) return true;
+    
+    if (endsWith(name, "referenced_by>")) return true;
+    if (endsWith(name, "statistics_entry>")) return true;
+    if (startsWith(name, "<http")) return true;
+    if (startsWith(name, "http")) return true;
+    if (startsWith(name, "<common.annotation")) return true;
+    if (startsWith(name, "<dataworld.")) return true;
+    return false;
+}
+
 bool importFreebase() {
-    //    return 0;
-//    long x=   freebaseHash("0023gm0>");
-    //    long x=   freebaseHash("023gm0>");
-    //	freebaseKeys=freebaseKey_root;
-    //	long x=freebaseHash("03f2bmf");
-    //	long y=freebaseHash("03f27mf");
-    //	check(x != y);
-    //	if (!hasWord("01000m1>"))
-    //	if (!freebaseKeys[freebaseHash("0c21rgr>")])		//1
-    //		importFreebaseLabels();
-    //    freebaseKeys.test();
-//        testPrecious2();
-    if (!freebaseKeys[freebaseHash("0zzxc3>")])		//1
+    if(hasWord("vote_value"))return true;
+    
+    if (!freebaseKeys[freebaseHash("0zzxc3>")]){		//1
         importFreebaseLabels();
-    testPrecious2();
-    //    if(hasWord("vote_value"))return true;
+        testPrecious2();
+    }
+    
     pf("Current nodeCount: %d\n", currentContext()->nodeCount);
     Node* subject;
     Node* predicate;
     Node* object;
     char line[10000];
-    char* objectName=(char*) malloc(10000);
-    char* predicateName=(char*) malloc(10000);
-    char* subjectName=(char*) malloc(10000);
+//    char* objectName=(char*) malloc(10000);
+//    char* predicateName=(char*) malloc(10000);
+//    char* subjectName=(char*) malloc(10000);
+    char* objectName=0;
+    char* predicateName=0;
+    char* subjectName=0;
     FILE *infile=open_file("freebase.data.txt");
     int linecount=0;
     while (fgets(line, sizeof(line), infile) != NULL) {
+        if(linecount > 1000)break;//test!
         //		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
         if (++linecount % 10000 == 0) {
-            printf("\r%d freebase       ", linecount);
+            printf("\r%d freebase   ( %d ignored )       ", linecount,badCount);
             fflush(stdout);
             if (checkLowMemory()) {
                 printf("Quitting import : id > maxNodes\n");
@@ -1249,12 +1284,38 @@ bool importFreebase() {
         }
         //		if(linecount<140000)continue;
         // printf(line);
-        sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);
         
-        //		if(filterFreebase(subjectName, predicateName, objectName))continue;
+//        subjectName=predicateName=objectName=line;
+//        for (int i=0;i<10000;i++){
+//            if(line[i]=='\t'){
+//                line[i]=0;
+//                if(objectName==line)
+//                    predicateName=line+i+1;
+//                else if(predicateName==line)
+//                    predicateName=line+i+1;
+//                else break;
+//            }
+//        }
+
+        subjectName=line;
+        int i=0;
+        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
+        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;objectName=line+i+1;break;}
+        for (;i<10000;i++)if(line[i]=='\t')line[i]=0;
+//        sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);
+        
+        if(filterFreebase(subjectName))continue;
+        if(filterFreebase(predicateName))continue;
+        if(filterFreebase(objectName))continue;
+        
+        if(startsWith(predicateName, "has")){
+            char next=predicateName[3];
+            if(next==' ')predicateName=predicateName+4;
+            if('A'<=next && next<='Z')predicateName=predicateName+3;
+        }
+//        deCamel(predicateName);
         
         predicate=getFreebaseEntity(predicateName);
-        
         subject=getFreebaseEntity(subjectName); //
         object=getFreebaseEntity(objectName);
         if (predicate == Instance) {
@@ -1265,7 +1326,7 @@ bool importFreebase() {
         }
         
         if (!subject || !predicate || !object) {
-            printf("_");
+//            printf("_"); // ignored
             badCount++;
             //			if (debug) {
             //				p(linecount);

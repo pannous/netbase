@@ -181,9 +181,8 @@ bool endsWith(const char* x, const char* y) {
 	int xlen=(int)strlen(x);
 	int ylen=(int)strlen(y);
 	if (xlen < ylen) return false;
-	for (int i=1; i <= ylen; i++) {
+	for (int i=1; i <= ylen; i++)
 		if (x[xlen - i] != y[ylen - i]) return false;
-	}
 	return true;
 }
 bool startsWith(const char* x, const char* y) {
