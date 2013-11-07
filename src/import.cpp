@@ -879,7 +879,7 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "dateTime")) return dateValue(name);
 	else if (eq(unit, "gYearMonth")) return dateValue(name);
 	else {
-		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
+//		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
 		return 0;
 	}
 	//		, current_context, getYagoConcept(unit)->id
