@@ -1282,7 +1282,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	if (showStatements) {
 		Statement* s=0;
 		while ((s=nextStatement(n, s))) {
-			//					for (; i < min(n->statementCount, maxShowStatements); i++) {
+			//					for (; i < minimum(n->statementCount, maxShowStatements); i++) {
 			//						s = getStatementNr(n, i);
 			if (i++ > resultLimit) break;
 			//			bool stopAtInstances = ++i > maxShowStatements;
@@ -1538,7 +1538,7 @@ void deleteNode(Node * n) {
 }
 
 void deleteStatements(Node * n) {
-	for (int i=0; i < min(n->statementCount, 10000); i++) {
+	for (int i=0; i < minimum(n->statementCount, 10000); i++) {
 		Statement* s=getStatementNr(n, i);
 		deleteStatement(s);
 	}

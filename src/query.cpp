@@ -168,7 +168,7 @@ string renderResults(Query& q) {
 	buffer << "</th>\n";
 
 	// results
-	for (int rowNr = 0; rowNr < min((int) all.size(), q.limit); rowNr++) {
+	for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++) {
 		Node* n = all[rowNr];
 		//    buffer << "<doc>\n";
 		buffer << "<entity name='" << n->name << "' id='" << n->id << "' statementCount='" << n->statementCount << "'>\n";
@@ -920,7 +920,7 @@ NodeVector find_all(cchar* name, int context, int recurse, int limit) {
 	if (recurse > 0)recurse++;
 	if (recurse > maxRecursions)return all;
 
-//	int max = min((long) c->nodeCount, maxNodes);
+//	int max = minimum((long) c->nodeCount, maxNodes);
 	all.push_back(getAbstract(name));
 
 	//    for (int i = 0; i < max; i++) {// inefficient^2 use word->instance->... instead
