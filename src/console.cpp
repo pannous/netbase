@@ -301,7 +301,9 @@ NodeVector parse(const char* data) {
 		return parentPath(from, to);
 	}
 	if (startsWith(data, "select ")) return query(data);
-	if (startsWith(data, "all ")) return query(data);
+	if (startsWith(data, "all ")){
+//     return query(data);   
+    }
 	if (startsWith(data, "these ")) return query(data);
 	if (contains(data, "that ")) return query(data);
 	if (contains(data, "who")) // who loves jule
@@ -385,7 +387,12 @@ NodeVector parse(const char* data) {
     show(a);
     if(i==0)showNodes(instanceFilter(a),true);
     //        findWord(currentContext()->id, data);
-    return instanceFilter(a);
+//    if(isAbstract(a))
+    if(i==0)
+        return instanceFilter(a);
+    else
+        return nodeVectorWrap(a);
+//
     
     //    return nodeVectorWrap(get(data));
     //	return OK;
