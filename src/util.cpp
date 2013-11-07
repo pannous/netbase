@@ -1,4 +1,3 @@
-#pragma once
 
 #include <string>
 #include <vector>
@@ -12,9 +11,9 @@ using namespace std;
 
 #include "util.hpp"
 
-bool assert(bool test, char* what) { // bool nix gut
+bool assert(bool test, cchar* what) { // bool nix gut
 	printf("----\nTEST ");
-	printf(what);
+	printf("%s",what);
 	if (test) {
 		printf(" OK\n");
 		flush();
@@ -40,13 +39,13 @@ bool isNumber(const char* buf) {
 }
 
 string next(string data) {
-	int spc=data.find(" ");
+	int spc=(int)data.find(" ");
 	if (spc >= 0) return data.substr(spc + 1);
 	return data;
 }
 
 char* substr(char* what, int from, int to) {
-	if (to == -1) to=strlen(what);
+	if (to == -1) to=(int)strlen(what);
 #ifndef DEBUG
 	if (from > to) return what; // ERROR!!
 #endif
@@ -58,7 +57,7 @@ char* substr(char* what, int from, int to) {
 
 // todo : FREEEEEE!!!!
 char* tolower(const char* x) { //const
-	int len=strlen(x);
+	int len=(int)strlen(x);
 	char* neu=(char*) malloc(sizeof(char) * len+1);
 	for (int i=0; i < len; i++) {
 		neu[i]=tolower(x[i]);
@@ -161,14 +160,14 @@ bool contains(string x, const char* y) {
 
 string replace_all(string str, string what, string with) {
 	int idx=0;
-	while ((idx=str.find(what, idx)) >= 0) {
+	while ((idx=(int)str.find(what, idx)) >= 0) {
 		str.replace(idx, what.length(), with);
-		idx=idx + with.length() + 1;
+		idx=idx + (int)with.length() + 1;
 	}
 	return str;
 }
 string cut_to(string str, string what) {
-	int idx=str.find(what);
+	int idx=(int)str.find(what);
 	return str.substr(idx + what.length());
 }
 
@@ -179,9 +178,9 @@ bool quiet=false;
 //}
 
 bool endsWith(const char* x, const char* y) {
-	int xlen=strlen(x);
-	int ylen=strlen(y);
-	if (xlen < xlen) return false;
+	int xlen=(int)strlen(x);
+	int ylen=(int)strlen(y);
+	if (xlen < ylen) return false;
 	for (int i=1; i <= ylen; i++) {
 		if (x[xlen - i] != y[ylen - i]) return false;
 	}
@@ -197,49 +196,44 @@ bool startsWith(const char* x, const char* y) {
 }
 
 bool startsWith(string* x, const char* y) {
-	return x->find(y) >= 0;
+	return (int)x->find(y) >= 0;
 }
 
 
 const char* concat(const char* a,const  char* b){
-	int la=strlen(a);
-	int lb=strlen(b);
+	int la=(int)strlen(a);
+	int lb=(int)strlen(b);
 //	char c[la+lb];
     char* c=(char*)malloc((la+lb)*sizeof(char));
 	strcpy(c,a);
 	strcpy(&c[la],b);
 	return c;
 }
-
-bool eq(const char* x, const char* y, bool ignoreCase, bool ignoreUnderscore) { //
-	if (!x && !y) return true; //danger better: undefined?
-	if (!x || !y) return false; //danger better: undefined?
-//	Context* c=currentContext();
-//	if(x<c->nodeNames || x >c->nodeNames+c->currentNameSlot){
-//		p("corrupt name!");
-//		return false;
-//	}
-//	if(y<c->nodeNames || y >c->nodeNames+c->currentNameSlot){
-//		p("corrupt name!");
-//		return false;
-//	}
-	if (x && x[0] == 0 && y == 0) return true; // 0=='' danger!
-	if (y && y[0] == 0 && x == 0) return true; // 0=='' danger!
-	if (x == 0 || !y) return false;
-	if (strcmp(x, y) == 0) return true;
-	if (!ignoreCase) return false;
-	int xl=strlen(x);
+bool equalsFuzzy(const char* x, const char* y){
+    int xl=(int)strlen(x);
 	if (xl != strlen(y)) return false; // xl!=strlen(y) != !xl==strlen(y) !!!!!
 	int i=0;
 	for (; i < xl; i++) {
 		if (y[i] == 0) return false;
-		if (ignoreUnderscore && normChar(x[i]) == normChar(y[i])) continue;
-		if (!ignoreCase && x[i] != y[i]) return false; // not reached, see line under strcmp
+		if (normChar(x[i]) == normChar(y[i])) continue;
 		if (tolower(x[i]) != tolower(y[i])) return false;
 	}
 	//    for(int i=0;i<strlen(y);i++)y0[i]=tolower(y[i]);
 	//    return(strcmp(x0,y0)==0);// free?
 	return true;
+}
+
+bool eq(const char* x, const char* y, bool ignoreCase, bool ignoreUnderscore) { //
+	if (!x && !y) return true; //danger better: undefined?
+	if (!x || !y) return false; //danger better: undefined?
+	if (x && x[0] == 0 && y == 0) return true; // 0=='' danger!
+	if (y && y[0] == 0 && x == 0) return true; // 0=='' danger!
+	if (x == 0 || !y) return false;
+	if (strcmp(x, y) == 0) return true;
+	if (!ignoreCase) return false;
+    if (strcasecmp(x, y) == 0) return true;//ignoreCase
+    if(!ignoreUnderscore)return false;
+    return equalsFuzzy(x, y);
 }
 
 //const char* concat(const char* a,const  char* b) {
@@ -286,7 +280,7 @@ void ps(string* s) {
 	fflush(stdout);
 }
 
-void ps(char* s) {
+void ps(const char* s) {
 	if (quiet) return;
 	printf("%s\n", s);
 	fflush(stdout);
@@ -294,11 +288,11 @@ void ps(char* s) {
 
 void p(int i) {
 	if (quiet) return;
-	printf("%i\n", i);
+	printf("%d\n", i);
 	fflush(stdout);
 }
 
-void pl(long l) {
+void p(long l) {
 	if (quiet) return;
 	printf("%lu\n", l);
 	fflush(stdout);
@@ -308,11 +302,17 @@ void pl(long l) {
 
 void px(void* p) {
 	if (quiet) return;
-	printf("%016llX\n", p);
+	printf("%p\n", p);
 	fflush(stdout);
 }
 
 void p(char* s) {
+	if (quiet) return;
+	printf("%s\n", s);
+	fflush(stdout);
+}
+
+void p(const char* s) {
 	if (quiet) return;
 	printf("%s\n", s);
 	fflush(stdout);
@@ -368,7 +368,6 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 	char* line=(char*) malloc(strlen(line0) * 2 + 1); //dont free!
 	strcpy(line, line0);
 	token=strtok(line, separator);
-	int row=0;
 	while (token != NULL) {
 		v.push_back(token);
 		token=strtok(NULL, separator);
@@ -412,7 +411,7 @@ char* modifyConstChar(const char* line) {
 int splitStringC(char* line, char** tokens, char separator) {
 	char * token;
 	int row=0;
-	int len=strlen(line);
+	int len=(int)strlen(line);
 	int i=0;
 	char* lastgood=line;
 	while (i < len) {
@@ -468,13 +467,13 @@ inline short normChar(char c) {// 0..36 damn ;)
 //    }
 }
 
-unsigned int hashMod=abstractHashSize / ahashSize;
+unsigned int hashMod=(int)abstractHashSize / ahashSize;
 
 // ./clear-shared-memory.sh After changing anything here!!
 unsigned int wordhash(const char *str) { // unsigned
 	if (!str) return 0;
 	unsigned int c,hash=5381; // long
-	while (c=*str++) {
+	while ((c=*str++)) {
 		int next=normChar(c);
 		if (next <= 0)continue;
 		hash=hash*33 + next;// ((hash << 5) + hash
@@ -507,7 +506,7 @@ void mergeVectors(NodeVector* some, NodeVector more) { // bool keep destination 
 	}
 }
 
-int charCount(char*__, char c) {
+int charCount(cchar*__, char c) {// lol
 	int ___=0;
 	while (*__)
 		___=c == *__++ ? ___ + 1 : ___;
@@ -517,7 +516,7 @@ int charCount(char*__, char c) {
 // for non-greedy use something like <([^>]+)>
 // or this: //#define MINMOD	29	/* no	Next operator is not greedy. */
 // USE [a-z] instead of \\w !!!
-char* match(char* input, char* pattern) {
+char* match(char* input,cchar* pattern) {
 	int groups=charCount(pattern, '(');
 	regmatch_t matches[groups + 1]; // matches[0] == whole pattern
 	regex_t regex;
@@ -525,8 +524,8 @@ char* match(char* input, char* pattern) {
 	if (error) return 0; //perror("regcomp failed");//regerror(status,REG_NOSUB)
 	error=regexec(&regex, input, groups + 1, &matches[0], 0);
 	if (error) return 0; //perror("regexec failed");
-	int from=matches[groups].rm_so;
-	int to=matches[groups].rm_eo;
+	int from=(int)matches[groups].rm_so;
+	int to=(int)matches[groups].rm_eo;
 	if (from > to) return 0;
 	char *group=substr(input, from, to);
 	regfree(&regex);
@@ -534,13 +533,12 @@ char* match(char* input, char* pattern) {
 }
 
 char* fixQuotesAndTrim(char* tmp) {
-	bool head=true;
 	bool quote=false;
 	while (tmp[0] == ' ' || tmp[0] == '_' || tmp[0] == '"') {
 		if (tmp[0] == '"') quote=true;
 		tmp=tmp + 1;
 	}
-	int len=strlen(tmp);
+	int len=(int)strlen(tmp);
 	for (int i=0; i < len; i++) {
 		char c=tmp[i];
 		if (c == '+' || c == 0x2b) tmp[i]=' ';

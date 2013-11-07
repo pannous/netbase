@@ -1,4 +1,4 @@
-#pragma once
+
 
 // malloc, exit:
 #include <cstdlib>
@@ -33,7 +33,7 @@ void checkGeo(){
 
 bool assert(bool test, string what) { // bool nix gut
 	printf("----\n");
-	printf(what.c_str());
+	printf("%s",what.data());
 	if (test) printf(" OK\n");
 	if (!test) {
 		printf(" Failed\n");
@@ -68,9 +68,8 @@ void testScanf() {
 	char a[100000];
 	char b[100000];
 	char c[100000];
-	char d[100000];
 	bool matching; // leider immer !? --
-	char* match="abc=er [sdaf=er ] =fe";
+	cchar* match="abc=er [sdaf=er ] =fe";
 	matching=sscanf(match, "%s [%s ] =%s", a, b, c);
 	p(matching);
 	p(a);
@@ -84,7 +83,7 @@ void testScanf() {
 
 void test() {
 	//you have a pointer to some read-only characters
-	char* a="abc";
+	cchar* a="abc";
     
 	char b[]="abc";
 	//you have an element array of characters that you can do what you like with.
@@ -178,12 +177,12 @@ void test() {
 	// sonderf√§lle
 	addStatement4(-1, -2, -3, -4);
 	assert(c->statementCount == statementCount, "c.statementCount==1");
-    
-	Node* instance=getThe("instance");
-	Node* instance2=getThe("instance");
-#ifdef inlineName // todo!
-	assert(instance == instance2, "instance==instance2"); //  it failes when strings are lost
-#endif
+
+    //#ifdef inlineName // todo!
+//	Node* instance=getThe("instance");
+//	Node* instance2=getThe("instance");
+//	assert(instance == instance2, "instance==instance2"); //  it failes when strings are lost
+//#endif
 	// todo: Important! keep Context string pool in other .cpp object files!!!!!
 	//#define inlineName true no good resolution!
 	//	assert(instance==Instance,"instance==Instance");
@@ -241,9 +240,9 @@ void testDummyLogic() {
 	Statement* s4=addStatement(CEO, Instance, karsten);
 	check(eq(karsten->name, "karsten"));
 	Statement* s4a=addStatement(manager, SubClass, CEO);
-	//    Statement* s4a = addStatement(CEO, SuperClass, manager);
+//    Statement* s4a = addStatement(CEO, SuperClass, manager);
 	Statement* s4b=addStatement(manager, is, a(worker));
-    
+    s1=s2=s2a=s3=s4=s4a=s4b=0;// as a counter measure against warnings
 	check(isA(CEO, manager));
 	clearAlgorithmHash();
 	check(isA(karsten, CEO));
@@ -295,7 +294,7 @@ void testDummyLogic() {
 	check(contains(testDummys, testDummy));
 	NodeVector funnys=filter(testDummys, "funny");
 	check(contains(testDummys, testDummy));
-	char* sql="select * from testDummy where funny";
+	cchar* sql="select * from testDummy where funny";
 	NodeVector list=query(sql);
 	//	show((Node *)(list[0]));
 	//	show((Node *)list[1]);
@@ -513,7 +512,7 @@ void testInstancesAtEnd() {
     showStatement(s);
     printf("%d %d\n",t->firstStatement,s->id());
     show(t);
-    printf("%X %X\n",getStatement(t->firstStatement),s);
+    printf("%p %p\n",getStatement(t->firstStatement),s);
 	check(t->firstStatement == s->id());
 }
 
@@ -559,7 +558,7 @@ void testHash() {
 	int c=wordhash("Hart");
 	check(a != b != c);
     
-	char* thing="city";
+	cchar* thing="city";
 	Node* city=getAbstract(thing);
 	ps(city->name);
 	check(eq(city->name, "city"));
@@ -692,7 +691,8 @@ void testInstanceLogic() {
 	Node* test3=getThe("test", Adjective); //add("test", adjective);
 	Node* test4=getThe("test", Adjective);
 	check(getThe("test", Adjective) == test3);
-    
+    deleteNode(test3);
+        deleteNode(test4);
 	//	exit(0);//test make!!
 	//    Node* aBaum=getAbstract("Baum");
 	ein(Baum);
@@ -706,6 +706,7 @@ void testInstanceLogic() {
 	check(c->Predicate() != Instance);
 	c=getStatementNr(Baum, 2);
 	check(c->Predicate() != Instance);
+    deleteStatement(s);
 }
 
 void testValueLogic() {
@@ -722,7 +723,7 @@ void testValueLogic() {
 	Node* m14=value("", 14, "m");
 	Node* m15=value("", 15, "m");
 	Node* mm14=value("", 14000, "mm");
-	Node* mm15=value("", 15000, "mm");
+	Node* mm15=value("15000",15000 , "mm");
 	Node* m143=value("14.3", 14.3, "meter");
 	Node* m1430=value("14.30", 14.30, "meter");
 	Node* m1433=value("14.330", 14.330, "meter");
@@ -752,7 +753,11 @@ void testValueLogic() {
 	check(!isGreater(m1430, m15));
 	check(isEqual(m143, m1430));
 	check(isAproxymately(m1433, m1430));
-    
+    bool convert=false;// not yet
+    if(convert){
+        check(isEqual(m14, mm14));
+        check(isEqual(m15, mm15));
+    }
 	//    check(isA(m14,m143));
 	//    check(isA(m14,m1432));
 	check(isA(m143, m1430));
@@ -802,6 +807,7 @@ void testValueLogic() {
 	//    show(m143); //   417287
 	//    show(has(Booot, a(length)));
 	Node *n=has(Booot, the(length));
+    check(eq(n,m143));
 	//    show(n); // 413730
 	//    check(has(Booot,the(length))==m143);
 	check(eq(has(Booot, a(length)), m143));
@@ -897,7 +903,7 @@ void testPropertyQuery() {
 	//    show(the(city));
 	countInstances(the(city));
 	Node* hasloh=the(Hasloh); // todo match addressbook Hasloh with geoname Hasloh in importCsv!
-	show(the(Hasloh));
+	show(hasloh);
 	//    check(eq(the("Hasloh"),the(Hasloh)))
 	//    check(has(the(Hasloh),the(population),the(3460)));// SLOW!!
     
@@ -1116,8 +1122,7 @@ void testPaths() {
 }
 
 void testCities() {
-	char* line=
-    "geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n";
+	char* line=modifyConstChar("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n");
 	int nr=splitStringC(line, 0, '\t');
 	//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n",0,"\t",true);
 	check(nr > 4);
@@ -1126,7 +1131,7 @@ void testCities() {
 	//	check(fields.size()==nr);
 	clearMemory();
 	if (!hasWord("Mersing")) {
-		char* ignore=
+		cchar* ignore=
         "alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
 		importCsv("cities1000.txt", the(city), '\t', ignore);
 	}
@@ -1195,7 +1200,6 @@ void testOpposite() {
 	Node* node=getThe("good");
 	Node* nodeA=getAbstract("good");
 	clearAlgorithmHash();
-	Node *pa=get(307229);
 	findStatement(node, property, Any, 3, true, 0, true);
 	has(node, property);
 	//		check(isA4(pa,Antonym, false, false));
@@ -1323,8 +1327,10 @@ void testFreebase(){
 
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
-	int var=0;
-    testFreebase();
+//	int var=0;
+    p("statementSize)");
+    p(  statementSize);
+//    testFreebase();
 //	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();
     //	checkWordnet();

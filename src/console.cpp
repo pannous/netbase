@@ -223,9 +223,12 @@ NodeVector parse(const char* data) {
 		else importAll();
 		return OK;
 	}
-	if (contains(data, " limit")) sscanf(data, "%s limit %d", &resultLimit, data);
-	if (contains(data, "limit")) {
-		sscanf(data, "limit %d %s", &resultLimit, data);
+	if (contains(data, "limit")){
+        char* newdata=(char*)malloc(1000);
+        sscanf(data, "%s limit %d",newdata, &resultLimit);
+//	if (contains(data, "limit")) {
+		sscanf(data, "limit %d %s", &resultLimit, newdata);
+        strcpy((char*)data,newdata);
 		p(resultLimit);
 	}
 	if (eq(data, "load") || eq(data, ":l")) {
@@ -298,8 +301,8 @@ NodeVector parse(const char* data) {
 	if (contains(data, "who")) // who loves jule
 		return query(data);
     
-	if (args.size() == 2 && (eq(args[0], "the") || eq(args[0], "my"))) {
-        N da=getThe(args[1],More);
+	if(eq(args[0], "the") || eq(args[0], "my")) {
+        N da=getThe(data+3,More);
 		show(da);
 		return nodeVectorWrap(da);
 	}
@@ -334,7 +337,7 @@ NodeVector parse(const char* data) {
 		show(n);//<g.11vjx36lj>
 		return OK;
 	}
-	if (args.size() > 2 && args[1] == "of" || contains(data, " of ")  || contains(data, " by ") || (contains(data, "."))){// && !contains(data, " "))) {
+	if ((args.size() > 2 && eq( args[1], "of")) || contains(data, " of ")  || contains(data, " by ") || (contains(data, "."))){// && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
@@ -354,7 +357,7 @@ NodeVector parse(const char* data) {
 	if (contains(data, " that ")) return query(data);
 	if (contains(data, "who ")) return query(data);
 	
-    if (args[1]=="to") {
+    if (eq(args[1],"to")) {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
@@ -363,7 +366,7 @@ NodeVector parse(const char* data) {
 		//		if(all==EMPTY)shortestPath(from,to);
 	}
     
-    if (data[0] == '!'||args[1]=="is")
+    if (data[0] == '!'||eq(args[1],"is"))
         return nodeVectorWrap(reify(learn(data)));
     
     data=replace((char*)data,' ','_');
@@ -383,8 +386,6 @@ NodeVector parse(const char* data) {
 }
 
 void console() {
-	Node* n;
-	int i;
 	quiet=false;
 	printf("\nNetbase C++ Version z.a\n");
 	char* data=(char*) malloc(1000);

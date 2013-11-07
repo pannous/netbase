@@ -12,9 +12,10 @@ extern void flush();
 
 
 //#define check(assertion) assert(assertion,#assertion);
-bool assert(bool test, char* what);
+bool assert(bool test, const char* what);
 template<typename T> void empty(vector<T,std::allocator<T> >& v);
-
+#define ulong unsigned long
+#define cchar const char
 #define po p("ok");
 string join(char** argv,int argc);
 bool eq(const char* x,const char* y,bool ignoreCase = true,bool ignoreUnderscore=true);
@@ -38,14 +39,15 @@ bool contains(string x,const char* y);
 bool isNumber(const char* buf);
 bool isInteger(const char* buf);
 #define pf(x,...) printf(x, __VA_ARGS__)
-void ps(char* s);
+void ps(const char* s);
 void ps(string s);// string geht nicht!?!
 void ps(string* s);
 void ps(NodeVector v);
-void pl(long l);
-void p(int i);
+void p(long l);
+//void p(int i);
 void px(void* p);// 64 bit hex
-extern void p(char* s);
+void p(char* s);
+void p(const char* s);
 void p(Query& q);
 void p(Node* n);
 void p(Statement* n);
@@ -74,7 +76,7 @@ void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
 //NodeVector mergeVectors(NodeVector some, NodeVector more);
 void mergeVectors(NodeVector* some, NodeVector more);
 char* substr(char* what,int from,int to);
-char* match(char* input, char* pattern);
+char* match(char* input, cchar* pattern);
 char* clone(const char* line);
 char* modifyConstChar(const char* line);
 const char* concat(const char* a,const  char* b);
@@ -86,3 +88,4 @@ bool contains(NodeVector& v, Node* o,bool fuzzy=false);
 char* replace(char* data,char what,char with);
 string itoa(int i);
 #define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}
+#define min(a,b) (a<b?a:b)

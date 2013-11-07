@@ -95,12 +95,12 @@ int getFieldNr(Query& q, Node* predicate) {
 
 void collectFacets(Query& q) {
 	NodeVector all = q.instances;
-	int nrFields = q.fields.size();
+	int nrFields = (int)q.fields.size();
 	for (int rowNr = 0; rowNr < all.size(); rowNr++) {
 		Node* n = all[rowNr];
 		q.values[n] = (NodeList) malloc(sizeof (Node*) * nrFields);
 		Statement* s = 0;
-		while (s = nextStatement(n, s, true)) {
+		while ((s = nextStatement(n, s, true))) {
 			if (s->Subject() == n) {
 				Node* predicate = s->Predicate();
 				Node* value = s->Object();
@@ -134,7 +134,7 @@ void collectFacets(Query& q) {
 
 string renderResults(Query& q) {
 	NodeVector all = q.instances;
-	int nrFields = q.fields.size();
+	int nrFields = (int)q.fields.size();
 	stringstream buffer; //(1000000, ' ');
 
 	buffer << "<response>\n";
@@ -209,8 +209,6 @@ string renderResults(Query& q) {
 		if (f.field == Synonym)continue;
 		if (f.field == Member)continue;
 		if (f.field == Derived)continue;
-		if (f.field->name == "\"direct instance count\"")continue;
-		if (f.field->name == "\"total instance count\"")continue;
 		//		if(f.field==SuperClass)continue;
 		buffer << "<facet name=\"" << f.field->name << "\">\n";
 		std::multimap<int, Node*> sorted;
@@ -273,8 +271,8 @@ NodeVector nodeVector(vector<char*> v) {
 
 Statement* parseSentence(string sentence, bool learn = false) {
 
-	int recurse = 0;
-	int limit = 5;
+//	int recurse = 0;
+//	int limit = 5;
 	sentence = replace_all(sentence, " a ", " ");
 	sentence = replace_all(sentence, " the ", " ");
 	vector<char*> matches = splitString(sentence, " ");
@@ -288,7 +286,7 @@ Statement* parseSentence(string sentence, bool learn = false) {
 	for (int i = 0; i < matches.size(); i++) {
 		string word = matches[i];
 		//		word=stem(word);
-		bool getPredicate = subject&&!predicate;
+//		bool getPredicate = subject&&!predicate;
 		int id = atoi(word.data());
 		Node* node;
 		if (id > 0)
@@ -376,7 +374,7 @@ Query parseQuery(string s, int limit) {
 	char fields[10000];
 	char type[10000];
 	char match[10000];
-	int li = s.find("limit");
+	int li = (int)s.find("limit");
 	if (li > 0) {
 		limit = atoi(s.substr(li + 5).c_str());
 		s = s.substr(0, li);
@@ -448,7 +446,7 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 
 	NodeVector all = all_instances(getAbstract(type));
 	//  find_all(type, current_context, true, batch); // dont limit wegen filter!!
-	pf("%d so far\n", all.size());
+	pf("%lu so far\n", all.size());
 	if (where[0])
 		found = filter(all, where); //fields
 
@@ -491,7 +489,7 @@ Node* match(string data) {
 }
 
 NodeVector exclude(NodeVector some, NodeVector less) {// bool keep destination unmodified=TRUE
-	for (int i = some.size(); i > 0; --i) {
+	for (int i = (int)some.size(); i > 0; --i) {
 		if (contains(less, (Node*) some[i]))
 			some.erase(some.begin() + i);
 	}
@@ -514,7 +512,7 @@ Statement* pattern(Node* subject, Node* predicate, Node* object) {
 	return s; // pattern?
 }
 
-NodeVector filter(NodeVector all, char* matches) {
+NodeVector filter(NodeVector all, cchar* matches) {
 	if (!matches || strlen(matches) == 0 || all.size() == 0)return all;
 
 	Query& q = *new Query();
@@ -529,7 +527,7 @@ NodeVector filter(NodeVector all, char* matches) {
 	while (ss >> buf)
 		tokens.push_back(buf);
 
-	for (int y = all.size() - 1; y >= 0; --y) {
+	for (int y = (int)all.size() - 1; y >= 0; --y) {
 		Node* node = (Node *) all[y];
 		if (!checkNode(node, 0, 0, 1))continue;
 		if (!checkNode(node))continue;
@@ -541,7 +539,7 @@ NodeVector filter(NodeVector all, char* matches) {
 		bool good = true;
 
 		if (!quiet)
-			printf("%d tokens in %s\n", tokens.size(), matches);
+			printf("%lu tokens in %s\n", tokens.size(), matches);
 
 		// create match tree
 		for (int i = 0; i < tokens.size(); i++) {
@@ -558,21 +556,21 @@ NodeVector filter(NodeVector all, char* matches) {
 				match.replace(0, strlen(node->name), "");
 			if (match.find(".") == 0)
 				match.replace(0, 1, "");
-			int comp = match.find("=");
+			int comp = (int)match.find("=");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
 				filter(q, pattern(s, Equals, o));
 				continue;
 			}
-			comp = match.find(">");
+			comp = (int)match.find(">");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
 				filter(q, pattern(s, Greater, o));
 				continue;
 			}
-			comp = match.find("<");
+			comp = (int)match.find("<");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
@@ -592,7 +590,7 @@ NodeVector filter(NodeVector all, char* matches) {
 			p("passed!");
 	}
 	if (!quiet)
-		printf("%d nodes passed\n", all.size());
+		printf("%lu nodes passed\n", all.size());
 	return all;
 }
 
@@ -629,12 +627,12 @@ NodeVector filter(Query& q, Statement* filterTree, int limit) {
 		return a;
 	} else if (predicate == Not) {// todo test
 		NV a = all; //.clone()!
-		NV b = filter(q, object, all.size());
+		NV b = filter(q, object, (int)all.size());
 		return exclude(a, b);
 	}
 
 	p(filterTree);
-	int size = all.size();
+	int size = (int)all.size();
 	for (int y = size - 1; y >= 0 && hits.size() <= limit; --y) {
 		Node* node = (Node *) all[y];
 		if (node->kind == Abstract->id)continue;
@@ -685,7 +683,7 @@ NodeVector filter(Query& q, Node* _filter, int limit) {
 		return filter(q, isStatement(_filter));
 	NodeVector all = q.instances;
 	NodeVector hits;
-	for (int y = all.size() - 1; y >= 0 && hits.size() <= limit; --y) {
+	for (int y = (int)all.size() - 1; y >= 0 && hits.size() <= limit; --y) {
 		Node* node = (Node *) all[y];
 		if (!findStatement(node, Any, _filter, q.recursion, q.semantic, false, q.predicatesemantic)) {
 			all.erase(all.begin() + y);
@@ -709,13 +707,13 @@ void enqueueClass(Query& q, queue<Node*>& classQueue, Node * c) {
 }
 
 NodeVector & nodesOfDirectType(int kind) {
-	NodeVector all;
+	NodeVector* all=new NodeVector;
 	for (int i = 0; i < currentContext()->nodeCount; i++) {
 		Node* n = &currentContext()->nodes[i];
 		if (checkNode(n, i, false, false) && n->kind == kind)
-			all.push_back(n);
+			all->push_back(n);
 	}
-	return all;
+	return *all;// Reference to the stack memory associated with local variable!
 }
 
 //
@@ -912,17 +910,17 @@ void clearAlgorithmHash(bool all) {
 	recurseFilter(0, 0, 0, 0);
 }
 
-NodeVector find_all(char* name, int context, int recurse, int limit) {
+NodeVector find_all(cchar* name, int context, int recurse, int limit) {
 	clearAlgorithmHash();
 	// if(context> -1)search subcontexts also?
 	// if(context==-1)search all
 	// if(context==-2)context=current_context;
-	Context* c = getContext(context);
+//	Context* c = getContext(context);
 	NodeVector all;
 	if (recurse > 0)recurse++;
 	if (recurse > maxRecursions)return all;
 
-	int max = min((long) c->nodeCount, maxNodes);
+//	int max = min((long) c->nodeCount, maxNodes);
 	all.push_back(getAbstract(name));
 
 	//    for (int i = 0; i < max; i++) {// inefficient^2 use word->instance->... instead
@@ -936,7 +934,7 @@ NodeVector find_all(char* name, int context, int recurse, int limit) {
 	//            // show(n);
 	//        }
 	//    }
-	int alle = all.size();
+	int alle = (int)all.size();
 	if (recurse)
 		for (int i = 0; i < alle; i++) {
 			all.clear(); // hack to reset all_instances
@@ -986,8 +984,8 @@ Node * findMatch(Node* n, const char* match) {//
 }
 
 int countInstances(Node * node) {
-	int j = instanceFilter(node).size();
-	int i = all_instances(node).size();
+	int j = (int)instanceFilter(node).size();
+	int i = (int)all_instances(node).size();
 	setValue(node, the(direct instance count), value(0, j));
 	setValue(node, the(total instance count), value(0, i));
 	show(node, false);
@@ -1236,7 +1234,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 
 	Node* current;
 
-	while (current = q.front()) {
+	while ((current = q.front())) {
 		if (q.empty())break;
 		q.pop();
 		//		if(current->id==230608)

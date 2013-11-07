@@ -56,7 +56,7 @@ void detach_shared_memory(){
     system("sudo ipcrm -M '0x69193'");
     system("sudo ipcrm -M '0x69194'");
 }
-void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void * desired) {
+void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * desired) {
 	if (root) {
 		ps("root_memory already attached!");
 		return root;
@@ -106,12 +106,13 @@ void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void *
 		perror("share_memory failed: shmat! Not enough memory?");
 		exit(1);
 	}
-	Context* c=currentContext(); // getContext(node->context);
+//	Context* c=currentContext(); // getContext(node->context);
 	if ((char*) root != (char*) desired) { // 64 BIT : %x -> %016llX
-		printf("FYI: root_memory != desired shmat_root %016llX!=%016llX \n", root, desired);
+//		printf("FYI: root_memory != desired shmat_root %016llX!=%016llX \n", (ulong long)root, (ulong long)desired);
+		printf("FYI: root_memory != desired shmat_root %p!=%p \n", root, desired);
 //		fixPointers();
 	}
-	char* msg="share_memory at %016llX	size = %x	max = %016llX\n"; // root address =
+    cchar* msg="share_memory at %016llX	size = %x	max = %016llX\n"; // root address =
 	printf(msg, root, sizeOfSharedMemory, (char*) root + sizeOfSharedMemory);
 	return root;
 }
@@ -182,7 +183,6 @@ void checkRootContext() {
 }
 
 void init() {
-	int i;
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key=0x69190;
 	char* root=(char*) shmat_root;
@@ -248,8 +248,8 @@ void fixNodes(Context* context, Node* oldNodes) {
 
 void load(bool force) {
 
-	clock_t start=clock();
-	double diff;
+//	clock_t start=clock();
+//	double diff;
 	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 
 	Context* c=currentContext();
@@ -429,14 +429,14 @@ char* initContext(Context* context) {
 	Node* nodes=0;
 	Statement* statements=0;
 	char* nodeNames=0;
-	int nodeSize=sizeof(Node); // 40
-	int statementSize=sizeof(Statement); //
-	int ahashSize=sizeof(Ahash); //
+//	int nodeSize=sizeof(Node); // 40
+//	int statementSize=sizeof(Statement); //
+//	int ahashSize=sizeof(Ahash); //
 	//    int contextOffset=sizeof (Context) *maxContexts;
 	long nameSegmentSize=sizeof(char) * averageNameLength * maxNodes;
 	long nodeSegmentSize=nodeSize * maxNodes;
 	long statementSegmentSize=statementSize * maxStatements0;
-	long abstractOffset=contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize; //just put them at the end!!
+//	long abstractOffset=contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize; //just put them at the end!!
 	if (node_root) {
 		p("Multiple shared memory segments");
 		nodes=(Node*) node_root;
@@ -447,7 +447,7 @@ char* initContext(Context* context) {
 		if (contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize > sizeOfSharedMemory + abstractHashSize * 2) { //
 			ps("ERROR sizeOfSharedMemory TOO SMALL!");
 			ps("contextOffset+nodeSegmentSize+nameSegmentSize+statementSegmentSizeabstractSegment > sizeOfSharedMemory !");
-			pl(contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize);
+			p(contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize);
 			p(sizeOfSharedMemory);
 			exit(1);
 		}
@@ -471,9 +471,9 @@ char* initContext(Context* context) {
 		}
 	} while (nodes == 0 || statements == 0);
 //	if (!context_root || virgin_memory) clearMemory();
-	Statement* oldstatements=context->statements;
+//	Statement* oldstatements=context->statements;
 	char* oldnodeNames=context->nodeNames;
-	Node* oldnodes=context->nodes;
+//	Node* oldnodes=context->nodes;
 	context->nodes=nodes;
 	context->statements=statements;
 	context->nodeNames=nodeNames;

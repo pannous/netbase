@@ -4,7 +4,7 @@
  *
  * Created on March 28, 2012, 6:46 PM
  */
-#include "util.hpp";
+#include "util.hpp"
 
 #ifndef QUERY_H
 #define	QUERY_H
@@ -25,7 +25,7 @@ Statement* pattern(Node* subject, Node* predicate, Node* object);
 void clearAlgorithmHash(bool all=false);
 NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
-NodeVector find_all(char* name, int context=1, int recurse=0, int limit=resultLimit);
+NodeVector find_all(cchar* name, int context=1, int recurse=0, int limit=resultLimit);
 NodeVector& all_instances(Node* type, int recurse, int max= resultLimit,bool includeClasses=true);
 NodeVector& all_instances(Node* type);
 NodeVector& all_instances(Query& q);
@@ -34,7 +34,7 @@ NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilte
 
 NodeVector filter(Query& q, Node* _filter,int limit=0);
 NodeVector filter(Query& q, Statement* filterTree,int limit=0);
-NodeVector filter(NodeVector all, char* matches);
+NodeVector filter(NodeVector all, cchar* matches);
 
 
 NodeVector filter(NodeVector all, Node* filterTree);

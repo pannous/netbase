@@ -17,9 +17,9 @@
 using namespace std;
 
 // 64 BIT : %x -> %016llX
-char* nodes_file="nodes.txt";
-char* statements_file="statements.txt";
-char* images_file="images.txt";
+cchar* nodes_file="nodes.txt";
+cchar* statements_file="statements.txt";
+cchar* images_file="images.txt";
 
 FILE *open_file(const char* file) {
 	FILE *infile;
@@ -35,7 +35,7 @@ FILE *open_file(const char* file) {
 }
 
 void norm(char* title) {
-	int len=strlen(title);
+	int len=(int)strlen(title);
 	for (int i=len; i >= 0; --i) {
 		if (title[i] == ' ' || title[i] == '_' || title[i] == '-') {
 			strcpy(&title[i], &title[i + 1]); //,len-i);
@@ -51,7 +51,7 @@ bool checkLowMemory() {
 	if (!free) free=9.0L * GB; // 4 GB + work
 	if (currentSize > free) {
 		p("OUT OF MEMORY!");
-		printf("MEMORY: %X Peak: %X FREE: %X \n", (long) currentSize, (long) peakSize, (long) free);
+		printf("MEMORY: %zX Peak: %zX FREE: %zX \n",  currentSize, peakSize, free);
 		return true;
 	}
 	//		|| currentSize*1.2>sizeOfSharedMemory||
@@ -72,7 +72,7 @@ bool checkLowMemory() {
 	}
 	if (extrahash + 20000 > abstracts + abstractHashSize * 2) {
 		p("OUT OF MEMORY!");
-		pf("hashes near %L!\n", extrahash);
+		pf("hashes near %p\n", extrahash);
 		return true;
 	}
 	return false;
@@ -116,11 +116,11 @@ void importImages() { // 18 MILLION!   // 18496249
     
 	/* Open the file.  If NULL is returned there was an error */
 	FILE* infile=open_file((char*) images_file);
-	char tokens[1000];
+//	char tokens[1000];
 	char image[1000];
 	char *title=(char *) malloc(1000);
 	int good=0;
-	int bad=0;
+//	int bad=0;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
 			pf("importImages %d    \r",linecount);
@@ -151,7 +151,7 @@ void importImages() { // 18 MILLION!   // 18496249
 	fclose(infile);
     
 	good=0;
-	Node* object=getAbstract(image); // getThe(image);;
+//	Node* object=getAbstract(image); // getThe(image);;
     
 	/*
 	 // again, this time with word fragments
@@ -223,14 +223,14 @@ void importNodes() {
 		char* name=(char*) malloc(100);
 		// char kind[20];
 		char contextId_s[100];
-		char deleted[1];
-		char version[1];
-		char wordKindName[100];
-		int wordKind;
+//		char deleted[1];
+//		char version[1];
+//		char wordKindName[100];
+//		int wordKind;
 		int Id;
 		int kind;
 		int contextId=wordnet;
-		int contextID;
+//		int contextID;
 		//2026896532	103	dry_out	Verb	\N	\N	11	103
 		//	sscanf(tokens,"%d\t%s\t%s\t%s\t%*s\t%*s\t%*d\t%d",&Id,contextId_s,name,wordKindName,&kind);
 		sscanf(tokens, "%d\t%s\t%s\t%*s\t%*s\t%*s\t%d\t%*d", &Id, contextId_s, name, &kind); // wordKind->kind !
@@ -266,7 +266,6 @@ void importStatements2() {
 	int linecount=0;
     
 	FILE *infile=open_file(statements_file);
-	char tokens[1000];
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		/* Get each line from the infile */
 		if (++linecount % 1000 == 0){
@@ -278,7 +277,7 @@ void importStatements2() {
 		//    while (tokens[x++])
 		//        if (tokens[x]==' ')
 		//		    tokens[x]='_';
-		int contextId;
+//		int contextId;
 		int subjectId;
 		int predicateId;
 		int objectId;
@@ -291,7 +290,8 @@ void importStatements2() {
 		// printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
 		if (subjectId < 1000 || objectId < 1000 || predicateId == 50 || predicateId == 0 || subjectId == 1043 || subjectId == 1044)
 			continue;
-		Statement* s=addStatement4(wordnet, subjectId, predicateId, objectId);
+//		Statement* s=
+        addStatement4(wordnet, subjectId, predicateId, objectId);
 	}
 	fclose(infile); /* Close the file */
 	p("\nstatements import ok");
@@ -328,7 +328,7 @@ void importSqlite(char* filename) {
 
 string deCamel(string s) {
 	static string space=" ";
-	for (int i=s.length(); i > 1; i--) {
+	for (int i=(int)s.length(); i > 1; i--) {
 		char c=s[i];
 		if (c > 65 && c < 91) s.replace(i, 1, space + (char) tolower(c));
 		if (c == '(') s[i - 1]=0; //cut _( )
@@ -361,8 +361,8 @@ const char* parseWikiTitle(char* item, int id=0, int context=current_context) {
 	s=replace_all(s, "wikicategory", "");
 	s=replace_all(s, "wordnet", "");
 	s=replace_all(s, "yago", "");
-	int last=s.rfind("_");
-	int type=s.find("(");
+	int last=(int)s.rfind("_");
+	int type=(int)s.find("(");
 	string clazz=deCamel(s.substr(type + 1, -1));
 	string word=s;
 	string Id=s.substr(last + 1, -1);
@@ -391,7 +391,7 @@ char guessSeparator(char* line) {
 	const char* separators=",\t;|";
 	char the_separator='\t';
 	int max=0;
-	int size=strlen(separators);
+	int size=(int)strlen(separators);
 	for (int i=0; i < size; i++) {
 		int nr=splitStringC(line, 0, (char) separators[i]);
 		if (nr > max) {
@@ -422,7 +422,7 @@ int getNameRow(char** tokens, int nameRowNr=-1, const char* nameRow=0) {
 
 int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, const char* nameRow) {
 	char * token;
-	char* separators=",;\t|";
+	cchar* separators=",;\t|";
 	if (separator) separators=charToCharPointer(separator);
 	//	line=modifyConstChar(line);
 	token=strtok(line, separators);
@@ -445,10 +445,10 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 }
 
 void fixNewline(char* line) {
-	int len=strlen(line);
+	int len=(int)strlen(line);
 	if (len == 0) return;
 	if (line[len - 1] == '\n') line[--len]=0;
-	if (line[len - 1] == '    \r') line[--len]=0;
+	if (line[len - 1] == '\r') line[--len]=0;
 	if (line[len - 1] == '\t') line[--len]=0;
 }
 
@@ -473,7 +473,7 @@ Node* namify(Node* node, char* name) {
 	Context* context=currentContext();
 	node->name=&context->nodeNames[context->currentNameSlot];
 	strcpy(node->name, name); // can be freed now!
-	int len=strlen(name);
+	int len=(int)strlen(name);
 	context->nodeNames[context->currentNameSlot + len]=0;
 	addStatement(getAbstract(name), Instance, node, DONT_CHECK_DUPLICATES);
 	// replaceNode(subject,object);
@@ -502,7 +502,7 @@ bool hasAttribute(char* line) {
 
 void importXml(const char* file, char* nameField, const char* ignoredFields, const char* includedFields) {
 	p("import csv start");
-	bool dissect=false;
+//	bool dissect=false;
 	char line[1000];
 	char* line0=(char*) malloc(sizeof(char*) * 100);
 	char* field=(char*) malloc(sizeof(char*) * 100);
@@ -523,7 +523,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	//	vector<char*>& includeFields = splitString(includedFields, ",");
 	int linecount=0;
 	FILE *infile=open_file(file);
-	Node* UNKNOWN_OR_EMPTY=getThe("<unknown/>");
+//	Node* UNKNOWN_OR_EMPTY=getThe("<unknown/>");
 	//	map<Node*,Node*> fields;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (!line) break;
@@ -600,7 +600,8 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 				predicate=getThe(field, NO_TYPE);
 			}
 			object=getThe(value, NO_TYPE);
-			Statement* s=addStatement(subject, predicate, object, DONT_CHECK_DUPLICATES);
+//			Statement* s=
+            addStatement(subject, predicate, object, DONT_CHECK_DUPLICATES);
             
 			//			fields.insert(predicate,object);//
 			continue;
@@ -639,7 +640,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	//	vector<char*>& fields = *new vector<char*>();
 	int linecount=0;
 	FILE *infile=open_file(file);
-	char* objectName=(char*) malloc(100);
+//	char* objectName=(char*) malloc(100);
 	int fieldCount=0;
 	char* columnTitles;
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -701,7 +702,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				if (debug) printf("ERROR %s\n", line);
 				continue;
 			}
-			Statement *s=addStatement(subject, predicate, object, false);
+//			Statement *s=
+            addStatement(subject, predicate, object, false);
 			//			showStatement(s);
 		}
         
@@ -743,7 +745,7 @@ void importList(const char* file, const char* type) {
 }
 
 char *cut_wordnet_id(char *key) {
-	for (int i=strlen(key); i > 1; --i) {
+	for (int i=(int)strlen(key); i > 1; --i) {
 		if (key[i] == '_') {
 			char* id=key + i + 1;
 			key[i]=0;
@@ -767,21 +769,21 @@ bool hasCamel(char* key) {
 	return false;
 }
 
-char* removeHead(char *key, char *bad) {
+char* removeHead(char *key, cchar *bad) {
 	if (startsWith(key, bad)) return key + strlen(bad);
 	return key;
 }
 
 char *fixYagoName(char *key) {
 	if (key[0] == '<') key++;
-	int len=strlen(key);
+	int len=(int)strlen(key);
 	if (key[len - 1] == '>') key[len - 1]=0;
 	key=removeHead(key, "wikicategory_");
 	key=removeHead(key, "geoclass_");
 	key=removeHead(key, "wordnetDomain_");
 	if (startsWith(key, "wordnet_")) {
 		p("SHOULDNT BE REACHED");
-		char* id=cut_wordnet_id(key);
+//		char* id=cut_wordnet_id(key);
 		key=removeHead(key, "wordnet_");
 	}
 	//	if(hasCamel(key)) // NOO: McBain
@@ -843,7 +845,7 @@ Node* dateValue(const char* val) {
  */
 Node* rdfValue(char* name) {
 	char** all=splitStringC(name, '^');
-	char* unit=all[2];
+	cchar* unit=all[2];
 	name=all[0];
 	name++; // ignore quotes "33"
 	free(all);
@@ -916,7 +918,7 @@ Node* getYagoConcept(char* key) {
 	return n;
 }
 int countRows(char* line) {
-	int len=strlen(line);
+	int len=(int)strlen(line);
 	int row=0;
 	for (int var=0; var < len; ++var)
 		if (line[var] == '\n') line[var]=' ';	// wtf!?
@@ -1007,7 +1009,7 @@ bool importYago(const char* file) {
 
 const char *fixFreebaseName(char *key) {
 	key=(char *) fixYagoName(key);
-	int len=strlen(key);
+	int len=(int)strlen(key);
 	for (int i=len - 1; i > 0; --i)
 		if (key[i] == '.') {
 			key[i]=0;
@@ -1015,13 +1017,13 @@ const char *fixFreebaseName(char *key) {
 		} else if (key[i] == '#') return &key[i + 1];
 	return key;
 }
-long freebaseHash(char* x) {
+long freebaseHash(cchar* x) {
 	long hash=0;
 	if (x[0] == '1') hash=1;
 	if (x[0] == '2') hash=2;
 	x++;
 	char c;
-	while (c=*x++) {
+	while ((c=*x++)) {
 		if (c == '>') break;
 		int n=normChar(c);
 		if (c == '_') n=36;
@@ -1029,37 +1031,6 @@ long freebaseHash(char* x) {
 	}
 	return hash;
 }
-
-unsigned int freebaseHash2(char* x) {
-	long hash=0;
-	char* o=x;
-	char c;
-    //	p(x);
-	x++;
-	if (x[0] == '1') hash=1;
-	if (x[0] == '2') hash=2;
-	x++;
-	int z=0; // number extra bits
-	int f=0;
-	int pos=0;
-	while (c=*x++) {
-		if (c == '>') break;
-		int n=normChar(c);
-		if (c == '_') n=36;
-		if (n >= 32) z+=(8 * f++) + (n / 32 + 1) + pos;
-        //		p(n);
-		hash=hash * 32 + n % 32;
-        //		p(hash);
-		pos++;
-	}
-	if (z > 0) {
-		long diff=z * billion; // / (f * 8);
-		hash=hash + diff;
-	}
-	if (hash < 0) hash=-hash;
-	return hash; // % freebaseHashSize;
-}
-
 //map<string, Node*> freebaseKeys;
 //map<const char*, Node*> freebaseKeys;
 //static map<int, Node*> freebaseKeys=new std::map();
@@ -1078,7 +1049,7 @@ int freebaseKeysConflicts=0;
 void testPrecious2() {
 	long testE=freebaseHash("023gm0>");
     check(477389594==testE);
-	long testI=freebaseKeys[testE];
+	int testI=freebaseKeys[testE];
     p(testI);
 	Node* testN=get(testI);
     p(testN);
@@ -1091,7 +1062,7 @@ void testPrecious() {
 	long testE=freebaseHash("01000m1>");
 	Node* testA=getAbstract("Most Precious Days");
     //	Node* testA=getThe("Most Precious Days");
-	long testI=freebaseKeys[testE];
+	int testI=freebaseKeys[testE];
 	Node* testN=get(testI);
 	p(testA);
 	p(testN);
@@ -1127,7 +1098,7 @@ bool importFreebaseLabels() { //  (Node**)malloc(1*billion*sizeof(Node*));
 		if (!startsWith(test, "<#label")) continue;
         //        if (startsWith(label, "http"))continue;
 		if (startsWith(label, "\"")) label++;
-		int len=strlen(label);
+		int len=(int)strlen(label);
 		if (len < 6) continue;
         if(len > 50){
             int spaces=0;
@@ -1241,7 +1212,7 @@ Node* getFreebaseEntity(char* name) {
 
 bool importFreebase() {
     //    return 0;
-    long x=   freebaseHash("0023gm0>");
+//    long x=   freebaseHash("0023gm0>");
     //    long x=   freebaseHash("023gm0>");
     //	freebaseKeys=freebaseKey_root;
     //	long x=freebaseHash("03f2bmf");
@@ -1307,7 +1278,9 @@ bool importFreebase() {
                 p(line);
                 subject=getFreebaseEntity(subjectName); //
                 //				object=getFreebaseEntity(objectName);
-            } else Statement* s=addStatement(subject, predicate, object, false); // todo: id
+            }
+            else// Statement* s=
+                addStatement(subject, predicate, object, false); // todo: id
         }
         //		showStatement(s);
     }
@@ -1451,7 +1424,7 @@ void importSenses() {
 }
 
 void addLabel(Node *node, char* text) {
-    int len=strlen(text);
+    int len=(int)strlen(text);
     Context* context=currentContext();
     int slot=context->currentNameSlot;
     char* label=context->nodeNames + slot;
@@ -1491,7 +1464,7 @@ void importLables() {
     char definition[1000];
     int linecount=0;
     int id;
-    char pos;
+//    char pos;
     FILE *infile=open_file("wordnet/labels.tsv");
     while (fgets(line, sizeof(line), infile) != NULL) {
         if (++linecount % 10000 == 0){ printf("importLables %d    \r", linecount);fflush(stdout);}
@@ -1647,8 +1620,8 @@ void importWikipedia() {
 }
 
 void import(const char* type, const char* filename) {
-    clock_t start;
-    double diff;
+//    clock_t start;
+//    double diff;
     //  start = clock();
     //  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
     if (filename == 0) filename=type;

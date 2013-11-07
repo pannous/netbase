@@ -104,21 +104,21 @@ int Service_Request(int conn) {
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
 	if (format == json)Writeline(conn, "{'results':[\n");
-	char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
-	char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	char* statement_format_json = "      { 'id:%d, 'subject':%s', 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
-	char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
-	char* statement_format;
+	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
+	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
+	const char* statement_format_json = "      { 'id:%d, 'subject':%s', 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
+	const char* statement_format;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
     
-   	char* entity_format;
-	char* entity_format_txt = "%s (%d)\n";
-	char* entity_format_xml = "<entity name=\"%s\" id='%d'>\n";
-	char* entity_format_json = "   {'name':\"%s\", 'id':%d";
-   	char* entity_format_csv = "%s\t%d\n";
+   	const char* entity_format;
+	const char* entity_format_txt = "%s (%d)\n";
+	const char* entity_format_xml = "<entity name=\"%s\" id='%d'>\n";
+	const char* entity_format_json = "   {'name':\"%s\", 'id':%d";
+   	const char* entity_format_csv = "%s\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
 	if (format == json)entity_format = entity_format_json;
@@ -129,9 +129,9 @@ int Service_Request(int conn) {
 		sprintf(buff, entity_format, node->name, node->id);
 		Writeline(conn, buff);
 		Statement* s = 0;
-		if (format==csv|| verbosity == verbose || verbosity == longer || all.size() == 1 && !verbosity == shorter) {
+		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
 			if (format == json)Writeline(conn, ",'statements':[\n");
-			while (s = nextStatement(node, s)) {
+			while ((s = nextStatement(node, s))) {
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
@@ -233,7 +233,7 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 #include "string.h"
 
 int Trim(char * buffer) {
-	int n = strlen(buffer) - 1;
+	long n = strlen(buffer) - 1;
 
 	while (!isalnum(buffer[n]) && n >= 0)
 		buffer[n--] = '\0';
@@ -302,7 +302,7 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 	static int first_header = 1;
 	char *temp;
 	char *endptr;
-	int len;
+	size_t len;
 
 
 	if (first_header == 1) {
@@ -327,23 +327,20 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 			return -1;
 		}
 
-
 		/*  Skip to start of resource  */
-
 		while (*buffer && isspace(*buffer))
 			buffer++;
 
 
 		/*  Calculate string length of resource...  */
-
 		endptr = strchr(buffer, ' ');
 		if (endptr == NULL)
 			len = strlen(buffer);
 		else
 			len = endptr - buffer;
 		if (len == 0) {
-			reqinfo->status = 400;
-			return -1;
+//			reqinfo->status = 400;
+//			return -1;
 		}
 
 		/*  ...and store it in the request information structure.  */
@@ -359,7 +356,7 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 			information supplied - we just assume that if it is
 			supplied, then it's a full request.                        */
 
-		if (contains(buffer, "HTTP/"))
+		if (contains(buffer, "HTTP/")||contains(buffer, "http/"))
 			reqinfo->type = FULL;
 		else
 			reqinfo->type = SIMPLE;
@@ -383,10 +380,10 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 
 	endptr = strchr(buffer, ':');
 	if (endptr == NULL) {
-		reqinfo->status = 400;
-		return -1;
+//		reqinfo->status = 400;
+//		return -1;
+        return 0;//ok
 	}
-
 	temp = (char*) calloc((endptr - buffer) + 1, sizeof (char));
 	strncpy(temp, buffer, (endptr - buffer));
 	StrUpper(temp);
@@ -400,7 +397,7 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 		++buffer;
 	if (*buffer == '\0')
 		return 0;
-
+    
 
 	/*  Now update the request information structure with the
 	appropriate field value. This version only supports the
@@ -537,11 +534,11 @@ static char server_root[1000] = "/Users/me/";
 
 int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
 	char c;
-	int i;
+	size_t i;
 
 	while ((i = read(resource, &c, 1))) {
-		if (i < 0)
-			Error_Quit("Error reading from file.");
+//		if (i < 0)
+//			Error_Quit("Error reading from file.");
 		if (write(conn, &c, 1) < 1)
 			Error_Quit("Error sending file.");
 	}
@@ -711,7 +708,8 @@ void start_server() {
 		Error_Quit("Call to listen failed.");
 
 
-	printf("listening on %d port %d [doesn't work in xcode]\n", INADDR_ANY, SERVER_PORT);
+	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
+    p(" [doesn't work with xcode, use ./compile.sh ]");
 
 	/*  Loop infinitely to accept and service connections  */
 	while (1) {

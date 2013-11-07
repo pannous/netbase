@@ -67,11 +67,11 @@ using namespace std;
 
 // F, G, H and I are basic MD5 functions.
 inline MD5::uint4 MD5::F(uint4 x, uint4 y, uint4 z) {
-  return x&y | ~x&z;
+  return (x&y) | (~x&z);
 }
 
 inline MD5::uint4 MD5::G(uint4 x, uint4 y, uint4 z) {
-  return x&z | y&~z;
+  return (x&z) | (y&~z);
 }
 
 inline MD5::uint4 MD5::H(uint4 x, uint4 y, uint4 z) {
@@ -119,7 +119,7 @@ MD5::MD5()
 MD5::MD5(const std::string &text)
 {
   init();
-  update(text.c_str(), text.length());
+  update(text.c_str(), (uint)text.length());
   finalize();
 }
 

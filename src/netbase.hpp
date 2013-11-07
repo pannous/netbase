@@ -50,8 +50,6 @@ extern bool useYetvisitedIsA;
 
 
 //static int sizeOfSharedMemory= 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
-//int maxNodes();
-int maxStatements();
 static const bool multipleContexts = false;
 extern string path;
 extern string data_path;
@@ -64,11 +62,9 @@ static const int maxContexts = 1000;
 extern map<int, int> wn_map;
 extern map<int, int> wn_map2;
 
-static const char* NIL_string = "NIL";
-
 struct Statement;
 
-typedef struct Node;
+struct Node;
 //class Node;
 typedef union Value {
     char* text; // wiki abstracts etc
@@ -484,7 +480,7 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 //bool checkStatement(Statement *s);
 void checkRootContext();
 
-Node* getProperty(Node* n, char* s);
+Node* getProperty(Node* n,const char* s);
 Node* findRelation(Node* from, Node* to);
 NodeVector findProperties(const char* n, const char* m);
 void dissectParent(Node* subject,bool checkDuplicates=false);
@@ -498,29 +494,32 @@ static int averageNameLength =40;// 20; // used for malloc
 static int nodeSize=sizeof(Node);// 40
 static int statementSize=sizeof(Statement);// 56
 static int ahashSize=16;
-static long MB=1048576;
-static long GB=1024*MB;
-static long million=MB;
-static long billion=GB;
+static int MB=1048576;
+static int GB=1024*MB;
+static int million=MB;
+static int billion=GB;
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
 
 // FREEBASE: 600.000.000 Statements !!!
 #if defined(__APPLE__)
-static long maxNodes = 100*million;
-static long maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
+static int maxNodes = 100*million;// long would need a new structure!!
+static int maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 #else
-static long maxNodes = 100*million;
-static long maxStatements0 = maxNodes*8;
+static int maxNodes = 100*million;
+static int maxStatements0 = maxNodes*8;
 #endif
 
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?
 static long contextOffset=0x800000;//0x10000;
-static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
+//static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
-static long freebaseHashSize=1*MB;// 1*GB;// 51.705.469 keys! + abstacts !  *  sizeof(int) => 4GB!
+//static long freebaseHashSize=1*MB;// 1*GB;// 51.705.469 keys! + abstacts !  *  sizeof(int) => 4GB!
 int main(int argc, char *argv[]);
+static long stupidCompiler=billion+abstractHashSize+sizeOfSharedMemory;
+//stupidCompiler=0;
+
 int test2();
 
 //const ?
