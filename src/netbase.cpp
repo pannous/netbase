@@ -2204,6 +2204,10 @@ int main(int argc, char *argv[]) {
     
 	init();
 	//    import();
+    
+    
+	if (checkParams(argc, argv, "clear"))clearMemory();
+    
 	if (checkParams(argc, argv, "query")) {
 		load();
 		string q=cut_to(join(argv, argc), "query ");
@@ -2212,15 +2216,11 @@ int main(int argc, char *argv[]) {
 		//        import();
 	}
     
-	if (checkParams(argc, argv, "server") || checkParams(argc, argv, "daemon") || checkParams(argc, argv, "demon")) {
-		printf("starting server\n");
-		start_server();
-		return 0;
-	}
-    
 	if (checkParams(argc, argv, "import")) {
-		import(argv[2]); // netbase import save
-		if (checkParams(argc, argv, "save")) save(); // danger
+        	if (checkParams(argc, argv, "all"))
+                importAll();
+        else import(argv[2]); // danger netbase clear import save
+		if (checkParams(argc, argv, "save")) save();
 	}
 	if (checkParams(argc, argv, "load")) load(false);
 	else if (checkParams(argc, argv, "load_files")) load(true);
@@ -2241,6 +2241,14 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "export")) export_csv();
     
 	if (checkParams(argc, argv, "test")) tests();
+    
+    
+	if (checkParams(argc, argv, "server") || checkParams(argc, argv, "daemon") || checkParams(argc, argv, "demon")) {
+		printf("starting server\n");
+		start_server();
+		return 0;
+	}
+    
     
 	printf("Warnings: %d\n", badCount);
     printf("Node limit: %d\n",(int)maxNodes);

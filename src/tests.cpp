@@ -14,6 +14,7 @@
 #include "query.hpp"
 #include "init.hpp"
 #include "console.hpp"
+#include "webserver.hpp"
 //#define assert(cond) ((cond)?(0): (fprintf (stderr,"FAILED: \ %s, file %s, line %d \n",#cond,__FILE__,__LINE__), abort()))
 
 void clearTestContext() {
@@ -1319,9 +1320,10 @@ void testFreebase(){
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
 //	int var=0;
+    start_server();
 //    p("statementSize)");
 //    p( statementSize);
-    importFreebase();
+//    importFreebase();
     testFreebase();
 //	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();

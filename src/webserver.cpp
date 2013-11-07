@@ -1,3 +1,4 @@
+#pragma once
 /*
 
   HELPER.C
@@ -98,7 +99,7 @@ int Service_Request(int conn) {
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
-    
+    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
@@ -190,7 +191,7 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 	return n;
 }
 
-void Writeline(char* s) {
+void Writeline(const char* s) {
 	Writeline(0, s, 0);
 }
 
@@ -323,8 +324,8 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 			buffer += 5;
 		} else {
 			reqinfo->method = UNSUPPORTED;
-			reqinfo->status = 501;
-			return -1;
+//			reqinfo->status = 501;
+//			return -1;
 		}
 
 		/*  Skip to start of resource  */
@@ -381,8 +382,7 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 	endptr = strchr(buffer, ':');
 	if (endptr == NULL) {
 //		reqinfo->status = 400;
-//		return -1;
-        return 0;//ok
+		return -1;//ok
 	}
 	temp = (char*) calloc((endptr - buffer) + 1, sizeof (char));
 	strncpy(temp, buffer, (endptr - buffer));
@@ -459,8 +459,7 @@ int Get_Request(int conn, struct ReqInfo * reqinfo) {
 			Error_Quit("Error calling select() in get_request()");
 		} else if (rval == 0) {
 
-			/*  input not ready after timeout  */
-
+			p(" input not ready after timeout  ");
 			return -1;
 
 		} else {
@@ -720,8 +719,8 @@ void start_server() {
 		// WORKS FINE, but not when debugging
 
 		/*  Fork child process to service connection  */
-
-		if ((pid = fork()) == 0) {
+        pid = fork();
+		if (pid == 0) {
 
 			/*  This is now the forked child process, so
 			close listening socket and service request   */
@@ -734,7 +733,10 @@ void start_server() {
 			if (close(conn) < 0)
 				Error_Quit("Error closing connection socket.");
 			exit(EXIT_SUCCESS);
-		}
+		}else{
+            p("not forked yet");
+//            Service_Request(conn);// whatever
+        }
 
 
 		/*  If we get here, we are still in the parent process,

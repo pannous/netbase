@@ -390,7 +390,7 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 }
 
 bool clearMemory() {
-	if (!virgin_memory) {
+    if (!virgin_memory) {
 		ps("Cleansing Memory!");
         detach_shared_memory();
         init();
