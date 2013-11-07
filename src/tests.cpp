@@ -1329,7 +1329,7 @@ void testBrandNewStuff() {
     p("Test Brand New Stuff");
 //	int var=0;
     p("statementSize)");
-    p(  statementSize);
+    p( statementSize);
 //    testFreebase();
 //	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();

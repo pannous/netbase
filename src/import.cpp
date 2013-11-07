@@ -1601,6 +1601,9 @@ void importAllYago() {
     addStatement(getAbstract("xsd:integer"), SuperClass, Number);
 }
 
+void importWikipedia() {
+}
+
 void importAll() {
     //	importFacts()
     //	importCsv("adressen.txt");
@@ -1614,9 +1617,6 @@ void importAll() {
     //		p("image import done before ...");
     //	else
     //		importImages();
-}
-
-void importWikipedia() {
 }
 
 void import(const char* type, const char* filename) {

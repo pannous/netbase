@@ -202,27 +202,33 @@ NodeVector parse(const char* data) {
 	if (eq(data, "quiet")) quiet=!quiet;
     
 	if (startsWith(data, ":if")) {
+                autoIds=false;
         //			if (endsWith(data, "!"))deleteWord("acceptant");
         //			if (!hasWord("acceptant"))
 		importFreebase();
 		return OK;
 	}
 	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
+                autoIds=false;
 		if (endsWith(data, "!")) deleteWord("acceptant");
 		if (!hasWord("acceptant")) importWordnet();
 		return OK;
 	}
 	if (startsWith(data, ":iy") || startsWith(data, ":yi")) {
+                autoIds=false;
 		if (endsWith(data, "!")) deleteWord("yagoGeoEntity");
 		importAllYago();
 		return OK;
 	}
 	if (startsWith(data, ":i") || startsWith(data, "import")) {
+        autoIds=false;
 		string arg=next(string(data));
 		if (arg.length() > 2) import(arg.c_str());
 		else importAll();
 		return OK;
 	}
+    autoIds=true;
+    
 	if (contains(data, "limit")){
         char* newdata=(char*)malloc(1000);
         sscanf(data, "%s limit %d",newdata, &resultLimit);

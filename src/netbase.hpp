@@ -19,7 +19,9 @@ extern int badCount;
 extern int runs; // algorithm metrics
 extern int current_context;
 extern bool useYetvisitedIsA;
+extern bool autoIds;
 // if test or called from other object
+
 //#define inlineName true // because of char* loss!!!!  TODO!!!
 #define DONT_CHECK_DUPLICATES false
 #define DONT_DISSECT false
@@ -147,7 +149,9 @@ public:
     int id(){ // implicit
     		return getStatementId((long)this);
     }
-    int context; // implicit?  NODE!?!
+//#ifdef useContext
+    int context; //    needed for pattern() -> find...     todo: via :NODE!?!
+//#endif
     //        Node* meta;
 #ifdef explicitNodes
     Node* Subject; // as function? nee as it is!! transpose on context load
@@ -492,8 +496,8 @@ typedef NodeVector NV;
 //#pragma warnings_off
 static int averageNameLength =40;// 20; // used for malloc
 static int nodeSize=sizeof(Node);// 40
-static int statementSize=sizeof(Statement);// 56
-static int ahashSize=16;
+static int statementSize=sizeof(Statement);// 26 after refactor !! // was 56!!
+static int ahashSize=sizeof(Ahash);
 static int MB=1048576;
 static int GB=1024*MB;
 static int million=MB;
@@ -502,11 +506,11 @@ static int billion=GB;
 
 // FREEBASE: 600.000.000 Statements !!!
 #if defined(__APPLE__)
-static int maxNodes = 100*million;// long would need a new structure!!
-static int maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
+static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
+static long maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 #else
-static int maxNodes = 100*million;
-static int maxStatements0 = maxNodes*8;
+static long maxNodes = 100*million;
+static long maxStatements0 = maxNodes*8;
 #endif
 
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?

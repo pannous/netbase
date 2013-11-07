@@ -47,6 +47,7 @@ int* freebaseKey_root=0;
 bool doDissectAbstracts=false;
 bool storeTypeExplicitly=true;
 bool exitOnFailure=true;
+bool autoIds=false;
 #ifdef __NETBASE_DEBUG__
 bool debug=true;
 //bool debug=false;
@@ -184,7 +185,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		if (get(ah->abstract) == a || eq(get(ah->abstract)->name, a->name, true))
 			return ah;
         //        ah->next=extrahash++;
-        ah->next=maxNodes+ currentContext()->extrahashNr++;
+        ah->next=currentContext()->extrahashNr++;
         ah=getAhash(ah->next);
 	}
 	if(!checkHash(ah))return 0;
@@ -536,7 +537,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 #endif
 	if (nodeId > maxNodes) {
 		badCount++;
-		pf("nodeId>maxNodes %d>%d", nodeId, maxNodes);
+		pf("nodeId>maxNodes %d>%ld", nodeId, maxNodes);
 		return false;
 	}
     
@@ -581,7 +582,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 	Context* context=getContext(contextId);
 	Node* node=&(context->nodes[context->nodeCount]);
 	if (context->nodeCount > maxNodes) {
-		pf("context->nodeCount > maxNodes %d>%d",context->nodeCount ,maxNodes);
+		pf("context->nodeCount > maxNodes %d>%ld",context->nodeCount ,maxNodes);
 		p("MEMORY FULL!!!");
         //		exit(1);
 		return 0;
@@ -1089,7 +1090,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		badCount++;
 		return 0;
 	}
-    if(isInteger(thing))return get(atoi(thing));
+    if(autoIds&&isInteger(thing))return get(atoi(thing));
 	if (getRelation(thing)) // not here!
 		return getRelation(thing);
     
@@ -1174,7 +1175,7 @@ Node * getAbstract(const char* thing) {			// AND CREATE!
 		badCount++;
 		return 0;
 	}
-    if(isInteger(thing))return get(atoi(thing));
+    if(autoIds&&isInteger(thing))return get(atoi(thing));
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);

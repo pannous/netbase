@@ -56,6 +56,19 @@ void detach_shared_memory(){
     system("sudo ipcrm -M '0x69193'");
     system("sudo ipcrm -M '0x69194'");
 }
+void increaseShmMax(){
+//				system("sudo sysctl -w kern.sysv.shmmax=2147483648"); // # 2GB
+//				system("sudo sysctl -w kern.sysv.shmall=2147483648");
+//				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB
+//				system("sudo sysctl -w kern.sysv.shmall=4294967296");
+//				system("sudo sysctl -w kern.sysv.shmmax=6442450944"); // # 6GB !
+//				system("sudo sysctl -w kern.sysv.shmall=6442450944");
+system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
+system("sudo sysctl -w kern.sysv.shmall=8589934592");
+//				system("sudo sysctl -w kern.sysv.shmmax=34359738368"); // # 32GB !!
+//				system("sudo sysctl -w kern.sysv.shmall=34359738368");
+}
+
 void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * desired) {
 	if (root) {
 		ps("root_memory already attached!");
@@ -80,16 +93,7 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 				//			perror(strerror(errno)); <= ^^ redundant !!!
 				printf("try ipcclean && sudo ipcrm -M 0x69190 ... \n./clear-shared-memory.sh\n");
                 detach_shared_memory();
-				//				system("sudo sysctl -w kern.sysv.shmmax=2147483648"); // # 2GB
-				//				system("sudo sysctl -w kern.sysv.shmall=2147483648");
-//				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB
-//				system("sudo sysctl -w kern.sysv.shmall=4294967296");
-//				system("sudo sysctl -w kern.sysv.shmmax=6442450944"); // # 6GB !
-//				system("sudo sysctl -w kern.sysv.shmall=6442450944");
-				system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
-				system("sudo sysctl -w kern.sysv.shmall=8589934592");
-//				system("sudo sysctl -w kern.sysv.shmmax=34359738368"); // # 32GB !!
-//				system("sudo sysctl -w kern.sysv.shmall=34359738368");
+                increaseShmMax();
 			}
 			if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 				perror("share_memory failed: shmget! Not enough memory?");
@@ -111,8 +115,7 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 		printf("FYI: root_memory != desired shmat_root %p!=%p \n", root, desired);
 //		fixPointers();
 	}
-    cchar* msg="share_memory at %016llX	size = %x	max = %016llX\n"; // root address =
-	printf(msg, root, sizeOfSharedMemory, (char*) root + sizeOfSharedMemory);
+	printf("share_memory at %p	size = %zX	max = %p\n", root, sizeOfSharedMemory, (char*) root + sizeOfSharedMemory);
 	return root;
 }
 
@@ -463,7 +466,7 @@ char* initContext(Context* context) {
 		//        nodeNames=(char*)malloc(sizeof(char)*nameBatch);// incremental
 		if (nodes == 0 || statements == 0 || nodeNames == 0) {
 			ps("System has not enough memory to support ");
-			printf("%d Nodes and %d Statements\nDividing by 2 ...\n", maxNodes, maxStatements0);
+			printf("%ld Nodes and %ld Statements\nDividing by 2 ...\n", maxNodes, maxStatements0);
 			maxStatements0=maxStatements0 / 2;
 			maxNodes=maxNodes / 2;
 			// negotiate memory cleverly!!
