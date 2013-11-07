@@ -1109,7 +1109,7 @@ bool importFreebaseLabels(cchar* file) {
         if (startsWith(label, "<http"))continue;
 		if (startsWith(label, "\"")) label++;
 		int len=(int)strlen(label);
-        if(label[len-1]=='"')label[len-1]=0;
+//        if(label[len-1]=='"')label[len-1]=0; NOT HERE !?
         if(label[len-1]=='>')label[len-1]=0;
 		if (len < 6) continue;
         if(len > 50){
