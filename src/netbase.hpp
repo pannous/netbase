@@ -413,7 +413,7 @@ Node* has(Node* subject, string predicate, string object, int recurse = true, bo
 Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true, bool matchName=false);
 void setValue(Node* node, Node* property, Node* value);
 bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
-bool isA4(Node* n, Node* match, int recurse = false, bool semantic = false, bool matchName=false);
+bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool matchName=false);
 bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);

@@ -333,6 +333,10 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "label")) return Label;
 	if (eq(thing, "range")) return Range;
 	if (eq(thing, "domain")) return Domain;
+//	if (eq(thing, "inverseOf")) return Antonym;
+//	if (eq(thing, "reverse_property")) return Owner;
+    
+    
 	//	if (eq(thing, "in"))return Loc;
 	return 0;
 }

@@ -17,7 +17,6 @@
 #include <cstdlib>
 #include <string.h> // strcmp
 
-#include "netbase.hpp"
 #include "util.hpp"
 //#include "relations.hpp"
 #include "util.hpp"
@@ -30,6 +29,7 @@
 #include "webserver.hpp"
 #include "init.hpp"
 #include "query.hpp"
+#include "netbase.hpp"
 //#include "tests.cpp"
 //#define assert(cond) ((cond)?(void)(0): (void)(fprintf (stderr,"FAILED: %s, file %s, line %d \n",#cond,__FILE__,__LINE__), (void)abort()))
 
@@ -394,7 +394,9 @@ void checkExpand(Context * context) {
 		} else if (!quiet) p("context->names checkExpanded");
 	}
 }
-
+//bool isA4(Node* n, string match, bool recurse, bool semantic){
+// return	isA4(n, match, recurse?1:0, semantic);
+//}
 bool isA4(Node* n, string match, int recurse, bool semantic) {
     
 	if (!checkNode(n)) return false;
@@ -1246,7 +1248,7 @@ void showStatement(Statement * s) {
 char* getLabel(Node * n) {
 	Context* context=getContext(current_context);
 	if (n->value.text > context->nodeNames && n->value.text < context->nodeNames + context->currentNameSlot) return n->value.text;
-	Statement * s=findStatement(n, Label, Any, false, false, false);
+	Statement * s=findStatement(n, Label, Any, 0, false, false);
 	if (s) return s->Object()->name;
     
 	return 0;
