@@ -59,7 +59,7 @@ extern string import_path;
 
 extern bool virgin_memory;
 
-static const int maxStatementsPerNode = 10000; // cant make dynamic if used as array[100]
+//static const int maxStatementsPerNode = 10000; // cant make dynamic if used as array[100]
 static const int maxContexts = 1000;
 extern map<int, int> wn_map;
 extern map<int, int> wn_map2;
@@ -507,17 +507,17 @@ static int billion=GB;
 // FREEBASE: 600.000.000 Statements !!!
 #if defined(__APPLE__)
 static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
-static long maxStatements0 = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
+static long maxStatements = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 #else
-static long maxNodes = 100*million;
-static long maxStatements0 = maxNodes*8;
+static long maxNodes = 200*million;
+static long maxStatements = maxNodes*2;
 #endif
 
 static long abstractHashSize = maxNodes*ahashSize; //~nodes?
 static long contextOffset=0x800000;//0x10000;
-//static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements0*statementSize;// can groooow!
+//static long abstractsOffset= contextOffset+ maxNodes*(nodeSize+averageNameLength)+maxStatements*statementSize;// can groooow!
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
-static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements0*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
+static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;// 5000000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long sizeOfSharedMemory =8000000; //0x0f000000;// 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 //static long freebaseHashSize=1*MB;// 1*GB;// 51.705.469 keys! + abstacts !  *  sizeof(int) => 4GB!
 int main(int argc, char *argv[]);

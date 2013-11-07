@@ -65,9 +65,9 @@ bool checkLowMemory() {
 		pf("%d characters!\n", currentContext()->currentNameSlot);
 		return true;
 	}
-	if (currentContext()->statementCount + 40000 > maxStatements0) {
+	if (currentContext()->statementCount + 40000 > maxStatements) {
 		p("OUT OF MEMORY!");
-		pf("%d nodes!\n", currentContext()->statementCount);
+		pf("%d statement!\n", currentContext()->statementCount);
 		return true;
 	}
 	if (extrahash + 20000 > abstracts + abstractHashSize * 2) {

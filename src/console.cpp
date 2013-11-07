@@ -308,7 +308,7 @@ NodeVector parse(const char* data) {
 		return query(data);
     
 	if(eq(args[0], "the") || eq(args[0], "my")) {
-        N da=getThe(data+3,More);
+        N da=getThe(data+4,More);
 		show(da);
 		return nodeVectorWrap(da);
 	}
@@ -363,7 +363,7 @@ NodeVector parse(const char* data) {
 	if (contains(data, " that ")) return query(data);
 	if (contains(data, "who ")) return query(data);
 	
-    if (eq(args[1],"to")) {
+    if (args.size()>=3&& eq(args[1],"to")) {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
@@ -372,7 +372,7 @@ NodeVector parse(const char* data) {
 		//		if(all==EMPTY)shortestPath(from,to);
 	}
     
-    if (data[0] == '!'||eq(args[1],"is"))
+    if (data[0] == '!'||(args.size()>=3&&eq(args[1],"is")))
         return nodeVectorWrap(reify(learn(data)));
     
     data=replace((char*)data,' ','_');

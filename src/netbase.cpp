@@ -300,7 +300,7 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if(!debug)return true;// bad idea!
 	if (s == 0) return false;
 	if (s < contexts[current_context].statements) return false;
-	if (s >= contexts[current_context].statements + maxStatements0) return false;
+	if (s >= contexts[current_context].statements + maxStatements) return false;
 	if (s->id() == 0) return false; // !
 	if (checkSPOs || checkNamesOfSPOs) if (s->Subject() == 0 || s->Predicate() == 0 || s->Object() == 0) return false;
 	if (checkNamesOfSPOs) if (s->Subject()->name == 0 || s->Predicate()->name == 0 || s->Object()->name == 0) return false;
@@ -437,7 +437,7 @@ Statement * getStatement(int id, int context_id) {
 		badCount++;
 		return null;
 	}
-	if (id >= maxStatements0) {
+	if (id >= maxStatements) {
 		badCount++;
 		return null;
 	}
@@ -754,10 +754,10 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 
 Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 	//	if(nr==0)return 0;// todo ????
-	if (nr >= maxStatementsPerNode) {
-		badCount++;
-		return null;
-	}
+//	if (nr >= maxStatementsPerNode) {
+//		badCount++;
+//		return null;
+//	}
 	if (n == null) {
 		badCount++;
 		return null;
@@ -1219,7 +1219,7 @@ Node * getClass(const char* word) {
 void showStatement(Statement * s) {
 	//	if (quiet)return;
 	Context* c=currentContext();
-	if (s < c->statements || s > &c->statements[maxStatements0]) {
+	if (s < c->statements || s > &c->statements[maxStatements]) {
 		if (quiet) return;
 		p("illegal statement:");
 		printf("%p", s);
@@ -2239,7 +2239,8 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "test")) tests();
     
 	printf("Warnings: %d\n", badCount);
-    
+    printf("Node limit: %d\n",(int)maxNodes);
+    printf("Statements: %d\n",(int)maxStatements);
 	if (checkParams(argc, argv, "exit")) exit(0);
 	//	testBrandNewStuff();
 	console();

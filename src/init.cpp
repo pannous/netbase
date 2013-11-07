@@ -192,7 +192,7 @@ void init() {
 	long node_size=maxNodes * nodeSize;
 	long abstract_size=abstractHashSize * 2;
 	long name_size=maxNodes * averageNameLength;
-	long statement_size=maxStatements0 * statementSize;
+	long statement_size=maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
 	p("abstract_root:");
 	abstract_root=(Node*) share_memory(key , abstract_size * 2, abstract_root,root);//  ((char*) context_root) + context_size
@@ -413,7 +413,7 @@ bool clearMemory() {
 //		else {
 //			memset(context_root, 0, contextOffset);
 //			memset(node_root, 0, nodeSize * maxNodes); //calloc!
-//			memset(statement_root, 0, statementSize * maxStatements0);
+//			memset(statement_root, 0, statementSize * maxStatements);
 //			memset(name_root, 0, maxNodes * averageNameLength);
 //			memset(abstracts, 0, abstractHashSize * 2);
 //			//		memset(extrahash, 0, abstractHashSize / 2);
@@ -437,7 +437,7 @@ char* initContext(Context* context) {
 	//    int contextOffset=sizeof (Context) *maxContexts;
 	long nameSegmentSize=sizeof(char) * averageNameLength * maxNodes;
 	long nodeSegmentSize=nodeSize * maxNodes;
-	long statementSegmentSize=statementSize * maxStatements0;
+	long statementSegmentSize=statementSize * maxStatements;
 //	long abstractOffset=contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize; //just put them at the end!!
 	if (node_root) {
 		p("Multiple shared memory segments");
@@ -466,8 +466,8 @@ char* initContext(Context* context) {
 		//        nodeNames=(char*)malloc(sizeof(char)*nameBatch);// incremental
 		if (nodes == 0 || statements == 0 || nodeNames == 0) {
 			ps("System has not enough memory to support ");
-			printf("%ld Nodes and %ld Statements\nDividing by 2 ...\n", maxNodes, maxStatements0);
-			maxStatements0=maxStatements0 / 2;
+			printf("%ld Nodes and %ld Statements\nDividing by 2 ...\n", maxNodes, maxStatements);
+			maxStatements=maxStatements / 2;
 			maxNodes=maxNodes / 2;
 			// negotiate memory cleverly!!
 		}

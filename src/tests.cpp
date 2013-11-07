@@ -477,14 +477,6 @@ void testWordnet() {
 	// show(&c.nodes[rand()]);
 }
 
-void testOutput() {
-	printf("Warnings:\n");
-	fflush(stdout);
-	// restart Idea if nothing appears
-	cout << "bla" << endl;
-	cout.flush();
-	flush();
-}
 
 //#define new(word) Node* word=getThe(#word);
 
@@ -1307,7 +1299,6 @@ void tests() {
 	testValueLogic();
 	testStringLogic();
 	testHash();
-	testOutput();
 	testScanf();
 	testYago();
 	testOpposite();
