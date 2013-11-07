@@ -108,7 +108,6 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 	}
 //	Context* c=currentContext(); // getContext(node->context);
 	if ((char*) root != (char*) desired) { // 64 BIT : %x -> %016llX
-//		printf("FYI: root_memory != desired shmat_root %016llX!=%016llX \n", (ulong long)root, (ulong long)desired);
 		printf("FYI: root_memory != desired shmat_root %p!=%p \n", root, desired);
 //		fixPointers();
 	}

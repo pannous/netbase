@@ -14,7 +14,6 @@ extern void flush();
 //#define check(assertion) assert(assertion,#assertion);
 bool assert(bool test, const char* what);
 template<typename T> void empty(vector<T,std::allocator<T> >& v);
-#define ulong unsigned long
 #define cchar const char
 #define po p("ok");
 string join(char** argv,int argc);
