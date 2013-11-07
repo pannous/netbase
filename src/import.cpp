@@ -1256,15 +1256,10 @@ bool importFreebase() {
 //        for (;i<10000;i++)if(line[i]=='\t')line[i]=0;
         sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);
         
-        if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
-        if(filterFreebase(predicateName)){ignored++; continue;}
-        if(filterFreebase(objectName)){ignored++;continue;}
-        
-        if(startsWith(predicateName, "has")){
-            char next=predicateName[3];
-            if(next==' ')predicateName=predicateName+4;
-            if('A'<=next && next<='Z')predicateName=predicateName+3;
-        }
+//        if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
+//        if(filterFreebase(predicateName)){ignored++; continue;}
+//        if(filterFreebase(objectName)){ignored++;continue;}
+
 //        deCamel(predicateName);
         
         predicate=getFreebaseEntity(predicateName);
