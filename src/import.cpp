@@ -1260,7 +1260,7 @@ bool filterFreebase(char* name){
 bool importFreebase() {
 //    if(hasWord("vote_value"))return true;
     
-    if (!freebaseKeys[freebaseHash("0zzxc3>")]){		//1
+    if (!freebaseKeys[freebaseHash("0zzxc3>")]){// always
         importFreebaseLabels();
         testPrecious2();
     }
