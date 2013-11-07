@@ -448,6 +448,7 @@ inline short normChar(char c) {// 0..36 damn ;)
 	if (c >= '0' && c <= '9') return c-'0'+26;
 	if (c >= 'a' && c <= 'z') return c-'a';
 	if (c >= 'A' && c <= 'Z') return c-'A';
+    return 0;// no chinese etc!
     switch (c) {
         case '"':return 0;
             break;

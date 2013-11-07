@@ -879,7 +879,7 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "dateTime")) return dateValue(name);
 	else if (eq(unit, "gYearMonth")) return dateValue(name);
 	else {
-//		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
+		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
 		return 0;
 	}
 	//		, current_context, getYagoConcept(unit)->id
@@ -1079,7 +1079,8 @@ void testPrecious() {
 
 bool importFreebaseLabels(cchar* file) {
     //  (Node**)malloc(1*billion*sizeof(Node*));
-	char* line=(char*) malloc(100000);//[10000];
+    char line[10000];
+    //    char* line=(char*) malloc(100000) GEHT NICHT PERIOD!!!!!!!!!!!!!!!
 	char* label0=(char*) malloc(10000);
 	char* label;
 	char* key=(char*) malloc(10000);
@@ -1241,8 +1242,8 @@ bool importFreebase() {
     Node* subject;
     Node* predicate;
     Node* object;
-//    char line[10000];
-    char* line=(char*) malloc(100000);
+    char line[10000];
+//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD!!!!!!!!!!!!!!!
     int ignored=0;
     badCount=0;
     char* objectName=(char*) malloc(10000);
