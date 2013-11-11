@@ -139,7 +139,7 @@ int Service_Request(int conn) {
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
-    const char* html_block="<html><body><div id='results'/><script>var results={'results':[\n";
+    const char* html_block="<html><body><div id='results'></div><script>var results={'results':[\n";
 
     if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
@@ -150,7 +150,8 @@ int Service_Request(int conn) {
 	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+//	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	const char* statement_format_json = "      { 'id':%d, 'subject':'%s', 'predicate':'%s', 'object':'%s', 'sid':%d, 'pid':%d, 'oid':%d},\n";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format;
 	if (format == xml)statement_format = statement_format_xml;
