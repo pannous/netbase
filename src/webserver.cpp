@@ -85,6 +85,11 @@ int Service_Request(int conn) {
 		format = html;
 		q[len-5]=0;
 	}
+	if (startsWith(q, ".js")) {
+		q[len-3]=0;
+		Writeline(conn, "var results=");
+		format = json;
+	}
 	if (startsWith(q, "html/")) {
 			format = html;
 			q = q + 5;
@@ -105,7 +110,13 @@ int Service_Request(int conn) {
 		format = csv;
 		q = q + 4;
 	}
-	if (startsWith(q, "json/")) {
+	if (startsWith(q, "js/")) {
+		q = q + 3;
+		if(format!=json)
+		Writeline(conn, "var results=");
+		format = json;
+	}
+	else if (startsWith(q, "json/")) {
 		format = json;
 		q = q + 5;
 	}
@@ -128,12 +139,15 @@ int Service_Request(int conn) {
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
+    const char* html_block="<html><body><div id='results'/><script>var results={'results':[\n";
+
     if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
 	if (format == json)Writeline(conn, "{'results':[\n");
+	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
@@ -171,14 +185,16 @@ int Service_Request(int conn) {
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
 			}
-			if (format == json)Writeline(conn, "]");
+			if (format == json||format == html)Writeline(conn, "]");
 		}
-		if (format == json)Writeline(conn, "},\n");
+		if (format == json||format == html)Writeline(conn, "},\n");
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
 	}
+	const char* html_end="]};</script><script src='http://pannous.net/netbase.js'></script></body></html>";
 	if (format == json)Writeline(conn, "]}\n");
+	if (format == html)Writeline(conn, html_end);
 	if (format == xml)Writeline(conn, "</results>\n");
 
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
