@@ -1275,7 +1275,8 @@ bool importFreebase() {
 //        if(filterFreebase(objectName)){ignored++;continue;}
 
 //        deCamel(predicateName);
-        
+        if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
+        		continue;// zh-ch, id ...
         predicate=getFreebaseEntity(predicateName);
         subject=getFreebaseEntity(subjectName); //
         object=getFreebaseEntity(objectName);

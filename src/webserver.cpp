@@ -105,6 +105,7 @@ int Service_Request(int conn) {
 	}
 	if (startsWith(q, "html/")) {
 			format = html;
+			verbose=true;
 			q = q + 5;
 		}
 	if (startsWith(q, "text/")) {
