@@ -38,7 +38,7 @@ bool isNumber(const char* buf) {
 	return strlen(buf) == strspn(buf, "0123456789,.");
 }
 
-string next(string data) {
+string next_word(string data) {
 	int spc=(int)data.find(" ");
 	if (spc >= 0) return data.substr(spc + 1);
 	return data;

@@ -96,7 +96,8 @@ int getFieldNr(Query& q, Node* predicate) {
 void collectFacets(Query& q) {
 	NodeVector all = q.instances;
 	int nrFields = (int)q.fields.size();
-	for (int rowNr = 0; rowNr < all.size(); rowNr++) {
+	int size=all.size();
+	for (int rowNr = 0; rowNr < size; rowNr++) {
 		Node* n = all[rowNr];
 		q.values[n] = (NodeList) malloc(sizeof (Node*) * nrFields);
 		Statement* s = 0;
@@ -247,14 +248,15 @@ NodeVector query(Query& q) {
 	for (int i = 0; i < q.keywords.size(); i++)
 		if (q.keywords[i] != q.keyword)
 			mergeVectors(&all, all_instances(q.keywords[i]));
-
-	p(all.size());
 	q.instances = all;
 	for (int i = 0; i < q.filters.size(); i++) {
+		pf("candidates so far %d",all.size());
 		Statement* _filter = q.filters[i];
 		clearAlgorithmHash();
 		q.instances = filter(q, _filter);
 	}
+	pf("candidates: %d\n",all.size());
+	pf("hits: %d\n",q.instances.size());
 	collectFacets(q);
 	return q.instances; // renderResults(q);
 }

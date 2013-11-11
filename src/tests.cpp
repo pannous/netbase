@@ -510,6 +510,8 @@ void testInstancesAtEnd() {
 }
 
 void testStringLogic2() {
+//    NV t= parse("label 4557271 woooot");
+//    check(eq(t[0]->name,"woooot"));// OK
 	eine(Schlacht);
 	Node* Schlacht_bei_Guinegate=getThe("Guinegate_(14791),_Schlacht_bei"); // intellij display bug!
 	//    deleteNode(Schlacht_bei_Guinegate);
@@ -1319,12 +1321,13 @@ void testFreebase(){
 
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
+    showNodes(parse("all 42650559"));
 //	int var=0;
-    start_server();
+//    start_server();
 //    p("statementSize)");
 //    p( statementSize);
 //    importFreebase();
-    testFreebase();
+//    testFreebase();
 //	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();
     //	checkWordnet();

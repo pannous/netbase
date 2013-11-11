@@ -360,7 +360,7 @@ char* name(Node* node);
 Context* getContext(int contextId);
 void showContext(int nr);
 void showContext(Context* cp);
-void showNodes(NodeVector all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false); // bool justTitles==showStatements
+NodeVector showNodes(NodeVector all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false); // bool justTitles==showStatements
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
@@ -418,7 +418,7 @@ bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);
 Node* parseValue(const char* aname);
-
+void setLabel(Node* n, const char* label);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
 Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);

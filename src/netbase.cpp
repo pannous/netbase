@@ -1927,7 +1927,7 @@ Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
 	return null;
 }
 
-void showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {
+NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {
 	int size=(int)all.size();
 	ps("+++++++++++++++++++++++++++++++++++");
 	for (int i=0; i < size; i++) {
@@ -1945,8 +1945,9 @@ void showNodes(NodeVector all, bool showStatements, bool showRelation, bool show
 		show(node, showStatements);
 	}
 	if (!showRelation) {
-		pf("++++++++++ Hits : %d +++++++++++++++++\n", size);
+		pf("++++++++++ Hits : %d +++++++++++++++++++\n", size);
 	} else ps("+++++++++++++++++++++++++++++++++++");
+	return all;
 }
 //NodeVector match_all(string data){
 //}
@@ -2144,6 +2145,24 @@ void setValue(Node* node, Node* property, Node * value) {
 		} else return; //Wert schon da => nix?
 	}
 	addStatement(node, property, value, false);
+}
+
+
+void setLabel(Node* n, cchar* label) {
+	if (eq(n->name, label)) return;
+	Context* c=currentContext();
+	char* l=&c->nodeNames[c->currentNameSlot];
+	strcpy(l, label);
+	int len=strlen(label);
+	l[len]=0;
+	c->currentNameSlot+=len + 1;
+	n->name=l;
+	if (n->kind == abstractId) {
+		insertAbstractHash(n);
+	} else {
+		Node* a=getAbstract(label);
+		addStatement(a, Instance, n);
+	}
 }
 
 bool checkParams(int argc, char *argv[], const char* p) {

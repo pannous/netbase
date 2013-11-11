@@ -53,7 +53,7 @@ void p(Statement* n);
 void p(NodeVector& n);
 void p(string s);
 //char* next(char* data);
-string next(string data);
+string next_word(string data);
 vector<char*>& splitString(string line0,const char* separator="\t");
 vector<char*>& splitString(const char* line0,const char* separator="\t");
 
