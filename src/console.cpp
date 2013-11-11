@@ -277,7 +277,7 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (startsWith(data, ":d ") || startsWith(data, "delete ") || startsWith(data, "del ") || startsWith(data, "remove ")) {
-		string d=next(data);
+		string d=next_word(data);
 		const char* what=d.data();
 		printf("deleting %s\n", what);
 		deleteWord(what);
