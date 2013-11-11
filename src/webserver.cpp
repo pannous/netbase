@@ -36,8 +36,20 @@ enum result_format {
 enum result_verbosity {
 	shorter, normal, longer,verbose
 };
-// WORKS FINE, but not when debugging
 
+
+void fixLabel(Node* n){
+	if(n->name[0]=='"')n->name=n->name+1;
+	if(n->name[strlen(n->name)-1]=='"')n->name[strlen(n->name)-1]=0;
+}
+
+void fixLabels(Statement* s){
+	fixLabel(s->Subject());
+	fixLabel(s->Predicate());
+	fixLabel(s->Object());
+}
+
+// WORKS FINE, but not when debugging
 int Service_Request(int conn) {
 
 	struct ReqInfo reqinfo;
@@ -150,8 +162,7 @@ int Service_Request(int conn) {
 	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-//	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
-	const char* statement_format_json = "      { 'id':%d, 'subject':'%s', 'predicate':'%s', 'object':'%s', 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format;
 	if (format == xml)statement_format = statement_format_xml;
@@ -180,6 +191,7 @@ int Service_Request(int conn) {
 			if (format == json||format == html)Writeline(conn, ",'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
+				fixLabels(s);
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
