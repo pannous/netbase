@@ -1105,10 +1105,11 @@ bool importFreebaseLabels(cchar* file) {
 		label=label0;
 		if (!startsWith(key, "<m.") && !startsWith(key, "<g.")) continue;
 		if (!startsWith(test, "<#label")) continue;
-        if (startsWith(label, "http"))continue;
-        if (startsWith(label, "\"http"))continue;
-        if (startsWith(label, "<http"))continue;
 		if (startsWith(label, "\"")) label++;
+        if (startsWith(label, "http"))continue;
+        if (startsWith(label, "/"))continue; // "/wikipedia/de_title"@en etc
+        if (endsWith(label, "_id"))continue; // "/wikipedia/de_title"@en etc
+        if (endsWith(label, "_title"))continue; // "/wikipedia/de_title"@en etc
 		int len=(int)strlen(label);
 //        if(label[len-1]=='"')label[len-1]=0; NOT HERE !?
         if(label[len-1]=='>')label[len-1]=0;

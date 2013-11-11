@@ -144,10 +144,15 @@ int Service_Request(int conn) {
 		verbosity = verbose;
 		q = q + 8;
 	}
+//	if (startsWith(q, "m/")) {
+//			q = q + 2;
+//
+//		}
+
     
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
-    NodeVector all = parse(q); // <<<<<<<< NETBASE!
+    NodeVector all = parse(q); // <<<<<<<< NETaddSBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	

@@ -232,7 +232,7 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 #endif
 		Statement* to_insert=&context->statements[statementNr];
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
-		if (to_insert->Predicate() == Instance || to_insert->Predicate() == Type) { // ALL!
+		if (to_insert->Predicate() == Instance || to_insert->Predicate() == Type || to_insert->Predicate() == node) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
 			if(eq(add_here,statementNr))return false;
 			appendLinkedListOfStatements(add_here, node, statementNr); // append new to old

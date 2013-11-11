@@ -231,8 +231,8 @@ NodeVector parse(const char* data) {
 	if (contains(data, "limit")) {
 		char* newdata=(char*) malloc(1000);
 		sscanf(data, "%s limit %d", newdata, &resultLimit);
-//	if (contains(data, "limit")) {
-		sscanf(data, "limit %d %s", &resultLimit, newdata);
+//		if(!)
+//		sscanf(data, "limit %d %s", &resultLimit, newdata);
 		strcpy((char*) data, newdata);
 		p(resultLimit);
 	}
@@ -344,6 +344,7 @@ NodeVector parse(const char* data) {
 	//		return nodeVectorWrap(found);
 	//	}
 
+//	if (startsWith(q, "m/")) {
 	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
 		p("<m.0c21rgr> needs showered memory or boost ");
 		Node* n=getFreebaseEntity((char*) data);
