@@ -163,7 +163,8 @@ int Service_Request(int conn) {
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
 			if (format == json||format == html)Writeline(conn, ",'statements':[\n");
-			while ((s = nextStatement(node, s))) {
+			int count=0;
+			while ((s = nextStatement(node, s))&&count++<resultLimit) {
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
