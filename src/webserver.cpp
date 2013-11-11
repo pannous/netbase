@@ -30,7 +30,7 @@
 #define SERVER_PORT  (3333)
 
 enum result_format {
-	xml, json, txt,csv
+	xml, json, txt,csv,html
 };
 
 enum result_verbosity {
@@ -59,7 +59,36 @@ int Service_Request(int conn) {
 
 	init(); // for each forked process!
 	char* q = substr(reqinfo.resource, 1, -1);
+	int len=strlen(q);
 	if (eq(q, "favicon.ico"))return 0;
+	if (endsWith(q, ".json")) {
+			format = json;
+			q[len-5]=0;
+		}
+
+	if (endsWith(q, ".xml")) {
+			format = xml;
+			q[len-4]=0;
+		}
+
+	if (endsWith(q, ".csv")) {
+			format = csv;
+			q[len-4]=0;
+		}
+
+	if (endsWith(q, ".txt")) {
+			format = txt;
+			q[len-4]=0;
+		}
+
+	if (endsWith(q, ".html")) {
+		format = html;
+		q[len-5]=0;
+	}
+	if (startsWith(q, "html/")) {
+			format = html;
+			q = q + 5;
+		}
 	if (startsWith(q, "text/")) {
 		format = txt;
 		q = q + 5;
@@ -107,10 +136,11 @@ int Service_Request(int conn) {
 	if (format == json)Writeline(conn, "{'results':[\n");
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { 'id:%d, 'subject':%s', 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	const char* statement_format_json = "      { 'id':%d, 'subject':%s', 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format;
 	if (format == xml)statement_format = statement_format_xml;
+	if (format == html)statement_format = statement_format_json;
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
@@ -122,6 +152,7 @@ int Service_Request(int conn) {
    	const char* entity_format_csv = "%s\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
+	if (format == html)entity_format = entity_format_json;
 	if (format == json)entity_format = entity_format_json;
 	if (format == txt)entity_format = entity_format_txt;
 	if (format == csv)entity_format = entity_format_csv;
@@ -131,7 +162,7 @@ int Service_Request(int conn) {
 		Writeline(conn, buff);
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
-			if (format == json)Writeline(conn, ",'statements':[\n");
+			if (format == json||format == html)Writeline(conn, ",'statements':[\n");
 			while ((s = nextStatement(node, s))) {
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;

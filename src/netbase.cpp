@@ -1300,7 +1300,7 @@ bool show(Node* n, bool showStatements) {		//=true
 		}
 	}
     if(showStatements)
-        pf("-----------------------^ %s #%d ^---------------\n", n->name, n->id);
+        pf("-----------------------^ %s #%d, %d statements ^---------------\n", n->name, n->id,n->statementCount);
 	return 1; // daisy
 }
 
@@ -1945,7 +1945,7 @@ NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, boo
 		show(node, showStatements);
 	}
 	if (!showRelation) {
-		pf("++++++++++ Hits : %d +++++++++++++++++++\n", size);
+		pf("++++++++++ Hits : %d ++++++++++++++++++++\n", size);
 	} else ps("+++++++++++++++++++++++++++++++++++");
 	return all;
 }
