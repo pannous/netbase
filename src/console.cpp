@@ -393,8 +393,12 @@ NodeVector parse(const char* data) {
 	if (i == 0) showNodes(instanceFilter(a), true);
 	//        findWord(currentContext()->id, data);
 //    if(isAbstract(a))
-	if (i == 0) return instanceFilter(a);
-	else return nodeVectorWrap(a);
+	if (i == 0){
+		NV all= instanceFilter(a);
+		if(all.size()>0)
+			return all;
+	}
+	return nodeVectorWrap(a);
 //
 
 	//    return nodeVectorWrap(get(data));
