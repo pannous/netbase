@@ -47,6 +47,8 @@ void fixLabel(Node* n){
 /// true = filter
 
 static char* excluded=0;
+static char* excluded2=0;
+static char* excluded3=0;
 bool checkHideStatement(Statement* s){
 	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
 	char* predicateName=s->Predicate()->name;
@@ -58,8 +60,9 @@ bool checkHideStatement(Statement* s){
     if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
     	return true;// zh-ch, id ...
     if(objectName[0]=='/'||objectName[1]=='/')return true;
-    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))
-    			return true;
+    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
+    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
+    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
     return false;
 }
 
@@ -170,6 +173,16 @@ int Service_Request(int conn) {
 		excluded=strstr(q," -");
 		excluded[0]=0;
 		excluded+=2;
+	}
+	if(contains(q," -")){
+		excluded2=strstr(q," -");
+		excluded2[0]=0;
+		excluded2+=2;
+	}
+	if(contains(q," -")){
+		excluded3=strstr(q," -");
+		excluded3[0]=0;
+		excluded3+=2;
 	}
 //	if (startsWith(q, "m/")) {
 //			q = q + 2;
