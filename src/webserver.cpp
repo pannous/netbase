@@ -45,6 +45,7 @@ void fixLabel(Node* n){
 }
 
 bool filterStatement(Statement* s){
+	if(s->predicate==23025403)return false;// 	Topic equivalent webpage
 	char* predicateName=s->Predicate()->name;
 	char* objectName=s->Object()->name;
 	if(eq(predicateName,"Key"))return true;
