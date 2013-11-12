@@ -44,8 +44,9 @@ void fixLabel(Node* n){
 		n->name[strlen(n->name)-1]=0;
 }
 
-bool filterStatement(Statement* s){
-	if(s->predicate==23025403)return false;// 	Topic equivalent webpage
+/// true = filter
+bool checkHideStatement(Statement* s){
+	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
 	char* predicateName=s->Predicate()->name;
 	char* objectName=s->Object()->name;
 	if(eq(predicateName,"Key"))return true;
@@ -213,7 +214,7 @@ int Service_Request(int conn) {
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
 				fixLabels(s);
-				if(filterStatement(s))continue;
+				if(checkHideStatement(s))continue;
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
