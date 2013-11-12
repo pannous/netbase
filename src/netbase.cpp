@@ -232,7 +232,7 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 #endif
 		Statement* to_insert=&context->statements[statementNr];
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
-		if (to_insert->Predicate() == Instance || to_insert->Predicate() == Type || to_insert->Predicate() == node) { // ALL!
+		if (to_insert->Predicate() == Instance || to_insert->Predicate() == Type&&to_insert->Object()==node || to_insert->Predicate() == node) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
 			if(eq(add_here,statementNr))return false;
 			appendLinkedListOfStatements(add_here, node, statementNr); // append new to old
@@ -1464,9 +1464,11 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 
 void removeStatement(Node* n, Statement * s) {
 	if (!n || !s) return;
-	Statement * last=0;
-	for (int i=0; i < n->statementCount; i++) {
-		Statement* st=getStatementNr(n, i);
+	Statement *last=0;
+	Statement *st=0;
+	while(st=nextStatement(n,st)){
+//	for (int i=0; i < n->statementCount; i++) {
+//		Statement* st=getStatementNr(n, i);
 		if (st == s) {
 			if (last == 0) {
 				if (s->Subject() == n) n->firstStatement=s->nextSubjectStatement;
@@ -1475,7 +1477,6 @@ void removeStatement(Node* n, Statement * s) {
 			} else {
 				if (s->Subject() == n) last->nextSubjectStatement=s->nextSubjectStatement;
 				if (s->Predicate() == n) last->nextPredicateStatement=s->nextPredicateStatement;
-                
 				if (s->Object() == n) last->nextObjectStatement=s->nextObjectStatement;
 			}
 		}
@@ -1522,22 +1523,26 @@ void deleteWord(string * s) {
 
 void deleteNode(Node * n) {
 	if (!n) return;
-	if (n->kind == abstractId) {
-		NodeVector nv=instanceFilter(n);
-		for (int i=0; i < nv.size(); i++) {
-            
-			Node* n=nv[i];
-			deleteNode(n);
-		}
-	}
 	deleteStatements(n);
+	if (n->kind == abstractId) {
+			NodeVector nv=instanceFilter(n);
+			for (int i=0; i < nv.size(); i++) {
+
+				Node* n=nv[i];
+				deleteNode(n);
+			}
+	}
 	memset(n, 0, sizeof(Node)); // hole in context!
 }
 
 void deleteStatements(Node * n) {
 	Statement* s=0;
-	while (s=nextStatement(n, s))
-		deleteStatement(s);
+	Statement* previous=0;
+	while (s=nextStatement(n, s)){
+		if(previous)deleteStatement(previous);
+		previous=s;
+	}
+	if(previous)deleteStatement(previous);// last one
 //	for (int i=0; i < minimum(n->statementCount, 10000); i++) {
 //		Statement* s=getStatementNr(n, i);
 //		deleteStatement(s);
@@ -2208,7 +2213,7 @@ int main(int argc, char *argv[]) {
 	}
     
 	//    signal(SIGSEGV, handler); // only when fully debugged!
-	signal(SIGINT, SIGINT_handler); // only when fully debugged!
+//	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
 	//    setjmp(loop_context);
 	path=argv[0];
 	path=path.substr(0, path.rfind("/") + 1);

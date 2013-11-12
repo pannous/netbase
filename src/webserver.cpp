@@ -45,16 +45,21 @@ void fixLabel(Node* n){
 }
 
 /// true = filter
+
+static char* excluded=0;
 bool checkHideStatement(Statement* s){
 	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
 	char* predicateName=s->Predicate()->name;
 	char* objectName=s->Object()->name;
+	char* subjectName=s->Subject()->name;
 	if(eq(predicateName,"Key"))return true;
     if(predicateName[3]=='-'||predicateName[3]=='_'||predicateName[3]==0)
           		return true;// <zh-ch, id ...
     if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
     	return true;// zh-ch, id ...
     if(objectName[0]=='/'||objectName[1]=='/')return true;
+    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))
+    			return true;
     return false;
 }
 
@@ -160,6 +165,11 @@ int Service_Request(int conn) {
 	if (startsWith(q, "verbose/")) {
 		verbosity = verbose;
 		q = q + 8;
+	}
+	if(contains(q," -")){
+		excluded=strstr(q," -");
+		excluded[0]=0;
+		excluded+=2;
 	}
 //	if (startsWith(q, "m/")) {
 //			q = q + 2;

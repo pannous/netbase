@@ -1321,7 +1321,9 @@ void testFreebase(){
 
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
-    showNodes(parse("all 42650559"));
+//    showNodes(parse("all 42650559"));
+    deleteNode(get(42032201));
+
 //	int var=0;
 //    start_server();
 //    p("statementSize)");

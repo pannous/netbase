@@ -1274,6 +1274,14 @@ bool importFreebase() {
 //        if(filterFreebase(predicateName)){ignored++; continue;}
 //        if(filterFreebase(objectName)){ignored++;continue;}
 
+//    	.
+//    <m.05bjb__>	<#label>	"final-fantasy-xiii.jpg"@en	.
+//    <m.05bswf1>	<#label>	"andrew jackson first.jpg"@en	.
+//    <m.05c76ht>	<#label>	"Via Crucis.jpg"@en	.
+//    <m.05crs6s>	<#label>	"weinberg1.jpg"@en	.
+//    <m.05dchmw>	<#label>	"scan0008.jpg"@en	.
+
+
 //        deCamel(predicateName);
         if(predicateName[3]=='-'||predicateName[3]=='_'||predicateName[3]==0)
               		continue;// <zh-ch, id ...
