@@ -1275,8 +1275,11 @@ bool importFreebase() {
 //        if(filterFreebase(objectName)){ignored++;continue;}
 
 //        deCamel(predicateName);
+        if(predicateName[3]=='-'||predicateName[3]=='_'||predicateName[3]==0)
+              		continue;// <zh-ch, id ...
         if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
-        		continue;// zh-ch, id ...
+              		continue;// zh-ch, id ...
+        if(objectName[0]=='/'||objectName[1]=='/')continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
         predicate=getFreebaseEntity(predicateName);
         subject=getFreebaseEntity(subjectName); //
         object=getFreebaseEntity(objectName);

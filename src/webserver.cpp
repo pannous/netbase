@@ -44,6 +44,18 @@ void fixLabel(Node* n){
 		n->name[strlen(n->name)-1]=0;
 }
 
+bool filterStatement(Statement* s){
+	char* predicateName=s->Predicate()->name;
+	char* objectName=s->Object()->name;
+	if(eq(predicateName,"Key"))return true;
+    if(predicateName[3]=='-'||predicateName[3]=='_'||predicateName[3]==0)
+          		return true;// <zh-ch, id ...
+    if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
+    	return true;// zh-ch, id ...
+    if(objectName[0]=='/'||objectName[1]=='/')return true;
+    return false;
+}
+
 void fixLabels(Statement* s){
 	fixLabel(s->Subject());
 	fixLabel(s->Predicate());
@@ -199,6 +211,7 @@ int Service_Request(int conn) {
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
 				fixLabels(s);
+				if(filterStatement(s))continue;
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;

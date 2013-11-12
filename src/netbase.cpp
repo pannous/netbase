@@ -1833,6 +1833,7 @@ NodeVector findProperties(Node* n, const char* m){
                 good.push_back(s->Subject());
             else if (!contains(good, s->Object(), false))
             good.push_back(s->Object());
+            if(good.size()>resultLimit)return good;
         }
     }
     return good;
@@ -1844,8 +1845,10 @@ NodeVector findProperties(Node* n , Node* m){
     //    if(!isAbstract(n))
     all.push_back(n);// especially for freebase singletons!
     // OR//    findStatement(<#Node *subject#>, <#Node *predicate#>, <#Node *object#>)
-    for (int i=0; i<all.size(); i++)
+    for (int i=0; i<all.size(); i++){
         mergeVectors(&good, findProperties(all[i],m->name));
+        if(good.size()>resultLimit)return good;
+    }
     return good;
 }
 
@@ -1859,6 +1862,7 @@ NodeVector findProperties(const char* n, const char* m){
     for (int i=0; i<all.size(); i++){
         NV more=findProperties(all[i],m);
         mergeVectors(&good, more);
+        if(good.size()>resultLimit)return good;
     }
     return good;// dedup(good);
 }
