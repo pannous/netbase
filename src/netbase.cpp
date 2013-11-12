@@ -1323,31 +1323,29 @@ Node * showNr(int context, int id) {
 
 // saver than iterating through abstracts?
 
-Node * findWord(int context, const char* word, bool first) {	//=false
+NodeVector* findWords(int context, const char* word, bool first) {	//=false
 	// pi(context);
+	NodeVector* all=new NodeVector();
 	Context* c=getContext(context);
-	Node* found=0;
-//	int shown=0;
 	for (int i=0; i < c->nodeCount; i++) {
 		Node* n=&c->nodes[i];
 		if (n->id==0||!checkNode(n, i, true, false)) continue;
 		if (eq(n->name, word, true)) {
-			found=n;
-			if (!quiet) {
-				//				if(isAbstract(n)&&showAbstract)
-				//				printf("found abstract %s in context %d\n", word, context);
-				//				else
-				//				printf("found node %s in context %d\n", word, context);
-			}
-			show(n); //////// <<<<<<<<<<<<<<<
-			if (first) return n;
+			all->push_back(n);
+			show(n);
+			if (first) return all;
 		}
 	}
-	if (found == 0) {
-        
+	if (all->size() == 0)
 		if (!quiet) printf("cant find node %s in context %d\n", word, context);
+	N a=getAbstract(word);
+	NV is=instanceFilter(a);
+
+	for (int i=0; i < all->size(); i++){
+		Node *n=all->at(i);
+		if(!contains(is,n))addStatement(a,Instance,n);
 	}
-	return found;
+	return all;
 }
 
 // DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
@@ -1504,18 +1502,12 @@ void deleteWord(const char* data, bool completely) {
 	if (id <= 0) {
 		deleteNode(getThe(data));
 		if (completely) {
-			Node* word=findWord(current_context, data, true); //getAbstract(data);
-			while (word) {
+			NodeVector* words=findWords(current_context, data, true); //getAbstract(data);
+			for(int i=0;i<words->size();i++){
+				Node* word=words->at(i);
 				pf("deleteNode %s \n", word->name);
 				deleteNode(word); // DANGER!!
-				//			Statement* s = getStatementNr(word->firstStatement);
-				//			while (s) {
-				//				deleteStatement(s);
-				//				s = nextStatement(word, s, false);
-				//			}
-				word=findWord(current_context, data, true);
 			}
-            
 		}
 	} else if (checkNode(&context->nodes[id], id, false, false)) deleteNode(&context->nodes[id]);
 	else if (checkStatement(&context->statements[id], false, false)) deleteStatement(&context->statements[id]);
@@ -1543,10 +1535,13 @@ void deleteNode(Node * n) {
 }
 
 void deleteStatements(Node * n) {
-	for (int i=0; i < minimum(n->statementCount, 10000); i++) {
-		Statement* s=getStatementNr(n, i);
+	Statement* s=0;
+	while (s=nextStatement(n, s))
 		deleteStatement(s);
-	}
+//	for (int i=0; i < minimum(n->statementCount, 10000); i++) {
+//		Statement* s=getStatementNr(n, i);
+//		deleteStatement(s);
+//	}
 	n->statementCount=0;
 	n->firstStatement=0;
 	n->lastStatement=0;

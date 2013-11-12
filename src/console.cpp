@@ -314,6 +314,11 @@ NodeVector parse(const char* data) {
 		return nodeVectorWrap(da);
 	}
 
+	if (eq(args[0], "find")) {
+		N da=getAbstract(data + 5);
+		return *findWords(wordnet,data + 5,false);
+	}
+
 	if (startsWith(data, "label ")||startsWith(data, "rename ")) {
 		N n=getThe(args[1]);
 		setLabel(n, next_word(next_word(data)).data());
