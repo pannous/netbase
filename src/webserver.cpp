@@ -204,8 +204,11 @@ int Service_Request(int conn) {
 	if (format == json)entity_format = entity_format_json;
 	if (format == txt)entity_format = entity_format_txt;
 	if (format == csv)entity_format = entity_format_csv;
+	Node* last=0;
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
+		if(last==node)continue;
+		last=node;
 		sprintf(buff, entity_format, node->name, node->id);
 		Writeline(conn, buff);
 		Statement* s = 0;
