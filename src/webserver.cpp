@@ -117,6 +117,7 @@ int Service_Request(int conn) {
 	}
 	if (startsWith(q, "html/")) {
 			format = html;
+			if(!contains(q,"."))
 			verbosity=verbose;
 			q = q + 5;
 		}
