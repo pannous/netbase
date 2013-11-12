@@ -174,13 +174,13 @@ int Service_Request(int conn) {
 		excluded[0]=0;
 		excluded+=2;
 	}
-	if(contains(q," -")){
-		excluded2=strstr(q," -");
+	if(contains(excluded," -")){
+		excluded2=strstr(excluded," -");
 		excluded2[0]=0;
 		excluded2+=2;
 	}
-	if(contains(q," -")){
-		excluded3=strstr(q," -");
+	if(contains(excluded2," -")){
+		excluded3=strstr(excluded2," -");
 		excluded3[0]=0;
 		excluded3+=2;
 	}
