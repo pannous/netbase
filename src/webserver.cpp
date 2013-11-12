@@ -755,19 +755,23 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 
 /*  main() funcion  */
 
+int listener, conn,closing=0;
+pid_t pid;
+
+//    socklen_t
+struct sockaddr_in servaddr;
 void start_server() {
 	printf("STARTING SERVER!\n localhost:%d\n", SERVER_PORT);
 	flush();
-	int listener, conn;
-	pid_t pid;
-//    socklen_t
-	struct sockaddr_in servaddr;
 
 
 	/*  Create socket  */
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		Error_Quit("Couldn't create listening socket.");
 
+	int flag = 1;// allow you to bind a local port that is in TIME_WAIT.
+//	This is very useful to ensure you don't have to wait 4 minutes after killing a server before restarting it.
+	setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
 
 	/*  Populate socket address structure  */
 	memset(&servaddr, 0, sizeof (servaddr));
@@ -794,9 +798,11 @@ void start_server() {
     p(" [doesn't work with xcode, use ./compile.sh ]");
 
 	/*  Loop infinitely to accept and service connections  */
-	while (1) {
+	while (!closing) {
 		/*  Wait for connection  */
-		if ((conn = accept(listener, NULL, NULL)) < 0)
+		conn = accept(listener, NULL, NULL);
+		if(closing){shutdown_webserver(); break;}
+		if (conn  < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
         else p("conn = accept OK");
 		// WORKS FINE, but not when debugging
@@ -824,18 +830,33 @@ void start_server() {
 
 		/*  If we get here, we are still in the parent process,
 			so close the connected socket, clean up child processes,
-			and go back to accept a new connection.                   */
-
+			and go back to accept a new connection.
+			 */
+		if(!closing)
 		waitpid(-1, NULL, WNOHANG);
 
 		if (close(conn) < 0)
 			Error_Quit("Error closing connection socket in parent.");
 
 	}
+	if(!closing)
 	Error_Quit("FORK web server failed");
+	else p("Shutdown successful");
 	return; // EXIT_FAILURE;    /*  We shouldn't get here  */
 }
 
+int shutdown_webserver(){
+	closing=true;
+	close(listener);
+	close(conn);
+	//	Keep in mind, even if you close() a TCP socket, it won't necessarily be immediately reusable anyway, since it will be in a TIME_WAIT state while the OS makes sure there's no outstanding packets that might get confused as new information if you were to immediately reuse that PORT for something else.
+
+//	http://stackoverflow.com/questions/4160347/close-vs-shutdown-socket
+//	shutdown(conn,0);
+//	shutdown(listener,0);
+
+//unbind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr));
+}
 
 /*
 int main(int argc, char *argv[]) {

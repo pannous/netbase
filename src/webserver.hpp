@@ -11,6 +11,7 @@
 
 */
 void start_server();
+int shutdown_webserver();
 
 #ifndef PG_HELPER_H
 #define PG_HELPER_H

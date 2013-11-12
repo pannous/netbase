@@ -1114,7 +1114,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 	return insta;
 }
 
-//#include <csignal> // or signal.h if C code // Generate an interrupt
+
 
 // only for relationships!
 //void forceAbstract(Node* n){
@@ -2198,7 +2198,10 @@ string getImage(const char* n, int size) {
     
 	return base + hash[0] + "/" + hash[0] + hash[1] + "/" + image + "/" + ssize + "px-" + image;
 }
-
+#include <csignal> // or signal.h if C code // Generate an interrupt
+void SIGINT_handler(int x){
+	shutdown_webserver();
+}
 int main(int argc, char *argv[]) {
 	char* data=getenv("QUERY_STRING");
 	if (data) {
@@ -2210,7 +2213,7 @@ int main(int argc, char *argv[]) {
 	}
     
 	//    signal(SIGSEGV, handler); // only when fully debugged!
-	//    signal(SIGINT, SIGINT_handler); // only when fully debugged!
+	signal(SIGINT, SIGINT_handler); // only when fully debugged!
 	//    setjmp(loop_context);
 	path=argv[0];
 	path=path.substr(0, path.rfind("/") + 1);
