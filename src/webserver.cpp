@@ -1,17 +1,4 @@
 #pragma once
-/*
-
-  HELPER.C
-  ========
-  (c) Copyright Paul Griffiths 1999
-  Email: mail@paulgriffiths.net
-
-  Implementation of helper functions for simple web server.
-  The Readline() and Writeline() functions are shamelessly
-  ripped from "UNIX Network Programming" by W Richard Stevens.
-
- */
-
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -27,7 +14,7 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (3333)
+#define SERVER_PORT  (80)
 
 enum result_format {
 	xml, json, txt,csv,html
