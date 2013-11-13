@@ -286,12 +286,12 @@ void testDummyLogic() {
 	//	Node* n = (Node *)rows1[0];
 	p(testDummy);
 	clearAlgorithmHash();
-	NodeVector& testDummys=all_instances(testDummy);
+	NodeVector& testDummys=allInstances(testDummy);
 	check(contains(testDummys, testDummy));
 	//	check(getThe("testDummy")==testDummy);
 	//	testDummys=all_instances(getThe("testDummy"));
 	//	check(contains(testDummys,testDummy));
-	testDummys=all_instances(getAbstract("testDummy"));
+	testDummys=allInstances(getAbstract("testDummy"));
 	check(contains(testDummys, testDummy));
 	NodeVector funnys=filter(testDummys, "funny");
 	check(contains(testDummys, testDummy));
@@ -356,11 +356,11 @@ void testDummyLogic() {
 	addStatement(beth, Type, Person);
 	assert(findStatement(cute, Type, Person) == 0, "findStatement(cute,Type,Person)==0 b");
 	clearAlgorithmHash();
-	vector<Node*> persons=all_instances(Person);
+	vector<Node*> persons=allInstances(Person);
 	assert(persons.size() > 0, "all_instances(Person).size()>0");
 	assert(contains(persons, beth), "contains(persons,Beth)");
 	//    check(contains(people, karsten));
-	vector<Node*> managers=all_instances(manager);
+	vector<Node*> managers=allInstances(manager);
 	//    todo:
 	//    check(contains(managers, karsten));
 	//    vector<Node*>
@@ -373,9 +373,9 @@ void testDummyLogic() {
 	vector<Node*> cuties=query(sql);
 	check(contains(cuties, beth));
 	check(last(cuties) == beth);
-	assert(all_instances(people).size() > 0, "all_instances(people)>0");
+	assert(allInstances(people).size() > 0, "all_instances(people)>0");
 	assert(find_all("people", current_context, true).size() > 1, "find_all(people)>1");
-	check(contains(all_instances(people), beth));
+	check(contains(allInstances(people), beth));
 	NodeVector all=find_all("people", current_context, true);
 	check(contains(all, beth));
 	//    check(isA(beth,cute));
@@ -584,7 +584,7 @@ void testImportContacts() {
 }
 
 void testImportExport() {
-	//    show(word(female_firstname));
+	//    show(word(female firstname));
 	//    check(isA(word(James), _(male_name)));
 	//    check(query("all firstnames starting with 'a'").size() > 0);
     
@@ -598,50 +598,56 @@ void testImportExport() {
 	 c->nodeCount=nodeCount;
 	 save();
 	 */
-    if (!hasWord("male_firstname")||!hasWord("female_firstname"))
+    if (!hasWord("male firstname")||!hasWord("female firstname"))
         importNames();
-	//	deleteStatements(a(female_firstname));
-	//	p(a(female_firstname));
-	//	addStatement(a(female_firstname),Instance,the(female_firstname),false);// bug hack
-	//	addStatement(a(female_firstname),Instance,get(489285),false);// bug hack
+	//	deleteStatements(a(female firstname));
+	//	p(a(female firstname));
+	//	addStatement(a(female firstname),Instance,the(female firstname),false);// bug hack
+	//	addStatement(a(female firstname),Instance,get(489285),false);// bug hack
 	//	addStatement(get(9028726),Synonym,get(9025182),false);// bug hack
-	check(all_instances(a(female_firstname)).size() > 5); //
-	check(query("all female_firstnames", 10).size() > 5);
     
-	p(a(female_firstname));
-	p(the(female_firstname));
+	check(query("all names", 1000).size() > 500);
+	check(allInstances(a(female firstname)).size() > 5); //
+	check(query("all female firstnames", 10).size() > 5);
+    
+	p(a(female firstname));
+	p(the(female firstname));
 	////    find_all("Jenny");
-	//	check(findStatement(a(female_firstname),Instance,the(female_firstname),0,0,0,0));
+	//	check(findStatement(a(female firstname),Instance,the(female firstname),0,0,0,0));
 	////	exit(1);
-	//	check(all_instances(the(female_firstname)).size()>5);//
+	//	check(all_instances(the(female firstname)).size()>5);//
     
-	//	check(all_instances(a("female_firstname")).size()>5);
+	//	check(all_instances(a("female firstname")).size()>5);
     
-	////	check(all_instances(a(female_firstnames)).size()>5);// plural not in system OK HERE
-	//	addStatement(a(female_firstname),Plural,the(female_firstnames),true);
-	//	check(all_instances(a(female_firstnames)).size()>5);// plural in system OK
+	////	check(all_instances(a(female firstnames)).size()>5);// plural not in system OK HERE
+	//	addStatement(a(female firstname),Plural,the(female firstnames),true);
+	//	check(all_instances(a(female firstnames)).size()>5);// plural in system OK
     
     
-    //	addStatement(all(female_firstname), a(gender), a(female));
-    //	addStatement(all(female_firstname), Owner, a(female));
-    //	addStatement(all(male_firstname), are, a(firstname));
-    //	addStatement(all(male_firstname), a(gender), a(male));
+    //	addStatement(all(female firstname), a(gender), a(female));
+    //	addStatement(all(female firstname), Owner, a(female));
+    //	addStatement(all(male firstname), are, a(firstname));
+    //	addStatement(all(male firstname), a(gender), a(male));
     //	addStatement(all(firstname), are, a(name));
-	check(isA(a(female_firstname), a(name)));
-	check(isA(a(Ahney), a(female_firstname)));
-   	check(isA(a(Ahney), the(female_firstname)));
+	check(isA(a(female firstname), a(name)));
+	check(isA(a(Ahney), a(female firstname)));
+   	check(isA(a(Ahney), the(female firstname)));
+    
+	clearAlgorithmHash();
+    addStatement(a(female firstname),is_a, a(name));
 	check(isA(a(Ahney), a(name)));
 	clearAlgorithmHash();
     
 	show(getAbstract("Zilla")); //51566;
 	show(getThe("Zilla"));
-	check(isA(a(Zilla), _(female_firstname)));
-    
+	check(isA(a(Zilla), _(female firstname)));
 	clearAlgorithmHash();
+    addStatement(a(firstname),is_a, a(name));
 	check(isA(a(firstname), a(name)));
 	clearAlgorithmHash(true);
-	check(isA(a(Zilla), a(female_firstname)));
-	check(isA(a(female_firstname), a(firstname)));
+	check(isA(a(Zilla), a(name)));
+	check(isA(a(Zilla), a(female firstname)));
+	check(isA(a(female firstname), a(firstname)));
 	//    check(isA(a(Zilla), a(first_name)));
 	//    check(isA(a(Zilla), _(first_name)));
 	clearAlgorithmHash(true);
@@ -651,11 +657,11 @@ void testImportExport() {
 	check(isA(a(Zilla), a(name)));
     
     clearAlgorithmHash(true);
-    check(isA(word(James), _(male_firstname)));
+    check(isA(word(James), _(male firstname)));
     check(isA(word(James), _(name)));
     
 	check(query("all firstnames", 10).size() > 5);
-	check(query("all names", 10).size() > 5);
+	check(query("all names", 100).size() > 50);
     
 	//	check(isA(a(Zilla), _(name)));
 	clearAlgorithmHash();
@@ -713,7 +719,7 @@ void testValueLogic() {
 	deleteNode(a("14.32 meter"));
 	ein(Booot);
 	check(eq(Booot->name, "Booot"));
-	NodeVector alle=all_instances(Booot);
+	NodeVector alle=allInstances(Booot);
 	//    check(contains(alle, Booot)); // Nee, all_classes ja, all_instances nicht. oder?
 	Node* m14=value("", 14, "m");
 	Node* m15=value("", 15, "m");
@@ -918,7 +924,7 @@ void testComparisonQuery() {
 	int limit=10;
 	NodeVector nv;
 	Query q;
-	q.instances=all_instances(the(city));
+	q.instances=allInstances(the(city));
 	q.limit=limit;
 	q.lookuplimit=limit * 2;
 	nv=filter(q, pattern(the(population), Less, the(1200)));
@@ -1282,13 +1288,13 @@ void tests() {
 	//    testStringLogic2();
 	//    testLogic();// test wordnet intersection
     
+	testImportExport();
 	checkWordnet();
     checkGeo();	//	testDummyLogic();// too big
     
 	// shaky
 	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
 	testFacets();
-	testImportExport();
 	testQuery();
    	testPaths();
 	// OK
@@ -1331,9 +1337,10 @@ void fixNames(){
 }
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
+    tests();
 //    fixNames();
 //    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
-    importAll();
+//    importAll();
 //    import("yago","yagoLabels.tsv");
 //    showNodes(parse("all 42650559"));
 //    deleteNode(get(42032201));

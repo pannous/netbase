@@ -244,10 +244,10 @@ NodeVector query(string s, int limit) {
 }
 
 NodeVector query(Query& q) {
-	NodeVector all = all_instances(q.keyword);
+	NodeVector all = allInstances(q.keyword);
 	for (int i = 0; i < q.keywords.size(); i++)
 		if (q.keywords[i] != q.keyword)
-			mergeVectors(&all, all_instances(q.keywords[i]));
+			mergeVectors(&all, allInstances(q.keywords[i]));
 	q.instances = all;
 	for (int i = 0; i < q.filters.size(); i++) {
 		pf("candidates so far %lu",all.size());
@@ -371,6 +371,7 @@ Statement *parseFilter(string s) {
 }
 
 Query parseQuery(string s, int limit) {
+    autoIds=false;
 	Query q;
     // static  ???
 	char fields[10000];
@@ -385,7 +386,7 @@ Query parseQuery(string s, int limit) {
 	s=fixQuery(s);
 	if ((int) s.find("from") < 0)
 		s = string("select * from ") + s; // why (int) neccessary???
-	sscanf(s.c_str(), "select %s from %s where %s", fields, type, match); //[^\n] // [^\0]
+	sscanf(s.c_str(), "select %s from %[0-9a-zA-Z ]s where %s", fields, type, match); //[^\n] // [^\0]
 	char* match2 = (char*) strstr(s.c_str(), " where "); // remove test.funny->.funny do later!
 	if (match2) {
 		match2 += 7; // wegen 'where' !!!! bad style
@@ -395,7 +396,8 @@ Query parseQuery(string s, int limit) {
 	p(fields);
 	p(type);
 	p(match);
-	q.keyword = getThe(type);
+//	q.keyword = getThe(type);
+	q.keyword = getAbstract(type);
 	//    q.keywords=nodeVector(splitString(type, ","));
 	//    if(q.keywords.size()>0)
 	//    q.keyword=q.keywords[0];
@@ -446,7 +448,7 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	//        batch = batch * 100; //=> max 9 runs
 	// what if all==1000000 but limit==3?
 
-	NodeVector all = all_instances(getAbstract(type));
+	NodeVector all = allInstances(getAbstract(type));
 	//  find_all(type, current_context, true, batch); // dont limit wegen filter!!
 	pf("%lu so far\n", all.size());
 	if (where[0])
@@ -785,7 +787,7 @@ NodeVector & nodesOfDirectType(int kind) {
 
 // todo: EXCLUDING classes and direct instances on demand!
 
-NodeVector & all_instances(Node * type) {
+NodeVector & allInstances(Node * type) {
 	clearAlgorithmHash();
 	//	NodeVector all=instanceFilter(type);
 	//	return all;//  all_instances(getQuery(type));
@@ -810,10 +812,10 @@ NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses
 	NodeVector subtypes;
 
 	// todo : via instanceFilter see below
-	//	Statement* s = 0;
-	//	while ((s = nextStatement(type, s)) && all.size() <= max && subtypes.size() <= max) {
-	for (int i = 0; i < type->statementCount; i++) {
-		Statement* s = getStatementNr(type, i);
+    Statement* s = 0;
+	while ((s = nextStatement(type, s)) && all.size() <= max && subtypes.size() <= max) {
+//	for (int i = 0; i < type->statementCount; i++) {
+//		Statement* s = getStatementNr(type, i);
 		if (!checkStatement(s))continue;
 		if (s->Predicate() == type)continue; // NO Predicate matches!!
 		//		if (s->subject == 613424) {
@@ -987,7 +989,7 @@ Node * findMatch(Node* n, const char* match) {//
 
 int countInstances(Node * node) {
 	int j = (int)instanceFilter(node).size();
-	int i = (int)all_instances(node).size();
+	int i = (int)allInstances(node).size();
 	setValue(node, the(direct instance count), value(0, j));
 	setValue(node, the(total instance count), value(0, i));
 	show(node, false);
@@ -1223,7 +1225,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	// NOT neccessary for anyPath , ...
 	NodeVector instances;
 	if (edgeFilter != anyFilterNoKinds && edgeFilter != instanceFilter && edgeFilter != anyFilterRandom) // && edgeFilter!=
-		instances = all_instances(fro);
+		instances = allInstances(fro);
 	for (int i = 0; i < instances.size(); i++) {
 		Node* d = instances[i];
 		enqueued[d->id] = fro->id;

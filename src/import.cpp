@@ -1664,7 +1664,7 @@ void importAll() {
     //	doDissectAbstracts=true;// already? why not
     importNames();
     importGeoDB();
-//    importFreebase();
+    importFreebase();
     importAllYago();
     //	if (getImage("alabama") != "" && getImage("Alabama") != "")
     //		p("image import done before ...");

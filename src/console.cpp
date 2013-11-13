@@ -361,6 +361,10 @@ NodeVector parse(const char* data) {
 		show(n);    //<g.11vjx36lj>
 		return OK;
 	}
+    
+	if (contains(data, ".") && contains(data, "="))
+		return nodeVectorWrap(reify(learn(data)));
+	
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))
 			|| (contains(data, ":"))) { // && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath
