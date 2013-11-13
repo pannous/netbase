@@ -238,11 +238,13 @@ NodeVector parse(const char* data) {
 	autoIds=true;
 
 	if (contains(data, "limit")) {
-		char* newdata=(char*) malloc(1000);
-		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
+		sscanf(data, "%*s limit %d", &resultLimit);
+		*strstr(data," limit")=0;
+//		char* newdata=(char*) malloc(1000);
+//		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
 //		if(!)
 //		sscanf(data, "limit %d %s", &resultLimit, newdata);
-		strcpy((char*) data, newdata);
+//		strcpy((char*) data, newdata);
 		p(resultLimit);
 	}
 	if (eq(data, "load") || eq(data, ":l")) {
