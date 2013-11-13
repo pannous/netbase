@@ -1665,7 +1665,7 @@ void importAll() {
     importNames();
     importGeoDB();
     importFreebase();
-    importAllYago();
+//    importAllYago();
     //	if (getImage("alabama") != "" && getImage("Alabama") != "")
     //		p("image import done before ...");
     //	else

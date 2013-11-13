@@ -46,6 +46,7 @@ bool checkHideStatement(Statement* s){
           		return true;// <zh-ch, id ...
     if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
     	return true;// zh-ch, id ...
+    if(startsWith(predicateName,"http"))return true;
     if(objectName[0]=='/'||objectName[1]=='/')return true;
     if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
     if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
