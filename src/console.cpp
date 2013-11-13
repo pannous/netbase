@@ -238,8 +238,9 @@ NodeVector parse(const char* data) {
 	autoIds=true;
 
 	if (contains(data, "limit")) {
-		sscanf(data, "%*s limit %d", &resultLimit);
-		*((char*)strstr(data," limit"))=0;
+		char* limit=(char*)strstr(data," limit");
+		sscanf(limit+1, "limit %d", &resultLimit);
+		*limit=0;
 //		char* newdata=(char*) malloc(1000);
 //		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
 //		if(!)
