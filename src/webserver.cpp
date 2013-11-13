@@ -210,10 +210,10 @@ int Service_Request(int conn) {
 	if (format == csv)statement_format = statement_format_csv;
     
    	const char* entity_format;
-	const char* entity_format_txt = "%s (%d)\n";
-	const char* entity_format_xml = "<entity name=\"%s\" id='%d'>\n";
-	const char* entity_format_json = "   {'name':\"%s\", 'id':%d";
-   	const char* entity_format_csv = "%s\t%d\n";
+	const char* entity_format_txt = "%s #%d statements:%d\n";
+	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statements='%d'>\n";
+	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statements':%d";
+   	const char* entity_format_csv = "%s\t%d\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
 	if (format == html)entity_format = entity_format_json;
