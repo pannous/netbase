@@ -1321,7 +1321,7 @@ void testFreebase(){
 void fixNames(){
 	char* x=name_root;
 	while(x<name_root+maxNodes*averageNameLength-10000){
-		int l=strlen(x);
+		int l=(int)strlen(x);
 		if(contains(x,"\"@")){
 			strstr(x,"\"@")[0]=0;
 		}
@@ -1331,7 +1331,9 @@ void fixNames(){
 }
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
-    fixNames();
+//    fixNames();
+    check(getAbstract("Tom_Hartley")==getAbstract("Tom Hartley"));
+//    import("yago","yagoLabels.tsv");
 //    showNodes(parse("all 42650559"));
 //    deleteNode(get(42032201));
 

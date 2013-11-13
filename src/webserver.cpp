@@ -81,7 +81,7 @@ int Service_Request(int conn) {
 
 	init(); // for each forked process!
 	char* q = substr(reqinfo.resource, 1, -1);
-	int len=strlen(q);
+	int len=(int)strlen(q);
 	if (eq(q, "favicon.ico"))return 0;
 	if (endsWith(q, ".json")) {
 			format = json;
@@ -817,10 +817,9 @@ void start_server() {
     p(" [doesn't work with xcode, use ./compile.sh ]");
 
 	/*  Loop infinitely to accept and service connections  */
-	while (!closing) {
+	while (1) {
 		/*  Wait for connection  */
 		conn = accept(listener, NULL, NULL);
-		if(closing){shutdown_webserver(); break;}
 		if (conn  < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
         else p("conn = accept OK");
@@ -851,30 +850,14 @@ void start_server() {
 			so close the connected socket, clean up child processes,
 			and go back to accept a new connection.
 			 */
-		if(!closing)
 		waitpid(-1, NULL, WNOHANG);
 
 		if (close(conn) < 0)
 			Error_Quit("Error closing connection socket in parent.");
 
 	}
-	if(!closing)
 	Error_Quit("FORK web server failed");
-	else p("Shutdown successful");
 	return; // EXIT_FAILURE;    /*  We shouldn't get here  */
-}
-
-int shutdown_webserver(){
-	closing=true;
-	close(listener);
-	close(conn);
-	//	Keep in mind, even if you close() a TCP socket, it won't necessarily be immediately reusable anyway, since it will be in a TIME_WAIT state while the OS makes sure there's no outstanding packets that might get confused as new information if you were to immediately reuse that PORT for something else.
-
-//	http://stackoverflow.com/questions/4160347/close-vs-shutdown-socket
-//	shutdown(conn,0);
-//	shutdown(listener,0);
-
-//unbind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr));
 }
 
 /*

@@ -118,7 +118,7 @@ NodeVector parseProperties(const char *data) {
 		char** splat=splitStringC(data, ':');
 		thing=splat[1];
 		property=splat[0];
-		bool inverse=1;
+//		bool inverse=1;
 	} else {
 		//			sscanf(data,"%s.%s",thing,property);
 		char** splat=splitStringC(data, '.');

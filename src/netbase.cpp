@@ -232,7 +232,7 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 #endif
 		Statement* to_insert=&context->statements[statementNr];
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
-		if (to_insert->Predicate() == Instance || to_insert->Predicate() == Type&&to_insert->Object()==node || to_insert->Predicate() == node) { // ALL!
+		if (to_insert->Predicate() == Instance || (to_insert->Predicate() == Type&&to_insert->Object()==node) || to_insert->Predicate() == node) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
 			if(eq(add_here,statementNr))return false;
 			appendLinkedListOfStatements(add_here, node, statementNr); // append new to old
@@ -1466,7 +1466,7 @@ void removeStatement(Node* n, Statement * s) {
 	if (!n || !s) return;
 	Statement *last=0;
 	Statement *st=0;
-	while(st=nextStatement(n,st)){
+	while((st=nextStatement(n,st))){
 //	for (int i=0; i < n->statementCount; i++) {
 //		Statement* st=getStatementNr(n, i);
 		if (st == s) {
@@ -1538,7 +1538,7 @@ void deleteNode(Node * n) {
 void deleteStatements(Node * n) {
 	Statement* s=0;
 	Statement* previous=0;
-	while (s=nextStatement(n, s)){
+	while ((s=nextStatement(n, s))){
 		if(previous)deleteStatement(previous);
 		previous=s;
 	}
@@ -2157,7 +2157,7 @@ void setLabel(Node* n, cchar* label) {
 	Context* c=currentContext();
 	char* l=&c->nodeNames[c->currentNameSlot];
 	strcpy(l, label);
-	int len=strlen(label);
+	int len=(int)strlen(label);
 	l[len]=0;
 	c->currentNameSlot+=len + 1;
 	n->name=l;
@@ -2198,10 +2198,10 @@ string getImage(const char* n, int size) {
     
 	return base + hash[0] + "/" + hash[0] + hash[1] + "/" + image + "/" + ssize + "px-" + image;
 }
-#include <csignal> // or signal.h if C code // Generate an interrupt
-void SIGINT_handler(int x){
-	shutdown_webserver();
-}
+//#include <csignal> // or signal.h if C code // Generate an interrupt
+//void SIGINT_handler(int x){
+//	shutdown_webserver();
+//}
 int main(int argc, char *argv[]) {
 	char* data=getenv("QUERY_STRING");
 	if (data) {

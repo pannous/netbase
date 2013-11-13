@@ -926,7 +926,7 @@ int countRows(char* line) {
 }
 
 bool importYago(const char* file) {
-	p("import YAGO start");
+	pf("import YAGO %s start\n",file);
     //	if (!contains(file, "/")) file=(((string) "/data/base/BIG/yago/") + file).data();
 	if (!contains(file, "/")) file=concat("yago/", file);
 	//		file = concat("/Users/me/data/base/BIG/yago/", file);
@@ -942,10 +942,12 @@ bool importYago(const char* file) {
 	char* objectName=(char*) malloc(10000);
 	int rows=0;
 	int leadingId=!contains(file, "Data");
+	bool labels=0;
 	while (fgets(line, 10000, infile) != NULL) {
 		fixNewline(line);
 		if (line[0] == '\t') line[0]=' '; // don't line++ , else nothing left!!!
 		if (linecount % 10000 == 0) {
+			labels=endsWith(line,"@eng");
 			if (checkLowMemory()) //MEMORY
 				return 0; //exit(0);
 		}
@@ -954,11 +956,14 @@ bool importYago(const char* file) {
             fflush(stdout);
         }
 		int ok=rows=countRows(line);
-		if (rows == 4 && leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
+      	if (labels&&line[0]==' ')ok=sscanf(line+1, " %s\t%s\t\"%[^\"]s",subjectName, predicateName, objectName);
+      	else if (labels)  ok=sscanf(line, "%*s\t%s\t%s\t\"%[^\"]s",subjectName, predicateName, objectName);
+		else if (rows == 4 && leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
 		else if (rows == 4 && !leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", subjectName, predicateName, objectName, id); // data
 		else ok=sscanf(line, "%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
 		if (ok < 3) {
-			printf("MISMATCH %s\n", line);
+            printf("id %s  subjectName %s  predicateName %s objectName  %s\n",id, subjectName, predicateName, objectName);
+			printf("MISMATCH2 %s\n", line);
 			continue; //todo
 			char** all=splitStringC(line, '\t');
 			if (all[2] == 0) {
@@ -977,6 +982,8 @@ bool importYago(const char* file) {
 			object=getYagoConcept(all[3]);
 			free(all);
 		} else {
+            if(labels&&wordhash(objectName)==wordhash(subjectName))
+                continue;
 			if (eq(predicateName, "<hasGeonamesEntityId>")) continue;
             //			if(eq("<Tommaso_Caudera>",subjectName))
             //							p(subjectName);// subject==0 bug Disappears when debugging!!!
@@ -1008,7 +1015,7 @@ bool importYago(const char* file) {
 		//		showStatement(s);
 	}
 	fclose(infile); /* Close the file */
-	p("import facts ok");
+	pf("import %s ok\n",file);
 	return true;
 }
 
@@ -1597,7 +1604,9 @@ void importGeoDB() {
 
 void importAllYago() {
 //    import("yago", "yagoGeonamesData.tsv");// expansive !!! don't dissect!
+//	importYago()
     load_wordnet_synset_map();
+//    import("yago", "yagoLabels.tsv");
     import("yago", "yagoFacts.tsv");
     check(hasWord("Tom_Hartley"));
     import("yago", "yagoSimpleTypes.tsv");
@@ -1617,7 +1626,7 @@ void importAllYago() {
     //import("yago","yagoDBpediaInstances.tsv");
     //import("yago","yagoMetaFacts.tsv");
     import("yago", "yagoImportantTypes.tsv");
-    import("yago", "yagoLabels.tsv");
+
     //	dissectParent((Node *) -1);
     
     //	addStatement(Number,Synonym,getThe("xsd:decimal"));
