@@ -1,2 +1,2 @@
 killall netbase
-nohup ./server.sh &
+nohup /root/netbase/server.sh &
