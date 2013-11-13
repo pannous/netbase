@@ -1097,7 +1097,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
     if(autoIds&&isInteger(thing))return get(atoi(thing));
 	if (getRelation(thing)) // not here!
 		return getRelation(thing);
-    
+    replaceChar((char*)thing,'_',' ');
 	Node* abstract=getAbstract(thing);
 	Node* insta=getThe(abstract, type); // todo: best?
 	if (insta) return insta;
@@ -1183,6 +1183,7 @@ Node * getAbstract(const char* thing) {			// AND CREATE!
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
+    replaceChar((char*)thing,'_',' ');
 	Node* abstract=hasWord(thing);
 	if (abstract) return abstract;
 	abstract=add(thing, abstractId, abstractId); // abstract context !!

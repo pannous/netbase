@@ -214,11 +214,12 @@ void importNodes() {
             fflush(stdout);
         }
 		strcpy(tokens, line);
-		int x=0; // replace ' ' with '_'
-		while (tokens[x]) {
-			if (tokens[x] == ' ') tokens[x]='_';
-			x++;
-		}
+//        replaceChar(tokens,, <#char what#>, <#char with#>)
+//		int x=0; // replace ' ' with '_'
+//		while (tokens[x]) {
+//			if (tokens[x] == ' ') tokens[x]='_';
+//			x++;
+//		}
 		// char name[1000];
 		char* name=(char*) malloc(100);
 		// char kind[20];
@@ -481,7 +482,7 @@ Node* namify(Node* node, char* name) {
 }
 
 void addAttributes(Node* subject, char* line) {
-	line=(char*) replace_all(line, "\"", "'").c_str();
+	line= replaceChar(line,'"','\'');// why?
 	do {
 		char* attribute=match(line, " ([^=]+)='[^']'");
 		char* value=match(line, " [^=]+='([^'])'");
@@ -823,7 +824,7 @@ Node* rdfOwl(char* name) {
 	//	if(eq(key,"xsd:string"))return Text;// no info!
 	if (eq(name, "xsd:nonNegativeInteger")) return getAbstract("natural number");
 	if (eq(name, "owl:FunctionalProperty")) return Label;
-	if (!startsWith(name, "wiki") && contains(name, ":")) {
+	if (!startsWith(name, "wiki") && contains(name, ":")&&!startsWith(name,"http")) {
 		name=strstr(name, ":");
 		if (!name) return 0; // contains(name, ":") WTF????????
 		name=name + 2;
@@ -899,7 +900,7 @@ Node* parseWordnetKey(char* key) {
 Node* getYagoConcept(char* key) {
 	if (startsWith(key, "<wordnet_")) return parseWordnetKey(key);
 	char* name=fixYagoName(key); // Normalized instead of using similar, key POINTER not touched
-	if (contains(name, ":")) return rdfOwl(key);
+	if (contains(name, ":")&&!startsWith(name,"http")) return rdfOwl(key);
 	if (eq(name, "isPreferredMeaningOf")) return Label;
 	if (eq(name, "#label")) return Label;
 	if (eq(name, "hasGloss")) return Label;
@@ -910,6 +911,7 @@ Node* getYagoConcept(char* key) {
 	//		printf(" bad key %s\n", name);
 	//		return 0;
 	//	}
+//    if(!hasWord(name))
 	Node *n=getThe(name); //fixYagoName(key));
 	//	dissectWord(n);
     //	if(!eq(name,"MC_Zwieback")&&!eq(name,"Stefanie_Zweig")&&!eq(name,"Ca�o_Central")&&!eq(name,"Beitbridge"))
@@ -1021,6 +1023,7 @@ bool importYago(const char* file) {
 
 const char *fixFreebaseName(char *key) {
 	key=(char *) fixYagoName(key);
+    if(startsWith(key,"http"))return key;
 	int len=(int)strlen(key);
 	for (int i=len - 1; i > 0; --i)
 		if (key[i] == '.') {
@@ -1607,9 +1610,10 @@ void importAllYago() {
 //	importYago()
     load_wordnet_synset_map();
 //    import("yago", "yagoLabels.tsv");
+    
+    import("yago", "yagoSimpleTypes.tsv");
     import("yago", "yagoFacts.tsv");
     check(hasWord("Tom_Hartley"));
-    import("yago", "yagoSimpleTypes.tsv");
     import("yago", "yagoLiteralFacts.tsv");
     import("yago", "yagoStatistics.tsv");
     import("yago", "yagoSchema.tsv");
