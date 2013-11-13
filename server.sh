@@ -1,1 +1,1 @@
-./netbase server
+/root/netbase/netbase server
