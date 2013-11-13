@@ -225,7 +225,7 @@ int Service_Request(int conn) {
 		Node* node = (Node*) all[i];
 		if(last==node)continue;
 		last=node;
-		sprintf(buff, entity_format, node->name, node->id);
+		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
