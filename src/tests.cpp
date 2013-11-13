@@ -1318,11 +1318,22 @@ void testFreebase(){
     check(all.size()>0);
         showNodes(all);
 }
+void fixNames(){
+	char* x=name_root;
+	while(x<name_root+maxNodes*averageNameLength-10000){
+		int l=strlen(x);
+		if(contains(x,"\"@")){
+			strstr(x,"\"@")[0]=0;
+		}
+		x=x+l+1;
+	}
 
+}
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
+    fixNames();
 //    showNodes(parse("all 42650559"));
-    deleteNode(get(42032201));
+//    deleteNode(get(42032201));
 
 //	int var=0;
 //    start_server();

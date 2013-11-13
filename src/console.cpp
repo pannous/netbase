@@ -113,7 +113,13 @@ NodeVector parseProperties(const char *data) {
 	char *property=(char *) malloc(1000);
 	if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
 	if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
-	else {
+	if (contains(data, ":")) {
+		//			sscanf(data,"%s:%s",property,thing);
+		char** splat=splitStringC(data, ':');
+		thing=splat[1];
+		property=splat[0];
+		bool inverse=1;
+	} else {
 		//			sscanf(data,"%s.%s",thing,property);
 		char** splat=splitStringC(data, '.');
 		thing=splat[0];
@@ -139,7 +145,6 @@ NodeVector nodeVectorWrap(Node* n) {
 }
 
 NodeVector OK;
-
 
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;
@@ -301,7 +306,7 @@ NodeVector parse(const char* data) {
 	}
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")) {
-     return showNodes(query(data));
+		return showNodes(query(data));
 	}
 	if (startsWith(data, "these ")) return query(data);
 	if (contains(data, "that ")) return query(data);
@@ -316,10 +321,10 @@ NodeVector parse(const char* data) {
 
 	if (eq(args[0], "find")) {
 		N da=getAbstract(data + 5);
-		return *findWords(wordnet,data + 5,false);
+		return *findWords(wordnet, data + 5, false);
 	}
 
-	if (startsWith(data, "label ")||startsWith(data, "rename ")) {
+	if (startsWith(data, "label ") || startsWith(data, "rename ")) {
 		N n=getThe(args[1]);
 		setLabel(n, next_word(next_word(data)).data());
 		return nodeVectorWrap(n);
@@ -356,7 +361,8 @@ NodeVector parse(const char* data) {
 		show(n);    //<g.11vjx36lj>
 		return OK;
 	}
-	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) { // && !contains(data, " "))) {
+	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))
+			|| (contains(data, ":"))) { // && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
@@ -398,10 +404,9 @@ NodeVector parse(const char* data) {
 	if (i == 0) showNodes(instanceFilter(a), true);
 	//        findWord(currentContext()->id, data);
 //    if(isAbstract(a))
-	if (i == 0){
-		NV all= instanceFilter(a);
-		if(all.size()>0)
-			return all;
+	if (i == 0) {
+		NV all=instanceFilter(a);
+		if (all.size() > 0) return all;
 	}
 	return nodeVectorWrap(a);
 //

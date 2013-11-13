@@ -186,6 +186,9 @@ int Service_Request(int conn) {
 		excluded3[0]=0;
 		excluded3+=2;
 	}
+	p(excluded);
+	p(excluded2);
+	p(excluded3);
 //	if (startsWith(q, "m/")) {
 //			q = q + 2;
 //
