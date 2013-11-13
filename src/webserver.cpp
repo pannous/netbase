@@ -171,8 +171,10 @@ int Service_Request(int conn) {
 	}
 	if(contains(q," -")){
 		excluded=strstr(q," -");
-		excluded[0]=0;
-		excluded+=2;
+		if(excluded[2]!=' '){
+			excluded[0]=0;
+			excluded+=2;
+		}
 	}
 	if(contains(excluded," -")){
 		excluded2=strstr(excluded," -");
