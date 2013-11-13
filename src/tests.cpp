@@ -1332,7 +1332,8 @@ void fixNames(){
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
 //    fixNames();
-    check(getAbstract("Tom_Hartley")==getAbstract("Tom Hartley"));
+//    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
+    importAll();
 //    import("yago","yagoLabels.tsv");
 //    showNodes(parse("all 42650559"));
 //    deleteNode(get(42032201));

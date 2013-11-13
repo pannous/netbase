@@ -990,9 +990,14 @@ bool importYago(const char* file) {
 			if (eq(predicateName, "<hasGeonamesEntityId>")) continue;
             //			if(eq("<Tommaso_Caudera>",subjectName))
             //							p(subjectName);// subject==0 bug Disappears when debugging!!!
+            
+			object=getYagoConcept(objectName);
+            if(object==Type){
+                badCount++;
+                continue;//!?
+            }
 			subject=getYagoConcept(subjectName); //
 			predicate=getYagoConcept(predicateName);
-			object=getYagoConcept(objectName);
             //			if (subject == 0) subject=getYagoConcept(modifyConstChar(subjectName)); // wth ???
             //			if (object == 0) object=getYagoConcept(objectName); // wth ???
 		}
@@ -1002,7 +1007,7 @@ bool importYago(const char* file) {
             //			subject = getYagoConcept(subjectName); //
             //			object = getYagoConcept(objectName);
 			badCount++;
-			pf(">%d<", linecount);
+			pf("|>%d<", linecount);
 			continue;
 		}
 		Statement* s;
