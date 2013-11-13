@@ -1385,15 +1385,15 @@ bool importFacts(const char* file, const char* predicateName="population") {
 
 void importNames() {
     addStatement(all(firstname), are, a(name));
-    addStatement(all(firstname), Synonym, a(first_name));
-    addStatement(all(male_firstname), have_the(gender), a(male));
-    addStatement(all(male_firstname), are, a(firstname));
-    addStatement(all(male_firstname), Owner, a(male));
-    addStatement(all(female_firstname), have_the(gender), a(female));
-    addStatement(all(female_firstname), are, a(firstname));
-    addStatement(all(female_firstname), Owner, a(female));
-    importList("FrauenVornamen.txt", "female_firstname");
-    importList("MaennerVornamen.txt", "male_firstname");
+    addStatement(all(firstname), Synonym, a(first name));
+    addStatement(all(male firstname), have_the(gender), a(male));
+    addStatement(all(male firstname), are, a(firstname));
+    addStatement(all(male firstname), Owner, a(male));
+    addStatement(all(female firstname), have_the(gender), a(female));
+    addStatement(all(female firstname), are, a(firstname));
+    addStatement(all(female firstname), Owner, a(female));
+    importList("FrauenVornamen.txt", "female firstname");
+    importList("MaennerVornamen.txt", "male firstname");
 }
 
 void importAbstracts() {
