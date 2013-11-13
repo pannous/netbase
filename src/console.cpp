@@ -130,10 +130,14 @@ NodeVector parseProperties(const char *data) {
 		thing=splat[0];
 		property=splat[2];
 	}
-	if (property[strlen(property) - 1] == 's') property[strlen(property) - 1]=0;
 
 	pf("does %s have %s?\n", thing, property);
 	NodeVector all=findProperties(thing, property);
+	if (all.size()==0&& property[strlen(property) - 1] == 's'){
+		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
+		NodeVector all=findProperties(thing, property);
+	}
+
 	showNodes(all);
 	return all;
 }

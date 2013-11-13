@@ -138,7 +138,7 @@ void debugAhash(int position) {
 	//		p(a->name);
 	int i=0;
 	while (ah->next) {
-        if (i++ > 100) break;
+        if (i++ > 10) break;
 		cchar* n="ERROR";
 		if (checkNode(ah->abstract)) n=get(ah->abstract)->name;
 		pf("%d | %d | >>%s<< | ", position, i, n);
