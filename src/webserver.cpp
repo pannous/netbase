@@ -211,8 +211,8 @@ int Service_Request(int conn) {
     
    	const char* entity_format;
 	const char* entity_format_txt = "%s #%d statements:%d\n";
-	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statements='%d'>\n";
-	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statements':%d";
+	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
+	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statementCount':%d";
    	const char* entity_format_csv = "%s\t%d\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
