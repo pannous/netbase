@@ -154,8 +154,8 @@ void initRelations() {
 	PartOwner = addRelation(_PartOwner, "part of",is_transitive);
 	Part = addRelation(_Part, "part",is_transitive);
 	//	PARTICIPLE_OF_VERB =
-	addRelation(_PARTICIPLE_OF_VERB, "PARTICIPLE_OF_VERB");
-	PERTAINYM =addRelation(_PERTAINYM, "PERTAINYM"); //  # cellular(a) \ cell(n) 	equally(adv)-equal(adj)
+	addRelation(_PARTICIPLE_OF_VERB, "participle");
+	PERTAINYM =addRelation(_PERTAINYM, "pertainym"); //  # cellular(a) \ cell(n) 	equally(adv)-equal(adj)
 
 	Synonym = addRelation(_synonym, "synonym",is_transitive); // similar?? 32??
 	//    Similar = addRelation(21, "similar");//synonym ??
@@ -164,10 +164,10 @@ void initRelations() {
 	addRelation(_SubstanceOwner, "substance of",is_transitive);
 	Substance = addRelation(_Substance, "substance",is_transitive);
 	//	VERB_GROUP=
-	addRelation(_VERB_GROUP, "VERB_GROUP");
+	addRelation(_VERB_GROUP, "verb group");
 	//	RELATIONSHIP_COUNT =
 //	addRelation(25, "RELATIONSHIP_COUNT");
-	addRelation(97, "DOMAIN");
+	addRelation(97, "domain");
 	addRelation(98, "MEMBER");// ??
 
 
@@ -243,8 +243,8 @@ void initRelations() {
 	Little = addRelation(_Much, "little");
 	Very = addRelation(_Very, "very");
 	Contains = addRelation(_Contains, "Contains");
-	StartsWith = addRelation(_StartsWith, "StartsWith");
-	EndsWith = addRelation(_EndsWith, "EndsWith");
+	StartsWith = addRelation(_StartsWith, "starts with");
+	EndsWith = addRelation(_EndsWith, "ends with");
 
 	String = addRelation(_string, "String");
 	Date = addRelation(_date, "Date");
@@ -252,8 +252,8 @@ void initRelations() {
 	Integer = addRelation(_integer, "Integer");
 	Range = addRelation(_range, "Range");
 
-	True= addRelation(_true,"true");
-	False=addRelation(_false,"false");// todo
+	True= addRelation(_true,"True");
+	False=addRelation(_false,"False");// todo
 }
 
 Node* invert(Node* relation) {
