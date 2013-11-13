@@ -911,8 +911,9 @@ Node* getYagoConcept(char* key) {
 	//		printf(" bad key %s\n", name);
 	//		return 0;
 	//	}
-//    if(!hasWord(name))
-	Node *n=getThe(name); //fixYagoName(key));
+    Node *n;
+    if(!hasWord(name))n=getAbstract(name);
+    else n=getThe(name); //fixYagoName(key));
 	//	dissectWord(n);
     //	if(!eq(name,"MC_Zwieback")&&!eq(name,"Stefanie_Zweig")&&!eq(name,"Ca�o_Central")&&!eq(name,"Beitbridge"))
     //		dissectParent(getAbstract(name));
