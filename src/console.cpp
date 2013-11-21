@@ -136,7 +136,7 @@ NodeVector parseProperties(const char *data) {
 	NodeVector all=findProperties(thing, property);
 	if (all.size()==0&& property[strlen(property) - 1] == 's'){
 		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
-		NodeVector all=findProperties(thing, property);
+		all=findProperties(thing, property);
 	}
 
 	showNodes(all);
