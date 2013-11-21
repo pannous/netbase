@@ -191,7 +191,7 @@ int Service_Request(int conn) {
 	
     const char* html_block="<html><body><div id='results'></div><script>var results={'results':[\n";
 
-    if((int)all.size()==0)Writeline("0");
+//    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
