@@ -229,7 +229,7 @@ int Service_Request(int conn) {
 		Writeline(conn, buff);
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
-			if (format == json||format == html)Writeline(conn, ",'statements':[\n");
+			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
 				fixLabels(s);
