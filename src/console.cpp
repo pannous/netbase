@@ -112,8 +112,8 @@ NodeVector parseProperties(const char *data) {
 	char *thing=(char *) malloc(1000);
 	char *property=(char *) malloc(1000);
 	if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
-	if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
-	if (contains(data, ":")) {
+	else if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
+	else if (contains(data, ":")) {
 		//			sscanf(data,"%s:%s",property,thing);
 		char** splat=splitStringC(data, ':');
 		thing=splat[1];
