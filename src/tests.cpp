@@ -1337,7 +1337,10 @@ void fixNames(){
 }
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
-    tests();
+
+//    parse("Hamburg.population");
+    parse("population of Hamburg");
+//    tests();
 //    fixNames();
 //    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
 //    importAll();
