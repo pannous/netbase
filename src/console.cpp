@@ -327,6 +327,11 @@ NodeVector parse(const char* data) {
 		return nodeVectorWrap(da);
 	}
 
+//    Château
+	if (eq(args[0], "findall")) {
+		return *findAllWords(data + 8);
+	}
+    
 	if (eq(args[0], "find")) {
 		N da=getAbstract(data + 5);
 		return *findWords(wordnet, data + 5, false);

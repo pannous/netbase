@@ -399,6 +399,7 @@ bool show(Node* n, bool showStatements = true);
 Node* showNr(int context, int id);
 void testBrandNewStuff();
 NodeVector* findWords(int context, const char* word, bool first = false);
+NodeVector* findAllWords(const char* word);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
 Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
 Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = false, bool symmetric = false);

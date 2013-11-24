@@ -1349,6 +1349,20 @@ NodeVector* findWords(int context, const char* word, bool first) {	//=false
 	return all;
 }
 
+NodeVector* findAllWords(const char* word) {
+	NodeVector* all=new NodeVector();
+	Context* c=currentContext();
+	for (int i=0; i < c->nodeCount; i++) {
+		Node* n=&c->nodes[i];
+		if (n->id==0||!checkNode(n, i, true, false)) continue;
+		if (contains(n->name, word, true)) {
+			all->push_back(n);
+			show(n);
+		}
+	}
+	return all;
+}
+
 // DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 Statement * findStatement(Node* subject, Node* predicate, Node* object, int recurse, bool semantic, bool symmetric, bool semanticPredicate,bool matchName) {
 	// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
