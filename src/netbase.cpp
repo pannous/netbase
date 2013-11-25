@@ -1341,7 +1341,6 @@ NodeVector* findWords(int context, const char* word, bool first) {	//=false
 		if (!quiet) printf("cant find node %s in context %d\n", word, context);
 	N a=getAbstract(word);
 	NV is=instanceFilter(a);
-
 	for (int i=0; i < all->size(); i++){
 		Node *n=all->at(i);
 		if(!contains(is,n))addStatement(a,Instance,n);
@@ -1359,6 +1358,12 @@ NodeVector* findAllWords(const char* word) {
 			all->push_back(n);
 			show(n);
 		}
+	}
+    N a=getAbstract(word);
+	NV is=instanceFilter(a);
+	for (int i=0; i < all->size(); i++){
+		Node *n=all->at(i);
+		if(!contains(is,n))addStatement(a,Instance,n);
 	}
 	return all;
 }
