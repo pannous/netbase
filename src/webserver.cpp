@@ -29,6 +29,8 @@ void fixLabel(Node* n){
 	if(n->name[0]=='"')n->name=n->name+1;
 	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
 		n->name[strlen(n->name)-1]=0;
+	if(n->name[strlen(n->name)-1]=='\\')
+		n->name[strlen(n->name)-1]=0;
 }
 
 /// true = filter
