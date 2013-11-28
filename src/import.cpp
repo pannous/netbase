@@ -853,6 +853,7 @@ Node* rdfValue(char* name) {
 	if (!unit || unit > name + 1000 || unit < name) return 0;
 	if (unit[0] == '<') unit++;
 	if (unit[0] == '#') unit++;
+	if (unit[0] == '"') unit++;
 	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
 	if (eq(unit, "xsd:integer")) unit=0; //-> number
 	if (eq(unit, "xsd:decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
