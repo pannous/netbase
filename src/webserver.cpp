@@ -87,8 +87,8 @@ int Service_Request(int conn) {
 	int len=(int)strlen(q);
 	if (eq(q, "favicon.ico"))return 0;
     if(contains(q,"robots.txt")){
-        Writeline("User-agent: *");
-        Writeline("Disallow: /");
+        Writeline("User-agent: *\n");
+        Writeline("Disallow: /\n");
         return 0;
     }
     
