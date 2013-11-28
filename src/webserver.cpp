@@ -86,6 +86,12 @@ int Service_Request(int conn) {
 	char* q = substr(reqinfo.resource, 1, -1);
 	int len=(int)strlen(q);
 	if (eq(q, "favicon.ico"))return 0;
+    if(contains(q,"robots.txt")){
+        Writeline("User-agent: *");
+        Writeline("Disallow: /");
+        return 0;
+    }
+    
 	if (endsWith(q, ".json")) {
 			format = json;
 			q[len-5]=0;
