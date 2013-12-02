@@ -424,7 +424,7 @@ NodeVector parse(const char* data) {
 	if (data[0] == '!' )
         return nodeVectorWrap(reify(learn(data+1)));
 	if (args.size() >= 4 && eq(args[0], "learn"))
-        return nodeVectorWrap(reify(learn(next(data))));
+        return nodeVectorWrap(reify(learn(next_word(data))));
 	if (args.size() >= 3 && eq(args[1], "is"))
         return nodeVectorWrap(reify(learn(data)));
 
