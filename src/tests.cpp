@@ -1337,10 +1337,12 @@ void fixNames(){
 }
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
-    check(value("3.00", atof("3.00"),Number)->value.number==3);
-    check(value("3.00", atof("3,00"),Number)->value.number==3);
+//    check(value("3.00", atof("3.00"),Number)->value.number==3);
+//    check(value("3.00", atof("3,00"),Number)->value.number==3);
 //    parse("Hamburg.population");
-    parse("population of Hamburg");
+//    parse("population of Hamburg");
+    learn("company synonym employer");
+    import("linkedin_connections_export_microsoft_outlook.csv");
 //    tests();
 //    fixNames();
 //    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));

@@ -1784,6 +1784,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 			}
 		}
 	}
+    if(useYetvisitedIsA)
 	yetvisitedIsA[badHash]=-1;
     
 	return false;

@@ -408,14 +408,16 @@ int getNameRow(char** tokens, int nameRowNr=-1, const char* nameRow=0) {
 	while (true) {
 		char* token=tokens[row];
 		if (!token) break;
-		if (nameRowNr < 0) {
+        if(nameRowNr<0){
 			if (nameRow == 0) {
 				if (eq("name", token)) nameRowNr=row;
+				if (contains( token,"name",true)) nameRowNr=row;// first come!
 				if (eq("title", token)) nameRowNr=row;
 			} else if (eq(nameRow, token)) nameRowNr=row;
-		}
+        }
 		row++;
 	}
+    if (nameRowNr < 0)return 0;
 	return nameRowNr;
 }
 
@@ -621,7 +623,15 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	p("import xml ok ... items imported:");
 	p(linecount);
 }
-
+void fixValues(char** values,int size){
+    for(int i=0;i<size;i++){
+        char* x=values[i];
+        if(x[0]=='"')x++;
+        int l=(int)strlen(x);
+        if(x[l-1]=='"')x[l-1]=0;
+        values[i]=x;
+    }
+}
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,
                const char* nameRow) {
 	p("import csv start");
@@ -652,6 +662,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			if (!separator) separator=guessSeparator(modifyConstChar(line)); // would kill fieldCount
 			fieldCount=splitStringC(line, values, separator);
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
+            fixValues(values,fieldCount);
 			for (int i=0; i < fieldCount; i++) {
 				char* field=values[i];
 				Node* fielt=getThe(field); // Firma		instance		Terror_Firma LOL
@@ -671,15 +682,17 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
         
 		int size=splitStringC(modifyConstChar(line), values, separator);
 		if (fieldCount != size) {
-            //			if(debug) printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
+//            printf("_");
+//            if(debug) printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
 			//            ps(columnTitles); // only 1st word:
 			continue;
 		}
-        
+//        else printf("OK");
+        fixValues(values,size);
 		if (values[nameRowNr] != lastValue)
             subject=getNew(values[nameRowNr], type);
-        //else //keep subject
-        //        subject=getThe(values[nameRowNr]);
+        else if(subject==null) //keep subject
+            subject=getThe(values[nameRowNr]);
         
 		lastValue=values[nameRowNr];
         
@@ -692,9 +705,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //            //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
 //		}
 		for (int i=0; i < size; i++) {
-			if (i == nameRowNr) continue;
 			predicate=predicates[i];
 			if (predicate == null) continue;
+			if (i == nameRowNr&&!eq("first_name",predicate->name)) continue;
 			if (contains(ignoreFields, predicate->name)) continue;
 			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
@@ -705,9 +718,14 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				if (debug) printf("ERROR %s\n", line);
 				continue;
 			}
-//			Statement *s=
+			Statement *s=
             addStatement(subject, predicate, object, false);
-			//			showStatement(s);
+			showStatement(s);
+            if(eq(predicate->name,"last_name")){
+                cchar *full_name=concat(values[nameRowNr],concat(" ",vali));
+                setLabel(subject,full_name);
+//                addStatement(subject,Synonym,getThe(full_name), false);
+            }
 		}
         
 		if (checkLowMemory()) {
@@ -1683,7 +1701,7 @@ void import(const char* type, const char* filename) {
     if (filename == 0) filename=type;
     if (eq(type, "all")) {
         importAll();
-    } else if (eq(type, "csv")) {
+    } else if (endsWith(type, "csv")) {
         importCsv(filename);
     } else if (eq(type, "wordnet")) {
         importWordnet();
@@ -1703,13 +1721,13 @@ void import(const char* type, const char* filename) {
         //			importFacts(filename, filename);
         //		else
         importYago(filename);
-    } else if (contains(filename, "txt")) {
+    } else if (endsWith(filename, "txt")) {
         importCsv(filename);
-    } else if (contains(filename, "csv")) {
+    } else if (endsWith(filename, "csv")) {
         importCsv(filename);
-    } else if (contains(filename, "tsv")) {
+    } else if (endsWith(filename, "tsv")) {
         importCsv(filename);
-    } else if (contains(filename, "xml")) {
+    } else if (endsWith(filename, "xml")) {
         importXml(filename);
     } else {
         //if (!importFacts(filename, filename))

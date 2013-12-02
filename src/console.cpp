@@ -420,8 +420,13 @@ NodeVector parse(const char* data) {
 		//		if(all==EMPTY)parentPath(from,to);
 		//		if(all==EMPTY)shortestPath(from,to);
 	}
-
-	if (data[0] == '!' || (args.size() >= 3 && eq(args[1], "is"))) return nodeVectorWrap(reify(learn(data)));
+    
+	if (data[0] == '!' )
+        return nodeVectorWrap(reify(learn(data+1)));
+	if (args.size() >= 4 && eq(args[0], "learn"))
+        return nodeVectorWrap(reify(learn(next(data))));
+	if (args.size() >= 3 && eq(args[1], "is"))
+        return nodeVectorWrap(reify(learn(data)));
 
 	data=replace((char*) data, ' ', '_');
 
