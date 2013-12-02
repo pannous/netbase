@@ -295,19 +295,41 @@ NodeVector parse(const char* data) {
 		printf("deleting %s\n", what);
 		deleteWord(what);
 	}
-
-	if (startsWith(data, "path") || startsWith(data, ":p")) {
+    
+    //    Château
+	if (eq(args[0], "findall")) {
+		return *findAllWords(data + 8);
+	}
+    
+	if (eq(args[0], "find")) {
+		N da=getAbstract(data + 5);
+		return *findWords(wordnet, data + 5, false);
+	}
+    
+	if (startsWith(data, "merge ")) {
+        int target,node=0;
+		sscanf(data, "merge %d %d", &target,&node);
+        Node* targetNode=get(target);
+        if(node)
+            return showNodes(nodeVectorWrap(mergeNode(targetNode,get(node))));
+        else if(target)
+            return showNodes(nodeVectorWrap(mergeAll(targetNode->name)));
+        else
+            return showNodes(nodeVectorWrap(mergeAll(args[1])));// merge <string>
+    }
+    
+	if (startsWith(data, "path ") || startsWith(data, ":p ")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
 	}
 
-	if (args.size() > 1 && startsWith(data, "has")) {
+	if (args.size() > 1 && startsWith(data, "has ")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return memberPath(from, to);
 	}
-	if (args.size() > 1 && startsWith(data, "is")) {
+	if (args.size() > 1 && startsWith(data, "is ")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return parentPath(from, to);
@@ -318,7 +340,7 @@ NodeVector parse(const char* data) {
 	}
 	if (startsWith(data, "these ")) return query(data);
 	if (contains(data, "that ")) return query(data);
-	if (contains(data, "who")) // who loves jule
+	if (contains(data, "who ")) // who loves jule
 		return query(data);
 
 	if (eq(args[0], "the") || eq(args[0], "my")) {
@@ -327,15 +349,6 @@ NodeVector parse(const char* data) {
 		return nodeVectorWrap(da);
 	}
 
-//    Château
-	if (eq(args[0], "findall")) {
-		return *findAllWords(data + 8);
-	}
-    
-	if (eq(args[0], "find")) {
-		N da=getAbstract(data + 5);
-		return *findWords(wordnet, data + 5, false);
-	}
 
 	if (startsWith(data, "label ") || startsWith(data, "rename ")) {
 		N n=getThe(args[1]);

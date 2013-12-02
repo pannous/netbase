@@ -631,7 +631,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	char* lastValue=0;
 	memset(values, 0, 100);
 	//    vector<char*> values;
-    
+    map<char*,Node*> valueCache;
 	Node* subject=0;
 	Node* predicate=0;
 	Node* object=0;
@@ -676,19 +676,21 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
         
-		if (values[nameRowNr] != lastValue) subject=getNew(values[nameRowNr], type);
-        //        else //keep subject
+		if (values[nameRowNr] != lastValue)
+            subject=getNew(values[nameRowNr], type);
+        //else //keep subject
+        //        subject=getThe(values[nameRowNr]);
+        
 		lastValue=values[nameRowNr];
-        //		subject=getThe(values[nameRowNr]);
         
 		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
 		// 2 objects, 4 relations, 1 name
         
 		if (!checkNode(subject)) continue;
-		if (debug && subject && type && subject->kind > 0 && subject->kind != type->id) {		// subject->kind == 0 ??? MEANING?
-			pf("Found one with different type subject->kind != type->id %d,%d,%s,%s\n", subject->kind, type->id, subject->name, type->name);
-            //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
-		}
+//		if (debug && subject && type && subject->kind > 0 && subject->kind != type->id) {		// subject->kind == 0 ??? MEANING?
+//			pf("Found one with different type subject->kind != type->id %d,%d,%s,%s\n", subject->kind, type->id, subject->name, type->name);
+//            //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
+//		}
 		for (int i=0; i < size; i++) {
 			if (i == nameRowNr) continue;
 			predicate=predicates[i];

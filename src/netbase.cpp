@@ -979,7 +979,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, at, ort,checkDuplicates);
 		dissectParent(ort,checkDuplicates);
-		return word;
+		return original;
 	}
 	type=(int)str.find("_from_");
 	if (type >= 0 && len - type > 2) {
@@ -1323,7 +1323,6 @@ Node * showNr(int context, int id) {
 }
 
 // saver than iterating through abstracts?
-
 NodeVector* findWords(int context, const char* word, bool first) {	//=false
 	// pi(context);
 	NodeVector* all=new NodeVector();
@@ -1349,23 +1348,7 @@ NodeVector* findWords(int context, const char* word, bool first) {	//=false
 }
 
 NodeVector* findAllWords(const char* word) {
-	NodeVector* all=new NodeVector();
-	Context* c=currentContext();
-	for (int i=0; i < c->nodeCount; i++) {
-		Node* n=&c->nodes[i];
-		if (n->id==0||!checkNode(n, i, true, false)) continue;
-		if (contains(n->name, word, true)) {
-			all->push_back(n);
-			show(n);
-		}
-	}
-    N a=getAbstract(word);
-	NV is=instanceFilter(a);
-	for (int i=0; i < all->size(); i++){
-		Node *n=all->at(i);
-		if(!contains(is,n))addStatement(a,Instance,n);
-	}
-	return all;
+    return findWords(current_context,word,false);
 }
 
 // DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
@@ -2303,6 +2286,33 @@ int main(int argc, char *argv[]) {
 	//	testBrandNewStuff();
 	console();
 	//    } catch (std::exception const& ex) {
+}
+
+Node* mergeNode(Node* target,Node* node){
+    Statement* s=getStatement( node->firstStatement);
+    addStatementToNodeDirect(target,node->firstStatement);
+    
+    Statement* next;
+    while (s) {
+        next=nextStatement(target, s);
+        if(s->Predicate()==Instance&&s->Subject()==target)
+            deleteStatement(s);
+        else{
+        if(s->Subject()==node)s->subject=target->id;
+        if(s->Predicate()==node)s->predicate=target->id;
+        if(s->Object()==node)s->object=target->id;
+        }
+        s=next;
+    }
+    deleteNode(node);
+    return target;
+}
+Node* mergeAll(char* target){
+    Node* node=getAbstract(target);
+    NV all=instanceFilter(node);
+    for(int i=0;i<all.size();i++)
+        mergeNode(node,all[i]);
+    return node;
 }
 
 int test2() {

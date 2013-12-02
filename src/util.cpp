@@ -568,3 +568,4 @@ char* replace(char* data,char what,char with){
         if(data[i]==what)data[i]=with;
     return data;// chain
 }
+

@@ -490,6 +490,8 @@ Node* findRelation(Node* from, Node* to);
 NodeVector findProperties(const char* n, const char* m);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
+Node* mergeNode(Node* target,Node* node);
+Node* mergeAll(char* target);
 typedef Node* N;
 typedef Statement* S;
 typedef NodeVector NV;
