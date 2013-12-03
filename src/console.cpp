@@ -281,6 +281,11 @@ NodeVector parse(const char* data) {
 		tests();
 		return OK;
 	}
+	if (eq(data, ":tb")) {
+		exitOnFailure=false;
+		testBrandNewStuff();
+		return OK;
+	}
 	if (eq(data, "debug") || eq(data, "debug on") || eq(data, "debug 1")) {
 		debug=true;
 		return OK;

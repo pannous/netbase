@@ -291,7 +291,7 @@ bool addStatementToNodeDirect(Node* node, int statementNr) {
 char* statementString(Statement * s) {
 	char* name=&currentContext()->nodeNames[currentContext()->currentNameSlot];
 	sprintf(name, "(%s %s %s)", s->Subject()->name, s->Predicate()->name, s->Object()->name);
-    currentContext()->currentNameSlot=    currentContext()->currentNameSlot+(int)strlen(name);
+    currentContext()->currentNameSlot=    currentContext()->currentNameSlot+(int)strlen(name)+1;
 	return name;
 }
 
@@ -589,7 +589,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
         //		exit(1);
 		return 0;
 	}
-	initNode(node, context->nodeCount, nodeName, kind, contextId);
+    initNode(node, context->nodeCount, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == abstractId) return node;
 	addStatement(getAbstract(nodeName), Instance, node, false);

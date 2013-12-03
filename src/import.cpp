@@ -718,9 +718,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				if (debug) printf("ERROR %s\n", line);
 				continue;
 			}
-			Statement *s=
+//			Statement *s=
             addStatement(subject, predicate, object, false);
-			showStatement(s);
+//			showStatement(s);
             if(eq(predicate->name,"last_name")){
                 cchar *full_name=concat(values[nameRowNr],concat(" ",vali));
                 setLabel(subject,full_name);

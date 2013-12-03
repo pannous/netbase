@@ -277,24 +277,28 @@ Statement* parseSentence(string sentence, bool learn = false) {
 //	int limit = 5;
 	sentence = replace_all(sentence, " a ", " ");
 	sentence = replace_all(sentence, " the ", " ");
-	vector<char*> matches = splitString(sentence, " ");
-	if (matches.size() != 3) {
+    char** matches=(char**)malloc(100);
+    char* data=modifyConstChar(sentence.data());
+    int count=splitStringC(data,matches, ' ');//matches.size();
+//	vector<char*> matches = splitString(sentence, " ");
+	if (count != 3) {
 		ps("Currently only triples can be learned. If you have multiple_word nodes combine them with an underscore");
 		return 0;
 	}
 	Node* subject = 0;
 	Node* predicate = 0;
 	Node* object = 0;
-	for (int i = 0; i < matches.size(); i++) {
-		string word = matches[i];
+	for (int i = 0; i < count; i++) {
+//		string word = matches[i];
+        char* word= matches[i];
 		//		word=stem(word);
 //		bool getPredicate = subject&&!predicate;
-		int id = atoi(word.data());
+		int id = atoi(word);
 		Node* node;
 		if (id > 0)
 			node = get(id);
 		else
-			node = getAbstract(word.data());
+			node = getAbstract(word);
 		//		Node* node = getThe(word); TODO getThe for relation!!!
 		//		Node* abstract=getAbstract(f);// ,getPredicate?Verb:0
 		//		NodeVector& instances=all_instances(abstract, recurse,limit);
@@ -345,7 +349,7 @@ Statement *parseFilter(string s) {
 			subject = p; // b=c
 			predicate = Equals;
 		}
-		s = s.substr(s.find("=") + 1);
+        s = s.substr(s.find("=") + 1);
 	}
 	if (contains(s, ">")) {
 		Node* p = getThe(s.substr(0, s.find(">")));
