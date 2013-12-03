@@ -14,7 +14,7 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (81)
+#define SERVER_PORT  (80)
 
 enum result_format {
 	xml, json, txt,csv,html
