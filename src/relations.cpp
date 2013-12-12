@@ -19,7 +19,7 @@ Node* Entailment; // Implication
 Node* Owner; //Owner inverse Member   (Prince of Persia) <=> (Persia has Prince)
 Node* Member;
 Node* Part;
-Node* PartOwner;
+Node* PartOf;
 Node* Substance;
 Node* Synonym;
 Node* Domain;
@@ -151,7 +151,7 @@ void initRelations() {
 	addRelation(_MEMBER_DOMAIN_REGION, "regional word"); //-r  IN Japan :  Sushi
 	//	MEMBER_OF_THIS_DOMAIN_USAGE =
 	addRelation(_MEMBER_DOMAIN_USAGE, "domain word"); // colloquialism: bitch
-	PartOwner = addRelation(_PartOwner, "part of",is_transitive);
+	PartOf = addRelation(_PartOf, "part of",is_transitive);
 	Part = addRelation(_Part, "part",is_transitive);
 	//	PARTICIPLE_OF_VERB =
 	addRelation(_PARTICIPLE_OF_VERB, "participle");
@@ -266,9 +266,9 @@ Node* invert(Node* relation) {
 	//if(relation==Entailment)return ; // Implication
 	if (relation == Owner)return Member;
 	if (relation == Member)return Owner;
-	if (relation == Part)return Owner;
-	if (relation == PartOwner)return Part;
-	if (relation == Substance)return Owner; //?
+	if (relation == Part)return PartOf;
+	if (relation == PartOf)return Part;
+	if (relation == Substance)return PartOf; //?
 	if (relation == Synonym)return Synonym;
 	//if(relation==Weight)return ??;
 	if (relation == Type)return Instance;
@@ -321,9 +321,11 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "type")) return Type;
    	if (eq(thing, "has type")) return Type;    
 	if (eq(thing, "is")) return Type;
+//   	if (eq(thing, "TEILVON")) return PartOf;
 	if (eq(thing, "has")) return Member;
 	if (eq(thing, "of")) return Owner;
-   	if (eq(thing, "containedby")) return PartOwner;
+   	if (eq(thing, "containedby")) return PartOf;
+   	if (eq(thing, "partOf")) return PartOf;
 	if (eq(thing, "by")) return Owner; // creator
 	if (eq(thing, "type")) return Type;
 	if (eq(thing, "property")) return Attribute; // Property;

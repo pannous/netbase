@@ -281,7 +281,7 @@ NodeVector parse(const char* data) {
 		tests();
 		return OK;
 	}
-	if (eq(data, ":tb")) {
+	if (eq(data, ":tb")||eq(data, ":tbn")) {
 		exitOnFailure=false;
 		testBrandNewStuff();
 		return OK;
@@ -439,9 +439,10 @@ NodeVector parse(const char* data) {
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 
-	Node* a=dissectWord(get(data), true);
+	Node* a=get(data);
+    dissectWord(a, true);
 	show(a);
-	if (i == 0) showNodes(instanceFilter(a), true);
+//	if (i == 0) showNodes(instanceFilter(a), true);
 	//        findWord(currentContext()->id, data);
 //    if(isAbstract(a))
 	if (i == 0) {

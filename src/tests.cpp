@@ -1342,7 +1342,13 @@ void testBrandNewStuff() {
 //    parse("Hamburg.population");
 //    parse("population of Hamburg");
 //    learn("company synonym employer");
-    parse("learn company synonym employer");
+//    parse("learn company synonym employer");
+//    importWordnet();
+//    setLabel(get("surname"), "Nachname");
+//    parse("surname");
+//    parse("surname");
+//        parse("surname");
+    		import("dbpedia");
 //    import("linkedin_connections_export_microsoft_outlook.csv");
 //    tests();
 //    fixNames();

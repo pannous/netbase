@@ -1,1 +1,1 @@
-/root/netbase/netbase server
+sudo /root/netbase/netbase server

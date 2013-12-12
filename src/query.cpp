@@ -1075,7 +1075,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		bool predicateMatchReverse = s->Predicate() == Owner; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == By;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == From;
-		predicateMatchReverse = predicateMatchReverse || s->Predicate() == PartOwner;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == PartOf;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == UsageContext;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate()->id == _DOMAIN_CATEGORY;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate()->id == _DOMAIN_REGION;

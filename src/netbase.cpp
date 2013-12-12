@@ -157,6 +157,8 @@ Ahash *getAhash(int position){
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 Ahash * insertAbstractHash(int position, Node * a) {
+    if(a==0)
+        return 0;
 	Ahash* ah=getAhash(position);
 	if (!checkHash(ah) || !checkNode(a) || a->name[0] == 0) return 0;
 	//    if(pos==hash("city"))
@@ -177,13 +179,21 @@ Ahash * insertAbstractHash(int position, Node * a) {
         //			show(a);
         //			return 0;
         //		}
-		if (get(ah->abstract) == a || eq(get(ah->abstract)->name, a->name, true)) return ah; //schon da
+		if (get(ah->abstract) == a)
+            return ah; //schon da
+        if(eq(get(ah->abstract)->name, a->name, true))
+            return ah; // NAME schon da!!
 		ah=getAhash(ah->next);
 	}
     
-	if (ah->abstract) { //schon voll
-		if (get(ah->abstract) == a || eq(get(ah->abstract)->name, a->name, true))
+	if (ah->abstract) { //schon was drin
+		if (get(ah->abstract) == a)
 			return ah;
+        if(eq(get(ah->abstract)->name, a->name, true)){
+            bool ok=hasWord(a->name);
+            bool ok2=hasWord(a->name);
+            return ah;
+        }
         //        ah->next=extrahash++;
         ah->next=currentContext()->extrahashNr++;
         ah=getAhash(ah->next);
@@ -1056,12 +1066,10 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	}
 	type=(int)str.find("._");
 	if (type >= 0 && len - type > 2) {
-		Node* number=getThe("number");
 		Node* nr=getThe(str.substr(0, type).c_str()); //deCamel
 		Node* word=getThe(str.substr(type + 2).c_str());
 		addStatement(word, Instance, subject, checkDuplicates);
-		addStatement(subject, number, nr, checkDuplicates);
-        
+		addStatement(subject, Number, nr, checkDuplicates);
 	}
 	type=(int)str.find("_");
 	if (type >= 0 && len - type > 2) {
@@ -1117,7 +1125,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 
 
 // only for relationships!
-//void forceAbstract(Node* n){
+// void forceAbstract(Node* n){
 //	long h = hash(n->name);
 //	Ahash* found = &abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
 //	found->abstract=n;
@@ -1144,7 +1152,7 @@ Node * hasWord(const char* thingy) {
 	map<int, bool> visited;
     //	map<Ahash*, bool> visited;
 	// ./clear-shared-memory.sh After changing anything here!!
-	while (found >= abstracts && found < &extrahash[maxNodes] && found->next) {
+	while (found >= abstracts && found < &extrahash[maxNodes]) {
 		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
 			debugAhash(h);
 			p("visited[found] == 1 How the hell can that even be??? ");
@@ -1160,10 +1168,11 @@ Node * hasWord(const char* thingy) {
 				return get(found->abstract);
 		}
         //		if (get(found->next) == found) {
-        //			debugAhash(h);
+//        debugAhash(h);
         //			p("found->next == found How the hell can that even be? ");
         //			break;
         //		}
+        if(!found->next)break;
         if(found->next<=0||found->next>maxNodes*2||found==&abstracts[found->next])break;
 		found=&abstracts[found->next];
 	}
@@ -1180,6 +1189,8 @@ Node * getAbstract(const char* thing) {			// AND CREATE!
 		return 0;
 	}
     if(autoIds&&isInteger(thing))return get(atoi(thing));
+    
+    if (thing[0] == '"')thing++;
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
@@ -1260,7 +1271,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	if (!checkNode(n)) return 0;
     if(n->statementCount<=1){
         //        pf("%d|",n->id);
-        return false;// !!! HIDE!!!
+//        return false;// !!! HIDE!!!
     }
     
 	// Context* c=getContext(n->context);
@@ -1323,14 +1334,16 @@ Node * showNr(int context, int id) {
 }
 
 // saver than iterating through abstracts?
-NodeVector* findWords(int context, const char* word, bool first) {	//=false
+NodeVector* findWords(int context, const char* word, bool first,bool containsWord) {	//=false
 	// pi(context);
 	NodeVector* all=new NodeVector();
 	Context* c=getContext(context);
 	for (int i=0; i < c->nodeCount; i++) {
 		Node* n=&c->nodes[i];
 		if (n->id==0||!checkNode(n, i, true, false)) continue;
-		if (eq(n->name, word, true)) {
+        bool good=eq(n->name, word, true);
+        if(containsWord)good=contains(n->name, word,true);
+		if (good) {
 			all->push_back(n);
 			show(n);
 			if (first) return all;
@@ -1348,7 +1361,7 @@ NodeVector* findWords(int context, const char* word, bool first) {	//=false
 }
 
 NodeVector* findAllWords(const char* word) {
-    return findWords(current_context,word,false);
+    return findWords(current_context,word,false,true);
 }
 
 // DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
@@ -1569,15 +1582,35 @@ Node * value(const char* aname, double v, const char* unit) {
 	return value(aname,v,unit);
 }
 
+cchar* shortName(cchar* unit){
+    if(unit==0||unit[0]==0)
+        return "";
+    if (eq(unit, "kilometre")) unit="km";
+	else if (eq(unit, "millimetre")) unit="mm";
+	else if (eq(unit, "centimetre")) unit="cm";
+	else if (eq(unit, "meter"))unit="m";
+	else if (eq(unit, "tonne"))unit="cm";
+	else if (eq(unit, "volt"))unit="V";
+   	else if (eq(unit, "gram")) unit="g";
+   	else if (eq(unit, "kilogram")) unit="kg";
+   	else if (eq(unit, "Contains")) unit=" ";
+    else if (eq(unit, "number")) unit=" ";
+    return unit;
+}
+
 Node * value(const char* aname, double v, Node* unit) {
 	char* name=(char*)malloc(1000);
 	//	if (aname)strcpy(name, aname);// IGNORED!!!?
-	if (unit) {
-		sprintf(name, "%g %s", v, unit->name); //Use the shorter of %e or %f  3.14 or 24E+35
+	if (unit&&unit->name) {
+        if(v>1000000000||v<1000)
+		sprintf(name, "%g %s", v, shortName(unit->name)); //Use the shorter of %e or %f  3.14 or 24E+35
+        else
+		sprintf(name, "%d %s", (int)v, shortName(unit->name)); // round
 	} else {
 		sprintf(name, "%g", v); //Use the shorter of %e or %f  3.14 or 24E+35
 	}///
-	Node *n= getThe(name,unit);
+//	Node *n= getThe(name,unit);
+	Node *n= getAbstract(name);//,unit);
 	if (unit)n->kind=unit->id;
     else n->kind=number;
 	n->value.number=v;
@@ -1903,7 +1936,7 @@ Node * has(Node* n, Node * m) {
 	if (!no) no=has(n, get(_MEMBER_DOMAIN_USAGE), m);
 	//inverse
 	if (!no) no=has(m, Owner, n);
-	if (!no) no=has(m, PartOwner, n);
+	if (!no) no=has(m, PartOf, n);
 	if (!no) no=has(m, get(_DOMAIN_CATEGORY), n);
 	if (!no) no=has(m, get(_DOMAIN_REGION), n);
 	if (!no) no=has(m, get(_DOMAIN_USAGE), n);
@@ -2156,8 +2189,13 @@ void setValue(Node* node, Node* property, Node * value) {
 }
 
 
-void setLabel(Node* n, cchar* label) {
-	if (eq(n->name, label)) return;
+void setLabel(Node* n, cchar* label,bool addInstance) {
+    if(    eq(n->name, label,false))return;
+    int len=(int)strlen(label);
+	if (strlen(n->name)>=len){
+        strcpy(n->name, label);
+        n->name[len]=0;
+    }else{
 	Context* c=currentContext();
 	char* l=&c->nodeNames[c->currentNameSlot];
 	strcpy(l, label);
@@ -2165,8 +2203,15 @@ void setLabel(Node* n, cchar* label) {
 	l[len]=0;
 	c->currentNameSlot+=len + 1;
 	n->name=l;
+    }
 	if (n->kind == abstractId) {
-		insertAbstractHash(n);
+        NV all=instanceFilter(n);
+        for(int i=0;i<all.size();i++)
+            setLabel(all[i],label,false);
+        if(!hasWord(label))
+            insertAbstractHash(n);
+//        else
+//            mergeNode(getAbstract(label),n);
 	} else {
 		Node* a=getAbstract(label);
 		addStatement(a, Instance, n);

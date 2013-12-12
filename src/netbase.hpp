@@ -398,7 +398,7 @@ void showStatement(Statement* s);
 bool show(Node* n, bool showStatements = true);
 Node* showNr(int context, int id);
 void testBrandNewStuff();
-NodeVector* findWords(int context, const char* word, bool first = false);
+NodeVector* findWords(int context, const char* word, bool first= false,bool containsWord=false);
 NodeVector* findAllWords(const char* word);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
 Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
@@ -419,7 +419,7 @@ bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);
 Node* parseValue(const char* aname);
-void setLabel(Node* n, const char* label);
+void setLabel(Node* n, const char* label,bool addInstance=true);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
 Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);

@@ -11,7 +11,7 @@ void importAllYago() ;
 void importWordnet();
 void importGeoDB();
 void importNames();
-bool importFreebase();
+void importFreebase();
 //void import(const char* file);
 void import(const char* type,const char* filename=0);
 void importList(const char* facts_file,const char* type);

@@ -21,7 +21,7 @@ extern Node* Entailment; // Implication
 extern Node* Owner;//Owner inverse Member   (Prince of Persia) <=> (Persia has Prince)
 extern Node* Member;
 extern Node* Part;
-extern Node* PartOwner;
+extern Node* PartOf;
 extern Node* Substance;
 extern Node* Synonym;
 extern Node* Weight;
@@ -178,7 +178,7 @@ static const int _see=0,//50 also, 40 similar
 	_instance=4,
 	_ENTAILMENT=21,// implies
 	_Part=11,
-	_PartOwner=12,
+	_PartOf=12,
 	_Member=13,
 	_Owner=14,
 	_Substance=15,
@@ -215,7 +215,7 @@ static const int _see=0,//50 also, 40 similar
 //	_MEMBER_DOMAIN_CATEGORY=14,
 //	_MEMBER_DOMAIN_REGION=15,
 //	_MEMBER_DOMAIN_USAGE=16,
-//	_PartOwner=17,
+//	_PartOf=17,
 //	_Part=18,
 //	_PARTICIPLE_OF_VERB=19,
 //	_PERTAINYM=20,
