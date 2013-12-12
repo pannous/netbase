@@ -1251,7 +1251,7 @@ bool importLabels(cchar* file, bool hash=false) {
 			//					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
 			//				else
 			//					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
-            printf("labels[key] already reUSED!! %s %s || %s\n", key , label, labels[key]->name);
+            printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, labels[key]->name);
             addStatement(labels[key],Label,getAbstract(label));
 			freebaseKeysConflicts++;
             continue;
