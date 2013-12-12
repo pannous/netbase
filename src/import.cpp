@@ -919,7 +919,7 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "bar"));
 	else if (eq(unit, "kilonewton"));
 	else if (eq(unit, "megawatt"));
-	else if (eq(unit, "squareMetre"))unit="m^2";
+	else if (eq(unit, "squareMetre"))unit="m²";
 	else if (eq(unit, "kilometrePerHour"))unit="km/h";
 	else if (eq(unit, "xsd:date")) ; // parse! unit = 0; //-> number
 	else if (eq(unit, "kelvin")) ; // ignore
@@ -930,7 +930,7 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "dollar")) ; // ignore
 	else if (eq(unit, "usDollar"))unit="dollar" ; // ignore
 	else if (eq(unit, "euro")) ; // ignore
-    else if (eq(unit, "squareKilometre"))unit="km^2" ; // ignore
+    else if (eq(unit, "squareKilometre"))unit="km²" ; // ignore
     else if (eq(unit, "megabyte")) ; // ignore
     else if (eq(unit, "gramPerCubicCentimetre"))unit="g/cm^3" ; // ignore
     else if (eq(unit, "metrePerSecond"))unit="m/s" ; // ignore
@@ -1294,7 +1294,7 @@ void importFreebaseLabels() {
 	importLabels("freebase.labels.de.txt", true);
 	importLabels("freebase.labels.en.txt", true);
 }
-
+bool useHash=false;
 Node *dissectFreebase(char* name) {
 	if (!contains(name, ".")) {
 		N a=getRelation((const char*) name);
@@ -1310,10 +1310,11 @@ Node *dissectFreebase(char* name) {
 	const char* fixed=fixFreebaseName(name);
 	N n=getThe(fixed);
 	if (!n) return 0;					// howtf "" ?
-	freebaseKeys[h]=n->id;
+    if(useHash)
+        freebaseKeys[h]=n->id;
 //    freebaseKeys.insert(pair<long,int>(h,n->id));
-	N o=dissectFreebase(name);
-	addStatement(n, Domain, o, false);
+//	N o=dissectFreebase(name);
+//	addStatement(n, Domain, o, false);
 	return n;
 }
 
@@ -1408,7 +1409,7 @@ bool importN3(cchar* file) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 //		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
         fixNewline(objectName);
-        if(contains(line,"Arsenic"))
+        if(contains(line,"Stellaland"))
             p(line);
 //        if(contains(line,"molaresvolumen"))
 //            p("st");
@@ -1459,6 +1460,7 @@ bool importN3(cchar* file) {
 }
 
 void importFreebase() {
+    useHash=true;
 	if (!freebaseKeys[freebaseHash("0zzxc3>")]) {					// always
 		importFreebaseLabels();
 		testPrecious2();
@@ -1748,6 +1750,8 @@ void importGeoDB() {
 }
 
 void importDBPedia() {
+    
+    useHash=false;
     importLabels("labels.csv");
     importLabels("dbpedia/labels.csv");
 ////	importLabels("dbpedia/raw_infobox_property_definitions_en_uris_de.nt") REPLACED BY:;
