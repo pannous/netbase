@@ -203,9 +203,10 @@ const char* concat(const char* a,const  char* b){
 	int la=(int)strlen(a);
 	int lb=(int)strlen(b);
 //	char c[la+lb];
-    char* c=(char*)malloc((la+lb)*sizeof(char));
+    char* c=(char*)malloc((la+lb)*sizeof(char)+1);
 	strcpy(c,a);
 	strcpy(&c[la],b);
+    c[la+lb]=0;
 	return c;
 }
 bool equalsFuzzy(const char* x, const char* y){
