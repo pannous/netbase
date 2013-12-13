@@ -47,6 +47,11 @@ bool checkHideStatement(Statement* s){
     if(subjectName==0||predicateName==0||objectName==0)return true;
 
 	if(eq(predicateName,"Key"))return true;
+   	if(eq(predicateName,"expected type"))return true;
+   	if(eq(predicateName,"Range"))return true;
+    if(eq(predicateName,"usage domain"))return true;
+    if(eq(predicateName,"schema"))return true;
+    
     if(predicateName[3]=='-'||predicateName[3]=='_'||predicateName[3]==0)
           		return true;// <zh-ch, id ...
     if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)

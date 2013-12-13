@@ -1517,7 +1517,8 @@ bool importFacts(const char* file, const char* predicateName="population") {
 
 
 void importEntities(){
-    getSingletons=true;
+    getSingletons=false;// desaster!
+    getBest=true;
     importCsv("couchdb/entities.csv");
 }
 
