@@ -112,7 +112,9 @@ extern Node* StartsWith;
 extern Node* EndsWith;
 extern Context* Wordnet;
 
+static const int singletonId = 99;
 static const int abstractId = 102;
+
 
 
 static const int wordnet = 0;// 303; //context==Class??   TODO!

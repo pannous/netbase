@@ -107,7 +107,7 @@ void flush() {
 //inline
 
 bool isAbstract(Node* object) {
-	return object->kind == abstractId;
+	return object->kind == abstractId || object->kind == singletonId;
 }
 
 inline Statement* firstStatement(Node* abstract) {
@@ -601,7 +601,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 	}
     initNode(node, context->nodeCount, nodeName, kind, contextId);
 	context->nodeCount++;
-	if (kind == abstractId) return node;
+	if (kind == abstractId|| kind == singletonId) return node;
 	addStatement(getAbstract(nodeName), Instance, node, false);
 	if (storeTypeExplicitly && kind > 105) // might cause loop?
         addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
@@ -1093,6 +1093,16 @@ Node * getNew(const char* thing, Node* type) {
 	return n;
 }
 
+
+Node * getClass(const char* word,Node* hint) {
+	return getThe(word,hint);
+}
+
+Node * getSingleton(const char* thing) {
+//    if(	getThe(thing) ...)
+    return getAbstract(thing);
+}
+
 Node * getThe(string thing, Node* type) {
 	return getThe(thing.data(), type);
 }
@@ -1228,9 +1238,6 @@ void collectAbstractInstances(Node* abstract) {
 //    return n;
 //}
 
-Node * getClass(const char* word) {
-	return getThe(word);
-}
 
 void showStatement(Statement * s) {
 	//	if (quiet)return;
@@ -2105,6 +2112,7 @@ Statement * learn(string sentence) {
 //void cleanAbstracts(Context* c){
 Node * getThe(Node* abstract, Node * type) {
 	if (!abstract) return 0;
+    if(abstract->kind==singletonId)return abstract;
 	if (type == 0) {
 		//		return getThe(abstract->name);
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
@@ -2124,7 +2132,9 @@ Node * getThe(Node* abstract, Node * type) {
 			}
 		return add(abstract->name, 0); // NO SUCH!! CREATE!?
 	}
-	if (type->id == abstractId) return getAbstract(abstract->name); // safe
+	if (type->id == abstractId || type->id == singletonId)
+        return getAbstract(abstract->name); // safe
+	
 	Statement * s=0;
     Node* best=0;
 	map<Statement*, int> visited; // You don't have to do anything. Just let the variable go out of scope.

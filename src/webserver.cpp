@@ -40,9 +40,12 @@ static char* excluded2=0;
 static char* excluded3=0;
 bool checkHideStatement(Statement* s){
 	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
+    if(s->subject==0||s->predicate==0||s->object==0)return true;
 	char* predicateName=s->Predicate()->name;
 	char* objectName=s->Object()->name;
 	char* subjectName=s->Subject()->name;
+    if(subjectName==0||predicateName==0||objectName==0)return true;
+
 	if(eq(predicateName,"Key"))return true;
     if(predicateName[3]=='-'||predicateName[3]=='_'||predicateName[3]==0)
           		return true;// <zh-ch, id ...
@@ -240,8 +243,8 @@ int Service_Request(int conn) {
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
-				fixLabels(s);
 				if(checkHideStatement(s))continue;
+				fixLabels(s);
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;

@@ -1348,7 +1348,10 @@ void testBrandNewStuff() {
 //    parse("surname");
 //    parse("surname");
 //        parse("surname");
-    		import("dbpedia");
+    
+//    importCsv("couchdb/entities.csv");
+    		import("entities");
+//    		import("dbpedia");
 //    import("linkedin_connections_export_microsoft_outlook.csv");
 //    tests();
 //    fixNames();

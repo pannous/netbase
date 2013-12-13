@@ -350,9 +350,14 @@ NodeVector parse(const char* data) {
 	if (contains(data, "that ")) return query(data);
 	if (contains(data, "who ")) // who loves jule
 		return query(data);
-
+    
 	if (eq(args[0], "the") || eq(args[0], "my")) {
 		N da=getThe(data + 4, More);
+		show(da);
+		return nodeVectorWrap(da);
+	}
+	if (eq(args[0], "a") || eq(args[0], "abstract")) {
+		N da=get(data + 2);
 		show(da);
 		return nodeVectorWrap(da);
 	}

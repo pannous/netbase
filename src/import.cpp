@@ -20,6 +20,9 @@ cchar* nodes_file="nodes.txt";
 cchar* statements_file="statements.txt";
 cchar* images_file="images.txt";
 
+bool getSingletons=false;// i.e. Nationalmannschaft
+bool getBest=false;// i.e. Madonna\Music | Madonna\Church
+
 FILE *open_file(const char* file) {
 	FILE *infile;
 	if ((infile=fopen((file), "r")) != NULL) return infile;
@@ -694,7 +697,11 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		}
 //        else printf("OK");
 		fixValues(values, size);
-		if (values[nameRowNr] != lastValue) subject=getNew(values[nameRowNr], type);
+//        if(contains(line,"Xherdan Shaqiri"))
+//            p(line);
+        if(getSingletons)subject=getSingleton(values[nameRowNr]);
+        else if (getBest)subject=getThe(values[nameRowNr], type);
+		else if (values[nameRowNr] != lastValue) subject=getNew(values[nameRowNr], type);
 		else if (subject == null) //keep subject
 			subject=getThe(values[nameRowNr]);
 
@@ -711,7 +718,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		for (int i=0; i < size; i++) {
 			predicate=predicates[i];
 			if (predicate == null) continue;
-			if (i == nameRowNr && !eq("first_name", predicate->name)) continue;
 			if (contains(ignoreFields, predicate->name)) continue;
 			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
@@ -725,11 +731,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //			Statement *s=
 			addStatement(subject, predicate, object, false);
 //			showStatement(s);
-			if (eq(predicate->name, "last_name")) {
-				cchar *full_name=concat(values[nameRowNr], concat(" ", vali));
-				setLabel(subject, full_name);
-//                addStatement(subject,Synonym,getThe(full_name), false);
-			}
 		}
 
 		if (checkLowMemory()) {
@@ -1514,6 +1515,13 @@ bool importFacts(const char* file, const char* predicateName="population") {
 	return true;
 }
 
+
+void importEntities(){
+    getSingletons=true;
+    importCsv("couchdb/entities.csv");
+}
+
+
 void importNames() {
 	addStatement(all(firstname), are, a(name));
 	addStatement(all(firstname), Synonym, a(first name));
@@ -1835,6 +1843,8 @@ void import(const char* type, const char* filename) {
 		importWikipedia();
 	} else if (eq(type, "topic")) {
 		importWikipedia();
+	} else if (eq(type, "entities")) {        
+        importEntities();
 	} else if (eq(type, "yago")) {
 		if (eq(filename, "yago")) importAllYago();
 		//		else if (contains(filename, "fact"))
@@ -1870,7 +1880,8 @@ void importAll() {
 	importNames();
 	importGeoDB();
 //	importFreebase();
-    importAllYago();
+//    importAllYago();
+    importEntities();
 	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
 	//		p("image import done before ...");
 	//	else
