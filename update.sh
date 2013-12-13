@@ -3,9 +3,9 @@ date
 cd ~/netbase  
 git commit -a --allow-empty-message -m \"''\" && git push --all && git status
 
- server="kfluegge@pannous.jo"
+ # server="kfluegge@pannous.jo"
 # server="root@quasiris.com"
-# server="root@quasiris.dev"
+server="root@quasiris.dev"
 # server="root@quasiris.big"
 # server="root@87.118.71.24"
 
