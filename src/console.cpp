@@ -21,8 +21,11 @@
 #define USE_READLINE
 // compile with -lreadline !
 #ifdef USE_READLINE
+//ai libreadline-dev
 #include <readline/history.h>
 #include <readline/readline.h>
+//#include <readline.h>
+//#include <history.h>
 #endif
 
 using namespace std;
