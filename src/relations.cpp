@@ -220,7 +220,7 @@ void initRelations() {
 	Noun = addRelation(noun, "noun");
 	Verb = addRelation(verb, "verb");
 	Adverb = addRelation(adverb, "adverb");
-	Number = addRelation(number, "number");
+	Number = addRelation(numberId, "number");
 	Unit = addRelation(unit, "unit");
 
 	Plural = addRelation(_plural, "plural");

@@ -1190,9 +1190,16 @@ Node * hasWord(const char* thingy) {
 }
 
 
+Node* number(int nr){
+    bool tmp=autoIds;
+    autoIds=false;
+    N n= getSingleton(itoa(nr).data());
+    autoIds=tmp;
+    return n;
+}
+
 
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
-
 Node * getAbstract(const char* thing) {			// AND CREATE!
 	if (thing == 0) {
 		badCount++;
@@ -1526,7 +1533,7 @@ void deleteWord(const char* data, bool completely) {
 	if (id <= 0) {
 		deleteNode(getThe(data));
 		if (completely) {
-			NodeVector* words=findWords(current_context, data, true); //getAbstract(data);
+			NodeVector* words=findWords(current_context, data, true,false); //getAbstract(data);
 			for(int i=0;i<words->size();i++){
 				Node* word=words->at(i);
 				pf("deleteNode %s \n", word->name);
@@ -1619,7 +1626,7 @@ Node * value(const char* aname, double v, Node* unit) {
 //	Node *n= getThe(name,unit);
 	Node *n= getAbstract(name);//,unit);
 	if (unit)n->kind=unit->id;
-    else n->kind=number;
+    else n->kind=numberId;
 	n->value.number=v;
 	free(name);
 	return n;

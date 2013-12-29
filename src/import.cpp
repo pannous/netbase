@@ -22,6 +22,7 @@ cchar* images_file="images.txt";
 
 bool getSingletons=false;// i.e. Nationalmannschaft
 bool getBest=false;// i.e. Madonna\Music | Madonna\Church
+bool germanImport=true;
 
 FILE *open_file(const char* file) {
 	FILE *infile;
@@ -746,7 +747,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 void importList(const char* file, const char* type) {
 	p("import list start");
 	char line[1000];
-	Node* subject=getClass(type);
+	Node* subject=getClass(type,0);
 	Node* object;
 	int linecount=0;
 	FILE *infile=open_file(file);
@@ -1132,6 +1133,7 @@ shared_map freebaseKeys;
 map<long, int> freebaseKeys;
 #endif
 map<string, Node*> labels;
+map<int,string> wn_labels;
 int freebaseKeysConflicts=0;
 
 void testPrecious2() {
@@ -1538,7 +1540,8 @@ void importNames() {
 
 void importAbstracts() {
 	char line[1000];
-	char name[1000];
+	char name0[1000];
+    const char* name;
 	//	char* line=(char*) malloc(1000);
 	//	char* name=(char*) malloc(1000);
 	int linecount=0;
@@ -1552,11 +1555,14 @@ void importAbstracts() {
 			printf("importAbstracts %d               \r", linecount);
 			fflush(stdout);
 		}
-		sscanf(line, "%d\t%[^\n]s", &id, name); // %[^\n]s == REST OF LINE!
-		id=id + 10000; // KILL ERVERYTHING!!!
+		sscanf(line, "%d\t%[^\n]s", &id, name0); // %[^\n]s == REST OF LINE!
+
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 		//		printf("%s\n",line);
+        name=wn_labels[id].data();
 		if (hasWord(name)) continue;
+
+        id=id + 10000; // OVERWRITE EVERYTHING!!!
 		c->nodeCount=id; // hardcoded hack to sync ids!!!
 		Node* a=getAbstract(name);
 		//		a->context=wordnet;
@@ -1565,22 +1571,22 @@ void importAbstracts() {
 	fclose(infile); /* Close the file */
 }
 
-int synonyms=400000;
+int synonyms=400000;// pointer autoincrement
 
 void importSenses() {
 	char line[1000];
 	char* name=(char*) malloc(1000);
 	int linecount=0;
-	int id, labelid, synsetid;
+	int id, labelid, synsetid,senseid,sensenum;
 	FILE *infile=open_file("wordnet/senses.tsv");
+	Node* Sense=getSingleton("sense number");// Number;// getRelation("Sense");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
 			printf("importSenses %d    \r", linecount);
 			fflush(stdout);
 		}
 		fixNewline(line);
-		sscanf(line, "%d\t%d\t%d\t%*d\t%*d\t%*d\t%*d\t%s", &id, &labelid, &synsetid, /*senseid,sensenum,lexid,tags,*/
-		name);
+		sscanf(line, "%d\t%d\t%d\t%d\t%d\t%*d\t%*d\t%s", &id, &labelid, &synsetid, &senseid,&sensenum,/*&lexid,&tags,*/ name);
 		//		if(id<1000)continue;// skip :(
 		id=id + 10000; // NORM!!!
 		//		if (130172 == id) p(line);
@@ -1601,6 +1607,8 @@ void importSenses() {
 			synonyms++;
 		}
 		addStatement(word, Instance, sense, false); // Sense
+//        Node* senseNumber= concat(<#const char *a#>, <#const char *b#>)
+		addStatement(sense,Sense,number(sensenum), false); // Sense
 		//		if(!sense->name){
 		//		sense->name=fixed;
 		//		sense->context=wordnet;
@@ -1675,6 +1683,34 @@ void importLables() {
 	fclose(infile); /* Close the file */
 }
 
+void importGermanLables() {
+	char line[1000];
+	char definition[1000];
+	char translations[1000];
+	int linecount=0;
+	int id;
+    //    char pos;
+	FILE *infile=open_file("babelnet/translations.tsv");
+	while (fgets(line, sizeof(line), infile) != NULL) {
+		if (++linecount % 10000 == 0) {
+			printf("importLables %d    \r", linecount);
+			fflush(stdout);
+		}
+		fixNewline(line);
+		sscanf(line, "%d\t%*s\t%s\t%[^\\]]s", &id, /*&lexdomain,*/definition,translations);
+//		id=id + 10000; //  label on abstract !?!
+		//		id=norm_wordnet_id(id);
+//		if (id >= 200000) {
+			p(line);
+//			continue;
+//		}
+        wn_labels[id]=definition;
+		addLabel(get(id), definition);
+		//		addStatement(get(id),Label,getAbstract(definition));
+	}
+	fclose(infile); /* Close the file */
+}
+
 void importLexlinks() {
 	char line[1000];
 	int linecount=0;
@@ -1731,6 +1767,7 @@ void importStatements() {
 
 void importWordnet() {
 	load_wordnet_synset_map();
+	importGermanLables();
 	//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
 	importSenses();
@@ -1872,22 +1909,33 @@ void import(const char* type, const char* filename) {
 	//    importStatements();
 }
 
-void importAll() {
-	//	importFacts()
-	//	importCsv("adressen.txt");
+void importAllDE() {
+	importCsv("adressen.txt");
 	importWordnet();
-//	importDBPedia();
+    importDBPedia();
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	importGeoDB();
-//	importFreebase();
-//    importAllYago();
     importEntities();
-	//	if (getImage("alabama") != "" && getImage("Alabama") != "")
-	//		p("image import done before ...");
-	//	else
-	//		importImages();
+    importImages();
+    //	importFacts()
 }
+
+void importAll() {
+    if(germanImport)
+        return importAllDE();
+
+	importWordnet();
+	importCsv("adressen.txt");
+	//	doDissectAbstracts=true;// already? why not
+	importNames();
+	importGeoDB();
+	importFreebase();
+    importAllYago();
+    importEntities();
+    importImages();
+}
+
 /*root@h1642655:~/netbase# l facts/
  actedIn           during              hasChild           hasISBN                hasRevenue       interestedIn    isSubstanceOf    subClassOf
  bornIn            establishedOnDate   hasCurrency        hasLabor               hasSuccessor     inTimeZone      livesIn          subPropertyOf

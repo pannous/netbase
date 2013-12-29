@@ -91,6 +91,7 @@ int Service_Request(int conn) {
 	CleanURL(reqinfo.resource);
 
 	init(); // for each forked process!
+    if(strlen(reqinfo.resource)>1000)return 0;
 	char* q = substr(reqinfo.resource, 1, -1);
 	int len=(int)strlen(q);
 	if (eq(q, "favicon.ico"))return 0;

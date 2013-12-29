@@ -485,7 +485,7 @@ Node* reify(Statement* s);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);
 //bool checkStatement(Statement *s);
 void checkRootContext();
-
+Node* number(int n);
 Node* getProperty(Node* n,const char* s);
 Node* findRelation(Node* from, Node* to);
 NodeVector findProperties(const char* n, const char* m);
