@@ -235,7 +235,7 @@ void initRelationsDE() {
 
 
 void initRelations() {
-    if(germanLabels)initRelationsDE();
+    if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_see, "see");
 	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
