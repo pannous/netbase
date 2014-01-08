@@ -120,7 +120,122 @@ Node* addRelation(int id, const char* name,bool transitive=false) {
 	return n;
 }
 
+void initRelationsDE() {
+	Unknown = addRelation(_see, "siehe");
+	Antonym = addRelation(_antonym, "Gegenteil");
+    //	Part = addRelation(1, "part"); USA etc BUG!?!!
+	Attribute = addRelation(_attribute, "Attribut"); // tag
+	Property=Attribute;
+	bool is_transitive=true;
+	Cause = addRelation(_cause, "Grund",is_transitive); //
+	Derived =addRelation(_derived, "Abgeleitet"); //
+    //	DerivedFromNoun =addRelation(_derived_from_noun, "derived from noun"); //
+	//        DOMAIN_OF_SYNSET_CATEGORY =
+	UsageContext=addRelation(_DOMAIN_CATEGORY, "Kontext"); // # sheet @ maths   // think of!! OWNER -> Part
+	//    DOMAIN_OF_SYNSET_REGION =
+	addRelation(_DOMAIN_REGION, "Region"); // mate @ australia
+	//    DOMAIN_OF_SYNSET_USAGE =
+	Domain=addRelation(_DOMAIN_USAGE, "Bereich"); // #bitch @ colloquialism  || fin de siecle @ French   # fuck(vulgar)
+	//    ENTAILMENT =
+	addRelation(_ENTAILMENT, "Impliziert",is_transitive); //ENTAILMENT  jump implies come down
+	SuperClass = addRelation(_Hypernym, "Oberklasse",is_transitive); //Parent ,"Hypernym"
+	Parent = SuperClass;
+	//	IsA = SuperClass;
+    
+	SubClass = addRelation(_hyponym, "Unterklasse",is_transitive); // hyponym
+	Owner = addRelation(_Owner, "von",is_transitive);
+	Member = addRelation(_Member, "hat");
+	//	MEMBER_OF_THIS_DOMAIN_CATEGORY=
+	addRelation(_MEMBER_DOMAIN_CATEGORY, "contextual"); //aviation: to overfly
+	//	MEMBER_OF_THIS_DOMAIN_REGION =
+	addRelation(_MEMBER_DOMAIN_REGION, "regional"); //-r  IN Japan :  Sushi
+	//	MEMBER_OF_THIS_DOMAIN_USAGE =
+	addRelation(_MEMBER_DOMAIN_USAGE, "Domaine"); // colloquialism: bitch
+	PartOf = addRelation(_PartOf, "Teil von",is_transitive);
+	Part = addRelation(_Part, "Teil",is_transitive);
+	//	PARTICIPLE_OF_VERB =
+	addRelation(_PARTICIPLE_OF_VERB, "Partizip");
+	PERTAINYM =addRelation(_PERTAINYM, "Abgeleitet"); //  # cellular(a) \ cell(n) 	equally(adv)-equal(adj)
+	Synonym = addRelation(_synonym, "Synonym",is_transitive); // similar?? 32??
+	addRelation(_SubstanceOwner, "Substanz von",is_transitive);
+	Substance = addRelation(_Substance, "Substanz",is_transitive);
+	addRelation(_VERB_GROUP, "Verb Gruppe");
+	//	RELATIONSHIP_COUNT =
+    //	addRelation(25, "RELATIONSHIP_COUNT");
+	addRelation(97, "Domaine");
+	addRelation(98, "Hat");
+	//	 Synonym = Relation(32, "synonym");// -> 21????? See see | tag
+	Type = addRelation(_Type, "Typ");// is_transitive?? // (instance->class) !=SuperClass
+	Instance = addRelation(_instance, "Instanz",is_transitive);
+    
+   	Weight = addRelation(31, "weight");
+	Active = addRelation(35, "active");
+	Passive = addRelation(36, "passive");
+	Tag = addRelation(37, "tag"); // different to 'unknown' !!
+	Label = addRelation(38, "Label");
+	BackLabel = addRelation(39, "label of");
+	addRelation(40, "ähnlich");// hypernym?? no synonym
+	addRelation(50, "auch");// hypernym??
+	Category = addRelation(43, "Kategorie"); // tag
+	SubContext = addRelation(44, "Subcontext"); // tag
+	SuperContext = addRelation(45, "Supercontext"); //
+	Comment = addRelation(46, "Kommentar");
+    
+	Internal = addRelation(_internal, "intern"); //ok
+	_Node = addRelation(_node, "Knoten");
+	Abstract = addRelation(_abstract, "Abstract");
+	Class = addRelation(_clazz, "Klasse");
+	Object = addRelation(_object, "Object");
+	Relation = addRelation(_relation, "Relation");
+	Pattern = addRelation(_pattern, "Pattern");
+	Reification = addRelation(_reification, "Reifikation");
+    
+	// Thing   = addRelation(101, "thing");
+	// Item    = addRelation(101, "item");
+	Person = addRelation(_person, "Person");
+	Adjective = addRelation(adjective, "Adjective");
+	Noun = addRelation(noun, "Nomen");
+	Verb = addRelation(verb, "Verb");
+	Adverb = addRelation(adverb, "Adverb");
+	Number = addRelation(numberId, "Zahl");
+	Unit = addRelation(unit, "Einheit");
+    
+	Plural = addRelation(_plural, "Plural");
+	Translation = addRelation(translation, "Übersetzung");
+    
+	And = addRelation(_And, "Und");
+	Or = addRelation(_Or, "Oder");
+	Not = addRelation(_Not, "Nicht");
+	Any = addRelation(666, "*");
+    
+    
+	Equals = addRelation(_Equals, "=");
+	Greater = addRelation(_Greater, ">");
+	More=Greater;
+	Less = addRelation(_Less, "<"); //smaller
+	Smaller=Less;
+	Between = addRelation(_Between, "Between");
+	Circa = addRelation(_Circa, "Circa");
+	Much = addRelation(_Much, "much");
+	Little = addRelation(_Much, "little");
+	Very = addRelation(_Very, "very");
+	Contains = addRelation(_Contains, "Contains");
+	StartsWith = addRelation(_StartsWith, "starts with");
+	EndsWith = addRelation(_EndsWith, "ends with");
+    
+	String = addRelation(_string, "String");
+	Date = addRelation(_date, "Date");
+	Float = addRelation(_float, "Float");
+	Integer = addRelation(_integer, "Integer");
+	Range = addRelation(_range, "Range");
+    
+	True= addRelation(_true,"Wahr");
+	False=addRelation(_false,"Falsch");// todo
+}
+
+
 void initRelations() {
+    if(germanImport)initRelationsDE();
 	Unknown = addRelation(_see, "see");
 	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
