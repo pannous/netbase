@@ -122,6 +122,11 @@ void importImages() { // 18 MILLION!   // 18496249
 	FILE* infile=open_file((char*) images_file);
 //	char tokens[1000];
 	char image[1000];
+
+	// But if you are actually writing C++, then using the new [] syntax is better:
+	// double *factors = new double [q-2];
+	// (Note that this requires using delete[] factors instead of free(factors))
+	
 	char *title=(char *) malloc(1000);
 	int good=0;
 //	int bad=0;
