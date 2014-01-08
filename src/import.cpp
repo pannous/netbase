@@ -115,7 +115,7 @@ void importImages() { // 18 MILLION!   // 18496249
 	char line[100];
 	char* lastTitle=0;
 	int linecount=0;
-	Node* wiki_image=getAbstract("wiki_image");
+	Node* wiki_image=getAbstract("wiki image");
 	addStatement(wiki_image, is_a, getThe("image"));
 
 	/* Open the file.  If NULL is returned there was an error */
