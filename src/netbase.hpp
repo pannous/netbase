@@ -9,7 +9,7 @@
 using namespace std;
 
 
-extern bool germanImport;
+extern bool germanLabels;
 extern bool exitOnFailure;
 extern int maxRecursions;
 extern bool debug; //=true;

@@ -22,7 +22,7 @@ cchar* images_file="images.txt";
 
 bool getSingletons=false;// i.e. Nationalmannschaft
 bool getBest=false;// i.e. Madonna\Music | Madonna\Church
-bool germanImport=true;
+bool germanLabels=true;
 
 FILE *open_file(const char* file) {
 	FILE *infile;
@@ -1610,7 +1610,7 @@ void importSenses() {
 			if (name0[i] == '%') name0[i]=0;
 
         const char* german=wn_labels[synsetid].data();
-        if(germanImport){
+        if(germanLabels){
             if(!german||strlen(german)==0)continue;
             name=german;
 //            OR add label!
@@ -1629,7 +1629,7 @@ void importSenses() {
 			synonyms++;
 		}
 		addStatement(word, Instance, sense, false);
-        if(!germanImport)
+        if(!germanLabels)
 		addStatement(sense,Sense,number(sensenum), false);
 	}
 	fclose(infile); /* Close the file */
@@ -1648,7 +1648,7 @@ void addLabel(Node *node, char* text) {
 }
 
 void importSynsets() {
-    if(germanImport)return;
+    if(germanLabels)return;
 	char line[1000];
 	char definition[1000];
 	int linecount=0;
@@ -1948,7 +1948,7 @@ void importAllDE() {
 }
 
 void importAll() {
-    if(germanImport)
+    if(germanLabels)
         return importAllDE();
 
 	importWordnet();

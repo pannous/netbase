@@ -413,7 +413,7 @@ NodeVector parse(const char* data) {
 		start_server();
 		return OK;
 	}
-
+    if(contains(data,"german"))germanLabels=true;
 	if (contains(data, " with ")) return query(data);
 	if (contains(data, " where ")) return query(data);
 	if (contains(data, " from ")) return query(data);
