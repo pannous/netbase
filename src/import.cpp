@@ -1165,7 +1165,21 @@ void testPrecious() {
 	check(freebaseKeys[testE] == testA->id);
 	//	if (linecount > 40000000)
 	//	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
+    
+    //        if(contains(line,"molaresvolumen")){
+    //            p(key);
+    //            Node* n=labels[key];
+    //            p(n);
+    //            p(label);
+    //            Node* m=getAbstract("Molares Volumen");
+    //            check(!hasWord("molaresvolumen"));
+    //            check(hasWord("Molares Volumen"));
+    //            p(m);
+    //            check(labels[key]==getAbstract("Molares Volumen"));
+    //        }
 }
+
+
 void fixLabel(char* label){
     label[0]=toupper(label[0]);
     char* wo=strstr(label,"@");
@@ -1264,9 +1278,9 @@ bool importLabels(cchar* file, bool hash=false) {
 			freebaseKeysConflicts++;
             continue;
         }
-if(contains(line,"Arsenic"))
-    p(line);
-
+        
+        if(contains(line,"Arsenic"))
+            p(line);
         
 			Node* n;
 			if (hasWord(label)) n=getNew(label);		//get(1);//
@@ -1275,19 +1289,12 @@ if(contains(line,"Arsenic"))
 			if (n) {
 				if (hash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
 //                freebaseKeys.insert(pair<long,int>(h,n->id));
-				else labels[key]=n;
+				else{
+                    labels[key]=n;
+                    if(contains((const char*)key,"_",false))
+                        labels[replaceChar(key,'_',' ')]=n;
+                }
 			}
-//        if(contains(line,"molaresvolumen")){
-//            p(key);
-//            Node* n=labels[key];
-//            p(n);
-//            p(label);
-//            Node* m=getAbstract("Molares Volumen");
-//            check(!hasWord("molaresvolumen"));
-//            check(hasWord("Molares Volumen"));
-//            p(m);
-//            check(labels[key]==getAbstract("Molares Volumen"));
-//        }
 	}
 	//		add(key,label);
 	fclose(infile); /* Close the file */
@@ -1458,7 +1465,7 @@ bool importN3(cchar* file) {
 		//		showStatement(s);
 	}
 	fclose(infile); /* Close the file */
-	p("import Freebase ok");
+	p("import N3 ok");
 
 	pf("MISSING %d\n", MISSING);
 	currentContext()->use_logic=false;
@@ -1563,10 +1570,8 @@ void importAbstracts() {
 		sscanf(line, "%d\t%[^\n]s", &id, name0); // %[^\n]s == REST OF LINE!
 
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
-		//		printf("%s\n",line);
-        name=wn_labels[id].data();
-		if (hasWord(name)) continue;
-
+            name=name0;
+//		if (hasWord(name)) continue; check earlier
         id=id + 10000; // OVERWRITE EVERYTHING!!!
 		c->nodeCount=id; // hardcoded hack to sync ids!!!
 		Node* a=getAbstract(name);
@@ -1580,7 +1585,8 @@ int synonyms=400000;// pointer autoincrement
 
 void importSenses() {
 	char line[1000];
-	char* name=(char*) malloc(1000);
+	char* name0=(char*) malloc(1000);
+	const char* name;
 	int linecount=0;
 	int id, labelid, synsetid,senseid,sensenum;
 	FILE *infile=open_file("wordnet/senses.tsv");
@@ -1591,17 +1597,28 @@ void importSenses() {
 			fflush(stdout);
 		}
 		fixNewline(line);
-		sscanf(line, "%d\t%d\t%d\t%d\t%d\t%*d\t%*d\t%s", &id, &labelid, &synsetid, &senseid,&sensenum,/*&lexid,&tags,*/ name);
+		sscanf(line, "%d\t%d\t%d\t%d\t%d\t%*d\t%*d\t%s", &id, &labelid, &synsetid, &senseid,&sensenum,/*&lexid,&tags,*/ name0);
 		//		if(id<1000)continue;// skip :(
 		id=id + 10000; // NORM!!!
 		//		if (130172 == id) p(line);
-		Node* word=get(id);
-		synsetid=norm_wordnet_id(synsetid);
+
+		synsetid=norm_wordnet_id(synsetid);// 100001740    ->  200000 and so on, no gaps
 		if (synsetid > 200000 + 117659) p(line);
 		if (synsetid < 200000) continue;
 		Node* sense=get(synsetid);
-		for (int i=0; i < strlen(name); i++)
-			if (name[i] == '%') name[i]=0;
+		for (int i=0; i < strlen(name0); i++)
+			if (name0[i] == '%') name0[i]=0;
+
+        const char* german=wn_labels[synsetid].data();
+        if(germanImport){
+            if(!german||strlen(german)==0)continue;
+            name=german;
+//            OR add label!
+        }else name=name0;
+
+        Node* word=get(id);// redundant and risky! just use
+        word=get(name);
+        
 		if (!sense->id) {
 			initNode(sense, synsetid, name, 0, wordnet);
 		} else if (!eq(sense->name, name)) {
@@ -1611,14 +1628,9 @@ void importSenses() {
 			sense=syno;
 			synonyms++;
 		}
-		addStatement(word, Instance, sense, false); // Sense
-//        Node* senseNumber= concat(<#const char *a#>, <#const char *b#>)
-		addStatement(sense,Sense,number(sensenum), false); // Sense
-		//		if(!sense->name){
-		//		sense->name=fixed;
-		//		sense->context=wordnet;
-		//		sense->id=synsetid;
-		//		}
+		addStatement(word, Instance, sense, false);
+        if(!germanImport)
+		addStatement(sense,Sense,number(sensenum), false);
 	}
 	fclose(infile); /* Close the file */
 }
@@ -1636,6 +1648,7 @@ void addLabel(Node *node, char* text) {
 }
 
 void importSynsets() {
+    if(germanImport)return;
 	char line[1000];
 	char definition[1000];
 	int linecount=0;
@@ -1663,6 +1676,7 @@ void importSynsets() {
 }
 
 void importLables() {
+    // labels for abstracts? why?
 	char line[1000];
 	char definition[1000];
 	int linecount=0;
@@ -1682,15 +1696,18 @@ void importLables() {
 			p(line);
 			continue;
 		}
-		addLabel(get(id), definition);
+        Node* old=get(id);
+		addLabel(old, definition);
 		//		addStatement(get(id),Label,getAbstract(definition));
 	}
 	fclose(infile); /* Close the file */
 }
 
 void importGermanLables() {
+    bool add_labels=hasWord("bug");//english already there
 	char line[1000];
-	char definition[1000];
+	char english[1000];
+	char german[1000];
 	char translations[1000];
 	int linecount=0;
 	int id;
@@ -1698,19 +1715,23 @@ void importGermanLables() {
 	FILE *infile=open_file("babelnet/translations.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			printf("importLables %d    \r", linecount);
+            printf("importLables %d    \r", linecount);
 			fflush(stdout);
 		}
 		fixNewline(line);
-		sscanf(line, "%d\t%*s\t%s\t%[^\\]]s", &id, /*&lexdomain,*/definition,translations);
+		sscanf(line, "%d\t%*s\t%s\t%s\t%[^\\]]s", &id, /*&wordkind 08950407n -> noun,*/english,german,translations);
 //		id=id + 10000; //  label on abstract !?!
-		//		id=norm_wordnet_id(id);
+		id=norm_wordnet_id(id); // 100001740  -> 200000 etc
 //		if (id >= 200000) {
+        if(!id)
 			p(line);
 //			continue;
 //		}
-        wn_labels[id]=definition;
-		addLabel(get(id), definition);
+//        if(wn_labels[id]!=null&&get(id))
+        getAbstract(german);
+        if(add_labels)
+            addLabel(get(id), german);// to abstracts or words?? get(id) -> word
+        wn_labels[id]=german;
 		//		addStatement(get(id),Label,getAbstract(definition));
 	}
 	fclose(infile); /* Close the file */
@@ -1772,9 +1793,9 @@ void importStatements() {
 
 void importWordnet() {
 	load_wordnet_synset_map();
-	importGermanLables();
 	//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
+    importGermanLables();
 	importSenses();
 	getContext(wordnet)->nodeCount=synonyms; //200000+117659;//WTH!
 	importSynsets();
