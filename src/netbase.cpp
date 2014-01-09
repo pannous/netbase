@@ -190,8 +190,8 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		if (get(ah->abstract) == a)
 			return ah;
         if(eq(get(ah->abstract)->name, a->name, true)){
-            bool ok=hasWord(a->name);
-            bool ok2=hasWord(a->name);
+//            bool ok=hasWord(a->name);
+//            bool ok2=hasWord(a->name);
             return ah;
         }
         //        ah->next=extrahash++;
@@ -2251,19 +2251,35 @@ bool checkParams(int argc, char *argv[], const char* p) {
 	return false;
 }
 
+string formatImage(Node* image,int size,bool thumb){
+	if (!image || !checkNode(image)) return "";
+    char* name=replaceChar(image->name,' ','_');
+	string hash=md5(name);
+	string base="http://upload.wikimedia.org/wikipedia/commons/";
+    if(!thumb)	return base + hash[0] + "/" + hash[0] + hash[1] + "/" +  name;
+        char ssize[12];
+        sprintf(ssize, "%d", size);
+	return base +"thumb/"+ hash[0] + "/" + hash[0] + hash[1] + "/" + name + "/" + ssize + "px-" + name;
+}
+
+string getImageThumb(const char* n, int size) {
+	Node* a=getAbstract(n);
+	Node* i=findMember(a, "wiki_image", false, false);
+    return formatImage(i,size,true);
+}
+
 string getImage(const char* n, int size) {
 	Node* a=getAbstract(n);
 	Node* i=findMember(a, "wiki_image", false, false);
-	if (!i) return "";
-	if (!checkNode(i)) return "";
-	string image=i->name;
-	string hash=md5(i->name);
-	string base="http://upload.wikimedia.org/wikipedia/commons/thumb/";
-	char ssize[12];
-	sprintf(ssize, "%d", size);
-    
-	return base + hash[0] + "/" + hash[0] + hash[1] + "/" + image + "/" + ssize + "px-" + image;
+   return formatImage(i,size,false);
 }
+
+string getImage(Node* a, int size,bool thumb) {
+	Node* i=findMember(a, "wiki_image", false, false);
+	if (!i || !checkNode(i)) return getImage(a->name);
+    return formatImage(i,size,thumb);
+}
+
 //#include <csignal> // or signal.h if C code // Generate an interrupt
 //void SIGINT_handler(int x){
 //	shutdown_webserver();

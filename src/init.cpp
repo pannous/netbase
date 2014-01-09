@@ -237,6 +237,12 @@ void fixNodes(Context* context, Node* oldNodes) {
 	}
 #endif
 }
+FILE* open_binary(char* c){
+	printf("Opening File %s\n", (data_path + c).data());
+     FILE* fp= fopen((data_path + c).data(), "rb");
+    if(fp==NULL)perror("Error opening file");
+    return fp;
+}
 
 void load(bool force) {
 
@@ -266,10 +272,8 @@ void load(bool force) {
 
 	ps("Loading graph from files!");
 
-	FILE *fp;
-	printf("Opening File %s\n", (data_path + "contexts.bin").data());
-	if ((fp=fopen((data_path + "contexts.bin").data(), "rb")) == NULL) {
-		perror("Error opening file");
+	FILE *fp=open_binary("contexts.bin");
+	if (fp== NULL) {
 		p("starting with fresh context!");
 		clearMemory();
 		return;
@@ -282,16 +286,18 @@ void load(bool force) {
 	//    fread(c, sizeof(Context), 1, fp);
 	//    fclose (fp);
 
-	fp=fopen((data_path + "names.bin").data(), "rb");
+    
+	fp=open_binary("names.bin");
 	fread(c->nodeNames, sizeof(char), c->currentNameSlot + 100, fp);
 	fclose(fp);
 
-	fp=fopen((data_path + "statements.bin").data(), "rb");
+	fp=open_binary( "statements.bin");
 	fread(c->statements, sizeof(Statement), c->statementCount, fp); //c->statementCount maxStatements
 	fclose(fp);
 
-	fp=fopen((data_path + "nodes.bin").data(), "rb");
+    fp=open_binary( "nodes.bin");
 	fread(c->nodes, sizeof(Node), c->nodeCount, fp);
+   	fclose(fp);
 
 	//
 	//    fp = fopen((path+"abstracts->bin").data(), "rb");

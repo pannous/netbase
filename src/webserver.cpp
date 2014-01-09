@@ -191,22 +191,14 @@ int Service_Request(int conn) {
 		excluded3[0]=0;
 		excluded3+=2;
 	}
-//	p(excluded);
-//	p(excluded2);
-//	p(excluded3);
-//	if (startsWith(q, "m/")) {
-//			q = q + 2;
-//
-//		}
 
-    
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
     NodeVector all = parse(q); // <<<<<<<< NETaddSBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
-    const char* html_block="<html><body><div id='results'></div><script>var results={'results':[\n";
+    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div><script>var results={'results':[\n";
 
 //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
@@ -246,6 +238,10 @@ int Service_Request(int conn) {
 		Writeline(conn, buff);
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
+            
+            if((format == json||format == html) && getImage(node)!="")
+                Writeline(",image:'"+getImage(node)+"'");
+//            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
@@ -313,6 +309,9 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 
 void Writeline(const char* s) {
 	Writeline(0, s, 0);
+}
+void Writeline(string s) {
+	Writeline(0, s.data(), 0);
 }
 
 /*  Write a line to a socket  */

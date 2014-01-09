@@ -19,6 +19,8 @@ using namespace std;
 cchar* nodes_file="nodes.txt";
 cchar* statements_file="statements.txt";
 cchar* images_file="images.txt";
+cchar* images_file_de="images_de.nt";
+cchar* images_file_babelnet="babelnet/images.wn.csv";
 
 bool getSingletons=false;// i.e. Nationalmannschaft
 bool getBest=false;// i.e. Madonna\Music | Madonna\Church
@@ -37,7 +39,7 @@ FILE *open_file(const char* file) {
 	return infile;
 }
 
-void norm(char* title) {
+void normImageTitle(char* title) {// blue_fin => bluefin // what?
 	int len=(int) strlen(title);
 	for (int i=len; i >= 0; --i) {
 		if (title[i] == ' ' || title[i] == '_' || title[i] == '-') {
@@ -88,7 +90,12 @@ std::map<int, int> wordnet_synset_map;
 int norm_wordnet_id(int synsetid) {
 	if (synsetid < million) return synsetid;
 	int id=wordnet_synset_map[synsetid];
-	if (!id) p("BAD ID!!!");
+    if (!id&&synsetid<10000000) id=wordnet_synset_map[synsetid+10000000];
+    if (!id&&synsetid<10000000) id=wordnet_synset_map[synsetid+100000000];
+	if (!id){
+        p("BAD ID!!!");
+        p(synsetid);
+    }
 	//	id=id+10000;// NORM!!!
 	return id;
 	//	return (synsetid%million)+200000;
@@ -110,26 +117,96 @@ map<long, string> nodeNameImages;
 map<long, string> nodeNameImages2; // chopped
 //map<long,string> nodeNameImages3;// chopped image name
 
-void importImages() { // 18 MILLION!   // 18496249
+
+void importImagesDE() { // 18 MILLION!   // 18496249
+    load_wordnet_synset_map();
 	p("image import starting ...");
-	char line[100];
+    int id;
+	char line[10000];
+	char label[1000];
 	char* lastTitle=0;
 	int linecount=0;
 	Node* wiki_image=getAbstract("wiki image");
 	addStatement(wiki_image, is_a, getThe("image"));
+	char image[10000];
+	char *title=(char *) malloc(10000);
+    FILE* infile=open_file((char*) images_file_babelnet);
+	while (fgets(line, sizeof(line), infile) != NULL) {
+		if (++linecount % 10000 == 0) {
+			pf("importImages %d    \r", linecount);
+			fflush(stdout);
+		};
+        sscanf(line, "%s\t%*s\t%s\t%d", title,/*md5,*/image,&id);
+        if(eq(title,"Uniform"))
+            p(line);
+		if (eq(lastTitle, title)) continue;
+		lastTitle=clone(title); // only the first
+        id=norm_wordnet_id(id);
+        Node* subject=get(id);
+		if (!subject && !hasWord(title)){
+            p(line);
+            badCount++; continue;} // currently only import matching words.
 
-	/* Open the file.  If NULL is returned there was an error */
-	FILE* infile=open_file((char*) images_file);
-//	char tokens[1000];
+        Node* object=getAbstract(image);
+        if(subject&&subject->id!=0)
+            	addStatement(subject, wiki_image, object, false);
+        if(!subject||subject->id==0||!isAbstract(subject)){
+            addStatement(getAbstract(title), wiki_image, object, false);
+        }
+	}
+	fclose(infile);
+}
+
+
+void importImagesDE2() {
+	p("image import starting ...");
+	char line[1000];
+	char label[100];
+	char* lastTitle=0;
+	int linecount=0;
+	Node* wiki_image=getAbstract("wiki image");
+	addStatement(wiki_image, is_a, getThe("image"));
 	char image[1000];
+	char *title=(char *) malloc(1000);
+	int good=0;
+    //	int bad=0;
+    FILE* infile=open_file((char*) images_file_de);
+	while (fgets(line, sizeof(line), infile) != NULL) {
+		if (++linecount % 10000 == 0) {
+			pf("importImages %d    \r", linecount);
+			fflush(stdout);
+		};
+//		sscanf(line, "<%[^>]s> <%[^>]s> <%[^>]s> .\n", title,label,image);
+		sscanf(line, "<%[^>]s",title);
+        sscanf(line+strlen(title)+3, "<%[^>]s", label);
+        sscanf(line+strlen(title)+3+strlen(label)+3, "<%[^>]s", image);
+        if (!eq(label,"depiction")) continue;
+		if (eq(lastTitle, title)) continue;
+        
+		lastTitle=clone(title); // only the first
+//		if (!hasWord(title)) normImageTitle(title); //blue -_fin ==> bluefin
+		if (!hasWord(title)) continue; // currently only import matching words.
+		Node* subject=getAbstract(title);
+		Node* object=getAbstract(image+5);// ommit md5 part /9/9a/
+		addStatement(subject, wiki_image, object, false);
+	}
+	fclose(infile);
+	good=0;
+}
 
-	// But if you are actually writing C++, then using the new [] syntax is better:
-	// double *factors = new double [q-2];
-	// (Note that this requires using delete[] factors instead of free(factors))
-	
+void importImages() { // 18 MILLION!   // 18496249
+    if(germanLabels){importImagesDE(); return;}
+	p("image import starting ...");
+	char line[1000];
+	char* lastTitle=0;
+	int linecount=0;
+	Node* wiki_image=getAbstract("wiki image");
+	addStatement(wiki_image, is_a, getThe("image"));
+	char image[1000];
 	char *title=(char *) malloc(1000);
 	int good=0;
 //	int bad=0;
+    	FILE* infile=open_file((char*) images_file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
 			pf("importImages %d    \r", linecount);
@@ -139,8 +216,8 @@ void importImages() { // 18 MILLION!   // 18496249
 		if (eq(lastTitle, title)) continue;
 
 		lastTitle=clone(title); // only the first
-		if (!hasWord(title)) norm(title); //blue -_fin ==> bluefin
-		if (!hasWord(title) && !hasWord(downcase(title))) continue; // currently only import matching words.
+//		if (!hasWord(title)) normImageTitle(title); //blue -_fin ==> bluefin
+		if (!hasWord(title)) continue; // currently only import matching words.
 
 		//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
 		//		if (getImage(title) != "")
@@ -158,49 +235,7 @@ void importImages() { // 18 MILLION!   // 18496249
 		}
 	}
 	fclose(infile);
-
 	good=0;
-//	Node* object=getAbstract(image); // getThe(image);;
-
-	/*
-	 // again, this time with word fragments
-	 * MEMORY LEAK!? where??
-	 infile = fopen((import_path+ images_file).data(), "r");
-	 while (fgets(line, sizeof (line), infile) != NULL) {
-	 if (++linecount % 1000 == 0)pi(linecount);
-	 sscanf(line, "%s %*s %s", title, image);
-	 //        #blue fin ==> blue and fin
-	 char* word=title;
-	 for (int i = 0; i < strlen(title); i++) {
-	 if(title[i]==' '||title[i]=='_'||title[i]=='-'){//split
-	 title[i]=0;
-	 //                nodeNameImages2[hash(title)]=image;
-	 if(!hasWord(word))continue;
-	 if(getImage(word)!="")continue;// only one so far!
-	 addStatement(getAbstract(word), wiki_image, object,false);
-	 if(++good%1000==0){ps("!!good");pi(good);}
-
-	 word=&title[i+1];
-	 }
-	 }
-	 }
-	 */
-	//    for(map<long,string>::const_iterator iter = nodeNameImages2.begin(); iter != nodeNameImages2.end(); ++iter){
-	//        long key=iter->first;
-	//        string value=iter->second;
-	//        if(nodeNameImages.find(key)==nodeNameImages.end())// does not exist?
-	//            nodeNameImages[key]=value;
-	//    }
-	//    for(map<long,Node*>::const_iterator iter = abstracts->begin(); iter != abstracts->end(); ++iter){
-	//        long key=iter->first;
-	//        Node* node=iter->second;
-	//        string image=nodeNameImages[key];
-	////        if(!image)key=hash2(node->name)
-	//        Node* object = getAbstract(image.data());// getThe(image);;
-	//        addStatement(node, predicate, object,false);
-	//    }
-	fclose(infile);
-	p("\ndone image import\n");
 }
 
 void importNodes() {
@@ -231,6 +266,9 @@ void importNodes() {
 //		}
 		// char name[1000];
 		char* name=(char*) malloc(100);
+        // But if you are actually writing C++, then using the new [] syntax is better:
+        // double *factors = new double [q-2];
+        // (Note that this requires using delete[] factors instead of free(factors))
 		// char kind[20];
 		char contextId_s[100];
 //		char deleted[1];
@@ -1942,8 +1980,8 @@ void importAllDE() {
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	importGeoDB();
-    importEntities();
-    importImages();
+//    importEntities();
+    importImagesDE();
     //	importFacts()
 }
 

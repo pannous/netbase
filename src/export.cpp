@@ -1,23 +1,24 @@
 #include "netbase.hpp"
 #include "util.hpp"
 #include <sys/stat.h> // mkdir
+
 bool save() {
     Context* c = currentContext();
-	string basepath=path+"/data/";
+	string data_path=path+"data/";
     FILE *fp;
-    fp = fopen((basepath+"statements.bin").data(), "wb");
+    fp = fopen((data_path+"statements.bin").data(), "wb");
     fwrite(c->statements, sizeof (Statement), c->statementCount, fp);
     fclose(fp);
 
-    fp = fopen((basepath+"nodes.bin").data(), "wb");
+    fp = fopen((data_path+"nodes.bin").data(), "wb");
     fwrite(c->nodes, sizeof (Node), c->nodeCount, fp);
     fclose(fp);
 
-    fp = fopen((basepath+"names.bin").data(), "wb");
+    fp = fopen((data_path+"names.bin").data(), "wb");
     fwrite(c->nodeNames, sizeof (char), c->currentNameSlot + 100, fp);
     fclose(fp);
 
-    fp = fopen((basepath+"contexts.bin").data(), "wb");
+    fp = fopen((data_path+"contexts.bin").data(), "wb");
     fwrite(contexts, sizeof (Context), maxContexts, fp);
     fclose(fp);
 
@@ -69,7 +70,7 @@ bool export_csv(){
         Statement* n= &c->statements[i];
 		if(!checkStatement(n,true,true))continue;
 		if(n->Predicate()==Instance)continue;
-        fprintf(fp,"%s\t%s\t%s\n",n->Subject()->name,n->Predicate()->name,n->Object()->name);//,n->kind);//n->context
+        fprintf(fp,"%d\t%d\t%d\t%s\t%s\t%s\n",n->subject,n->predicate,n->object,n->Subject()->name,n->Predicate()->name,n->Object()->name);//,n->kind);//n->context
     }
     fclose(fp);
 

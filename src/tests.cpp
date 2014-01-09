@@ -1345,14 +1345,23 @@ void testBrandNewStuff() {
 //    parse("population of Hamburg");
 //    learn("company synonym employer");
 //    parse("learn company synonym employer");
-    importWordnet();
+    //    importWordnet();
+//    string img= getImageThumb("Null");
+
+    string img= getImage("Spielkarte");
+    img=getImage(get(    221896));
+    check(contains(img,"jpg"));
+//    load(true);
+//    save();
+//    export_csv();
 //    setLabel(get("surname"), "Nachname");
 //    parse("surname");
 //    parse("surname");
 //        parse("surname");
     
 //    importCsv("couchdb/entities.csv");
-    		import("entities");
+//    		import("entities");
+//    import("images");
 //    		import("dbpedia");
 //    import("linkedin_connections_export_microsoft_outlook.csv");
 //    tests();

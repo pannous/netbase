@@ -408,7 +408,8 @@ Statement* findStatement(Node* n, string predicate, string object, int recurse =
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
 string getImage(const char* n, int size = 300);
-
+string getImageThumb(const char* n, int size = 150);
+string getImage(Node* a, int size=150,bool thumb=false);
 Node* has(const char* n, const char* m);
 Node* has(Node* n, Node* m);
 Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);//naja!!!
