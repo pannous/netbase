@@ -118,7 +118,7 @@ map<long, string> nodeNameImages2; // chopped
 //map<long,string> nodeNameImages3;// chopped image name
 
 
-void importImagesDE() { // 18 MILLION!   // 18496249
+void importImagesDE2() { // 18 MILLION!   // 18496249
     load_wordnet_synset_map();
 	p("image import starting ...");
     int id;
@@ -158,7 +158,7 @@ void importImagesDE() { // 18 MILLION!   // 18496249
 }
 
 
-void importImagesDE2() {
+void importImagesDE() {
 	p("image import starting ...");
 	char line[1000];
 	char label[100];
@@ -194,8 +194,7 @@ void importImagesDE2() {
 	good=0;
 }
 
-void importImages() { // 18 MILLION!   // 18496249
-    if(germanLabels){importImagesDE(); return;}
+void importImagesEN() { // 18 MILLION!   // 18496249
 	p("image import starting ...");
 	char line[1000];
 	char* lastTitle=0;
@@ -236,6 +235,16 @@ void importImages() { // 18 MILLION!   // 18496249
 	}
 	fclose(infile);
 	good=0;
+}
+
+void importImages(){
+//    if(germanLabels){
+        importImagesDE();
+        importImagesDE2();
+//        return;
+//    }
+//    else
+        importImagesEN();
 }
 
 void importNodes() {
@@ -1336,10 +1345,10 @@ bool importLabels(cchar* file, bool hash=false) {
 	}
 	//		add(key,label);
 	fclose(infile); /* Close the file */
-	p("freebase duplicates removed:");
+	p("duplicates removed:");
 	p(freebaseKeysConflicts);
 	testPrecious();
-	p("import Freebase labels ok");
+	pf("DONE importing labels from %s",file);
 	return true;
 }
 
@@ -1859,7 +1868,7 @@ void importGeoDB() {
 			"latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
 
-void importDBPedia() {
+void importDBPediaDE() {
     
     useHash=false;
     importLabels("labels.csv");
@@ -1936,7 +1945,7 @@ void import(const char* type, const char* filename) {
 	} else if (eq(type, "freebase")) {
 		importFreebase();
 	} else if (eq(type, "dbpedia")) {
-		importDBPedia();
+		importDBPediaDE();
 	} else if (eq(type, "names")) {
 		importNames();
 	} else if (eq(type, "images")) {
@@ -1976,7 +1985,7 @@ void import(const char* type, const char* filename) {
 void importAllDE() {
 	importCsv("adressen.txt");
 	importWordnet();
-    importDBPedia();
+    importDBPediaDE();
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	importGeoDB();
