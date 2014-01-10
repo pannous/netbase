@@ -240,14 +240,14 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 
 void importImages(){
 //    if(germanLabels){
-        importImagesDE();
-        importWordnetImages("images.wn.csv");
+//        importImagesDE();
+//        importWordnetImages("images.wn.csv");
 //        return;
 //    }
 //    else
     
         importWordnetImages("images.wn.en.csv");
-        importImagesEN();
+//        importImagesEN();
 }
 
 void importNodes() {
