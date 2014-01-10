@@ -240,7 +240,7 @@ int Service_Request(int conn) {
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
             
             if((format == json||format == html) && getImage(node)!="")
-                Writeline(",image:'"+getImage(node)+"'");
+                Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");
 //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
