@@ -138,8 +138,8 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 			fflush(stdout);
 		};
         sscanf(line, "%s\t%*s\t%s\t%d", title,/*md5,*/image,&id);
-        if(eq(title,"Uniform"))
-            p(line);
+//        if(eq(title,"Uniform"))
+//            p(line);
 		if (eq(lastTitle, title)) continue;
 		lastTitle=clone(title); // only the first
         id=norm_wordnet_id(id);
@@ -152,7 +152,8 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
         if(subject&&subject->id!=0)
             	addStatement(subject, wiki_image, object, false);
         if(!subject||subject->id==0||!isAbstract(subject)){
-            addStatement(getAbstract(title), wiki_image, object, false);
+            if(hasWord(title))
+                addStatement(getAbstract(title), wiki_image, object, false);
         }
 	}
 	fclose(infile);
@@ -240,13 +241,9 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 
 void importImages(){
 //    if(germanLabels){
-//        importImagesDE();
-//        importWordnetImages("images.wn.csv");
-//        return;
-//    }
-//    else
-    
-        importWordnetImages("images.wn.en.csv");
+//        importImagesDE();// dbpedia
+        importWordnetImages("images.wn.csv");// via ids
+        importWordnetImages("images.wn.all.csv");// via name
 //        importImagesEN();
 }
 
