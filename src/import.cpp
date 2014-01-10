@@ -20,7 +20,6 @@ cchar* nodes_file="nodes.txt";
 cchar* statements_file="statements.txt";
 cchar* images_file="images.txt";
 cchar* images_file_de="images_de.nt";
-cchar* images_file_babelnet="babelnet/images.wn.csv";
 
 bool getSingletons=false;// i.e. Nationalmannschaft
 bool getBest=false;// i.e. Madonna\Music | Madonna\Church
@@ -118,7 +117,9 @@ map<long, string> nodeNameImages2; // chopped
 //map<long,string> nodeNameImages3;// chopped image name
 
 
-void importImagesDE2() { // 18 MILLION!   // 18496249
+
+
+void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
     load_wordnet_synset_map();
 	p("image import starting ...");
     int id;
@@ -130,7 +131,7 @@ void importImagesDE2() { // 18 MILLION!   // 18496249
 	addStatement(wiki_image, is_a, getThe("image"));
 	char image[10000];
 	char *title=(char *) malloc(10000);
-    FILE* infile=open_file((char*) images_file_babelnet);
+    FILE* infile=open_file((char*) file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
 			pf("importImages %d    \r", linecount);
@@ -158,7 +159,7 @@ void importImagesDE2() { // 18 MILLION!   // 18496249
 }
 
 
-void importImagesDE() {
+void importImagesDE() {// dbpedia
 	p("image import starting ...");
 	char line[1000];
 	char label[100];
@@ -240,10 +241,12 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 void importImages(){
 //    if(germanLabels){
         importImagesDE();
-        importImagesDE2();
+        importWordnetImages("images.wn.csv");
 //        return;
 //    }
 //    else
+    
+        importWordnetImages("images.wn.en.csv");
         importImagesEN();
 }
 
