@@ -71,7 +71,7 @@ system("sudo sysctl -w kern.sysv.shmall=8589934592");
 
 void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * desired) {
 	if (root) {
-		ps("root_memory already attached!");
+//		ps("root_memory already attached!");
 		return root;
 	}
 //	if (sizeOfSharedMemory > 2147483648) {
@@ -194,18 +194,18 @@ void init() {
 	long name_size=maxNodes * averageNameLength;
 	long statement_size=maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
-	p("abstract_root:");
+//	p("abstract_root:");
 	abstract_root=(Node*) share_memory(key , abstract_size * 2, abstract_root,root);//  ((char*) context_root) + context_size
-	p("name_root:");
+//	p("name_root:");
 	name_root=(char*) share_memory(key + 1, name_size, name_root, ((char*) abstract_root) + abstract_size * 2);
-	p("node_root:");
+//	p("node_root:");
 	node_root=(Node*) share_memory(key + 2, node_size, node_root, name_root + name_size);
-	p("statement_root:");
+//	p("statement_root:");
 	statement_root=(Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
 //	p("keyhash_root:");
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
-   	p("context_root:");
+//   	p("context_root:");
 	context_root=(Context*) share_memory(key+4, context_size, context_root,  ((char*) statement_root) + statement_size);
 
 //	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);

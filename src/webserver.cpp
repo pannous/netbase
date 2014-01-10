@@ -858,7 +858,7 @@ void start_server() {
 				Error_Quit("Error closing connection socket.");
 			exit(EXIT_SUCCESS);
 		}else{
-            p("not forked yet");
+//            p("not forked yet");
 //            Service_Request(conn);// whatever
         }
 
