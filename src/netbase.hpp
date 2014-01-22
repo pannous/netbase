@@ -70,12 +70,15 @@ struct Statement;
 struct Node;
 //class Node;
 typedef union Value {
+        // why not just save values+text in 'name' as string??
+    
     char* text; // wiki abstracts etc
     //    char* name;
     //    int integer;
     //    float floatValue;
     long datetime; // milliseconds? Date*? HOW really?
     //    long longValue;// 8 bytes
+    
     double number; // 8 bytes OK
     // why not just save ints as string?
     // 1) faster comparison   bottleneck factor n==nr digits or is atoi part of cpu?
@@ -90,9 +93,10 @@ typedef union Value {
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
 // reduce from 0x20 bytes to name,kind, firstStatement == 0x0b bytes!
 // 1 nit == 4+1 words =20bytes
+extern "C"
 typedef struct Node {
 //    class Node{
-//    public:
+    public:
     int id; //implicit -> redundant
     char* name; // see value for float etc
     int kind; // abstract,node,person,year, m^2     // via first slot? nah
@@ -109,8 +113,6 @@ typedef struct Node {
     // germany.index[0]=80Mio .index[1]=Berlin
 
 }Node ;
-
-
 
 // norway captial oslo
 // oslo population 325235
@@ -139,7 +141,7 @@ typedef struct Ahash {
 // S      Node3254/S13425 is wrong
 // 1 Stit == 3 words
 
-Node* get(int NodeId);
+extern "C" Node* get(int NodeId);
 int getStatementId(long pointer);
 
 typedef class Statement {
@@ -153,7 +155,6 @@ public:
 //#ifdef useContext
     int context; //    needed for pattern() -> find...     todo: via :NODE!?!
 //#endif
-    //        Node* meta;
 #ifdef explicitNodes
     Node* Subject; // as function? nee as it is!! transpose on context load
     Node* Predicate;
@@ -163,12 +164,19 @@ public:
     Node* Predicate(){return get(predicate);}
     Node* Object(){return get(object);}
 #endif
+//    REORDER NEEDS NEW INDEX ON ALL SERVERS +JAVA!
+//    int subject; // implicit!! Subject
+//    int predicate;
+//    int object;
+    
     int nextSubjectStatement;
     int nextPredicateStatement;
     int nextObjectStatement;
+
     int subject; // implicit!! Subject
     int predicate;
     int object;
+    //  Node* meta; for reification, too expensive, how else now??
     // int subjectContext;//... na! nur in externer DB!
 } Statement;
 // manipulate via other statements (confidence, truth, author(!), ...)
@@ -281,8 +289,9 @@ typedef struct Context {
     //	int lastStatementArray;
 } Context;
 
-
-
+extern "C" int nodeCount();
+extern "C" int statementCount();
+extern "C" int nextId();
 // Relations
 extern Node* Unknown;
 extern Node* Antonym;
@@ -358,6 +367,10 @@ extern Node* EndsWith;
 ////////////////////////
 void flush();
 char* name(Node* node);
+extern "C" char* getName(int node);
+extern "C" Node* getNode(int node);
+//extern "C" Node* getNode(char* node);
+
 Context* getContext(int contextId);
 void showContext(int nr);
 void showContext(Context* cp);
@@ -371,6 +384,8 @@ bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool c
 bool addStatementToNode(Node* node, int statementNr);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
+
+extern "C"
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
 Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
 //inline
@@ -383,7 +398,7 @@ Node* get(int NodeId);
 //extern "C" /* <== don't mingle name! */ inline
 Context* currentContext();
 
-Node* getAbstract(const char* word);
+extern "C" Node* getAbstract(const char* word);
 int collectAbstracts();
 unsigned int hash(const char *str); //unsigned
 //unsigned long hash(const char *str); //unsigned
@@ -398,20 +413,24 @@ Node* getSingleton(const char* thing) ;
 //Node* getClass(string word);
 void showStatement(Statement* s);
 bool show(Node* n, bool showStatements = true);
-Node* showNr(int context, int id);
+extern "C" Node* showNode(int id);
 void testBrandNewStuff();
 NodeVector* findWords(int context, const char* word, bool first= false,bool containsWord=false);
 NodeVector* findAllWords(const char* word);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
+extern "C"
 Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
 Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = false, bool symmetric = false);
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
+extern "C" bool hasNode(const char* thingy);
 string getImage(const char* n, int size = 300);
 string getImageThumb(const char* n, int size = 150);
 string getImage(Node* a, int size=150,bool thumb=false);
+
+
+extern "C" Node* has(Node* n, Node* m);
 Node* has(const char* n, const char* m);
-Node* has(Node* n, Node* m);
 Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);//naja!!!
 Node* has(Node* subject, string predicate, string object, int recurse = true, bool semantic = true, bool symmetric = false);
 Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true, bool matchName=false);
@@ -422,10 +441,11 @@ bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);
 Node* parseValue(const char* aname);
-void setLabel(Node* n, const char* label,bool addInstance=true);
+extern "C" void setLabel(Node* n, const char* label,bool addInstance=true);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
-Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
+
+extern "C" Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
 Statement* getStatement(int id,int context_id=current_context);
 Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
 
@@ -460,7 +480,6 @@ Node* isAproxymately(Node* subject, Node* object);
 
 Context* currentContext();
 //void initRelations();
-void init();
 Node* add_force(int contextId, int id, const char* nodeName, int kind);
 
 #define is Parent
@@ -527,7 +546,7 @@ static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatemen
 int main(int argc, char *argv[]);
 static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize
 
-int test2();
+extern "C" int test2();// extern "C" -> don't mangle!
 extern Context* contexts; //[maxContexts];
 extern Statement* statement_root;
 extern Context* context_root; // else: void value not ignored as it ought to be

@@ -847,6 +847,7 @@ Node * get(const char* node) {
 //	return getAbstract(node);
 //}
 
+
 //inline
 Node * get(int NodeId) {
 	//    if (NodeId > maxNodes) {
@@ -856,6 +857,13 @@ Node * get(int NodeId) {
 	//    }
 	return &currentContext()->nodes[NodeId];
 }
+
+extern "C" Node* getNode(int node){
+    return get(node);
+}
+//extern "C" Node* getNode(char* node){
+//    return getAbstract(node);
+//}
 
 //	static
 //map<Node*, bool> dissected;
@@ -1142,6 +1150,10 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //	found->next=0;
 //}
 
+bool hasNode(const char* thingy) {
+    return hasWord(thingy);
+}
+
 Node * hasWord(const char* thingy) {
 	if (!thingy || thingy[0] == 0) return 0;
     //	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
@@ -1198,9 +1210,19 @@ Node* number(int nr){
     return n;
 }
 
+extern "C" int nodeCount(){
+    return currentContext()->nodeCount;
+}extern "C" int statementCount(){
+    return currentContext()->nodeCount;
+}
+extern "C" int nextId(){
+    return currentContext()->nodeCount++;
+}
+
 
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
-Node * getAbstract(const char* thing) {			// AND CREATE!
+extern "C"
+Node* getAbstract(const char* thing) {			// AND CREATE!
 	if (thing == 0) {
 		badCount++;
 		return 0;
@@ -1270,6 +1292,9 @@ void showStatement(Statement * s) {
 }
 
 //, bool showAbstract
+extern "C" char* getName(int node){
+    return get(node)->name;
+}
 
 char* getLabel(Node * n) {
 	Context* context=getContext(current_context);
@@ -1330,17 +1355,15 @@ bool show(Node* n, bool showStatements) {		//=true
 	return 1; // daisy
 }
 
-Node * showNr(int context, int id) {
-    
-	Context* c=getContext(context); //contexts[context];
+Node * showNode(int id) {
+//	Context* c=getContext(context); //contexts[context];
 	// showContext(context);
-    
 	if (id > maxNodes) {
 		if (quiet) return 0;
-		printf("int context %d, int id %d id>maxNodes", context, id);
+		printf("int context %d, int id %d id>maxNodes", 0, id);
 		return 0;
 	}
-	Node* n=&c->nodes[id];
+	Node* n=&currentContext()->nodes[id];
 	if (!checkNode(n, id)) return 0;
 	show(n);
     
@@ -2207,19 +2230,25 @@ void setValue(Node* node, Node* property, Node * value) {
 
 
 void setLabel(Node* n, cchar* label,bool addInstance) {
-    if(    eq(n->name, label,false))return;
     int len=(int)strlen(label);
+	Context* c=currentContext();
+	char* l=&c->nodeNames[c->currentNameSlot];
+    if(n->name==0){
+        n->name=l;
+        if(!addInstance)n->kind=abstractId;
+//        addInstance=true;// unless abstract
+    }
+    if(eq(n->name, label,false))return;
+    
 	if (strlen(n->name)>=len){
         strcpy(n->name, label);
         n->name[len]=0;
     }else{
-	Context* c=currentContext();
-	char* l=&c->nodeNames[c->currentNameSlot];
-	strcpy(l, label);
-	int len=(int)strlen(label);
-	l[len]=0;
-	c->currentNameSlot+=len + 1;
-	n->name=l;
+        strcpy(l, label);
+        int len=(int)strlen(label);
+        l[len]=0;
+        c->currentNameSlot+=len + 1;
+        n->name=l;
     }
 	if (n->kind == abstractId) {
         NV all=instanceFilter(n);
@@ -2395,5 +2424,5 @@ Node* mergeAll(char* target){
 }
 
 int test2() {
-	return 1234;
+	return 12345;
 }		// RUBY!!

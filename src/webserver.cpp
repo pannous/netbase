@@ -9,6 +9,7 @@
 #include "webserver.hpp"
 #include "console.hpp" // parse request
 #include "util.hpp"
+#include "init.hpp"
 #include "query.hpp"
 //#include "helper.h"
 
@@ -239,7 +240,7 @@ int Service_Request(int conn) {
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
             
-            if((format == json||format == html) && getImage(node)!="")
+            if((format == json||format == html)&&node->statementCount>1 && getImage(node)!="")
                 Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");
 //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");

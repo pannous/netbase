@@ -3,4 +3,5 @@
 char* getaline();
 void console();
 void showHelp();
+extern "C" Node** execute(const char* data);// and act
 NodeVector parse(const char* data);// and act

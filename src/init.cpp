@@ -184,7 +184,7 @@ void checkRootContext() {
 //	}
 }
 
-void init() {
+extern "C" void init() {
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key=0x69190;
 	char* root=(char*) shmat_root;

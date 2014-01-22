@@ -859,7 +859,7 @@ char *fixYagoName(char *key) {
     if(len==0)return key;
 	if (key[len - 1] == '>') key[len - 1]=0;
 	key=removeHead(key, "wikicategory_");
-	key=removeHead(key, "geoclass_");
+    key=removeHead(key, "geoclass_");
 	key=removeHead(key, "wordnetDomain_");
 	if (startsWith(key, "wordnet_")) {
 		p("SHOULDNT BE REACHED");
@@ -1151,7 +1151,16 @@ bool importYago(const char* file) {
 const char *fixFreebaseName(char *key) {
 	key=(char *) fixYagoName(key);
 	if (startsWith(key, "http")) return key;
+	if (endsWith(key, ".svg")) return key;
+	if (endsWith(key, ".png")) return key;
+	if (endsWith(key, ".PNG")) return key;
+	if (endsWith(key, ".jpg")) return key;
+	if (endsWith(key, ".JPG")) return key;
+	if (endsWith(key, ".gif")) return key;
+   	if (endsWith(key, ".bmp")) return key;
+    
 	int len=(int) strlen(key);
+    if(len>5&&key[len-4]=='.')return key;// .svg ... file endings
 	for (int i=len - 1; i > 0; --i)
 		if (key[i] == '.') {
 			key[i]=0;
