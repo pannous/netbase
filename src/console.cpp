@@ -458,11 +458,17 @@ NodeVector parse(const char* data) {
 		if (all.size() > 0) return all;
 	}
 	return nodeVectorWrap(a);
-//
-
-	//    return nodeVectorWrap(get(data));
-	//	return OK;
 }
+
+extern "C"  Node** execute(const char* data){
+    NodeVector result=parse(data);
+    Node** results=(Node** ) malloc(result.size()*nodeSize);
+    for (int i=0; i< result.size(); i++) {
+        results[i]=result[i];
+    }
+    return     results;
+}
+
 
 void console() {
 	quiet=false;
