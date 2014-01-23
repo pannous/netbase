@@ -52,8 +52,8 @@ bool export_csv(){
     for (int i = 0; i < minimum((long)c->nodeCount,maxNodes); i++) {
         Node* n= &c->nodes[i];
 		if(!checkNode(n,i))continue;
-        fprintf(fp,"%d\t%s\n",n->id,n->Name());
-//        fprintf("%d\t%s\t%d",n->id,n->Name(),n->kind);//n->context
+        fprintf(fp,"%d\t%s\n",n->id,n->name);
+//        fprintf("%d\t%s\t%d",n->id,n->name,n->kind);//n->context
     }
     fp = fopen((path+"export/statements.csv").data(), "w");
     for (int i = 0; i < c->statementCount; i++) {
@@ -70,7 +70,7 @@ bool export_csv(){
         Statement* n= &c->statements[i];
 		if(!checkStatement(n,true,true))continue;
 		if(n->Predicate()==Instance)continue;
-        fprintf(fp,"%d\t%d\t%d\t%s\t%s\t%s\n",n->subject,n->predicate,n->object,n->Subject()->Name(),n->Predicate()->Name(),n->Object()->Name());//,n->kind);//n->context
+        fprintf(fp,"%d\t%d\t%d\t%s\t%s\t%s\n",n->subject,n->predicate,n->object,n->Subject()->name,n->Predicate()->name,n->Object()->name);//,n->kind);//n->context
     }
     fclose(fp);
 

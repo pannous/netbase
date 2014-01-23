@@ -23,7 +23,9 @@ const void * shmat_root = (const void *) 0x10000000; // just higher than system 
 #else
 //const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0101000000; // just higher than system Recommendation
-const void * shmat_root=(const void *) 0x0120000000; // just higher than system Recommendation
+//const void * shmat_root=(const void *) 0x0120000000; // just higher than system Recommendation
+//const void * shmat_root=(const void *) 0x021000000;// java !
+const void * shmat_root=(const void *) 0x0220000000;// java !
 //const void * shmat_root = (const void *) 0x0100137000;
 #endif
 //const void * shmat_root = (const void *)0x105800000;//test
@@ -216,7 +218,8 @@ extern "C" void init() {
 	checkRootContext();
 	getContext(current_context);
 	initRelations();
-	if (currentContext()->nodeCount < 100) currentContext()->nodeCount=10000;
+	if (currentContext()->nodeCount < 1000)
+        currentContext()->nodeCount=1000;
 }
 
 void fixNodes(Context* context, Node* oldNodes) {
@@ -369,7 +372,7 @@ int collectAbstracts() {
 	for (int i=0; i < max; i++) {
 		Node* n=&c->nodes[i];
 		if (i > 1000 && !checkNode(n)) break;
-		if (n == null || n->Name() == null || n->id == 0) continue;
+		if (n == null || n->name == null || n->id == 0) continue;
 		if (n->kind == Abstract->id) {
 			insertAbstractHash(n);
 			count++;
@@ -389,8 +392,9 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 	for (int i=0; i < max; i++) {
 		Node* n=&context->nodes[i];
 		//		show(n,true);
-		if (!checkNode(n)) continue;
-		n->name=newOffset;
+		if (!checkNode(n,i,0,0)) continue;
+//		n->name=newOffset;
+        n->name=n->name+newOffset;
 	}
 #endif
 }
