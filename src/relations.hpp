@@ -77,10 +77,10 @@ extern Node* Float;
 extern Node* Integer;
 extern Node* Range;
 extern Node* Unit;
+extern Node* Array;
 
 extern Node* True;
 extern Node* False;
-
 
 extern Node* Translation;
 extern Node* Plural;
@@ -141,7 +141,8 @@ static const int noun = 110;
 static const int verb = 111;
 static const int adjective = 112;
 static const int adverb = 113;
-static const int numberId = 123;
+static const int _array = 121;
+static const int _number = 123;
 static const int _string = 124; // text
 static const int _float = 125; //naa, see number
 static const int _integer = 126; //naa, see number

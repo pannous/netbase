@@ -89,6 +89,8 @@ typedef union Value {
 }Value;
 
 
+extern "C" char* getName(int node);
+
 // NEVER USE STRUCTS WITHOUT POINTER!!
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
 // reduce from 0x20 bytes to name,kind, firstStatement == 0x0b bytes!
@@ -98,7 +100,8 @@ typedef struct Node {
 //    class Node{
     public:
     int id; //implicit -> redundant
-    char* name; // see value for float etc
+    long name; // see value for float etc
+    char* Name(){return getName(id);}
     int kind; // abstract,node,person,year, m^2     // via first slot? nah
     //int context; //implicit   | short context_id or int node_id
     //float rank;
@@ -142,7 +145,7 @@ typedef struct Ahash {
 // 1 Stit == 3 words
 
 extern "C" Node* get(int NodeId);
-int getStatementId(long pointer);
+extern "C" int getStatementId(long pointer);
 
 typedef class Statement {
 //class Statement { //OK!!
@@ -165,17 +168,17 @@ public:
     Node* Object(){return get(object);}
 #endif
 //    REORDER NEEDS NEW INDEX ON ALL SERVERS +JAVA!
-//    int subject; // implicit!! Subject
-//    int predicate;
-//    int object;
+    int subject; // implicit!! Subject
+    int predicate;
+    int object;
     
     int nextSubjectStatement;
     int nextPredicateStatement;
     int nextObjectStatement;
 
-    int subject; // implicit!! Subject
-    int predicate;
-    int object;
+//    int subject; // implicit!! Subject
+//    int predicate;
+//    int object;
     //  Node* meta; for reification, too expensive, how else now??
     // int subjectContext;//... na! nur in externer DB!
 } Statement;
@@ -367,7 +370,6 @@ extern Node* EndsWith;
 ////////////////////////
 void flush();
 char* name(Node* node);
-extern "C" char* getName(int node);
 extern "C" Node* getNode(int node);
 //extern "C" Node* getNode(char* node);
 
@@ -378,7 +380,7 @@ NodeVector showNodes(NodeVector all, bool showStatements = false,bool showRelati
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
-Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
+extern "C" Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
 bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
 bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
 bool addStatementToNode(Node* node, int statementNr);
@@ -435,18 +437,22 @@ Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool 
 Node* has(Node* subject, string predicate, string object, int recurse = true, bool semantic = true, bool symmetric = false);
 Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true, bool matchName=false);
 void setValue(Node* node, Node* property, Node* value);
+//void value(
+//void setKind
 bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
 bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool matchName=false);
 bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
+extern "C"
 Node * value(const char* aname, double v, Node* unit = 0);
+//Node * value(const char* aname, Value v, Node* unit = 0);
 Node* parseValue(const char* aname);
-extern "C" void setLabel(Node* n, const char* label,bool addInstance=true);
+extern "C" long setLabel(Node* n, const char* label,bool addInstance=true);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
 
 extern "C" Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
-Statement* getStatement(int id,int context_id=current_context);
+extern "C" Statement* getStatement(int id,int context_id=current_context);
 Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
 
 //NodeVector& all_instances(Node* type, int recurse , int limit = defaultLimit);
@@ -468,8 +474,10 @@ Node* first(NodeVector rows);
 Node* last(NodeVector rows);
 //Node* learn(string data);
 Statement* learn(string data);
+extern "C" void deleteNode(int id);
 void deleteNode(Node* n);
 void deleteStatements(Node* n);
+extern "C" void deleteStatement(int id);
 void deleteStatement(Statement* s);
 int countInstances(Node* n);
 Node* isEqual(Node* subject, Node* object);
@@ -514,6 +522,8 @@ void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(char* target);
+extern "C" void setKind(int id,int kind);
+extern "C" Node* save(Node* n);
 typedef Node* N;
 typedef Statement* S;
 typedef NodeVector NV;

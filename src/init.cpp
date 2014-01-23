@@ -369,7 +369,7 @@ int collectAbstracts() {
 	for (int i=0; i < max; i++) {
 		Node* n=&c->nodes[i];
 		if (i > 1000 && !checkNode(n)) break;
-		if (n == null || n->name == null || n->id == 0) continue;
+		if (n == null || n->Name() == null || n->id == 0) continue;
 		if (n->kind == Abstract->id) {
 			insertAbstractHash(n);
 			count++;
@@ -390,7 +390,7 @@ void fixNodeNames(Context* context, char* oldnodeNames) {
 		Node* n=&context->nodes[i];
 		//		show(n,true);
 		if (!checkNode(n)) continue;
-		n->name=n->name + newOffset;
+		n->name=newOffset;
 	}
 #endif
 }
