@@ -534,8 +534,8 @@ bool isNameField(char* field, char* nameField) {
 
 Node* namify(Node* node, char* name) {
 	Context* context=currentContext();
-	node->name=context->currentNameSlot;
-	strcpy(node->Name(), name); // can be freed now!
+	node->name=name_root+context->currentNameSlot;
+	strcpy(node->name, name); // can be freed now!
 	int len=(int) strlen(name);
 	context->nodeNames[context->currentNameSlot + len]=0;
 	addStatement(getAbstract(name), Instance, node, DONT_CHECK_DUPLICATES);
@@ -625,7 +625,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 				// rewrite address.member=city
 				//				deleteStatement(findStatement(parent, Member, subject, 0, 0, 0, 0));
 				// address.CITY=bukarest
-				predicate=getThe(subject->Name()); // CITY
+				predicate=getThe(subject->name); // CITY
 				Node* object=namify(subject, value); // city.name=bukarest
 				addStatement(parent, predicate, object, DONT_CHECK_DUPLICATES); // address.CITY=bukarest
 				subject=object; // bukarest
@@ -765,14 +765,14 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 		if (!checkNode(subject)) continue;
 //		if (debug && subject && type && subject->kind > 0 && subject->kind != type->id) {		// subject->kind == 0 ??? MEANING?
-//			pf("Found one with different type subject->kind != type->id %d,%d,%s,%s\n", subject->kind, type->id, subject->Name(), type->Name());
+//			pf("Found one with different type subject->kind != type->id %d,%d,%s,%s\n", subject->kind, type->id, subject->name, type->name);
 //            //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
 //		}
 		for (int i=0; i < size; i++) {
 			predicate=predicates[i];
 			if (predicate == null) continue;
-			if (contains(ignoreFields, predicate->Name())) continue;
-			if (includedFields != null && !contains(includeFields, predicate->Name())) continue;
+			if (contains(ignoreFields, predicate->name)) continue;
+			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
 			if (!vali || strlen(vali) == 0) continue; //HOW *vali<100??
 			object=getThe(vali);
@@ -1205,7 +1205,7 @@ void testPrecious2() {
 	p(testI);
 	Node* testN=get(testI);
 	p(testN);
-	check(startsWith(testN->Name(), "Christen"));
+	check(startsWith(testN->name, "Christen"));
 }
 
 void testPrecious() {
@@ -1316,27 +1316,32 @@ bool importLabels(cchar* file, bool hash=false) {
 			}
 			label[100]=0;
 		}
+
+        
 		long h=freebaseHash(key);		// skip m.
         bool old=false;
-        if(hash)old=freebaseKeys[h] != 0;
-        else old=labels[key] != 0;
-		if (old) {
-            if(labels[key]&&eq(labels[key]->Name(),label))continue;// OK
+        Node* oldLabel=labels[key];
+        if(oldLabel){
+            if(eq(oldLabel->name,label))continue;// OK
             if(contains(label,"\\u"))continue; //Straßenverkehr || Stra\u00DFenverkehr
-            if(labels[key]&&contains(labels[key]->Name(),"\\u")){labels[key]=getAbstract(label); continue; }//Straßenverkehr || Stra\u00DFenverkehr
+            if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}//Straßenverkehr || Stra\u00DFenverkehr
+            printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
+            addStatement(oldLabel,Label,getAbstract(label));
+        }
+        
+		if (freebaseKeys[h] != 0 ) {
+//            printf("freebaseKeys[key] already reUSED!! %s => %s || %s\n", key , label, freebaseKeys[key]->name);
 			//       freebaseKeysConflicts:2305228 not worth It
-			//				if(!eq(get(freebaseKeys[h])->Name(), label,false))
-			//					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->Name());
+			//				if(!eq(get(freebaseKeys[h])->name, label,false))
+			//					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
 			//				else
-			//					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->Name());
-            printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, labels[key]->Name());
-            addStatement(labels[key],Label,getAbstract(label));
-			freebaseKeysConflicts++;
+			//					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+            freebaseKeysConflicts++;
             continue;
         }
         
-        if(contains(line,"Arsenic"))
-            p(line);
+//        if(contains(line,"Arsenic"))
+//            p(line);
         
 			Node* n;
 			if (hasWord(label)) n=getNew(label);		//get(1);//
@@ -1677,7 +1682,7 @@ void importSenses() {
         
 		if (!sense->id) {
 			initNode(sense, synsetid, name, 0, wordnet);
-		} else if (!eq(sense->Name(), name)) {
+		} else if (!eq(sense->name, name)) {
 			Node* syno=initNode(get(synonyms), synonyms, name, 0, wordnet);
 			addStatement(syno, Synonym, sense);
 			//			addStatement(word,Instance,syno);// Sense

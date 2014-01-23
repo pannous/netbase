@@ -7,7 +7,7 @@
 #include "util.hpp"
 #include "relations.hpp"
 // DONT depend on netbase!
-
+Node* Error;
 Node* Unknown;
 Node* Antonym;
 Node* Parent;
@@ -122,8 +122,10 @@ Node* addRelation(int id, const char* name,bool transitive=false) {
 }
 
 void initRelationsDE() {
-	Unknown = addRelation(_see, "siehe");
+//	Unknown = addRelation(_see, "siehe");
+	Unknown = addRelation(_see, "?");
 	Antonym = addRelation(_antonym, "Gegenteil");
+	Error = addRelation(_error, "Fehler");
     //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "Attribut"); // tag
 	Property=Attribute;
@@ -208,7 +210,7 @@ void initRelationsDE() {
 	And = addRelation(_And, "Und");
 	Or = addRelation(_Or, "Oder");
 	Not = addRelation(_Not, "Nicht");
-	Any = addRelation(666, "*");
+	Any = addRelation(_any, "*");
     
     
 	Equals = addRelation(_Equals, "=");
@@ -237,8 +239,10 @@ void initRelationsDE() {
 
 
 void initRelations() {
+    currentContext()->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
-	Unknown = addRelation(_see, "see");
+	Unknown = addRelation(_see, "unknown");
+    Error = addRelation(_error, "Error");
 	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "attribute"); // tag
@@ -347,7 +351,7 @@ void initRelations() {
 	And = addRelation(_And, "and");
 	Or = addRelation(_Or, "or");
 	Not = addRelation(_Not, "not");
-	Any = addRelation(666, "*");
+	Any = addRelation(_any, "*");
 
 	Equals = addRelation(_Equals, "=");
 	Greater = addRelation(_Greater, ">");

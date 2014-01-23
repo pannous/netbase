@@ -83,7 +83,7 @@ int getFieldNr(Query& q, Node* predicate) {
 	}
 	for (int i = 0; i < q.fields.size(); i++) {
 		Node* field = q.fields[i];
-		if (eq(predicate->Name(), field->Name()))
+		if (eq(predicate->name, field->name))
 			return i;
 		if (isA4(predicate, field, false, false))
 			return i;
@@ -126,7 +126,7 @@ void collectFacets(Query& q) {
 				if (fieldNr >= 0 && !checkNode(nl[fieldNr]))// && nl[fieldNr]==0 don't Over wright todo : multiple values?nl[fieldNr]
 					nl[fieldNr] = value;
 //				else
-//					pf("ignoring predicate %d %s\n",predicate->id,predicate->Name());
+//					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
 			}
 		}
 
@@ -142,7 +142,7 @@ string renderResults(Query& q) {
 	buffer << "<lst name=\"responseHeader\">\n";
 	buffer << "<int name=\"QTime\">0</int>\n";
 	buffer << "<lst name=\"params\">\n";
-	buffer << " <str name=\"q\">" << q.keyword->Name() << "</str>\n";
+	buffer << " <str name=\"q\">" << q.keyword->name << "</str>\n";
 	buffer << " <str name=\"filters\">" << q.filters.size() << "</str>\n";
 	buffer << " <str name=\"facets\">" << q.facets.size() << "</str>\n";
 	buffer << " <int name=\"limit\">" << q.limit << "</int>\n";
@@ -164,7 +164,7 @@ string renderResults(Query& q) {
 	for (int columnNr = 0; columnNr < nrFields; columnNr++) {
 		Node *f = q.fields[columnNr];
 		string kind = "td"; // "str"
-		buffer << "   <" << kind << " name=\"" << f->Name() << "\" field_id=" << f->id << ">" << f->Name() << "</" << kind << ">\n";
+		buffer << "   <" << kind << " name=\"" << f->name << "\" field_id=" << f->id << ">" << f->name << "</" << kind << ">\n";
 	}
 	buffer << "</th>\n";
 
@@ -172,12 +172,12 @@ string renderResults(Query& q) {
 	for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++) {
 		Node* n = all[rowNr];
 		//    buffer << "<doc>\n";
-		buffer << "<entity name='" << n->Name() << "' id='" << n->id << "' statementCount='" << n->statementCount << "'>\n";
+		buffer << "<entity name='" << n->name << "' id='" << n->id << "' statementCount='" << n->statementCount << "'>\n";
 		//    buffer << "<doc>\n";
 		//		buffer << "<tr name='entity'>\n";
 		//		buffer << "    <td name=\"id\">" << n->id << "</td>\n";
 		////		buffer << "    <td name=\"context\">" << n->context << "</td>\n";
-		//		buffer << "    <td name=\"name\">" << n->Name() << "</td>\n";
+		//		buffer << "    <td name=\"name\">" << n->name << "</td>\n";
 		////		buffer << "    <td name=\"kind\">" << n->kind << "</td>\n";
 		//		buffer << "    <td name=\"statementCount\">" << n->statementCount << "</td>\n";
 		NodeList values = q.values[n];
@@ -188,10 +188,10 @@ string renderResults(Query& q) {
 
 			string kind = "field"; // "td"; // "str"
 			if (!checkNode(v)) {
-				buffer << "    <" << kind << " name='" << f->Name() << "' missing='true'/>\n";
+				buffer << "    <" << kind << " name='" << f->name << "' missing='true'/>\n";
 				continue;
 			} else
-				buffer << "    <" << kind << " name=\"" << f->Name() << "\" value_id='" << v->id << "'>" << v->Name() << "</" << kind << ">\n";
+				buffer << "    <" << kind << " name=\"" << f->name << "\" value_id='" << v->id << "'>" << v->name << "</" << kind << ">\n";
 		}
 		buffer << "</entity>\n";
 		//		buffer << "</tr>\n";
@@ -211,7 +211,7 @@ string renderResults(Query& q) {
 		if (f.field == Member)continue;
 		if (f.field == Derived)continue;
 		//		if(f.field==SuperClass)continue;
-		buffer << "<facet name=\"" << f.field->Name() << "\">\n";
+		buffer << "<facet name=\"" << f.field->name << "\">\n";
 		std::multimap<int, Node*> sorted;
 		map<Node*, int>::iterator it = f.values->begin();
 		while (it != f.values->end()) {
@@ -226,7 +226,7 @@ string renderResults(Query& q) {
 			Node *slot = ti->second;
 			int count = ti->first; // same as (*it).first   (the key value)
 			if(count>1)// todo : switch
-			buffer << "   <int name=\"" << slot->Name() << "\">" << count << "</int>\n";
+			buffer << "   <int name=\"" << slot->name << "\">" << count << "</int>\n";
 		}
 		buffer << "</facet>\n";
 	}
@@ -540,7 +540,7 @@ NodeVector filter(NodeVector all, cchar* matches) {
 		if (!checkNode(node, 0, 0, 1))continue;
 		if (!checkNode(node))continue;
 		p("!++++++++++++++++++++++++++++\nfiltering node:");
-		//		if (quiet)printf("%s ?",node->Name());
+		//		if (quiet)printf("%s ?",node->name);
 		show(node, false);
 
 		p("+++++++++++++++++++++++++++++\n");
@@ -560,8 +560,8 @@ NodeVector filter(NodeVector all, cchar* matches) {
 				continue; // continue alone not breakable
 			}
 			//			printf("%s","checking "+match);
-			if (match.find(node->Name()) == 0)
-				match.replace(0, strlen(node->Name()), "");
+			if (match.find(node->name) == 0)
+				match.replace(0, strlen(node->name), "");
 			if (match.find(".") == 0)
 				match.replace(0, 1, "");
 			int comp = (int)match.find("=");
@@ -742,7 +742,7 @@ NodeVector & nodesOfDirectType(int kind) {
 //		if (yetvisited[c])continue;
 //		yetvisited[c] = true;
 //		if (!checkNode(c))continue;
-//		pf("all %d %s *%d\n", c->statementCount, c->Name(), c->id);
+//		pf("all %d %s *%d\n", c->statementCount, c->name, c->id);
 //		Statement* s = 0;
 //		while (s = nextStatement(c, s)) {
 //			//		for (int i = 0; i < c->statementCount; i++) {
@@ -771,7 +771,7 @@ NodeVector & nodesOfDirectType(int kind) {
 //				if (contains(q.instances, s->Subject))continue;
 //				if (isA4(s->Predicate, Type, false, false)) {
 //					q.instances.push_back(s->Subject);
-//					pf("%d %s\n", s->Subject->id, s->Subject->Name());
+//					pf("%d %s\n", s->Subject->id, s->Subject->name);
 //					//					if(q.depth>0)
 //					enqueueClass(q, classQueue, s->Subject);
 //					continue; // found one!
@@ -850,7 +850,7 @@ NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses
 			if (all.size() >= max)
 				return all;
 			Node* x = (Node*) subtypes[i];
-			pf("all %d %s *%d\n", x->statementCount, x->Name(), x->id);
+			pf("all %d %s *%d\n", x->statementCount, x->name, x->id);
 			if (!checkNode(x))continue; // how??
 			NodeVector more;
 			//			if (recurse)
@@ -887,7 +887,7 @@ NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFil
 		if (all.size() >= max)return all;
 		Node* x = (Node*) more[i];
 		if (!checkNode(x))continue; // how??
-		pf("all %d %s *%d\n", x->statementCount, x->Name(), x->id);
+		pf("all %d %s *%d\n", x->statementCount, x->name, x->id);
 		recurseFilter(x, recurse, max, edgeFilter); // recurse++ above OK, adds to 'all'
 		//			mergeVectors(all,recurseFilter(x,recurse, max,edgeFilter));// recurse++ above
 	}
@@ -933,9 +933,9 @@ NodeVector find_all(cchar* name, int context, int recurse, int limit) {
 
 	//    for (int i = 0; i < max; i++) {// inefficient^2 use word->instance->... instead
 	//        Node* n = &c->nodes[i];
-	//        if (n == null || n->Name() == null || name == null)
+	//        if (n == null || n->name == null || name == null)
 	//            continue;
-	//        if (eq(n->Name(), name)) {
+	//        if (eq(n->name, name)) {
 	//            all.push_back(n);
 	//            if (all.size() > limit)return all;
 	//            // printf("found node %s in context %d\n",word,context);						//
@@ -963,7 +963,7 @@ Node * findMatch(Node* n, const char* match) {//
 	string smatch = replace_all(match, "=", " =");
 	matching = sscanf(smatch.c_str(), "%s =%s", a, b);
 	if (!quiet)
-		printf("test findMatch %s %s\n", n->Name(), match);
+		printf("test findMatch %s %s\n", n->name, match);
 	flush();
 	if (!matching)
 		p("scanf not matching");
@@ -972,7 +972,7 @@ Node * findMatch(Node* n, const char* match) {//
 	if (b != 0 && !eq(b, "")) {
 		p("n[a=b]");
 		if (!quiet)
-			printf("show(findStatement(%s,%s,%s))", n->Name(), a, b);
+			printf("show(findStatement(%s,%s,%s))", n->name, a, b);
 		Statement* statement = findStatement(n, getAbstract(a), getAbstract(b));
 		if (statement) {
 			showStatement(statement);
@@ -982,7 +982,7 @@ Node * findMatch(Node* n, const char* match) {//
 	} else {
 		p("n[match]");
 		if (!quiet)
-			printf("show(findMember(%s,%s))", n->Name(), a);
+			printf("show(findMember(%s,%s))", n->name, a);
 		Node* member = findMember(n, a);
 		//		show(member);
 		if (member)return n; //findMember(n,a);
@@ -1114,7 +1114,7 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 		if (s->Predicate() == Derived)continue;
 		//		if (s->Predicate==DerivedFromNoun)continue;
 		if (s->Predicate() == get(_attribute))continue;
-		//		if(s->Predicate==Instance && !eq(s->Object->Name(),subject->Name()) )break;// needs ORDER! IS THE FIRST!!
+		//		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 		//		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool predicateMatch = (s->Predicate() == Type);
@@ -1204,7 +1204,7 @@ NodeVector reconstructPath(Node* from, Node * to) {
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
 	if (!d || enqueued[d->id])return false; // already done -> continue;
-	//	printf("? %d %s\n",d->id, d->Name());
+	//	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
 	enqueued[d->id] = current->id;
 	q->push(d);
@@ -1234,9 +1234,9 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 		Node* d = instances[i];
 		enqueued[d->id] = fro->id;
 		q.push(d);
-		pf("FROM %d %s\n", d->id, d->Name());
+		pf("FROM %d %s\n", d->id, d->name);
 	}
-	pf("TO %d %s\n", to->id, to->Name());
+	pf("TO %d %s\n", to->id, to->name);
 	//	p(to);
 	p("GO!");
 
@@ -1246,7 +1246,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 		if (q.empty())break;
 		q.pop();
 		//		if(current->id==230608)
-		//			pf("?? %d %s\n",current->id,current->Name());
+		//			pf("?? %d %s\n",current->id,current->name);
 		if (to == current)
 			return reconstructPath(fro, to);
 		if (!checkNode(current, 0, true))

@@ -106,7 +106,7 @@ Node *parseProperty(const char *data) {
 	if (found == 0) found=has(getAbstract(thing), getAbstract(property));
 	if (checkNode(found)) {
 		show(found);
-		pf("ANSWER: %s\n", found->Name());
+		pf("ANSWER: %s\n", found->name);
 	}
 	return found;
 }
@@ -304,6 +304,9 @@ NodeVector parse(const char* data) {
 		deleteWord(what);
 	}
     
+    if(contains(data,"english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
+    if(contains(data,"german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
+    
     //    Château
 	if (eq(args[0], "findall")) {
 		return *findAllWords(data + 8);
@@ -321,7 +324,7 @@ NodeVector parse(const char* data) {
         if(node)
             return showNodes(nodeVectorWrap(mergeNode(targetNode,get(node))));
         else if(target)
-            return showNodes(nodeVectorWrap(mergeAll(targetNode->Name())));
+            return showNodes(nodeVectorWrap(mergeAll(targetNode->name)));
         else
             return showNodes(nodeVectorWrap(mergeAll(args[1])));// merge <string>
     }
@@ -388,7 +391,7 @@ NodeVector parse(const char* data) {
 	////		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
 	//		if (checkNode(found)) {
 	//			show(found);
-	//			pf("ANSWER: %s\n", found->Name());
+	//			pf("ANSWER: %s\n", found->name);
 	//		}
 	//		return nodeVectorWrap(found);
 	//	}
@@ -413,8 +416,6 @@ NodeVector parse(const char* data) {
 		start_server();
 		return OK;
 	}
-    if(contains(data,"german"))germanLabels=true;
-     if(contains(data,"english"))germanLabels=false;
 	if (contains(data, " with ")) return query(data);
 	if (contains(data, " where ")) return query(data);
 	if (contains(data, " from ")) return query(data);

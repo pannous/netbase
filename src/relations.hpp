@@ -11,6 +11,7 @@
 #define	RELATIONS_HPP
 
 extern Node* Unknown;
+extern Node* Error;
 extern Node* Antonym;
 extern Node* Parent;
 extern Node* SuperClass;// Parent
@@ -143,9 +144,9 @@ static const int adjective = 112;
 static const int adverb = 113;
 static const int _array = 121;
 static const int _number = 123;
-static const int _string = 124; // text
+static const int _integer = 124; //naa, see number
 static const int _float = 125; //naa, see number
-static const int _integer = 126; //naa, see number
+static const int _string = 126; // text
 static const int _date = 127;
 static const int unit = 128;
 static const int _range = 129;
@@ -174,6 +175,8 @@ static const int _EndsWith = 159;
 static const int _false = 200;// not '0' by design!
 static const int _true = 201;
 
+static const int _any=333;
+static const int _error=666;//-1 = evil in itself;//
 static const int _see=0,//50 also, 40 similar
 	_Hypernym=1,//SuperClass
 	_hyponym=2,//SubClass

@@ -100,8 +100,8 @@ typedef struct Node {
 //    class Node{
     public:
     int id; //implicit -> redundant
-    long name; // see value for float etc
-    char* Name(){return getName(id);}
+//    long name; // see value for float etc
+    char* name;//(){return getName(id);}
     int kind; // abstract,node,person,year, m^2     // via first slot? nah
     //int context; //implicit   | short context_id or int node_id
     //float rank;
@@ -371,6 +371,9 @@ extern Node* EndsWith;
 void flush();
 char* name(Node* node);
 extern "C" Node* getNode(int node);
+extern "C" Node* getNodeP(int node);
+extern "C" Node* getNodeS(int node);
+extern "C" int getId(char* node);
 //extern "C" Node* getNode(char* node);
 
 Context* getContext(int contextId);
@@ -407,13 +410,15 @@ unsigned int hash(const char *str); //unsigned
 //Node* getThe(const char* word, Node* type = 0,bool dissect=true);
 //Node* getThe(string thing, Node* type=0,bool dissect=true);
 Node* getThe(Node* abstract, Node* type=0);
-Node* getThe(const char* word, Node* type = 0);//,bool dissect=false);
+extern "C" Node* getThe(const char* word, Node* type = 0);//,bool dissect=false);
 Node* getThe(string thing, Node* type=0);//,bool dissect=false);
-Node* getNew(const char* thing, Node* type=0);//, bool dissect=false);
+extern "C" Node* getNew(const char* thing, Node* type=0);//, bool dissect=false);
 Node* getClass(const char* word, Node* hint=0);// ?  apple vs Apple ! same as getThe NOW
 Node* getSingleton(const char* thing) ;
 //Node* getClass(string word);
+//extern "C"
 void showStatement(Statement* s);
+extern "C" void showStatement(int id);
 bool show(Node* n, bool showStatements = true);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
@@ -421,6 +426,7 @@ NodeVector* findWords(int context, const char* word, bool first= false,bool cont
 NodeVector* findAllWords(const char* word);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
 extern "C"
+Statement* findStatement(int subject, int predicate, int object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
 Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
 Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = false, bool symmetric = false);
 char* initContext(Context*);
@@ -443,15 +449,20 @@ bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
 bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool matchName=false);
 bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
-extern "C"
 Node * value(const char* aname, double v, Node* unit = 0);
+extern "C"
+int valueId(const char* aname, double v, int unit = 0);
 //Node * value(const char* aname, Value v, Node* unit = 0);
 Node* parseValue(const char* aname);
-extern "C" long setLabel(Node* n, const char* label,bool addInstance=true);
+extern "C" void setLabel(Node* n, const char* label,bool addInstance=true,bool renameInstances=false);
+extern "C" void setName(int node, const char* label);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 Statement* isStatement(Node* n);// to / get Statement
 
-extern "C" Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
+
+extern "C"
+Statement * nextStatement(int node,Statement* current);
+Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
 extern "C" Statement* getStatement(int id,int context_id=current_context);
 Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
 

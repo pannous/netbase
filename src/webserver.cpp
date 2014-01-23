@@ -27,11 +27,11 @@ enum result_verbosity {
 
 
 void fixLabel(Node* n){
-	if(n->Name()[0]=='"')n->name=n->name+1;
-	if(n->Name()[strlen(n->Name())-1]=='"'&&n->Name()[strlen(n->Name())-2]!='"')
-		n->Name()[strlen(n->Name())-1]=0;
-	if(n->Name()[strlen(n->Name())-1]=='\\')
-		n->Name()[strlen(n->Name())-1]=0;
+	if(n->name[0]=='"')n->name=n->name+1;
+	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
+		n->name[strlen(n->name)-1]=0;
+	if(n->name[strlen(n->name)-1]=='\\')
+		n->name[strlen(n->name)-1]=0;
 }
 
 /// true = filter
@@ -42,9 +42,9 @@ static char* excluded3=0;
 bool checkHideStatement(Statement* s){
 	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
     if(s->subject==0||s->predicate==0||s->object==0)return true;
-	char* predicateName=s->Predicate()->Name();
-	char* objectName=s->Object()->Name();
-	char* subjectName=s->Subject()->Name();
+	char* predicateName=s->Predicate()->name;
+	char* objectName=s->Object()->name;
+	char* subjectName=s->Subject()->name;
     if(subjectName==0||predicateName==0||objectName==0)return true;
 
 	if(eq(predicateName,"Key"))return true;
@@ -235,14 +235,14 @@ int Service_Request(int conn) {
 		Node* node = (Node*) all[i];
 		if(last==node)continue;
 		last=node;
-		sprintf(buff, entity_format, node->Name(), node->id,node->statementCount);
+		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
             
             if((format == json||format == html)&&node->statementCount>1 && getImage(node)!="")
                 Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");
-//            Writeline(",image:'"+getImage(node->Name())+"'");
+//            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
@@ -251,14 +251,14 @@ int Service_Request(int conn) {
                 if(format==csv&&all.size()>1)break;
 				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
-				sprintf(buff, statement_format, s->id(), s->Subject()->Name(), s->Predicate()->Name(), s->Object()->Name(), s->Subject()->id, s->Predicate()->id, s->Object()->id);
+				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
 			}
 			if (format == json||format == html)Writeline(conn, "]");
 		}
 		if (format == json||format == html)Writeline(conn, "},\n");
 		if (format == xml)Writeline(conn, "</entity>\n");
-		//		string img=getImage(node->Name());
+		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
 	}
 	const char* html_end="]};</script><script src='http://pannous.net/netbase.js'></script></body></html>";
