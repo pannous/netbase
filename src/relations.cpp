@@ -72,6 +72,7 @@ Node* String;
 Node* Date;
 Node* Float;
 Node* Integer;
+Node* Array;
 Node* Range;
 Node* Unit;
 
@@ -168,12 +169,12 @@ void initRelationsDE() {
 	Type = addRelation(_Type, "Typ");// is_transitive?? // (instance->class) !=SuperClass
 	Instance = addRelation(_instance, "Instanz",is_transitive);
     
-   	Weight = addRelation(31, "weight");
-	Active = addRelation(35, "active");
-	Passive = addRelation(36, "passive");
+   	Weight = addRelation(31, "Gewicht");
+	Active = addRelation(35, "Activ");
+	Passive = addRelation(36, "Passiv");
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "Label");
-	BackLabel = addRelation(39, "label of");
+	BackLabel = addRelation(39, "Label von");
 	addRelation(40, "ähnlich");// hypernym?? no synonym
 	addRelation(50, "auch");// hypernym??
 	Category = addRelation(43, "Kategorie"); // tag
@@ -187,7 +188,7 @@ void initRelationsDE() {
 	Class = addRelation(_clazz, "Klasse");
 	Object = addRelation(_object, "Object");
 	Relation = addRelation(_relation, "Relation");
-	Pattern = addRelation(_pattern, "Pattern");
+	Pattern = addRelation(_pattern, "Muster");
 	Reification = addRelation(_reification, "Reifikation");
     
 	// Thing   = addRelation(101, "thing");
@@ -197,8 +198,9 @@ void initRelationsDE() {
 	Noun = addRelation(noun, "Nomen");
 	Verb = addRelation(verb, "Verb");
 	Adverb = addRelation(adverb, "Adverb");
-	Number = addRelation(numberId, "Zahl");
+	Number = addRelation(_number, "Zahl");
 	Unit = addRelation(unit, "Einheit");
+    Array = addRelation(_array, "Liste");
     
 	Plural = addRelation(_plural, "Plural");
 	Translation = addRelation(translation, "Übersetzung");
@@ -224,10 +226,10 @@ void initRelationsDE() {
 	EndsWith = addRelation(_EndsWith, "ends with");
     
 	String = addRelation(_string, "String");
-	Date = addRelation(_date, "Date");
+	Date = addRelation(_date, "Datum");
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
-	Range = addRelation(_range, "Range");
+	Range = addRelation(_range, "Bereich");
     
 	True= addRelation(_true,"Wahr");
 	False=addRelation(_false,"Falsch");// todo
@@ -335,8 +337,9 @@ void initRelations() {
 	Noun = addRelation(noun, "noun");
 	Verb = addRelation(verb, "verb");
 	Adverb = addRelation(adverb, "adverb");
-	Number = addRelation(numberId, "number");
+	Number = addRelation(_number, "number");
 	Unit = addRelation(unit, "unit");
+    Array = addRelation(_array, "array");
 
 	Plural = addRelation(_plural, "plural");
 	Translation = addRelation(translation, "translation");
@@ -345,7 +348,6 @@ void initRelations() {
 	Or = addRelation(_Or, "or");
 	Not = addRelation(_Not, "not");
 	Any = addRelation(666, "*");
-
 
 	Equals = addRelation(_Equals, "=");
 	Greater = addRelation(_Greater, ">");
@@ -365,6 +367,7 @@ void initRelations() {
 	Date = addRelation(_date, "Date");
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
+	Array = addRelation(_array, "Integer");
 	Range = addRelation(_range, "Range");
 
 	True= addRelation(_true,"True");

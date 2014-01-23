@@ -1,9 +1,5 @@
-
-
-// malloc, exit:
-#include <cstdlib>
-// strcmp
-#include <string.h>
+#include <cstdlib> // malloc, exit:
+#include <string.h> // strcmp
 #include <stdlib.h>
 
 #include "netbase.hpp"
@@ -117,10 +113,10 @@ void test() {
 	Node* syn=&c->nodes[(21)];
 	show(syn);
 	check(syn == Synonym);
-	p(Synonym->name);
+	p(Synonym->Name());
 	//  does not work in test environment ( only???? ) ...  fix!!!
 #ifdef inlineName // todo!
-	check(eq(Synonym->name, "synonym"));
+	check(eq(Synonym->Name(), "synonym"));
 #endif
 	showStatement(getStatementNr(syn, 0));
 	//    initContext(c);
@@ -139,20 +135,20 @@ void test() {
 	assert(is != null, "is!=null");
     
 	showContext(current_context);
-	//	c->name="Public";
+	//	c->Name()="Public";
 	if (multipleContexts) assert(c->id == 1, "c.id==1 multipleContexts");
 	else assert(c->id == wordnet, "c.id==wordnet"); //wordnet if
     
-	//	assert(c->name=="Public","c.name==Public");
+	//	assert(c->Name()=="Public","c.name==Public");
 	assert(c->nodeCount >= initialNodeCount + 3, "c.nodes==3"); //3+abstracts
 	assert(eq(name(test), "test"), "name(test)=='test'");
-	assert(eq(c->nodes[initialNodeCount].name, "good"), "c.nodes[1].name==good");
+	assert(eq(c->nodes[initialNodeCount].Name(), "good"), "c.nodes[1].name==good");
 	//	p(c->nodes[3].name);
 	//	pi(c->nodes[3].name);
 	//if(!loaded)
 	//	assert(eq(c->nodes[3].name,null),"c.nodes[3].name==null");
 	//    assert(findWord(testContext, "good",true)==good), "find(wordnet,good)==good");
-	//    assert(eq(findWord(testContext, "good",true)->name,good), "find(wordnet,good)==good");
+	//    assert(eq(findWord(testContext, "good",true)->Name(),good), "find(wordnet,good)==good");
 	Node* dead=&c->nodes[999];
 	// Statement* s=addStatement4(c.id, test->id,is->id,good->id);
 	int statementCount=c->statementCount;
@@ -239,7 +235,7 @@ void testDummyLogic() {
 	Statement* s3=addStatement(testDummy, Attribute, funny);
 	//    Statement* s4 = addStatement(Person, Instance, karsten);
 	Statement* s4=addStatement(CEO, Instance, karsten);
-	check(eq(karsten->name, "karsten"));
+	check(eq(karsten->Name(), "karsten"));
 	Statement* s4a=addStatement(manager, SubClass, CEO);
 //    Statement* s4a = addStatement(CEO, SuperClass, manager);
 	Statement* s4b=addStatement(manager, is, a(worker));
@@ -337,9 +333,9 @@ void testDummyLogic() {
 	list=query(sql);
 	assert(contains(list, testDummy), sql);
     
-	assert(isA(beth, Person), "isA(beth,Person->name)");
+	assert(isA(beth, Person), "isA(beth,Person->Name())");
 	// deprecated:
-	//    assert(isA5(beth, Person->name), "isA(beth,Person->name)");
+	//    assert(isA5(beth, Person->Name()), "isA(beth,Person->Name())");
 	show(Person);
 	assert(has(Person, Plural, people), "has Person,plural,people");
     
@@ -349,7 +345,7 @@ void testDummyLogic() {
     
 	// deprecated:
 	assert(isA(beth, people), "isA(beth,people)");
-	//    assert(isA(beth,people->name),"isA(beth,people->name)");
+	//    assert(isA(beth,people->Name()),"isA(beth,people->Name())");
 	//    assert(!isA(cute,Person),"!isA(cute,Person)");
 	clearAlgorithmHash();
 	assert(findStatement(cute, Type, Person) == 0, "findStatement(cute,Type,Person)==0");
@@ -438,7 +434,7 @@ void testWordnet() {
 	// Node: context:wordnet id=4919 name=test statementCount=17 kind=wordnet
 	//    Node* test = findWord(wordnet, "test", true);
 	// assert(test->id==4919)
-	//    assert(strcmp(test->name, "test") == 0, "test->name==test");
+	//    assert(strcmp(test->Name(), "test") == 0, "test->Name()==test");
 	//	assert(test->statementCount==17,"test->statementCount==17");
 	//    show(the(duck));
 	//    show(a(duck));
@@ -511,7 +507,7 @@ void testInstancesAtEnd() {
 
 void testStringLogic2() {
 //    NV t= parse("label 4557271 woooot");
-//    check(eq(t[0]->name,"woooot"));// OK
+//    check(eq(t[0]->Name(),"woooot"));// OK
 	eine(Schlacht);
 	Node* Schlacht_bei_Guinegate=getThe("Guinegate_(14791),_Schlacht_bei"); // intellij display bug!
 	//    deleteNode(Schlacht_bei_Guinegate);
@@ -521,7 +517,7 @@ void testStringLogic2() {
 	//	Schlacht_bei_Guinegate=getThe("Schlacht_bei_Guinegate_(1479)");
 	dissectWord(Schlacht_bei_Guinegate);
 	check(isA(Schlacht_bei_Guinegate, Schlacht));
-	check(eq(getThe("near")->name, "near"));
+	check(eq(getThe("near")->Name(), "near"));
 	show(Schlacht_bei_Guinegate);
 	check(findStatement(Schlacht_bei_Guinegate, a(near), a(Guinegate)));
 	NV all=instanceFilter(a(Guinegate));
@@ -555,12 +551,12 @@ void testHash() {
     
 	cchar* thing="city";
 	Node* city=getAbstract(thing);
-	ps(city->name);
-	check(eq(city->name, "city"));
-    //	insertAbstractHash(wordhash(Circa->name), Domain);
+	ps(city->Name());
+	check(eq(city->Name(), "city"));
+    //	insertAbstractHash(wordhash(Circa->Name()), Domain);
     //	insertAbstractHash(Circa);
     //#ifdef inlineName
-    //	Node* a2 = getAbstract(Circa->name);
+    //	Node* a2 = getAbstract(Circa->Name());
     //	check(a2 == Circa);
     //#endif
 }
@@ -718,7 +714,7 @@ void testValueLogic() {
 	deleteNode(a(Booot));
 	deleteNode(a("14.32 meter"));
 	ein(Booot);
-	check(eq(Booot->name, "Booot"));
+	check(eq(Booot->Name(), "Booot"));
 	NodeVector alle=allInstances(Booot);
 	//    check(contains(alle, Booot)); // Nee, all_classes ja, all_instances nicht. oder?
 	Node* m14=value("", 14, "m");
@@ -782,7 +778,7 @@ void testValueLogic() {
     
 	Node *kind=the(kind);
 	Node *length=the(length);
-	check(eq(length->name, "length")); //60350
+	check(eq(length->Name(), "length")); //60350
 	clearAlgorithmHash();
 	show(length);
 	clearAlgorithmHash();
@@ -930,12 +926,12 @@ void testComparisonQuery() {
 	nv=filter(q, pattern(the(population), Less, the(1200)));
 	p(nv.size());
 	check(nv.size() > 10);
-	check(atoi(getProperty(nv[0], "population")->name) < 1200);
+	check(atoi(getProperty(nv[0], "population")->Name()) < 1200);
     
 	nv=filter(q, pattern(the(population), Greater, the(1300)));
 	p(nv.size());
 	check(nv.size() > 10);
-	check(atoi(getProperty(nv[0], "population")->name) > 1300);
+	check(atoi(getProperty(nv[0], "population")->Name()) > 1300);
     
 	defaultLookupLimit=1000000;
 	q.instances=all_instances(the(city), true, defaultLookupLimit, false); // again??
@@ -954,7 +950,7 @@ void testComparisonQuery() {
 	nv=filter(q, filter1);
 	p(nv.size());
 	check(nv.size() >= 1);
-	check(atoi(getProperty(nv[0], "population")->name) == 1140);
+	check(atoi(getProperty(nv[0], "population")->Name()) == 1140);
 	p(nv[0]);
     
 	q.limit=1000;
@@ -985,8 +981,8 @@ void testComparisonQueryString() {
 	p(nv[0]);
 	N population=getProperty(nv[0], "population");
 	p(population);
-	check(eq(population->name, "1140"));
-	check(atoi(population->name) == 1140);
+	check(eq(population->Name(), "1140"));
+	check(atoi(population->Name()) == 1140);
 	//	check(population->value.number==1140);
 	//	showNodes(q.instances, false);
 }
@@ -996,7 +992,7 @@ void testComparisonQueryString2() {
 	NV nv=query(q);
 	check(nv.size() > 0);
 	N countrycode=getProperty(nv[0], "countrycode");
-	check(eq(countrycode->name, "de"));
+	check(eq(countrycode->Name(), "de"));
 }
 
 void testQueryAnd() {
@@ -1006,8 +1002,8 @@ void testQueryAnd() {
 	N countrycode=getProperty(nv[0], "countrycode");
 	N population=getProperty(nv[0], "population");
 	p(nv[0]);
-	check(eq(countrycode->name, "us"));
-	check(atoi(population->name) > 0 && atoi(population->name) < 2000);
+	check(eq(countrycode->Name(), "us"));
+	check(atoi(population->Name()) > 0 && atoi(population->Name()) < 2000);
 }
 
 void testQueryMore() {
@@ -1022,7 +1018,7 @@ void testQueryMore() {
 	check(nv.size() > 0);
 	N population=getProperty(nv[0], "population");
 	p(nv[0]);
-	check(atoi(population->name) > 0 && atoi(population->name) > 10000000);
+	check(atoi(population->Name()) > 0 && atoi(population->Name()) > 10000000);
 }
 
 void testComparisonQueryStringLess() {
@@ -1030,7 +1026,7 @@ void testComparisonQueryStringLess() {
 	NV nv;
 	string s="select * from city where population<1100";
 	q=parseQuery(s);
-	check(eq(q.keyword->name, "city"));
+	check(eq(q.keyword->Name(), "city"));
 	check(q.filters.size() == 1);
 	check(checkStatement(q.filters[0]));
 	nv=query(q);
@@ -1038,7 +1034,7 @@ void testComparisonQueryStringLess() {
 	p(nv[0]);
 	N population=getProperty(nv[0], "population");
 	p(population);
-	check(atoi(population->name) > 0 && atoi(population->name) < 1100);
+	check(atoi(population->Name()) > 0 && atoi(population->Name()) < 1100);
 }
 
 void testSelectQuery() {
@@ -1337,7 +1333,14 @@ void fixNames(){
 }
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
-    
+    S s= findStatement(get(679236),get(679258),Any);
+    p(s);
+    N n=getNode(_array);
+    p(n);
+    showNode(getAbstract("c")->id);
+    parse("$367124");
+//    deleteStatement(365598);
+//    showStatement(getStatement(365598));
     getThe("hi",number(2));
 //    check(value("3.00", atof("3.00"),Number)->value.number==3);
 //    check(value("3.00", atof("3,00"),Number)->value.number==3);
