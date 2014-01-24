@@ -74,63 +74,63 @@ netbase: ${OBJECTFILES}
 
 ${OBJECTDIR}/src/console.o: nbproject/Makefile-${CND_CONF}.mk src/console.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/console.o src/console.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/console.o src/console.cpp
 
 ${OBJECTDIR}/src/export.o: nbproject/Makefile-${CND_CONF}.mk src/export.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/export.o src/export.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/export.o src/export.cpp
 
 ${OBJECTDIR}/src/import.o: nbproject/Makefile-${CND_CONF}.mk src/import.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/import.o src/import.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/import.o src/import.cpp
 
 ${OBJECTDIR}/src/init.o: nbproject/Makefile-${CND_CONF}.mk src/init.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/init.o src/init.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/init.o src/init.cpp
 
 ${OBJECTDIR}/src/md5.o: nbproject/Makefile-${CND_CONF}.mk src/md5.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/md5.o src/md5.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/md5.o src/md5.cpp
 
 ${OBJECTDIR}/src/netbase.o: nbproject/Makefile-${CND_CONF}.mk src/netbase.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/netbase.o src/netbase.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/netbase.o src/netbase.cpp
 
 ${OBJECTDIR}/src/query.o: nbproject/Makefile-${CND_CONF}.mk src/query.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/query.o src/query.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/query.o src/query.cpp
 
 ${OBJECTDIR}/src/reflection.o: nbproject/Makefile-${CND_CONF}.mk src/reflection.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/reflection.o src/reflection.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/reflection.o src/reflection.cpp
 
 ${OBJECTDIR}/src/relations.o: nbproject/Makefile-${CND_CONF}.mk src/relations.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/relations.o src/relations.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/relations.o src/relations.cpp
 
 ${OBJECTDIR}/src/tests.o: nbproject/Makefile-${CND_CONF}.mk src/tests.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/tests.o src/tests.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/tests.o src/tests.cpp
 
 ${OBJECTDIR}/src/util.o: nbproject/Makefile-${CND_CONF}.mk src/util.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/util.o src/util.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/util.o src/util.cpp
 
 ${OBJECTDIR}/src/webserver.o: nbproject/Makefile-${CND_CONF}.mk src/webserver.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
-	${RM} $@.d
-	$(COMPILE.cc) -g -w -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -MMD -MP -MF $@.d -o ${OBJECTDIR}/src/webserver.o src/webserver.cpp
+	${RM} "$@.d"
+	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/webserver.o src/webserver.cpp
 
 # Subprojects
 .build-subprojects:

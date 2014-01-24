@@ -37,6 +37,7 @@ string fixQuery(string s) {
 	s = replace_all(s, "those ", select(s));
 	s = replace_all(s, "an ", select(s));
 	s = replace_all(s, "any ", select(s));
+	s = replace_all(s, "show ", "");
 	s = replace_all(s, " are ", " ");
 	s = replace_all(s, " is ", " ");
 	s = replace_all(s, " with ", " where ");
@@ -103,9 +104,21 @@ void collectFacets(Query& q) {
 		q.values[n] = (NodeList) malloc(sizeof (Node*) * nrFields);
 		Statement* s = 0;
 		while ((s = nextStatement(n, s, true))) {
-			if (s->Subject() == n) {
-				Node* predicate = s->Predicate();
-				Node* value = s->Object();
+            Node* subject=s->Subject();
+            Node* predicate = s->Predicate();
+            Node* object=s->Object() ;
+            Node* value;
+			if (subject == n) {
+                value=object;
+            }else if(object== n){
+//                predicate = invert(predicate);// reverse! -> 0 if none !!
+				value = subject;
+            }else{
+                p("Predicate facets not allowed");
+                continue;
+            }
+            if(predicate==Any)continue; // if reverse failed !
+            
 				//                addHit(q,predicate)
 				Facet& f = findFacet(q, predicate);
 				f.hits++;
@@ -128,7 +141,6 @@ void collectFacets(Query& q) {
 					nl[fieldNr] = value;
 //				else
 //					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
-			}
 		}
 
 	}
@@ -260,9 +272,9 @@ NodeVector sqlTable(Query& q){
                 if (checkNode(v))
                     rows.push_back(v);
                 else
-                    rows.push_back(Any);
+                    rows.push_back(n);//DEBUG:n Any
             }
-            else  rows.push_back(Any);
+            else  rows.push_back(n);// Any
         }
     //copy to dummy result
     if(q.fields.size()>1)
@@ -297,9 +309,10 @@ NodeVector query(Query& q) {
 	pf("candidates: %lu\n",all.size());
     pf("hits: %lu\n",q.instances.size());
 	
+    collectFacets(q);
+    
     if(q.queryType==sqlQuery ){return sqlTable(q);}
     
-    collectFacets(q);
     return q.instances; // renderResults(q);
 }
 
@@ -686,7 +699,7 @@ NodeVector filter(Query& q, Statement* filterTree, int limit) {
 		// cities where city->population->3999
 		// cities where *->population->3999
 		if (predicate == Equals) {// a=b => n.a:b
-			if (!findStatement(node, subject, object, q.recursion, q.semantic, false, q.predicatesemantic))// &&! !findStatement(node, subject, object)
+			if (!findStatement(node, subject, object, q.recursion, q.semantic, false, q.predicatesemantic,q.matchNames))// &&! !findStatement(node, subject, object)
 				all.erase(all.begin() + y);
 			else {
 				hits.push_back(node);
@@ -695,7 +708,7 @@ NodeVector filter(Query& q, Statement* filterTree, int limit) {
 				p(y);
 			}
 		} else if (isA4(subject, node, q.recursion, q.semantic) || subject == Any) {
-			if (!findStatement(node, predicate, object, q.recursion, q.semantic, false, q.predicatesemantic))
+			if (!findStatement(node, predicate, object, q.recursion, q.semantic, false, q.predicatesemantic,q.matchNames))
 				all.erase(all.begin() + y);
 		}//  cities where population->equals->3999
 			//  match Berlin.population=3999

@@ -241,6 +241,7 @@ public:
         autoFacet = true;
         semantic = false;
         predicatesemantic=false;
+        matchNames = true;
     }
     enum QueryType queryType;
     int start; //    int offset; == page* hitPerPage
@@ -252,6 +253,7 @@ public:
     int depth; //=maxRecursions;
     bool semantic;
     bool predicatesemantic;
+    bool matchNames;
     bool autoFacet; //=true;
     int maxFacets; //=10;//first come? get 30 cut 20?
     NodeVector keywords; //and

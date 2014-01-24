@@ -334,6 +334,7 @@ void p(NodeVector& n) {
 
 void p(Statement* n) {
 	showStatement(n);
+	flush();
 }
 
 void p(Query& q) {

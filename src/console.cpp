@@ -346,8 +346,8 @@ NodeVector parse(const char* data) {
 		return parentPath(from, to);
 	}
 	if (startsWith(data, "select ")) return query(data);
-	if (startsWith(data, "all ")) {
-		return showNodes(query(data));
+	if (startsWith(data, "all ")||startsWith(data, "show ")) {
+		return showNodes(query(data),true);
 	}
 	if (startsWith(data, "these ")) return query(data);
 	if (contains(data, "that ")) return query(data);

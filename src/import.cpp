@@ -1999,9 +1999,9 @@ void import(const char* type, const char* filename) {
 void importAllDE() {
 	importCsv("adressen.txt");
 	importWordnet();
+	importNames();
     importDBPediaDE();
 	//	doDissectAbstracts=true;// already? why not
-	importNames();
 	importGeoDB();
 //    importEntities();
     importImagesDE();
