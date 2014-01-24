@@ -1329,50 +1329,38 @@ void fixNames(){
 		}
 		x=x+l+1;
 	}
-
 }
-void testBrandNewStuff() {
-    p("Test Brand New Stuff");
-    quiet=false;
-	debug = true;
-//	char* sql="select Klasse from dogs where Doenges";
-//	char* sql = "select Kette from dogs where Tock";
-//    	char* sql = "select Klasse from dogs where Schlangenhalsvögel";
-//        	char* sql = "select Kontext from frau where Anrede"; // 2
-//            	char* sql = "select Kontext from frau where Eva";
-  	char* sql = "select Klasse from grau where Anthrazit";
-    
-    
-    
-//    char* sql="select Synonym from dogs where anhinga";
 
+void testSqlDe(){
+  	char* sql = "Karin with Rufnummer";
+    //    char* sql="select Synonym from dogs where anhinga";
+	NodeVector r = query(sql);
+	check(r.size() >= 1);
+    p(r[0]->name);
+    check(eq(r[0]->name,"Karin"));
+}
+void testSqlDe2(){
+    //	char* sql="select Klasse from dogs where Doenges";
+    //	char* sql = "select Kette from dogs where Tock";
+    //    	char* sql = "select Klasse from dogs where Schlangenhalsvögel";
+    //        	char* sql = "select Kontext from frau where Anrede"; // 2
+    //            	char* sql = "select Kontext from frau where Eva";
+  	char* sql = "select Klasse from grau where Anthrazit";
+    //    char* sql="select Synonym from dogs where anhinga";
 	NodeVector r = query(sql);
 	check(r.size() == 1);
     p(r[0]->name);
     check(eq(r[0]->name,"Achromatische farbe"));
 
-    int id=174455;
-    int nodeI=174238;//
-    p(get(174238));
-    S s= findStatement(id, nodeI,_any, 0, false, false, false, true);
-    p(s);
-//    S s= findStatement(get(679236),get(679258),Any);
-    N n=getNode(_array);
-    p(n);
-    showNode(getAbstract("c")->id);
-    parse("$367124");
-//    deleteStatement(365598);
-//    showStatement(getStatement(365598));
-    getThe("hi",number(2));
-//    check(value("3.00", atof("3.00"),Number)->value.number==3);
-//    check(value("3.00", atof("3,00"),Number)->value.number==3);
-//    parse("Hamburg.population");
-//    parse("population of Hamburg");
-//    learn("company synonym employer");
-//    parse("learn company synonym employer");
-    //    importWordnet();
-//    string img= getImageThumb("Null");
+}
 
+void testBrandNewStuff() {
+    p("Test Brand New Stuff");
+    quiet=false;
+	debug = true;
+
+    testSqlDe();
+    
     tests();
     string img= getImage("Spielkarte");
     img=getImage(get(    221896));
