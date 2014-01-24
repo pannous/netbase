@@ -49,7 +49,8 @@ string fixQuery(string s) {
 	s = replace_all(s, " of ", " where "); // owner= or location=
 	s = replace_all(s, " that ", " where ");
 	s = replace_all(s, "ies ", "y "); //singular
-	s = replace_all(s, "s ", " "); //singular
+    if(!contains(s," where "))
+        s = replace_all(s, "s ", " "); //singular singular
 	s = replace_all(s, " $", ""); //trim hack
 	return s;
 }
@@ -123,7 +124,7 @@ void collectFacets(Query& q) {
 				NodeList& nl = q.values[n];
 				int fieldNr = getFieldNr(q, predicate);
 				if(fieldNr>nrFields)p("fieldNr>nrFields!?!!?");
-				if (fieldNr >= 0 && !checkNode(nl[fieldNr]))// && nl[fieldNr]==0 don't Over wright todo : multiple values?nl[fieldNr]
+				if (fieldNr >= 0)// &&  !checkNode(nl[fieldNr]))// && nl[fieldNr]==0 don't Over wright todo : multiple values?nl[fieldNr]
 					nl[fieldNr] = value;
 //				else
 //					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
@@ -239,8 +240,46 @@ NodeVector query(string s, int limit) {
 	p(("Executing query "));
 	ps(s);
 	Query q = parseQuery(s, limit);
-	return query(q);
+    q.queryType=sqlQuery;
+    NodeVector results=query(q);
+    showNodes(results);
+	return results;
 //	return evaluate_sql(s, limit);
+}
+
+
+NodeVector sqlTable(Query& q){
+    NodeVector all=q.instances;
+    NodeVector rows;
+    if(q.fields.size()==0)return q.instances;
+    if(q.fields.size()==1)
+        for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++){
+            Node* n = all[rowNr];
+            if(q.values[n]){
+            Node *v = q.values[n][0];
+                if (checkNode(v))
+                    rows.push_back(v);
+                else
+                    rows.push_back(Any);
+            }
+            else  rows.push_back(Any);
+        }
+    //copy to dummy result
+    if(q.fields.size()>1)
+    for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++) {
+		Node* n = all[rowNr];
+        Node* dummy=getNew(n->name);
+        dummy->kind=Internal->kind;
+        rows.push_back(dummy);
+		for (int columnNr = 0; columnNr < q.fields.size(); columnNr++) {
+			Node *f = q.fields[columnNr];
+			if(f==Any)continue;
+			Node *v = q.values[n][columnNr];
+            //			if (!checkNode(v))addStatement(dummy,f,Null);else
+            addStatement(dummy,f,v);
+        }
+    }
+    return rows;
 }
 
 NodeVector query(Query& q) {
@@ -256,9 +295,12 @@ NodeVector query(Query& q) {
 		q.instances = filter(q, _filter);
 	}
 	pf("candidates: %lu\n",all.size());
-	pf("hits: %lu\n",q.instances.size());
-	collectFacets(q);
-	return q.instances; // renderResults(q);
+    pf("hits: %lu\n",q.instances.size());
+	
+    if(q.queryType==sqlQuery ){return sqlTable(q);}
+    
+    collectFacets(q);
+    return q.instances; // renderResults(q);
 }
 
 NodeVector nodeVector(vector<char*> v) {
@@ -318,6 +360,8 @@ Statement* parseSentence(string sentence, bool learn = false) {
 }
 
 Statement *parseFilter(string s) {
+//    if (!contains(s, " "))return addStatement(Any,Any,getAbstract(s.data()));
+    if (!contains(s, " "))return addStatement(Any,Equals,getAbstract(s.data()));
 	if (!contains(s, ".")&&!contains(s, "=")&&!contains(s, "<")&&!contains(s, ">"))
 		return parseSentence(s);
 
@@ -390,17 +434,11 @@ Query parseQuery(string s, int limit) {
 	s=fixQuery(s);
 	if ((int) s.find("from") < 0)
 		s = string("select * from ") + s; // why (int) neccessary???
-	sscanf(s.c_str(), "select %s from %[0-9a-zA-Z ]s where %s", fields, type, match); //[^\n] // [^\0]
-	char* match2 = (char*) strstr(s.c_str(), " where "); // remove test.funny->.funny do later!
-	if (match2) {
-		match2 += 7; // wegen 'where' !!!! bad style
-		p(match2);
-		strcpy(match,match2);
-	}
+	sscanf(s.c_str(), "select %s from %s where %s", fields, type, match); //[^\n] // [^\0]
+    if(type[strlen(type)-1]=='s')type[strlen(type)-1]=0;// remove plural
 	p(fields);
 	p(type);
 	p(match);
-//	q.keyword = getThe(type);
 	q.keyword = getAbstract(type);
 	//    q.keywords=nodeVector(splitString(type, ","));
 	//    if(q.keywords.size()>0)
@@ -642,9 +680,9 @@ NodeVector filter(Query& q, Statement* filterTree, int limit) {
 	p(filterTree);
 	int size = (int)all.size();
 	for (int y = size - 1; y >= 0 && hits.size() <= limit; --y) {
-		Node* node = (Node *) all[y];
+		Node* node = (Node *) all.at(y);
 		if (node->kind == Abstract->id)continue;
-		//		show(node);
+		show(node);
 		// cities where city->population->3999
 		// cities where *->population->3999
 		if (predicate == Equals) {// a=b => n.a:b

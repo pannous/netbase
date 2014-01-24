@@ -175,8 +175,8 @@ static const int _EndsWith = 159;
 static const int _false = 200;// not '0' by design!
 static const int _true = 201;
 
-static const int _any=333;
 static const int _error=666;//-1 = evil in itself;//
+static const int _any=0;// !!!
 static const int _see=0,//50 also, 40 similar
 	_Hypernym=1,//SuperClass
 	_hyponym=2,//SubClass

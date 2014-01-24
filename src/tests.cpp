@@ -1335,6 +1335,13 @@ void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
     debug=true;
+    char* sql="select Klasse from dogs where Doenges";
+//    char* sql="select Synonym from dogs where anhinga";
+    
+    NodeVector r=query(sql);
+    p(r[0]->name);
+    check(eq(r[0]->name,"Conant"));
+    
     int id=174455;
     int nodeI=174238;//
     p(get(174238));
