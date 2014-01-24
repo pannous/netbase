@@ -185,7 +185,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
             return ah; // NAME schon da!!
 		ah=getAhash(ah->next);
 	}
-    
+
 	if (ah->abstract) { //schon was drin
 		if (get(ah->abstract) == a)
 			return ah;
@@ -344,15 +344,15 @@ Context * getContext(int contextId) {
     //        p("Context#0!");
     //	}
 	if (!multipleContexts) contextId=wordnet; // just one context
-    
+
 	Context* context=&(contexts[contextId]); //*(Context*)malloc(sizeof(Context*));
-    
+
 	if (context->nodes != null){// && context->id == contextId) {
 		//		printf("Found context %d: %s\n",context->id,context->name);
 		//		flush();
 		return context;
 	}
-    
+
 	printf("Reset context %d: %s", context->id, context->name);
 	context->id=contextId;
 	context->currentNameSlot=0; //context->nodeNames;
@@ -408,15 +408,15 @@ void checkExpand(Context * context) {
 // return	isA4(n, match, recurse?1:0, semantic);
 //}
 bool isA4(Node* n, string match, int recurse, bool semantic) {
-    
+
 	if (!checkNode(n)) return false;
 	if (eq(n->name, match.c_str())) return true; //&& n->name==match
 	if (get(n->kind) && eq(get(n->kind)->name, match.c_str())) return true;
-    
+
 	if (recurse > 0) recurse++;
 	else recurse=maxRecursions;
 	if (recurse > maxRecursions) return false;
-    
+
 	if (semantic && has(n, "synonym", match, false, false, true)) return true;
 	if (semantic && has(n, "plural", match, false, false, true)) return true;
 	if (semantic && has(n, "type", match, false, false, false)) return true;
@@ -425,7 +425,7 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 	if (semantic && has(n, "name", match, false, false, false)) return true;
 	if (semantic && has(n, "label", match, false, false, false)) return true;
 	if (semantic && has(n, "is", match, false, false, false)) return true; // --
-    
+
 	if (semantic && n->kind == Abstract->id) { //|| isA(n,List)
 		Statement* s=0;
 		while ((s=nextStatement(n, s, false))) {
@@ -490,11 +490,11 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 	}
 	node->id=id;
     setLabel(node, nodeName,false,false);
-    
+
 #ifdef useContext
  	node->context=contextId;
 #endif
-    
+
     node->kind=kind;
 	if (node->value.number) node->value.number=0; //Necessary? overwrite WHEN??
 	if (id > 1000) {
@@ -552,13 +552,13 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 		pf("nodeId>maxNodes %d>%ld", nodeId, maxNodes);
 		return false;
 	}
-    
+
 	if (nodeId > 1 && node->id > 0 && node->id != nodeId) {
 		badCount++;
 		pf("node->id!=nodeId %d!=%d", node->id, nodeId);
 		return false;
 	}
-    
+
 	if (checkNames && node->name == 0) {// WHY AGAIN??
 		badCount++;
 		printf("node->name == 0 %p\n", node);
@@ -668,27 +668,27 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 	Node* subject=&context->nodes[subjectId];
 	Node* predicate=&context->nodes[predicateId];
 	Node* object=&context->nodes[objectId];
-    
+
     //	if (checkDuplicate) {	//todo: add specifications but not generalizations?
     //		Statement* old=findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
     //		if (old) return old; // showStatement(old)
     //	}
-    
+
 	if (subject == object) {
 		pf("REALLY subject==object?? %s %s %s (%d->%d->%d)\n", subject->name, predicate->name, object->name, object->id,predicate->id,object->id);
         //		return 0;
 	}
 	//	if(predicate==Antonym)
 	//		p("SD");
-    
+
 	if (checkNodes && !checkNode(subject, subjectId)) return 0;
 	if (checkNodes && !checkNode(object, objectId)) return 0;
 	if (checkNodes && !checkNode(predicate, predicateId)) return 0;
-    
+
 	Statement* s=getStatement( subject->lastStatement);
 	if(s&&s->subject==subjectId&&s->predicate==predicateId&&s->object==objectId)
 		return s;// quick checkDuplicate!
-    
+
     int id=context->statementCount;
 	Statement* statement=&context->statements[id]; // union of statement, node??? nee
     //	statement->id()=context->statementCount;
@@ -698,14 +698,14 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 	statement->Predicate=predicate;
 	statement->Object=object;
 #endif
-    
+
 	statement->subject=subjectId;
 	statement->predicate=predicateId;
 	statement->object=objectId;
 	if (!addStatementToNode(subject, id)) return statement;
 	if (!addStatementToNode(object, id)) return statement;
 	if (!addStatementToNode(predicate, id)) return statement;
-    
+
 	// predicate->statementCount++;
 	// context->nodeCount++;
 	return statement;
@@ -715,22 +715,22 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	if (!checkNode(subject)) return 0;
 	if (!checkNode(object)) return 0;
 	if (!checkNode(predicate)) return 0;
-    
+
 	Statement* s=getStatement( subject->lastStatement);
 	if(s&&s->Subject()==subject&&s->Predicate()==predicate&&s->Object()==object)
 		return s;// quick checkDuplicate!
-    
+
 	if (checkDuplicate) {	//todo: add specifications but not generalizations?
 		Statement* old=findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		if (old) return old; // showStatement(old)
 	}
 	Context* context=currentContext(); //  getContext(subject->context); // todo!
 	// pi(context.nodes);// == &context.nodes[0] !!
-    
+
 	//	if(isAbstract(object)&&( predicate==Type||predicate==SuperClass))
 	//		object=getThe(object);
 	if (subject == object && predicate->id < 1000) return 0;
-    
+
     //	Statement* last_statement=&context->statements[context->statementCount-1];
     //	if(context->statementCount>1000&&last_statement->Subject=subject&&last_statement->Predicate=predicate&&last_statement->Object=object)
     //		return last_statement;// direct duplicate!
@@ -740,17 +740,17 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 #ifdef useContext
 	statement->context=current_context; //todo!!
 #endif
-    
+
 #ifdef explicitNodes
 	statement->Subject=subject;
 	statement->Predicate=predicate;
 	statement->Object=object;
 #endif
-    
+
 	statement->subject=subject->id;
 	statement->predicate=predicate->id;
 	statement->object=object->id;
-    
+
 	addStatementToNode(subject, id);
 	addStatementToNode(predicate, id);
 	addStatementToNode(object, id);
@@ -891,14 +891,14 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 	//if(isAName(s)ret. // noe!
 	string str=replace_all(subject->name, " ", "_");
 	str=replace_all(str, "-", "_");
-    
-    
+
+
     //	if (dissected[subject]) return;
     //	dissected[subject]=1;
-    
+
 	int len=(int)str.length();
 	bool plural=(char) str[len - 1] == 's' && (char) str[len - 2] != 's' && ((char) str[len - 2] != 'n' || (char) str[len - 3] == 'o');
-    
+
 	if (!contains(str, "_") && !plural) return;
 	if (contains(subject->name, "(")) return;
 	if (contains(subject->name, ",")) return;
@@ -920,7 +920,7 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 	//		addStatement(subject,Synonym,getThe(str.substr(4).data()));
 	//		return;
 	//	}
-    
+
 	int type=(int)str.find("_");
 	if (type < 1) type=(int)str.find(".");
 	if (type >= 0 && len - type > 2) {
@@ -962,16 +962,16 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	if (!checkNode(subject, true, true, true)) return original;
     if(subject->statementCount>1000)checkDuplicates=false;// expansive isA4 !!!!
     //    => todo dissectWord befor loading data!!!!!
-    
+
 	string str=replace_all(subject->name, " ", "_");
 	str=replace_all(str, "-", "_");
 	//        p("dissectWord");
 	//        p(subject->name);
 	const char *thing=str.data();
 	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".") || endsWith(thing, "s")) dissectParent(subject); // <<
-    
+
     //	dissected[subject]=1;
-    
+
 	int len=(int)str.length();
 	int type=(int)str.find(",");
 	if (type >= 0 && len - type > 2) {
@@ -1044,7 +1044,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		if (original != subject) addStatement(original, in, ort, checkDuplicates);
 		addStatement(subject, the(location), ort, checkDuplicates);
 	}
-    
+
 	type=(int)str.find("'s_");
 	if (type < 0) type=(int)str.find("s'_");// Oswalds' Cave ?
 	if (type >= 0 && len - type > 2) {
@@ -1149,7 +1149,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		ps(thing);
 		return 0;
 	}
-    
+
     //	if (dissect) dissectWord(insta); // dont remove! doch!
 	return insta;
 }
@@ -1183,7 +1183,7 @@ Node * hasWord(const char* thingy) {
 			return first;
     }
     //	int tries=0; // cycle bugs
-    
+
     //    	map<Node*, bool> visited;
 	map<int, bool> visited;
     //	map<Ahash*, bool> visited;
@@ -1196,7 +1196,7 @@ Node * hasWord(const char* thingy) {
 			return 0;
 		}
 		visited[found->abstract]=1;
-        
+
 		if (checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
@@ -1242,7 +1242,7 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
 		return 0;
 	}
     if(autoIds&&isInteger(thing))return get(atoi(thing));
-    
+
     if (thing[0] == '"')thing++;
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
@@ -1300,11 +1300,11 @@ void showStatement(Statement * s) {
         //        else
         printf("<%d>\t%s\t\t%s\t\t%s\t\t%d->%d->%d\n", s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->subject, s->predicate,
                s->object);
-    
+
 	else printf("#%d %d->%d->%d  [%p]\n", s->id(), s->subject, s->predicate, s->object, s);
 	flush();
 	// printf("%s->%s->%s\n",s->Subject->name,s->Predicate->name,s->Object->name);
-    
+
 }
 
 //, bool showAbstract
@@ -1321,7 +1321,7 @@ char* getLabel(Node * n) {
 	if (n->value.text > context->nodeNames && n->value.text < context->nodeNames + context->currentNameSlot) return n->value.text;
 	Statement * s=findStatement(n, Label, Any, 0, false, false);
 	if (s) return s->Object()->name;
-    
+
 	return 0;
 }
 
@@ -1332,7 +1332,7 @@ bool show(Node* n, bool showStatements) {		//=true
         //        pf("%d|",n->id);
         //        return false;// !!! HIDE!!!
     }
-    
+
 	// Context* c=getContext(n->context);
 	// if(c != null && c->name!=null)
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
@@ -1354,7 +1354,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
 	int i=0;
     //	int maxShowStatements=40; //hm
-    
+
 	if (showStatements) {
 		Statement* s=0;
 		while ((s=nextStatement(n, s))) {
@@ -1420,7 +1420,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 	else recurse=maxRecursions;
 	if (recurse > maxRecursions || subject == 0) return 0;
 	//    if(recurse>maxRecursions/3)semantic = false;
-    
+
 	Statement * s=0;
 	map<Statement*, bool> visited;
 	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
@@ -1430,7 +1430,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
         //#ifdef useContext
 		if (s->context == _pattern) continue;
         //#endif
-        
+
 		//		if(s->Predicate!=Any){
 		if (s->Object() == Adjective && object != Adjective) continue; // bug !!
 		if (s->Predicate() == Derived) continue; // Derived bug !!
@@ -1444,15 +1444,15 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		//		native		derived		native		301562->81->251672
 		//		good		also		good		302044->50->302076
 		//		evil		attribute		evil		226940->60->302081
-        
+
 		//		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
-        
+
 		//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject == s->Predicate()) {
             ps("NO predicate statements!");
 			break;
 		}
-        
+
 		//        if(s->context != current_context)continue;// only queryContext
 #ifdef use_instance_gap
 		if (s->Predicate == subject || i > 1 && s->Predicate == Instance && predicate != Instance || i > 1 && s->Predicate == Type && predicate != Type) {
@@ -1464,24 +1464,33 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		if (s->Predicate() == Instance && predicate != Instance && predicate != Any) continue; //  return 0; // DANGER!
 		//		NOT COMPATIBLE WITH DISSECTED WORDS!!!!! PUT TO END!!!
         
+        if(predicate==Any&&eq(s->Subject()->name,s->Object()->name))continue;
+        
         p(s);
 		//		if(debug&&s->id>0)
-        
+
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 		bool subjectMatch=s->Subject() == subject || subject == Any || isA4(s->Subject(), subject, false, false); //DONT CHANGE quick isA4
-        subjectMatch=subjectMatch||(matchName&&s->Subject()->name == subject->name );
+        subjectMatch=subjectMatch||(matchName&& eq(s->Subject()->name,subject->name ));
 		bool predicateMatch=(s->Predicate() == predicate || predicate == Any);
 		predicateMatch=predicateMatch || (predicate == Instance && s->Predicate() == SubClass);
 		predicateMatch=predicateMatch || (predicate == SubClass && s->Predicate() == Instance);
 		predicateMatch=predicateMatch || isA4(s->Predicate(), predicate, false, false);
         predicateMatch=predicateMatch || (matchName&& eq(s->Predicate()->name, predicate->name ));
 		bool objectMatch=s->Object() == object || object == Any || isA4(s->Object(), object, false, false);// by name OK!
-		if (subjectMatch && predicateMatch && objectMatch) return s;
+        objectMatch=objectMatch||(matchName&& eq(s->Object()->name,object->name ));
         
+		if(s->id()==5964173||s->id()==180846)
+			p(s);
+        
+		if (subjectMatch && predicateMatch && objectMatch) return s;
+
 		// READ BACKWARDS
-		// OR<-PR<-SR
-		bool subjectMatchReverse=subject == s->Object() || subject == Any || isA4(s->Object(), subject, false, false);
-		bool objectMatchReverse=object == s->Subject() || object == Any || isA4(s->Subject(), subject, false, false);
+		// OR <- PR<-SR
+		bool subjectMatchReverse = subject == s->Object() || subject == Any || isA4(s->Object(), subject, false, false);
+		subjectMatchReverse=subjectMatchReverse||(matchName&& eq(subject->name,s->Object()->name  ));
+		bool objectMatchReverse = object == s->Subject() || object == Any || isA4(s->Subject(), subject, false, false);
+		objectMatchReverse=objectMatchReverse||(matchName&& eq(object->name,s->Subject()->name  ));
 		bool predicateMatchReverse=predicate == Any; // || inverse
 		symmetric=symmetric || s->Predicate() == Synonym || predicate == Synonym || s->Predicate() == Antonym || predicate == Antonym;
 		symmetric=symmetric && !(s->Predicate() == Instance); // todo : ^^ + more
@@ -1494,7 +1503,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		predicateMatchReverse=predicateMatchReverse || predicate == Any;
 		predicateMatchReverse=predicateMatchReverse || (predicateMatch && symmetric);
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
-        
+
 		//		predicateMatchReverse = predicateMatchReverse || predicate == invert(s->Predicate);// invert properties ?? NAH!!
 		//		predicateMatchReverse = predicateMatchReverse || invert(predicate) == s->Predicate;// invert properties ?? NAH!!
 		// sick:
@@ -1503,7 +1512,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		//        predicateMatchReverse = predicateMatchReverse || predicate == SubClass && s->Predicate == Type;
 		//        predicateMatchReverse = predicateMatchReverse || predicate == Type && s->Predicate == SubClass;
 		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse) return s;
-        
+
 		if (!semantic) continue;
 		///////////////////////// SEMANTIC /////////////////////////////
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM
@@ -1521,7 +1530,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 			objectMatchReverse=objectMatchReverse || isA4(s->Subject(), object, recurse, semantic);
 		}
 		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse)
-            
+
             return s;
 		///////////////////////// END SEMANTIC /////////////////////////////
 	}
@@ -1581,12 +1590,12 @@ void deleteWord(const char* data, bool completely) {
 		}
 	} else if (checkNode(&context->nodes[id], id, false, false)) deleteNode(&context->nodes[id]);
 	else if (checkStatement(&context->statements[id], false, false)) deleteStatement(&context->statements[id]);
-    
+
 	else ps("No such node or statement: " + string(data));
 }
 
 void deleteWord(string * s) {
-    
+
 	remove(s->c_str());
 }
 void deleteNode(int id){
@@ -1703,7 +1712,7 @@ Node * has(Node* subject, Node* predicate, Node* object, int recurse, bool seman
 			if (resu) return resu;
 		}
 	}
-    
+
 	//    if(recurse>maxRecursions/3)semantic = false;
 	//    printf("findStatement(n %d,predicate %d,object %d,recurse %d,semantic %d,symmetric %d)\n",n,predicate,object,recurse,semantic,symmetric);
 	Statement* s=findStatement(subject, predicate, object, recurse, semantic, symmetric, predicatesemantic,matchName);
@@ -1713,13 +1722,13 @@ Node * has(Node* subject, Node* predicate, Node* object, int recurse, bool seman
 }
 
 Node * isEqual(Node* subject, Node * object) {
-    
+
 	if (!isA4(subject, object)) return 0;
 	//    if (isA4(subject, object))return subject;
 	//    if(subject->kind==object->kind)
 	if (subject->value.number == object->value.number) return subject;
 	if (atof(subject->name) > 0 && atof(subject->name) == atof(object->name)) return subject;
-    
+
 	return 0;
 }
 
@@ -1742,7 +1751,7 @@ Node * isLess(Node* subject, Node * object) {
     if(!v)v=atof(object->name);
 	if (subject->kind == object->kind && v < w) return subject;
 	if (v && w && v < w) return subject;
-    
+
 	return 0;
 }
 
@@ -1753,7 +1762,7 @@ Node * isAproxymately(Node* subject, Node * object) {
 	if (object->value.number == 0 && subject->value.number * subject->value.number > 0.1) return 0;
 	float r=subject->value.number / object->value.number;
 	if (r * r > 0.9 && r * r < 1.1) return subject;
-    
+
 	return 0;
 }
 
@@ -1762,7 +1771,7 @@ Node * isAproxymately(Node* subject, Node * object) {
 Node * has(Node* subject, Statement* match, int recurse, bool semantic, bool symmetric, bool predicatesemantic) {
 	//    if(findStatement(match))
 	//    if (match->Predicate == Equals)return has(subject, match->Subject, match->Object);
-    
+
 	//todo : iterate all property_values !!
 	Node* property_value=has(subject, match->Subject(), Any, recurse, semantic, symmetric, predicatesemantic);
 	//has(subject, match->Subject);
@@ -1773,19 +1782,19 @@ Node * has(Node* subject, Statement* match, int recurse, bool semantic, bool sym
 	else if (match->Predicate() == Less) return isLess(property_value, match->Object());
 	else if (match->Predicate() == Circa) return isAproxymately(property_value, match->Object());
 	else return has(subject, match->Predicate(), match->Object()); // match->Subject == Subject?
-    
+
 	return 0;
 	//    if(match->Predicate==Range) isGreater and isLess
 }
 int recursions=0;
 
 bool hasValue(Node * n) {
-    
+
 	return (*(int*) &n->value) != 0;
 }
 
 bool areAll(Node* a, Node * b) {
-    
+
 	return isA4(a, b, true, true); // greedy isA4
 }
 
@@ -1804,12 +1813,12 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	}
 	//        else if (yetvisitedIsA[n]==null)yetvisitedIsA[n]=true;
 	//        else yetvisitedIsA[n]++;
-    
+
 	if (recurse > 0) recurse++;
 	//    else recurse=maxRecursions;
 	if (recurse > maxRecursions) return false;
 	runs++;
-    
+
 	if (hasValue(n)) {	// false else?
 		//        if(isA4(n->kind,match->kind))
 		if (n->kind == match->kind) {
@@ -1821,14 +1830,14 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	}
 	//        if (recurse > maxRecursions / 3)
 	//            semantic = false;
-    
+
 	// todo:semantic true (level1)
 	bool quickCheckSynonym=recurse == maxRecursions; // todo !?!??!
 	if (quickCheckSynonym && findStatement(n, Synonym, match, false, false, true)) {
 		yetvisitedIsA[badHash]=true;
 		return true;
 	}
-    
+
 	bool semantic2=semantic && recurse > 5; // && ... ?;
 	if (semantic && findStatement(n, Synonym, match, recurse, semantic2, true)) {
 		yetvisitedIsA[badHash]=true;
@@ -1863,7 +1872,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 		yetvisitedIsA[badHash]=true;
 		return true;
 	} //(n,Plural,match,0,true,true))return true;
-    
+
 	//    if(isA(n,match->name,false,false))return true;// compare by name
 	if (isAbstract(n) && recurse>0 && recurse < 3) { //|| isA(n,List)
 		Statement* s=0;
@@ -1879,7 +1888,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	}
     if(useYetvisitedIsA)
         yetvisitedIsA[badHash]=-1;
-    
+
 	return false;
 }
 
@@ -1903,7 +1912,7 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
             else return s->Subject();
         }
 		if (isA4(s->Object(), match, recurse, semantic)) return s->Object();
-        
+
 		if (isA4(s->Subject(), match, recurse, semantic)) return s->Subject();
 	}
 	return null;
@@ -1915,7 +1924,7 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 
 Statement * isStatement(Node * n) {
 	if (n && n->kind == _statement) return n->value.statement;
-    
+
 	return 0;
 }
 
@@ -1975,13 +1984,13 @@ Node * has(Node* n, Node * m) {
 	NodeVector all=memberPath(n, m);
 	resultLimit=tmp;
 	if (all.size() > 0) return all.front();
-    
+
 	// how to find paths with property predicates?? so:
 	clearAlgorithmHash();
 	Node *no=0;
 	if (!no) no=has(n, m, Any); // TODO: test
 	return no; // others already done!!
-    
+
 	// deprecated:
 	//	if (m->value.text != 0)// hasloh population:3000
 	//		no = has(n, m, m->value); // TODO: test
@@ -2000,7 +2009,7 @@ Node * has(Node* n, Node * m) {
 	if (!no) no=has(m, get(_DOMAIN_CATEGORY), n);
 	if (!no) no=has(m, get(_DOMAIN_REGION), n);
 	if (!no) no=has(m, get(_DOMAIN_USAGE), n);
-    
+
 	//    if(!n)n=has(n,Predicate,m);// TODO!
 	//	if (!no)no = has(save, Any, m); //TODO: really?
 	return no;
@@ -2033,7 +2042,7 @@ NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, boo
 	ps("+++++++++++++++++++++++++++++++++++");
 	for (int i=0; i < size; i++) {
 		Node* node=(Node*) all[i];
-        
+
 		if (i > 0 && showRelation) {
 			S r=findRelations(all[i - 1], node);
 			N n=findRelation(all[i - 1], node);
@@ -2061,7 +2070,7 @@ int getStatementId(long pointer){
 Node * first(NodeVector rows) {
 	if (rows.size() > 0) {
 		Node* n=(Node *) rows[0];
-        
+
 		return n;
 	}
 	return 0;
@@ -2071,7 +2080,7 @@ Node * last(NodeVector rows) {
 	int s=(int)rows.size();
 	if (s > 0) {
 		Node* n=(Node *) rows[s - 1];
-        
+
 		return n;
 	}
 	return 0;
@@ -2087,7 +2096,7 @@ void initUnits() {
 	}
 	Node* u=getThe("meter", Unit);
 	addStatement(a(length), has_the("unit"), u);
-    
+
 	//    addSynonyms(u,"m");
 	u=getThe("m^2", Unit);
 	u=getThe("km^2", Unit);
@@ -2106,7 +2115,7 @@ Statement * learn(string sentence) {
 	} else {
 		ps("not a valid statement:");
 		ps(sentence);
-        
+
 		return 0;
 	}
 }
@@ -2117,7 +2126,7 @@ Statement * learn(string sentence) {
  Node* found = 0;
  int abstractId = Abstract->id;
  int max = c->nodeCount; // maxNodes;
- 
+
  // collect Abstracts
  for (int i = 0; i < max; i++) {
  Node* n = &c->nodes[i];
@@ -2149,12 +2158,12 @@ Statement * learn(string sentence) {
  continue;
  } else {
  abstract = add(n->name, Abstract->id, c->id);
- 
- 
+
+
  abstracts->insert(pair<long,Node*>(hash(n->name), abstract));
  addStatement(abstract, Instance, n);
  }
- 
+
  }
  }
  p("found abstracts:");
@@ -2190,7 +2199,7 @@ Node * getThe(Node* abstract, Node * type) {
 	}
 	if (type->id == abstractId || type->id == singletonId)
         return getAbstract(abstract->name); // safe
-	
+
 	Statement * s=0;
     Node* best=0;
 	map<Statement*, int> visited; // You don't have to do anything. Just let the variable go out of scope.
@@ -2211,7 +2220,7 @@ Node * getThe(Node* abstract, Node * type) {
 		bool subjectMatchReverse=s->Object() == abstract;
 		bool predicateMatchReverse=s->Predicate() == Type; // || inverse
 		bool typeMatchReverse=(type == 0 || s->Subject() == type); // isA4(s->Object, type)
-        
+
 		if (type!=More&&subjectMatchReverse && predicateMatchReverse && typeMatchReverse) return s->Subject();
 	}
 	return best;
@@ -2223,11 +2232,11 @@ Node * getProperty(Node* n, cchar* s) {
 
 bool isA(Node* fro, Node * to) {
 	if (isA4(fro, to, 0, 0)) return true;
-    
+
 	Statement* s=0; // x.son=milan => milan is_a son
 	while ((s=nextStatement(fro, s)))
 		if (s->Object() == fro && isA4(s->Predicate(), to)) return true;
-    
+
 	if (fro->kind == Abstract->id) {
 		NodeVector all=instanceFilter(fro);
 		for (int i=0; i < all.size(); i++) {
@@ -2268,7 +2277,7 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
         //        addInstance=true;// unless abstract
     }
     else if(eq(n->name, label,false))return;
-    
+
 	if (strlen(n->name)>=len){// reuse! NOT when sharing char*s !!
         strcpy(n->name, label);
         n->name[len]=0;
@@ -2306,7 +2315,7 @@ bool checkParams(int argc, char *argv[], const char* p) {
 			return true;
 		if (eq(argv[i], (minus + p).c_str())) return true;
 		if (eq(argv[i], (minus + minus + p).c_str()))
-            
+
             return true;
 	}
 	return false;
@@ -2354,7 +2363,7 @@ int main(int argc, char *argv[]) {
 		parse(data);
 		//	start_server();
 	}
-    
+
 	//    signal(SIGSEGV, handler); // only when fully debugged!
     //	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
 	//    setjmp(loop_context);
@@ -2366,17 +2375,17 @@ int main(int argc, char *argv[]) {
 	system(string("cd " + path).c_str());
 	data_path=path + "/data/";
 	import_path=path + "import/";
-    
+
 	//	path=sprintf("%s/data",path);
 	if (checkParams(argc, argv, "quiet")) quiet=true;
 	if (checkParams(argc, argv, "quit")) exit(0);
-    
+
 	init();
 	//    import();
-    
-    
+
+
 	if (checkParams(argc, argv, "clear"))clearMemory();
-    
+
 	if (checkParams(argc, argv, "query")) {
 		load();
 		string q=cut_to(join(argv, argc), "query ");
@@ -2384,7 +2393,7 @@ int main(int argc, char *argv[]) {
 		exit(0);
 		//        import();
 	}
-    
+
 	if (checkParams(argc, argv, "import")) {
         if (checkParams(argc, argv, "all"))
             importAll();
@@ -2408,17 +2417,17 @@ int main(int argc, char *argv[]) {
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	}
 	if (checkParams(argc, argv, "export")) export_csv();
-    
+
 	if (checkParams(argc, argv, "test")) tests();
-    
-    
+
+
 	if (checkParams(argc, argv, "server") || checkParams(argc, argv, "daemon") || checkParams(argc, argv, "demon")) {
 		printf("starting server\n");
 		start_server();
 		return 0;
 	}
-    
-    
+
+
 	printf("Warnings: %d\n", badCount);
     printf("Node limit: %d\n",(int)maxNodes);
     printf("Statements: %d\n",(int)maxStatements);
@@ -2431,7 +2440,7 @@ int main(int argc, char *argv[]) {
 Node* mergeNode(Node* target,Node* node){
     Statement* s=getStatement( node->firstStatement);
     addStatementToNodeDirect(target,node->firstStatement);
-    
+
     Statement* next;
     while (s) {
         next=nextStatement(target, s);

@@ -9,9 +9,6 @@
             <cpp-extensions>cpp</cpp-extensions>
             <header-extensions>h,hpp</header-extensions>
             <sourceEncoding>UTF-8</sourceEncoding>
-            <formatting>
-                <project-formatting-style>false</project-formatting-style>
-            </formatting>
             <make-dep-projects/>
             <sourceRootList>
                 <sourceRootElem>.</sourceRootElem>
@@ -30,6 +27,9 @@
                     <type>1</type>
                 </confElem>
             </confList>
+            <formatting>
+                <project-formatting-style>false</project-formatting-style>
+            </formatting>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
             <word>schon</word>

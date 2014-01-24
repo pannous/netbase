@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- <itemPath>src/jni/NetbaseJNI.h</itemPath> -->
-<configurationDescriptor version="89">
+<configurationDescriptor version="90">
   <projectmakefile>Makefile</projectmakefile>
   <confs>
     <conf name="Debug" type="1">
