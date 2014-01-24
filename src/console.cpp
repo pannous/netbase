@@ -462,14 +462,23 @@ NodeVector parse(const char* data) {
 	return nodeVectorWrap(a);
 }
 
-extern "C"  Node** execute(const char* data){
+
+extern "C"  Node** execute(const char* data,int* out){
     NodeVector result=parse(data);
-    Node** results=(Node** ) malloc(result.size()*nodeSize);
-    for (int i=0; i< result.size(); i++) {
+    int hits=(int)result.size();
+    printf(">>>>>>>>>>> %p\n",out);
+    if(out)*out=hits;
+    Node** results=(Node** ) malloc(hits*nodeSize);
+    for (int i=0; i< hits; i++) {
         results[i]=result[i];
+        pf("%d %s | ",result[i]->id,result[i]->name);
+        pf(" %ld\n",(long)(void*)result[i]);
+//        memccpy(&results[i],result[i],0,sizeof(Node));
     }
-    return     results;
+    flush();
+    return results;
 }
+
 
 
 void console() {

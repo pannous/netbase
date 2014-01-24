@@ -223,11 +223,12 @@ public:
 
 typedef vector<Statement*> StatementVector;
 typedef vector<Facet*> FacetVector;
-
+enum QueryType{nodeQuery,xmlQuery,sqlQuery};
 class Query {
 public:
 
     Query() {
+        queryType=nodeQuery;
         depth = maxRecursions;
 		recursion=0;
         start = 0;
@@ -241,6 +242,7 @@ public:
         semantic = false;
         predicatesemantic=false;
     }
+    enum QueryType queryType;
     int start; //    int offset; == page* hitPerPage
     //    int end;//     == start + hitsPerPage
     int page; //    int offset;

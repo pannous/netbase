@@ -1423,7 +1423,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
     
 	Statement * s=0;
 	map<Statement*, bool> visited;
-	while ((s=nextStatement(subject, s, predicate != Instance))) {
+	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
 		if (visited[s]) return 0;
 		visited[s]=1;
 		if (!checkStatement(s)) continue;

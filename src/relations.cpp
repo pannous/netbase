@@ -141,7 +141,7 @@ void initRelationsDE() {
 	Domain=addRelation(_DOMAIN_USAGE, "Bereich"); // #bitch @ colloquialism  || fin de siecle @ French   # fuck(vulgar)
 	//    ENTAILMENT =
 	addRelation(_ENTAILMENT, "Impliziert",is_transitive); //ENTAILMENT  jump implies come down
-	SuperClass = addRelation(_Hypernym, "Oberklasse",is_transitive); //Parent ,"Hypernym"
+	SuperClass = addRelation(_Hypernym, "Klasse",is_transitive); //Parent ,"Hypernym"
 	Parent = SuperClass;
 	//	IsA = SuperClass;
     
@@ -242,6 +242,8 @@ void initRelations() {
     currentContext()->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_see, "unknown");
+    
+	Any = addRelation(_any, "?");
     Error = addRelation(_error, "Error");
 	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
@@ -351,7 +353,6 @@ void initRelations() {
 	And = addRelation(_And, "and");
 	Or = addRelation(_Or, "or");
 	Not = addRelation(_Not, "not");
-	Any = addRelation(_any, "*");
 
 	Equals = addRelation(_Equals, "=");
 	Greater = addRelation(_Greater, ">");
