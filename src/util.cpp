@@ -354,11 +354,12 @@ NodeVector intersect(NodeVector a, NodeVector b) {
     return c;
 }
 
+// AAAHH NEVER WORKS!!! use splitStringC !!!
 vector<char*>& splitString(string line0, const char* separator) {
 	return splitString(line0.data(), separator);
 }
 
-// AAAHH NEVER WORKS!!! use splitStringC2 !!!
+// AAAHH NEVER WORKS!!! use splitStringC !!!
 vector<char*>& splitString(const char* line0, const char* separator) {
 	char * token;
 	vector<char*>& v=*new vector<char*>;
@@ -377,7 +378,7 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 	return v;
 }
 
-// never works
+// never works! use splitStringC
 char** splitStringC1(const char* line0, const char* separator, int maxRows) {
 	if (line0 == 0) {
 		ps("empty splitString!");
