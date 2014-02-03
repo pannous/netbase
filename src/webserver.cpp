@@ -243,6 +243,7 @@ int handle(char* q,int conn){
 	}
 	if (startsWith(q, "excludes/")||startsWith(q, "includes/")||startsWith(q, "excluded/")||startsWith(q, "included/")) {
         showExcludes=true;
+        verbosity=longer;
 		q = q + 9;
 	}
     else showExcludes=false;

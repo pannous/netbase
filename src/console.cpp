@@ -119,7 +119,7 @@ NodeVector parseProperties(const char *data) {
 		char** splat=splitStringC(data, ':');
 		thing=splat[1];
 		property=splat[0];
-//		bool inverse=1;
+        //		bool inverse=1;
 	} else if (contains(data, ".")) {
 		//			sscanf(data,"%s.%s",thing,property);
 		char** splat=splitStringC(data, '.');
@@ -128,20 +128,20 @@ NodeVector parseProperties(const char *data) {
 	}
 	else if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
 	else if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
-
+    
 	if (!property) {
 		char** splat=splitStringC(data, ' ');
 		thing=splat[0];
 		property=splat[2];
 	}
-
+    
 	pf("does %s have %s?\n", thing, property);
 	NodeVector all=findProperties(thing, property);
 	if (all.size()==0&& property[strlen(property) - 1] == 's'){
 		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
 		all=findProperties(thing, property);
 	}
-
+    
 	showNodes(all);
 	return all;
 }
@@ -165,7 +165,7 @@ NodeVector parse(const char* data) {
 	data=fixQuotesAndTrim(modifyConstChar(data));
 	//	std::remove(arg.begin(), arg.end(), ' ');
 	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
-
+    
 	//		scanf ( "%s", data );
 	if (eq(data, "exit")) return OK;
 	if (eq(data, "help") || eq(data, "?")) {
@@ -173,13 +173,13 @@ NodeVector parse(const char* data) {
 		//        printf("type exit or word");
 		return OK;
 	}
-
+    
 	if (eq(data, "more")) {
 		resultLimit=resultLimit * 2;
 		if (lastCommand) return parse(lastCommand);
 		else return OK;
 	}
-
+    
 	if (eq(data, ":x")) {
 		save();
 		exit(1);
@@ -187,7 +187,7 @@ NodeVector parse(const char* data) {
 	lastCommand=clone(data);
 	if (eq(data, ":w")) save();
 	if (eq(data, ":q")) exit(1);
-
+    
 	if (eq(data, "q")) return OK;
 	if (eq(data, "x")) return OK;
 	if (eq(data, "export")) {
@@ -212,7 +212,7 @@ NodeVector parse(const char* data) {
 	}
 	if (eq(data, "quit")) return OK;
 	if (eq(data, "quiet")) quiet=!quiet;
-
+    
 	if (startsWith(data, ":if")) {
 		autoIds=false;
 		//			if (endsWith(data, "!"))deleteWord("acceptant");
@@ -240,17 +240,17 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	autoIds=true;
-
+    
 	if (contains(data, "limit")) {
 		char* limit=(char*)strstr(data," limit");
 		sscanf(limit+1, "limit %d", &resultLimit);
 		*limit=0;
-//		char* newdata=(char*) malloc(1000);
-//		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
-//		if(!)
-//		sscanf(data, "limit %d %s", &resultLimit, newdata);
-//		strcpy((char*) data, newdata);
-//		p(resultLimit);
+        //		char* newdata=(char*) malloc(1000);
+        //		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
+        //		if(!)
+        //		sscanf(data, "limit %d %s", &resultLimit, newdata);
+        //		strcpy((char*) data, newdata);
+        //		p(resultLimit);
 	}
 	if (eq(data, "load") || eq(data, ":l")) {
 		load(false);
@@ -339,7 +339,7 @@ NodeVector parse(const char* data) {
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
 	}
-
+    
 	if (args.size() > 1 && startsWith(data, "has ")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
@@ -350,14 +350,31 @@ NodeVector parse(const char* data) {
 		Node* to=getAbstract(args.at(2));
 		return parentPath(from, to);
 	}
-	if (startsWith(data, "exclude ")){
-        addStatement(get("excluded"), Instance,get(data+8));
+    
+    if (args.size() ==3 && contains(data,"exclude ")){
+        autoIds=true;
+        Node *node=getAbstract(args[0]);
+        if(eq(args[0], "exclude"))node=getAbstract(args[1]);
+        addStatement(node,getAbstract("exclude"),getAbstract(args[2]));
+        return nodeVectorWrap(getAbstract(args[0]));
+    }
+    if (startsWith(data, "exclude ")){
+        addStatement(get("excluded"), Instance,getAbstract(data+8));
         return nodeVectorWrap(get("excluded"));
     }
+        if (args.size() ==3 && contains(data,"include ")){
+            autoIds=true;
+            Node *node=getAbstract(args[0]);
+            if(eq(args[0], "include"))node=getAbstract(args[1]);
+            addStatement(node,getAbstract("include"),getAbstract(args[2]));
+            return nodeVectorWrap(getAbstract(args[0]));
+        }
+        
 	if (startsWith(data, "include ")){
-        addStatement(get("included"), Instance,get(data+8));
+        addStatement(get("included"), Instance,getAbstract(data+8));
         return nodeVectorWrap(get("included"));
     }
+    ///
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
 		return showNodes(query(data),true);
@@ -377,8 +394,8 @@ NodeVector parse(const char* data) {
 		show(da);
 		return nodeVectorWrap(da);
 	}
-
-
+    
+    
 	if (startsWith(data, "label ") || startsWith(data, "rename ")) {
 		N n=getThe(args[1]);
 		setLabel(n, next_word(next_word(data)).data());
@@ -387,11 +404,11 @@ NodeVector parse(const char* data) {
 	if (startsWith(data, "an ")) return query(data);
 	if (startsWith(data, "a ")) return query(data);
 	if (startsWith(data, "any ")) return query(data);
-
+    
 	//        if(startsWith(data,"is ")){  check_statement(data);return OK;}
 	//        if(startsWith(data,"does ")){  check_statement(data);return OK;}
 	if (contains(data, " in ")) return query(data);
-
+    
 	//	if (args.size() > 2 && eq(args[1], "of")) {
 	//		clearAlgorithmHash();
 	//		Node* property = getThe(args[0]);
@@ -408,8 +425,8 @@ NodeVector parse(const char* data) {
 	//		}
 	//		return nodeVectorWrap(found);
 	//	}
-
-//	if (startsWith(q, "m/")) {
+    
+    //	if (startsWith(q, "m/")) {
 	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
 		p("<m.0c21rgr> needs showered memory or boost ");
 		Node* n=getFreebaseEntity((char*) data);
@@ -421,7 +438,7 @@ NodeVector parse(const char* data) {
 		return nodeVectorWrap(reify(learn(data)));
 	
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))
-			|| (contains(data, ":"))) { // && !contains(data, " "))) {
+        || (contains(data, ":"))) { // && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath
 	}
 	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
@@ -436,10 +453,10 @@ NodeVector parse(const char* data) {
 	if (contains(data, " which ")) return query(data);
 	if (contains(data, " without ")) return query(data);
 	if (contains(data, "ing ")) return query(data);
-
+    
 	if (contains(data, " that ")) return query(data);
 	if (contains(data, "who ")) return query(data);
-
+    
 	if (args.size() >= 3 && eq(args[1], "to")) {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(2));
@@ -455,19 +472,19 @@ NodeVector parse(const char* data) {
         return nodeVectorWrap(reify(learn(next_word(data))));
 	if (args.size() >= 3 && eq(args[1], "is"))
         return nodeVectorWrap(reify(learn(data)));
-
+    
 	data=replace((char*) data, ' ', '_');
-
+    
 	int i=atoi(data);
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
-
+    
 	Node* a=get(data);
     dissectWord(a, true);
 	show(a);
-//	if (i == 0) showNodes(instanceFilter(a), true);
+    //	if (i == 0) showNodes(instanceFilter(a), true);
 	//        findWord(currentContext()->id, data);
-//    if(isAbstract(a))
+    //    if(isAbstract(a))
 	if (i == 0) {
 		NV all=instanceFilter(a);
 		if (all.size() > 0) return all;
@@ -486,7 +503,7 @@ extern "C"  Node** execute(const char* data,int* out){
         results[i]=result[i];
         pf("%d %s | ",result[i]->id,result[i]->name);
         pf(" %ld\n",(long)(void*)result[i]);
-//        memccpy(&results[i],result[i],0,sizeof(Node));
+        //        memccpy(&results[i],result[i],0,sizeof(Node));
     }
     flush();
     return results;

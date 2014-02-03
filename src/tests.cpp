@@ -1359,10 +1359,16 @@ void testBrandNewStuff() {
     quiet=false;
 	debug = true;
     parse("exclude Code");
-    import("labels");
+//    import("labels");
 //    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
 //    handle("xml/510619",-1);// test web server
-    handle("/html/verbose/hamburg");
+//    parse("exclude hamburg Latitude");
+//    parse("exclude 1459866 1363455");
+    //    1459866
+//    handle("/xml/all/1459866");
+    handle("/xml/verbose/1459866");
+//    handle("/xml/excluded/1459866");
+    exit(0);
     testSqlDe();
     
     tests();
