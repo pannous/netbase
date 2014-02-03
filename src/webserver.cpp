@@ -125,6 +125,14 @@ void loadExcluded(char* q){
         include+=2;
         included.push_back(include);
     }
+    ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
+    s=0;
+    while((s=nextStatement(ex->id,s))){
+        if(eq(s->Predicate()->name,"exclude"))
+            excluded.push_back(s->Object()->name);
+        //        excluded.push_back(s->Object()->id);
+    }
+
 }
 
 
