@@ -15,7 +15,7 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (80)
+#define SERVER_PORT  (801)
 
 enum result_format {
 	xml, json, txt,csv,html
@@ -23,7 +23,7 @@ enum result_format {
 
 enum result_verbosity {
 	shorter, normal, longer,verbose
-};
+}verbosity;
 
 
 void fixLabel(Node* n){
@@ -35,34 +35,64 @@ void fixLabel(Node* n){
 }
 
 /// true = filter
-
-static char* excluded=0;
-static char* excluded2=0;
-static char* excluded3=0;
+vector<char*>excluded;
+vector<char*>included;
+bool showExcludes=false;
+int warnings=0;
+//static char* excluded=0;
+//static char* excluded2=0;
+//static char* excluded3=0;
 bool checkHideStatement(Statement* s){
 	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
-    if(s->subject==0||s->predicate==0||s->object==0)return true;
+    if(s->subject==0||s->predicate==0||s->object==0){warnings++;return true;}
 	char* predicateName=s->Predicate()->name;
 	char* objectName=s->Object()->name;
 	char* subjectName=s->Subject()->name;
-    if(subjectName==0||predicateName==0||objectName==0)return true;
-
+    if(subjectName==0||predicateName==0||objectName==0){warnings++;return true;}
+    
+    if(showExcludes){
+        if(contains(subjectName,"exclude",1)||contains(predicateName,"exclude",1)||contains(objectName,"exclude",1))return false;
+        if(contains(subjectName,"include",1)||contains(predicateName,"include",1)||contains(objectName,"include",1))return false;
+        return true;
+    }
+    
+    if(eq(predicateName,"exclude")){
+        excluded.push_back(objectName);
+        return !showExcludes;
+    }
+    if(eq(predicateName,"include")){
+        included.push_back(objectName);
+        return !showExcludes;
+    }
+    if(predicateName[0]=='<')predicateName++;
 	if(eq(predicateName,"Key"))return true;
    	if(eq(predicateName,"expected type"))return true;
    	if(eq(predicateName,"Range"))return true;
     if(eq(predicateName,"usage domain"))return true;
     if(eq(predicateName,"schema"))return true;
+    if(startsWith(predicateName,"http"))return true;
     
-    if(predicateName[3]=='-'||predicateName[3]=='_'||predicateName[3]==0)
-          		return true;// <zh-ch, id ...
     if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
     	return true;// zh-ch, id ...
-    if(startsWith(predicateName,"http"))return true;
-    if(objectName[0]=='/'||objectName[1]=='/')return true;
-    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
-    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
-    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
-    return false;
+    if(objectName[0]=='/'||objectName[1]=='/')return true;// ?
+    
+    
+    for(int i=0;i<excluded.size();i++){
+        char* exclude=excluded.at(i);
+        if(contains(subjectName,exclude,1)||contains(predicateName,exclude,1)||contains(objectName,exclude,1))return true;
+        if(eq(itoa(s->subject),exclude)||eq(itoa(s->predicate),exclude)||eq(itoa(s->object),exclude))return true;
+    }
+    bool ok=included.size()==0;// no filter
+    for(int i=0;i<included.size();i++){
+        char* include=included.at(i);
+        if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
+        if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))ok=true;
+    }
+    
+//    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
+//    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
+//    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
+    return !ok;
 }
 
 void fixLabels(Statement* s){
@@ -76,8 +106,6 @@ int Service_Request(int conn) {
 
 	struct ReqInfo reqinfo;
 	InitReqInfo(&reqinfo);
-	enum result_format format = txt;
-	enum result_verbosity verbosity = normal;
 
 	/*  Get HTTP request  */
 	if (Get_Request(conn, &reqinfo) < 0)
@@ -94,10 +122,21 @@ int Service_Request(int conn) {
 	init(); // for each forked process!
     if(strlen(reqinfo.resource)>1000)return 0;
 	char* q = substr(reqinfo.resource, 1, -1);
+
+    int ok=handle(q,conn); // <<<<<<<<<<<<<
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	FreeReqInfo(&reqinfo);
+	return ok;
+}
+
+int handle(char* q,int conn){
+    q=modifyConstChar(q);
+	enum result_format format = txt;
+	enum result_verbosity verbosity = normal;
 	int len=(int)strlen(q);
 	if (eq(q, "favicon.ico"))return 0;
     if(contains(q,"robots.txt")){
-        Writeline("User-agent: *\n");
+        Writeline(conn,"User-agent: *\n");
         Writeline("Disallow: /\n");
         return 0;
     }
@@ -175,27 +214,42 @@ int Service_Request(int conn) {
 		verbosity = verbose;
 		q = q + 8;
 	}
-	if(contains(q," -")){
-		excluded=strstr(q," -");
-		if(excluded[2]!=' '){
-			excluded[0]=0;
-			excluded+=2;
-		}else excluded=0;
+	if (startsWith(q, "all/")) {
+		q = q + 4;
+		showExcludes=false;
+		verbosity = verbose;
+        excluded.clear();// later!
+        included.clear();
 	}
-	if(contains(excluded," -")){
-		excluded2=strstr(excluded," -");
-		excluded2[0]=0;
-		excluded2+=2;
+    
+	if (startsWith(q, "excludes/")||startsWith(q, "includes/")||startsWith(q, "excluded/")||startsWith(q, "included/")) {
+        showExcludes=true;
+		q = q + 9;
 	}
-	if(contains(excluded2," -")){
-		excluded3=strstr(excluded2," -");
-		excluded3[0]=0;
-		excluded3+=2;
+    else showExcludes=false;
+    
+    excluded.clear();
+    included.clear();
+    char* exclude=q;
+	while(exclude&&contains(exclude," -")){
+		exclude=strstr(exclude," -");
+		if(exclude[2]!=' '){// not 2009 - 2010 etc
+			exclude[0]=0;
+			exclude+=2;
+            excluded.push_back(exclude);
+		}else exclude=0;
 	}
+    char* include=q;
+    while(include&&contains(include," +")){
+        include=strstr(exclude," +");
+        include[0]=0;
+        include+=2;
+        included.push_back(include);
+    }
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
-    NodeVector all = parse(q); // <<<<<<<< NETaddSBASE!
+    NodeVector all = parse(q); // <<<<<<<< NETBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
@@ -231,6 +285,7 @@ int Service_Request(int conn) {
 	if (format == txt)entity_format = entity_format_txt;
 	if (format == csv)entity_format = entity_format_csv;
 	Node* last=0;
+    warnings=0;
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
 		if(last==node)continue;
@@ -246,10 +301,10 @@ int Service_Request(int conn) {
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
-				if(checkHideStatement(s))continue;
+				if (!checkStatement(s))continue;
+				if(checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
                 if(format==csv&&all.size()>1)break;
-				if (!checkStatement(s))continue;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
@@ -265,10 +320,8 @@ int Service_Request(int conn) {
 	if (format == json)Writeline(conn, "]}\n");
 	if (format == html)Writeline(conn, html_end);
 	if (format == xml)Writeline(conn, "</results>\n");
-
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	FreeReqInfo(&reqinfo);
-	return 0;
+    pf("Warnings: %d\n",warnings);
+    return 0;// 0K
 }
 
 /*  Prints an error message and quits  */
@@ -308,24 +361,27 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 	return n;
 }
 
+int lastSockd = -1;
 void Writeline(const char* s) {
-	Writeline(0, s, 0);
+	Writeline(lastSockd, s, 0);
 }
 void Writeline(string s) {
-	Writeline(0, s.data(), 0);
+	Writeline(lastSockd, s.data(), 0);
 }
 
 /*  Write a line to a socket  */
 ssize_t Writeline(int sockd, string s) {
 	return Writeline(sockd, s.data(), s.length());
 }
-int lastSockd = 0;
 
 ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 	size_t nleft;
 	ssize_t nwritten;
 	const char *buffer;
-
+    if(sockd==-1){// debug
+        p(vptr);
+        return 0;
+    }
 	if (sockd == 0)sockd = lastSockd; //not thread safe!
 	lastSockd = sockd;
 
