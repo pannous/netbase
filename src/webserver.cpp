@@ -266,7 +266,10 @@ int handle(char* q,int conn){
     }else{
         loadExcluded(q);
     }
-    if(contains(q,"exclude"))showExcludes=true;
+    if(contains(q,"exclude")){
+        verbosity=normal;
+        showExcludes=true;
+    }
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
     NodeVector all = parse(q); // <<<<<<<< NETBASE!

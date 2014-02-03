@@ -1366,12 +1366,13 @@ void testBrandNewStuff() {
 //        parse("hamburg exclude Erhebung");
     
 //    Nachname
-//    parse("exclude 1459866 1363455");
+    parse("exclude fafdafds");
     //    1459866
 //    handle("/xml/all/1459866");
 //    handle("/xml/verbose/1459866");
-//    handle("/xml/excluded/1459866");
-        handle("/xml/excluded/Hamburg");
+    //    handle("/xml/excluded/1459866");
+//    handle("/xml/excluded/Hamburg");
+    handle("/xml/excluded");
 
     exit(0);
     testSqlDe();
