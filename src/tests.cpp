@@ -1358,7 +1358,8 @@ void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
-    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
+    import("labels");
+//    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
 //    handle("xml/510619",-1);// test web server
     testSqlDe();
     
