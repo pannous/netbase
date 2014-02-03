@@ -1579,6 +1579,10 @@ void deleteStatement(Statement * s) {
 void deleteWord(const char* data, bool completely) {
 	pf("delete %s \n", data);
 	Context* context=&contexts[current_context];
+    if(data[0]=='$'){
+        deleteStatement(&context->statements[atoi(data+1)]);
+        return;
+    }
 	int id=atoi(data);
 	if (id <= 0) {
 		deleteNode(getThe(data));

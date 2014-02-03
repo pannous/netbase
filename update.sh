@@ -25,6 +25,6 @@ ssh -A "$server" "cd /root/netbase/;git pull"
 ssh "$server" "cd /root/netbase/; sed -i 's/300/30/' src/netbase.hpp "
 ssh "$server" "cd /root/netbase/; sed -i 's/80/81/' src/webserver.cpp "
 ssh "$server" "source .bash_profile; cd /root/netbase/;./compile.sh $@"
-ssh "$server" "nice nohup /root/netbase/restart-server.sh > logfile.log 2>&1 &"
+ssh "$server" "cd /root/netbase/; nice nohup ./restart-server.sh > logfile.log 2>&1 &"
 # rm to_update.tmp                       
 date
