@@ -1358,9 +1358,11 @@ void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
+    parse("exclude Code");
     import("labels");
 //    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
 //    handle("xml/510619",-1);// test web server
+    handle("/html/verbose/hamburg");
     testSqlDe();
     
     tests();

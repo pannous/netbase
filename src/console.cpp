@@ -307,6 +307,11 @@ NodeVector parse(const char* data) {
     if(contains(data,"english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
     if(contains(data,"german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
     
+    if (eq(args[0], "show")) {
+		N da=getAbstract(data + 5);
+        show(da,true);
+		return nodeVectorWrap(da);
+	}
     //    Château
 	if (eq(args[0], "findall")) {
 		return *findAllWords(data + 8);
@@ -345,6 +350,14 @@ NodeVector parse(const char* data) {
 		Node* to=getAbstract(args.at(2));
 		return parentPath(from, to);
 	}
+	if (startsWith(data, "exclude ")){
+        addStatement(get("excluded"), Instance,get(data+8));
+        return nodeVectorWrap(get("excluded"));
+    }
+	if (startsWith(data, "include ")){
+        addStatement(get("included"), Instance,get(data+8));
+        return nodeVectorWrap(get("included"));
+    }
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
 		return showNodes(query(data),true);

@@ -156,7 +156,7 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo);
 /*  Function prototypes  */
 
 int Service_Request(int conn);
-int handle(char* q,int conn);
+int handle(char* q,int conn=-1);
 
 #endif  /*  PG_SERVREQ_H  */
 
