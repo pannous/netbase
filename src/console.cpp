@@ -250,7 +250,7 @@ NodeVector parse(const char* data) {
 //		if(!)
 //		sscanf(data, "limit %d %s", &resultLimit, newdata);
 //		strcpy((char*) data, newdata);
-		p(resultLimit);
+//		p(resultLimit);
 	}
 	if (eq(data, "load") || eq(data, ":l")) {
 		load(false);
