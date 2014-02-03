@@ -1301,8 +1301,7 @@ bool importLabels(cchar* file, bool hash=false) {
         if(test==label){
             //            setLabel(getAbstract(key),label);
             //            continue;
-        }else
-            if (!startsWith(test, "<#label")&&!startsWith(test, "<label")) continue;
+        }else if (!startsWith(test, "<#label")&&!startsWith(test, "<label")&&!startsWith(test, "label")) continue;
         
         
 		int len=(int) strlen(label);
@@ -1318,6 +1317,11 @@ bool importLabels(cchar* file, bool hash=false) {
 			}
 			label[100]=0;
 		}
+        
+        if(hasWord(key)){
+            setLabel(getAbstract(key),label,false,true);
+            continue;
+        }
         
         
 		long h=freebaseHash(key);		// skip m.
@@ -1345,10 +1349,7 @@ bool importLabels(cchar* file, bool hash=false) {
         //        if(contains(line,"Arsenic"))
         //            p(line);
         
-        if(hasWord(key)){
-            setLabel(getAbstract(key),label,false,true);
-            continue;
-        }
+
         
         
         Node* n;
@@ -1370,7 +1371,7 @@ bool importLabels(cchar* file, bool hash=false) {
 	p("duplicates removed:");
 	p(freebaseKeysConflicts);
 	testPrecious();
-	pf("DONE importing labels from %s",file);
+	pf("DONE importing labels from %s\n",file);
 	return true;
 }
 
@@ -1378,6 +1379,7 @@ void importFreebaseLabels() {
 	importLabels("freebase.labels.de.txt", true);
 	importLabels("freebase.labels.en.txt", true);
 }
+
 bool useHash=false;
 Node *dissectFreebase(char* name) {
 	if (!contains(name, ".")) {

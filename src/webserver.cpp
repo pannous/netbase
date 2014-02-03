@@ -89,9 +89,9 @@ bool checkHideStatement(Statement* s){
         if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))ok=true;
     }
     
-//    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
-//    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
-//    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
+    //    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
+    //    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
+    //    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
     return !ok;
 }
 
@@ -101,28 +101,54 @@ void fixLabels(Statement* s){
 	fixLabel(s->Object());
 }
 
+
+void loadExcluded(char* q){
+    N ex=get("excluded");
+    Statement *s=0;
+    while((s=nextStatement(ex->id,s))){
+        excluded.push_back(s->Object()->name);
+        //        excluded.push_back(s->Object()->id);
+    }
+    char* exclude=q;
+    while(exclude&&contains(exclude," -")){
+        exclude=strstr(exclude," -");
+        if(exclude[2]!=' '){// not 2009 - 2010 etc
+            exclude[0]=0;
+            exclude+=2;
+            excluded.push_back(exclude);
+        }else exclude=0;
+    }
+    char* include=q;
+    while(include&&contains(include," +")){
+        include=strstr(exclude," +");
+        include[0]=0;
+        include+=2;
+        included.push_back(include);
+    }
+}
+
+
 // WORKS FINE, but not when debugging
 int Service_Request(int conn) {
-
+    
 	struct ReqInfo reqinfo;
 	InitReqInfo(&reqinfo);
-
+    
 	/*  Get HTTP request  */
 	if (Get_Request(conn, &reqinfo) < 0)
 		return -1;
-
+    
 	if (reqinfo.type == FULL)
 		Output_HTTP_Headers(conn, &reqinfo);
-
-	// file system:
-	//		Serve_Resource(ReqInfo  reqinfo,int conn)
-
+    
+	// file system:	//		Serve_Resource(ReqInfo  reqinfo,int conn)
+    
 	CleanURL(reqinfo.resource);
-
+    
 	init(); // for each forked process!
     if(strlen(reqinfo.resource)>1000)return 0;
 	char* q = substr(reqinfo.resource, 1, -1);
-
+    
     int ok=handle(q,conn); // <<<<<<<<<<<<<
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	FreeReqInfo(&reqinfo);
@@ -131,6 +157,7 @@ int Service_Request(int conn) {
 
 int handle(char* q,int conn){
     q=modifyConstChar(q);
+    if(q[0]=='/')q++;
 	enum result_format format = txt;
 	enum result_verbosity verbosity = normal;
 	int len=(int)strlen(q);
@@ -142,25 +169,25 @@ int handle(char* q,int conn){
     }
     
 	if (endsWith(q, ".json")) {
-			format = json;
-			q[len-5]=0;
-		}
-
+        format = json;
+        q[len-5]=0;
+    }
+    
 	if (endsWith(q, ".xml")) {
-			format = xml;
-			q[len-4]=0;
-		}
-
+        format = xml;
+        q[len-4]=0;
+    }
+    
 	if (endsWith(q, ".csv")) {
-			format = csv;
-			q[len-4]=0;
-		}
-
+        format = csv;
+        q[len-4]=0;
+    }
+    
 	if (endsWith(q, ".txt")) {
-			format = txt;
-			q[len-4]=0;
-		}
-
+        format = txt;
+        q[len-4]=0;
+    }
+    
 	if (endsWith(q, ".html")) {
 		format = html;
 		q[len-5]=0;
@@ -171,11 +198,11 @@ int handle(char* q,int conn){
 		format = json;
 	}
 	if (startsWith(q, "html/")) {
-			format = html;
-			if(!contains(q,".")&&!contains(q,":"))
+        format = html;
+        if(!contains(q,".")&&!contains(q,":"))
 			verbosity=verbose;
-			q = q + 5;
-		}
+        q = q + 5;
+    }
 	if (startsWith(q, "text/")) {
 		format = txt;
 		q = q + 5;
@@ -195,7 +222,7 @@ int handle(char* q,int conn){
 	if (startsWith(q, "js/")) {
 		q = q + 3;
 		if(format!=json)
-		Writeline(conn, "var results=");
+            Writeline(conn, "var results=");
 		format = json;
 	}
 	else if (startsWith(q, "json/")) {
@@ -214,39 +241,22 @@ int handle(char* q,int conn){
 		verbosity = verbose;
 		q = q + 8;
 	}
-	if (startsWith(q, "all/")) {
-		q = q + 4;
-		showExcludes=false;
-		verbosity = verbose;
-        excluded.clear();// later!
-        included.clear();
-	}
-    
 	if (startsWith(q, "excludes/")||startsWith(q, "includes/")||startsWith(q, "excluded/")||startsWith(q, "included/")) {
         showExcludes=true;
 		q = q + 9;
 	}
     else showExcludes=false;
-    
     excluded.clear();
     included.clear();
-    char* exclude=q;
-	while(exclude&&contains(exclude," -")){
-		exclude=strstr(exclude," -");
-		if(exclude[2]!=' '){// not 2009 - 2010 etc
-			exclude[0]=0;
-			exclude+=2;
-            excluded.push_back(exclude);
-		}else exclude=0;
-	}
-    char* include=q;
-    while(include&&contains(include," +")){
-        include=strstr(exclude," +");
-        include[0]=0;
-        include+=2;
-        included.push_back(include);
+    
+    
+	if (startsWith(q, "all/")) {
+		q = q + 4;
+		showExcludes=false;
+		verbosity = verbose;
+    }else{
+        loadExcluded(q);
     }
-
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
     NodeVector all = parse(q); // <<<<<<<< NETBASE!
@@ -254,8 +264,8 @@ int handle(char* q,int conn){
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
     const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div><script>var results={'results':[\n";
-
-//    if((int)all.size()==0)Writeline("0");
+    
+    //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
@@ -297,7 +307,7 @@ int handle(char* q,int conn){
             
             if((format == json||format == html)&&node->statementCount>1 && getImage(node)!="")
                 Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");
-//            Writeline(",image:'"+getImage(node->name)+"'");
+            //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
@@ -336,11 +346,11 @@ void Error_Quit(char const * msg) {
 ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 	ssize_t n, rc;
 	char c, *buffer;
-
+    
 	buffer = (char*) vptr;
-
+    
 	for (n = 1; n < maxlen; n++) {
-
+        
 		if ((rc = read(sockd, &c, 1)) == 1) {
 			*buffer++ = c;
 			if (c == '\n')
@@ -356,7 +366,7 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 			Error_Quit("Error in Readline()");
 		}
 	}
-
+    
 	*buffer = 0;
 	return n;
 }
@@ -384,13 +394,13 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
     }
 	if (sockd == 0)sockd = lastSockd; //not thread safe!
 	lastSockd = sockd;
-
+    
 	buffer = vptr;
 	if (n == 0 || n == -1)
 		n = strlen(buffer);
 	//	printf("%d:%s\n",n,buffer);
 	nleft = n;
-
+    
 	while (nleft > 0) {
 		if ((nwritten = write(sockd, buffer, nleft)) <= 0) {
 			if (errno == EINTR)
@@ -401,7 +411,7 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 		nleft -= nwritten;
 		buffer += nwritten;
 	}
-
+    
 	return n;
 }
 
@@ -411,10 +421,10 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 
 int Trim(char * buffer) {
 	long n = strlen(buffer) - 1;
-
+    
 	while (!isalnum(buffer[n]) && n >= 0)
 		buffer[n--] = '\0';
-
+    
 	return 0;
 }
 
@@ -433,7 +443,7 @@ int StrUpper(char * buffer) {
 void CleanURL(char * buffer) {
 	char asciinum[3] = {0};
 	int i = 0, c;
-
+    
 	while (buffer[i]) {
 		if (buffer[i] == '+')
 			buffer[i] = ' ';
@@ -450,14 +460,14 @@ void CleanURL(char * buffer) {
 	}
 }
 /*
-
-  REQHEAD.C
-  =========
-  (c) Copyright Paul Griffiths 1999
-  Email: mail@paulgriffiths.net
-
-  Implementation of functions to manipulate HTTP request headers.
-
+ 
+ REQHEAD.C
+ =========
+ (c) Copyright Paul Griffiths 1999
+ Email: mail@paulgriffiths.net
+ 
+ Implementation of functions to manipulate HTTP request headers.
+ 
  */
 
 
@@ -472,26 +482,26 @@ void CleanURL(char * buffer) {
 //#include "helper.h"
 
 /*  Parses a string and updates a request
-	information structure if necessary.    */
+ information structure if necessary.    */
 
 int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
-
+    
 	static int first_header = 1;
 	char *temp;
 	char *endptr;
 	size_t len;
-
-
+    
+    
 	if (first_header == 1) {
-
+        
 		/*  If first_header is 0, this is the first line of
-			the HTTP request, so this should be the request line.  */
-
-
+         the HTTP request, so this should be the request line.  */
+        
+        
 		/*  Get the request method, which is case-sensitive. This
-			version of the server only supports the GET and HEAD
-			request methods.                                        */
-
+         version of the server only supports the GET and HEAD
+         request methods.                                        */
+        
 		if (!strncmp(buffer, "GET ", 4)) {
 			reqinfo->method = GET;
 			buffer += 4;
@@ -500,15 +510,15 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 			buffer += 5;
 		} else {
 			reqinfo->method = UNSUPPORTED;
-//			reqinfo->status = 501;
-//			return -1;
+            //			reqinfo->status = 501;
+            //			return -1;
 		}
-
+        
 		/*  Skip to start of resource  */
 		while (*buffer && isspace(*buffer))
 			buffer++;
-
-
+        
+        
 		/*  Calculate string length of resource...  */
 		endptr = strchr(buffer, ' ');
 		if (endptr == NULL)
@@ -516,69 +526,69 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 		else
 			len = endptr - buffer;
 		if (len == 0) {
-//			reqinfo->status = 400;
-//			return -1;
+            //			reqinfo->status = 400;
+            //			return -1;
 		}
-
+        
 		/*  ...and store it in the request information structure.  */
-
+        
 		reqinfo->resource = (char*) calloc(len + 1, sizeof (char));
 		strncpy(reqinfo->resource, buffer, len);
-
-
+        
+        
 		/*  Test to see if we have any HTTP version information.
-			If there isn't, this is a simple HTTP request, and we
-			should not try to read any more headers. For simplicity,
-			we don't bother checking the validity of the HTTP version
-			information supplied - we just assume that if it is
-			supplied, then it's a full request.                        */
-
+         If there isn't, this is a simple HTTP request, and we
+         should not try to read any more headers. For simplicity,
+         we don't bother checking the validity of the HTTP version
+         information supplied - we just assume that if it is
+         supplied, then it's a full request.                        */
+        
 		if (contains(buffer, "HTTP/")||contains(buffer, "http/"))
 			reqinfo->type = FULL;
 		else
 			reqinfo->type = SIMPLE;
-
+        
 		first_header = 0;
 		return 0;
 	}
-
-
+    
+    
 	/*  If we get here, we have further headers aside from the
-	request line to parse, so this is a "full" HTTP request.  */
-
+     request line to parse, so this is a "full" HTTP request.  */
+    
 	/*  HTTP field names are case-insensitive, so make an
-	upper-case copy of the field name to aid comparison.
-	We need to make a copy of the header up until the colon.
-	If there is no colon, we return a status code of 400
-	(bad request) and terminate the connection. Note that
-	HTTP/1.0 allows (but discourages) headers to span multiple
-	lines if the following lines start with a space or a
-	tab. For simplicity, we do not allow this here.              */
-
+     upper-case copy of the field name to aid comparison.
+     We need to make a copy of the header up until the colon.
+     If there is no colon, we return a status code of 400
+     (bad request) and terminate the connection. Note that
+     HTTP/1.0 allows (but discourages) headers to span multiple
+     lines if the following lines start with a space or a
+     tab. For simplicity, we do not allow this here.              */
+    
 	endptr = strchr(buffer, ':');
 	if (endptr == NULL) {
-//		reqinfo->status = 400;
+        //		reqinfo->status = 400;
 		return -1;//ok
 	}
 	temp = (char*) calloc((endptr - buffer) + 1, sizeof (char));
 	strncpy(temp, buffer, (endptr - buffer));
 	StrUpper(temp);
-
-
+    
+    
 	/*  Increment buffer so that it now points to the value.
-	If there is no value, just return.                    */
-
+     If there is no value, just return.                    */
+    
 	buffer = endptr + 1;
 	while (*buffer && isspace(*buffer))
 		++buffer;
 	if (*buffer == '\0')
 		return 0;
     
-
+    
 	/*  Now update the request information structure with the
-	appropriate field value. This version only supports the
-	"Referer:" and "User-Agent:" headers, ignoring all others.  */
-
+     appropriate field value. This version only supports the
+     "Referer:" and "User-Agent:" headers, ignoring all others.  */
+    
 	if (!strcmp(temp, "USER-AGENT")) {
 		reqinfo->useragent = (char*) malloc(strlen(buffer) + 1);
 		strcpy(reqinfo->useragent, buffer);
@@ -586,73 +596,73 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 		reqinfo->referer = (char*) malloc(strlen(buffer) + 1);
 		strcpy(reqinfo->referer, buffer);
 	}
-
+    
 	free(temp);
 	return 0;
 }
 
 /*  Gets request headers. A CRLF terminates a HTTP header line,
-	but if one is never sent we would wait forever. Therefore,
-	we use select() to set a maximum length of time we will
-	wait for the next complete header. If we timeout before
-	this is received, we terminate the connection.               */
+ but if one is never sent we would wait forever. Therefore,
+ we use select() to set a maximum length of time we will
+ wait for the next complete header. If we timeout before
+ this is received, we terminate the connection.               */
 
 int Get_Request(int conn, struct ReqInfo * reqinfo) {
-
+    
 	char buffer[MAX_REQ_LINE] = {0};
 	int rval;
 	fd_set fds;
 	struct timeval tv;
-
-
+    
+    
 	/*  Set timeout to 5 seconds  */
-
+    
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
-
-
+    
+    
 	/*  Loop through request headers. If we have a simple request,
-	then we will loop only once. Otherwise, we will loop until
-	we receive a blank line which signifies the end of the headers,
-	or until select() times out, whichever is sooner.                */
-
+     then we will loop only once. Otherwise, we will loop until
+     we receive a blank line which signifies the end of the headers,
+     or until select() times out, whichever is sooner.                */
+    
 	do {
-
+        
 		/*  Reset file descriptor set  */
-
+        
 		FD_ZERO(&fds);
 		FD_SET(conn, &fds);
-
-
+        
+        
 		/*  Wait until the timeout to see if input is ready  */
-
+        
 		rval = select(conn + 1, &fds, NULL, NULL, &tv);
-
-
+        
+        
 		/*  Take appropriate action based on return from select()  */
-
+        
 		if (rval < 0) {
 			Error_Quit("Error calling select() in get_request()");
 		} else if (rval == 0) {
-
+            
 			p(" input not ready after timeout  ");
 			return -1;
-
+            
 		} else {
-
+            
 			/*  We have an input line waiting, so retrieve it  */
-
+            
 			Readline(conn, buffer, MAX_REQ_LINE - 1);
 			//	    Trim(buffer);
-
+            
 			if (buffer[0] == '\0')
 				break;
-
+            
 			if (Parse_HTTP_Header(buffer, reqinfo))
 				break;
 		}
 	} while (reqinfo->type != SIMPLE);
-
+    
 	return 0;
 }
 
@@ -677,14 +687,14 @@ void FreeReqInfo(struct ReqInfo * reqinfo) {
 		free(reqinfo->resource);
 }
 /*
-
-  RESOURCE.C
-  ==========
-  (c) Copyright Paul Griffiths 1999
-  Email: mail@paulgriffiths.net
-
-  Implementation of functions for returning a resource.
-
+ 
+ RESOURCE.C
+ ==========
+ (c) Copyright Paul Griffiths 1999
+ Email: mail@paulgriffiths.net
+ 
+ Implementation of functions for returning a resource.
+ 
  */
 
 
@@ -700,8 +710,8 @@ void FreeReqInfo(struct ReqInfo * reqinfo) {
 
 
 /*  Change this string to change the root directory that
-	the server will use, i.e. /index.html will translate
-	here to /home/httpd/html/index.html                   */
+ the server will use, i.e. /index.html will translate
+ here to /home/httpd/html/index.html                   */
 
 static char server_root[1000] = "/Users/me/";
 
@@ -710,23 +720,23 @@ static char server_root[1000] = "/Users/me/";
 int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
 	char c;
 	size_t i;
-
+    
 	while ((i = read(resource, &c, 1))) {
-//		if (i < 0)
-//			Error_Quit("Error reading from file.");
+        //		if (i < 0)
+        //			Error_Quit("Error reading from file.");
 		if (write(conn, &c, 1) < 1)
 			Error_Quit("Error sending file.");
 	}
-
+    
 	return 0;
 }
 
 /*  Tries to open a resource. The calling function can use
-	the return value to check for success, and then examine
-	errno to determine the cause of failure if neceesary.    */
+ the return value to check for success, and then examine
+ errno to determine the cause of failure if neceesary.    */
 int Check_Resource(struct ReqInfo * reqinfo) {
 	/*  Resource name can contain urlencoded
-	data, so clean it up just in case.    */
+     data, so clean it up just in case.    */
 	CleanURL(reqinfo->resource);
 	/*  Concatenate resource name to server root, and try to open  */
 	strcat(server_root, reqinfo->resource);
@@ -736,32 +746,32 @@ int Check_Resource(struct ReqInfo * reqinfo) {
 /*  Returns an error message  */
 
 int Return_Error_Msg(int conn, struct ReqInfo * reqinfo) {
-
+    
 	char buffer[100];
-
+    
 	sprintf(buffer, "<HTML>\n<HEAD>\n<TITLE>Server Error %d</TITLE>\n"
 			"</HEAD>\n\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-
+    
 	sprintf(buffer, "<BODY>\n<H1>Server Error %d</H1>\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-
+    
 	sprintf(buffer, "<P>The request could not be completed.</P>\n"
 			"</BODY>\n</HTML>\n");
 	Writeline(conn, buffer, strlen(buffer));
-
+    
 	return 0;
-
+    
 }
 /*
-
-  RESPHEAD.C
-  ==========
-  (c) Copyright Paul Griffiths 1999
-  Email: mail@paulgriffiths.net
-
-  Implementation of HTTP reponse header functions.
-
+ 
+ RESPHEAD.C
+ ==========
+ (c) Copyright Paul Griffiths 1999
+ Email: mail@paulgriffiths.net
+ 
+ Implementation of HTTP reponse header functions.
+ 
  */
 
 #include <unistd.h>
@@ -790,8 +800,8 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 void Serve_Resource(ReqInfo reqinfo, int conn) {
 	int resource = 0;
 	/*  Check whether resource exists, whether we have permission
-	to access it, and update status code accordingly.          */
-
+     to access it, and update status code accordingly.          */
+    
 	if (reqinfo.status == 200)
 		if ((resource = Check_Resource(&reqinfo)) < 0) {
 			if (errno == EACCES)
@@ -799,21 +809,21 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 			else
 				reqinfo.status = 404;
 		}
-
+    
 	/*  Output HTTP response headers if we have a full request  */
-
+    
 	if (reqinfo.type == FULL)
 		Output_HTTP_Headers(conn, &reqinfo);
-
-
+    
+    
 	/*  Service the HTTP request  */
-
+    
 	//	if ( Return_Resource(conn, resource, &reqinfo) )
 	//	    Error_Quit("Something wrong returning resource.");
 	//    }
 	//    else
 	//	Return_Error_Msg(conn, &reqinfo);
-
+    
 	if (resource > 0)
 		if (close(resource) < 0)
 			Error_Quit("Error closing resource.");
@@ -823,14 +833,14 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 
 
 /*
-
-  WEBSERV.C
-  =========
-  (c) Copyright Paul Griffiths 1999
-  Email: mail@paulgriffiths.net
-
-  A simple web server
-
+ 
+ WEBSERV.C
+ =========
+ (c) Copyright Paul Griffiths 1999
+ Email: mail@paulgriffiths.net
+ 
+ A simple web server
+ 
  */
 
 
@@ -856,40 +866,40 @@ struct sockaddr_in servaddr;
 void start_server() {
 	printf("STARTING SERVER!\n localhost:%d\n", SERVER_PORT);
 	flush();
-
-
+    
+    
 	/*  Create socket  */
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		Error_Quit("Couldn't create listening socket.");
-
+    
 	int flag = 1;// allow you to bind a local port that is in TIME_WAIT.
-//	This is very useful to ensure you don't have to wait 4 minutes after killing a server before restarting it.
+    //	This is very useful to ensure you don't have to wait 4 minutes after killing a server before restarting it.
 	setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
-
+    
 	/*  Populate socket address structure  */
 	memset(&servaddr, 0, sizeof (servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(SERVER_PORT);
-
-
+    
+    
 	/*  Assign socket address to socket  */
-//	__bind<int&,sockaddr *,unsigned long> x=
+    //	__bind<int&,sockaddr *,unsigned long> x=
     bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr));
     if(listener<0)
 		Error_Quit("Couldn't bind listening socket.");
-
-
+    
+    
 	/*  Make socket a listening socket  */
     
-//    	if (listen(listener, BACKLOG) < 0)
+    //    	if (listen(listener, BACKLOG) < 0)
 	if (listen(listener, LISTENQ) < 0)
 		Error_Quit("Call to listen failed.");
-
-
+    
+    
 	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
     p(" [doesn't work with xcode, use ./compile.sh ]");
-
+    
 	/*  Loop infinitely to accept and service connections  */
 	while (1) {
 		/*  Wait for connection  */
@@ -898,45 +908,46 @@ void start_server() {
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
         else p("conn = accept OK");
 		// WORKS FINE, but not when debugging
-
+        
 		/*  Fork child process to service connection  */
         pid = fork();
 		if (pid == 0) {
-
+            
 			/*  This is now the forked child process, so
-			close listening socket and service request   */
+             close listening socket and service request   */
 			if (close(listener) < 0)
 				Error_Quit("Error closing listening socket in child.");
-
+            
 			Service_Request(conn);
-
+            
 			/*  Close connected socket and exit forked process */
 			if (close(conn) < 0)
 				Error_Quit("Error closing connection socket.");
 			exit(EXIT_SUCCESS);
 		}else{
-//            p("not forked yet");
-//            Service_Request(conn);// whatever
+            //            p("not forked yet");
+            //            Service_Request(conn);// whatever
         }
-
-
+        
+        
 		/*  If we get here, we are still in the parent process,
-			so close the connected socket, clean up child processes,
-			and go back to accept a new connection.
-			 */
+         so close the connected socket, clean up child processes,
+         and go back to accept a new connection.
+         */
 		waitpid(-1, NULL, WNOHANG);
-
+        
 		if (close(conn) < 0)
 			Error_Quit("Error closing connection socket in parent.");
-
+        
 	}
 	Error_Quit("FORK web server failed");
 	return; // EXIT_FAILURE;    /*  We shouldn't get here  */
 }
 
+
 /*
-int main(int argc, char *argv[]) {
-	start_server();
-}
+ int main(int argc, char *argv[]) {
+ start_server();
+ }
  */
 
