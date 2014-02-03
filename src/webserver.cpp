@@ -51,8 +51,8 @@ bool checkHideStatement(Statement* s){
     if(subjectName==0||predicateName==0||objectName==0){warnings++;return true;}
     
     if(showExcludes){
-        if(contains(subjectName,"exclude",1)||contains(predicateName,"exclude",1)||contains(objectName,"exclude",1))return false;
-        if(contains(subjectName,"include",1)||contains(predicateName,"include",1)||contains(objectName,"include",1))return false;
+        if(eq(subjectName,"exclude",1)||eq(predicateName,"exclude",1)||eq(objectName,"exclude",1))return false;
+        if(eq(subjectName,"include",1)||eq(predicateName,"include",1)||eq(objectName,"include",1))return false;
         return true;
     }
     
@@ -266,6 +266,7 @@ int handle(char* q,int conn){
     }else{
         loadExcluded(q);
     }
+    if(contains(q,"exclude"))showExcludes=true;
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
     NodeVector all = parse(q); // <<<<<<<< NETBASE!

@@ -487,6 +487,7 @@ NodeVector parse(const char* data) {
     //    if(isAbstract(a))
 	if (i == 0) {
 		NV all=instanceFilter(a);
+        all.push_back(a);// include abstract!
 		if (all.size() > 0) return all;
 	}
 	return nodeVectorWrap(a);

@@ -1362,13 +1362,17 @@ void testBrandNewStuff() {
 //    import("labels");
 //    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
 //    handle("xml/510619",-1);// test web server
-    parse("exclude hamburg Population");
+//    parse("exclude hamburg Population");
+//        parse("hamburg exclude Erhebung");
+    
 //    Nachname
 //    parse("exclude 1459866 1363455");
     //    1459866
 //    handle("/xml/all/1459866");
-    handle("/xml/verbose/1459866");
+//    handle("/xml/verbose/1459866");
 //    handle("/xml/excluded/1459866");
+        handle("/xml/excluded/Hamburg");
+
     exit(0);
     testSqlDe();
     
