@@ -354,8 +354,12 @@ Statement* parseSentence(string sentence, bool learn = false) {
 		Node* node;
 		if (id > 0)
 			node = get(id);
-		else
-			node = getAbstract(word);
+		else{
+            if (getRelation(word)) // not here! doch
+                node= getRelation(word);
+            else
+                node = getAbstract(word);
+        }
 		//		Node* node = getThe(word); TODO getThe for relation!!!
 		//		Node* abstract=getAbstract(f);// ,getPredicate?Verb:0
 		//		NodeVector& instances=all_instances(abstract, recurse,limit);

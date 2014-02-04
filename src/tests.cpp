@@ -1415,15 +1415,22 @@ void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
-    parse("exclude Code");
+//    parse("exclude Code");
 //    import("labels");
 //    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
 //    handle("xml/510619",-1);// test web server
-    parse("include hamburg Population");
-    addStatement(getThe("hamburg"),Type,getThe("city"));
+//    parse("include hamburg Population");
+//    parse("include city Elevation");
+    parse("learn hamburg type city");
+    parse("learn 5463914 type 2000586");
+//    parse("include hamburg Bundesland");
+    
+//    addStatement(getThe("hamburg"),Type,getThe("city"));
 //    addStatement(a("hamburg"),Type,getThe("city"));
-    parse("city include Erhebung");
 //    parse("city include Erhebung");
+//    parse("city include Erhebung");
+    parse("5136347 include Erhebung");
+    
     
     
 //    Nachname
@@ -1433,8 +1440,9 @@ void testBrandNewStuff() {
 //    handle("/xml/verbose/1459866");
     //    handle("/xml/excluded/1459866");
 //    handle("/xml/excluded/Hamburg");
-//    handle("/xml/Hamburg");
-        handle("/xml/all/Hamburg");
+//    handle("/xml/long/Hamburg");
+    handle("/xml/all/Hamburg +type");
+//    handle("/xml/all/Hamburg +type");
 //    handle("/xml/excluded");
 
     exit(0);

@@ -1135,7 +1135,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		return 0;
 	}
     if(autoIds&&isInteger(thing))return get(atoi(thing));
-	if (getRelation(thing)) // not here!
+	if (getRelation(thing)) // not here! doch
 		return getRelation(thing);
 //    replaceChar((char*)thing,'_',' ');// NOT HERE!
 	Node* abstract=getAbstract(thing);
@@ -1432,13 +1432,15 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 	map<Statement*, bool> visited;
 	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
 		if (visited[s]) return 0;
-        if(predicate==Type&&visited.size()>20)return 0;// HAS TO BE ORDERED!!
 		visited[s]=1;
 //        if(s->id()==4334||subject->id==4904654)
 //            p(s);
 		if (!checkStatement(s)) continue;
         //#ifdef useContext
 		if (s->context == _pattern) continue;
+        
+        if(predicate==Type&&s->predicate!=_Type&& visited.size()>100)return 0;// expect types on top HAS TO BE ORDERED!!
+
         //#endif
 
 		//		if(s->Predicate!=Any){
@@ -2194,6 +2196,8 @@ Statement * learn(string sentence) {
 Node * getThe(Node* abstract, Node * type) {
 	if (!abstract) return 0;
     if(abstract->kind==singletonId)return abstract;
+    if (getRelation(abstract->name)) // not here! doch
+        return getRelation(abstract->name);
     if (type<node_root||type>&node_root[maxNodes]) type=0;// default parameter hickup through JNA
 	if (type == 0) {
 		//		return getThe(abstract->name);
