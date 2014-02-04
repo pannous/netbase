@@ -37,6 +37,8 @@ void fixLabel(Node* n){
 /// true = filter
 vector<char*>excluded;
 vector<char*>included;
+vector<int>excludedIds;
+vector<int>includedIds;
 bool showExcludes=false;
 int warnings=0;
 //static char* excluded=0;
@@ -100,16 +102,37 @@ void fixLabels(Statement* s){
 	fixLabel(s->Predicate());
 	fixLabel(s->Object());
 }
-
-
-void loadExcluded(char* q){
-    N ex=get("excluded");
+void getIncludes(Node* n){
     Statement *s=0;
-    while((s=nextStatement(ex->id,s))){
-        excluded.push_back(s->Object()->name);
-        //        excluded.push_back(s->Object()->id);
+    while((s=nextStatement(n,s))){
+//        p(s);
+        if(eq(s->Predicate()->name,"exclude")){
+            excluded.push_back(s->Object()->name);
+            excludedIds.push_back(s->Object()->id);
+        }
+        if(eq(s->Predicate()->name,"include")){
+            included.push_back(s->Object()->name);
+            includedIds.push_back(s->Object()->id);
+        }
     }
-    char* exclude=q;
+    
+}
+void loadView(Node* n){
+    getIncludes(n);
+    N parent= getType(n);
+    if(parent)
+        getIncludes(parent);
+    if(parent&&!parent->kind==Abstract->kind)
+        getIncludes(getAbstract(parent->name));
+}
+
+void loadView(char* q){
+    N ex=get("excluded");// globally
+    if(ex)getIncludes(ex);
+    ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
+    if(ex)getIncludes(ex);
+    
+   char* exclude=q;
     while(exclude&&contains(exclude," -")){
         exclude=strstr(exclude," -");
         if(exclude[2]!=' '){// not 2009 - 2010 etc
@@ -125,14 +148,7 @@ void loadExcluded(char* q){
         include+=2;
         included.push_back(include);
     }
-    ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
-    s=0;
-    while((s=nextStatement(ex->id,s))){
-        if(eq(s->Predicate()->name,"exclude"))
-            excluded.push_back(s->Object()->name);
-        //        excluded.push_back(s->Object()->id);
-    }
-
+    
 }
 
 
@@ -249,7 +265,7 @@ int handle(char* q,int conn){
 		verbosity = verbose;
 		q = q + 8;
 	}
-	if (startsWith(q, "excludes/")||startsWith(q, "includes/")||startsWith(q, "excluded/")||startsWith(q, "included/")) {
+	if (startsWith(q, "excludes/")||startsWith(q, "includes/")||startsWith(q, "excluded/")||startsWith(q, "included/")||startsWith(q, "showview/")) {
         showExcludes=true;
         verbosity=longer;
 		q = q + 9;
@@ -264,9 +280,9 @@ int handle(char* q,int conn){
 		showExcludes=false;
 		verbosity = verbose;
     }else{
-        loadExcluded(q);
+        loadView(q);
     }
-    if(contains(q,"exclude")){
+    if(contains(q,"exclude")||contains(q,"include")){
         verbosity=normal;
         showExcludes=true;
     }
@@ -276,6 +292,12 @@ int handle(char* q,int conn){
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
+    if(showExcludes&&all.size()>0){
+        N parent= getType(all.at(0));
+        if(parent)all.push_back(parent);// show view of type + abstract
+        if(parent)all.push_back(getAbstract(parent->name));// &&!parent->kind==Abstract->kind
+    }
+    
     const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div><script>var results={'results':[\n";
     
     //    if((int)all.size()==0)Writeline("0");
@@ -315,8 +337,9 @@ int handle(char* q,int conn){
 		last=node;
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
+        loadView(node);
 		Statement* s = 0;
-		if (format==csv|| verbosity == verbose || verbosity == longer || ( all.size() == 1 && !verbosity == shorter)) {
+		if (format==csv|| verbosity == verbose || verbosity == longer ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
             
             if((format == json||format == html)&&node->statementCount>1 && getImage(node)!="")
                 Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");

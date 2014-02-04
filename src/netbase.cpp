@@ -1233,6 +1233,12 @@ extern "C" int nextId(){
     return currentContext()->nodeCount++;
 }
 
+extern "C"
+Node* getType(Node* n){
+    Statement* s=findStatement(n,Type,Any);
+    if(!checkStatement(s))return 0;
+    return s->Object();
+}
 
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
@@ -1309,7 +1315,7 @@ void showStatement(Statement * s) {
 
 //, bool showAbstract
 extern "C" char* getName(int node){
-    if(checkNode(node))return "BAD";//  
+    if(checkNode(node))return "BAD";//
     return get(node)->name;
 //    long name=get(node)->name;
 //    if(name<=0)return 0;
@@ -1426,6 +1432,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 	map<Statement*, bool> visited;
 	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
 		if (visited[s]) return 0;
+        if(predicate==Type&&visited.size()>20)return 0;// HAS TO BE ORDERED!!
 		visited[s]=1;
 //        if(s->id()==4334||subject->id==4904654)
 //            p(s);
@@ -1469,7 +1476,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
         
         if(predicate==Any&&eq(s->Subject()->name,s->Object()->name))continue;
         
-        p(s);
+//        p(s);
 		//		if(debug&&s->id>0)
 
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
@@ -1953,10 +1960,14 @@ NodeVector findProperties(Node* n, const char* m){
 
 NodeVector findProperties(Node* n , Node* m){
     NodeVector good;
+    if(!m){
+        pf("Warning: empty property null for node %d\t%s",n->id,n->name);
+     return good;
+    }
     NV all=    instanceFilter(n);
     //    if(!isAbstract(n))
     all.push_back(n);// especially for freebase singletons!
-    // OR//    findStatement(<#Node *subject#>, <#Node *predicate#>, <#Node *object#>)
+    // OR//    findStatement(Node *subject, Node *predicate, Node *object)
     for (int i=0; i<all.size(); i++){
         mergeVectors(&good, findProperties(all[i],m->name));
         if(good.size()>resultLimit)return good;
