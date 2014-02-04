@@ -146,6 +146,22 @@ NodeVector parseProperties(const char *data) {
 	return all;
 }
 
+
+void console() {
+	quiet=false;
+	printf("\nNetbase C++ Version z.a\n");
+	char* data=(char*) malloc(1000);
+#ifdef signal
+	setjmp(try_context); //recovery point
+#endif
+	while (true) {
+		//		clearAlgorithmHash();
+		getline(data);
+		parse(data);
+	}
+}
+
+
 NodeVector nodeVectorWrap(Node* n) {
 	NodeVector r;
 	r.push_back(n);
@@ -190,6 +206,9 @@ NodeVector parse(const char* data) {
     
 	if (eq(data, "q")) return OK;
 	if (eq(data, "x")) return OK;
+    if (eq(data, "console")){
+        console();
+        return OK;}
 	if (eq(data, "export")) {
 		export_csv();
 		return OK;
@@ -511,17 +530,3 @@ extern "C"  Node** execute(const char* data,int* out){
 }
 
 
-
-void console() {
-	quiet=false;
-	printf("\nNetbase C++ Version z.a\n");
-	char* data=(char*) malloc(1000);
-#ifdef signal
-	setjmp(try_context); //recovery point
-#endif
-	while (true) {
-		//		clearAlgorithmHash();
-		getline(data);
-		parse(data);
-	}
-}
