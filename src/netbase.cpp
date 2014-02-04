@@ -1309,6 +1309,7 @@ void showStatement(Statement * s) {
 
 //, bool showAbstract
 extern "C" char* getName(int node){
+    if(checkNode(node))return "BAD";//  
     return get(node)->name;
 //    long name=get(node)->name;
 //    if(name<=0)return 0;
