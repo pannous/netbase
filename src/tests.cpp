@@ -1353,80 +1353,54 @@ void testSqlDe2(){
     check(eq(r[0]->name,"Achromatische farbe"));
 
 }
-
-void testBrandNewStuff() {
-    p("Test Brand New Stuff");
-    quiet=false;
-	debug = true;
-//    parse("exclude Code");
-//    import("labels");
-//    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
-//    handle("xml/510619",-1);// test web server
-//    parse("exclude hamburg Population");
-//        parse("hamburg exclude Erhebung");
+void old_to_remove(){
     
-//    Nachname
-    parse("exclude fafdafds");
-    //    1459866
-//    handle("/xml/all/1459866");
-//    handle("/xml/verbose/1459866");
-    //    handle("/xml/excluded/1459866");
-//    handle("/xml/excluded/Hamburg");
-    handle("/xml/excluded");
-
-    exit(0);
-    testSqlDe();
+    //    load(true);
+    //    save();
+    //    export_csv();
+    //    setLabel(get("surname"), "Nachname");
+    //    parse("surname");
+    //    parse("surname");
+    //        parse("surname");
     
-    tests();
-    string img= getImage("Spielkarte");
-    img=getImage(get(    221896));
-    check(contains(img,"jpg"));
-//    load(true);
-//    save();
-//    export_csv();
-//    setLabel(get("surname"), "Nachname");
-//    parse("surname");
-//    parse("surname");
-//        parse("surname");
-
-//    importCsv("couchdb/entities.csv");
-//    		import("entities");
-//    import("images");
-//    		import("dbpedia");
-//    import("linkedin_connections_export_microsoft_outlook.csv");
-//    tests();
-//    fixNames();
-//    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
-//    importAll();
-//    import("yago","yagoLabels.tsv");
-//    showNodes(parse("all 42650559"));
-//    deleteNode(get(42032201));
-
-//	int var=0;
-//    start_server();
-//    p("statementSize)");
-//    p( statementSize);
-//    importFreebase();
-//    testFreebase();
-//	if(currentContext()->nodeCount<10000)importAll();
+    //    importCsv("couchdb/entities.csv");
+    //    		import("entities");
+    //    import("images");
+    //    		import("dbpedia");
+    //    import("linkedin_connections_export_microsoft_outlook.csv");
+    //    tests();
+    //    fixNames();
+    //    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
+    //    importAll();
+    //    import("yago","yagoLabels.tsv");
+    //    showNodes(parse("all 42650559"));
+    //    deleteNode(get(42032201));
+    
+    //	int var=0;
+    //    start_server();
+    //    p("statementSize)");
+    //    p( statementSize);
+    //    importFreebase();
+    //    testFreebase();
+    //	if(currentContext()->nodeCount<10000)importAll();
     //	testHash();
     //	checkWordnet();
-//    const char* x=concat("ab","cde");
-//    check(eq(x,"abcde"));
+    //    const char* x=concat("ab","cde");
+    //    check(eq(x,"abcde"));
     //	import("freebase");
-//    importFreebase();// needs /Volumes/Data/BIG/ !
-//    	import("yago");
-//    check(hasWord("Tom_Hartley"));
-//    N a=    getAbstract("Tom_Hartley");
-//    N b=   getThe("Tom_Hartley");
-//    N a1=    getAbstract("Tom Hartley");
-//    N b1=   getThe("Tom Hartley");
-//    N a2=    getAbstract("Tom_Hartley");
-//    N b2=   getThe("Tom_Hartley");
-//    check(a==a2);
-//        check(b==b2);
-//    importAll();
-//	tests();
+    //    importFreebase();// needs /Volumes/Data/BIG/ !
+    //    	import("yago");
+    //    check(hasWord("Tom_Hartley"));
+    //    N a=    getAbstract("Tom_Hartley");
+    //    N b=   getThe("Tom_Hartley");
+    //    N a1=    getAbstract("Tom Hartley");
+    //    N b1=   getThe("Tom Hartley");
+    //    N a2=    getAbstract("Tom_Hartley");
+    //    N b2=   getThe("Tom_Hartley");
+    //    check(a==a2);
+    //        check(b==b2);
+    //    importAll();
+    //	tests();
 	//	testQueryMore();
 	//	testQuery();
 	//	testFacets();
@@ -1435,5 +1409,40 @@ void testBrandNewStuff() {
 	//	parse("opposite of bad");
 	//	parse("all bug");
 	//	showNodes(all_instances(a(bug)));
+}
+
+void testBrandNewStuff() {
+    p("Test Brand New Stuff");
+    quiet=false;
+	debug = true;
+    parse("exclude Code");
+//    import("labels");
+//    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
+//    handle("xml/510619",-1);// test web server
+    parse("include hamburg Population");
+    addStatement(getThe("hamburg"),Type,getThe("city"));
+//    addStatement(a("hamburg"),Type,getThe("city"));
+    parse("city include Erhebung");
+//    parse("city include Erhebung");
+    
+    
+//    Nachname
+//    parse("exclude fafdafds");
+    //    1459866
+//    handle("/xml/all/1459866");
+//    handle("/xml/verbose/1459866");
+    //    handle("/xml/excluded/1459866");
+//    handle("/xml/excluded/Hamburg");
+//    handle("/xml/Hamburg");
+        handle("/xml/all/Hamburg");
+//    handle("/xml/excluded");
+
+    exit(0);
+    testSqlDe();
+    
+    tests();
+    string img= getImage("Spielkarte");
+    img=getImage(get(    221896));
+    check(contains(img,"jpg"));
 }
 

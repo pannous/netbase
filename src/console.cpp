@@ -321,6 +321,7 @@ NodeVector parse(const char* data) {
 		const char* what=d.data();
 		printf("deleting %s\n", what);
 		deleteWord(what);
+        return OK;
 	}
     
     if(contains(data,"english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
@@ -378,7 +379,8 @@ NodeVector parse(const char* data) {
         return nodeVectorWrap(getAbstract(args[0]));
     }
     if (startsWith(data, "exclude ")){
-        addStatement(get("excluded"), Instance,getAbstract(data+8));
+        autoIds=true;
+        addStatement(get("excluded"), get("exclude"),getAbstract(data+8));
         return nodeVectorWrap(get("excluded"));
     }
         if (args.size() ==3 && contains(data,"include ")){
@@ -389,7 +391,7 @@ NodeVector parse(const char* data) {
             return nodeVectorWrap(getAbstract(args[0]));
         }
         
-	if (startsWith(data, "include ")){
+	if (startsWith(data, "include ")){// globally included? NAH! How? bad
         addStatement(get("included"), Instance,getAbstract(data+8));
         return nodeVectorWrap(get("included"));
     }

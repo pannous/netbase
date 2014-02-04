@@ -540,6 +540,8 @@ Node* mergeAll(char* target);
 NodeVector parse(const char* data);// and act
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);
+extern "C" Node* getType(Node* n);// != kind!
+
 typedef Node* N;
 typedef Statement* S;
 typedef NodeVector NV;
