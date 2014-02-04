@@ -537,6 +537,7 @@ void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(char* target);
+NodeVector parse(const char* data);// and act
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);
 typedef Node* N;

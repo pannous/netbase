@@ -459,6 +459,8 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "range")) return Range;
 	if (eq(thing, "domain")) return Domain;
 	if (eq(thing, "inverseOf")) return Antonym;
+    
+	if (eq(thing, "Art")) return Type;
 //	if (eq(thing, "reverse_property")) return Owner;
     
     
