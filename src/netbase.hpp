@@ -119,7 +119,7 @@ typedef struct Node {
 
 // norway captial oslo
 // oslo population 325235
-// all captials with more than 300000
+// all captials with more than 30
 
 // units
 // beth age '29 years'
@@ -436,7 +436,7 @@ Statement* findStatement(Node* n, string predicate, string object, int recurse =
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
 extern "C" bool hasNode(const char* thingy);
-string getImage(const char* n, int size = 300);
+string getImage(const char* n, int size = 30);
 string getImageThumb(const char* n, int size = 150);
 string getImage(Node* a, int size=150,bool thumb=false);
 
@@ -560,7 +560,7 @@ static int billion=GB;
 static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
 static long maxStatements = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
 #else
-static long maxNodes = 300*million;
+static long maxNodes = 30*million;
 static long maxStatements = maxNodes*3;
 #endif
 
