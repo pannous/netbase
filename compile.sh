@@ -3,6 +3,8 @@ sudo killall -SIGKILL gdb
 sudo killall -SIGKILL gdb-i386-apple-darwin
 sudo killall -SIGKILL netbase
 
+platform=`uname`
+
 ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
 options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
@@ -29,6 +31,18 @@ sed -i  's/300\*/30*/' src/netbase.hpp
 
 g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o libNetbase.so
 g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase exit $@
+
+
+if [[ $platform == 'Darwin' ]]; then
+cp netbase blueprints-netbase/lib/mac/libNetbase.dylib 
+else
+cp netbase blueprints-netbase/lib/linux/libNetbase.a
+cp libNetbase.so blueprints-netbase/lib/linux-x86-64/
+cp libNetbase.so blueprints-netbase/lib/linux/
+fi
+cd blueprints-netbase; git commit -a -m "Updated library" && git push --all && git status
+cd -
+
 #  -I/opt/local/include BOOST
 
 # --exclude src/netbase-ruby.cpp TODO
