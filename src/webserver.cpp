@@ -22,11 +22,12 @@ enum result_format {
 };
 
 enum result_verbosity {
-	shorter, normal, longer,verbose
+	shorter, normal, longer,verbose,alle
 }verbosity;
 
 
 void fixLabel(Node* n){
+    if(!checkNode(n))return;
 	if(n->name[0]=='"')n->name=n->name+1;
 	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
 		n->name[strlen(n->name)-1]=0;
@@ -87,14 +88,18 @@ bool checkHideStatement(Statement* s){
     bool ok=included.size()==0;// no filter
     for(int i=0;i<included.size();i++){
         char* include=included.at(i);
+        if(eq(predicateName,"Bundesland"))
+            p(s);
         if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
-        if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))ok=true;
+        if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))
+            ok=true;
     }
     
     //    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
     //    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
     //    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
-    return !ok;
+   return !ok;
+//    return false;
 }
 
 void fixLabels(Statement* s){
@@ -122,7 +127,7 @@ void loadView(Node* n){
     N parent= getType(n);
     if(parent)
         getIncludes(parent);
-    if(parent&&!parent->kind==Abstract->kind)
+    if(parent&&parent->kind!=Abstract->kind)
         getIncludes(getAbstract(parent->name));
 }
 
@@ -276,9 +281,10 @@ int handle(char* q,int conn){
     
     
 	if (startsWith(q, "all/")) {
+        cut_to(q," +");cut_to(q," -");
 		q = q + 4;
 		showExcludes=false;
-		verbosity = verbose;
+		verbosity = alle;
     }else{
         loadView(q);
     }
@@ -337,9 +343,19 @@ int handle(char* q,int conn){
 		last=node;
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
-        loadView(node);
+        if(verbosity != alle)
+            loadView(node);
+        if(showExcludes){// todo : own routine!!!
+            N parent= getType(node);
+            if(parent&&parent!=node){
+             all.push_back(parent);
+                N abs= getAbstract(parent->name);
+                if(parent&&parent!=node)all.push_back(abs);
+            }
+        }
+        
 		Statement* s = 0;
-		if (format==csv|| verbosity == verbose || verbosity == longer ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
+		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
             
             if((format == json||format == html)&&node->statementCount>1 && getImage(node)!="")
                 Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");

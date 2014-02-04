@@ -441,8 +441,8 @@ Node * getRelation(const char* thing) {
 	if (thing[0] == '#') thing++;
 	if (eq(thing, "instance")) return Instance;
     if (eq(thing, "Contains")) return Part;
-	if (eq(thing, "type")) return Type;
-   	if (eq(thing, "has type")) return Type;    
+	if (eq(thing, "type")) return Type;// lustiger Typ !!! --------- !!!!!!!!
+   	if (eq(thing, "has type")) return Type;
 	if (eq(thing, "is")) return Type;
 //   	if (eq(thing, "TEILVON")) return PartOf;
 	if (eq(thing, "has")) return Member;
@@ -460,7 +460,10 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "domain")) return Domain;
 	if (eq(thing, "inverseOf")) return Antonym;
     
+	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;
+//    if (eq(thing, "Klasse")) return SuperClass;
+
 //	if (eq(thing, "reverse_property")) return Owner;
     
     
