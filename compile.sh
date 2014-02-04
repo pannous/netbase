@@ -24,8 +24,11 @@ options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
 
 mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
-g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase exit $@
+sed -i 's/80/81/' src/webserver.cpp 
+sed -i  's/300\*/30*/' src/netbase.hpp 
 
+g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o libNetbase.so
+g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase exit $@
 #  -I/opt/local/include BOOST
 
 # --exclude src/netbase-ruby.cpp TODO
