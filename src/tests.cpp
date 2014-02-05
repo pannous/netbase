@@ -1421,8 +1421,11 @@ void testBrandNewStuff() {
 //    handle("xml/510619",-1);// test web server
 //    parse("include hamburg Population");
 //    parse("include city Elevation");
-    parse("learn hamburg type city");
-    parse("learn 5463914 type 2000586");
+    NV l= parse("learn hamburg type city");
+//    show(l[0]);
+    check(has(l[0],"type","city"));
+    exit(0);
+//    parse("learn 5463914 type 2000586");
 //    parse("include hamburg Bundesland");
     
 //    addStatement(getThe("hamburg"),Type,getThe("city"));

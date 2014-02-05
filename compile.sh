@@ -40,7 +40,7 @@ cp netbase blueprints-netbase/lib/linux/libNetbase.a
 cp libNetbase.so blueprints-netbase/lib/linux-x86-64/
 cp libNetbase.so blueprints-netbase/lib/linux/
 fi
-cd blueprints-netbase; git commit -a -m "Updated library" && git push --all && git status
+cd blueprints-netbase; git pull --all; git commit -a -m "Updated library" && git push --all && git status
 cd -
 
 #  -I/opt/local/include BOOST

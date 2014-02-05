@@ -455,8 +455,11 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
     
+
+    if (data[0] == '!' )return nodeVectorWrap(learn(data+1)->Subject());
 	if (contains(data, ".") && contains(data, "="))
-		return nodeVectorWrap(reify(learn(data)));
+		return nodeVectorWrap(learn(data)->Subject());
+//    return nodeVectorWrap(reify(learn(data)));
 	
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))
         || (contains(data, ":"))) { // && !contains(data, " "))) {
@@ -487,12 +490,11 @@ NodeVector parse(const char* data) {
 		//		if(all==EMPTY)shortestPath(from,to);
 	}
     
-	if (data[0] == '!' )
-        return nodeVectorWrap(reify(learn(data+1)));
+
 	if (args.size() >= 4 && eq(args[0], "learn"))
-        return nodeVectorWrap(reify(learn(next_word(data))));
+        return nodeVectorWrap(learn(next_word(data))->Subject());
 	if (args.size() >= 3 && eq(args[1], "is"))
-        return nodeVectorWrap(reify(learn(data)));
+        return nodeVectorWrap(learn(data)->Subject());
     
 	data=replace((char*) data, ' ', '_');
     
