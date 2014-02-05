@@ -2134,7 +2134,6 @@ Statement * learn(string sentence) {
 	} else {
 		ps("not a valid statement:");
 		ps(sentence);
-
 		return 0;
 	}
 }
