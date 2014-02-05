@@ -1419,11 +1419,12 @@ void testBrandNewStuff() {
 //    import("labels");
 //    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
 //    handle("xml/510619",-1);// test web server
+    handle("/all/Unternehmen");
 //    parse("include hamburg Population");
 //    parse("include city Elevation");
-    NV l= parse("learn hamburg type city");
+//    NV l= parse("learn hamburg type city");
 //    show(l[0]);
-    check(has(l[0],"type","city"));
+//    check(has(l[0],"type","city"));
     exit(0);
 //    parse("learn 5463914 type 2000586");
 //    parse("include hamburg Bundesland");
