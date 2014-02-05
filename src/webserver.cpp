@@ -108,7 +108,7 @@ void fixLabels(Statement* s){
 	fixLabel(s->Object());
 }
 void getIncludes(Node* n){
-    pf("getIncludes %s",n->name);
+    pf("getIncludes %d %s\n",n->id,n->name);
     Statement *s=0;
     while((s=nextStatement(n,s))){
 //        p(s);
