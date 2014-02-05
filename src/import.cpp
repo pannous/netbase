@@ -1411,6 +1411,7 @@ Node* getFreebaseEntity(char* name) {
         if(name[strlen(name) - 1]=='>')
             name[strlen(name) - 1]=0;
     }
+    cut_to_c(name," (");
     Node* n=labels[name];
     if (n) {
         return n;

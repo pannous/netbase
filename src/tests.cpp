@@ -1415,6 +1415,18 @@ void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
+    testing=true;// NO RELATIONS!
+    germanLabels=true;// false;
+    check(!eq("=","a", true));
+//    check(hasNode("type"));
+    N a=getAbstract("a");
+    showNode(a);
+    check(getAbstract("a")->id>=1000);
+    check(hasNode("Typ"));
+    check(hasNode("1"));
+    exit(0);
+    
+    parse("node count");
 //    parse("exclude Code");
 //    import("labels");
 //    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
@@ -1425,7 +1437,7 @@ void testBrandNewStuff() {
 //    NV l= parse("learn hamburg type city");
 //    show(l[0]);
 //    check(has(l[0],"type","city"));
-    exit(0);
+    
 //    parse("learn 5463914 type 2000586");
 //    parse("include hamburg Bundesland");
     

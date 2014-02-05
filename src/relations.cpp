@@ -1,4 +1,4 @@
-/*
+        /*
  * File:   relations.cpp
  * Author: me
  *
@@ -115,8 +115,9 @@ Node* UsageContext;
 
 Node* addRelation(int id, const char* name,bool transitive=false) {
 	Node* n = add_force(wordnet, id, name, _internal);
-	if(n->statementCount==0&&id>0)// IT BETTER BE!!!
-		addStatement4(wordnet, getAbstract(name)->id,_instance,id);// Internal
+    insertAbstractHash(wordhash(name), n);// ECHT? TYP ?
+//	if(n->statementCount==0&&id>0)// IT BETTER BE!!!
+//		addStatement4(wordnet, getAbstract(name)->id,_instance,id);// Internal
 //	if(transitive)???  baked into Algorithms, at least four standard relations?
 	return n;
 }
@@ -239,6 +240,8 @@ void initRelationsDE() {
 
 
 void initRelations() {
+//    if(testing){p("testing");return;}
+    p("initRelations");
     currentContext()->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_see, "unknown");

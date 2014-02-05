@@ -9,7 +9,7 @@
 #define	INIT_HPP
 bool clearMemory();
 void load(bool force=false);
-extern "C" void init();
+extern "C" void init(bool relations=true);
 //int semrm(key_t key, int id);
 int share_memory();
 //char* share_memory(size_t key,long sizeOfSharedMemory,char* root,const void * desired);

@@ -21,6 +21,8 @@ extern int runs; // algorithm metrics
 extern int current_context;
 extern bool useYetvisitedIsA;
 extern bool autoIds;
+extern bool testing;// don't implicitly init relations
+
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!!  TODO!!!
@@ -424,6 +426,7 @@ Node* getSingleton(const char* thing) ;
 void showStatement(Statement* s);
 extern "C" void showStatement(int id);
 bool show(Node* n, bool showStatements = true);
+Node * showNode(Node* n);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
 NodeVector* findWords(int context, const char* word, bool first= false,bool containsWord=false);
