@@ -166,8 +166,8 @@ string replace_all(string str, string what, string with) {
 	}
 	return str;
 }
-void cut_to(char* str, char* match){
-    char* i=    strstr(str,match);
+void cut_to_c(char* str, char* match){
+    char* i=strstr(str,match);
     if(i)i[0]=0;
 }
 string cut_to(string str, string what) {

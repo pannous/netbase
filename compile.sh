@@ -33,9 +33,11 @@ g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp 
 
 
 if [[ $platform == 'Darwin' ]]; then
-cp netbase blueprints-netbase/lib/mac/libNetbase.dylib 
+cp netbase blueprints-netbase/lib/mac/libNetbase.dylib
+cp netbase blueprints-netbase/bin/netbase-mac
 else
 g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o libNetbase.so	
+cp netbase blueprints-netbase/bin
 cp netbase blueprints-netbase/lib/linux/libNetbase.a
 cp libNetbase.so blueprints-netbase/lib/linux-x86-64/
 cp libNetbase.so blueprints-netbase/lib/linux/
