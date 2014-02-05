@@ -1332,6 +1332,12 @@ char* getLabel(Node * n) {
 	return 0;
 }
 
+void show(vector<char*>& v){
+    for (int i=0; i<v.size(); i++) {
+        p(v.at(i));
+    }
+}
+
 bool show(Node* n, bool showStatements) {		//=true
 	//	if (quiet)return;
 	if (!checkNode(n)) return 0;

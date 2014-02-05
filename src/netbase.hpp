@@ -526,6 +526,7 @@ Ahash* insertAbstractHash(Node* abstract);
 void deleteWord(string* s);
 void deleteWord(const char* data,bool completely=true);
 Node* reify(Statement* s);
+void show(vector<char*>& v);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);
 //bool checkStatement(Statement *s);
 void checkRootContext();

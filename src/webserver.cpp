@@ -282,7 +282,8 @@ int handle(char* q,int conn){
     
     
 	if (startsWith(q, "all/")) {
-        cut_to(q," +");cut_to(q," -");
+        cut_to_c(q," +");
+        cut_to_c(q," -");
 		q = q + 4;
 		showExcludes=false;
 		verbosity = alle;
@@ -300,7 +301,7 @@ int handle(char* q,int conn){
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
     int size=(int)all.size();
-    if(showExcludes)
+    if(showExcludes){
         for (int i = 0; i < size; i++) {
         // todo : own routine!!!
         Node* node = (Node*) all[i];
@@ -312,6 +313,8 @@ int handle(char* q,int conn){
             N abs= getAbstract(parent->name);
             if(parent&&!contains(all,abs))all.push_back(abs);
         }
+        }
+        show(excluded);
     }
     
     const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div><script>var results={'results':[\n";
