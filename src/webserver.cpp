@@ -108,6 +108,7 @@ void fixLabels(Statement* s){
 	fixLabel(s->Object());
 }
 void getIncludes(Node* n){
+    pf("getIncludes %s",n->name);
     Statement *s=0;
     while((s=nextStatement(n,s))){
 //        p(s);
@@ -367,7 +368,7 @@ int handle(char* q,int conn){
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
                 if(format==csv&&all.size()>1)break;
-				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
+				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
 			}
