@@ -259,10 +259,6 @@ int handle(char* q,int conn){
 		format = json;
 		q = q + 5;
 	}
-	if (startsWith(q, "short/")) {
-		verbosity = shorter;
-		q = q + 6;
-	}
 	if (startsWith(q, "long/")) {
 		verbosity = longer;
 		q = q + 5;
@@ -270,6 +266,10 @@ int handle(char* q,int conn){
 	if (startsWith(q, "verbose/")) {
 		verbosity = verbose;
 		q = q + 8;
+	}
+	if (startsWith(q, "short/")) {
+		verbosity = shorter;
+		q = q + 6;
 	}
 	if (startsWith(q, "excludes/")||startsWith(q, "includes/")||startsWith(q, "excluded/")||startsWith(q, "included/")||startsWith(q, "showview/")) {
         showExcludes=true;
@@ -280,6 +280,9 @@ int handle(char* q,int conn){
     excluded.clear();
     included.clear();
     
+    
+    if(contains(q,"statement count")){Writeline(conn,itoa(currentContext()->statementCount).data());return 0;}
+    if(contains(q,"node count")){Writeline(conn,itoa(currentContext()->nodeCount).data());return 0;}
     
 	if (startsWith(q, "all/")) {
         cut_to_c(q," +");
@@ -360,10 +363,12 @@ int handle(char* q,int conn){
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
+        if(verbosity==verbose||verbosity==shorter)// lol // just name
+            Writeline(conn, ", 'kind':"+itoa(node->kind));
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
             if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-                Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");
+                Writeline(", 'image':'"+getImage(node,150,/*thumb*/true)+"'");
             //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;

@@ -21,3 +21,10 @@ todo.txt
 /Default
 /Default
 /release
+import/babelnet
+import/babelnet-2.0.0-core-dump
+import/babelnet-2.0.0-core-lucene
+import/freebase.data.txt import/freebase.data.txt.2 import/freebase.labels.de.txt import/freebase.labels.de.txt.bak import/freebase.labels.en.txt import/freebase.labels.en.txt.2
+import/missing/
+import/wins.csv
+netbase_results.html

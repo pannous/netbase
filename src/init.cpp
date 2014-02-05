@@ -186,7 +186,8 @@ void checkRootContext() {
 //	}
 }
 
-extern "C" void init() {
+extern "C" void init(bool relations) {
+    if(!relations)testing=true;
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key=0x69190;
 	char* root=(char*) shmat_root;
@@ -217,9 +218,11 @@ extern "C" void init() {
 	contexts=(Context*) context_root;
 	checkRootContext();
 	getContext(current_context);
+    if(relations){
 	initRelations();
 	if (currentContext()->nodeCount < 1000)
         currentContext()->nodeCount=1000;
+    }
 }
 
 void fixNodes(Context* context, Node* oldNodes) {
@@ -416,6 +419,16 @@ bool clearMemory() {
         virgin_memory=false;
 	}
     initRootContext();
+    if(testing){
+    memset(node_root+1000, 0, 100000); // for testing
+    memset(statement_root, 0, 100000); // for testing
+    memset(name_root, 0, 100000); // for testing
+	memset(abstract_root, 0, maxNodes*ahashSize * 2);
+    currentContext()->nodeCount=1000;// 0 = ANY
+    currentContext()->statementCount=1;// 0 = ERROR
+    currentContext()->nodeNames=name_root;
+    }
+//    if(!testing)
 	initRelations();
 	return true;
 	//		Context* context=currentContext();

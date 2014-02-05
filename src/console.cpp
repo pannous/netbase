@@ -213,11 +213,11 @@ NodeVector parse(const char* data) {
 		export_csv();
 		return OK;
 	}
-	if (eq(data, ":cl")) {
+	if (eq(data, ":cl")||eq(data, ":clear")||eq(data, ":clean")||eq(data, ":cleanup")) {
 		clearMemory();
 		return OK;
 	}
-	if (eq(data, "clear")) {
+	if (eq(data, "clear")||eq(data, "clean")||eq(data, "cleanup")) {
 		clearMemory();
 		return OK;
 	}
@@ -470,6 +470,7 @@ NodeVector parse(const char* data) {
 		start_server();
 		return OK;
 	}
+    if(eq(data,"testing")){testing=true;autoIds=false;clearMemory();return OK;}
 	if (contains(data, " with ")) return query(data);
 	if (contains(data, " where ")) return query(data);
 	if (contains(data, " from ")) return query(data);
@@ -520,9 +521,9 @@ NodeVector parse(const char* data) {
 extern "C"  Node** execute(const char* data,int* out){
     NodeVector result=parse(data);
     int hits=(int)result.size();
-    printf(">>>>>>>>>>> %p\n",out);
-    if(out)*out=hits;
-    Node** results=(Node** ) malloc(hits*nodeSize);
+//    printf(">>>>>>>>>>> %p\n",out);
+    if(out) *out=hits;
+    Node** results=(Node** ) malloc((1+hits)*nodeSize);
     for (int i=0; i< hits; i++) {
         results[i]=result[i];
         pf("%d %s | ",result[i]->id,result[i]->name);

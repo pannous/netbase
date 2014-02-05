@@ -48,6 +48,7 @@ bool doDissectAbstracts=false;
 bool storeTypeExplicitly=true;
 bool exitOnFailure=true;
 bool autoIds=false;
+bool testing=true;// false;
 #ifdef __NETBASE_DEBUG__
 bool debug=true;
 //bool debug=false;
@@ -532,8 +533,8 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	}
 	if (node >= maxNodePointer) {
 		badCount++;
-        //		printf("node* >= maxNodes!!! %p > %p\n", node, maxNodePointer);
-        //         p("OUT OF MEMORY or graph corruption");
+        printf("node* >= maxNodes!!! %p > %p\n", node, maxNodePointer);
+        p("OUT OF MEMORY or graph corruption");
 		return false;
 	}
 #ifdef useContext
@@ -1176,7 +1177,7 @@ Node * hasWord(const char* thingy) {
 	int h=wordhash(thingy);
 	Ahash* found=&abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
     Node* first;
-	if (found && (first=get(found->abstract))){
+	if (found&& found->abstract>0 && (first=get(found->abstract))){
         //		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
         //			return found->abstract;
 		if (eq(first->name, thingy, true))	// tolower
@@ -1315,12 +1316,8 @@ void showStatement(Statement * s) {
 
 //, bool showAbstract
 extern "C" char* getName(int node){
-    if(checkNode(node))return "BAD";//
+    if(!checkNode(node,false,true))return "<ERROR>";//_IN_GET_NAME>";//
     return get(node)->name;
-//    long name=get(node)->name;
-//    if(name<=0)return 0;
-//    //    if(node<0||name>currentContext()->currentNameSlot)return 0;
-//    return &name_root[name];
 }
 
 char* getLabel(Node * n) {
@@ -1377,13 +1374,16 @@ bool show(Node* n, bool showStatements) {		//=true
 			//				break;
 			//			s=nextStatement(n,s,stopAtInstances);
 			if (checkStatement(s)) showStatement(s);
+            else pf("NOOOOO %p",s);
 		}
         printf("-----------------------^ %s #%d (kind: %d), %d statements ^---------------\n", n->name, n->id,n->kind,n->statementCount);
         flush();
 	}
 	return 1; // daisy
 }
-
+Node * showNode(Node* n) {
+    show(n);return n;
+}
 Node * showNode(int id) {
 	Node* n=&currentContext()->nodes[id];
 	if (!checkNode(n, id)) return 0;
@@ -1495,7 +1495,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		predicateMatch=predicateMatch || (predicate == SubClass && s->Predicate() == Instance);
 		predicateMatch=predicateMatch || isA4(s->Predicate(), predicate, false, false);
         predicateMatch=predicateMatch || (matchName&& eq(s->Predicate()->name, predicate->name ));
-		bool objectMatch=s->Object() == object || object == Any || isA4(s->Object(), object, false, false);// by name OK!
+		bool objectMatch=s->Object() == object || object == Any || object->id==0|| isA4(s->Object(), object, false, false);// by name OK!
         objectMatch=objectMatch||(matchName&& eq(s->Object()->name,object->name ));
         
 		if(s->id()==5964173||s->id()==180846)
@@ -1617,9 +1617,9 @@ void deleteWord(const char* data, bool completely) {
 }
 
 void deleteWord(string * s) {
-
 	remove(s->c_str());
 }
+
 void deleteNode(int id){
     deleteNode(get(id));
 }
