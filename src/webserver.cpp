@@ -299,14 +299,9 @@ int handle(char* q,int conn){
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
-    if(showExcludes&&all.size()>0){
-        N parent= getType(all.at(0));
-        if(parent)all.push_back(parent);// show view of type + abstract
-        if(parent)all.push_back(getAbstract(parent->name));// &&!parent->kind==Abstract->kind
-    }
-    
+    int size=(int)all.size();
     if(showExcludes)
-        for (int i = 0; i < all.size(); i++) {
+        for (int i = 0; i < size; i++) {
         // todo : own routine!!!
         Node* node = (Node*) all[i];
         if(!contains(all,getAbstract(node->name)))
@@ -362,8 +357,6 @@ int handle(char* q,int conn){
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
-
-        
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
             if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
