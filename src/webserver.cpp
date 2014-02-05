@@ -305,6 +305,20 @@ int handle(char* q,int conn){
         if(parent)all.push_back(getAbstract(parent->name));// &&!parent->kind==Abstract->kind
     }
     
+    if(showExcludes)
+        for (int i = 0; i < all.size(); i++) {
+        // todo : own routine!!!
+        Node* node = (Node*) all[i];
+        if(!contains(all,getAbstract(node->name)))
+            all.push_back(getAbstract(node->name));
+        N parent= getType(node);
+        if(parent){
+            if(!contains(all,parent))all.push_back(parent);
+            N abs= getAbstract(parent->name);
+            if(parent&&!contains(all,abs))all.push_back(abs);
+        }
+    }
+    
     const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div><script>var results={'results':[\n";
     
     //    if((int)all.size()==0)Writeline("0");
@@ -339,16 +353,6 @@ int handle(char* q,int conn){
 	Node* last=0;
     warnings=0;
     
-    if(showExcludes)for (int i = 0; i < all.size(); i++) {
-        // todo : own routine!!!
-        Node* node = (Node*) all[i];
-        N parent= getType(node);
-        if(parent&&parent!=node){
-            if(!contains(all,parent))all.push_back(parent);
-            N abs= getAbstract(parent->name);
-            if(parent&&parent!=node&&!contains(all,abs))all.push_back(abs);
-        }
-    }
     
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
@@ -362,7 +366,6 @@ int handle(char* q,int conn){
         
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
-            
             if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
                 Writeline(",image:'"+getImage(node,150,/*thumb*/true)+"'");
             //            Writeline(",image:'"+getImage(node->name)+"'");
