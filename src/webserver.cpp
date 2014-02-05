@@ -364,7 +364,7 @@ int handle(char* q,int conn){
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
 				if (!checkStatement(s))continue;
-				if(checkHideStatement(s)){warnings++;continue;}
+				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
                 if(format==csv&&all.size()>1)break;
 				if(verbosity!=verbose && (s->Predicate()==Instance||s->Predicate()==Type))continue;
