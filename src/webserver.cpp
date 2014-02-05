@@ -338,6 +338,18 @@ int handle(char* q,int conn){
 	if (format == csv)entity_format = entity_format_csv;
 	Node* last=0;
     warnings=0;
+    
+    if(showExcludes)for (int i = 0; i < all.size(); i++) {
+        // todo : own routine!!!
+        Node* node = (Node*) all[i];
+        N parent= getType(node);
+        if(parent&&parent!=node){
+            if(!contains(all,parent))all.push_back(parent);
+            N abs= getAbstract(parent->name);
+            if(parent&&parent!=node&&!contains(all,abs))all.push_back(abs);
+        }
+    }
+    
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
 		if(last==node)continue;
@@ -346,14 +358,7 @@ int handle(char* q,int conn){
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
-        if(showExcludes){// todo : own routine!!!
-            N parent= getType(node);
-            if(parent&&parent!=node){
-             all.push_back(parent);
-                N abs= getAbstract(parent->name);
-                if(parent&&parent!=node)all.push_back(abs);
-            }
-        }
+
         
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
@@ -364,10 +369,10 @@ int handle(char* q,int conn){
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
+                if(format==csv&&all.size()>1)break;// entities vs statements
 				if (!checkStatement(s))continue;
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
-                if(format==csv&&all.size()>1)break;
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
