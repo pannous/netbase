@@ -75,6 +75,7 @@ typedef union Value {
         // why not just save values+text in 'name' as string??
     
     char* text; // wiki abstracts etc
+    void* data; // byte[], same as ^^
     //    char* name;
     //    int integer;
     //    float floatValue;
@@ -89,7 +90,6 @@ typedef union Value {
 	Node* node; // THE ONE in abstracts type --- cycle !---
     Statement* statement; // overhead OK!!! 8 bytes on 64bit machines  (Statement too long, pointer OK)
 }Value;
-
 
 extern "C" char* getName(int node);
 
@@ -457,10 +457,15 @@ bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool mat
 bool isA(Node* fro, Node* to);
 Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);
-extern "C"
-int valueId(const char* aname, double v, int unit = 0);
+extern "C" void saveData(int node,void* data,int size,bool copy);
+extern "C" void* getData(int node);
+extern "C" Value getValue(int node);
+extern "C" int valueId(const char* aname, double v, int unit = 0);
 //Node * value(const char* aname, Value v, Node* unit = 0);
 Node* parseValue(const char* aname);
+
+
+
 extern "C" void setLabel(Node* n, const char* label,bool addInstance=true,bool renameInstances=false);
 extern "C" void setName(int node, const char* label);
 Statement* pattern(Node* subject, Node* predicate, Node* object);

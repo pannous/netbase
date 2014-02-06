@@ -1687,17 +1687,18 @@ Node * value(const char* aname, double v, const char* unit) {
 	return value(aname,v,getThe(unit));
 }
 Node * value(const char* aname, double v, Node* unit/*kind*/) {
-	char* name=(char*)malloc(1000);
+	char* name=(char*)malloc(1000);// from todo: name_root!!
 	//	if (aname)strcpy(name, aname);// IGNORED!!!?
 
-	if (unit&&unit!=Number&&unit!=Integer&&unit->name) {
+    if(unit==Number||unit==Integer){// double / long
+		sprintf(name, "%g", v); //Use the shorter of %e or %f  3.14 or 24E+35
+	}else if (unit&&unit!=Bytes&&unit->name) {
         if(v>1000000000||v<1000)
             sprintf(name, "%g %s", v, shortName(unit->name)); //Use the shorter of %e or %f  3.14 or 24E+35
         else
             sprintf(name, "%d %s", (int)v, shortName(unit->name)); // round
-	} else {
-		sprintf(name, "%g", v); //Use the shorter of %e or %f  3.14 or 24E+35
-	}///
+	}else if (aname)strcpy(name, aname);// not name=aname wegen free(name)!
+
     Node *n= getThe(name,unit);// 45cm != 45Volt !!!
 //	Node *n= getAbstract(name); // 45cm
    	if (unit)n->kind=unit->id;
@@ -1707,6 +1708,26 @@ Node * value(const char* aname, double v, Node* unit/*kind*/) {
     //    	n->value=v;
 	free(name);
 	return n;
+}
+
+extern "C" void saveData(int node,void* data,int size,bool copy){
+    N n=getNode(node);
+    if(!copy){n->value.data=data;return;}
+    void* target=&currentContext()->nodeNames[currentContext()->currentNameSlot];
+    
+    memcpy(target, data,size);
+    n->value.data=target;// data
+    currentContext()->currentNameSlot+=size+1;
+}
+
+extern "C" void* getData(int node){
+    N n=getNode(node);
+    return n->value.data;
+}
+
+extern "C" Value getValue(int node){
+    N n=getNode(node);
+    return n->value;
 }
 
 Node * has(Node* n, string predicate, string object, int recurse, bool semantic, bool symmetric) {

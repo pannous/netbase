@@ -52,21 +52,30 @@ int semrm(key_t key, int id=0) {
 	return semctl(id, 0, IPC_RMID, arg);
 }
 void detach_shared_memory(){
-    system("sudo ipcrm -M '0x69190'");
-    system("sudo ipcrm -M '0x69191'");
-    system("sudo ipcrm -M '0x69192'");
-    system("sudo ipcrm -M '0x69193'");
-    system("sudo ipcrm -M '0x69194'");
+        // TODO (?) programmatically
+    p(" if you cannot start netbase try: ");    
+//    sudo: no tty present and no askpass program specified
+//    system("sudo ipcrm -M '0x69190'");
+//    system("sudo ipcrm -M '0x69191'");
+//    system("sudo ipcrm -M '0x69192'");
+//    system("sudo ipcrm -M '0x69193'");
+//    system("sudo ipcrm -M '0x69194'");
 }
+
 void increaseShmMax(){
+    // TODO (?)  programmatically
+    
 //				system("sudo sysctl -w kern.sysv.shmmax=2147483648"); // # 2GB
 //				system("sudo sysctl -w kern.sysv.shmall=2147483648");
 //				system("sudo sysctl -w kern.sysv.shmmax=4294967296"); // # 4GB
 //				system("sudo sysctl -w kern.sysv.shmall=4294967296");
 //				system("sudo sysctl -w kern.sysv.shmmax=6442450944"); // # 6GB !
 //				system("sudo sysctl -w kern.sysv.shmall=6442450944");
-system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
-system("sudo sysctl -w kern.sysv.shmall=8589934592");
+    p(" if you cannot start netbase try:");
+    p("sudo sysctl -w kern.sysv.shmmax=8589934592");
+    p("sudo sysctl -w kern.sysv.shmall=8589934592");
+//system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
+//system("sudo sysctl -w kern.sysv.shmall=8589934592");
 //				system("sudo sysctl -w kern.sysv.shmmax=34359738368"); // # 32GB !!
 //				system("sudo sysctl -w kern.sysv.shmall=34359738368");
 }
