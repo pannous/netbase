@@ -78,7 +78,12 @@ extern Node* Float;
 extern Node* Integer;
 extern Node* Range;
 extern Node* Unit;
-extern Node* Array;
+
+
+extern Node* Bytes;// byte[] -> serialized java object etc etc
+extern Node* Map; // Map<String,T>
+extern Node* Array;// T[]
+extern Node* List; // List<T>
 
 extern Node* True;
 extern Node* False;
@@ -142,7 +147,11 @@ static const int noun = 110;
 static const int verb = 111;
 static const int adjective = 112;
 static const int adverb = 113;
+
+static const int _bytes = 119;
+static const int _map = 120;
 static const int _array = 121;
+static const int _list = 122;
 static const int _number = 123;
 static const int _integer = 124; //naa, see number
 static const int _float = 125; //naa, see number

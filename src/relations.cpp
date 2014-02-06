@@ -72,7 +72,12 @@ Node* String;
 Node* Date;
 Node* Float;
 Node* Integer;
-Node* Array;
+
+Node* Bytes;// byte[] -> serialized java object etc etc
+Node* Map; // Map<String,T>
+Node* Array;// T[]
+Node* List; // List<T>
+
 Node* Range;
 Node* Unit;
 
@@ -203,7 +208,11 @@ void initRelationsDE() {
 	Adverb = addRelation(adverb, "Adverb");
 	Number = addRelation(_number, "Zahl");
 	Unit = addRelation(unit, "Einheit");
+    
     Array = addRelation(_array, "Liste");
+    List = addRelation(_list, "Liste");
+    Map = addRelation(_map, "Hash");
+    Bytes = addRelation(_bytes, "Daten");
     
 	Plural = addRelation(_plural, "Plural");
 	Translation = addRelation(translation, "Übersetzung");
@@ -375,7 +384,12 @@ void initRelations() {
 	Date = addRelation(_date, "Date");
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
-	Array = addRelation(_array, "Integer");
+    
+    List = addRelation(_list, "List");
+    Map = addRelation(_map, "Hash");
+    Bytes = addRelation(_bytes, "Data");
+	Array = addRelation(_array, "Array");
+    
 	Range = addRelation(_range, "Range");
 
 	True= addRelation(_true,"True");
