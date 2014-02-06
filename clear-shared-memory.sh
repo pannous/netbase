@@ -1,5 +1,5 @@
 # allow bigger shared memory
-
+echo "All instances of netbase need to be stopped to clear memory"
 sudo killall netbase
 echo linux
 # sudo /sbin/sysctl -w kernel.shmmax=4294967296

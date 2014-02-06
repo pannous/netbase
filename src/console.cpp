@@ -32,7 +32,8 @@ using namespace std;
 // static struct termios stored_settings;
 
 void showHelp() {
-	ps("available commands");
+    ps("");
+	ps("AVAILABLE COMMANDS:");
 	ps("help :h or ?");
 	ps("load :l [force]\tfetch the graph from disk or mem");
 	//	ps("load_files :lf");
@@ -53,6 +54,9 @@ void showHelp() {
 	ps("all city with countrycode ZW");
 	ps("Population of Gehren");
 	ps("opposite of bad");
+    ps("learn Germany has Gehren");
+    ps("learn 1001 1003 2442 (via ids)");
+    ps("");
 	//	ps("update city set type=town where population<10000");
 }
 

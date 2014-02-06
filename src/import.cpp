@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <string>
 #include <map>
+#include <unistd.h> //getcwd
 #ifdef sqlite3
 #include "sqlite3.h"
 #endif
@@ -25,11 +26,17 @@ bool getSingletons=false;// i.e. Nationalmannschaft
 bool getBest=false;// i.e. Madonna\Music | Madonna\Church
 bool germanLabels=true;
 
+
 FILE *open_file(const char* file) {
 	FILE *infile;
 	if ((infile=fopen((file), "r")) != NULL) return infile;
 	if (import_path.length() == 0) import_path="import/";
-	if (!startsWith(file, "/")) file=(import_path + file).data(); // concat(import_path.data(), file);
+    if(startsWith(file, "~/"))
+        file=concat(getenv("HOME"), file+1);
+    if(startsWith(file, "./"))
+        file=concat(getcwd(NULL, 0), file+1);
+	if (!startsWith(file, "/")) file=(import_path + file).data();
+    p(file);
 	if ((infile=fopen((file), "r")) == NULL) {
 		perror("Error opening file");
 		printf(" %s\n", (file));
@@ -461,16 +468,17 @@ char guessSeparator(char* line) {
 
 int getNameRow(char** tokens, int nameRowNr=-1, const char* nameRow=0) {
 	int row=0;
+    if(nameRowNr>=0)return nameRowNr;
 	while (true) {
 		char* token=tokens[row];
 		if (!token) break;
-		if (nameRowNr < 0) {
+//		if (nameRowNr < 0) {
 			if (nameRow == 0) {
 				if (eq("name", token)) nameRowNr=row;
-				if (contains(token, "name", true)) nameRowNr=row; // first come!
+				if (contains(token, "name", true)&&nameRowNr<0) nameRowNr=row; // first come!
 				if (eq("title", token)) nameRowNr=row;
 			} else if (eq(nameRow, token)) nameRowNr=row;
-		}
+//		}
 		row++;
 	}
 	if (nameRowNr < 0) return 0;
@@ -564,7 +572,7 @@ bool hasAttribute(char* line) {
 // importXml("/Users/me/data/base/geo/geolocations/Orte_und_GeopIps_mit_PLZ.xml","city","ort");
 
 void importXml(const char* file, char* nameField, const char* ignoredFields, const char* includedFields) {
-	p("import csv start");
+	p("\nimport XML start");
     //	bool dissect=false;
 	char line[1000];
 	char* line0=(char*) malloc(sizeof(char*) * 100);
@@ -695,7 +703,7 @@ void fixValues(char** values, int size) {
 }
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,
                const char* nameRow) {
-	p("import csv start");
+	p("\nimport csv start");
 	char line[1000];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?!
 	char** values=(char**) malloc(sizeof(char*) * 100);
@@ -706,13 +714,16 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	Node* subject=0;
 	Node* predicate=0;
 	Node* object=0;
-	vector<Node*> predicates=*new vector<Node*>();
-	vector<char*> ignoreFields=splitString(ignoredFields, ",");
-	vector<char*>& includeFields=splitString(includedFields, ",");
 	//	vector<char*>& fields = *new vector<char*>();
 	int linecount=0;
 	FILE *infile=open_file(file);
+    if(!type)type=getThe(keep_to(cut_to(cut_to(file,"/"),"/"),"."));
+
     //	char* objectName=(char*) malloc(100);
+    vector<Node*> predicates=*new vector<Node*>();
+	vector<char*> ignoreFields=splitString(ignoredFields, ",");
+	vector<char*>& includeFields=splitString(includedFields, ",");
+
 	int fieldCount=0;
 	char* columnTitles;
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -775,7 +786,12 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
 			if (!vali || strlen(vali) == 0) continue; //HOW *vali<100??
-			object=getThe(vali);
+            if(atoi(vali)>0&&eq(itoa(atoi(vali)),vali))
+                object=value(vali,atoi(vali),Integer);
+            else if(atof(vali)>0&&eq(itoa(atof(vali)),vali))
+                object=value(vali,atof(vali),Number);
+            else
+                object=getThe(vali);
 			if (!object || object->id > maxNodes) {
 				badCount++;
 				if (debug) printf("ERROR %s\n", line);
@@ -1411,7 +1427,7 @@ Node* getFreebaseEntity(char* name) {
         if(name[strlen(name) - 1]=='>')
             name[strlen(name) - 1]=0;
     }
-    cut_to_c(name," (");
+    cut_to(name," (");
     Node* n=labels[name];
     if (n) {
         return n;

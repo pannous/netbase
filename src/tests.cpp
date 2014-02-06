@@ -1417,6 +1417,15 @@ void testBrandNewStuff() {
 	debug = true;
     testing=true;// NO RELATIONS!
     germanLabels=true;// false;
+    
+    execute("import ./import/cities1000.txt");
+    int hits;
+    execute("Population of Gehren",&hits);
+    p("hits");
+    p(hits);
+    show(a(Gehren));
+    showNode(getThe("Gehren"));
+    
     check(!eq("=","a", true));
 //    check(hasNode("type"));
     N a=getAbstract("a");

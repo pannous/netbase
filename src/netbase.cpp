@@ -1686,19 +1686,21 @@ int valueId(const char* aname, double v, int unit){
 Node * value(const char* aname, double v, const char* unit) {
 	return value(aname,v,getThe(unit));
 }
-Node * value(const char* aname, double v, Node* unit/*kind*/) {
-	char* name=(char*)malloc(1000);// from todo: name_root!!
-	//	if (aname)strcpy(name, aname);// IGNORED!!!?
-
-    if(unit==Number||unit==Integer){// double / long
-		sprintf(name, "%g", v); //Use the shorter of %e or %f  3.14 or 24E+35
-	}else if (unit&&unit!=Bytes&&unit->name) {
-        if(v>1000000000||v<1000)
-            sprintf(name, "%g %s", v, shortName(unit->name)); //Use the shorter of %e or %f  3.14 or 24E+35
-        else
-            sprintf(name, "%d %s", (int)v, shortName(unit->name)); // round
-	}else if (aname)strcpy(name, aname);// not name=aname wegen free(name)!
-
+Node * value(const char* name, double v, Node* unit/*kind*/) {
+	char* new_name=0;
+    
+    if(name==0){
+        new_name=(char*)malloc(1000);// no todo: name_root done in getThe()
+        if(unit==Number||unit==Integer||unit==0){// double / long
+            sprintf(new_name, "%g", v); //Use the shorter of %e or %f  3.14 or 24E+35
+        }else if (unit&&unit!=Bytes&&unit->name) {
+            if(v>1000000000||v<1000)
+                sprintf(new_name, "%g %s", v, shortName(unit->name)); //Use the shorter of %e or %f  3.14 or 24E+35
+            else
+                sprintf(new_name, "%d %s", (int)v, shortName(unit->name)); // round
+        }
+        name=new_name;
+    }
     Node *n= getThe(name,unit);// 45cm != 45Volt !!!
 //	Node *n= getAbstract(name); // 45cm
    	if (unit)n->kind=unit->id;
@@ -1706,7 +1708,7 @@ Node * value(const char* aname, double v, Node* unit/*kind*/) {
 	n->value.number=v;
 //    if(unit)addStatement(unit, Instance, n);// NO, getThe !!
     //    	n->value=v;
-	free(name);
+    if(new_name)free(new_name);
 	return n;
 }
 
@@ -2435,8 +2437,7 @@ int main(int argc, char *argv[]) {
 
 	if (checkParams(argc, argv, "query")) {
 		load();
-		string q=cut_to(join(argv, argc), "query ");
-		parse(q.c_str());
+		parse((const char*)cut_to(join(argv, argc).data(), "query "));
 		exit(0);
 		//        import();
 	}
