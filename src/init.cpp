@@ -53,7 +53,7 @@ int semrm(key_t key, int id=0) {
 }
 void detach_shared_memory(){
         // TODO (?) programmatically
-    p(" if you cannot start netbase try: ");    
+    p("If you cannot start netbase try ./clear-shared-memory.sh");
 //    sudo: no tty present and no askpass program specified
 //    system("sudo ipcrm -M '0x69190'");
 //    system("sudo ipcrm -M '0x69191'");
@@ -71,7 +71,7 @@ void increaseShmMax(){
 //				system("sudo sysctl -w kern.sysv.shmall=4294967296");
 //				system("sudo sysctl -w kern.sysv.shmmax=6442450944"); // # 6GB !
 //				system("sudo sysctl -w kern.sysv.shmall=6442450944");
-    p(" if you cannot start netbase try:");
+    p(" if you cannot start netbase try: ");
     p("sudo sysctl -w kern.sysv.shmmax=8589934592");
     p("sudo sysctl -w kern.sysv.shmall=8589934592");
 //system("sudo sysctl -w kern.sysv.shmmax=8589934592"); // # 8GB !!
