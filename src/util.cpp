@@ -309,11 +309,17 @@ void p(int i) {
 	fflush(stdout);
 }
 
-void p(long l) {
+void p(double l) {
 	if (quiet) return;
-	printf("%lu\n", l);
+	printf("%f\n", l);
 	fflush(stdout);
 }
+
+//void p(long l) {
+//	if (quiet) return;
+//	printf("%lu\n", l);
+//	fflush(stdout);
+//}
 
 // 64 bit hex value
 
@@ -420,10 +426,13 @@ char* clone(const char* line) {
 	strcpy(line0, line);
 	return line0;
 }
-char* modifyConstChar(const char* line) {
+char* editable(const char* line) {
 	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
 	strcpy(line0, line);
 	return line0;
+}
+char* modifyConstChar(const char* line){
+    return editable(line);
 }
 
 // line MUST not be const!
@@ -450,11 +459,11 @@ int splitStringC(char* line, char** tokens, char separator) {
 	return row + 1; //s
 }
 char** splitStringC(const char* line0, const char* separator) {
-	return splitStringC(modifyConstChar(line0), separator[0]);
+	return splitStringC(editable(line0), separator[0]);
 }
 
 char** splitStringC(const char* line0, char separator) {
-	return splitStringC(modifyConstChar(line0), separator);
+	return splitStringC(editable(line0), separator);
 }
 
 char** splitStringC(char* line0, char separator, int maxRows) {

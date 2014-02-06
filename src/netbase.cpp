@@ -48,7 +48,7 @@ bool doDissectAbstracts=false;
 bool storeTypeExplicitly=true;
 bool exitOnFailure=true;
 bool autoIds=false;
-bool testing=true;// false;
+bool testing=false;// ;true
 #ifdef __NETBASE_DEBUG__
 bool debug=true;
 //bool debug=false;
@@ -752,9 +752,12 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	statement->predicate=predicate->id;
 	statement->object=object->id;
 
-	addStatementToNode(subject, id);
-	addStatementToNode(predicate, id);
-	addStatementToNode(object, id);
+	bool ok=addStatementToNode(subject, id);
+	ok=ok&&addStatementToNode(predicate, id);
+	ok=ok&&addStatementToNode(object, id);
+    if(!ok){
+        p("warning: addStatementToNode skipped ");
+    }
 	//	subject->statements[subject->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
 	//	subject->statementCount++;
 	//	predicate->statements[predicate->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
@@ -1136,6 +1139,8 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		return 0;
 	}
     if(autoIds&&isInteger(thing))return get(atoi(thing));
+    
+    
 	if (getRelation(thing)) // not here! doch
 		return getRelation(thing);
 //    replaceChar((char*)thing,'_',' ');// NOT HERE!
@@ -1150,6 +1155,16 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		ps(thing);
 		return 0;
 	}
+    
+    if(atoi(thing)!=0&&eq(itoa(atoi(thing)),thing)){
+        insta->value.number=atoi(thing);
+        if(!type)insta->kind=_integer;
+    }
+    else if(atof(thing)!=0&&eq(itoa(atof(thing)),thing)){
+        insta->value.number=atof(thing);
+        if(!type)insta->kind=_number;
+    }
+//        object=value(thing,atof(thing),Number);
 
     //	if (dissect) dissectWord(insta); // dont remove! doch!
 	return insta;
@@ -1172,7 +1187,7 @@ bool hasNode(const char* thingy) {
 Node * hasWord(const char* thingy) {
 	if (!thingy || thingy[0] == 0) return 0;
     //	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
-    //    char* fixed=modifyConstChar(thingy); // free!!!
+    //    char* fixed=editable(thingy); // free!!!
     //	thingy=(const char*) fixQuotesAndTrim(fixed);// NOT HERE!
 	int h=wordhash(thingy);
 	Ahash* found=&abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
@@ -1494,7 +1509,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		predicateMatch=predicateMatch || (predicate == Instance && s->Predicate() == SubClass);
 		predicateMatch=predicateMatch || (predicate == SubClass && s->Predicate() == Instance);
 		predicateMatch=predicateMatch || isA4(s->Predicate(), predicate, false, false);
-        predicateMatch=predicateMatch || (matchName&& eq(s->Predicate()->name, predicate->name ));
+        predicateMatch=predicateMatch || ((matchName||semanticPredicate)&& eq(s->Predicate()->name, predicate->name ));
 		bool objectMatch=s->Object() == object || object == Any || object->id==0|| isA4(s->Object(), object, false, false);// by name OK!
         objectMatch=objectMatch||(matchName&& eq(s->Object()->name,object->name ));
         
@@ -1689,7 +1704,7 @@ Node * value(const char* aname, double v, const char* unit) {
 Node * value(const char* name, double v, Node* unit/*kind*/) {
 	char* new_name=0;
     
-    if(name==0){
+    if(name==0||strlen(name)==0){
         new_name=(char*)malloc(1000);// no todo: name_root done in getThe()
         if(unit==Number||unit==Integer||unit==0){// double / long
             sprintf(new_name, "%g", v); //Use the shorter of %e or %f  3.14 or 24E+35
@@ -2275,8 +2290,11 @@ Node * getThe(Node* abstract, Node * type) {
 	return best;
 }
 
-Node * getProperty(Node* n, cchar* s) {
-	return findStatement(n, getAbstract(s), Any)->Object();
+Node * getProperty(Node* node, cchar* key) {
+    S s=findStatement(node, getThe(key), Any);
+//findStatement(node, getAbstract(key), Any); // todo? egal
+    if(!checkStatement(s))return 0;
+	return s->Object();
 }
 
 bool isA(Node* fro, Node * to) {

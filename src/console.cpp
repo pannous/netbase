@@ -182,7 +182,7 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	clearAlgorithmHash(true); //  maybe messed up
-	data=fixQuotesAndTrim(modifyConstChar(data));
+	data=fixQuotesAndTrim(editable(data));
 	//	std::remove(arg.begin(), arg.end(), ' ');
 	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
     
@@ -234,7 +234,9 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (eq(data, "quit")) return OK;
-	if (eq(data, "quiet")) quiet=!quiet;
+	if (eq(data, "quiet")||eq(data, "quiet!")||eq(data, ":quiet")||eq(data,"!debug")){debug=false; quiet=true;return OK;}
+    if (eq(data, "debug")||eq(data, "debug!")||eq(data, ":debug")||eq(data, "!quiet")){debug=true; quiet=false;return OK;}
+
     
 	if (startsWith(data, ":if")) {
 		autoIds=false;

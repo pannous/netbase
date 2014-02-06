@@ -50,7 +50,7 @@ NodeVector hasFilter(Node* subject,NodeQueue* queue=null);
 NodeVector childFilter(Node* subject,NodeQueue* queue=null);
 NodeVector ownerFilter(Node* subject,NodeQueue* queue=null);
 NodeVector anyFilter(Node* subject,NodeQueue* queue=null,bool includeRelations=true);
-NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);
+NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);//, int max= lookupLimit resultLimit);
 
 //NodeVector parentFilter(Node* subject);
 //NodeVector memberFilter(Node* subject);

@@ -190,6 +190,50 @@ void testBasics() {
 
 }
 
+void testGeoDB(){
+    
+    if(nodeCount()<10000)
+        importGeoDB();
+    //        execute("import ./import/cities1000.txt");
+    
+    show(a(Gehren));
+    showNode(getThe("Gehren"));
+    
+    NV all;
+    
+    NodeVector cities=all_instances(getThe("city"),1);
+    check(cities.size()>10);
+    
+    
+    all=query("city where latitude=50.65");
+    check(all.size()>2);
+    show(all[2]);
+    N latitude=getProperty(all[2],"latitude");
+    check(latitude->value.number==50.65);
+    
+    all=query("city where population=3703");
+    check(all.size()>0);
+//    showNodes(all);
+    show(all[0]);
+    N population=getProperty(all[0],"population");
+    check(population->value.number==3703);
+    
+    all=query("all city with countrycode=AD");
+    check(all.size()>0);
+        show(all[0]);
+    N countrycode=getProperty(all[0],"countrycode");
+    check(eq(countrycode->name,"AD"));
+    
+//    all=query("all city with countrycode AD");
+//    check(all.size()>0);
+//        show(all[0]);
+//    countrycode=getProperty(all[0],"countrycode");
+//    check(eq(countrycode->name,"AD"));
+    
+    
+
+}
+
 void testDummyLogic() {
 	//	if(!hasWord("testDummy")){
 	//    Node* testDummy = add("testDummy", _node);
@@ -478,7 +522,7 @@ void testWordnet() {
 //#define new(word) Node* word=getThe(#word);
 
 void testStringLogic() {
-	Node* Schlacht_von_Kleverhamm=getThe("Schlacht_von_Kleverhamm");
+	Node* Schlacht_von_Kleverhamm=getThe(editable( "Schlacht_von_Kleverhamm"));
 	//    die(Schlacht_von_Kleverhamm);
 	eine(Schlacht);
 	Node* Kleverhamm=getThe("Kleverhamm");
@@ -495,8 +539,9 @@ void testInstancesAtEnd() {
 	Node* o=getThe("testInstancesAtEndO");
 	addStatement(t, Type, o);
 	addStatement(t, Instance, o);
-	S s=addStatement(t, p, o, false);
-	addStatement(t, Type, o, false);
+	S s=addStatement(t, p, o, true);
+//	S s=addStatement(t, p, o, false);// warning: addStatementToNode skipped
+//	addStatement(t, Type, o, false); types up too
 	addStatement(t, Instance, o, false);
     showStatement(s);
     printf("%d %d\n",t->firstStatement,s->id());
@@ -509,10 +554,10 @@ void testStringLogic2() {
 //    NV t= parse("label 4557271 woooot");
 //    check(eq(t[0]->name,"woooot"));// OK
 	eine(Schlacht);
-	Node* Schlacht_bei_Guinegate=getThe("Guinegate_(14791),_Schlacht_bei"); // intellij display bug!
+	Node* Schlacht_bei_Guinegate=getThe(editable("Guinegate_(14791),_Schlacht_bei")); // intellij display bug!
 	//    deleteNode(Schlacht_bei_Guinegate);
 	//    Schlacht_bei_Guinegate=getThe("Guinegate_(1479),_Schlacht_bei");
-	Schlacht_bei_Guinegate=getThe("Schlacht_bei_Guinegate_(14791)");
+	Schlacht_bei_Guinegate=getThe(editable("Schlacht_bei_Guinegate_(14791)"));
 	//	deleteNode(Schlacht_bei_Guinegate);
 	//	Schlacht_bei_Guinegate=getThe("Schlacht_bei_Guinegate_(1479)");
 	dissectWord(Schlacht_bei_Guinegate);
@@ -536,7 +581,7 @@ void testStringLogic2() {
 	// der_<place> von_der/of
 	//Kultureller_Ehrenpreis_der_Landeshauptstadt_M�����nchen
 
-	show(getThe("Musyoka,_Kalonzo,"));
+	show(getThe(editable("Musyoka,_Kalonzo,")));
 
 }
 
@@ -722,10 +767,12 @@ void testValueLogic() {
 	Node* mm14=value("", 14000, "mm");
 	Node* mm15=value("15000",15000 , "mm");
 	Node* m143=value("14.3", 14.3, "meter");
-	Node* m1430=value("14.30", 14.30, "meter");
+	Node* m1430=value("", 14.30, "meter");
+//	Node* m1430=value("14.30", 14.30, "meter");
 	Node* m1433=value("14.330", 14.330, "meter");
 	Node* m1433_duplicate=value("14.330", 14.330, "meter");
 	check(m1433_duplicate == m1433);
+    check(m1430->value.number==14.3);
 
 	Statement* boot_length=addStatement(Booot, a(length), m143);
 	show(Booot);
@@ -765,6 +812,10 @@ void testValueLogic() {
 
 	//    getA("length")
 	show(Booot);
+    show(m1430);
+    p(m1430->value.number);
+//    p(m1430->value.datetime);
+    
 	check(has(Booot, the(length), m1430));
 	check(has(Booot, a(length), m1430));
 
@@ -1119,12 +1170,12 @@ void testPaths() {
 }
 
 void testCities() {
-	char* line=modifyConstChar("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n");
+	char* line=editable("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n");
 	int nr=splitStringC(line, 0, '\t');
 	//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n",0,"\t",true);
 	check(nr > 4);
 	vector<char*> fields;
-	//	int n=getFields(modifyConstChar(line),fields,'\t');
+	//	int n=getFields(editable(line),fields,'\t');
 	//	check(fields.size()==nr);
 	clearMemory();
 	if (!hasWord("Mersing")) {
@@ -1148,6 +1199,7 @@ void testSplit() {
 }
 
 void testOpposite() {
+    checkWordnet();
 	check(has(a(good), Antonym, Any));
 
 	check(!findStatement(the(evil), Instance, Synonym, 6, 1, 0, 0));
@@ -1274,43 +1326,6 @@ void testYago() {
 	//	parentPath(a(Banco_de_Gaia),a(group));
 }
 
-void tests() {
-	//    share_memory();
-	//    init();
-
-	//    testBasics();
-	//	clearTestContext();
-	//	testBrandNewStuff();// LOOP!
-	//    testStringLogic2();
-	//    testLogic();// test wordnet intersection
-    germanLabels=false;
-	testImportExport();
-	checkWordnet();
-    checkGeo();	//	testDummyLogic();// too big
-
-	// shaky
-	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
-	testFacets();
-	testQuery();
-   	testPaths();
-	// OK
-
-	testStringLogic2();
-	testInstancesAtEnd();
-	testHash();
-	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
-	testFactLearning();
-	testReification();
-	testValueLogic();
-	testStringLogic();
-	testHash();
-	testScanf();
-	testYago();
-	testOpposite();
-	p("ALL TESTS SUCCESSFUL!");
-	//    testLoop();
-}
-
 void testFreebase(){
     N m=getThe("Madonna",More);
     check(m->statementCount>100);
@@ -1411,20 +1426,94 @@ void old_to_remove(){
 	//	showNodes(all_instances(a(bug)));
 }
 
+void testInclude(){
+    //    parse("include hamburg Population");
+    //    parse("include city Elevation");
+    //    NV l= parse("learn hamburg type city");
+    //    show(l[0]);
+    //    check(has(l[0],"type","city"));
+    
+    //    parse("learn 5463914 type 2000586");
+    //    parse("include hamburg Bundesland");
+    
+    //    addStatement(getThe("hamburg"),Type,getThe("city"));
+    //    addStatement(a("hamburg"),Type,getThe("city"));
+    //    parse("city include Erhebung");
+    //    parse("city include Erhebung");
+    parse("5136347 include Erhebung");
+    
+    
+    
+    //    Nachname
+    //    parse("exclude fafdafds");
+    //    1459866
+    //    handle("/xml/all/1459866");
+    //    handle("/xml/verbose/1459866");
+    //    handle("/xml/excluded/1459866");
+    //    handle("/xml/excluded/Hamburg");
+    //    handle("/xml/long/Hamburg");
+    handle("/xml/all/Hamburg +type");
+    //    handle("/xml/all/Hamburg +type");
+    //    handle("/xml/excluded");
+}
+
+
+void tests() {
+    
+
+	testInstancesAtEnd();
+	testHash();
+	testValueLogic();
+	testStringLogic();
+	testHash();
+	testScanf();
+	testYago();
+    testGeoDB();
+    testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
+	testFactLearning();
+	testReification();
+	testStringLogic2();
+    testOpposite();
+	//    share_memory();
+	//    init();
+    
+	//    testBasics();
+	//	clearTestContext();
+	//	testBrandNewStuff();// LOOP!
+	//    testStringLogic2();
+	//    testLogic();// test wordnet intersection
+    germanLabels=false;
+	testImportExport();
+	checkWordnet();
+    checkGeo();	//	testDummyLogic();// too big
+    testInclude();
+    
+	// shaky
+	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
+	testFacets();
+	testQuery();
+   	testPaths();
+
+	// OK
+    
+	p("ALL TESTS SUCCESSFUL!");
+	//    testLoop();
+}
+
+
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
-    testing=true;// NO RELATIONS!
+//    testing=false;// NO RELATIONS!
     germanLabels=true;// false;
     
-    execute("import ./import/cities1000.txt");
-    int hits;
-    execute("Population of Gehren",&hits);
-    p("hits");
-    p(hits);
-    show(a(Gehren));
-    showNode(getThe("Gehren"));
+    tests();
+    
+//    int hits;
+//    execute("Population of Gehren",&hits);
+//    p("hits");
+//    p(hits);
     
     check(!eq("=","a", true));
 //    check(hasNode("type"));
@@ -1441,34 +1530,7 @@ void testBrandNewStuff() {
 //    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
 //    handle("xml/510619",-1);// test web server
     handle("/all/Unternehmen");
-//    parse("include hamburg Population");
-//    parse("include city Elevation");
-//    NV l= parse("learn hamburg type city");
-//    show(l[0]);
-//    check(has(l[0],"type","city"));
-    
-//    parse("learn 5463914 type 2000586");
-//    parse("include hamburg Bundesland");
-    
-//    addStatement(getThe("hamburg"),Type,getThe("city"));
-//    addStatement(a("hamburg"),Type,getThe("city"));
-//    parse("city include Erhebung");
-//    parse("city include Erhebung");
-    parse("5136347 include Erhebung");
-    
-    
-    
-//    Nachname
-//    parse("exclude fafdafds");
-    //    1459866
-//    handle("/xml/all/1459866");
-//    handle("/xml/verbose/1459866");
-    //    handle("/xml/excluded/1459866");
-//    handle("/xml/excluded/Hamburg");
-//    handle("/xml/long/Hamburg");
-    handle("/xml/all/Hamburg +type");
-//    handle("/xml/all/Hamburg +type");
-//    handle("/xml/excluded");
+
 
     exit(0);
     testSqlDe();
