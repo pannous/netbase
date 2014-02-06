@@ -186,7 +186,7 @@ int Service_Request(int conn) {
 }
 
 int handle(char* q,int conn){
-    q=modifyConstChar(q);
+    q=editable(q);
     if(q[0]=='/')q++;
 	enum result_format format = txt;
 	enum result_verbosity verbosity = normal;

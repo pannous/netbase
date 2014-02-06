@@ -491,7 +491,7 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 	char * token;
 	cchar* separators=",;\t|";
 	if (separator) separators=charToCharPointer(separator);
-	//	line=modifyConstChar(line);
+	//	line=editable(line);
 	token=strtok(line, separators);
 	int row=0;
 	while (token != NULL) {
@@ -731,7 +731,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		fixNewline(line);
 		if (linecount == 0) {
 			columnTitles=line;
-			if (!separator) separator=guessSeparator(modifyConstChar(line)); // would kill fieldCount
+			if (!separator) separator=guessSeparator(editable(line)); // would kill fieldCount
 			fieldCount=splitStringC(line, values, separator);
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
@@ -752,7 +752,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
         
-		int size=splitStringC(modifyConstChar(line), values, separator);
+		int size=splitStringC(editable(line), values, separator);
 		if (fieldCount != size) {
             //            printf("_");
             //            if(debug) printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
@@ -786,9 +786,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
 			if (!vali || strlen(vali) == 0) continue; //HOW *vali<100??
-            if(atoi(vali)>0&&eq(itoa(atoi(vali)),vali))
+            if(atoi(vali)!=0&&eq(itoa(atoi(vali)),vali))
                 object=value(vali,atoi(vali),Integer);
-            else if(atof(vali)>0&&eq(itoa(atof(vali)),vali))
+            else if(atof(vali)!=0&&eq(itoa(atof(vali)),vali))
                 object=value(vali,atof(vali),Number);
             else
                 object=getThe(vali);
@@ -1135,7 +1135,7 @@ bool importYago(const char* file) {
 			}
 			subject=getYagoConcept(subjectName); //
 			predicate=getYagoConcept(predicateName);
-			//			if (subject == 0) subject=getYagoConcept(modifyConstChar(subjectName)); // wth ???
+			//			if (subject == 0) subject=getYagoConcept(editable(subjectName)); // wth ???
 			//			if (object == 0) object=getYagoConcept(objectName); // wth ???
 		}
 		if (subject == 0 || predicate == 0 || object == 0) {

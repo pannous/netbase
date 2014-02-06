@@ -44,7 +44,8 @@ void ps(const char* s);
 void ps(string s);// string geht nicht!?!
 void ps(string* s);
 void ps(NodeVector v);
-void p(long l);
+//void p(long l);
+void p(double l);
 //void p(int i);
 void px(void* p);// 64 bit hex
 void p(char* s);
@@ -79,6 +80,7 @@ void mergeVectors(NodeVector* some, NodeVector more);
 char* substr(char* what,int from,int to);
 char* match(char* input, cchar* pattern);
 char* clone(const char* line);
+char* editable(const char* line);
 char* modifyConstChar(const char* line);
 const char* concat(const char* a,const  char* b);
 char* fixQuotesAndTrim(char* tmp);
