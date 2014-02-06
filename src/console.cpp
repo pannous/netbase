@@ -525,6 +525,7 @@ NodeVector parse(const char* data) {
 
 
 extern "C"  Node** execute(const char* data,int* out){
+//    quiet=true;
     NodeVector result=parse(data);
     int hits=(int)result.size();
 //    printf(">>>>>>>>>>> %p\n",out);
@@ -532,8 +533,8 @@ extern "C"  Node** execute(const char* data,int* out){
     Node** results=(Node** ) malloc((1+hits)*nodeSize);
     for (int i=0; i< hits; i++) {
         results[i]=result[i];
-        pf("%d %s | ",result[i]->id,result[i]->name);
-        pf(" %ld\n",(long)(void*)result[i]);
+//        pf("%d %s | ",result[i]->id,result[i]->name);
+//        pf(" %ld\n",(long)(void*)result[i]);
         //        memccpy(&results[i],result[i],0,sizeof(Node));
     }
     flush();
