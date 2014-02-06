@@ -68,10 +68,14 @@ Node* Derived;// Adjective^-1
 Node* DerivedFromNoun;
 
 Node* Number;
+Node* Double;// == Number
+Node* Float;// == Number
+
+Node* Integer;
+Node* Long;// == Integer
+
 Node* String;
 Node* Date;
-Node* Float;
-Node* Integer;
 
 Node* Bytes;// byte[] -> serialized java object etc etc
 Node* Map; // Map<String,T>

@@ -285,8 +285,8 @@ int handle(char* q,int conn){
     if(contains(q,"node count")){Writeline(conn,itoa(currentContext()->nodeCount).data());return 0;}
     
 	if (startsWith(q, "all/")) {
-        cut_to_c(q," +");
-        cut_to_c(q," -");
+        cut_to(q," +");
+        cut_to(q," -");
 		q = q + 4;
 		showExcludes=false;
 		verbosity = alle;

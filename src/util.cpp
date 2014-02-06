@@ -166,14 +166,27 @@ string replace_all(string str, string what, string with) {
 	}
 	return str;
 }
-void cut_to_c(char* str, char* match){
+
+cchar* cut_to(cchar* str, char* match){
+    char* i=strstr(str,match);
+    if(!i)return str;
+//    if(i)i[0]=0;
+    return i+1;
+}
+
+// NOT const !!
+cchar* keep_to(cchar* str, char* match){
     char* i=strstr(str,match);
     if(i)i[0]=0;
+    return str;
 }
-string cut_to(string str, string what) {
-	int idx=(int)str.find(what);
-	return str.substr(idx + what.length());
-}
+
+
+
+//string cut_to(string str, string what) {
+//	int idx=(int)str.find(what);
+//	return str.substr(idx + what.length());
+//}
 
 bool quiet=false;
 
