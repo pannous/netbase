@@ -60,14 +60,8 @@ bool checkHideStatement(Statement* s){
         return true;
     }
     
-    if(eq(predicateName,"exclude")){
-        excluded.push_back(objectName);
-        return !showExcludes;
-    }
-    if(eq(predicateName,"include")){
-        included.push_back(objectName);
-        return !showExcludes;
-    }
+    if(eq(predicateName,"exclude")){excluded.push_back(objectName);return true;}
+    if(eq(predicateName,"include")){included.push_back(objectName);return true;}
     if(predicateName[0]=='<')predicateName++;
 	if(eq(predicateName,"Key"))return true;
    	if(eq(predicateName,"expected type"))return true;

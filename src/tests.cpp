@@ -1512,7 +1512,8 @@ void testBrandNewStuff() {
 //    importGeoDB();
 //    showNode(1001);
     parse("learn T-Online Typ Firma");
-    handle("/json/verbose/T-Online");
+    handle("json/verbose/excluded/T-Online");
+//    handle("/json/verbose/T-Online");
     exit(0);
     tests();
     
