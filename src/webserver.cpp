@@ -28,6 +28,7 @@ enum result_verbosity {
 
 void fixLabel(Node* n){
     if(!checkNode(n))return;
+    if(n->name==0)return;// HOW? checkNames=false :(
 	if(n->name[0]=='"')n->name=n->name+1;
 	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
 		n->name[strlen(n->name)-1]=0;
