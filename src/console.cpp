@@ -17,6 +17,7 @@
 #include "query.hpp"
 #include "init.hpp"
 #include "relations.hpp"
+#include "webserver.hpp" // int handle(char* q,int conn) TEST
 
 #define USE_READLINE
 // compile with -lreadline !
@@ -402,6 +403,7 @@ NodeVector parse(const char* data) {
         return nodeVectorWrap(get("included"));
     }
     ///
+    if (startsWith(data, "handle ")) {handle((char*)data+7);return OK;}
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
 		return showNodes(query(data),true);
