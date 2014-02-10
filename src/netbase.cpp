@@ -755,9 +755,8 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	bool ok=addStatementToNode(subject, id);
 	ok=ok&&addStatementToNode(predicate, id);
 	ok=ok&&addStatementToNode(object, id);
-    if(!ok){
-        p("warning: addStatementToNode skipped ");
-    }
+//    if(!ok)p("warning: addStatementToNode skipped ");// probably quick duplicate check
+    
 	//	subject->statements[subject->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
 	//	subject->statementCount++;
 	//	predicate->statements[predicate->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
