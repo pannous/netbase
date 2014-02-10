@@ -1507,8 +1507,8 @@ void testBrandNewStuff() {
 	debug = true;
 //    testing=false;// NO RELATIONS!
     germanLabels=true;// false;
-    
-    tests();
+    importAll();
+//    tests();
     
 //    int hits;
 //    execute("Population of Gehren",&hits);

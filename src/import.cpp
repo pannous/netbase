@@ -717,7 +717,10 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	//	vector<char*>& fields = *new vector<char*>();
 	int linecount=0;
 	FILE *infile=open_file(file);
-    if(!type)type=getThe(keep_to(cut_to(cut_to(file,"/"),"/"),"."));
+    if(!type){
+        char* typeName=keep_to(editable(cut_to(cut_to(file,"/"),"/")),".");
+        type=getThe(typeName);
+    }
 
     //	char* objectName=(char*) malloc(100);
     vector<Node*> predicates=*new vector<Node*>();
