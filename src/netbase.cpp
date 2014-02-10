@@ -229,6 +229,10 @@ inline bool eq(Statement* s,int statementNr){
 }
 
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
+    if(statementNr==0){
+        p("WARNING statementNr==0");
+        return false;
+    }
 	int n=node->statementCount;
 	if (n == 0) { // && ==0
 		if (node->firstStatement != 0)
@@ -735,6 +739,7 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
     //	Statement* last_statement=&context->statements[context->statementCount-1];
     //	if(context->statementCount>1000&&last_statement->Subject=subject&&last_statement->Predicate=predicate&&last_statement->Object=object)
     //		return last_statement;// direct duplicate!
+    
     int id=context->statementCount;
 	Statement* statement=&context->statements[id]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
     //	statement->id=context->statementCount;
@@ -763,9 +768,10 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	//	predicate->statementCount++;
 	//    object->statements[object->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
 	//	object->statementCount++;
-	context->statementCount++;
 	// pi(context->statementCount);
 	// context->nodeCount++;
+    
+	context->statementCount++;
 	return statement;
 }
 
@@ -1242,7 +1248,7 @@ Node* number(int nr){
 extern "C" int nodeCount(){
     return currentContext()->nodeCount;
 }extern "C" int statementCount(){
-    return currentContext()->nodeCount;
+    return currentContext()->statementCount;
 }
 extern "C" int nextId(){
     return currentContext()->nodeCount++;

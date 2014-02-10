@@ -1507,8 +1507,12 @@ void testBrandNewStuff() {
 	debug = true;
 //    testing=false;// NO RELATIONS!
     germanLabels=true;// false;
-    importAll();
-//    tests();
+//    importAll();
+    p(statementCount());
+    importGeoDB();
+    showNode(1001);
+    exit(0);    
+    tests();
     
 //    int hits;
 //    execute("Population of Gehren",&hits);
@@ -1522,7 +1526,7 @@ void testBrandNewStuff() {
     check(getAbstract("a")->id>=1000);
     check(hasNode("Typ"));
     check(hasNode("1"));
-    exit(0);
+
     
     parse("node count");
 //    parse("exclude Code");
