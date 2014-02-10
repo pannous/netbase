@@ -1321,6 +1321,8 @@ void showStatement(Statement * s) {
 		return;
 	}
 	if (s == null) return;
+    if(s->subject==s->predicate==s->object==0)return;//null / deleted
+    
 	if (checkNode(s->Subject(), s->subject) && checkNode(s->Predicate(), s->predicate) && checkNode(s->Object(), s->object))
         //        if(s->Object->value.number)
         //            printf("%d\t%s\t\t%s\t\t%g %s\t%d\t%d\t%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->value.number,s->Object->name, s->subject, s->predicate, s->object);
@@ -2175,10 +2177,10 @@ void initUnits() {
 	//    addSynonyms(u,"m^2","sqm");
 }
 
+// SAME as evaluate!!
 Statement * learn(string sentence) {
 	ps("learning " + sentence);
 	Statement* s=evaluate(sentence);
-    s->context=0;// NO LONGER PaTTERN!
 	if (checkStatement(s)) {
 		return s;
 	} else {
