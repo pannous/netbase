@@ -175,7 +175,7 @@ cchar* cut_to(cchar* str, char* match){
 }
 
 // NOT const !!
-cchar* keep_to(cchar* str, char* match){
+char* keep_to(char* str, char* match){
     char* i=(char*)strstr(str,match);
     if(i)i[0]=0;
     return str;
