@@ -434,9 +434,9 @@ bool clearMemory() {
     memset(name_root, 0, 100000); // for testing
 	memset(abstract_root, 0, maxNodes*ahashSize * 2);
     currentContext()->nodeCount=1000;// 0 = ANY
-    currentContext()->statementCount=1;// 0 = ERROR
     currentContext()->nodeNames=name_root;
     }
+    currentContext()->statementCount=1;// 0 = ERROR
 //    if(!testing)
 	initRelations();
 	return true;
@@ -494,6 +494,7 @@ char* initContext(Context* context) {
 	context->nodes=nodes;
 	context->statements=statements;
 	context->nodeNames=nodeNames;
+    context->statementCount=1;// 0 = error
 //	px(context);
 //	px(nodes);
 //	px(nodeNames);
