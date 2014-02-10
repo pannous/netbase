@@ -1509,9 +1509,11 @@ void testBrandNewStuff() {
     germanLabels=true;// false;
 //    importAll();
     p(statementCount());
-    importGeoDB();
-    showNode(1001);
-    exit(0);    
+//    importGeoDB();
+//    showNode(1001);
+    parse("learn T-Online Typ Firma");
+    handle("/json/verbose/T-Online");
+    exit(0);
     tests();
     
 //    int hits;

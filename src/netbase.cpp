@@ -1460,7 +1460,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		if (visited[s]) return 0;
 		visited[s]=1;
 //        if(s->id()==4334||subject->id==4904654)
-//            p(s);
+        p(s);
 		if (!checkStatement(s)) continue;
         //#ifdef useContext
 		if (s->context == _pattern) continue;
@@ -2178,6 +2178,7 @@ void initUnits() {
 Statement * learn(string sentence) {
 	ps("learning " + sentence);
 	Statement* s=evaluate(sentence);
+    s->context=0;// NO LONGER PaTTERN!
 	if (checkStatement(s)) {
 		return s;
 	} else {

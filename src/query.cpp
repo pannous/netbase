@@ -547,7 +547,6 @@ good:
 
 // maria.freund=sven
 // maria.freund => sven
-
 Statement* evaluate(string data) {
 	Statement* s = parseFilter(data); //Hypothesis Aim Objective supposition assumption
 	// TODO MARK + CLEAR PATTERNS!!!
@@ -555,8 +554,10 @@ Statement* evaluate(string data) {
 	if (result)return result;
     //     Node* n=has(s->Subject,s->Predicate,s->Object);
     //     if(n)return n;
-	else
-		return addStatement(s->Subject(), s->Predicate(), s->Object(), true);
+	else {
+        return s;// CLEAR PATTERN in LEARN function!
+    }
+//		return addStatement(s->Subject(), s->Predicate(), s->Object(), true);
 }
 
 Node* match(string data) {
