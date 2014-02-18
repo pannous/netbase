@@ -2107,6 +2107,10 @@ Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
 	return null;
 }
 
+NodeVector show(NodeVector all){
+ return    showNodes(all);
+}
+
 NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {
 	int size=(int)all.size();
 	ps("+++++++++++++++++++++++++++++++++++");

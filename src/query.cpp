@@ -1092,6 +1092,19 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){//, int max) {
 }
 
 
+NodeVector relationsFilter(Node* subject, NodeQueue * queue){//, int max) {
+	NodeVector all;
+//    vector<int> relations;
+	int i = 0;
+	Statement* s = 0;
+	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {
+        if(!contains(all,s->Predicate()))
+           all.push_back(s->Predicate());
+	}
+	return all;
+}
+
+
 // how to find paths with property predicates??
 
 NodeVector memberFilter(Node* subject, NodeQueue * queue) {
