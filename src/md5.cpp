@@ -119,7 +119,7 @@ MD5::MD5()
 MD5::MD5(const std::string &text)
 {
   init();
-  update(text.c_str(), (uint)text.length());
+  updateMd5(text.c_str(), (uint)text.length());
   finalize();
 }
 
@@ -256,7 +256,7 @@ void MD5::transform(const uint1 block[blocksize])
 
 // MD5 block update operation. Continues an MD5 message-digest
 // operation, processing another message block
-void MD5::update(const unsigned char input[], size_type length)
+void MD5::updateMd5(const unsigned char input[], size_type length)
 {
   // compute number of bytes mod 64
   size_type index = count[0] / 8 % blocksize;
@@ -294,9 +294,9 @@ void MD5::update(const unsigned char input[], size_type length)
 //////////////////////////////
 
 // for convenience provide a verson with signed char
-void MD5::update(const char input[], size_type length)
+void MD5::updateMd5(const char input[], size_type length)
 {
-  update((const unsigned char*)input, length);
+  updateMd5((const unsigned char*)input, length);
 }
 
 //////////////////////////////
@@ -319,10 +319,10 @@ MD5& MD5::finalize()
     // pad out to 56 mod 64.
     size_type index = count[0] / 8 % 64;
     size_type padLen = (index < 56) ? (56 - index) : (120 - index);
-    update(padding, padLen);
+    updateMd5(padding, padLen);
 
     // Append length (before padding)
-    update(bits, 8);
+    updateMd5(bits, 8);
 
     // Store state in digest
     encode(digest, state, 16);

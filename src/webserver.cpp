@@ -173,10 +173,10 @@ void loadView(char* q){
     
 }
 
-/* CENTRAL METHOD */
+/* CENTRAL METHOD to parse and render html request*/
 int handle(char* q,int conn){
     q=editable(q);
-    if(q[0]=='/')q++;
+    while(q[0]=='/')q++;
 	enum result_format format = txt;
 	enum result_verbosity verbosity = normal;
 	int len=(int)strlen(q);
@@ -287,7 +287,7 @@ int handle(char* q,int conn){
     }
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
-    NodeVector all = parse(q); // <<<<<<<< NETBASE!
+    NodeVector all = parse(q); // <<<<<<<< HANDLE QUERY WITH NETBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	
@@ -362,6 +362,7 @@ int handle(char* q,int conn){
 			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
                 if(format==csv&&all.size()>1)break;// entities vs statements
+                p(s);
 				if (!checkStatement(s))continue;
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
@@ -380,7 +381,7 @@ int handle(char* q,int conn){
 	if (format == json)Writeline(conn, "]}\n");
 	if (format == html)Writeline(conn, html_end);
 	if (format == xml)Writeline(conn, "</results>\n");
-    pf("Warnings: %d\n",warnings);
+    pf("Warnings/excluded: %d\n",warnings);
     return 0;// 0K
 }
 
