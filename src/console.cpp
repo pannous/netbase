@@ -30,6 +30,7 @@
 #endif
 
 using namespace std;
+NodeVector OK;
 // static struct termios stored_settings;
 
 void showHelp() {
@@ -57,6 +58,8 @@ void showHelp() {
 	ps("opposite of bad");
     ps("learn Germany has Gehren");
     ps("learn 1001 1003 2442 (via ids)");
+    ps("update Stadt.Gemeindeart set typ=244797");
+//    ps("delete from Stadt.Gemeindeart where typ=244797");
     ps("");
 	//	ps("update city set type=town where population<10000");
 }
@@ -116,40 +119,6 @@ Node *parseProperty(const char *data) {
 	return found;
 }
 
-NodeVector parseProperties(const char *data) {
-	char *thing=(char *) malloc(1000);
-	char *property=(char *) malloc(1000);
-	if (contains(data, ":")) {
-		//			sscanf(data,"%s:%s",property,thing);
-		char** splat=splitStringC(data, ':');
-		thing=splat[1];
-		property=splat[0];
-        //		bool inverse=1;
-	} else if (contains(data, ".")) {
-		//			sscanf(data,"%s.%s",thing,property);
-		char** splat=splitStringC(data, '.');
-		thing=splat[0];
-		property=splat[1];
-	}
-	else if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
-	else if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
-    
-	if (!property) {
-		char** splat=splitStringC(data, ' ');
-		thing=splat[0];
-		property=splat[2];
-	}
-    
-	pf("does %s have %s?\n", thing, property);
-	NodeVector all=findProperties(thing, property);
-	if (all.size()==0&& property[strlen(property) - 1] == 's'){
-		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
-		all=findProperties(thing, property);
-	}
-    
-	showNodes(all);
-	return all;
-}
 
 
 void console() {
@@ -166,14 +135,6 @@ void console() {
 	}
 }
 
-
-NodeVector nodeVectorWrap(Node* n) {
-	NodeVector r;
-	r.push_back(n);
-	return r;
-}
-
-NodeVector OK;
 
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;
@@ -392,9 +353,14 @@ NodeVector parse(const char* data) {
         if (args.size() ==3 && contains(data,"include ")){
             autoIds=true;
             Node *node=getAbstract(args[0]);
+            Node *to_include=getAbstract(args[2]);// next //join(sublist(args,2)," "));
             if(eq(args[0], "include"))node=getAbstract(args[1]);
-            addStatement(node,getAbstract("include"),getAbstract(args[2]));
-            return nodeVectorWrap(getAbstract(args[0]));
+            else to_include=getAbstract(cut_to(data, "include "));
+            addStatement(node,getAbstract("include"),to_include);
+            N type=getType(node);// auto add to type!!!
+            if(type)node=type;
+            addStatement(type,getAbstract("include"),to_include);
+            return nodeVectorWrap(node);
         }
         
 	if (startsWith(data, "include ")){// globally included? NAH! How? bad
@@ -468,6 +434,11 @@ NodeVector parse(const char* data) {
 		return nodeVectorWrap(learn(data)->Subject());
 //    return nodeVectorWrap(reify(learn(data)));
 	
+//   update Stadt.Gemeindeart set type=244797 limit 100000
+	if (startsWith(data, "update")){
+        update(data);
+    }
+    
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))
         || (contains(data, ":"))) { // && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath

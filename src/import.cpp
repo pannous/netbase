@@ -1181,7 +1181,7 @@ const char *fixFreebaseName(char *key) {
 	int len=(int) strlen(key);
     if(len>5&&key[len-4]=='.')return key;// .svg ... file endings
 	for (int i=len - 1; i > 0; --i)
-		if (key[i] == '.') {
+		if (key[i] == '.'&&key[i-1]>'9') {// no numbers!
 			key[i]=0;
 			if (!eq(&key[i + 1], "topic")) return &key[i + 1];
 		} else if (key[i] == '#') return &key[i + 1];

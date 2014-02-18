@@ -1358,3 +1358,66 @@ NodeVector shortestPath(Node* from, Node * to) {
 	showNodes(all, false, true);
 	return all;
 }
+
+
+NodeVector nodeVectorWrap(Node* n) {
+	NodeVector r;
+	r.push_back(n);
+	return r;
+}
+
+NodeVector update(cchar* query){
+    autoIds=true;
+    char* data=modifyConstChar(query);
+    if(startsWith(data, "update "))data+=7;
+    char* i=strstr(data, " set ");
+    if(!i)throw "SYNTAX: UPDATE * SET x=y";// NOT OK;
+    i[0]=0;
+    string expression=i+5;
+    NV all;
+    if(contains(data,"."))
+        all= parseProperties(data);
+    else
+        all=nodeVectorWrap(getThe(data));
+    for (int i=0; i < all.size(); i++) {
+        Node* n=(Node*) all[i];
+        learn(itoa(n->id)+"."+expression);
+    }
+    return all;
+}
+
+
+NodeVector parseProperties(const char *data) {
+	char *thing=(char *) malloc(1000);
+	char *property=(char *) malloc(1000);
+	if (contains(data, ":")) {
+		//			sscanf(data,"%s:%s",property,thing);
+		char** splat=splitStringC(data, ':');
+		thing=splat[1];
+		property=splat[0];
+        //		bool inverse=1;
+	} else if (contains(data, ".")) {
+		//			sscanf(data,"%s.%s",thing,property);
+		char** splat=splitStringC(data, '.');
+		thing=splat[0];
+		property=splat[1];
+	}
+	else if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
+	else if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
+    
+	if (!property) {
+		char** splat=splitStringC(data, ' ');
+		thing=splat[0];
+		property=splat[2];
+	}
+    
+	pf("does %s have %s?\n", thing, property);
+	NodeVector all=findProperties(thing, property);
+	if (all.size()==0&& property[strlen(property) - 1] == 's'){
+		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
+		all=findProperties(thing, property);
+	}
+    
+	showNodes(all);
+	return all;
+}

@@ -41,6 +41,7 @@ function makeLink(name,url,elem)
 	x=document.createTextNode(name.replace(/\$(....)/,"&#x$1;"));
 	a.href=url;
 	a.style=nolink+black
+	if(name=="x")a.setAttribute("onclick","return confirm('really delete?')");
 	a.appendChild(x);
 	elem.appendChild(a);
 	elem.appendChild(document.createTextNode(" "));
@@ -52,9 +53,12 @@ function makeStatement(statement,elem)
 	var top = document.createElement("tr");
 	makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
 	predicate=	makeRow(top)
+	makeLink("x",document.URL.replace(/html.*/,"/")+"delete $"+statement.id,predicate).style=tiny;
 	makeLink(statement.predicate,server+statement.pid,predicate);
-	makeLink(" ^",document.URL+"."+statement.predicate,predicate).style=tiny;// filter
+	makeLink(" ^",clean(document.URL).replace(/html/,"html/short")+"."+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" -",document.URL+" -"+statement.predicate,predicate).style=tiny;// filter
+	makeLink(" +",statement.sid+" include "+statement.predicate,predicate).style=tiny;// filter
+	makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
 	x=makeLink(statement.object,server+statement.oid,makeRow(top));
 	makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
 	elem.appendChild(top);
@@ -93,6 +97,7 @@ function addImage(image,div){
 
 function makeEntity(entity)
 {
+	makeLink("x",document.URL.replace(/html.*/,"/")+"delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+entity.name,div).style=nolink+bold+blue+big
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
 	if(entity.image)addImage(entity.image,div);
@@ -115,6 +120,15 @@ function addStyle(file){
   x.setAttribute("href", file)
 	document.getElementsByTagName("head")[0].appendChild(x)
 }
+function clean(url){
+	url=url.replace("/short/","/");
+	url=url.replace("/long/","/");
+	url=url.replace("/verbose/","/");
+	url=url.replace("/all/","/");
+	url=url.replace("/showview/","/");
+	url=url.replace(/.limit.\d+/,"");	
+	return url;
+}
 
 
 window.onload = function ()
@@ -133,17 +147,22 @@ window.onload = function ()
 	var limit=matched?matched[1]:200
 	// br();
 	if((""+url).match(" -"))
-		makeLink(" MORE |",url.replace("/short/","/").replace(/.limit.\d+/,"").replace("-","limit "+limit*2+" -"));
+		makeLink(" MORE |",clean(url).replace("-","limit "+limit*2+" -"));
 	else
-		makeLink(" MORE |",url.replace("/short/","/").replace(/.limit.\d+/,"")+" limit "+limit*2);
+		makeLink(" MORE |",clean(url)+" limit "+limit*2);
 	if(url.match(/limit/))
-		makeLink(" LESS ",url.replace(/.limit.\d+/,"")+" limit "+limit/2);
+		makeLink(" LESS ",clean(url)+" limit "+limit/2);
 	else
-		makeLink(" LESS ",url.replace("/html","/html/short"));
+		makeLink(" LESS ",clean(url).replace("/html","/html/short"));
 	br();
 	makeLink(" tsv |",url.replace("/html","/csv"));
 	makeLink(" json |",url.replace("/html","/json"));
 	makeLink(" xml |",url.replace("/html","/xml"));
 	makeLink(" txt ",url.replace("/html","/txt"));
+	br();
+	makeLink(" Normal |",clean(url).replace("/html","/html/verbose"));// :filtered
+	makeLink(" Summary |",clean(url).replace("/html","/html/short"));// entity name + id
+	makeLink(" ALL |",clean(url).replace("/html","/html/all"));
+	makeLink(" VIEW ",clean(url).replace("/html","/html/showview"));///INCLUDES
 	div.style="display: block;"// render now
 }

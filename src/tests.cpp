@@ -1510,10 +1510,16 @@ void testBrandNewStuff() {
 //    importAll();
     p(statementCount());
     N s=get(244797);
+    handle("Katarina Witt");
+//    handle("//delete $564");
+//    handle("/html/all/Claudia Pechstein.Typ");
+//    update("update Stadt.Gemeindeart set typ=244797");
+//    parse("update Stadt.Gemeindeart set typ=244797 limit 100000");
+    exit(0);
     show(s,true);
     showNodes(relationsFilter(s));
     handle("/html/Stadt");
-    exit(0);
+
     
     
 //    importGeoDB();

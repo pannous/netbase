@@ -171,7 +171,7 @@ cchar* cut_to(cchar* str, char* match){
     cchar* i=strstr(str,match);
     if(!i)return str;
 //    if(i)i[0]=0;
-    return i+1;
+    return i+strlen(match);
 }
 
 // NOT const !!

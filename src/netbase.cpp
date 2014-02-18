@@ -319,6 +319,7 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if (s->id() == 0) return false; // !
 	if (checkSPOs || checkNamesOfSPOs) if (s->Subject() == 0 || s->Predicate() == 0 || s->Object() == 0) return false;
 	if (checkNamesOfSPOs) if (s->Subject()->name == 0 || s->Predicate()->name == 0 || s->Object()->name == 0) return false;
+    if(s->subject==0&&s->predicate==0&&s->object==0)return false;// one 0 OK :ANY
 	return true;
 }
 
@@ -1257,7 +1258,7 @@ extern "C" int nextId(){
 extern "C"
 Node* getType(Node* n){
     Statement* s=findStatement(n,Type,Any);
-    if(!checkStatement(s))return 0;
+    if(!checkStatement(s))return 0;// n
     return s->Object();
 }
 
@@ -1268,9 +1269,9 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
 		badCount++;
 		return 0;
 	}
+    while(thing[0]==' '||thing[0] == '"')thing++;
     if(autoIds&&isInteger(thing))return get(atoi(thing));
 
-    if (thing[0] == '"')thing++;
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
@@ -1321,7 +1322,7 @@ void showStatement(Statement * s) {
 		return;
 	}
 	if (s == null) return;
-    if(s->subject==s->predicate==s->object==0)return;//null / deleted
+    if(s->subject==0&&s->predicate==0&&s->object==0)return;//null / deleted
     
 	if (checkNode(s->Subject(), s->subject) && checkNode(s->Predicate(), s->predicate) && checkNode(s->Object(), s->object))
         //        if(s->Object->value.number)
@@ -1994,6 +1995,14 @@ Statement * isStatement(Node * n) {
 	return 0;
 }
 
+Node* findProperty(Node* n , const char* m){
+Statement* s=0;
+while ((s=nextStatement(n,s))) {
+    if(eq(s->Predicate()->name,m,true))
+        return s->Object();
+}
+    return 0;
+}
 
 NodeVector findProperties(Node* n, const char* m){
     if(isInteger(m)) m=getThe(m)->name;
@@ -2419,12 +2428,12 @@ string getImageThumb(const char* n, int size) {
 
 string getImage(const char* n, int size) {
 	Node* a=getAbstract(n);
-	Node* i=findMember(a, "wiki_image", false, false);
+   	Node* i=findProperty(a, "wiki_image");
     return formatImage(i,size,false);
 }
 
 string getImage(Node* a, int size,bool thumb) {
-	Node* i=findMember(a, "wiki_image", false, false);
+	Node* i=findProperty(a, "wiki_image");
 	if (!i || !checkNode(i)) return getImage(a->name);
     return formatImage(i,size,thumb);
 }

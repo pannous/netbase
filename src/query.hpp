@@ -53,6 +53,9 @@ NodeVector anyFilter(Node* subject,NodeQueue* queue=null,bool includeRelations=t
 NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);//, int max= lookupLimit resultLimit);
 NodeVector relationsFilter(Node* subject, NodeQueue * queue=null);
 
+NodeVector parseProperties(const char *data);
+NodeVector update(cchar* query);
+NodeVector nodeVectorWrap(Node* n);
 //NodeVector parentFilter(Node* subject);
 //NodeVector memberFilter(Node* subject);
 //NodeVector hasFilter(Node* subject);

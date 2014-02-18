@@ -542,6 +542,7 @@ void checkRootContext();
 Node* number(int n);
 Node* getProperty(Node* n,const char* s);
 Node* findRelation(Node* from, Node* to);
+Node* findProperty(Node* n , const char* m);
 NodeVector findProperties(const char* n, const char* m);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
