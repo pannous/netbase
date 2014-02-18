@@ -1509,6 +1509,13 @@ void testBrandNewStuff() {
     germanLabels=true;// false;
 //    importAll();
     p(statementCount());
+    N s=get(244797);
+    show(s,true);
+    showNodes(relationsFilter(s));
+    handle("/html/Stadt");
+    exit(0);
+    
+    
 //    importGeoDB();
 //    showNode(1001);
     parse("learn T-Online Typ Firma");

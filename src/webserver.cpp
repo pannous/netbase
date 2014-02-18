@@ -5,6 +5,19 @@
 #include <errno.h>
 #include <ctype.h>
 #include <string.h>
+#include <errno.h>
+#include <sys/socket.h>       /*  socket definitions        */
+#include <sys/types.h>        /*  socket types              */
+#include <sys/wait.h>         /*  for waitpid()             */
+#include <arpa/inet.h>        /*  inet (3) funtions         */
+#include <unistd.h>           /*  misc. UNIX functions      */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <sys/time.h>             /*  For select()  */
+#include <unistd.h>
+#include <fcntl.h>
 
 #include "webserver.hpp"
 #include "console.hpp" // parse request
@@ -16,6 +29,12 @@
 /*  Service an HTTP request  */
 
 #define SERVER_PORT  (81)
+static char server_root[1000] = "/Users/me/";
+
+int listener, conn,closing=0;
+pid_t pid;
+//    socklen_t
+struct sockaddr_in servaddr;
 
 enum result_format {
 	xml, json, txt,csv,html
@@ -102,6 +121,7 @@ void fixLabels(Statement* s){
 	fixLabel(s->Predicate());
 	fixLabel(s->Object());
 }
+
 void getIncludes(Node* n){
     pf("getIncludes %d %s\n",n->id,n->name);
     Statement *s=0;
@@ -118,6 +138,7 @@ void getIncludes(Node* n){
     }
     
 }
+
 void loadView(Node* n){
     getIncludes(n);
     N parent= getType(n);
@@ -152,34 +173,7 @@ void loadView(char* q){
     
 }
 
-
-// WORKS FINE, but not when debugging
-int Service_Request(int conn) {
-    
-	struct ReqInfo reqinfo;
-	InitReqInfo(&reqinfo);
-    
-	/*  Get HTTP request  */
-	if (Get_Request(conn, &reqinfo) < 0)
-		return -1;
-    
-	if (reqinfo.type == FULL)
-		Output_HTTP_Headers(conn, &reqinfo);
-    
-	// file system:	//		Serve_Resource(ReqInfo  reqinfo,int conn)
-    
-	CleanURL(reqinfo.resource);
-    
-	init(); // for each forked process!
-    if(strlen(reqinfo.resource)>1000)return 0;
-	char* q = substr(reqinfo.resource, 1, -1);
-    
-    int ok=handle(q,conn); // <<<<<<<<<<<<<
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	FreeReqInfo(&reqinfo);
-	return ok;
-}
-
+/* CENTRAL METHOD */
 int handle(char* q,int conn){
     q=editable(q);
     if(q[0]=='/')q++;
@@ -274,7 +268,6 @@ int handle(char* q,int conn){
     else showExcludes=false;
     excluded.clear();
     included.clear();
-    
     
     if(contains(q,"statement count")){Writeline(conn,itoa(currentContext()->statementCount).data());return 0;}
     if(contains(q,"node count")){Writeline(conn,itoa(currentContext()->nodeCount).data());return 0;}
@@ -391,15 +384,42 @@ int handle(char* q,int conn){
     return 0;// 0K
 }
 
-/*  Prints an error message and quits  */
 
+// WORKS FINE, but not when debugging
+int Service_Request(int conn) {
+    
+	struct ReqInfo reqinfo;
+	InitReqInfo(&reqinfo);
+    
+	/*  Get HTTP request  */
+	if (Get_Request(conn, &reqinfo) < 0)
+		return -1;
+    
+	if (reqinfo.type == FULL)
+		Output_HTTP_Headers(conn, &reqinfo);
+    
+	// file system:	//		Serve_Resource(ReqInfo  reqinfo,int conn)
+    
+	CleanURL(reqinfo.resource);
+    
+	init(); // for each forked process!
+    if(strlen(reqinfo.resource)>1000)return 0;
+	char* q = substr(reqinfo.resource, 1, -1);
+    
+    int ok=handle(q,conn); // <<<<<<<<<<<<<
+	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	FreeReqInfo(&reqinfo);
+	return ok;
+}
+
+
+/*  Prints an error message and quits  */
 void Error_Quit(char const * msg) {
 	fprintf(stderr, "WEBSERV: %s\n", msg);
 	exit(EXIT_FAILURE);
 }
 
 /*  Read a line from a socket  */
-
 ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 	ssize_t n, rc;
 	char c, *buffer;
@@ -440,7 +460,6 @@ void Writeline(string s) {
 ssize_t Writeline(int sockd, string s) {
 	return Writeline(sockd, s.data(), s.length());
 }
-
 ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 	size_t nleft;
 	ssize_t nwritten;
@@ -472,10 +491,6 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 	return n;
 }
 
-
-/*  Removes trailing whitespace from a string  */
-#include "string.h"
-
 int Trim(char * buffer) {
 	long n = strlen(buffer) - 1;
     
@@ -484,8 +499,6 @@ int Trim(char * buffer) {
     
 	return 0;
 }
-
-/*  Converts a string to upper-case  */
 
 int StrUpper(char * buffer) {
 	while (*buffer) {
@@ -496,7 +509,6 @@ int StrUpper(char * buffer) {
 }
 
 /*  Cleans up url-encoded string  */
-
 void CleanURL(char * buffer) {
 	char asciinum[3] = {0};
 	int i = 0, c;
@@ -516,31 +528,8 @@ void CleanURL(char * buffer) {
 		++i;
 	}
 }
-/*
- 
- REQHEAD.C
- =========
- (c) Copyright Paul Griffiths 1999
- Email: mail@paulgriffiths.net
- 
- Implementation of functions to manipulate HTTP request headers.
- 
- */
 
-
-#include <sys/time.h>             /*  For select()  */
-
-#include <stdlib.h>
-#include <string.h>
-#include <ctype.h>
-
-//#include "reqhead.h"
-//#include "servreq.h"
-//#include "helper.h"
-
-/*  Parses a string and updates a request
- information structure if necessary.    */
-
+/*  Parses a string and updates a request  information structure if necessary.    */
 int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
     
 	static int first_header = 1;
@@ -663,7 +652,6 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
  we use select() to set a maximum length of time we will
  wait for the next complete header. If we timeout before
  this is received, we terminate the connection.               */
-
 int Get_Request(int conn, struct ReqInfo * reqinfo) {
     
 	char buffer[MAX_REQ_LINE] = {0};
@@ -723,8 +711,6 @@ int Get_Request(int conn, struct ReqInfo * reqinfo) {
 	return 0;
 }
 
-/*  Initialises a request information structure  */
-
 void InitReqInfo(struct ReqInfo * reqinfo) {
 	reqinfo->useragent = NULL;
 	reqinfo->referer = NULL;
@@ -732,8 +718,6 @@ void InitReqInfo(struct ReqInfo * reqinfo) {
 	reqinfo->method = UNSUPPORTED;
 	reqinfo->status = 200;
 }
-
-/*  Frees memory allocated for a request information structure  */
 
 void FreeReqInfo(struct ReqInfo * reqinfo) {
 	if (reqinfo->useragent)
@@ -743,36 +727,6 @@ void FreeReqInfo(struct ReqInfo * reqinfo) {
 	if (reqinfo->resource)
 		free(reqinfo->resource);
 }
-/*
- 
- RESOURCE.C
- ==========
- (c) Copyright Paul Griffiths 1999
- Email: mail@paulgriffiths.net
- 
- Implementation of functions for returning a resource.
- 
- */
-
-
-#include <unistd.h>
-#include <fcntl.h>
-
-#include <string.h>
-#include <stdio.h>
-
-//#include "resource.h"
-//#include "reqhead.h"
-//#include "helper.h"
-
-
-/*  Change this string to change the root directory that
- the server will use, i.e. /index.html will translate
- here to /home/httpd/html/index.html                   */
-
-static char server_root[1000] = "/Users/me/";
-
-/*  Returns a resource  */
 
 int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
 	char c;
@@ -800,8 +754,6 @@ int Check_Resource(struct ReqInfo * reqinfo) {
 	return open(server_root, O_RDONLY);
 }
 
-/*  Returns an error message  */
-
 int Return_Error_Msg(int conn, struct ReqInfo * reqinfo) {
     
 	char buffer[100];
@@ -820,24 +772,6 @@ int Return_Error_Msg(int conn, struct ReqInfo * reqinfo) {
 	return 0;
     
 }
-/*
- 
- RESPHEAD.C
- ==========
- (c) Copyright Paul Griffiths 1999
- Email: mail@paulgriffiths.net
- 
- Implementation of HTTP reponse header functions.
- 
- */
-
-#include <unistd.h>
-#include <stdio.h>
-
-//#include "resphead.h"
-//#include "helper.h"
-
-/*  Outputs HTTP response headers  */
 
 int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	char buffer[100];
@@ -848,11 +782,6 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	Writeline(conn, "\r\n", 2);
 	return 0;
 }
-
-
-
-#include <stdio.h>
-#include <errno.h>
 
 void Serve_Resource(ReqInfo reqinfo, int conn) {
 	int resource = 0;
@@ -887,39 +816,6 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 	FreeReqInfo(&reqinfo);
 }
 
-
-
-/*
- 
- WEBSERV.C
- =========
- (c) Copyright Paul Griffiths 1999
- Email: mail@paulgriffiths.net
- 
- A simple web server
- 
- */
-
-
-#include <sys/socket.h>       /*  socket definitions        */
-#include <sys/types.h>        /*  socket types              */
-#include <sys/wait.h>         /*  for waitpid()             */
-#include <arpa/inet.h>        /*  inet (3) funtions         */
-#include <unistd.h>           /*  misc. UNIX functions      */
-
-#include <stdio.h>
-#include <stdlib.h>
-
-//#include "helper.h"
-//#include "servreq.h"
-
-/*  main() funcion  */
-
-int listener, conn,closing=0;
-pid_t pid;
-
-//    socklen_t
-struct sockaddr_in servaddr;
 void start_server() {
 	printf("STARTING SERVER!\n localhost:%d\n", SERVER_PORT);
 	flush();

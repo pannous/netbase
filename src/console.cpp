@@ -345,7 +345,6 @@ NodeVector parse(const char* data) {
 	}
     
 	if (eq(args[0], "find")) {
-		N da=getAbstract(data + 5);
 		return *findWords(wordnet, data + 5, false);
 	}
     
