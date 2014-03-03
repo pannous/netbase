@@ -135,7 +135,6 @@ void console() {
 	}
 }
 
-
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;
 	if (!isprint(data[0])) // ??
@@ -350,7 +349,7 @@ NodeVector parse(const char* data) {
         addStatement(get("excluded"), get("exclude"),getAbstract(data+8));
         return nodeVectorWrap(get("excluded"));
     }
-        if (args.size() ==3 && contains(data,"include ")){
+        if (args.size() >=3 && contains(data,"include ")){
             autoIds=true;
             Node *node=getAbstract(args[0]);
             Node *to_include=getAbstract(args[2]);// next //join(sublist(args,2)," "));
@@ -362,12 +361,11 @@ NodeVector parse(const char* data) {
             addStatement(type,getAbstract("include"),to_include);
             return nodeVectorWrap(node);
         }
-        
-	if (startsWith(data, "include ")){// globally included? NAH! How? bad
-        addStatement(get("included"), Instance,getAbstract(data+8));
-        return nodeVectorWrap(get("included"));
-    }
-    ///
+//  //	if (startsWith(data, "include ")){// globally included? NAH! How? bad
+//        addStatement(get("included"), Instance,getAbstract(data+8));
+//        return nodeVectorWrap(get("included"));
+//    }
+//    ///
     if (startsWith(data, "handle ")) {handle((char*)data+7);return OK;}
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
