@@ -342,11 +342,18 @@ int handle(char* q,int conn){
 	Node* last=0;
     warnings=0;
     
+    char* entity=0;
+    if(startsWith(q,"all")){
+        entity=(char*)cut_to(q," ");
+        entity=keep_to(entity,"limit");
+    }
     
 	for (int i = 0; i < all.size(); i++) {
 		Node* node = (Node*) all[i];
 		if(last==node)continue;
 		last=node;
+        if(verbosity ==normal && entity&& eq(entity,node->name))continue;
+        
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
         if(verbosity != alle)
