@@ -19,7 +19,7 @@
 #include "relations.hpp"
 #include "webserver.hpp" // int handle(char* q,int conn) TEST
 
-#define USE_READLINE
+// #define USE_READLINE
 // compile with -lreadline !
 #ifdef USE_READLINE
 //ai libreadline-dev
