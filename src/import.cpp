@@ -24,7 +24,7 @@ cchar* images_file_de="images_de.nt";
 
 bool getSingletons=false;// i.e. Nationalmannschaft
 bool getBest=false;// i.e. Madonna\Music | Madonna\Church
-bool germanLabels=true;
+bool germanLabels=false;//true;
 
 
 FILE *open_file(const char* file) {
