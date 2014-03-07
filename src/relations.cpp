@@ -458,10 +458,15 @@ Node* invert(Node* relation) {
 }
 
 
+// expansive! todo! merge later
 Node * getRelation(const char* thing) {
 	if (thing[0] == '#') thing++;
 	if (eq(thing, "instance")) return Instance;
     if (eq(thing, "Contains")) return Part;
+    if (eq(thing, "Broader")) return SuperClass;
+    if (eq(thing, "Broader topic")) return SuperClass;
+    if (eq(thing, "narrower")) return SubClass;
+    if (eq(thing, "narrower topic")) return SubClass;
 	if (eq(thing, "type")) return Type;// lustiger Typ !!! --------- !!!!!!!!
    	if (eq(thing, "has type")) return Type;
 	if (eq(thing, "is")) return Type;
@@ -473,8 +478,9 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "by")) return Owner; // creator
 	if (eq(thing, "type")) return Type;
 	if (eq(thing, "property")) return Attribute; // Property;
-	if (eq(thing, "true"))
-		return True;
+	if (eq(thing, "inverseOf"))return Antonym;
+	if (eq(thing, "reverse property"))return Antonym;
+	if (eq(thing, "true"))return True;
 	if (eq(thing, "false")) return False;
 	if (eq(thing, "label")) return Label;
 	if (eq(thing, "range")) return Range;

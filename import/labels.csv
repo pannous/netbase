@@ -30,3 +30,9 @@ Elevation	Erhebung
 birthplace	Geburtsort
 countrycode	Ländercode
 longitude	Längengrad
+Broader	SuperClass
+Broader_topic	SuperClass
+Broader_concept	SuperClass
+narrower	SubClass
+narrower_topic	SubClass
+narrower_concept	SubClass
