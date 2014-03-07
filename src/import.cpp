@@ -1887,6 +1887,7 @@ void importWordnet() {
 	load_wordnet_synset_map();
 	//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
+    if(germanLabels)
     importGermanLables();
 	importSenses();
 	getContext(wordnet)->nodeCount=synonyms; //200000+117659;//WTH!
