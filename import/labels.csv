@@ -2,6 +2,7 @@ Type Typ
 Description Beschreibung
 surname	Nachname
 Death_place	Sterbeort
+deathPlace	Sterbeort
 patrono	Patron
 UAort	Uraufführung
 STERBEORT	Sterbeort
@@ -35,3 +36,6 @@ Broader_concept	SuperClass
 narrower	SubClass
 narrower_topic	SubClass
 narrower_concept	SubClass
+birthDate	Geburtsdatum
+deathDate	Sterbedatum
+
