@@ -20,13 +20,10 @@ if [ $1 ]
 		# echo "kernel.shmall=$shmmax" >> /etc/sysctl.conf
 	if [ $APPLE ] 
 	then
-		sudo sysctl -w kern.sysv.shmmax=$shmmax
-		sudo sysctl -w kern.sysv.shmall=$shmmax
+sudo sysctl -w kern.sysv.shmmax=$shmmax && sudo sysctl -w kern.sysv.shmall=$shmmax
 	else 
-		sysctl -w kernel.shmall=$shmmax
-		sysctl -w kernel.shmmax=$shmmax
-		# sudo sysctl -w sys.kernel.shmmax=$shmmax
-		# sudo sysctl -w sys.kernel.shmmall=$shmmax
+sysctl -w kernel.shmall=$shmmax && sysctl -w kernel.shmmax=$shmmax
+#sudo sysctl -w sys.kernel.shmmax=$shmmax && sudo sysctl -w sys.kernel.shmmall=$shmmax
 	fi
 fi
 
