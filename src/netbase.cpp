@@ -1338,7 +1338,7 @@ void showStatement(Statement * s) {
 }
 
 //, bool showAbstract
-extern "C" char* getName(int node){
+extern "C"  const char* getName(int node){
     if(!checkNode(node,false,true))return "<ERROR>";//_IN_GET_NAME>";//
     return get(node)->name;
 }

@@ -91,7 +91,7 @@ typedef union Value {
     Statement* statement; // overhead OK!!! 8 bytes on 64bit machines  (Statement too long, pointer OK)
 }Value;
 
-extern "C" char* getName(int node);
+extern "C" const char* getName(int node);
 
 // NEVER USE STRUCTS WITHOUT POINTER!!
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
@@ -583,7 +583,7 @@ static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
 
 int main(int argc, char *argv[]);
-static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize
+static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize // against unused ahashSize ...
 
 extern "C" int test2();// extern "C" -> don't mangle!
 extern Context* contexts; //[maxContexts];

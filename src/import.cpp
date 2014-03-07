@@ -131,7 +131,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 	p("image import starting ...");
     int id;
 	char line[10000];
-	char label[1000];
+//	char label[1000];
 	char* lastTitle=0;
 	int linecount=0;
 	Node* wiki_image=getAbstract("wiki image");
@@ -1309,9 +1309,10 @@ bool importLabels(cchar* file, bool hash=false) {
         fixNewline(label);
         fixLabel(label);
         if (!hash&&contains(label, "\\u")) continue;// no strange umlauts 'here'
-        if (hash)
+        if (hash){
             if(!startsWith(key, "m.") && !startsWith(key, "g.")) continue;
             else key=key+2;
+        }
         if (startsWith(label, "http")) continue;
 		if (startsWith(label, "/")) continue; // "/wikipedia/de_title"@en etc
 		if (endsWith(label, "_id")) continue; // "/wikipedia/de_title"@en etc
@@ -1344,7 +1345,7 @@ bool importLabels(cchar* file, bool hash=false) {
         
         
 		long h=freebaseHash(key);		// skip m.
-        bool old=false;
+//        bool old=false;
         Node* oldLabel=labels[key];
         if(oldLabel){
             if(eq(oldLabel->name,label))continue;// OK
@@ -1515,7 +1516,7 @@ bool importN3(cchar* file) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
         //		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
         fixNewline(objectName);
-        if(contains(line,"Stellaland"))
+        if(contains(line,"date>"))
             p(line);
         //        if(contains(line,"molaresvolumen"))
         //            p("st");
@@ -2036,6 +2037,7 @@ void importAllDE() {
 	importGeoDB();
     //    importEntities();
     importImagesDE();
+    importLabels("labels.csv");// todo: why again?
     //	importFacts()
 }
 
