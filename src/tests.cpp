@@ -1506,7 +1506,8 @@ void testBrandNewStuff() {
     quiet=false;
 	debug = true;
 //    testing=false;// NO RELATIONS!
-    germanLabels=true;// false;
+//    germanLabels=true;// false;
+    germanLabels=false;
     importAll();
         exit(0);
     p(statementCount());
