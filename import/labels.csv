@@ -36,3 +36,6 @@ Broader_concept	SuperClass
 narrower	SubClass
 narrower_topic	SubClass
 narrower_concept	SubClass
+birthDate	Geburtsdatum
+deathDate	Sterbedatum
+
