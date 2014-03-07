@@ -1396,6 +1396,7 @@ bool importLabels(cchar* file, bool hash=false) {
 }
 
 void importFreebaseLabels() {
+    if(germanLabels)
 	importLabels("freebase.labels.de.txt", true);
 	importLabels("freebase.labels.en.txt", true);
 }
