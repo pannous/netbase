@@ -64,8 +64,7 @@ void detach_shared_memory(){
 
 void increaseShmMax(){
     // TODO (?)  programmatically
-    p(" if you cannot start netbase try: ");
-    p("increase shmmax, see clear-shared-memory.sh)");
+    p("If you still cannot start netbase decrease maxNodes = 30*million in netbase.hpp or adjust shmmax, see clear-shared-memory.sh");
 }
 
 void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * desired) {

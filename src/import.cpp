@@ -2032,6 +2032,8 @@ void import(const char* type, const char* filename) {
 }
 
 void importAllDE() {
+    germanLabels=true;
+    p("importAll GERMAN");
     importLabels("labels.csv");
 	importCsv("adressen.txt");
 	importWordnet();
@@ -2046,9 +2048,9 @@ void importAllDE() {
 }
 
 void importAll() {
-//    if(germanLabels)
-//        return importAllDE();
-    
+    if(germanLabels)
+        return importAllDE();
+    p("importAll ENGLISH");
 	importWordnet();
 	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
