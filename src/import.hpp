@@ -7,6 +7,7 @@ extern std::string basepath;
 using namespace std;
 
 void importAll();
+void importAllDE() {
 void importAllYago() ;
 void importWordnet();
 void importGeoDB();
