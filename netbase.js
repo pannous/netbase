@@ -2,6 +2,7 @@
 // (C) 2014 Pannous + Quasiris
 
 var div=document.getElementById("results");
+var server="/html/"; // "http://quasiris.big:3333/html/";
 
 function br(){
 	div.appendChild( document.createElement("br"));
@@ -9,7 +10,7 @@ function br(){
 
 function append(tag,elem,clazz){
 	var tl = document.createElement(tag);
-	if(clazz)tl.setAttribute("class",clazz);
+	if(clazz) tl.setAttribute("class",clazz);
 	elem.appendChild(tl);
 	return tl;
 }
@@ -24,8 +25,6 @@ function makeRow(elem){
 	td.width="30%" //400px"
 	return td;
 }
-	// server="http://quasiris.big:3333/html/";
-	server="/html/";
 
 var nolink="border: 0 none; cursor: pointer;text-decoration:none;"
 var bold="font-decoration:bold;"
@@ -41,11 +40,11 @@ function makeLink(name,url,elem)
 	x=document.createTextNode(name.replace(/\$(....)/,"&#x$1;"));
 	a.href=url;
 	a.style=nolink+black
-	if(name=="x")a.setAttribute("onclick","return confirm('really delete?')");
+	if(name=="x") a.setAttribute("onclick","return confirm('really delete?')");
 	a.appendChild(x);
 	elem.appendChild(a);
 	elem.appendChild(document.createTextNode(" "));
-	return a; // or a
+	return a; 
 }
 function makeStatement(statement,elem)
 {
@@ -85,7 +84,7 @@ function addImage(image,div){
 		if(onerror_handled==1){this.src=this.src.replace("/thumb/","//");}
 		if(onerror_handled==2){this.src=this.src.replace("/commons/","/en/");}
 		onerror_handled++;;
-		}
+	}
 	img.src=image;
 	img.style="float:right;width:200px";
 	// img.onerror="this.src=''"
@@ -105,21 +104,21 @@ function makeEntity(entity)
 	appendText("  statements: "+entity.statementCount,div).style="font-size:small;"
 	
 	try{
-	table=append("table",div,"sorted");
-	for(key in entity.statements){
-		statement=entity.statements[key];
-		makeStatement(statement,table)
-	}
+		table=append("table",div,"sorted");
+		for(key in entity.statements)
+			makeStatement(entity.statements[key],table)
 	}catch(x){}	
 	br();
 }
+
 function addStyle(file){
 	x=document.createElement("link")
-  x.setAttribute("rel", "stylesheet")
-  x.setAttribute("type", "text/css")
-  x.setAttribute("href", file)
+  	x.setAttribute("rel", "stylesheet")
+  	x.setAttribute("type", "text/css")
+  	x.setAttribute("href", file)
 	document.getElementsByTagName("head")[0].appendChild(x)
 }
+
 function clean(url){
 	url=url.replace("/short/","/");
 	url=url.replace("/long/","/");
@@ -130,12 +129,14 @@ function clean(url){
 	return url;
 }
 
-
-window.onload = function ()
-{
+function parseResults(){
+	
+	// var results set via jsonp:
+	// <script src="http://de.netbase.pannous.com:81/js/verbose/gehren"></script>
+	
+	div.style="display: none;"// don't render yet
 	url=document.URL.replace(/%20/g," ")
 	addStyle("http://files.pannous.net/styles/table.css")
-	div.style="display: none;"// don't render yet
 	var title=decodeURIComponent(url.replace(/.*\//,"")).replace(":"," : ").replace("."," . ").replace(/\+/g," ").replace(/limit.*/,"");
 	document.title=title;
 	appendText(title,append("h1",div))
@@ -166,3 +167,5 @@ window.onload = function ()
 	makeLink(" VIEW ",clean(url).replace("/html","/html/showview"));///INCLUDES
 	div.style="display: block;"// render now
 }
+
+window.onload = function (){parseResults()}

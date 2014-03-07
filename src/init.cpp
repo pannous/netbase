@@ -252,7 +252,7 @@ void fixNodes(Context* context, Node* oldNodes) {
 	}
 #endif
 }
-FILE* open_binary(char* c){
+FILE* open_binary(cchar* c){
 	printf("Opening File %s\n", (data_path + c).data());
      FILE* fp= fopen((data_path + c).data(), "rb");
     if(fp==NULL)perror("Error opening file");
