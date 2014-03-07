@@ -1347,7 +1347,7 @@ void fixNames(){
 }
 
 void testSqlDe(){
-  	char* sql = "Karin with Rufnummer";
+  	cchar* sql = "Karin with Rufnummer";
     //    char* sql="select Synonym from dogs where anhinga";
 	NodeVector r = query(sql);
 	check(r.size() >= 1);
@@ -1360,7 +1360,7 @@ void testSqlDe2(){
     //    	char* sql = "select Klasse from dogs where Schlangenhalsvögel";
     //        	char* sql = "select Kontext from frau where Anrede"; // 2
     //            	char* sql = "select Kontext from frau where Eva";
-  	char* sql = "select Klasse from grau where Anthrazit";
+  	cchar* sql = "select Klasse from grau where Anthrazit";
     //    char* sql="select Synonym from dogs where anhinga";
 	NodeVector r = query(sql);
 	check(r.size() == 1);
@@ -1507,7 +1507,8 @@ void testBrandNewStuff() {
 	debug = true;
 //    testing=false;// NO RELATIONS!
     germanLabels=true;// false;
-//    importAll();
+    importAll();
+        exit(0);
     p(statementCount());
     N s=get(244797);
     handle("Katarina Witt");

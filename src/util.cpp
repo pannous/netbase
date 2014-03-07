@@ -167,7 +167,7 @@ string replace_all(string str, string what, string with) {
 	return str;
 }
 
-cchar* cut_to(cchar* str, char* match){
+cchar* cut_to(cchar* str, cchar* match){
     cchar* i=strstr(str,match);
     if(!i)return str;
 //    if(i)i[0]=0;
@@ -175,7 +175,7 @@ cchar* cut_to(cchar* str, char* match){
 }
 
 // NOT const !!
-char* keep_to(char* str, char* match){
+char* keep_to(char* str, cchar* match){
     char* i=(char*)strstr(str,match);
     if(i)i[0]=0;
     return str;

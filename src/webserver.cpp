@@ -1,4 +1,4 @@
-#pragma once
+//#pragma once
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -150,9 +150,9 @@ void loadView(Node* n){
 
 void loadView(char* q){
     N ex=get("excluded");// globally
-    if(ex)getIncludes(ex);
+    if(ex &&   verbosity != alle )getIncludes(ex);
     ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
-    if(ex)getIncludes(ex);
+    if(ex && verbosity != alle )getIncludes(ex);
     
    char* exclude=q;
     while(exclude&&contains(exclude," -")){
@@ -160,6 +160,7 @@ void loadView(char* q){
         if(exclude[2]!=' '){// not 2009 - 2010 etc
             exclude[0]=0;
             exclude+=2;
+            if(verbosity != alle)
             excluded.push_back(exclude);
         }else exclude=0;
     }
@@ -168,14 +169,15 @@ void loadView(char* q){
         include=strstr(exclude," +");
         include[0]=0;
         include+=2;
+        if(verbosity != alle)
         included.push_back(include);
     }
     
 }
 
 /* CENTRAL METHOD to parse and render html request*/
-int handle(char* q,int conn){
-    q=editable(q);
+int handle(cchar* q0,int conn){
+    char* q=editable(q0);
     while(q[0]=='/')q++;
 	enum result_format format = txt;
 	enum result_verbosity verbosity = normal;
@@ -272,15 +274,16 @@ int handle(char* q,int conn){
     if(contains(q,"statement count")){Writeline(conn,itoa(currentContext()->statementCount).data());return 0;}
     if(contains(q,"node count")){Writeline(conn,itoa(currentContext()->nodeCount).data());return 0;}
     
+    
 	if (startsWith(q, "all/")) {
         cut_to(q," +");
         cut_to(q," -");
 		q = q + 4;
 		showExcludes=false;
 		verbosity = alle;
-    }else{
-        loadView(q);
     }
+    loadView(q);
+    
     if(contains(q,"exclude")||contains(q,"include")){
         verbosity=normal;
         showExcludes=true;

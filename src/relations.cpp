@@ -458,6 +458,7 @@ Node* invert(Node* relation) {
 }
 
 
+// expansive! todo! merge later
 Node * getRelation(const char* thing) {
 	if (thing[0] == '#') thing++;
 	if (eq(thing, "instance")) return Instance;
