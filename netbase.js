@@ -129,8 +129,8 @@ function clean(url){
 	return url;
 }
 
-function parseResults(){
-	
+function parseResults(results0){
+	if(results0)results=results0;
 	// var results set via jsonp:
 	// <script src="http://de.netbase.pannous.com:81/js/verbose/gehren"></script>
 	
