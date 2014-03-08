@@ -1462,8 +1462,9 @@ bool filterFreebase(char* name) {
 	if (eq(name, "<common.topic>")) return true;
 	// nutrition_information
 	if (eq(name, "\"/#type\"")) return true;
-    
-	if (endsWith(name, "controls>")) return true;
+
+   	if (endsWith(name, "update>")) return true;
+    if (endsWith(name, "controls>")) return true;
 	if (endsWith(name, "webpage>")) return true;
 	if (endsWith(name, "uploaded_by>")) return true;
 	if (endsWith(name, "notable_for>")) return true;
@@ -1517,15 +1518,15 @@ bool importN3(cchar* file) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
         //		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
         fixNewline(objectName);
-        if(contains(line,"date>"))
-            p(line);
+//        if(contains(line,"date>"))
+//            p(line);
         //        if(contains(line,"molaresvolumen"))
         //            p("st");
         
-        //        fixLabel(objectName);
-        //        if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
-        //        if(filterFreebase(predicateName)){ignored++; continue;}
-        //        if(filterFreebase(objectName)){ignored++;continue;}
+        //        fixLabel(
+        if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
+        if(filterFreebase(predicateName)){ignored++; continue;}
+        if(filterFreebase(objectName)){ignored++;continue;}
         
         //    	.
         //    <m.05bjb__>	<#label>	"final-fantasy-xiii.jpg"@en	.
