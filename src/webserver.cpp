@@ -131,7 +131,8 @@ void getIncludes(Node* n){
 	if(eq("Release track",n->name))return;
 	if(eq("Recording",n->name))return;
 	if(eq("Document",n->name))return;
-    pf("getIncludes %d %s\n",n->id,n->name);
+	if(eq("Cataloged instance",n->name))return;
+    pf("getIncludes %d >>%s<<\n",n->id,n->name);
     Statement *s=0;
 	int maxLookups=50;
     while((s=nextStatement(n,s))){
