@@ -2482,7 +2482,7 @@ int main(int argc, char *argv[]) {
 	}
 
 	if (checkParams(argc, argv, "import")) {
-        if (checkParams(argc, argv, "all"))
+        if (checkParams(argc, argv, "all")||argc<2)
             importAll();
         else import(argv[2]); // danger netbase clear import save
 		if (checkParams(argc, argv, "save")) save();

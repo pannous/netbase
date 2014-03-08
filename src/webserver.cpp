@@ -49,10 +49,13 @@ void fixLabel(Node* n){
     if(!checkNode(n))return;
     if(n->name==0)return;// HOW? checkNames=false :(
 	if(n->name[0]=='"')n->name=n->name+1;
+
 	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
 		n->name[strlen(n->name)-1]=0;
 	if(n->name[strlen(n->name)-1]=='\\')
 		n->name[strlen(n->name)-1]=0;
+	replaceChar(n->name,'"',' ');
+	replaceChar(n->name,'\'',' ');
 }
 
 /// true = filter
@@ -123,9 +126,16 @@ void fixLabels(Statement* s){
 }
 
 void getIncludes(Node* n){
+	if(verbosity==shorter||verbosity==alle)return;
+	if(n->id<1000)return;
+	if(eq("Release track",n->name))return;
+	if(eq("Recording",n->name))return;
+	if(eq("Document",n->name))return;
     pf("getIncludes %d %s\n",n->id,n->name);
     Statement *s=0;
+	int maxLookups=50;
     while((s=nextStatement(n,s))){
+		if(maxLookups--<0)break;
 //        p(s);
         if(eq(s->Predicate()->name,"exclude")){
             excluded.push_back(s->Object()->name);
