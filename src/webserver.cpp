@@ -134,9 +134,9 @@ void getIncludes(Node* n){
 	if(eq("Cataloged instance",n->name))return;
     pf("getIncludes %d >>%s<<\n",n->id,n->name);
     Statement *s=0;
-	int maxLookups=50;
+	int lookups=0;
     while((s=nextStatement(n,s))){
-		if(maxLookups--<0)break;
+		if(++lookups>50)break;
 //        p(s);
         if(eq(s->Predicate()->name,"exclude")){
             excluded.push_back(s->Object()->name);
@@ -373,11 +373,11 @@ int handle(cchar* q0,int conn){
         if(verbosity != alle)
             loadView(node);
         if(verbosity==verbose||verbosity==shorter)// lol // just name
-            Writeline(conn, ", 'kind':"+itoa(node->kind));
+            Writeline(conn, ", 'kind':"+itoa(node->kind));		
+        if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
+                Writeline(", 'image':'"+getImage(node,150,/*thumb*/true)+"'");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
-            if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-                Writeline(", 'image':'"+getImage(node,150,/*thumb*/true)+"'");
             //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
