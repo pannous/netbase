@@ -1,15 +1,14 @@
 echo "All instances of netbase need to be stopped to clear memory"
 sudo killall netbase
-echo linux
 
 # shared memory limit
-export shmmax=2147483648 	# 2GB
+# export shmmax=2147483648 	# 2GB
 export shmmax=4294967296	# 4GB
-export shmmax=6442450944	# 6GB
-export shmmax=8589934592	# 8GB
-export shmmax=17179869184	# 16GB
-export shmmax=34359738368	# 32GB
-export shmmax=68719476736 	# 64GB
+# export shmmax=6442450944	# 6GB
+# export shmmax=8589934592	# 8GB
+# export shmmax=17179869184	# 16GB
+# export shmmax=34359738368	# 32GB
+# export shmmax=68719476736 	# 64GB
 
 # todo : use/set in netbase
 

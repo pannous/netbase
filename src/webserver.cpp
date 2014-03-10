@@ -28,7 +28,7 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (80)
+#define SERVER_PORT  (81)
 static char server_root[1000] = "/Users/me/";
 
 int listener, conn,closing=0;
@@ -200,6 +200,15 @@ int handle(cchar* q0,int conn){
         return 0;
     }
     
+	
+	char* jsonp=strstr(q,"jsonp");// ?jsonp=fun
+	if(jsonp){
+		jsonp[-1]=0;
+		jsonp+=6;
+		format = json;
+		}
+	else jsonp="parseResults";
+
 	if (endsWith(q, ".json")) {
         format = json;
         q[len-5]=0;
@@ -226,7 +235,8 @@ int handle(cchar* q0,int conn){
 	}
 	if (startsWith(q, ".js")) {
 		q[len-3]=0;
-		Writeline(conn, "parseResults(");
+		Writeline(conn, jsonp);
+		Writeline(conn, "(");
 		format = json;
 	}
 	if (startsWith(q, "html/")) {
@@ -251,15 +261,15 @@ int handle(cchar* q0,int conn){
 		format = csv;
 		q = q + 4;
 	}
-	if (startsWith(q, "js/")) {
-		q = q + 3;
-		if(format!=json)
-            Writeline(conn, "parseResults(");
-		format = json;
-	}
-	else if (startsWith(q, "json/")) {
+	if (startsWith(q, "json/")) {
 		format = json;
 		q = q + 5;
+	}
+	if (startsWith(q, "js/")) {
+		q = q + 3;
+		Writeline(conn, jsonp);
+		Writeline(conn, "(");
+		format = json;
 	}
 	if (startsWith(q, "long/")) {
 		verbosity = longer;
