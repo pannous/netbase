@@ -410,7 +410,7 @@ int handle(cchar* q0,int conn){
 	}
 	const char* html_end="]};</script><script src='http://pannous.net/netbase.js'></script></body></html>";
 	if (format == json)Writeline(conn, "]}\n");
-    if(contains(q0,"js/"))Writeline(conn, ");");// jsonp
+    if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
 	if (format == html)Writeline(conn, html_end);
 	if (format == xml)Writeline(conn, "</results>\n");
     pf("Warnings/excluded: %d\n",warnings);
