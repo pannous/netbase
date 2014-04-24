@@ -26,10 +26,10 @@ extern bool testing;// don't implicitly init relations
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!!  TODO!!!
-#define DONT_CHECK_DUPLICATES false
+
+#define CHECK_DUPLICATES true
 #define DONT_DISSECT false
 #define NO_TYPE 0
-#define CHECK_DUPLICATES true
 
 //#define name(w) getThe(#w)
 #define word(w) getAbstract(#w)
@@ -73,7 +73,7 @@ struct Node;
 //class Node;
 typedef union Value {
         // why not just save values+text in 'name' as string??
-    
+
     char* text; // wiki abstracts etc
     void* data; // byte[], same as ^^
     //    char* name;
@@ -81,7 +81,7 @@ typedef union Value {
     //    float floatValue;
     long datetime; // milliseconds? Date*? HOW really?
     //    long longValue;// 8 bytes
-    
+
     double number; // 8 bytes OK
     // why not just save ints as string?
     // 1) faster comparison   bottleneck factor n==nr digits or is atoi part of cpu?
@@ -173,7 +173,7 @@ public:
     int subject; // implicit!! Subject
     int predicate;
     int object;
-    
+
     int nextSubjectStatement;
     int nextPredicateStatement;
     int nextObjectStatement;
@@ -570,8 +570,9 @@ static int billion=GB;
 
 // FREEBASE: 600.000.000 Statements !!!
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
-static long maxStatements = maxNodes;// 10 = crude average of Statements per Node  ; max=1000!
+//static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
+static long maxNodes /*max 32bit=4GB!*/= 10*million;// long would need a new structure!!
+static long maxStatements = maxNodes;// *10 = crude average of Statements per Node  ; max=1000!
 #else
 static long maxNodes = 300*million;
 static long maxStatements = maxNodes*3;
