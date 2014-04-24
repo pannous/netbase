@@ -53,7 +53,7 @@ int semrm(key_t key, int id=0) {
 }
 void detach_shared_memory(){
         // TODO (?) programmatically
-    p("If you cannot start netbase try ./clear-shared-memory.sh");
+    p("If you cannot start netbase try ./increase-shared-memory.sh || ./clear-shared-memory.sh");
 //    sudo: no tty present and no askpass program specified
 //    system("ipcrm -M '0x69190'");
 //    system("ipcrm -M '0x69191'");
@@ -82,6 +82,7 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 	int READ_WRITE=0666; //
 	if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE)) == -1) {
 		ps("share_memory used for the first time");
+		pf("requesting 0x%x bytes\n",sizeOfSharedMemory);
 		virgin_memory=1;
 		if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 			semrm(key); // clean and try again

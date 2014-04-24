@@ -23,23 +23,23 @@ string select(string s) {
 }
 
 string fixQuery(string s) {
-	s = s + string(" $");
+	s = "^"+ s + string(" $");
 	s = replace_all(s, "types of ", select(s)); //todo .*types of regex
 	s = replace_all(s, "kinds of ", select(s));
 	s = replace_all(s, "list of ", select(s));
 	s = replace_all(s, "list ", select(s));
 	s = replace_all(s, "species of ", select(s));
-	s = replace_all(s, "all ", select(s)); // todo all fields of types that ...
-	s = replace_all(s, "some ", select(s));
 	s = replace_all(s, "different ", select(s));
 	s = replace_all(s, "various ", select(s));
-	s = replace_all(s, "the ", select(s));
-	s = replace_all(s, "a ", select(s)); //limit 1
-	s = replace_all(s, "these ", select(s));
-	s = replace_all(s, "those ", select(s));
-	s = replace_all(s, "an ", select(s));
-	s = replace_all(s, "any ", select(s));
-	s = replace_all(s, "show ", "");
+	s = replace_all(s, "show ", select(s));
+	s = replace_all(s, "^all ", select(s)); // todo all fields of types that ...
+	s = replace_all(s, "^some ", select(s));
+	s = replace_all(s, "^the ", select(s));
+	s = replace_all(s, "^a ", select(s)); //limit 1
+	s = replace_all(s, "^these ", select(s));
+	s = replace_all(s, "^those ", select(s));
+	s = replace_all(s, "^an ", select(s));
+	s = replace_all(s, "^any ", select(s));
 	s = replace_all(s, " are ", " ");
 	s = replace_all(s, " is ", " ");
 	s = replace_all(s, " with ", " where ");
@@ -55,6 +55,7 @@ string fixQuery(string s) {
     if(!contains(s," where "))
         s = replace_all(s, "s ", " "); //singular singular
 	s = replace_all(s, " $", ""); //trim hack
+	s = replace_all(s, "^", ""); //trim hack
 	return s;
 }
 
@@ -453,20 +454,28 @@ Query parseQuery(string s, int limit) {
     autoIds=false;
 	Query q;
     // static  ???
-	char fields[10000];
-	char type[10000];
-	char match[10000];
+	char* fields;
+	char* type;
+	char* match;
 	int li = (int)s.find("limit");
 	if (li > 0) {
 		limit = atoi(s.substr(li + 5).c_str());
 		s = s.substr(0, li);
 	}
 	q.limit = limit;
+	p(s);
 	s=fixQuery(s);
 	if ((int) s.find("from") < 0)
-		s = string("select * from ") + s; // why (int) neccessary???
-	sscanf(s.c_str(), "select %s from %s where %s", fields, type, match); //[^\n] // [^\0]
+		s = string("select * from ") + s; // why neccessary???
+	if ((int) s.find("where") < 0)
+		s = s + " where *"; // why neccessary???
+	//sscanf(s.c_str(), "select %s from %s where %s", fields, type,match);// NO SPACES :(
+	char* ss=modifyConstChar(s.c_str());
+	match=cut_to(ss," where "); 
+	type=cut_to(ss," from ");
+	fields=cut_to(ss,"select ");
     if(type[strlen(type)-1]=='s')type[strlen(type)-1]=0;// remove plural
+	p(ss);
 	p(fields);
 	p(type);
 	p(match);
@@ -475,7 +484,8 @@ Query parseQuery(string s, int limit) {
 	//    if(q.keywords.size()>0)
 	//    q.keyword=q.keywords[0];
     if(!eq(fields,"*"))
-	q.fields = nodeVector(splitString(fields, ","));
+		q.fields = nodeVector(splitString(fields, ","));
+	if(eq(match,"*"))return q;
 	vector<char*> matches = splitString(replace_all(match, " and ", ","), ",");
 	for (int i = 0; i < matches.size(); i++) {
 		string f = matches[i];
