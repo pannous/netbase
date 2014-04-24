@@ -1,7 +1,7 @@
 cd ~/netbase
-killall -SIGKILL gdb
-killall -SIGKILL gdb-i386-apple-darwin
-killall -SIGKILL netbase
+#killall -SIGKILL gdb
+#killall -SIGKILL gdb-i386-apple-darwin
+#killall -SIGKILL netbase
 
 platform=`uname`
 
