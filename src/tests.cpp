@@ -1508,7 +1508,9 @@ void testBrandNewStuff() {
 //    testing=false;// NO RELATIONS!
 //    germanLabels=true;// false;
     germanLabels=false;
-    importAll();
+	handle("all+pennsylvania+marijuana");
+	
+//    importAll();
         exit(0);
     p(statementCount());
     N s=get(244797);

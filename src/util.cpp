@@ -170,7 +170,12 @@ string replace_all(string str, string what, string with) {
 cchar* cut_to(cchar* str, cchar* match){
     cchar* i=strstr(str,match);
     if(!i)return str;
-//    if(i)i[0]=0;
+    return i+strlen(match);
+}
+char* cut_to(char* str, cchar* match){
+    char* i=strstr(str,match);
+    if(!i)return str;
+    if(i)i[0]=0;
     return i+strlen(match);
 }
 
