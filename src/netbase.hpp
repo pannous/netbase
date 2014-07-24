@@ -412,6 +412,7 @@ Context* currentContext();
 
 extern "C" Node* getAbstract(const char* word);
 int collectAbstracts();
+int collectInstances();
 unsigned int hash(const char *str); //unsigned
 //unsigned long hash(const char *str); //unsigned
 //Node* getThe(const char* word, Node* type = 0,bool dissect=true);
