@@ -1506,9 +1506,10 @@ void testBrandNewStuff() {
     quiet=false;
 	debug = true;
 //    testing=false;// NO RELATIONS!
-//    germanLabels=true;// false;
+    germanLabels=true;// false;
+    import("test.csv");
     germanLabels=false;
-	handle("all+pennsylvania+marijuana");
+//	handle("all+pennsylvania+marijuana");
 	
 //    importAll();
         exit(0);

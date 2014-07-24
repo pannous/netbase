@@ -381,6 +381,28 @@ int collectAbstracts() {
 	return count;
 }
 
+int collectInstances() {
+	ps("collecting instances");// int now
+	initRelations();
+	memset(abstracts, 0, maxNodes*ahashSize * 2);
+	Context* c=currentContext();
+	int max=c->nodeCount; // maxNodes;
+	int count=0;
+	// collect Abstracts
+	for (int i=0; i < max; i++) {
+		Node* n=&c->nodes[i];
+		if (i > 1000 && !checkNode(n)) break;
+		if (n == null || n->name == null || n->id == 0) continue;
+		if (n->kind == Abstract->id) {
+			insertAbstractHash(n);
+			count++;
+		}else{
+			addStatement(get(n->name),Instance,n,false);
+		}
+	}
+	return count;
+}
+
 void fixNodeNames(Context* context, char* oldnodeNames) {
 #ifdef inlineName
 	printf("inlineNames!");
@@ -423,8 +445,8 @@ bool clearMemory() {
 	memset(abstract_root, 0, maxNodes*ahashSize * 2);
     currentContext()->nodeCount=1000;// 0 = ANY
     currentContext()->nodeNames=name_root;
-    }
     currentContext()->statementCount=1;// 0 = ERROR
+    }
 //    if(!testing)
 	initRelations();
 	return true;
