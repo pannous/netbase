@@ -148,14 +148,14 @@ NodeVector parse(const char* data) {
 	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
     
 	//		scanf ( "%s", data );
-	if (eq(data, "exit")) return OK;
+	if (eq(data, ":exit")) return OK;
 	if (eq(data, "help") || eq(data, "?")) {
 		showHelp();
 		//        printf("type exit or word");
 		return OK;
 	}
     
-	if (eq(data, "more")) {
+	if (eq(data, ":more")) {
 		resultLimit=resultLimit * 2;
 		if (lastCommand) return parse(lastCommand);
 		else return OK;
@@ -169,12 +169,12 @@ NodeVector parse(const char* data) {
 	if (eq(data, ":w")) save();
 	if (eq(data, ":q")) exit(1);
     
-	if (eq(data, "q")) return OK;
-	if (eq(data, "x")) return OK;
-    if (eq(data, "console")){
+//	if (eq(data, "q")) return OK;
+//	if (eq(data, "x")) return OK;
+    if (eq(data, ":console")){
         console();
         return OK;}
-	if (eq(data, "export")) {
+	if (eq(data, ":export")) {
 		export_csv();
 		return OK;
 	}
@@ -182,7 +182,7 @@ NodeVector parse(const char* data) {
 		clearMemory();
 		return OK;
 	}
-	if (eq(data, "clear")||eq(data, "clean")||eq(data, "cleanup")) {
+	if (eq(data, "!clear")||eq(data, "!clean")||eq(data, "!cleanup")) {
 		clearMemory();
 		return OK;
 	}
@@ -194,9 +194,9 @@ NodeVector parse(const char* data) {
 		export_csv();
 		return OK;
 	}
-	if (eq(data, "quit")) return OK;
-	if (eq(data, "quiet")||eq(data, "quiet!")||eq(data, ":quiet")||eq(data,"!debug")){debug=false; quiet=true;return OK;}
-    if (eq(data, "debug")||eq(data, "debug!")||eq(data, ":debug")||eq(data, "!quiet")){debug=true; quiet=false;return OK;}
+	if (eq(data, ":quit")) return OK;
+	if (eq(data, "!quiet")||eq(data, "quiet!")||eq(data, ":quiet")||eq(data,"!debug")){debug=false; quiet=true;return OK;}
+    if (eq(data, "!debug")||eq(data, "debug!")||eq(data, ":debug")||eq(data, "!quiet")){debug=true; quiet=false;return OK;}
 
     
 	if (startsWith(data, ":if")) {
@@ -218,7 +218,7 @@ NodeVector parse(const char* data) {
 		importAllYago();
 		return OK;
 	}
-	if (startsWith(data, ":i") || startsWith(data, "import")) {
+	if (startsWith(data, ":i") || startsWith(data, ":import")) {
 		autoIds=false;
 		string arg=next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
@@ -238,16 +238,16 @@ NodeVector parse(const char* data) {
         //		strcpy((char*) data, newdata);
         //		p(resultLimit);
 	}
-	if (eq(data, "load") || eq(data, ":l")) {
+	if (eq(data, ":load") || eq(data, ":l")) {
 		load(false);
 		return OK;
 	}
 	if (eq(data, ":ca")) collectAbstracts();
-	if (eq(data, "load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
+	if (eq(data, ":load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
 		load(true);
 		return OK;
 	}
-	if (eq(data, "save")) {
+	if (eq(data, ":save")) {
 		save();
 		return OK;
 	}
@@ -275,15 +275,15 @@ NodeVector parse(const char* data) {
 		testBrandNewStuff();
 		return OK;
 	}
-	if (eq(data, "debug") || eq(data, "debug on") || eq(data, "debug 1")) {
+	if (eq(data, ":debug") || eq(data, "debug on") || eq(data, "debug 1")) {
 		debug=true;
 		return OK;
 	}
-	if (eq(data, "debug off") || eq(data, "no debug") || eq(data, "debug 0")) {
+	if (eq(data, ":debug off") || eq(data, "no debug") || eq(data, "debug 0")) {
 		debug=true;
 		return OK;
 	}
-	if (startsWith(data, ":d ") || startsWith(data, "delete ") || startsWith(data, "del ") || startsWith(data, "remove ")) {
+	if (startsWith(data, ":d ") || startsWith(data, "!delete ") || startsWith(data, "!del ") || startsWith(data, "!remove ")) {
 		string d=next_word(data);
 		const char* what=d.data();
 		printf("deleting %s\n", what);
@@ -291,26 +291,26 @@ NodeVector parse(const char* data) {
         return OK;
 	}
     
-    if(contains(data,"english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
-    if(contains(data,"german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
+    if(contains(data,":english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
+    if(contains(data,":german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
     
     if (eq(args[0], "show")) {
 		N da=getAbstract(data + 5);
         show(da,true);
 		return nodeVectorWrap(da);
 	}
-    //    Château
+    //    Ch��teau
 	if (eq(args[0], "findall")) {
 		return *findAllWords(data + 8);
 	}
     
-	if (eq(args[0], "find")) {
-		return *findWords(wordnet, data + 5, false);
+	if (eq(args[0], ":find")) {
+		return *findWords(wordnet, data + 6, false);
 	}
     
-	if (startsWith(data, "merge ")) {
+	if (startsWith(data, ":merge ")) {
         int target,node=0;
-		sscanf(data, "merge %d %d", &target,&node);
+		sscanf(data, ":merge %d %d", &target,&node);
         Node* targetNode=get(target);
         if(node)
             return showNodes(nodeVectorWrap(mergeNode(targetNode,get(node))));
@@ -320,7 +320,7 @@ NodeVector parse(const char* data) {
             return showNodes(nodeVectorWrap(mergeAll(args[1])));// merge <string>
     }
     
-	if (startsWith(data, "path ") || startsWith(data, ":p ")) {
+	if (startsWith(data, ":path ") || startsWith(data, ":p ")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
@@ -388,7 +388,7 @@ NodeVector parse(const char* data) {
 	}
     
     
-	if (startsWith(data, "label ") || startsWith(data, "rename ")) {
+	if (startsWith(data, ":label ") || startsWith(data, ":rename ")) {
 		N n=getThe(args[1]);
 		setLabel(n, next_word(next_word(data)).data());
 		return nodeVectorWrap(n);
@@ -441,7 +441,7 @@ NodeVector parse(const char* data) {
         || (contains(data, ":"))) { // && !contains(data, " "))) {
 		return parseProperties(data); // ownerpath
 	}
-	if (eq(data, "server") || eq(data, "daemon") || eq(data, "demon")) {
+	if (eq(data, "server") ||eq(data, ":server") || eq(data, ":daemon") || eq(data, ":demon")) {
 		printf("starting server\n");
 		start_server();
 		return OK;
