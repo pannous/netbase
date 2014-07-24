@@ -547,7 +547,7 @@ Node* namify(Node* node, char* name) {
 	strcpy(node->name, name); // can be freed now!
 	int len=(int) strlen(name);
 	context->nodeNames[context->currentNameSlot + len]=0;
-	addStatement(getAbstract(name), Instance, node, DONT_CHECK_DUPLICATES);
+	addStatement(getAbstract(name), Instance, node, !CHECK_DUPLICATES);
 	// replaceNode(subject,object);
 	return node;
 }
@@ -636,7 +636,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 				// address.CITY=bukarest
 				predicate=getThe(subject->name); // CITY
 				Node* object=namify(subject, value); // city.name=bukarest
-				addStatement(parent, predicate, object, DONT_CHECK_DUPLICATES); // address.CITY=bukarest
+				addStatement(parent, predicate, object, !CHECK_DUPLICATES); // address.CITY=bukarest
 				subject=object; // bukarest
 				//				show(subject,true);
 				continue;
@@ -654,14 +654,14 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 				if (!contains(line, "><")) {				// else empty!
 					object=add(field);
 					addStatement(subject, Member, object,
-                                 DONT_CHECK_DUPLICATES);
+                                 !CHECK_DUPLICATES);
 					subject=object;
 				} else {
 					object=getThe(field);
-					//					addStatement(subject, Unknown,object,DONT_CHECK_DUPLICATES);//EMPTY
+					//					addStatement(subject, Unknown,object,!CHECK_DUPLICATES);//EMPTY
 					addStatement(subject, object, Unknown,
-                                 DONT_CHECK_DUPLICATES); //EMPTY
-					//					addStatement(subject, object,UNKNOWN_OR_EMPTY,DONT_CHECK_DUPLICATES);//EMPTY
+                                 !CHECK_DUPLICATES); //EMPTY
+					//					addStatement(subject, object,UNKNOWN_OR_EMPTY,!CHECK_DUPLICATES);//EMPTY
 				}
 				addAttributes(subject, line);
 				continue;
@@ -674,7 +674,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			}
 			object=getThe(value, NO_TYPE);
             //			Statement* s=
-			addStatement(subject, predicate, object, DONT_CHECK_DUPLICATES);
+			addStatement(subject, predicate, object, !CHECK_DUPLICATES);
             
 			//			fields.insert(predicate,object);//
 			continue;
@@ -684,7 +684,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			//			parents.push(subject); // <address> <city> ...
 			field=extractTagName(line);
 			subject=add(field); // can be replaced by name!
-			addStatement(parent, Member, subject, DONT_CHECK_DUPLICATES); // address.city
+			addStatement(parent, Member, subject, !CHECK_DUPLICATES); // address.city
 			addAttributes(subject, line);
 			continue;
 		}
