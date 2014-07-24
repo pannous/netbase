@@ -397,7 +397,7 @@ int collectInstances() {
 			insertAbstractHash(n);
 			count++;
 		}else{
-			addStatement(get(n->name),Instance,n,false);
+			addStatement(getAbstract(n->name),Instance,n,false);
 		}
 	}
 	return count;
