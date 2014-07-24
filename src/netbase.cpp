@@ -204,6 +204,14 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	return ah;
 }
 
+inline bool eq(Statement* s,Statement* s2){
+    if(!s || !s2)return false;
+	return (s->subject==s2->subject&&s->predicate==s2->predicate&&s->object==s2->object);
+}
+inline bool eq(Statement* s,int statementNr){
+	return eq(s,getStatement(statementNr));
+}
+
 bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statementNr) {
 	//    Statement* statement1=&c->statements[statementNr];
 	if (add_here->id() == statementNr){
@@ -220,14 +228,6 @@ bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statement
 bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int statementNr) {
 	return  appendLinkedListOfStatements(to_insert, node, statementNr); // append old to new
 }
-inline bool eq(Statement* s,Statement* s2){
-    if(!s || !s2)return false;
-	return (s->subject==s2->subject&&s->predicate==s2->predicate&&s->object==s2->object);
-}
-inline bool eq(Statement* s,int statementNr){
-	return eq(s,getStatement(statementNr));
-}
-
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
     if(statementNr==0){
         p("WARNING statementNr==0");
@@ -742,7 +742,7 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
     //		return last_statement;// direct duplicate!
     
     int id=context->statementCount;
-	Statement* statement=&context->statements[id]; // union of statement, node??? nee // 3 mal f√ºr 3 contexts !!!
+	Statement* statement=&context->statements[id]; // union of statement, node??? nee // 3 mal f�����r 3 contexts !!!
     //	statement->id=context->statementCount;
 #ifdef useContext
 	statement->context=current_context; //todo!!
@@ -953,10 +953,10 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 // Ausnahmen:
 //Zugsicherung    Zugbeeinflussungssystem_S-Bahn_Berlin
 //Zugunfall       Kesselwagenexplosion_in_der_BASF
-//Zugsicherung    Geschwindigkeits√ºberwachung_Neigetechnik
+//Zugsicherung    Geschwindigkeits�����berwachung_Neigetechnik
 //Zugsicherung    Zugsicherung_mit_Linienleiter_1990
 //Zuggattung      ICE_International
-//Zug_(Stadt)     Hochschule_Luzern_‚Äì_Wirtschaft
+//Zug_(Stadt)     Hochschule_Luzern_�������_Wirtschaft
 //Zug_(Stadt)     Padagogische_Hochschule_Zentralschweiz
 //Zug     Fliegender_Hamburger
 //Zug     Doppelstock-Stromlinien-Wendezug_der_LBE
@@ -1035,7 +1035,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(subject, from, ort, checkDuplicates);
 	}
 	type=(int)str.find("_for_");
-	type=(int)str.find("_für_");
+	type=(int)str.find("_f��r_");
 	if (type >= 0 && len - type > 2) {
 		Node* from=getThe("for");
 		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
@@ -1222,7 +1222,7 @@ Node * hasWord(const char* thingy) {
 		if (checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
-			if (eq(get(found->abstract)->name, thingy, true))			//teuer? nö, if 1.letter differs
+			if (eq(get(found->abstract)->name, thingy, true))			//teuer? n��, if 1.letter differs
 				return get(found->abstract);
 		}
         //		if (get(found->next) == found) {
@@ -1392,10 +1392,6 @@ bool show(Node* n, bool showStatements) {		//=true
 		Statement* s=0;
 		while ((s=nextStatement(n, s))) {
 			if (i++ > resultLimit) break;
-			//			bool stopAtInstances = ++i > maxShowStatements;
-			//			if (stopAtInstances && s && s->Predicate == Instance || i > resultLimit)
-			//				break;
-			//			s=nextStatement(n,s,stopAtInstances);
 			if (checkStatement(s)) showStatement(s);
             else pf("NOOOOO %p",s);
 		}
@@ -1423,7 +1419,7 @@ NodeVector* findWords(int context, const char* word, bool first,bool containsWor
 		Node* n=&c->nodes[i];
 		if (n->id==0||!checkNode(n, i, true, false)) continue;
         bool good=eq(n->name, word, true);
-        if(containsWord)good=contains(n->name, word,true);
+        if(containsWord)good=good||contains(n->name, word,true);
 		if (good) {
 			all->push_back(n);
 			show(n);
@@ -1442,6 +1438,9 @@ NodeVector* findWords(int context, const char* word, bool first,bool containsWor
 }
 
 NodeVector* findAllWords(const char* word) {
+    return findWords(current_context,word,false,false);
+}
+NodeVector* findAllMatches(const char* word) {
     return findWords(current_context,word,false,true);
 }
 

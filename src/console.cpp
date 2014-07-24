@@ -19,7 +19,7 @@
 #include "relations.hpp"
 #include "webserver.hpp" // int handle(char* q,int conn) TEST
 
-// #define USE_READLINE
+#define USE_READLINE
 // compile with -lreadline !
 #ifdef USE_READLINE
 //ai libreadline-dev
@@ -37,17 +37,17 @@ void showHelp() {
     ps("");
 	ps("AVAILABLE COMMANDS:");
 	ps("help :h or ?");
-	ps("load :l [force]\tfetch the graph from disk or mem");
+	ps(":load :l [force]\tfetch the graph from disk or mem");
 	//	ps("load_files :lf");
-	ps("import :i [<file>]");
-	ps("export :e (all to csv)");
+	ps(":import :i [<file>]");
+	ps(":export :e (all to csv)");
 	//    ps("print :p");
-	ps("delete :d <node|statement|id|name>");
-	ps("save :s or :w");
+	ps(":delete :d <node|statement|id|name>");
+	ps(":save :s or :w");
 	//	ps("save and exit :x");
-	ps("server");
-	ps("quit :q");
-	ps("clear :cl");
+	ps(":server");
+	ps(":quit :q");
+	ps(":clear :cl");
 	ps("limit <n>");
 	ps("Type words, ids, or queries:");
 	//    ps("all animals that have feathers");
@@ -149,7 +149,7 @@ NodeVector parse(const char* data) {
     
 	//		scanf ( "%s", data );
 	if (eq(data, ":exit")) return OK;
-	if (eq(data, "help") || eq(data, "?")) {
+	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
 		showHelp();
 		//        printf("type exit or word");
 		return OK;
@@ -201,9 +201,11 @@ NodeVector parse(const char* data) {
     
 	if (startsWith(data, ":if")) {
 		autoIds=false;
-		//			if (endsWith(data, "!"))deleteWord("acceptant");
-		//			if (!hasWord("acceptant"))
 		importFreebase();
+		return OK;
+	}
+	if (eq(data, ":il")){
+		import("labels");
 		return OK;
 	}
 	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
@@ -243,6 +245,7 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (eq(data, ":ca")) collectAbstracts();
+	if (eq(data, ":ci")) collectInstances();
 	if (eq(data, ":load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
 		load(true);
 		return OK;
@@ -251,7 +254,7 @@ NodeVector parse(const char* data) {
 		save();
 		return OK;
 	}
-	if (eq(data, ":ha")) {
+	if (eq(data, ":hack")) {
 		Context* c=currentContext();
 		c->nodeCount-=1000; //hack!
 		//		maxNodes += 1000;
@@ -265,7 +268,7 @@ NodeVector parse(const char* data) {
 		showContext(currentContext());
 		return OK;
 	}
-	if (eq(data, ":t") || eq(data, "test") || eq(data, "test ") || eq(data, "tests")) {
+	if (eq(data, ":t") || eq(data, ":test") || eq(data, ":tests")) {
 		exitOnFailure=false;
 		tests();
 		return OK;
@@ -275,15 +278,15 @@ NodeVector parse(const char* data) {
 		testBrandNewStuff();
 		return OK;
 	}
-	if (eq(data, ":debug") || eq(data, "debug on") || eq(data, "debug 1")) {
+	if (eq(data, ":debug") || eq(data, ":debug on") || eq(data, ":debug 1")) {
 		debug=true;
 		return OK;
 	}
-	if (eq(data, ":debug off") || eq(data, "no debug") || eq(data, "debug 0")) {
+	if (eq(data, ":debug off") || eq(data, "no debug") || eq(data, ":debug 0")) {
 		debug=true;
 		return OK;
 	}
-	if (startsWith(data, ":d ") || startsWith(data, "!delete ") || startsWith(data, "!del ") || startsWith(data, "!remove ")) {
+	if (startsWith(data, ":d ") || startsWith(data, ":delete ") || startsWith(data, "!delete ") || startsWith(data, "!del ") || startsWith(data, "!remove ")) {
 		string d=next_word(data);
 		const char* what=d.data();
 		printf("deleting %s\n", what);
@@ -300,13 +303,12 @@ NodeVector parse(const char* data) {
 		return nodeVectorWrap(da);
 	}
     //    Ch��teau
-	if (eq(args[0], "findall")) {
-		return *findAllWords(data + 8);
-	}
-    
-	if (eq(args[0], ":find")) {
+	if (eq(args[0], ":all"))
+		return *findAllWords(data + 9);
+	if (eq(args[0], ":matches"))
+		return *findAllMatches(data + 13);
+	if (eq(args[0], ":find"))
 		return *findWords(wordnet, data + 6, false);
-	}
     
 	if (startsWith(data, ":merge ")) {
         int target,node=0;

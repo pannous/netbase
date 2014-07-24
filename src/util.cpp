@@ -310,7 +310,7 @@ void ps(const char* s) {
 
 void p(int i) {
 	if (quiet) return;
-	printf("%d\n", i);
+	printf("%i\n", i);
 	fflush(stdout);
 }
 

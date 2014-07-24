@@ -29,7 +29,7 @@ mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 #sed -i 's/80/81/' src/webserver.cpp 
 #sed -i  's/300\*/30*/' src/netbase.hpp 
 
-g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase exit $@
+g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase :exit $@
 
 
 if [[ $platform == 'Darwin' ]]; then

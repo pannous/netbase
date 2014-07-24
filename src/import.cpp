@@ -141,6 +141,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
     FILE* infile=open_file((char*) file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
+			if(checkLowMemory())break;
 			pf("importImages %d    \r", linecount);
 			fflush(stdout);
 		};
@@ -249,7 +250,7 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 void importImages(){
     importWordnetImages("images.wn.all.csv");// via name
     if(germanLabels)
-    	importImagesDE();// dbpedia
+    		importImagesDE();// dbpedia
 	else 
 		importImagesEN();
     //        importWordnetImages("images.wn.csv");// via ids
@@ -993,18 +994,18 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "bar"));
 	else if (eq(unit, "kilonewton"));
 	else if (eq(unit, "megawatt"));
-	else if (eq(unit, "squareMetre"))unit="m²";
+	else if (eq(unit, "squareMetre"))unit="m��";
 	else if (eq(unit, "kilometrePerHour"))unit="km/h";
 	else if (eq(unit, "xsd:date")) ; // parse! unit = 0; //-> number
 	else if (eq(unit, "kelvin")) ; // ignore
-	else if (eq(unit, "degreeCelsius")) unit="°C"; // ignore
-	else if (eq(unit, "degreeFahrenheit")) unit="°F"; // ignore
-	else if (eq(unit, "degreeRankine")) unit="°R"; // ignore
+	else if (eq(unit, "degreeCelsius")) unit="��C"; // ignore
+	else if (eq(unit, "degreeFahrenheit")) unit="��F"; // ignore
+	else if (eq(unit, "degreeRankine")) unit="��R"; // ignore
 	else if (eq(unit, "degrees")) ; // ignore
 	else if (eq(unit, "dollar")) ; // ignore
 	else if (eq(unit, "usDollar"))unit="dollar" ; // ignore
 	else if (eq(unit, "euro")) ; // ignore
-    else if (eq(unit, "squareKilometre"))unit="km²" ; // ignore
+    else if (eq(unit, "squareKilometre"))unit="km��" ; // ignore
     else if (eq(unit, "megabyte")) ; // ignore
     else if (eq(unit, "gramPerCubicCentimetre"))unit="g/cm^3" ; // ignore
     else if (eq(unit, "metrePerSecond"))unit="m/s" ; // ignore
@@ -1056,7 +1057,7 @@ Node* getYagoConcept(char* key) {
 	if (!hasWord(name)) n=getAbstract(name);
 	else n=getThe(name); //fixYagoName(key));
 	//	dissectWord(n);
-	//	if(!eq(name,"MC_Zwieback")&&!eq(name,"Stefanie_Zweig")&&!eq(name,"Ca�o_Central")&&!eq(name,"Beitbridge"))
+	//	if(!eq(name,"MC_Zwieback")&&!eq(name,"Stefanie_Zweig")&&!eq(name,"Ca���o_Central")&&!eq(name,"Beitbridge"))
 	//		dissectParent(getAbstract(name));
 	return n;
 }
@@ -1350,8 +1351,8 @@ bool importLabels(cchar* file, bool hash=false) {
         Node* oldLabel=labels[key];
         if(oldLabel){
             if(eq(oldLabel->name,label))continue;// OK
-            if(contains(label,"\\u"))continue; //Straßenverkehr || Stra\u00DFenverkehr
-            if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}//Straßenverkehr || Stra\u00DFenverkehr
+            if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
+            if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}//Stra��enverkehr || Stra\u00DFenverkehr
             printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
             addStatement(oldLabel,Label,getAbstract(label));
         }
@@ -1602,7 +1603,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 		else sscanf(line, "%*d\t%s\t%s\t%*d", /*&id,*/subjectName, objectName /*, &certainty*/); // no contextId? cause this db assumes GLOBAL id!
 		// printf(line);
 		//	 printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
-		//		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abkürzung") || contains(subjectName, ":") || contains(subjectName, "#"))
+		//		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abk��rzung") || contains(subjectName, ":") || contains(subjectName, "#"))
 		//			continue;
 		if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#")
             || contains(objectName, ":")) continue;
@@ -2021,10 +2022,16 @@ void import(const char* type, const char* filename) {
 		importCsv(filename);
 	} else if (endsWith(filename, "xml")) {
 		importXml(filename);
+	}  else if (endsWith(filename, "n3")) {
+		importN3(filename);
+	}  else if (endsWith(filename, "nt")) {
+		importN3(filename);
+	}  else if (endsWith(filename, "ttl")) {
+		importN3(filename);
 	} else {
 		//if (!importFacts(filename, filename))
 		printf("Unsupported file type %s %s", type, filename);
-		importAll();
+//		importAll();
 	}
 	//  cout<<"nanoseconds "<< diff <<'\n';
     
@@ -2059,9 +2066,11 @@ void importAll() {
 	importNames();
 	importGeoDB();
 	importFreebase();
-    importAllYago();
-    importEntities();
+	showContext(wordnet);
     importImages();
+	showContext(wordnet);
+    importAllYago();
+//    importEntities();
 }
 
 /*root@h1642655:~/netbase# l facts/

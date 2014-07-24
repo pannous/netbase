@@ -382,7 +382,7 @@ int handle(cchar* q0,int conn){
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
-        if(verbosity==verbose||verbosity==shorter)// lol // just name
+        if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
             Writeline(conn, ", 'kind':"+itoa(node->kind));		
         if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
                 Writeline(", 'image':'"+getImage(node,150,/*thumb*/true)+"'");
