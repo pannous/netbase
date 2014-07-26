@@ -41,6 +41,7 @@ function makeLink(name,url,elem)
 	a.href=url;
 	a.style=nolink+black
 	if(name=="x") a.setAttribute("onclick","return confirm('really delete?')");
+	a.setAttribute("rel","nofollow")
 	a.appendChild(x);
 	elem.appendChild(a);
 	elem.appendChild(document.createTextNode(" "));

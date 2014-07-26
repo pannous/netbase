@@ -2069,7 +2069,7 @@ void importAll() {
 	showContext(wordnet);
     importImages();
 	showContext(wordnet);
-    importAllYago();
+//    importAllYago(); //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 //    importEntities();
 }
 

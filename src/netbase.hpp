@@ -287,7 +287,7 @@ typedef struct Context {
     long currentNameSlot;
     int nodeCount;
     int extrahashNr;
-    int statementCount; //first 1000 reserved!
+    long statementCount; //first 1000 reserved!
     bool use_logic;
     // Node nodes[maxNodes];
     // Statement statements[maxStatements];

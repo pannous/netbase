@@ -371,6 +371,7 @@ NodeVector parse(const char* data) {
     if (startsWith(data, "handle ")) {handle((char*)data+7);return OK;}
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
+		lookupLimit=100;
 		return showNodes(query(data),true);
 	}
 	if (startsWith(data, "these ")) return query(data);
