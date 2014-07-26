@@ -375,6 +375,8 @@ NodeVector parse(const char* data) {
 		lookupLimit=100;
 //		allowInverse=true;// ONLY inverse of superclass!!
 		NodeVector all=findProperties(next_word(data).c_str(),"superclass",true);// jeannie hack!!
+		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
+		//Big the Cat 	x Species ^ - + -- -!
 		if(all.size()<resultLimit){
 			NodeVector more=query(data);
 			mergeVectors(&all,more);

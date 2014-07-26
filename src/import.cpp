@@ -1406,6 +1406,7 @@ void importFreebaseLabels() {
 bool useHash=false;
 Node *dissectFreebase(char* name) {
 	if (!contains(name, ".")) {
+//		if(endsWith(name," of"))// FLIP RELATION!
 		N a=getRelation((const char*) name);
 		if (a) return a;
 		a=getAbstract(name);

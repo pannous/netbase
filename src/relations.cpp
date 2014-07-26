@@ -187,7 +187,7 @@ void initRelationsDE() {
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "Label");
 	BackLabel = addRelation(39, "Label von");
-	addRelation(40, "ähnlich");// hypernym?? no synonym
+	addRelation(40, "��hnlich");// hypernym?? no synonym
 	addRelation(50, "auch");// hypernym??
 	Category = addRelation(43, "Kategorie"); // tag
 	SubContext = addRelation(44, "Subcontext"); // tag
@@ -219,7 +219,7 @@ void initRelationsDE() {
     Bytes = addRelation(_bytes, "Daten");
     
 	Plural = addRelation(_plural, "Plural");
-	Translation = addRelation(translation, "Übersetzung");
+	Translation = addRelation(translation, "��bersetzung");
     
 	And = addRelation(_And, "Und");
 	Or = addRelation(_Or, "Oder");
@@ -467,6 +467,9 @@ Node * getRelation(const char* thing) {
     if (eq(thing, "Broader topic")) return SuperClass;
     if (eq(thing, "narrower")) return SubClass;
     if (eq(thing, "narrower topic")) return SubClass;
+//    if (eq(thing, "Organism type")) return SuperClass;
+    //    if (eq(thing, "Species")) return SuperClass;
+    //    if (eq(thing, "Breed of")) return SuperClass;
 	if (eq(thing, "type")) return Type;// lustiger Typ !!! --------- !!!!!!!!
    	if (eq(thing, "has type")) return Type;
 	if (eq(thing, "is")) return Type;
