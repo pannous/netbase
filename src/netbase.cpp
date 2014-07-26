@@ -1429,7 +1429,7 @@ NodeVector* findWords(int context, const char* word, bool first,bool containsWor
 	if (all->size() == 0)
 		if (!quiet) printf("cant find node %s in context %d\n", word, context);
 	N a=getAbstract(word);
-	NV is=instanceFilter(a);
+	NV is=instanceFilter(a);// expensive!!!
 	for (int i=0; i < all->size(); i++){
 		Node *n=all->at(i);
 		if(!contains(is,n))addStatement(a,Instance,n);
@@ -1763,7 +1763,7 @@ Node * has(Node* subject, Node* predicate, Node* object, int recurse, bool seman
 	else recurse=maxRecursions - 1;
 	if (recurse > maxRecursions) return 0;
 	if (recurse <= 2 && subject->kind == Abstract->id) {
-		NodeVector all=instanceFilter(subject);
+		NodeVector all=instanceFilter(subject);// need big lookuplimit here? :( todo: filter onthe fly!
 		for (int i=0; i < all.size(); i++) {
 			Node* insta=(Node*) all[i];
 			Node* resu=has(insta, predicate, object, recurse, semantic, symmetric, predicatesemantic,matchName);
@@ -2025,7 +2025,7 @@ NodeVector findProperties(Node* n , Node* m){
         pf("Warning: empty property null for node %d\t%s",n->id,n->name);
      return good;
     }
-    NV all=    instanceFilter(n);
+    NV all=    instanceFilter(n);// need big lookuplimit here :( todo: filter onthe fly!
     //    if(!isAbstract(n))
     all.push_back(n);// especially for freebase singletons!
     // OR//    findStatement(Node *subject, Node *predicate, Node *object)
@@ -2041,7 +2041,7 @@ NodeVector findProperties(const char* n, const char* m){
     if(isInteger(m)) return findProperties(getAbstract(n),getThe(m));
     NodeVector good;
     N a=getAbstract(n);
-    NV all=    instanceFilter(a);
+    NV all=    instanceFilter(a);// need big lookuplimit here :( todo: filter onthe fly!
     all.push_back(a);// especially for freebase singletons!
     for (int i=0; i<all.size(); i++){
         NV more=findProperties(all[i],m);

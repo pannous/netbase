@@ -928,6 +928,7 @@ NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses
 			//			if (recurse)
 			//				more = all_instances(x, recurse, max - all.size());// why sooo slooow ???
 			//			else
+			lookupLimit=max;
 			more = instanceFilter(x);//,null,max); //   all_instances(x, recurse-1, max);
 			mergeVectors(&all, more);
 		}
@@ -1063,6 +1064,7 @@ Node * findMatch(Node* n, const char* match) {//
 	return 0;
 }
 
+// expensive
 int countInstances(Node * node) {
 	int j = (int)instanceFilter(node).size();
 	int i = (int)allInstances(node).size();
@@ -1078,7 +1080,7 @@ int countInstances(Node * node) {
 	return i;
 }
 
-NodeVector instanceFilter(Node* subject, NodeQueue * queue){//, int max) {
+NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
 	NodeVector all;
     
 	int i = 0;
