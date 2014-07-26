@@ -7,7 +7,7 @@ bool save() {
 	string data_path=path+"data/";
     FILE *fp;
     fp = fopen((data_path+"statements.bin").data(), "wb");
-    fwrite(c->statements, sizeof (Statement), c->statementCount, fp);
+    fwrite(c->statements, (unsigned long int) sizeof (Statement),(unsigned long int) (c->statementCount), fp);
     fclose(fp);
 
     fp = fopen((data_path+"nodes.bin").data(), "wb");

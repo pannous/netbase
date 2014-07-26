@@ -1994,7 +1994,7 @@ Statement * isStatement(Node * n) {
 	return 0;
 }
 
-Node* findProperty(Node* n , const char* m){
+Node* findProperty(Node* n , const char* m,bool allowInverse){
 Statement* s=0;
 while ((s=nextStatement(n,s))) {
     if(eq(s->Predicate()->name,m,true))
@@ -2003,13 +2003,13 @@ while ((s=nextStatement(n,s))) {
     return 0;
 }
 
-NodeVector findProperties(Node* n, const char* m){
+NodeVector findProperties(Node* n, const char* m,bool allowInverse=true){
     if(isInteger(m)) m=getThe(m)->name;
     NodeVector good;
     Statement* s=0;
     while ((s=nextStatement(n,s))) {
         if(eq(s->Predicate()->name,m,true)){
-            if(s->Object()==n)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
+            if(s->Object()==n&&allowInverse)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
                 good.push_back(s->Subject());
             else if (!contains(good, s->Object(), false))
                 good.push_back(s->Object());
@@ -2019,7 +2019,7 @@ NodeVector findProperties(Node* n, const char* m){
     return good;
 }
 
-NodeVector findProperties(Node* n , Node* m){
+NodeVector findProperties(Node* n , Node* m,bool allowInverse=true){
     NodeVector good;
     if(!m){
         pf("Warning: empty property null for node %d\t%s",n->id,n->name);
@@ -2036,15 +2036,15 @@ NodeVector findProperties(Node* n , Node* m){
     return good;
 }
 
-NodeVector findProperties(const char* n, const char* m){
-    if(isInteger(n)) return findProperties(getAbstract(n),m);
-    if(isInteger(m)) return findProperties(getAbstract(n),getThe(m));
+NodeVector findProperties(const char* n, const char* m,bool allowInverse){
+    if(isInteger(n)) return findProperties(getAbstract(n),m,allowInverse);
+    if(isInteger(m)) return findProperties(getAbstract(n),getThe(m),allowInverse);
     NodeVector good;
     N a=getAbstract(n);
     NV all=    instanceFilter(a);// need big lookuplimit here :( todo: filter onthe fly!
     all.push_back(a);// especially for freebase singletons!
     for (int i=0; i<all.size(); i++){
-        NV more=findProperties(all[i],m);
+        NV more=findProperties(all[i],m,allowInverse);
         mergeVectors(&good, more);
         if(good.size()>resultLimit)return good;
     }
@@ -2122,7 +2122,7 @@ NodeVector show(NodeVector all){
 NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {
 	int size=(int)all.size();
 	ps("+++++++++++++++++++++++++++++++++++");
-	for (int i=0; i < size; i++) {
+	for (int i=0; i < size && i<resultLimit; i++) {
 		Node* node=(Node*) all[i];
 
 		if (i > 0 && showRelation) {

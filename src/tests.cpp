@@ -1510,7 +1510,7 @@ void testBrandNewStuff() {
     import("test.csv");
     germanLabels=false;
 //	handle("all+pennsylvania+marijuana");
-	
+	handle("all dog");      
 //    importAll();
         exit(0);
     p(statementCount());
