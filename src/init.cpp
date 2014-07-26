@@ -427,6 +427,7 @@ bool clearMemory() {
         detach_shared_memory();
         init();
         //		if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
+        // EXPENSIVE on big machines!! like: 10 minutes!!
 //		else {
 //			memset(context_root, 0, contextOffset);
 //			memset(node_root, 0, nodeSize * maxNodes); //calloc!
@@ -443,6 +444,7 @@ bool clearMemory() {
     memset(statement_root, 0, 100000); // for testing
     memset(name_root, 0, 100000); // for testing
 	memset(abstract_root, 0, maxNodes*ahashSize * 2);
+//	memset(abstracts, 0, maxNodes*ahashSize * 2);
     currentContext()->nodeCount=1000;// 0 = ANY
     currentContext()->nodeNames=name_root;
     currentContext()->statementCount=1;// 0 = ERROR
