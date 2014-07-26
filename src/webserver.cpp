@@ -372,7 +372,7 @@ int handle(cchar* q0,int conn){
         entity=keep_to(entity,"limit");
     }
     
-	for (int i = 0; i < all.size(); i++) {
+	for (int i = 0; i < all.size() && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
 		if(last==node)continue;
 		last=node;
