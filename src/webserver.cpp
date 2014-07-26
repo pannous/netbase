@@ -56,6 +56,9 @@ void fixLabel(Node* n){
 		n->name[strlen(n->name)-1]=0;
 	replaceChar(n->name,'"',' ');
 	replaceChar(n->name,'\'',' ');
+// todo: "'","%27" etc
+//#include <curl/curl.h>
+//char *curl_easy_escape( CURL * curl , char * url , int length );
 }
 
 /// true = filter
@@ -385,7 +388,7 @@ int handle(cchar* q0,int conn){
         if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
             Writeline(conn, ", 'kind':"+itoa(node->kind));		
         if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-                Writeline(", 'image':'"+getImage(node,150,/*thumb*/true)+"'");
+                Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
             //            Writeline(",image:'"+getImage(node->name)+"'");
