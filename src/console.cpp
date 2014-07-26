@@ -232,6 +232,7 @@ NodeVector parse(const char* data) {
 	if (contains(data, "limit")) {
 		char* limit=(char*)strstr(data," limit");
 		sscanf(limit+1, "limit %d", &resultLimit);
+		lookupLimit=resultLimit*10;//todo
 		*limit=0;
         //		char* newdata=(char*) malloc(1000);
         //		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
@@ -371,6 +372,7 @@ NodeVector parse(const char* data) {
     if (startsWith(data, "handle ")) {handle((char*)data+7);return OK;}
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
+		lookupLimit=100;
 		return showNodes(query(data,100),true);
 	}
 	if (startsWith(data, "these ")) return query(data);
