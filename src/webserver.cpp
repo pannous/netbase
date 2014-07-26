@@ -377,6 +377,7 @@ int handle(cchar* q0,int conn){
     
 	for (int i = 0; i < all.size() && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
+		if(!checkNode(node))continue;
 		if(last==node)continue;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
