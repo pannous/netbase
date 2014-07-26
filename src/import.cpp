@@ -99,8 +99,8 @@ int norm_wordnet_id(int synsetid) {
     if (!id&&synsetid<10000000) id=wordnet_synset_map[synsetid+10000000];
     if (!id&&synsetid<10000000) id=wordnet_synset_map[synsetid+100000000];
 	if (!id){
-        p("BAD ID!!!");
-        p(synsetid);
+//        p("BAD ID!!!");
+//        p(synsetid);
     }
 	//	id=id+10000;// NORM!!!
 	return id;
@@ -151,6 +151,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 		if (eq(lastTitle, title)) continue;
 		lastTitle=clone(title); // only the first
         id=norm_wordnet_id(id);
+        if(!id)continue;
         Node* subject=get(id);
 		if (!subject && !hasWord(title)){
             p(line);
@@ -1034,6 +1035,7 @@ Node* rdfValue(char* name) {
 Node* parseWordnetKey(char* key) {
 	char* id=cut_wordnet_id(key);
 	int nid=norm_wordnet_id(atoi(id));
+	if(!nid)return 0;
 	Node* wn=get(nid);
 	if (wn) return wn;
 	else return initNode(wn, nid, removeHead(key, "<wordnet_"), 0, 0);
@@ -1761,6 +1763,7 @@ void importSynsets() {
 		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/
                definition);
 		id=norm_wordnet_id(id);
+		if(!id)continue;
 		if (pos == 'n') addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun; DEFAULT!!
 		if (pos == 'v') addStatement4(wordnet, id, Type->id, verb); //get(id)->kind = verb;
 		if (pos == 'a') addStatement4(wordnet, id, Type->id, adjective); //get(id)->kind = adjective;
@@ -1820,10 +1823,10 @@ void importGermanLables() {
         //		id=id + 10000; //  label on abstract !?!
 		id=norm_wordnet_id(id); // 100001740  -> 200000 etc
         //		if (id >= 200000) {
-        if(!id)
-			p(line);
-        //			continue;
-        //		}
+        if(!id){
+//			p(line);
+        			continue;
+        		}
         //        if(wn_labels[id]!=null&&get(id))
         getAbstract(german);
         if(add_labels)
@@ -2045,8 +2048,10 @@ void importAllDE() {
     germanLabels=true;
     p("importAll GERMAN");
     importLabels("labels.csv");
-	importCsv("adressen.txt");
 	importWordnet();
+	return;
+//	exit(0);
+	importCsv("adressen.txt");
 	importNames();
     importDBPediaDE();
 	//	doDissectAbstracts=true;// already? why not

@@ -474,7 +474,7 @@ Query parseQuery(string s, int limit) {
 	match=cut_to(ss," where "); 
 	type=cut_to(ss," from ");
 	fields=cut_to(ss,"select ");
-    if(type[strlen(type)-1]=='s')type[strlen(type)-1]=0;// remove plural
+    if(!germanLabels && type[strlen(type)-1]=='s')type[strlen(type)-1]=0;// remove plural todo better
 	p(ss);
 	p(fields);
 	p(type);

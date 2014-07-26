@@ -506,7 +506,8 @@ char* initContext(Context* context) {
 	context->nodes=nodes;
 	context->statements=statements;
 	context->nodeNames=nodeNames;
-    context->statementCount=1;// 0 = error
+	if(context->statementCount==0)// ??
+		context->statementCount=1;// 0 = error
 //	px(context);
 //	px(nodes);
 //	px(nodeNames);
