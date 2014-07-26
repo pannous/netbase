@@ -11,6 +11,8 @@
 
 extern int resultLimit;
 extern int defaultLookupLimit;
+extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
 NodeVector query(Query& q);
@@ -50,7 +52,7 @@ NodeVector hasFilter(Node* subject,NodeQueue* queue=null);
 NodeVector childFilter(Node* subject,NodeQueue* queue=null);
 NodeVector ownerFilter(Node* subject,NodeQueue* queue=null);
 NodeVector anyFilter(Node* subject,NodeQueue* queue=null,bool includeRelations=true);
-NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);//, int max= lookupLimit resultLimit);
+NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);// chage all + edgeFilter!! for , int max= lookupLimit);// resultLimit
 NodeVector relationsFilter(Node* subject, NodeQueue * queue=null);
 
 NodeVector parseProperties(const char *data);
