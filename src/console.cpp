@@ -373,7 +373,13 @@ NodeVector parse(const char* data) {
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
 		lookupLimit=100;
-		return showNodes(query(data,100),true);
+//		allowInverse=true;// ONLY inverse of superclass!!
+		NodeVector all=findProperties(next_word(data).c_str(),"superclass",true);// jeannie hack!!
+		if(all.size()<resultLimit){
+			NodeVector more=query(data);
+			mergeVectors(&all,more);
+		}
+		return showNodes(all,true);
 	}
 	if (startsWith(data, "these ")) return query(data);
 	if (contains(data, "that ")) return query(data);

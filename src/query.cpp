@@ -253,7 +253,7 @@ string renderResults(Query& q) {
 	return buffer.str();
 }
 
-NodeVector query(string s, int limit) {
+NodeVector query(string s, int limit/*=resultLimit*/) {
 	p(("Executing query "));
 	ps(s);
 	Query q = parseQuery(s, limit);
