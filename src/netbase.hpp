@@ -570,8 +570,8 @@ static int billion=GB;
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
 
 // FREEBASE: 600.000.000 Statements !!!
+// todo: via getenv
 #if defined(__APPLE__)
-//static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
 static long maxNodes /*max 32bit=4GB!*/= 10*million;// long would need a new structure!!
 static long maxStatements = maxNodes;// *10 = crude average of Statements per Node  ; max=1000!
 #else

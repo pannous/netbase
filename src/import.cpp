@@ -2049,7 +2049,7 @@ void importAllDE() {
     p("importAll GERMAN");
     importLabels("labels.csv");
 	importWordnet();
-	return;
+//	return;
 //	exit(0);
 	importCsv("adressen.txt");
 	importNames();
