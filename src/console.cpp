@@ -449,10 +449,6 @@ NodeVector parse(const char* data) {
         update(data);
     }
     
-	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))
-        || (contains(data, ":"))) { // && !contains(data, " "))) {
-		return parseProperties(data); // ownerpath
-	}
 	if (eq(data, "server") ||eq(data, ":server") || eq(data, ":daemon") || eq(data, ":demon")) {
 		printf("starting server\n");
 		start_server();
@@ -470,6 +466,12 @@ NodeVector parse(const char* data) {
 	if (contains(data, " that ")) return query(data);
 	if (contains(data, "who ")) return query(data);
     
+
+	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
+		// || (contains(data, ":")) && !contains(data, " "))) {
+		return parseProperties(data); // ownerpath
+	}
+
 	if (args.size() >= 3 && eq(args[1], "to")) {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(2));

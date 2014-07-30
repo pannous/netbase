@@ -389,7 +389,7 @@ int handle(cchar* q0,int conn){
         if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
             Writeline(conn, ", 'kind':"+itoa(node->kind));		
         if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-                Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
+            Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
             //            Writeline(",image:'"+getImage(node->name)+"'");

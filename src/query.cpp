@@ -1400,6 +1400,7 @@ NodeVector update(cchar* query){
 
 
 NodeVector parseProperties(const char *data) {
+	lookupLimit=10000;
 	char *thing=(char *) malloc(1000);
 	char *property=(char *) malloc(1000);
 	if (contains(data, ":")) {
