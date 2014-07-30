@@ -2432,6 +2432,7 @@ string getImage(const char* n, int size) {
 }
 
 string getImage(Node* a, int size,bool thumb) {
+	if(!a||!checkNode(a))return 0;
 	Node* i=findProperty(a, "wiki_image");
 	if (!i || !checkNode(i)) return getImage(a->name);
     return formatImage(i,size,thumb);

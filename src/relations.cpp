@@ -470,6 +470,7 @@ Node * getRelation(const char* thing) {
 //    if (eq(thing, "Organism type")) return SuperClass;
     //    if (eq(thing, "Species")) return SuperClass;
     //    if (eq(thing, "Breed of")) return SuperClass;
+//    Higher Classification
 	if (eq(thing, "type")) return Type;// lustiger Typ !!! --------- !!!!!!!!
    	if (eq(thing, "has type")) return Type;
 	if (eq(thing, "is")) return Type;
