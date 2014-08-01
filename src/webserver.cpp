@@ -28,7 +28,7 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (81)
+#define SERVER_PORT  (80)
 static char server_root[1000] = "/Users/me/";
 
 int listener, conn,closing=0;
