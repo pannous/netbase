@@ -755,7 +755,8 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	else if(contains(reqinfo->resource,"json/"))
 		Writeline(conn, "Content-Type: application/json\r\n");
 	else if(contains(reqinfo->resource,"xml/"))
-		Writeline(conn, "Content-Type: application/xml\r\n");
+		Writeline(conn, "Content-Type: text/html\r\n");// till entities are fixed
+//		Writeline(conn, "Content-Type: application/xml\r\n");
 	else
 		Writeline(conn, "Content-Type: text/plain\r\n");
 	Writeline(conn, "Connection: close\r\n");
