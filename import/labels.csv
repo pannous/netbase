@@ -38,4 +38,6 @@ narrower_topic	SubClass
 narrower_concept	SubClass
 birthDate	Geburtsdatum
 deathDate	Sterbedatum
+male_firstname	maennlicher_Vorname
+female_firstname  weiblicher_Vorname
 
