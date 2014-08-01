@@ -28,7 +28,7 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (80)
+#define SERVER_PORT  (81)
 static char server_root[1000] = "/Users/me/";
 
 int listener, conn,closing=0;
@@ -335,8 +335,7 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div><script>var results={'results':[\n";
-    
+    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div>\n<script>var results={'results':[\n";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
@@ -412,7 +411,7 @@ int handle(cchar* q0,int conn){
 		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
 	}
-	const char* html_end="]};</script><script src='http://pannous.net/netbase.js'></script></body></html>";
+	const char* html_end="]};</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
 	if (format == json)Writeline(conn, "]}\n");
     if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
 	if (format == html)Writeline(conn, html_end);
@@ -424,27 +423,21 @@ int handle(cchar* q0,int conn){
 
 // WORKS FINE, but not when debugging
 int Service_Request(int conn) {
-    
 	struct ReqInfo reqinfo;
 	InitReqInfo(&reqinfo);
-    
 	/*  Get HTTP request  */
 	if (Get_Request(conn, &reqinfo) < 0)
 		return -1;
-    
 	if (reqinfo.type == FULL)
 		Output_HTTP_Headers(conn, &reqinfo);
-    
 	// file system:	//		Serve_Resource(ReqInfo  reqinfo,int conn)
-    
 	CleanURL(reqinfo.resource);
-    
 	init(); // for each forked process!
     if(strlen(reqinfo.resource)>1000)return 0;
 	char* q = substr(reqinfo.resource, 1, -1);
-    
-    int ok=handle(q,conn); // <<<<<<<<<<<<<
-	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
+	// ::::::::::::::::::::::::::::::
+    int ok=handle(q,conn); // <<<<<<< CENTRAL CALL
+	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	FreeReqInfo(&reqinfo);
 	return ok;
 }
@@ -573,18 +566,12 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 	char *temp;
 	char *endptr;
 	size_t len;
-    
-    
 	if (first_header == 1) {
-        
 		/*  If first_header is 0, this is the first line of
          the HTTP request, so this should be the request line.  */
-        
-        
 		/*  Get the request method, which is case-sensitive. This
          version of the server only supports the GET and HEAD
          request methods.                                        */
-        
 		if (!strncmp(buffer, "GET ", 4)) {
 			reqinfo->method = GET;
 			buffer += 4;
@@ -596,12 +583,9 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
             //			reqinfo->status = 501;
             //			return -1;
 		}
-        
 		/*  Skip to start of resource  */
 		while (*buffer && isspace(*buffer))
 			buffer++;
-        
-        
 		/*  Calculate string length of resource...  */
 		endptr = strchr(buffer, ' ');
 		if (endptr == NULL)
@@ -612,33 +596,24 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
             //			reqinfo->status = 400;
             //			return -1;
 		}
-        
 		/*  ...and store it in the request information structure.  */
-        
 		reqinfo->resource = (char*) calloc(len + 1, sizeof (char));
 		strncpy(reqinfo->resource, buffer, len);
-        
-        
 		/*  Test to see if we have any HTTP version information.
          If there isn't, this is a simple HTTP request, and we
          should not try to read any more headers. For simplicity,
          we don't bother checking the validity of the HTTP version
          information supplied - we just assume that if it is
          supplied, then it's a full request.                        */
-        
 		if (contains(buffer, "HTTP/")||contains(buffer, "http/"))
 			reqinfo->type = FULL;
 		else
 			reqinfo->type = SIMPLE;
-        
 		first_header = 0;
 		return 0;
 	}
-    
-    
 	/*  If we get here, we have further headers aside from the
      request line to parse, so this is a "full" HTTP request.  */
-    
 	/*  HTTP field names are case-insensitive, so make an
      upper-case copy of the field name to aid comparison.
      We need to make a copy of the header up until the colon.
@@ -647,7 +622,6 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
      HTTP/1.0 allows (but discourages) headers to span multiple
      lines if the following lines start with a space or a
      tab. For simplicity, we do not allow this here.              */
-    
 	endptr = strchr(buffer, ':');
 	if (endptr == NULL) {
         //		reqinfo->status = 400;
@@ -656,22 +630,16 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 	temp = (char*) calloc((endptr - buffer) + 1, sizeof (char));
 	strncpy(temp, buffer, (endptr - buffer));
 	StrUpper(temp);
-    
-    
 	/*  Increment buffer so that it now points to the value.
      If there is no value, just return.                    */
-    
 	buffer = endptr + 1;
 	while (*buffer && isspace(*buffer))
 		++buffer;
 	if (*buffer == '\0')
 		return 0;
-    
-    
 	/*  Now update the request information structure with the
      appropriate field value. This version only supports the
      "Referer:" and "User-Agent:" headers, ignoring all others.  */
-    
 	if (!strcmp(temp, "USER-AGENT")) {
 		reqinfo->useragent = (char*) malloc(strlen(buffer) + 1);
 		strcpy(reqinfo->useragent, buffer);
@@ -679,7 +647,6 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 		reqinfo->referer = (char*) malloc(strlen(buffer) + 1);
 		strcpy(reqinfo->referer, buffer);
 	}
-    
 	free(temp);
 	return 0;
 }
@@ -690,61 +657,39 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
  wait for the next complete header. If we timeout before
  this is received, we terminate the connection.               */
 int Get_Request(int conn, struct ReqInfo * reqinfo) {
-    
 	char buffer[MAX_REQ_LINE] = {0};
 	int rval;
 	fd_set fds;
 	struct timeval tv;
-    
-    
 	/*  Set timeout to 5 seconds  */
-    
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
-    
-    
 	/*  Loop through request headers. If we have a simple request,
      then we will loop only once. Otherwise, we will loop until
      we receive a blank line which signifies the end of the headers,
      or until select() times out, whichever is sooner.                */
-    
 	do {
-        
 		/*  Reset file descriptor set  */
-        
 		FD_ZERO(&fds);
 		FD_SET(conn, &fds);
-        
-        
 		/*  Wait until the timeout to see if input is ready  */
-        
 		rval = select(conn + 1, &fds, NULL, NULL, &tv);
-        
-        
 		/*  Take appropriate action based on return from select()  */
-        
 		if (rval < 0) {
 			Error_Quit("Error calling select() in get_request()");
 		} else if (rval == 0) {
-            
 			p(" input not ready after timeout  ");
 			return -1;
-            
 		} else {
-            
 			/*  We have an input line waiting, so retrieve it  */
-            
 			Readline(conn, buffer, MAX_REQ_LINE - 1);
 			//	    Trim(buffer);
-            
 			if (buffer[0] == '\0')
 				break;
-            
 			if (Parse_HTTP_Header(buffer, reqinfo))
 				break;
 		}
 	} while (reqinfo->type != SIMPLE);
-    
 	return 0;
 }
 
@@ -768,14 +713,12 @@ void FreeReqInfo(struct ReqInfo * reqinfo) {
 int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
 	char c;
 	size_t i;
-    
 	while ((i = read(resource, &c, 1))) {
         //		if (i < 0)
         //			Error_Quit("Error reading from file.");
 		if (write(conn, &c, 1) < 1)
 			Error_Quit("Error sending file.");
 	}
-    
 	return 0;
 }
 
@@ -792,31 +735,33 @@ int Check_Resource(struct ReqInfo * reqinfo) {
 }
 
 int Return_Error_Msg(int conn, struct ReqInfo * reqinfo) {
-    
 	char buffer[100];
-    
-	sprintf(buffer, "<HTML>\n<HEAD>\n<TITLE>Server Error %d</TITLE>\n"
-			"</HEAD>\n\n", reqinfo->status);
+	sprintf(buffer, "<HTML>\n<HEAD>\n<TITLE>Server Error %d</TITLE>\n</HEAD>\n\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-    
 	sprintf(buffer, "<BODY>\n<H1>Server Error %d</H1>\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-    
 	sprintf(buffer, "<P>The request could not be completed.</P>\n"
 			"</BODY>\n</HTML>\n");
 	Writeline(conn, buffer, strlen(buffer));
-    
 	return 0;
-    
 }
 
 int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	char buffer[100];
-	sprintf(buffer, "HTTP/1.0 %d OK\r\n", reqinfo->status);
+	sprintf(buffer, "HTTP/1.1 %d OK\r\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-	Writeline(conn, "Server: Netbase \r\n", 24);
-	Writeline(conn, "Content-Type: text/html\r\n", 25);
+	if(contains(reqinfo->resource,"html/"))
+		Writeline(conn, "Content-Type: text/html\r\n");
+	else if(contains(reqinfo->resource,"json/"))
+		Writeline(conn, "Content-Type: application/json\r\n");
+	else if(contains(reqinfo->resource,"xml/"))
+		Writeline(conn, "Content-Type: application/xml\r\n");
+	else
+		Writeline(conn, "Content-Type: text/plain\r\n");
+	Writeline(conn, "Connection: close\r\n");
+	Writeline(conn, "Server: Netbase\r\n");
 	Writeline(conn, "\r\n", 2);
+//	Writeline(conn, "\r\n", 2);
 	return 0;
 }
 
@@ -824,7 +769,6 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 	int resource = 0;
 	/*  Check whether resource exists, whether we have permission
      to access it, and update status code accordingly.          */
-    
 	if (reqinfo.status == 200)
 		if ((resource = Check_Resource(&reqinfo)) < 0) {
 			if (errno == EACCES)
@@ -832,15 +776,10 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 			else
 				reqinfo.status = 404;
 		}
-    
 	/*  Output HTTP response headers if we have a full request  */
-    
 	if (reqinfo.type == FULL)
 		Output_HTTP_Headers(conn, &reqinfo);
-    
-    
 	/*  Service the HTTP request  */
-    
 	//	if ( Return_Resource(conn, resource, &reqinfo) )
 	//	    Error_Quit("Something wrong returning resource.");
 	//    }
@@ -856,8 +795,6 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 void start_server() {
 	printf("STARTING SERVER!\n localhost:%d\n", SERVER_PORT);
 	flush();
-    
-    
 	/*  Create socket  */
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		Error_Quit("Couldn't create listening socket.");
@@ -872,20 +809,16 @@ void start_server() {
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(SERVER_PORT);
     
-    
 	/*  Assign socket address to socket  */
     //	__bind<int&,sockaddr *,unsigned long> x=
     bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr));
     if(listener<0)
 		Error_Quit("Couldn't bind listening socket.");
     
-    
 	/*  Make socket a listening socket  */
-    
     //    	if (listen(listener, BACKLOG) < 0)
 	if (listen(listener, LISTENQ) < 0)
 		Error_Quit("Call to listen failed.");
-    
     
 	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
     p(" [doesn't work with xcode, use ./compile.sh ]");
@@ -898,18 +831,14 @@ void start_server() {
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
         else p("conn = accept OK");
 		// WORKS FINE, but not when debugging
-        
 		/*  Fork child process to service connection  */
         pid = fork();
 		if (pid == 0) {
-            
 			/*  This is now the forked child process, so
              close listening socket and service request   */
 			if (close(listener) < 0)
 				Error_Quit("Error closing listening socket in child.");
-            
 			Service_Request(conn);
-            
 			/*  Close connected socket and exit forked process */
 			if (close(conn) < 0)
 				Error_Quit("Error closing connection socket.");
@@ -918,8 +847,6 @@ void start_server() {
             //            p("not forked yet");
             //            Service_Request(conn);// whatever
         }
-        
-        
 		/*  If we get here, we are still in the parent process,
          so close the connected socket, clean up child processes,
          and go back to accept a new connection.

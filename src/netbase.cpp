@@ -2007,7 +2007,7 @@ NodeVector findProperties(Node* n, const char* m,bool allowInverse=true){
     if(isInteger(m)) m=getThe(m)->name;
     NodeVector good;
     Statement* s=0;
-    while ((s=nextStatement(n,s))) {
+    while ((s=nextStatement(n,s))) {// todont: lookuplimit
         if(eq(s->Predicate()->name,m,true)){
             if(s->Object()==n&&allowInverse)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
                 good.push_back(s->Subject());
