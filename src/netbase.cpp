@@ -2030,7 +2030,9 @@ NodeVector findProperties(Node* n , Node* m,bool allowInverse=true){
     all.push_back(n);// especially for freebase singletons!
     // OR//    findStatement(Node *subject, Node *predicate, Node *object)
     for (int i=0; i<all.size(); i++){
-        mergeVectors(&good, findProperties(all[i],m->name));
+        mergeVectors(&good, findProperties(all[i],m->name,false));
+        if(good.size()<resultLimit/2)
+        mergeVectors(&good, findProperties(all[i],m->name,true));
         if(good.size()>resultLimit)return good;
     }
     return good;
