@@ -2071,11 +2071,11 @@ void importAll() {
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	importGeoDB();
-	importFreebase();
+//	importFreebase();
 	showContext(wordnet);
+	showContext(wordnet);
+    importAllYago(); //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
     importImages();
-	showContext(wordnet);
-//    importAllYago(); //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 //    importEntities();
 }
 
