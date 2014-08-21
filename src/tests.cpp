@@ -1506,12 +1506,12 @@ void testBrandNewStuff() {
     quiet=false;
 	debug = true;
 //    testing=false;// NO RELATIONS!
-    germanLabels=true;// false;
-    import("test.csv");
+//    germanLabels=true;// false;
+//    import("test.csv");
     germanLabels=false;
 //	handle("all+pennsylvania+marijuana");
-	handle("all dog");      
-//    importAll();
+//	handle("all dog");
+    importAll();
         exit(0);
     p(statementCount());
     N s=get(244797);
