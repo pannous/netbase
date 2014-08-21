@@ -99,8 +99,8 @@ int norm_wordnet_id(int synsetid) {
     if (!id&&synsetid<10000000) id=wordnet_synset_map[synsetid+10000000];
     if (!id&&synsetid<10000000) id=wordnet_synset_map[synsetid+100000000];
 	if (!id){
-        //        p("BAD ID!!!");
-        //        p(synsetid);
+//        p("BAD ID!!!");
+//        p(synsetid);
     }
 	//	id=id+10000;// NORM!!!
 	return id;
@@ -2093,7 +2093,9 @@ void importAll() {
 	importImages();
     //    importAllYago();// BETTER THAN DBPEDIA!? //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 	showContext(wordnet);
-    //    importEntities();
+    importImages();
+    importAllYago(); //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
+//    importEntities();
 }
 
 /*root@h1642655:~/netbase# l facts/
