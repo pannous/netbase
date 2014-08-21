@@ -157,6 +157,7 @@ Ahash *getAhash(int position){
 }
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+map<Ahash*, bool> badAhashReported;// debug
 Ahash * insertAbstractHash(int position, Node * a) {
     if(a==0)
         return 0;
@@ -168,6 +169,8 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	while (ah&&ah->next) {
 		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
             badCount++;
+            if(badAhashReported[ah])return ah;
+            badAhashReported[ah]=true;
 			debugAhash(position);
 			p("insertAbstractHash FULL!");
 			show(a);
