@@ -1166,7 +1166,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 	}
     
 
-    if(atof(thing))//!=0&&eq(itoa(atof(thing)),thing)){
+    if(atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
         insta->value.number=atof(thing);
         if(!type)insta->kind=_number;
     }
