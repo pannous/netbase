@@ -919,11 +919,11 @@ Node* rdfOwl(char* name) {
 	if (eq(name, "xsd:date")) return Date;
 	if (eq(name, "xsd:decimal")) return Number;
 	if (eq(name, "xsd:integer")) return Number;
+   	if (eq(name, "xsd:nonNegativeInteger"))return Number;// getAbstract("natural number");
 	if (eq(name, "xsd:boolean")) return getAbstract("boolean"); // !
 	if (eq(name, "xsd:gYear")) return getAbstract("year"); // !
 	if (eq(name, "owl:disjointWith")) return getAbstract("disjoint with"); // symmetric!
-	//	if(eq(key,"xsd:string"))return Text;// no info!
-	if (eq(name, "xsd:nonNegativeInteger")) return getAbstract("natural number");
+	//	if(eq(key,"xsd:string"))return Text;// redundant
 	if (eq(name, "owl:FunctionalProperty")) return Label;
 	if (!startsWith(name, "wiki") && contains(name, ":") && !startsWith(name, "http")) {
 		name=strstr(name, ":");
@@ -1434,6 +1434,11 @@ Node* getFreebaseEntity(char* name) {
     if (name[0] == '<') {
         name++;
         if(name[strlen(name) - 1]=='>')
+            name[strlen(name) - 1]=0;
+    }
+    if (name[0] == '"') {
+        name++;
+        if(name[strlen(name) - 1]=='"')
             name[strlen(name) - 1]=0;
     }
     cut_to(name," (");
