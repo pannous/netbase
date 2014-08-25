@@ -2086,15 +2086,14 @@ void importAll() {
         importDBPediaDE();
     else
         importDBPediaEN();
-	importImages();
+//	importImages();
 	importGeoDB();
 	showContext(wordnet);
 	importFreebase();
-	importImages();
-    //    importAllYago();// BETTER THAN DBPEDIA!? //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 	showContext(wordnet);
+//   	importAllYago();// BETTER THAN DBPEDIA!?
     importImages();
-    importAllYago(); //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
+    //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 //    importEntities();
 }
 
