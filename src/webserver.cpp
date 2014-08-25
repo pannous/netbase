@@ -210,7 +210,7 @@ int handle(cchar* q0,int conn){
 		jsonp+=6;
 		format = json;
 		}
-	else jsonp="parseResults";
+	else jsonp=(char*)"parseResults";
 
 	if (endsWith(q, ".json")) {
         format = json;
@@ -295,7 +295,7 @@ int handle(cchar* q0,int conn){
     excluded.clear();
     included.clear();
     
-    if(contains(q,"statement count")){Writeline(conn,itoa(currentContext()->statementCount).data());return 0;}
+    if(contains(q,"statement count")){Writeline(conn,itoa((int)currentContext()->statementCount).data());return 0;}
     if(contains(q,"node count")){Writeline(conn,itoa(currentContext()->nodeCount).data());return 0;}
     
     
@@ -347,14 +347,14 @@ int handle(cchar* q0,int conn){
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
-	const char* statement_format;
+	const char* statement_format = nullptr;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == html)statement_format = statement_format_json;
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
     
-   	const char* entity_format;
+   	const char* entity_format = nullptr;
 	const char* entity_format_txt = "%s #%d statements:%d\n";
 	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
 	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statementCount':%d";
@@ -390,7 +390,7 @@ int handle(cchar* q0,int conn){
         if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
             Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
 		Statement* s = 0;
-		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
+		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
             //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
