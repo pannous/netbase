@@ -1853,7 +1853,7 @@ void importLexlinks() {
 		if (p == SubClass->id) continue; // Redundant data!
 		if (p == Instance->id) continue; // Redundant data!
         
-		Statement* x = nullptr;
+		Statement* x = 0;
 		if (ss != so) x=addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
 		if (debug && !x)
             pf("ERROR %s\n", line);

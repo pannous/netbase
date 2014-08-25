@@ -347,14 +347,14 @@ int handle(cchar* q0,int conn){
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
-	const char* statement_format = nullptr;
+	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == html)statement_format = statement_format_json;
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
     
-   	const char* entity_format = nullptr;
+   	const char* entity_format = 0;
 	const char* entity_format_txt = "%s #%d statements:%d\n";
 	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
 	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statementCount':%d";
