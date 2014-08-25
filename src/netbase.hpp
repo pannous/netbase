@@ -575,7 +575,7 @@ static int billion=GB;
 static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
 static long maxStatements = maxNodes*4;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 300*million;
+static long maxNodes = 30*million;
 static long maxStatements = maxNodes*3;
 #endif
 
