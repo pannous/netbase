@@ -131,7 +131,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 	p("image import starting ...");
     int id;
 	char line[10000];
-//	char label[1000];
+    //	char label[1000];
 	char* lastTitle=0;
 	int linecount=0;
 	Node* wiki_image=getAbstract("wiki image");
@@ -251,8 +251,8 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 void importImages(){
     importWordnetImages("images.wn.all.csv");// via name
     if(germanLabels)
-    		importImagesDE();// dbpedia
-	else 
+        importImagesDE();// dbpedia
+	else
 		importImagesEN();
     //        importWordnetImages("images.wn.csv");// via ids
 }
@@ -475,13 +475,13 @@ int getNameRow(char** tokens, int nameRowNr=-1, const char* nameRow=0) {
 	while (true) {
 		char* token=tokens[row];
 		if (!token) break;
-//		if (nameRowNr < 0) {
-			if (nameRow == 0) {
-				if (eq("name", token)) nameRowNr=row;
-				if (contains(token, "name", true)&&nameRowNr<0) nameRowNr=row; // first come!
-				if (eq("title", token)) nameRowNr=row;
-			} else if (eq(nameRow, token)) nameRowNr=row;
-//		}
+        //		if (nameRowNr < 0) {
+        if (nameRow == 0) {
+            if (eq("name", token)) nameRowNr=row;
+            if (contains(token, "name", true)&&nameRowNr<0) nameRowNr=row; // first come!
+            if (eq("title", token)) nameRowNr=row;
+        } else if (eq(nameRow, token)) nameRowNr=row;
+        //		}
 		row++;
 	}
 	if (nameRowNr < 0) return 0;
@@ -724,12 +724,12 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
         char* typeName=keep_to(editable(cut_to(cut_to(file,"/"),"/")),".");
         type=getThe(typeName);
     }
-
+    
     //	char* objectName=(char*) malloc(100);
     vector<Node*> predicates=*new vector<Node*>();
 	vector<char*> ignoreFields=splitString(ignoredFields, ",");
 	vector<char*>& includeFields=splitString(includedFields, ",");
-
+    
 	int fieldCount=0;
 	char* columnTitles;
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -919,11 +919,11 @@ Node* rdfOwl(char* name) {
 	if (eq(name, "xsd:date")) return Date;
 	if (eq(name, "xsd:decimal")) return Number;
 	if (eq(name, "xsd:integer")) return Number;
+   	if (eq(name, "xsd:nonNegativeInteger"))return Number;// getAbstract("natural number");
 	if (eq(name, "xsd:boolean")) return getAbstract("boolean"); // !
 	if (eq(name, "xsd:gYear")) return getAbstract("year"); // !
 	if (eq(name, "owl:disjointWith")) return getAbstract("disjoint with"); // symmetric!
-	//	if(eq(key,"xsd:string"))return Text;// no info!
-	if (eq(name, "xsd:nonNegativeInteger")) return getAbstract("natural number");
+	//	if(eq(key,"xsd:string"))return Text;// redundant
 	if (eq(name, "owl:FunctionalProperty")) return Label;
 	if (!startsWith(name, "wiki") && contains(name, ":") && !startsWith(name, "http")) {
 		name=strstr(name, ":");
@@ -1223,7 +1223,7 @@ int freebaseKeysConflicts=0;
 void testPrecious2() {
 	if (freebaseKeys.size() < 20000000) return;
 	long testE=freebaseHash("023gm0>");
-//	check(477389594 == testE);
+    //	check(477389594 == testE);
 	int testI=freebaseKeys[testE];
 	p(testI);
 	Node* testN=get(testI);
@@ -1265,8 +1265,8 @@ void fixLabel(char* label){
     if(wo)wo[-1]=0;
     wo=strstr(label+1,">");
     if(wo)wo[-1]=0;
-        //            givenName
-
+    //            givenName
+    
     //    if(len>4&&label[len - 3]=='@')label[len - 4]=0;		// "@de .\n
     //    if(len>5&&label[len - 4]=='@')label[len - 5]=0;		// "@de .\n
     //    if(len>6&&label[len - 5]=='@')label[len - 6]=0;		// "@de .\n
@@ -1349,7 +1349,7 @@ bool importLabels(cchar* file, bool hash=false) {
         }
         
 		long h=freebaseHash(key);		// skip m.
-//        bool old=false;
+        //        bool old=false;
         Node* oldLabel=labels[key];
         if(oldLabel){
             if(eq(oldLabel->name,label))continue;// OK
@@ -1397,33 +1397,35 @@ bool importLabels(cchar* file, bool hash=false) {
 
 void importFreebaseLabels() {
     if(germanLabels)
-	importLabels("freebase.labels.de.txt", true);
+        importLabels("freebase.labels.de.txt", true);
 	importLabels("freebase.labels.en.txt", true);
 }
 
 bool useHash=false;
 Node *dissectFreebase(char* name) {
 	if (!contains(name, ".")) {
-//		if(endsWith(name," of"))// FLIP RELATION!
+        //		if(endsWith(name," of"))// FLIP RELATION!
 		N a=getRelation((const char*) name);
 		if (a) return a;
 		a=getAbstract(name);
-		if (a->lastStatement && getStatement(a->lastStatement)->predicate == _instance) return getStatement(a->lastStatement)->Object();
-		else return a;
+		if (a->lastStatement && getStatement(a->lastStatement)->predicate == _instance)
+            return getStatement(a->lastStatement)->Object();// LAST INSTANCE == 'THE' one !?!? In import flow?
+		else
+            return a;
 	}
 	// reuse freebaseHash for <organization.organization.parent> etc
-	long h=freebaseHash(name);
-	int got=freebaseKeys[h];
-	if (got && get(got)->id != 0) return get(freebaseKeys[h]);
+    long h;
+    if(useHash){
+        h=freebaseHash(name);
+        int got=freebaseKeys[h];
+        if (got && get(got)->id != 0)
+            return get(freebaseKeys[h]);
+    }
 	const char* fixed=fixFreebaseName(name);
-    if(fixed[0]==0)fixed=name;
+    if(fixed[0]==0)fixed=name;// NO FREEBASE!?
 	N n=getThe(fixed);
-	if (!n) return 0;					// howtf "" ?
-    if(useHash)
+    if(useHash&&n)
         freebaseKeys[h]=n->id;
-    //    freebaseKeys.insert(pair<long,int>(h,n->id));
-    //	N o=dissectFreebase(name);
-    //	addStatement(n, Domain, o, false);
 	return n;
 }
 
@@ -1432,6 +1434,11 @@ Node* getFreebaseEntity(char* name) {
     if (name[0] == '<') {
         name++;
         if(name[strlen(name) - 1]=='>')
+            name[strlen(name) - 1]=0;
+    }
+    if (name[0] == '"') {
+        name++;
+        if(name[strlen(name) - 1]=='"')
             name[strlen(name) - 1]=0;
     }
     cut_to(name," (");
@@ -1464,7 +1471,7 @@ bool filterFreebase(char* name) {
 	if (eq(name, "<common.topic>")) return true;
 	// nutrition_information
 	if (eq(name, "\"/#type\"")) return true;
-
+    
    	if (endsWith(name, "update>")) return true;
     if (endsWith(name, "controls>")) return true;
 	if (endsWith(name, "webpage>")) return true;
@@ -1483,9 +1490,7 @@ bool filterFreebase(char* name) {
 }
 
 bool importN3(cchar* file) {
-    
     //    if(hasWord("vote_value"))return true;
-    
 	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
 	Node* subject;
 	Node* predicate;
@@ -1535,8 +1540,8 @@ bool importN3(cchar* file) {
 		if (predicateName[3] == '-' || predicateName[3] == '_' || predicateName[3] == 0) continue;        // <zh-ch, id ...
 		if (predicateName[2] == '-' || predicateName[2] == '_' || predicateName[2] == 0) continue;        // zh-ch, id ...
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
-//    if(contains(line,"<Apple"))
-//        p(line);
+        //    if(contains(line,"<Apple"))
+        //        p(line);
 		predicate=getFreebaseEntity(predicateName);
 		subject=getFreebaseEntity(subjectName); //
 		object=getFreebaseEntity(objectName);
@@ -1818,9 +1823,9 @@ void importGermanLables() {
 		id=norm_wordnet_id(id); // 100001740  -> 200000 etc
         //		if (id >= 200000) {
         if(!id){
-//			p(line);
-        			continue;
-        		}
+            //			p(line);
+            continue;
+        }
         //        if(wn_labels[id]!=null&&get(id))
         getAbstract(german);
         if(add_labels)
@@ -1853,7 +1858,7 @@ void importLexlinks() {
 		if (p == SubClass->id) continue; // Redundant data!
 		if (p == Instance->id) continue; // Redundant data!
         
-		Statement* x;
+		Statement* x = 0;
 		if (ss != so) x=addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
 		if (debug && !x)
             pf("ERROR %s\n", line);
@@ -1890,7 +1895,7 @@ void importWordnet() {
 	//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
     if(germanLabels)
-    importGermanLables();
+        importGermanLables();
 	importSenses();
 	getContext(wordnet)->nodeCount=synonyms; //200000+117659;//WTH!
 	importSynsets();
@@ -1919,16 +1924,16 @@ void importGeoDB() {
 
 void importDBPediaEN() {
     useHash=false;
-//    importLabels("dbpedia_en/labels_en.ttl");
-//    importLabels("dbpedia_en/raw_infobox_property_definitions_en.ttl");
-//	importLabels("dbpedia_en/category_labels_en.ttl");
-
+    importLabels("dbpedia_en/labels_en.ttl");
+    importLabels("dbpedia_en/raw_infobox_property_definitions_en.ttl");
+	importLabels("dbpedia_en/category_labels_en.ttl");
+    
 	importN3("dbpedia_en/instance_types_en.ttl");
 	importN3("dbpedia_en/mappingbased_properties_cleaned_en.ttl");
 	importN3("dbpedia_en/raw_infobox_properties_en.ttl");
 	importN3("dbpedia_en/persondata_en.ttl");
 	importN3("dbpedia_en/images_en.nt");// IMAGE LOGIC??
-	importN3("skos_categories_en.ttl");// broader == superclass OR type OR Something different!!! RELATED
+	importN3("dbpedia_en/skos_categories_en.ttl");// broader == superclass OR type OR Something different!!! RELATED
 }
 
 void importDBPediaDE() {
@@ -2047,7 +2052,7 @@ void import(const char* type, const char* filename) {
 	} else {
 		//if (!importFacts(filename, filename))
 		printf("Unsupported file type %s %s", type, filename);
-//		importAll();
+        //		importAll();
 	}
 	//  cout<<"nanoseconds "<< diff <<'\n';
     
@@ -2061,8 +2066,8 @@ void importAllDE() {
     p("importAll GERMAN");
     importLabels("labels.csv");
 	importWordnet();
-//	return;
-//	exit(0);
+    //	return;
+    //	exit(0);
 	importCsv("adressen.txt");
 	importNames();
     importDBPediaDE();
@@ -2086,13 +2091,14 @@ void importAll() {
         importDBPediaDE();
     else
         importDBPediaEN();
-	importImages();
+//	importImages();
 	importGeoDB();
 	showContext(wordnet);
 	importFreebase();
-	importImages();
-//    importAllYago();// BETTER THAN DBPEDIA!? //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 	showContext(wordnet);
+//   	importAllYago();// BETTER THAN DBPEDIA!?
+    importImages();
+    //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 //    importEntities();
 }
 
