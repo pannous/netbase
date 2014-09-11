@@ -1165,14 +1165,15 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		return 0;
 	}
     
-    if(atoi(thing)!=0&&eq(itoa(atoi(thing)),thing)){
-        insta->value.number=atoi(thing);
-        if(!type)insta->kind=_integer;
-    }
-    else if(atof(thing)!=0&&eq(itoa(atof(thing)),thing)){
+
+    if(atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
         insta->value.number=atof(thing);
         if(!type)insta->kind=_number;
     }
+    // else if(atoi(thing)!=0)//&&eq(itoa(atoi(thing)),thing)){
+    //     insta->value.number=atoi(thing);
+    //     if(!type)insta->kind=_integer;
+    // }
 //        object=value(thing,atof(thing),Number);
 
     //	if (dissect) dissectWord(insta); // dont remove! doch!
