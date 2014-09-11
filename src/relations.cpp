@@ -6,9 +6,14 @@
  */
 #include "util.hpp"
 #include "relations.hpp"
-// DONT depend on netbase!
+
 Node* Error;
 Node* Unknown;
+Node* Any;// QUERY ONLY!
+Node* Pattern; // temporary QUERY ONLY!
+//Node* IS; // QUERY ONLY! TypeOrParent
+
+//Node* Broader;
 Node* Antonym;
 Node* Parent;
 Node* SuperClass; // Parent
@@ -51,12 +56,7 @@ Node* Object;
 Node* Relation;
 Node* Reification;
 Node* Property;
-Node* Pattern; // temporary
-
-Node* Any;
-// Semantics
 Node* Attribute; //ok, if  Node* Attribute declared in netbase.cpp
-// Node* Is; // danger: obama is president etc
 
 Node* Person;
 Node* Adjective;
@@ -102,7 +102,6 @@ Node* From;
 Node* By;
 Node* For;
 Node* On;
-
 
 Node* Equals;
 Node* Greater;
@@ -463,6 +462,7 @@ Node * getRelation(const char* thing) {
 	if (thing[0] == '#') thing++;
 	if (eq(thing, "instance")) return Instance;
     if (eq(thing, "Contains")) return Part;
+//    if (eq(thing, "broader")) return Unknown;//Any;// Related, See Also SuperClass or Type
     if (eq(thing, "Broader")) return SuperClass;
     if (eq(thing, "Broader topic")) return SuperClass;
     if (eq(thing, "narrower")) return SubClass;

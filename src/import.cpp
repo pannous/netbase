@@ -155,8 +155,8 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
         Node* subject=get(id);
 		if (!subject && !hasWord(title)){
             p(line);
-            badCount++; continue;} // currently only import matching words.
-        
+            badCount++; continue; // currently only import matching words.
+        }
         Node* object=getAbstract(image);
         if(subject&&subject->id!=0)
             addStatement(subject, wiki_image, object, false);
@@ -1261,11 +1261,12 @@ void testPrecious() {
 
 void fixLabel(char* label){
     label[0]=toupper(label[0]);
-    char* wo=strstr(label,"@");
-    if(wo){
-        wo[-1]=0;
+    char* wo=strstr(label+1,"@");
+    if(wo)wo[-1]=0;
+    wo=strstr(label+1,">");
+    if(wo)wo[-1]=0;
         //            givenName
-    }
+
     //    if(len>4&&label[len - 3]=='@')label[len - 4]=0;		// "@de .\n
     //    if(len>5&&label[len - 4]=='@')label[len - 5]=0;		// "@de .\n
     //    if(len>6&&label[len - 5]=='@')label[len - 6]=0;		// "@de .\n
@@ -1321,7 +1322,7 @@ bool importLabels(cchar* file, bool hash=false) {
 		if (startsWith(label, "/")) continue; // "/wikipedia/de_title"@en etc
 		if (endsWith(label, "_id")) continue; // "/wikipedia/de_title"@en etc
 		if (endsWith(label, "_title")) continue; // "/wikipedia/de_title"@en etc
-        
+        if(eq(label,key))continue;
         if(test==label){
             //            setLabel(getAbstract(key),label);
             //            continue;
@@ -1347,7 +1348,6 @@ bool importLabels(cchar* file, bool hash=false) {
             continue;
         }
         
-        
 		long h=freebaseHash(key);		// skip m.
 //        bool old=false;
         Node* oldLabel=labels[key];
@@ -1369,12 +1369,8 @@ bool importLabels(cchar* file, bool hash=false) {
             freebaseKeysConflicts++;
             continue;
         }
-        
         //        if(contains(line,"Arsenic"))
         //            p(line);
-        
-
-        
         
         Node* n;
         if (hasWord(label)) n=getNew(label);		//get(1);//
@@ -1420,6 +1416,7 @@ Node *dissectFreebase(char* name) {
 	int got=freebaseKeys[h];
 	if (got && get(got)->id != 0) return get(freebaseKeys[h]);
 	const char* fixed=fixFreebaseName(name);
+    if(fixed[0]==0)fixed=name;
 	N n=getThe(fixed);
 	if (!n) return 0;					// howtf "" ?
     if(useHash)
@@ -1506,7 +1503,7 @@ bool importN3(cchar* file) {
         //        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
-			printf("\r%d triples   %d ignored + %d badCount - %d MISSING = %d    ", linecount, ignored, badCount, MISSING,
+			printf("\r%d triples   %d ignored + %d badCount - %d = MISSING: %d    ", linecount, ignored, badCount, MISSING,
                    ignored + badCount - MISSING);
 			fflush(stdout);
 			if (checkLowMemory()) {
@@ -1523,12 +1520,6 @@ bool importN3(cchar* file) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
         //		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
         fixNewline(objectName);
-//        if(contains(line,"date>"))
-//            p(line);
-        //        if(contains(line,"molaresvolumen"))
-        //            p("st");
-        
-        //        fixLabel(
         if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
         if(filterFreebase(predicateName)){ignored++; continue;}
         if(filterFreebase(objectName)){ignored++;continue;}
@@ -1544,6 +1535,8 @@ bool importN3(cchar* file) {
 		if (predicateName[3] == '-' || predicateName[3] == '_' || predicateName[3] == 0) continue;        // <zh-ch, id ...
 		if (predicateName[2] == '-' || predicateName[2] == '_' || predicateName[2] == 0) continue;        // zh-ch, id ...
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
+//    if(contains(line,"<Apple"))
+//        p(line);
 		predicate=getFreebaseEntity(predicateName);
 		subject=getFreebaseEntity(subjectName); //
 		object=getFreebaseEntity(objectName);
@@ -1556,6 +1549,7 @@ bool importN3(cchar* file) {
         
 		if (!subject || !predicate || !object) {
             //            printf("_"); // ignored
+            subject=getFreebaseEntity(subjectName);
 			badCount++;
 		} else {
             //            else// Statement* s=
@@ -1566,7 +1560,7 @@ bool importN3(cchar* file) {
 	fclose(infile); /* Close the file */
 	p("import N3 ok");
     
-	pf("MISSING %d\n", MISSING);
+	pf("BAD: %d     MISSING: %d\n",badCount, MISSING);
 	currentContext()->use_logic=false;
 	//	freebaseKeys.clear();
 	//	free(freebaseKeys);
@@ -1922,16 +1916,31 @@ void importGeoDB() {
               "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
 
+
+void importDBPediaEN() {
+    useHash=false;
+//    importLabels("dbpedia_en/labels_en.ttl");
+//    importLabels("dbpedia_en/raw_infobox_property_definitions_en.ttl");
+//	importLabels("dbpedia_en/category_labels_en.ttl");
+
+	importN3("dbpedia_en/instance_types_en.ttl");
+	importN3("dbpedia_en/mappingbased_properties_cleaned_en.ttl");
+	importN3("dbpedia_en/raw_infobox_properties_en.ttl");
+	importN3("dbpedia_en/persondata_en.ttl");
+	importN3("dbpedia_en/images_en.nt");// IMAGE LOGIC??
+	importN3("skos_categories_en.ttl");// broader == superclass OR type OR Something different!!! RELATED
+}
+
 void importDBPediaDE() {
     useHash=false;
-    importLabels("dbpedia/labels.csv");
-    ////	importLabels("dbpedia/raw_infobox_property_definitions_en_uris_de.nt") REPLACED BY:;
-	importLabels("dbpedia/labels_en_uris_de.nt");
-	importLabels("dbpedia/category_labels_en_uris_de.ttl");
+    importLabels("dbpedia_de/labels.csv");
+    ////	importLabels("dbpedia_de/raw_infobox_property_definitions_en_uris_de.nt") REPLACED BY:;
+	importLabels("dbpedia_de/labels_en_uris_de.nt");
+	importLabels("dbpedia_de/category_labels_en_uris_de.ttl");
     
-    //	importLabels("dbpedia/persondata_en_uris_de.ttl");
-	importN3("dbpedia/raw_infobox_properties_en_uris_de.ttl");
-	importN3("dbpedia/persondata_en_uris_de.ttl");
+    //	importLabels("dbpedia_de/persondata_en_uris_de.ttl");
+	importN3("dbpedia_de/raw_infobox_properties_en_uris_de.ttl");
+	importN3("dbpedia_de/persondata_en_uris_de.ttl");
 }
 
 // IMPORTANT: needs manual collectAbstracts() afterwards (for speed reasons??)
@@ -2001,7 +2010,10 @@ void import(const char* type, const char* filename) {
 	} else if (eq(type, "freebase")) {
 		importFreebase();
 	} else if (eq(type, "dbpedia")) {
-		importDBPediaDE();
+		if(germanLabels)
+			importDBPediaDE();
+		else
+			importDBPediaEN();
 	} else if (eq(type, "names")) {
 		importNames();
 	} else if (eq(type, "images")) {
@@ -2070,12 +2082,17 @@ void importAll() {
 	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
+    if(germanLabels)
+        importDBPediaDE();
+    else
+        importDBPediaEN();
+	importImages();
 	importGeoDB();
-//	importFreebase();
 	showContext(wordnet);
+	importFreebase();
+	importImages();
+//    importAllYago();// BETTER THAN DBPEDIA!? //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 	showContext(wordnet);
-    importAllYago(); //  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
-    importImages();
 //    importEntities();
 }
 

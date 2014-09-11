@@ -572,8 +572,8 @@ static int billion=GB;
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 10*million;// long would need a new structure!!
-static long maxStatements = maxNodes;// *10 = crude average of Statements per Node  ; max=1000!
+static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
+static long maxStatements = maxNodes*4;// *10 = crude average of Statements per Node (yago:12!!)
 #else
 static long maxNodes = 30*million;
 static long maxStatements = maxNodes*3;
@@ -583,7 +583,7 @@ static long maxStatements = maxNodes*3;
 static long contextOffset=0x800000;//0x10000;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
-
+#define _MAIN_
 int main(int argc, char *argv[]);
 static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize // against unused ahashSize ...
 
