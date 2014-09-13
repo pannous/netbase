@@ -2002,6 +2002,7 @@ Node* findProperty(Node* n , const char* m,bool allowInverse){
 Statement* s=0;
 while ((s=nextStatement(n,s))) {
     if(eq(s->Predicate()->name,m,true))
+		if(allowInverse||eq(s->Subject(),n))
         return s->Object();
 }
     return 0;
@@ -2016,6 +2017,7 @@ NodeVector findProperties(Node* n, const char* m,bool allowInverse=true){
             if(s->Object()==n&&allowInverse)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
                 good.push_back(s->Subject());
             else if (!contains(good, s->Object(), false))
+				if(allowInverse||eq(s->Subject(),n))
                 good.push_back(s->Object());
             if(good.size()>resultLimit)return good;
         }
@@ -2035,8 +2037,11 @@ NodeVector findProperties(Node* n , Node* m,bool allowInverse=true){
     // OR//    findStatement(Node *subject, Node *predicate, Node *object)
     for (int i=0; i<all.size(); i++){
         mergeVectors(&good, findProperties(all[i],m->name,false));
-        if(good.size()<resultLimit/2)
-        mergeVectors(&good, findProperties(all[i],m->name,true));
+        if(good.size()>resultLimit)return good;
+    }
+	if(allowInverse)
+	for (int i=0; i<all.size(); i++){
+		mergeVectors(&good, findProperties(all[i],m->name,true));
         if(good.size()>resultLimit)return good;
     }
     return good;
