@@ -28,3 +28,5 @@ import/freebase.data.txt import/freebase.data.txt.2 import/freebase.labels.de.tx
 import/missing/
 import/wins.csv
 netbase_results.html
+adjust.sh
+
