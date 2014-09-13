@@ -373,8 +373,8 @@ NodeVector parse(const char* data) {
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")) {
 		lookupLimit=100;
-//		allowInverse=true;// ONLY inverse of superclass!!
-		NodeVector all=findProperties(next_word(data).c_str(),"superclass",true);// jeannie hack!!
+		bool allowInverse=true;// ONLY inverse of superclass!!
+		NodeVector all=findProperties(next_word(data).c_str(),"superclass",allowInverse);
 		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
 		//Big the Cat 	x Species ^ - + -- -!
 		if(all.size()<resultLimit){
@@ -469,7 +469,7 @@ NodeVector parse(const char* data) {
 
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
 		// || (contains(data, ":")) && !contains(data, " "))) {
-		return parseProperties(data); // ownerpath
+		return parseProperties(data);
 	}
 
 	if (args.size() >= 3 && eq(args[1], "to")) {
