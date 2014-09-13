@@ -193,7 +193,7 @@ void loadView(char* q){
 int handle(cchar* q0,int conn){
     char* q=editable(q0);
     while(q[0]=='/')q++;
-	enum result_format format = txt;
+	enum result_format format = html;//txt;
 	enum result_verbosity verbosity = normal;
 	int len=(int)strlen(q);
 	if (eq(q, "favicon.ico"))return 0;
