@@ -2014,7 +2014,10 @@ void import(const char* type, const char* filename) {
 		importWordnet();
 	} else if (eq(type, "freebase")) {
 		importFreebase();
-	} else if (eq(type, "dbpedia")) {
+	} else if (eq(type, "geodb")||eq(type, "locations")||eq(type, "places")) {
+		importGeoDB();
+	}
+	else if (eq(type, "dbpedia")) {
 		if(germanLabels)
 			importDBPediaDE();
 		else
