@@ -202,7 +202,6 @@ int handle(cchar* q0,int conn){
         Writeline("Disallow: /\n");
         return 0;
     }
-    
 	
 	char* jsonp=strstr(q,"jsonp");// ?jsonp=fun
 	if(jsonp){
