@@ -1425,12 +1425,12 @@ NodeVector parseProperties(const char *data) {
 	}
     
 	pf("does %s have %s?\n", thing, property);
-	NodeVector all=findProperties(thing, property);
+	NodeVector all=findProperties(thing, property,false);
 	if (all.size()==0&& property[strlen(property) - 1] == 's'){
 		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
 		all=findProperties(thing, property);
 	}
-    
+	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
 	showNodes(all);
 	return all;
 }

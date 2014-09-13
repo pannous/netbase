@@ -2499,7 +2499,7 @@ Node* mergeNode(Node* target,Node* node){
 //void SIGINT_handler(int x){
 //	shutdown_webserver();
 //}
-#define _MAIN_
+//#define _MAIN_
 int main(int argc, char *argv[]) {
 	char* data=getenv("QUERY_STRING");
 	if (data) {
