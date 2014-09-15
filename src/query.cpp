@@ -1415,9 +1415,10 @@ NodeVector parseProperties(const char *data) {
 		thing=splat[0];
 		property=splat[1];
 	}
-	else if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
-	else if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
-    
+	else if (contains(data, " of ")) sscanf(data, "%s of %[^\n]", property, thing);
+	else if (contains(data, " by ")) sscanf(data, "%s by %[^\n]", property, thing);
+    // todo: birth_place of james -> splitStringC %[a-zA-Z _]
+	
 	if (!property) {
 		char** splat=splitStringC(data, ' ');
 		thing=splat[0];
