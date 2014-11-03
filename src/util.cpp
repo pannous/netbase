@@ -44,11 +44,9 @@ string next_word(string data) {
 	return data;
 }
 
-char* substr(char* what, int from, int to) {
+char* substr(const char* what, int from, int to) {
 	if (to == -1) to=(int)strlen(what);
-#ifndef DEBUG
-	if (from > to) return what; // ERROR!!
-#endif
+	if (from > to) return (char*)what; // const -> ERROR!! + danger!
 	char *result=(char*) malloc(sizeof(char) * (to - from + 1));
 	strncpy(result, what + from, to - from);
 	result[to - from]=0; // In case of unclean malloc

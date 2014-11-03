@@ -82,9 +82,9 @@ function addImage(image,div){
 	link.style="float:right;width:200px";
 	img=document.createElement("img");
 	img.onerror=function() {
-		if(onerror_handled==0){this.src=this.src.replace(/.150px.*/,"")}
-		if(onerror_handled==1){this.src=this.src.replace("/thumb/","//");}
-		if(onerror_handled==2){this.src=this.src.replace("/commons/","/en/");}
+		if(onerror_handled==0){console.log(this.src);this.src=this.src.replace(/.150px.*/,"");}
+		if(onerror_handled==1){;console.log(this.src);this.src=this.src.replace("/thumb/","/");}
+		if(onerror_handled==2){;console.log(this.src);this.src=this.src.replace("/commons/","/en/");}
 		onerror_handled++;;
 	}
 	img.src=image;
