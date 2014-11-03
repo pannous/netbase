@@ -1415,9 +1415,12 @@ NodeVector parseProperties(const char *data) {
 		thing=splat[0];
 		property=splat[1];
 	}
-	else if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
-	else if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
-    
+	else if (contains(data, " of ")) sscanf(data, "%s of %[^\n]", property, thing);
+	else if (contains(data, " by ")) sscanf(data, "%s by %[^\n]", property, thing);
+	// OK: opponent+of+barack_obama
+    // todo : birth_place of james -> %[a-zA-Z _] or splitStringC
+	// sscanf is EVIL PERIOD!
+	
 	if (!property) {
 		char** splat=splitStringC(data, ' ');
 		thing=splat[0];
@@ -1425,12 +1428,12 @@ NodeVector parseProperties(const char *data) {
 	}
     
 	pf("does %s have %s?\n", thing, property);
-	NodeVector all=findProperties(thing, property);
+	NodeVector all=findProperties(thing, property,false);
 	if (all.size()==0&& property[strlen(property) - 1] == 's'){
 		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
 		all=findProperties(thing, property);
 	}
-    
+	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
 	showNodes(all);
 	return all;
 }

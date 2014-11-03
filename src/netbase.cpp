@@ -157,6 +157,7 @@ Ahash *getAhash(int position){
 }
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+map<Ahash*, bool> badAhashReported;// debug
 Ahash * insertAbstractHash(int position, Node * a) {
     if(a==0)
         return 0;
@@ -168,6 +169,8 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	while (ah&&ah->next) {
 		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
             badCount++;
+            if(badAhashReported[ah])return ah;
+            badAhashReported[ah]=true;
 			debugAhash(position);
 			p("insertAbstractHash FULL!");
 			show(a);
@@ -1162,14 +1165,15 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		return 0;
 	}
     
-    if(atoi(thing)!=0&&eq(itoa(atoi(thing)),thing)){
-        insta->value.number=atoi(thing);
-        if(!type)insta->kind=_integer;
-    }
-    else if(atof(thing)!=0&&eq(itoa(atof(thing)),thing)){
+
+    if(atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
         insta->value.number=atof(thing);
         if(!type)insta->kind=_number;
     }
+    // else if(atoi(thing)!=0)//&&eq(itoa(atoi(thing)),thing)){
+    //     insta->value.number=atoi(thing);
+    //     if(!type)insta->kind=_integer;
+    // }
 //        object=value(thing,atof(thing),Number);
 
     //	if (dissect) dissectWord(insta); // dont remove! doch!
@@ -1998,6 +2002,7 @@ Node* findProperty(Node* n , const char* m,bool allowInverse){
 Statement* s=0;
 while ((s=nextStatement(n,s))) {
     if(eq(s->Predicate()->name,m,true))
+		if(allowInverse||eq(s->Subject(),n))
         return s->Object();
 }
     return 0;
@@ -2012,6 +2017,7 @@ NodeVector findProperties(Node* n, const char* m,bool allowInverse=true){
             if(s->Object()==n&&allowInverse)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
                 good.push_back(s->Subject());
             else if (!contains(good, s->Object(), false))
+				if(allowInverse||eq(s->Subject(),n))
                 good.push_back(s->Object());
             if(good.size()>resultLimit)return good;
         }
@@ -2030,7 +2036,12 @@ NodeVector findProperties(Node* n , Node* m,bool allowInverse=true){
     all.push_back(n);// especially for freebase singletons!
     // OR//    findStatement(Node *subject, Node *predicate, Node *object)
     for (int i=0; i<all.size(); i++){
-        mergeVectors(&good, findProperties(all[i],m->name));
+        mergeVectors(&good, findProperties(all[i],m->name,false));
+        if(good.size()>resultLimit)return good;
+    }
+	if(allowInverse)
+	for (int i=0; i<all.size(); i++){
+		mergeVectors(&good, findProperties(all[i],m->name,true));
         if(good.size()>resultLimit)return good;
     }
     return good;
@@ -2438,10 +2449,62 @@ string getImage(Node* a, int size,bool thumb) {
     return formatImage(i,size,thumb);
 }
 
+Node* mergeAll(char* target){
+    Node* node=getAbstract(target);
+    NV all=instanceFilter(node);
+    for(int i=0;i<all.size();i++)
+        mergeNode(node,all[i]);
+    return node;
+}
+
+void setKind(int id,int kind){
+    get(id)->kind=kind;
+}
+
+extern "C" Node* save(Node* copy){
+    p("SAVING");
+    p(copy);
+    Node* node=get(copy->id);
+    if(node==copy)return node;
+    memcpy(node,copy,nodeSize);
+    return node;
+}
+
+extern "C" void save2(Node n){
+    if(get(n.id)==&n)return;
+    memcpy(get(n.id),&n,nodeSize);
+}
+
+int test2() {
+	return 12345;
+}		// RUBY/ JNA !!
+
+Node* mergeNode(Node* target,Node* node){
+    Statement* s=getStatement( node->firstStatement);
+    addStatementToNodeDirect(target,node->firstStatement);
+	
+    Statement* next;
+    while (s) {
+        next=nextStatement(target, s);
+        if(s->Predicate()==Instance&&s->Subject()==target)
+            deleteStatement(s);
+        else{
+            if(s->Subject()==node)s->subject=target->id;
+            if(s->Predicate()==node)s->predicate=target->id;
+            if(s->Object()==node)s->object=target->id;
+        }
+        s=next;
+    }
+    deleteNode(node);
+    return target;
+}
+
+
 //#include <csignal> // or signal.h if C code // Generate an interrupt
 //void SIGINT_handler(int x){
 //	shutdown_webserver();
 //}
+//#define _MAIN_
 int main(int argc, char *argv[]) {
 	char* data=getenv("QUERY_STRING");
 	if (data) {
@@ -2523,52 +2586,4 @@ int main(int argc, char *argv[]) {
 	console();
 	//    } catch (std::exception const& ex) {
 }
-
-Node* mergeNode(Node* target,Node* node){
-    Statement* s=getStatement( node->firstStatement);
-    addStatementToNodeDirect(target,node->firstStatement);
-
-    Statement* next;
-    while (s) {
-        next=nextStatement(target, s);
-        if(s->Predicate()==Instance&&s->Subject()==target)
-            deleteStatement(s);
-        else{
-            if(s->Subject()==node)s->subject=target->id;
-            if(s->Predicate()==node)s->predicate=target->id;
-            if(s->Object()==node)s->object=target->id;
-        }
-        s=next;
-    }
-    deleteNode(node);
-    return target;
-}
-Node* mergeAll(char* target){
-    Node* node=getAbstract(target);
-    NV all=instanceFilter(node);
-    for(int i=0;i<all.size();i++)
-        mergeNode(node,all[i]);
-    return node;
-}
-
-void setKind(int id,int kind){
-    get(id)->kind=kind;
-}
-
-extern "C" Node* save(Node* copy){
-    p("SAVING");
-    p(copy);
-    Node* node=get(copy->id);
-    if(node==copy)return node;
-    memcpy(node,copy,nodeSize);
-    return node;
-}
-
-extern "C" void save2(Node n){
-    if(get(n.id)==&n)return;
-    memcpy(get(n.id),&n,nodeSize);
-}
-
-int test2() {
-	return 12345;
-}		// RUBY/ JNA !!
+// _MAIN_ ^^^

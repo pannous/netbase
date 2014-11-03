@@ -121,7 +121,7 @@ void testBasics() {
 	showStatement(getStatementNr(syn, 0));
 	//    initContext(c);
 	int initialNodeCount=c->nodeCount;
-	int initialStatementCount=c->statementCount;
+	int initialStatementCount=(int)c->statementCount;
 	c->nodeCount=initialNodeCount; // reset for tests! dont save!
 	c->statementCount=initialStatementCount;
 
@@ -170,7 +170,7 @@ void testBasics() {
 	show(test);
 	show(is);
 	show(dead);
-	statementCount=c->statementCount;
+	statementCount=(int)c->statementCount;
 	// sonderf�����lle
 	addStatement4(-1, -2, -3, -4);
 	assert(c->statementCount == statementCount, "c.statementCount==1");
@@ -1506,12 +1506,12 @@ void testBrandNewStuff() {
     quiet=false;
 	debug = true;
 //    testing=false;// NO RELATIONS!
-    germanLabels=true;// false;
-    import("test.csv");
+//    germanLabels=true;// false;
+//    import("test.csv");
     germanLabels=false;
 //	handle("all+pennsylvania+marijuana");
-	handle("all dog");      
-//    importAll();
+//	handle("all dog");
+    importAll();
         exit(0);
     p(statementCount());
     N s=get(244797);
