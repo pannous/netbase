@@ -1417,7 +1417,9 @@ NodeVector parseProperties(const char *data) {
 	}
 	else if (contains(data, " of ")) sscanf(data, "%s of %[^\n]", property, thing);
 	else if (contains(data, " by ")) sscanf(data, "%s by %[^\n]", property, thing);
-    // todo: birth_place of james -> splitStringC %[a-zA-Z _]
+	// OK: opponent+of+barack_obama
+    // todo : birth_place of james -> %[a-zA-Z _] or splitStringC
+	// sscanf is EVIL PERIOD!
 	
 	if (!property) {
 		char** splat=splitStringC(data, ' ');

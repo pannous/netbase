@@ -205,7 +205,7 @@ void importImagesDE() {// dbpedia
 	good=0;
 }
 
-void importImagesEN() { // 18 MILLION!   // 18496249
+void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 	p("image import starting ...");
 	char line[1000];
 	char* lastTitle=0;
@@ -216,7 +216,7 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 	char *title=(char *) malloc(1000);
 	int good=0;
     //	int bad=0;
-    FILE* infile=open_file((char*) images_file);
+    FILE* infile=open_file((char*) file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
 			pf("importImages %d    \r", linecount);
@@ -227,8 +227,9 @@ void importImagesEN() { // 18 MILLION!   // 18496249
         
 		lastTitle=clone(title); // only the first
         //		if (!hasWord(title)) normImageTitle(title); //blue -_fin ==> bluefin
-		if (!hasWord(title)) continue; // currently only import matching words.
-        
+
+//		if (!hasWord(title)) continue; // currently only import matching words.
+
 		//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
 		//		if (getImage(title) != "")
 		//			continue; //already has one ; only one so far!
@@ -248,9 +249,14 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 	good=0;
 }
 
+void importImagesEN() { // 18 MILLION!   // 18496249
+	importImageTripels(images_file);
+}
+
+
 void importImages(){
-    importWordnetImages("images.wn.all.csv");// via name
-    if(germanLabels)
+	importWordnetImages("images.wn.all.csv");// via name
+	if(germanLabels)
         importImagesDE();// dbpedia
 	else
 		importImagesEN();
@@ -2026,6 +2032,8 @@ void import(const char* type, const char* filename) {
 		importNames();
 	} else if (eq(type, "images")) {
 		importImages();
+	} else if (startsWith(type, "images ")) {
+		importImageTripels(substr(type,7,-1));
 	} else if (eq(type, "wiki")) {
 		importWikipedia();
 	} else if (eq(type, "topic")) {

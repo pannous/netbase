@@ -481,9 +481,14 @@ NodeVector parse(const char* data) {
 		//		if(all==EMPTY)shortestPath(from,to);
 	}
     
-
-	if (args.size() >= 4 && eq(args[0], "learn"))
-        return nodeVectorWrap(learn(next_word(data))->Subject());
+	
+	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], "!learn"))){
+		string what=next_word(data);
+		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
+		fprintf(fp,"%s\n",what.data());
+		fclose(fp);
+        return nodeVectorWrap(learn(what)->Subject());
+	}
 	if (args.size() >= 3 && eq(args[1], "is"))
         return nodeVectorWrap(learn(data)->Subject());
     

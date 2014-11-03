@@ -79,7 +79,7 @@ string stem(string word);
 void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
 //NodeVector mergeVectors(NodeVector some, NodeVector more);
 void mergeVectors(NodeVector* some, NodeVector more);
-char* substr(char* what,int from,int to);
+char* substr(const char* what,int from,int to);
 char* match(char* input, cchar* pattern);
 char* clone(const char* line);
 char* editable(const char* line);
