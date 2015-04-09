@@ -82,7 +82,12 @@ template void empty(vector<Statement*, std::allocator<Statement*> > &v);
 //    }
 //    return false;
 //}
-
+bool contains(const char* x, const char y){
+	for (int i=0; i<strlen(x); i++) {
+		if(x[i]==y)return true;
+	}
+	return false;
+}
 bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
 	if (!x || !y) return false;
@@ -306,23 +311,28 @@ void ps(const char* s) {
 	fflush(stdout);
 }
 
-void p(int i) {
+//void p(int i) {
+//	if (quiet) return;
+//	printf("%i\n", i);
+//	fflush(stdout);
+//}
+void pi(int i) {
 	if (quiet) return;
 	printf("%i\n", i);
 	fflush(stdout);
 }
 
-void p(double l) {
+void pd(double l) {
 	if (quiet) return;
 	printf("%f\n", l);
 	fflush(stdout);
 }
 
-//void p(long l) {
-//	if (quiet) return;
-//	printf("%lu\n", l);
-//	fflush(stdout);
-//}
+void p(long l) {
+	if (quiet) return;
+	printf("%lu\n", l);
+	fflush(stdout);
+}
 
 // 64 bit hex value
 
@@ -429,17 +439,23 @@ char* clone(const char* line) {
 	strcpy(line0, line);
 	return line0;
 }
+
+char* modifyConstChar(const char* line){
+	return editable(line);// FREE if not kept!
+}
 char* editable(const char* line) {
 	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
 	strcpy(line0, line);
-	return line0;
-}
-char* modifyConstChar(const char* line){
-    return editable(line);
+	return line0;// FREE if not kept!
 }
 
-// line MUST not be const!
+// line MUST not be const! tokens->out
 int splitStringC(char* line, char** tokens, char separator) {
+//	if(!contains(line, separator)){
+//		tokens[0]=line;
+//		return 1;
+////		return -1;
+//	}
 	char * token;
 	int row=0;
 	int len=(int)strlen(line);
@@ -458,7 +474,10 @@ int splitStringC(char* line, char** tokens, char separator) {
 		}
 		i++;
 	}
-	if (tokens) tokens[row]=lastgood;
+	if (tokens) {
+		tokens[row]=lastgood;
+		tokens[row+1]=0;// clean, be sure
+	}
 	return row + 1; //s
 }
 char** splitStringC(const char* line0, const char* separator) {

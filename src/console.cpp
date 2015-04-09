@@ -123,7 +123,9 @@ Node *parseProperty(const char *data) {
 
 void console() {
 	quiet=false;
+	if(germanLabels)printf("\nDeutsch");
 	printf("\nNetbase C++ Version z.a\n");
+
 	char* data=(char*) malloc(1000);
 #ifdef signal
 	setjmp(try_context); //recovery point
@@ -135,6 +137,21 @@ void console() {
 	}
 }
 
+void logQuery(const char* data){
+//	char* logQueryFile="~/.netbase.query.log";
+	char* logQueryFile="query.log";
+	FILE *fp= fopen(logQueryFile,"a");
+	if(fp==0){return;}
+	fprintf(fp,"%s\n",data);
+	fclose(fp);
+}
+void logCommand(const char* data){
+	char* logCommandFile="commands.log";
+	FILE *fp= fopen(logCommandFile,"a");
+	if(fp==0){return;}
+	fprintf(fp,"%s\n",data);
+	fclose(fp);
+}
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;
 	if (!isprint(data[0])) // ??
@@ -142,8 +159,12 @@ NodeVector parse(const char* data) {
 	if (eq(data, "")) {
 		return OK;
 	}
+	if(data[0]==':'||data[0]=='!')logCommand(data);
+	else logQuery(data);
+
 	clearAlgorithmHash(true); //  maybe messed up
 	data=fixQuotesAndTrim(editable(data));
+	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	//	std::remove(arg.begin(), arg.end(), ' ');
 	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
     
@@ -182,10 +203,6 @@ NodeVector parse(const char* data) {
 		clearMemory();
 		return OK;
 	}
-	if (eq(data, "!clear")||eq(data, "!clean")||eq(data, "!cleanup")) {
-		clearMemory();
-		return OK;
-	}
 	if (eq(data, "./clear-shared-memory.sh")) {
 		clearMemory();
 		return OK;
@@ -194,10 +211,9 @@ NodeVector parse(const char* data) {
 		export_csv();
 		return OK;
 	}
-	if (eq(data, ":quit")) return OK;
-	if (eq(data, "!quiet")||eq(data, "quiet!")||eq(data, ":quiet")||eq(data,"!debug")){debug=false; quiet=true;return OK;}
-    if (eq(data, "!debug")||eq(data, "debug!")||eq(data, ":debug")||eq(data, "!quiet")){debug=true; quiet=false;return OK;}
-
+	if (eq(data, ":quit")||eq(data, ":exit")) return OK;
+	if (eq(data, ":quiet")||eq(data,":!debug")){debug=false; quiet=true;return OK;}// !-> NOT !!
+    if (eq(data, ":debug")||eq(data, ":!quiet")){debug=true; quiet=false;return OK;}
     
 	if (startsWith(data, ":if")) {
 		autoIds=false;
@@ -241,17 +257,17 @@ NodeVector parse(const char* data) {
         //		strcpy((char*) data, newdata);
         //		p(resultLimit);
 	}
-	if (eq(data, ":load") || eq(data, ":l")) {
+	if (eq(data, ":load")) { // || eq(data, ":l")
 		load(false);
 		return OK;
 	}
 	if (eq(data, ":ca")) collectAbstracts();
 	if (eq(data, ":ci")) collectInstances();
-	if (eq(data, ":load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, "load!")) {
+	if (eq(data, ":load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, ":load!")) {
 		load(true);
 		return OK;
 	}
-	if (eq(data, ":save")) {
+	if (eq(data, ":save")||eq(data, ":s")) {
 		save();
 		return OK;
 	}
@@ -259,10 +275,6 @@ NodeVector parse(const char* data) {
 		Context* c=currentContext();
 		c->nodeCount-=1000; //hack!
 		//		maxNodes += 1000;
-		return OK;
-	}
-	if (eq(data, ":s")) {
-		save();
 		return OK;
 	}
 	if (eq(data, ":c")) {
@@ -283,11 +295,11 @@ NodeVector parse(const char* data) {
 		debug=true;
 		return OK;
 	}
-	if (eq(data, ":debug off") || eq(data, "no debug") || eq(data, ":debug 0")) {
+	if (eq(data, ":debug off") || eq(data, ":no debug") || eq(data, ":debug 0")) {
 		debug=true;
 		return OK;
 	}
-	if (startsWith(data, ":d ") || startsWith(data, ":delete ") || startsWith(data, "!delete ") || startsWith(data, "!del ") || startsWith(data, "!remove ")) {
+	if (startsWith(data, ":d ") || startsWith(data, ":delete ") ||startsWith(data, ":del ") || startsWith(data, ":remove ")) {
 		string d=next_word(data);
 		const char* what=d.data();
 		printf("deleting %s\n", what);
@@ -298,7 +310,7 @@ NodeVector parse(const char* data) {
     if(contains(data,":english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
     if(contains(data,":german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
     
-    if (eq(args[0], "show")) {
+    if (eq(args[0], "show")) {// not ":show" here!!
 		N da=getAbstract(data + 5);
         show(da,true);
 		return nodeVectorWrap(da);
@@ -329,30 +341,30 @@ NodeVector parse(const char* data) {
 		return shortestPath(from, to);
 	}
     
-	if (args.size() > 1 && startsWith(data, "has ")) {
+	if (args.size() > 1 && (startsWith(data, ":has ")||startsWith(data, "has "))) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return memberPath(from, to);
 	}
-	if (args.size() > 1 && startsWith(data, "is ")) {
+	if (args.size() > 1 && (startsWith(data, ":is ")||startsWith(data, "is "))) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return parentPath(from, to);
 	}
     
-    if (args.size() ==3 && contains(data,"exclude ")){
+    if (args.size() ==3 && contains(data,"exclude ")){// no ":" here!
         autoIds=true;
         Node *node=getAbstract(args[0]);
         if(eq(args[0], "exclude"))node=getAbstract(args[1]);
         addStatement(node,getAbstract("exclude"),getAbstract(args[2]));
         return nodeVectorWrap(getAbstract(args[0]));
     }
-    if (startsWith(data, "exclude ")){
+    if (startsWith(data, "exclude ")){// no ":" here!
         autoIds=true;
         addStatement(get("excluded"), get("exclude"),getAbstract(data+8));
         return nodeVectorWrap(get("excluded"));
     }
-        if (args.size() >=3 && contains(data,"include ")){
+        if (args.size() >=3 && contains(data,"include ")){// no ":" here!
             autoIds=true;
             Node *node=getAbstract(args[0]);
             Node *to_include=getAbstract(args[2]);// next //join(sublist(args,2)," "));
@@ -369,9 +381,9 @@ NodeVector parse(const char* data) {
 //        return nodeVectorWrap(get("included"));
 //    }
 //    ///
-    if (startsWith(data, "handle ")) {handle((char*)data+7);return OK;}
+    if (startsWith(data, "handle ")) {handle((char*)data+7);return OK;}// no ":" here!
 	if (startsWith(data, "select ")) return query(data);
-	if (startsWith(data, "all ")||startsWith(data, "show ")) {
+	if (startsWith(data, "all ")||startsWith(data, "show ")||startsWith(data, ":all ")||startsWith(data, ":show ")) {
 		lookupLimit=100;
 		bool allowInverse=true;// ONLY inverse of superclass!!
 		NodeVector all=findProperties(next_word(data).c_str(),"superclass",allowInverse);
@@ -389,18 +401,18 @@ NodeVector parse(const char* data) {
 		return query(data);
     
 	if (eq(args[0], "the") || eq(args[0], "my")) {
-		N da=getThe(data + 4, More);
+		N da=getThe(next_word(data).data(), More);
 		show(da);
 		return nodeVectorWrap(da);
 	}
 	if (eq(args[0], "a") || eq(args[0], "abstract")) {
-		N da=get(data + 2);
+		N da=getAbstract(next_word(data).data());
 		show(da);
 		return nodeVectorWrap(da);
 	}
     
     
-	if (startsWith(data, ":label ") || startsWith(data, ":rename ")) {
+	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
 		N n=getThe(args[1]);
 		setLabel(n, next_word(next_word(data)).data());
 		return nodeVectorWrap(n);
