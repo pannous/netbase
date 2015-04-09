@@ -981,7 +981,8 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	//        p("dissectWord");
 	//        p(subject->name);
 	const char *thing=str.data();
-	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".") || endsWith(thing, "s")) dissectParent(subject); // <<
+	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".") || (endsWith(thing, "s")&&!germanLabels))
+		dissectParent(subject); // <<
 
     //	dissected[subject]=1;
 

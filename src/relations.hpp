@@ -147,6 +147,7 @@ static const int noun = 110;
 static const int verb = 111;
 static const int adjective = 112;
 static const int adverb = 113;
+static const int preposition = 114;
 
 static const int _bytes = 119;
 static const int _map = 120;

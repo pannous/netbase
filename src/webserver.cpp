@@ -798,6 +798,7 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 
 void start_server() {
 	printf("STARTING SERVER!\n localhost:%d\n", SERVER_PORT);
+	if(SERVER_PORT<1024)p("sudo netbase if port < 1024 !!!");
 	flush();
 	/*  Create socket  */
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -830,6 +831,7 @@ void start_server() {
 	/*  Loop infinitely to accept and service connections  */
 	while (1) {
 		/*  Wait for connection  */
+		// NOT with XCODE -> WEBSERV: Error calling accept()! debugging not supported, are you debugging?
 		conn = accept(listener, NULL, NULL);
 		if (conn  < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");

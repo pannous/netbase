@@ -1507,12 +1507,14 @@ void testBrandNewStuff() {
 	debug = true;
 //    testing=false;// NO RELATIONS!
 //    germanLabels=true;// false;
-//    import("test.csv");
-    germanLabels=false;
+	//    import("test.csv");
+//	germanLabels=false;
+	germanLabels=true;
 //	handle("all+pennsylvania+marijuana");
 //	handle("all dog");
-    importAll();
-        exit(0);
+//    importAll();
+	handle(":server");
+    exit(0);
     p(statementCount());
     N s=get(244797);
     handle("Katarina Witt");

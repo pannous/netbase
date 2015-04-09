@@ -28,6 +28,7 @@ bool endsWith(const char* x, const char* y);
 cchar* cut_to(cchar* str,cchar* match);
 char* cut_to(char* str,cchar* match);
 char* keep_to(char* str, cchar* match);
+bool contains(const char* x, const char y);
 bool contains(const char* x,const char* y,bool ignoreCase=false);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
@@ -45,9 +46,11 @@ void ps(const char* s);
 void ps(string s);// string geht nicht!?!
 void ps(string* s);
 void ps(NodeVector v);
-//void p(long l);
-void p(double l);
+void p(long l);
+void pl(long l);
+void pd(double l);
 //void p(int i);
+void pi(int i);
 void px(void* p);// 64 bit hex
 void p(char* s);
 void p(const char* s);
