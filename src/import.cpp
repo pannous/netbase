@@ -1314,7 +1314,7 @@ bool importLabels(cchar* file, bool hash=false) {
 			if (checkLowMemory()) break;
 			rowCount =countRows(line);
 		}
-
+		if(line[0]=='#')continue;
 		label0[0]=0;// remove old!!
 		if(rowCount==2){
 			sscanf(line, "%s\t%[^\n]s", key0,label0);
@@ -1531,6 +1531,8 @@ bool importN3(cchar* file) {
 				break;
 			}
 		}
+
+		if(line[0]=='#')continue;
 		//        subjectName=line;
 		//        int i=0;
 		//        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
