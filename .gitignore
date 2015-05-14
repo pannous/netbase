@@ -12,14 +12,8 @@ src/.svn
 synset-methods.txt
 to_update
 todo.txt
-
 /Default
 /debug
-/Default
-/Default
-/Default
-/Default
-/Default
 /release
 import/babelnet
 import/babelnet-2.0.0-core-dump
@@ -31,3 +25,8 @@ netbase_results.html
 adjust.sh
 
 import/images_de.nt
+import/babelnet/images.wn.all.csv
+import/data/images.txt
+*.orig
+.*.orig
+**/*.orig
