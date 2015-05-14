@@ -1,2 +1,2 @@
 killall netbase
-sudo ~/netbase/netbase server :de
+sudo ~/netbase/netbase server

@@ -1180,7 +1180,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
     //     if(!type)insta->kind=_integer;
     // }
 //        object=value(thing,atof(thing),Number);
-
+    
     //	if (dissect) dissectWord(insta); // dont remove! doch!
 	return insta;
 }

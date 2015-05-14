@@ -142,7 +142,7 @@ void appendFile(const char* fileName,const char* data){
 	if(fp==0){pf("CANNOT APPEND to FILE %s\n",fileName); return;}
 	fprintf(fp,"%s\n",data);
 	fclose(fp);
-}
+	}
 
 NodeVector runScript(char* file){
 	FILE *fp= fopen(file,"r");
@@ -154,7 +154,7 @@ NodeVector runScript(char* file){
 		if(startsWith(line, ":s"))continue;// don't
 		if(startsWith(line, ":rh"))continue;// don't loop
 	last=parse(line);
-	}
+}
 	fclose(fp);
 	return last;
 }
@@ -175,7 +175,7 @@ NodeVector parse(const char* data) {
 
 	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
 	clearAlgorithmHash(true); //  maybe messed up
-
+    
 	//		scanf ( "%s", data );
 	if (eq(data, ":exit")) return OK;
 	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
@@ -341,14 +341,14 @@ NodeVector parse(const char* data) {
             return showNodes(nodeVectorWrap(mergeAll(targetNode->name)));
         else
             return showNodes(nodeVectorWrap(mergeAll(args[1])));// merge <string>
-	}
-	
+    }
+    
 	if (startsWith(data, ":path ") || startsWith(data, ":p ")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
 	}
-
+    
 	if (startsWith(data, ":script ")) {
 		char* file=args.at(1);
 		return runScript(file);
@@ -471,7 +471,7 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
     
-
+	
 
 //   update Stadt.Gemeindeart set type=244797 limit 100000
 	if (startsWith(data, "update")){
