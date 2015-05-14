@@ -1508,12 +1508,16 @@ void testBrandNewStuff() {
 //    testing=false;// NO RELATIONS!
 //    germanLabels=true;// false;
 	//    import("test.csv");
-//	germanLabels=false;
-	germanLabels=true;
+	germanLabels=false;
+//	germanLabels=true;
 //	handle("all+pennsylvania+marijuana");
 //	handle("all dog");
-//    importAll();
-	handle(":server");
+	importAll();
+//	handle(":rh");
+//	handle(":learn 240938 Label Diät");
+//	handle(":learn 240938 Label Kur");
+//	dissectWord(getAbstract("Board of Directors"));
+//	handle(":server");
     exit(0);
     p(statementCount());
     N s=get(244797);

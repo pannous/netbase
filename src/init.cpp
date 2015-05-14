@@ -53,7 +53,7 @@ int semrm(key_t key, int id=0) {
 }
 void detach_shared_memory(){
         // TODO (?) programmatically
-    p("If you cannot start netbase try ./increase-shared-memory.sh || ./clear-shared-memory.sh");
+    p("If you cannot start netbase try:\n ./increase-shared-memory.sh || ./clear-shared-memory.sh");
 //    sudo: no tty present and no askpass program specified
 //    system("ipcrm -M '0x69190'");
 //    system("ipcrm -M '0x69191'");

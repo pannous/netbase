@@ -1039,7 +1039,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(subject, from, ort, checkDuplicates);
 	}
 	type=(int)str.find("_for_");
-	type=(int)str.find("_f��r_");
+	type=(int)str.find("_für_");
 	if (type >= 0 && len - type > 2) {
 		Node* from=getThe("for");
 		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
@@ -1070,7 +1070,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
         //		addStatement(word, Member, ort, checkDuplicates);
 		addStatement(word, Instance, subject, checkDuplicates);
 	}
-	type=(int)str.find("_of_");
+	type=(int)str.find("_of_");// board of directors
 	if (type < 0) type=(int)str.find("_de_"); // de_la_Casa
 	if (type < 0) type=(int)str.find("_du_");
 	//_della_ de la del des
@@ -1081,6 +1081,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		Node* ort=getThe(o);
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(ort, hat, subject, checkDuplicates);
+//		addStatement(ort, hat, word, checkDuplicates);
 	}
 	type=(int)str.find("_der_");
 	if (type < 0) type=(int)str.find("_des_");
@@ -1112,7 +1113,9 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	}
 	type=(int)str.find("_");
 	if (type >= 0 && len - type > 2) {
-		Node* word=getThe(str.substr(type + 1).c_str());
+		const char* rest=str.substr(type + 1).c_str();
+		if(startsWith(rest, "of_"))rest+=3;// ...
+		Node* word=getThe(rest);
 		addStatement(word, Instance, subject, checkDuplicates);
 	}
     return original;
@@ -1148,9 +1151,12 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		badCount++;
 		return 0;
 	}
+//	if(eq("of Directors",thing))
+//		thing=thing+3;
+//	if(startsWith(thing,"of "))
+//		thing=thing+3;
+//	if(startsWith(thing,"in "))thing=thing+3;
     if(autoIds&&isInteger(thing))return get(atoi(thing));
-    
-    
 	if (getRelation(thing)) // not here! doch
 		return getRelation(thing);
 //    replaceChar((char*)thing,'_',' ');// NOT HERE!
@@ -1165,8 +1171,6 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		ps(thing);
 		return 0;
 	}
-    
-
     if(atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
         insta->value.number=atof(thing);
         if(!type)insta->kind=_number;
@@ -1275,12 +1279,14 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
 		return 0;
 	}
     while(thing[0]==' '||thing[0] == '"')thing++;
+//		if(startsWith(thing,"of "))
+	if(eq("of Directors",thing))
+		thing=thing+3;
     if(autoIds&&isInteger(thing))return get(atoi(thing));
-
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
-    replaceChar((char*)thing,'_',' ');
+    replaceChar((char*)thing,'_',' ');// wah! careful with const!!!
 	Node* abstract=hasWord(thing);
 	if (abstract) return abstract;
 	abstract=add(thing, abstractId, abstractId); // abstract context !!
@@ -1294,7 +1300,7 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
     insertAbstractHash(wordhash(thing), abstract);
     //	if (ok == 0) insertAbstractHash(wordhash(thing), abstract);		// debug
 	if (doDissectAbstracts && (contains(thing, "_") || contains(thing, " ") || contains(thing, ".")))
-		dissectParent(abstract);
+		dissectParent(abstract);// later! else mess!?
     //	else dissectAbstracts(am Ende)
 	//	collectAbstractInstances(abstract am Ende);
 	return abstract;
@@ -2387,8 +2393,8 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
         n->name=newLabel;// c->currentNameSlot;
         c->currentNameSlot+=len + 1;
     }
-    if(!renameInstances)return;
 	if (n->kind == abstractId) {
+		if(!renameInstances)return;
         NV all=instanceFilter(n);
         for(int i=0;i<all.size();i++)
             setLabel(all[i],label,false);

@@ -1721,8 +1721,8 @@ void importGermanLables(bool addLabels=false) {
 		//		id=id + 10000; //  label on abstract !?!
 
 		wn_labels[id]=german;
-		if(eq(german,"Autoerotik"))
-			p(line);
+//		if(eq(german,"Autoerotik"))
+//			p(line);
 		int kind=noun;
 		if(wordkind[0]=='n')kind=noun;
 		else if(wordkind[0]=='v'){kind=verb;id+=200000000;}
@@ -1796,7 +1796,7 @@ void importSenses() {
 		if(germanLabels){
 			const char* german=wn_labels[synsetid_mapped].data();
 			if(!german||strlen(german)==0){
-				pf("id %d synsetid0 %d synsetid %d >>> %s\n",id,synsetid0,synsetid_mapped,name0);
+//				pf("id %d synsetid0 %d synsetid %d >>> %s\n",id,synsetid0,synsetid_mapped,name0);
 				name=name0;// DEBUG with english!! //continue;
 			}
 			else name=german;

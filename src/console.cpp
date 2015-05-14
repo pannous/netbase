@@ -137,21 +137,28 @@ void console() {
 	}
 }
 
-void logQuery(const char* data){
-//	char* logQueryFile="~/.netbase.query.log";
-	char* logQueryFile="query.log";
-	FILE *fp= fopen(logQueryFile,"a");
-	if(fp==0){return;}
+void appendFile(const char* fileName,const char* data){
+	FILE *fp= fopen(fileName,"a");
+	if(fp==0){pf("CANNOT APPEND to FILE %s\n",fileName); return;}
 	fprintf(fp,"%s\n",data);
 	fclose(fp);
 }
-void logCommand(const char* data){
-	char* logCommandFile="commands.log";
-	FILE *fp= fopen(logCommandFile,"a");
-	if(fp==0){return;}
-	fprintf(fp,"%s\n",data);
+
+NodeVector runScript(char* file){
+	FILE *fp= fopen(file,"r");
+	if(fp==0){return OK;}
+	char line[1000];
+	NodeVector last;
+	while (fgets(line, sizeof(line), fp) != NULL) {
+		if(startsWith(line, ":i"))continue;// don't import here!
+		if(startsWith(line, ":s"))continue;// don't
+		if(startsWith(line, ":rh"))continue;// don't loop
+	last=parse(line);
+	}
 	fclose(fp);
+	return last;
 }
+
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;
 	if (!isprint(data[0])) // ??
@@ -159,15 +166,16 @@ NodeVector parse(const char* data) {
 	if (eq(data, "")) {
 		return OK;
 	}
-	if(data[0]==':'||data[0]=='!')logCommand(data);
-	else logQuery(data);
 
-	clearAlgorithmHash(true); //  maybe messed up
 	data=fixQuotesAndTrim(editable(data));
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
-	//	std::remove(arg.begin(), arg.end(), ' ');
+
+	if(data[0]==':')appendFile("commands.log",data);
+	else appendFile("query.log", data);
+
 	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
-    
+	clearAlgorithmHash(true); //  maybe messed up
+
 	//		scanf ( "%s", data );
 	if (eq(data, ":exit")) return OK;
 	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
@@ -221,7 +229,7 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (eq(data, ":il")){
-		import("labels");
+		import("labels");// import/labels.csv
 		return OK;
 	}
 	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
@@ -333,14 +341,23 @@ NodeVector parse(const char* data) {
             return showNodes(nodeVectorWrap(mergeAll(targetNode->name)));
         else
             return showNodes(nodeVectorWrap(mergeAll(args[1])));// merge <string>
-    }
-    
+	}
+	
 	if (startsWith(data, ":path ") || startsWith(data, ":p ")) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
 	}
-    
+
+	if (startsWith(data, ":script ")) {
+		char* file=args.at(1);
+		return runScript(file);
+	}
+	if (startsWith(data, ":rh")) {
+		return runScript("commands.log");
+	}
+
+
 	if (args.size() > 1 && (startsWith(data, ":has ")||startsWith(data, "has "))) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
@@ -413,8 +430,12 @@ NodeVector parse(const char* data) {
     
     
 	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
+		const char* what=next_word(data).data();
+		appendFile("import/labels.csv",what);
+		char* wordOrId=args[1];
+		const char* label=next_word(what).data();
 		N n=getThe(args[1]);
-		setLabel(n, next_word(next_word(data)).data());
+		setLabel(n, label);
 		return nodeVectorWrap(n);
 	}
 	if (startsWith(data, "an ")) return query(data);
@@ -451,11 +472,7 @@ NodeVector parse(const char* data) {
 	}
     
 
-    if (data[0] == '!' )return nodeVectorWrap(learn(data+1)->Subject());
-	if (contains(data, ".") && contains(data, "="))
-		return nodeVectorWrap(learn(data)->Subject());
-//    return nodeVectorWrap(reify(learn(data)));
-	
+
 //   update Stadt.Gemeindeart set type=244797 limit 100000
 	if (startsWith(data, "update")){
         update(data);
@@ -494,12 +511,14 @@ NodeVector parse(const char* data) {
 	}
     
 	
-	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], "!learn"))){
+	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], ":!"))){
 		string what=next_word(data);
+		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
+		if(!fp){p("NO such file facts.ssv!"); return OK;}
 		fprintf(fp,"%s\n",what.data());
 		fclose(fp);
-        return nodeVectorWrap(learn(what)->Subject());
+		return nv;
 	}
 	if (args.size() >= 3 && eq(args[1], "is"))
         return nodeVectorWrap(learn(data)->Subject());

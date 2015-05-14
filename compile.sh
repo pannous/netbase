@@ -28,7 +28,7 @@ options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
 
 mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
-g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase :exit $@
+g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline && ./netbase :exit $@
 
 
 if [[ $platform == 'Darwin' ]]; then
@@ -41,7 +41,7 @@ cp netbase blueprints-netbase/lib/linux/libNetbase.a
 cp bin/libNetbase.so blueprints-netbase/lib/linux-x86-64/
 cp bin/libNetbase.so blueprints-netbase/lib/linux/
 fi
-cd blueprints-netbase; git pull --all; git commit -a -m "Updated library" && git push --all && git status
+# cd blueprints-netbase; git pull --all; git commit -a -m "Updated library" && git push --all && git status
 cd -
 
 #  -I/opt/local/include BOOST

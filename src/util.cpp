@@ -585,6 +585,7 @@ char* match(char* input,cchar* pattern) {
 	return group;
 }
 
+// std::remove(arg.begin(), arg.end(), ' ');
 char* fixQuotesAndTrim(char* tmp) {
 	bool quote=false;
 	while (tmp[0] == ' ' || tmp[0] == '_' || tmp[0] == '"') {
