@@ -1531,7 +1531,7 @@ bool importN3(cchar* file) {
 				break;
 			}
 		}
-
+		if(linecount==4067932)continue;// MAC WTF
 		if(line[0]=='#')continue;
 		//        subjectName=line;
 		//        int i=0;
@@ -1569,7 +1569,7 @@ bool importN3(cchar* file) {
 			object=t;
 		}
 
-		if (!subject || !predicate || !object) {
+		if (!subject || !predicate || !object) {// G.o.d. dot problem !?
 			//            printf("_"); // ignored
 			subject=getFreebaseEntity(subjectName);
 			badCount++;

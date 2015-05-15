@@ -257,14 +257,16 @@ void initRelations() {
     currentContext()->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_see, "unknown");
-    
+
+	bool is_transitive=true;
+	Instance = addRelation(_instance, "instance",is_transitive);
 	Any = addRelation(_any, "?");
+
     Error = addRelation(_error, "Error");
 	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "attribute"); // tag
 	Property=Attribute;
-	bool is_transitive=true;
 	Cause = addRelation(_cause, "cause",is_transitive); //
 	Derived =addRelation(_derived, "derived"); //
 //	DerivedFromNoun =addRelation(_derived_from_noun, "derived from noun"); //
@@ -312,7 +314,6 @@ void initRelations() {
 	Weight = addRelation(31, "weight");
 	//	 Synonym = Relation(32, "synonym");// -> 21????? See see | tag
 	Type = addRelation(_Type, "type");// is_transitive?? // (instance->class) !=SuperClass
-	Instance = addRelation(_instance, "instance",is_transitive);
 	Active = addRelation(35, "active");
 	Passive = addRelation(36, "passive");
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!

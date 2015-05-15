@@ -211,8 +211,8 @@ inline bool eq(Statement* s,Statement* s2){
     if(!s || !s2)return false;
 	return (s->subject==s2->subject&&s->predicate==s2->predicate&&s->object==s2->object);
 }
-inline bool eq(Statement* s,int statementNr){
-	return eq(s,getStatement(statementNr));
+inline bool eq(Statement* s,int statementId){
+	return eq(s,getStatement(statementId));
 }
 
 bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statementNr) {
@@ -231,8 +231,8 @@ bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statement
 bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int statementNr) {
 	return  appendLinkedListOfStatements(to_insert, node, statementNr); // append old to new
 }
-bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
-    if(statementNr==0){
+bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
+    if(statementId==0){
         p("WARNING statementNr==0");
         return false;
     }
@@ -240,41 +240,41 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementNr) {
 	if (n == 0) { // && ==0
 		if (node->firstStatement != 0)
             pf("BUG node->firstStatement!=0 %d %s :%d", node->id, node->name, node->firstStatement);
-		node->firstStatement=statementNr;
-		node->lastStatement=statementNr;
+		node->firstStatement=statementId;
+		node->lastStatement=statementId;
 	} else {
 #ifdef useContext
 		Context* context=getContext(node->context);
 #else
         Context* context=currentContext();
 #endif
-		Statement* to_insert=&context->statements[statementNr];
+		Statement* to_insert=&context->statements[statementId];
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
 		if (to_insert->Predicate() == Instance || (to_insert->Predicate() == Type&&to_insert->Object()==node) || to_insert->Predicate() == node) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
-			if(eq(add_here,statementNr))return false;
-			appendLinkedListOfStatements(add_here, node, statementNr); // append new to old
-			node->lastStatement=statementNr;
+			if(eq(add_here,statementId))return false;
+			appendLinkedListOfStatements(add_here, node, statementId); // append new to old
+			node->lastStatement=statementId;
 		} else {
 			if(eq(to_insert,node->firstStatement))return false;
 			prependLinkedListOfStatements(to_insert, node, node->firstStatement); // append old to new
-			node->firstStatement=statementNr;
+			node->firstStatement=statementId;
 		}
 	}
 	node->statementCount++;
 	return true;
 }
 
-bool addStatementToNode(Node* node, int statementNr) {
+bool addStatementToNode(Node* node, int statementId) {
 	//	return addStatementToNodeDirect(node, statementNr);
-	return addStatementToNodeWithInstanceGap(node, statementNr);
+	return addStatementToNodeWithInstanceGap(node, statementId);
 }
 
-bool addStatementToNodeDirect(Node* node, int statementNr) {
+bool addStatementToNodeDirect(Node* node, int statementId) {
 	int n=node->lastStatement;
 	if (n == 0) {
-		node->firstStatement=statementNr;
-		node->lastStatement=statementNr;
+		node->firstStatement=statementId;
+		node->lastStatement=statementId;
 		node->statementCount++;
 		return true;
 	} else {
@@ -285,22 +285,22 @@ bool addStatementToNodeDirect(Node* node, int statementNr) {
         Context* context=currentContext();
 #endif
 		Statement* statement0=&context->statements[node->lastStatement]; // last statement
-		Statement* statement1=&context->statements[statementNr]; // target
+		Statement* statement1=&context->statements[statementId]; // target
 		if (statement0->Subject() == node) {
 			statement2Nr=statement0->nextSubjectStatement; // rescue old
-			statement0->nextSubjectStatement=statementNr;
+			statement0->nextSubjectStatement=statementId;
 		}
 		if (statement0->Predicate() == node) {
 			statement2Nr=statement0->nextPredicateStatement;
-			statement0->nextPredicateStatement=statementNr;
+			statement0->nextPredicateStatement=statementId;
 		}
 		if (statement0->Object() == node) {
 			statement2Nr=statement0->nextObjectStatement;
-			statement0->nextObjectStatement=statementNr;
+			statement0->nextObjectStatement=statementId;
 		}
 		// squeeze statement1 in between statement0 and statement2Nr
 		appendLinkedListOfStatements(statement1, node, statement2Nr); // put target into free slot
-		node->lastStatement=statementNr;
+		node->lastStatement=statementId;
 	}
 	node->statementCount++;
 	return true;
@@ -451,14 +451,17 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 	return false;
 }
 
-// don't use! iterate via nextStatement
-
+// global Statement
 Statement * getStatement(int id, int context_id) {
-	if (id <= 0) {
+	if (id == 0) {
+		return null;// i.e. lastStatement
+	}
+	if (id < 0) {
 		badCount++;
 		return null;
 	}
 	if (id >= maxStatements) {
+		p("maxStatements reached!");
 		badCount++;
 		return null;
 	}
@@ -787,10 +790,10 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 
 Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 	//	if(nr==0)return 0;// todo ????
-    //	if (nr >= maxStatementsPerNode) {
-    //		badCount++;
-    //		return null;
-    //	}
+//    	if (nr >= maxStatementsPerNode) {
+//    		badCount++;
+//    		return null;
+//    	}
 	if (n == null) {
 		badCount++;
 		return null;
@@ -1216,18 +1219,21 @@ Node * hasWord(const char* thingy) {
     //	int tries=0; // cycle bugs
 
     //    	map<Node*, bool> visited;
-	map<int, bool> visited;
+//#ifdef DEBUG
+//	map<int, bool> visited;// relatively EXPENSIVE!!
+//#endif
     //	map<Ahash*, bool> visited;
 	// ./clear-shared-memory.sh After changing anything here!!
 	while (found >= abstracts && found < &extrahash[maxNodes]) {
-		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
-			debugAhash(h);
-			p("visited[found] == 1 How the hell can that even be??? ");
-			p(found->abstract);
-			return 0;
-		}
-		visited[found->abstract]=1;
-
+//#ifdef DEBUG
+//		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
+//			debugAhash(h);
+//			p("visited[found] == 1 How the hell can that even be??? ");
+//			p(found->abstract);
+//			return 0;
+//		}
+//		visited[found->abstract]=1;
+//#endif
 		if (checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
@@ -2373,6 +2379,8 @@ void setName(int node, cchar* label){
 }
 void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
     if(n!=get(n->id))n=save(n);
+//	if(label[0]=='<')
+//		badCount++; "<span dbpedia parser fuckup etc
     int len=(int)strlen(label);
     Context* c=currentContext();
 	char* newLabel=name_root+ c->currentNameSlot;
@@ -2393,6 +2401,7 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
         n->name=newLabel;// c->currentNameSlot;
         c->currentNameSlot+=len + 1;
     }
+	if (n->kind == _internal)return;
 	if (n->kind == abstractId) {
 		if(!renameInstances)return;
         NV all=instanceFilter(n);
