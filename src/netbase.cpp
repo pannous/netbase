@@ -546,6 +546,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 		badCount++;
         printf("node* >= maxNodes!!! %p > %p\n", node, maxNodePointer);
         p("OUT OF MEMORY or graph corruption");
+		exit(0);
 		return false;
 	}
 #ifdef useContext

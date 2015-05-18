@@ -970,7 +970,7 @@ Node* rdfValue(char* name) {
 	cchar* unit=all[2];
 	name=all[0];
 	if (name[0] == '"') name++; // ignore quotes "33"
-//	free(all); LEAK! but SEGFAULTS on Echse
+	free(all);
 	if (!unit || unit > name + 1000 || unit < name) return 0;
 	if (unit[0] == '<') unit++;
 	if (unit[0] == '#') unit++;
@@ -1461,11 +1461,12 @@ Node* getFreebaseEntity(char* name) {
 			name[strlen(name) - 1]=0;
 	}
 	cut_to(name," (");
+	if(name[0]!='0'){// ECHSE
 	Node* n=labels[name];
 	if (n) {
 		return n;
 	}
-
+	}
 	// skip <m. but  LEAVE THE >
 	if (startsWith(name, "m.") || startsWith(name, "g.")) {
 		long h=freebaseHash(name + 2);
