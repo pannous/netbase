@@ -1371,8 +1371,9 @@ bool importLabels(cchar* file, bool hash=false) {
 			if(eq(oldLabel->name,label))continue;// OK
 			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}//Stra��enverkehr || Stra\u00DFenverkehr
-			printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
-			addStatement(oldLabel,Label,getAbstract(label));
+//			printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
+			setLabel(oldLabel, label);
+//			addStatement(oldLabel,Label,getAbstract(label));
 		}
 
 		if (freebaseKeys[h] != 0 ) {
