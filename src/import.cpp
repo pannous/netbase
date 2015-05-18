@@ -1988,8 +1988,8 @@ void importDBPediaEN() {
 	importLabels("dbpedia_en/raw_infobox_property_definitions_en.ttl");
 	importLabels("dbpedia_en/category_labels_en.ttl");
 
-	importN3("dbpedia_en/mappingbased_properties_cleaned_en.ttl");
 	importN3("dbpedia_en/instance_types_en.ttl");
+	importN3("dbpedia_en/mappingbased_properties_cleaned_en.ttl");
 	importN3("dbpedia_en/raw_infobox_properties_en.ttl");
 	importN3("dbpedia_en/persondata_en.ttl");
 	importN3("dbpedia_en/images_en.nt");// IMAGE LOGIC??
