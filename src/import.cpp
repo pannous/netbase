@@ -965,13 +965,10 @@ Node* dateValue(const char* val) {
  <g.11vjx3759>   <#type> <measurement_unit.dated_percentage>     .
  */
 Node* rdfValue(char* name) {
-	//    p(name);
-	char** all=splitStringC(name, '^');
-	cchar* unit=all[2];
-	name=all[0];
 	if (name[0] == '"') name++; // ignore quotes "33"
-	free(all);
+	char* unit=strstr(name, "^");
 	if (!unit || unit > name + 1000 || unit < name) return 0;
+	while (unit[0] == '^') unit++;
 	if (unit[0] == '<') unit++;
 	if (unit[0] == '#') unit++;
 	if (unit[0] == '"') unit++;
