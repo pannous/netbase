@@ -1372,7 +1372,7 @@ bool importLabels(cchar* file, bool hash=false) {
 			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}//Stra��enverkehr || Stra\u00DFenverkehr
 //			printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
-			setLabel(oldLabel, label);
+			setLabel(oldLabel, label,false,false);
 //			addStatement(oldLabel,Label,getAbstract(label));
 		}
 
