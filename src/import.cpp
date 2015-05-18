@@ -1370,9 +1370,11 @@ bool importLabels(cchar* file, bool hash=false) {
 		if(oldLabel){
 			if(eq(oldLabel->name,label))continue;// OK
 			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
-			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}//Stra��enverkehr || Stra\u00DFenverkehr
+			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
+			if(startsWith(oldLabel->name,"<")){labels[key]=getAbstract(label); continue;}
+			//Stra��enverkehr || Stra\u00DFenverkehr
 //			printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
-			setLabel(oldLabel, label,false,false);
+//			setLabel(oldLabel, label,false,false);
 //			addStatement(oldLabel,Label,getAbstract(label));
 		}
 
@@ -1631,7 +1633,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 
 		subject=getAbstract(subjectName); //
 		object=getAbstract(objectName);
-		//dissectWord(abstract);
+		dissectWord(subject);
 		Statement* s;
 		if (contains(objectName, subjectName, true)) s=addStatement(subject, Member, object, false); // todo: id
 		else s=addStatement(subject, predicate, object, false); // todo: id
@@ -2140,8 +2142,8 @@ void importAllDE() {
 	//	exit(0);
 	importCsv("adressen.txt");
 	importNames();
+	doDissectAbstracts=true;// already? why not
 	importDBPediaDE();
-	//	doDissectAbstracts=true;// already? why not
 	importGeoDB();
 	//    importEntities();
 	importImagesDE();
@@ -2159,6 +2161,7 @@ void importAll() {
 	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
+	doDissectAbstracts=true;// already? why not
 	if(germanLabels)
 		importDBPediaDE();
 	else
