@@ -983,7 +983,7 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "xsd:float")) unit=0; //-> number
 	else if (eq(unit, "xsd:nonNegativeInteger")) unit=0; //-> number
 	else if (eq(unit, "yago0to100")) unit=0;
-	if (!unit) return value(name, atof(name), Number);
+	if (!unit) return value(name, atof(name), Number);// unit==0 means number, ignore extra chars 123\"
 
 	if (eq(unit, "m")) unit="Meter";
 	else if (eq(unit, "%")) ; // OK
