@@ -621,3 +621,9 @@ char* replace(char* data,char what,char with){
     return data;// chain
 }
 
+void appendFile(const char* fileName,const char* data){
+	FILE *fp= fopen(fileName,"a");
+	if(fp==0){pf("CANNOT APPEND to FILE %s\n",fileName); return;}
+	fprintf(fp,"%s\n",data);
+	fclose(fp);
+}

@@ -25,7 +25,7 @@ cchar* images_file_de="images_de.nt";
 bool getSingletons=false;// i.e. Nationalmannschaft
 bool getBest=false;// i.e. Madonna\Music | Madonna\Church
 bool germanLabels=false;//true;
-
+bool importing=false;
 
 FILE *open_file(const char* file) {
 	FILE *infile;
@@ -78,7 +78,8 @@ bool checkLowMemory() {
 	}
 	if (currentContext()->statementCount + 40000 > maxStatements) {
 		p("OUT OF MEMORY!");
-		pf("%d statement!\n", currentContext()->statementCount);
+		pf("%d statements!\n", currentContext()->statementCount);
+		if(importing)exit(0);
 		return true;
 	}
 	if (extrahash + 20000 > abstracts + maxNodes * 2) {
@@ -1010,18 +1011,18 @@ Node* rdfValue(char* name) {
 	else if (eq(unit, "bar"));
 	else if (eq(unit, "kilonewton"));
 	else if (eq(unit, "megawatt"));
-	else if (eq(unit, "squareMetre"))unit="m��";
+	else if (eq(unit, "squareMetre"))unit="m^2";
 	else if (eq(unit, "kilometrePerHour"))unit="km/h";
 	else if (eq(unit, "xsd:date")) ; // parse! unit = 0; //-> number
 	else if (eq(unit, "kelvin")) ; // ignore
-	else if (eq(unit, "degreeCelsius")) unit="��C"; // ignore
-	else if (eq(unit, "degreeFahrenheit")) unit="��F"; // ignore
-	else if (eq(unit, "degreeRankine")) unit="��R"; // ignore
+	else if (eq(unit, "degreeCelsius")) unit="C"; // ignore
+	else if (eq(unit, "degreeFahrenheit")) unit="F"; // ignore
+	else if (eq(unit, "degreeRankine")) unit="R"; // ignore
 	else if (eq(unit, "degrees")) ; // ignore
 	else if (eq(unit, "dollar")) ; // ignore
 	else if (eq(unit, "usDollar"))unit="dollar" ; // ignore
 	else if (eq(unit, "euro")) ; // ignore
-	else if (eq(unit, "squareKilometre"))unit="km��" ; // ignore
+	else if (eq(unit, "squareKilometre"))unit="km^2" ; // ignore
 	else if (eq(unit, "megabyte")) ; // ignore
 	else if (eq(unit, "gramPerCubicCentimetre"))unit="g/cm^3" ; // ignore
 	else if (eq(unit, "metrePerSecond"))unit="m/s" ; // ignore
@@ -1030,7 +1031,7 @@ Node* rdfValue(char* name) {
 
 	else if (eq(unit, "yagoISBN")) unit="ISBN"; // ignore
 	else if (eq(unit, "yagoTLD")) unit="TLD"; // ???
-	else if (eq(unit, "yagoMonetaryValue")) unit="dollar";
+	else if (eq(unit, "yagoMonetaryValue")) unit="dollar";// USD $
 	else if (eq(unit, "gYear")) unit="year"; //Date;
 	else if (eq(unit, "date")) return dateValue(name);
 	else if (eq(unit, "dateTime")) return dateValue(name);
@@ -1637,7 +1638,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 			printf("Quitting import : id > maxNodes\n");
 			break;
 		}
-		showStatement(s);
+//		showStatement(s);
 	}
 	fclose(infile); /* Close the file */
 	p("import facts ok");
@@ -1787,7 +1788,6 @@ void importSenses() {
 		//		if (130172 == id) p(line);
 
 		synsetid_mapped=norm_wordnet_id(synsetid0);// 100001740    ->  200000 and so on, no gaps
-		if (synsetid_mapped > 200000 + 117659) p(line);
 		if (synsetid_mapped < 200000) continue;
 		Node* sense=get(synsetid_mapped);
 		for (int i=0; i < strlen(name0); i++)
@@ -2058,6 +2058,7 @@ void importWikipedia() {
 
 
 void import(const char* type, const char* filename) {
+	importing=true;
 	//    clock_t start;
 	//    double diff;
 	//  start = clock();
@@ -2120,6 +2121,7 @@ void import(const char* type, const char* filename) {
 		printf("Unsupported file type %s %s", type, filename);
 		//		importAll();
 	}
+	importing=false;
 	//  cout<<"nanoseconds "<< diff <<'\n';
 
 	// importSqlite(filename);
@@ -2128,6 +2130,7 @@ void import(const char* type, const char* filename) {
 }
 
 void importAllDE() {
+	importing=true;
 	germanLabels=true;
 	p("importAll GERMAN");
 	importLabels("labels.csv");
@@ -2142,10 +2145,12 @@ void importAllDE() {
 	//    importEntities();
 	importImagesDE();
 	importLabels("labels.csv");// todo: why again?
+	importing=false;
 	//	importFacts()
 }
 
 void importAll() {
+	importing=true;
 	if(germanLabels)
 		return importAllDE();
 	p("importAll ENGLISH");
@@ -2164,6 +2169,7 @@ void importAll() {
 	showContext(wordnet);
 	//   	importAllYago();// BETTER THAN DBPEDIA!?
 	importImages();
+	importing=false;
 	//  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
 	//    importEntities();
 }

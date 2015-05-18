@@ -137,13 +137,6 @@ void console() {
 	}
 }
 
-void appendFile(const char* fileName,const char* data){
-	FILE *fp= fopen(fileName,"a");
-	if(fp==0){pf("CANNOT APPEND to FILE %s\n",fileName); return;}
-	fprintf(fp,"%s\n",data);
-	fclose(fp);
-	}
-
 NodeVector runScript(char* file){
 	FILE *fp= fopen(file,"r");
 	if(fp==0){return OK;}

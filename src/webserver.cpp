@@ -36,31 +36,6 @@ pid_t pid;
 //    socklen_t
 struct sockaddr_in servaddr;
 
-enum result_format {
-	xml, json, txt,csv,html
-};
-
-enum result_verbosity {
-	shorter, normal, longer,verbose,alle
-}verbosity;
-
-
-void fixLabel(Node* n){
-    if(!checkNode(n))return;
-    if(n->name==0)return;// HOW? checkNames=false :(
-	if(n->name[0]=='"')n->name=n->name+1;
-
-	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
-		n->name[strlen(n->name)-1]=0;
-	if(n->name[strlen(n->name)-1]=='\\')
-		n->name[strlen(n->name)-1]=0;
-	replaceChar(n->name,'"',' ');
-	replaceChar(n->name,'\'',' ');
-// todo: "'","%27" etc
-//#include <curl/curl.h>
-//char *curl_easy_escape( CURL * curl , char * url , int length );
-}
-
 /// true = filter
 vector<char*>excluded;
 vector<char*>included;
@@ -71,131 +46,34 @@ int warnings=0;
 //static char* excluded=0;
 //static char* excluded2=0;
 //static char* excluded3=0;
-bool checkHideStatement(Statement* s){
-	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
-    if(s->subject==0||s->predicate==0||s->object==0){warnings++;return true;}
-	char* predicateName=s->Predicate()->name;
-	char* objectName=s->Object()->name;
-	char* subjectName=s->Subject()->name;
-    if(subjectName==0||predicateName==0||objectName==0){warnings++;return true;}
-    
-    if(showExcludes){
-        if(eq(subjectName,"exclude",1)||eq(predicateName,"exclude",1)||eq(objectName,"exclude",1))return false;
-        if(eq(subjectName,"include",1)||eq(predicateName,"include",1)||eq(objectName,"include",1))return false;
-        return true;
-    }
-    
-    if(eq(predicateName,"exclude")){excluded.push_back(objectName);return true;}
-    if(eq(predicateName,"include")){included.push_back(objectName);return true;}
-    if(predicateName[0]=='<')predicateName++;
-	if(eq(predicateName,"Key"))return true;
-   	if(eq(predicateName,"expected type"))return true;
-   	if(eq(predicateName,"Range"))return true;
-    if(eq(predicateName,"usage domain"))return true;
-    if(eq(predicateName,"schema"))return true;
-    if(startsWith(predicateName,"http"))return true;
-    
-    if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
-    	return true;// zh-ch, id ...
-    if(objectName[0]=='/'||objectName[1]=='/')return true;// ?
-    
-    
-    for(int i=0;i<excluded.size();i++){
-        char* exclude=excluded.at(i);
-        if(contains(subjectName,exclude,1)||contains(predicateName,exclude,1)||contains(objectName,exclude,1))return true;
-        if(eq(itoa(s->subject),exclude)||eq(itoa(s->predicate),exclude)||eq(itoa(s->object),exclude))return true;
-    }
-    bool ok=included.size()==0;// no filter
-    for(int i=0;i<included.size();i++){
-        char* include=included.at(i);
-        if(eq(predicateName,"Bundesland"))
-            p(s);
-        if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
-        if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))
-            ok=true;
-    }
-    
-    //    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
-    //    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
-    //    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
-   return !ok;
-//    return false;
-}
 
-void fixLabels(Statement* s){
-	fixLabel(s->Subject());
-	fixLabel(s->Predicate());
-	fixLabel(s->Object());
-}
+enum result_format {
+	xml, json, txt,csv,html
+};
 
-void getIncludes(Node* n){
-	if(verbosity==shorter||verbosity==alle)return;
-	if(n->id<1000)return;
-	if(eq("Release track",n->name))return;
-	if(eq("Recording",n->name))return;
-	if(eq("Document",n->name))return;
-	if(eq("Cataloged instance",n->name))return;
-    pf("getIncludes %d >>%s<<\n",n->id,n->name);
-    Statement *s=0;
-	int lookups=0;
-    while((s=nextStatement(n,s))){
-		if(++lookups>50)break;
-//        p(s);
-        if(eq(s->Predicate()->name,"exclude")){
-            excluded.push_back(s->Object()->name);
-            excludedIds.push_back(s->Object()->id);
-        }
-        if(eq(s->Predicate()->name,"include")){
-            included.push_back(s->Object()->name);
-            includedIds.push_back(s->Object()->id);
-        }
-    }
-    
-}
+enum result_verbosity {
+	shorter, normal, longer,verbose,alle
+}verbosity;
 
-void loadView(Node* n){
-    getIncludes(n);
-    N parent= getType(n);
-    if(parent)
-        getIncludes(parent);
-    if(parent&&parent->kind!=Abstract->kind)
-        getIncludes(getAbstract(parent->name));
-}
 
-void loadView(char* q){
-    N ex=get("excluded");// globally
-    if(ex &&   verbosity != alle )getIncludes(ex);
-    ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
-    if(ex && verbosity != alle )getIncludes(ex);
-    
-   char* exclude=q;
-    while(exclude&&contains(exclude," -")){
-        exclude=strstr(exclude," -");
-        if(exclude[2]!=' '){// not 2009 - 2010 etc
-            exclude[0]=0;
-            exclude+=2;
-            if(verbosity != alle)
-            excluded.push_back(exclude);
-        }else exclude=0;
-    }
-    char* include=q;
-    while(include&&contains(include," +")){
-        include=strstr(exclude," +");
-        include[0]=0;
-        include+=2;
-        if(verbosity != alle)
-        included.push_back(include);
-    }
-    
-}
+void fixLabels(Statement* s);
+void getIncludes(Node* n);
+void loadView(Node* n);
+void loadView(char* q);
+void fixLabel(Node* n);
+void checkSanity(char* q,int len);
+bool checkHideStatement(Statement* s);
 
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
+	int len=(int)strlen(q0);
+	if(len>1000)return 0;// SAFETY!
     char* q=editable(q0);
+	checkSanity(q,len);
     while(q[0]=='/')q++;
 	enum result_format format = html;//txt; DANGER WITH ROBOTS
 	enum result_verbosity verbosity = normal;
-	int len=(int)strlen(q);
+
 	if (eq(q, "favicon.ico"))return 0;
     if(contains(q,"robots.txt")){
         Writeline(conn,"User-agent: *\n");
@@ -422,6 +300,151 @@ int handle(cchar* q0,int conn){
     pf("Warnings/excluded: %d\n",warnings);
     return 0;// 0K
 }
+
+void checkSanity(char* q,int len){
+	bool bad=false;
+	if(q[0]==':'||q[0]=='!')bad=true;
+	for (int i=0; i<len; i++) {
+		if(q[i]>127)bad=true;
+	}
+	if(bad)
+		appendFile("netbase.warnings", q);
+}
+
+void fixLabel(Node* n){
+	if(!checkNode(n))return;
+	if(n->name==0)return;// HOW? checkNames=false :(
+	if(n->name[0]=='"')n->name=n->name+1;
+
+	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
+		n->name[strlen(n->name)-1]=0;
+	if(n->name[strlen(n->name)-1]=='\\')
+		n->name[strlen(n->name)-1]=0;
+	replaceChar(n->name,'"',' ');
+	replaceChar(n->name,'\'',' ');
+	// todo: "'","%27" etc
+	//#include <curl/curl.h>
+	//char *curl_easy_escape( CURL * curl , char * url , int length );
+}
+
+bool checkHideStatement(Statement* s){
+	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
+	if(s->subject==0||s->predicate==0||s->object==0){warnings++;return true;}
+	char* predicateName=s->Predicate()->name;
+	char* objectName=s->Object()->name;
+	char* subjectName=s->Subject()->name;
+	if(subjectName==0||predicateName==0||objectName==0){warnings++;return true;}
+
+	if(showExcludes){
+		if(eq(subjectName,"exclude",1)||eq(predicateName,"exclude",1)||eq(objectName,"exclude",1))return false;
+		if(eq(subjectName,"include",1)||eq(predicateName,"include",1)||eq(objectName,"include",1))return false;
+		return true;
+	}
+
+	if(eq(predicateName,"exclude")){excluded.push_back(objectName);return true;}
+	if(eq(predicateName,"include")){included.push_back(objectName);return true;}
+	if(predicateName[0]=='<')predicateName++;
+	if(eq(predicateName,"Key"))return true;
+	if(eq(predicateName,"expected type"))return true;
+	if(eq(predicateName,"Range"))return true;
+	if(eq(predicateName,"usage domain"))return true;
+	if(eq(predicateName,"schema"))return true;
+	if(startsWith(predicateName,"http"))return true;
+
+	if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
+		return true;// zh-ch, id ...
+	if(objectName[0]=='/'||objectName[1]=='/')return true;// ?
+
+
+	for(int i=0;i<excluded.size();i++){
+		char* exclude=excluded.at(i);
+		if(contains(subjectName,exclude,1)||contains(predicateName,exclude,1)||contains(objectName,exclude,1))return true;
+		if(eq(itoa(s->subject),exclude)||eq(itoa(s->predicate),exclude)||eq(itoa(s->object),exclude))return true;
+	}
+	bool ok=included.size()==0;// no filter
+	for(int i=0;i<included.size();i++){
+		char* include=included.at(i);
+		if(eq(predicateName,"Bundesland"))
+			p(s);
+		if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
+		if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))
+			ok=true;
+	}
+
+	//    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
+	//    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
+	//    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
+	return !ok;
+	//    return false;
+}
+
+void fixLabels(Statement* s){
+	fixLabel(s->Subject());
+	fixLabel(s->Predicate());
+	fixLabel(s->Object());
+}
+
+void getIncludes(Node* n){
+	if(verbosity==shorter||verbosity==alle)return;
+	if(n->id<1000)return;
+	if(eq("Release track",n->name))return;
+	if(eq("Recording",n->name))return;
+	if(eq("Document",n->name))return;
+	if(eq("Cataloged instance",n->name))return;
+	pf("getIncludes %d >>%s<<\n",n->id,n->name);
+	Statement *s=0;
+	int lookups=0;
+	while((s=nextStatement(n,s))){
+		if(++lookups>50)break;
+		//        p(s);
+		if(eq(s->Predicate()->name,"exclude")){
+			excluded.push_back(s->Object()->name);
+			excludedIds.push_back(s->Object()->id);
+		}
+		if(eq(s->Predicate()->name,"include")){
+			included.push_back(s->Object()->name);
+			includedIds.push_back(s->Object()->id);
+		}
+	}
+
+}
+
+void loadView(Node* n){
+	getIncludes(n);
+	N parent= getType(n);
+	if(parent)
+		getIncludes(parent);
+	if(parent&&parent->kind!=Abstract->kind)
+		getIncludes(getAbstract(parent->name));
+}
+
+void loadView(char* q){
+	N ex=get("excluded");// globally
+	if(ex &&   verbosity != alle )getIncludes(ex);
+	ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
+	if(ex && verbosity != alle )getIncludes(ex);
+
+	char* exclude=q;
+	while(exclude&&contains(exclude," -")){
+		exclude=strstr(exclude," -");
+		if(exclude[2]!=' '){// not 2009 - 2010 etc
+			exclude[0]=0;
+			exclude+=2;
+			if(verbosity != alle)
+				excluded.push_back(exclude);
+		}else exclude=0;
+	}
+	char* include=q;
+	while(include&&contains(include," +")){
+		include=strstr(exclude," +");
+		include[0]=0;
+		include+=2;
+		if(verbosity != alle)
+			included.push_back(include);
+	}
+
+}
+
 
 
 // WORKS FINE, but not when debugging
