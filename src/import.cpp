@@ -1470,7 +1470,6 @@ Node* getFreebaseEntity(char* name) {
 	// skip <m. but  LEAVE THE >
 	if (startsWith(name, "m.") || startsWith(name, "g.")) {
 		long h=freebaseHash(name + 2);
-
 		int got=freebaseKeys[h];
 		if (got && get(got)->id != 0) return get(freebaseKeys[h]);
 		else {
@@ -1484,7 +1483,7 @@ Node* getFreebaseEntity(char* name) {
 	return dissectFreebase(name);
 }
 
-bool filterFreebase(char* name) {
+bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
 	if (startsWith(name, "<book.isbn")) return true;
 	if (startsWith(name, "<biology.gene")) return true;
 	if (startsWith(name, "<freebase.")) return true;
@@ -1547,9 +1546,9 @@ bool importN3(cchar* file) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		fixNewline(objectName);
-		if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
-		if(filterFreebase(predicateName)){ignored++; continue;}
-		if(filterFreebase(objectName)){ignored++;continue;}
+//		if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
+//		if(filterFreebase(predicateName)){ignored++; continue;}
+//		if(filterFreebase(objectName)){ignored++;continue;}
 
 		//    	.
 		//    <m.05bjb__>	<#label>	"final-fantasy-xiii.jpg"@en	.
@@ -1576,7 +1575,7 @@ bool importN3(cchar* file) {
 
 		if (!subject || !predicate || !object) {// G.o.d. dot problem !?
 			//            printf("_"); // ignored
-			subject=getFreebaseEntity(subjectName);
+//			subject=getFreebaseEntity(subjectName);
 			badCount++;
 		} else {
 			//            else// Statement* s=

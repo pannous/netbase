@@ -451,11 +451,12 @@ char* editable(const char* line) {
 
 // line MUST not be const! tokens->out
 int splitStringC(char* line, char** tokens, char separator) {
-	if(!contains(line, separator)){
-		tokens[0]=line;
-		return 1;
-////		return -1;
-	}
+//	if(!contains(line, separator)){
+//		tokens[0]=line;
+//		tokens[1]=0;
+//		return 1;
+//////		return -1;
+//	}
 	char * token;
 	int row=0;
 	int len=(int)strlen(line);
