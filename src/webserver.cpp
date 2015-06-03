@@ -777,14 +777,18 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	sprintf(buffer, "HTTP/1.1 %d OK\r\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
 	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
-		Writeline(conn, "Content-Type: text/plain\r\n");
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
 	else if(contains(reqinfo->resource,"json/"))
-		Writeline(conn, "Content-Type: application/json\r\n");
+		Writeline(conn, "Content-Type: application/json; charset=utf-8\r\n");
+	else if(contains(reqinfo->resource,"csv/"))
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
+	else if(contains(reqinfo->resource,"tsv/"))
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
 	else if(contains(reqinfo->resource,"xml/"))
-		Writeline(conn, "Content-Type: text/plain\r\n");// till entities are fixed
-//		Writeline(conn, "Content-Type: application/xml\r\n");
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");// till entities are fixed
+//		Writeline(conn, "Content-Type: application/xml; charset=utf-8\r\n");
 	else
-		Writeline(conn, "Content-Type: text/html\r\n");
+		Writeline(conn, "Content-Type: text/html; charset=utf-8\r\n");
 	Writeline(conn, "Connection: close\r\n");
 	Writeline(conn, "Server: Netbase\r\n");
 	Writeline(conn, "\r\n", 2);

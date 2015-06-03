@@ -968,7 +968,7 @@ Node* rdfValue(char* name) {
 	if (name[0] == '"') name++; // ignore quotes "33"
 	char* unit=strstr(name, "^");
 	if (!unit || unit > name + 1000 || unit < name) return 0;
-	while (unit[0] == '^') unit++;
+	while (unit[0] == '^'){unit[0]=0; unit++;}
 	if (unit[0] == '<') unit++;
 	if (unit[0] == '#') unit++;
 	if (unit[0] == '"') unit++;
@@ -1366,9 +1366,9 @@ bool importLabels(cchar* file, bool hash=false) {
 		Node* oldLabel=labels[key];
 		if(oldLabel){
 			if(eq(oldLabel->name,label))continue;// OK
-			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
-			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
 			if(startsWith(oldLabel->name,"<")){labels[key]=getAbstract(label); continue;}
+			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
+			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			//Stra��enverkehr || Stra\u00DFenverkehr
 //			printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
 //			setLabel(oldLabel, label,false,false);

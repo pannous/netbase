@@ -9,7 +9,7 @@
 //the preference should be to use #include <cstdlib>, unless you need compatibility with C
 #include <cstdlib>
 //#include <stdlib.h> // system(cmd)
-
+#include <unistd.h> // getpid
 #include <string.h>
 #include "util.hpp"
 #include "netbase.hpp"
@@ -183,7 +183,14 @@ void checkRootContext() {
 //	}
 }
 
+void signal_handler(int signum) {
+	printf("Process %d got signal %d\n", getpid(), signum);
+	//	signal(signum, SIG_DFL);
+//	kill(getpid(), signum);
+}
 extern "C" void init(bool relations) {
+	signal(SIGSEGV, signal_handler);
+
     if(!relations)testing=true;
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key=0x69190;

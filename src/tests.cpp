@@ -1511,8 +1511,8 @@ void testBrandNewStuff() {
 	germanLabels=false;
 //	germanLabels=true;
 //	handle("all+pennsylvania+marijuana");
-//	handle("all dog");
-	importAll();
+	handle("dog limit 10");
+//	importAll();
 //	handle(":rh");
 //	handle(":learn 240938 Label Diät");
 //	handle(":learn 240938 Label Kur");
