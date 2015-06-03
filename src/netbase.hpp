@@ -23,6 +23,10 @@ extern bool useYetvisitedIsA;
 extern bool autoIds;
 extern bool testing;// don't implicitly init relations
 
+extern int resultLimit;
+extern int defaultLookupLimit;
+extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!!  TODO!!!

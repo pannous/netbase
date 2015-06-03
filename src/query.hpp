@@ -9,10 +9,6 @@
 #ifndef QUERY_H
 #define	QUERY_H
 
-extern int resultLimit;
-extern int defaultLookupLimit;
-extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
 NodeVector query(Query& q);

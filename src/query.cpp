@@ -8,10 +8,6 @@
 #include <algorithm> // std:reverse
 //#include <multimap> // to sort map
 
-int resultLimit = 100; // != lookuplimit
-int defaultLookupLimit = 1000;
-int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-
 int* enqueued; // 'parents'
 NodeVector EMPTY;
 

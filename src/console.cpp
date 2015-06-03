@@ -251,6 +251,7 @@ NodeVector parse(const char* data) {
 		sscanf(limit, "limit %d", &resultLimit);
 		pf("SET LIMIT TO %d\n",resultLimit);
 		lookupLimit=resultLimit*10;//todo
+		if(limit>data) *(limit-1)=0;
 		*limit=0;
 		if(strlen(data)<2)return OK;
         //		char* newdata=(char*) malloc(1000);
