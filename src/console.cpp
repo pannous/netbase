@@ -249,8 +249,10 @@ NodeVector parse(const char* data) {
 	if (contains(data, "limit")) {
 		char* limit=(char*)strstr(data,"limit");
 		sscanf(limit, "limit %d", &resultLimit);
+		pf("SET LIMIT TO %d\n",resultLimit);
 		lookupLimit=resultLimit*10;//todo
 		*limit=0;
+		if(strlen(data)<2)return OK;
         //		char* newdata=(char*) malloc(1000);
         //		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
         //		if(!)

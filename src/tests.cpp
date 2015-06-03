@@ -1518,9 +1518,10 @@ void testBrandNewStuff() {
 	germanLabels=false;
 //	germanLabels=true;
 	//	handle("all+pennsylvania+marijuana");
-	handle(":limit 200");
-	handle("jahr.minuten=525601^^int");
-	assertResult("jahr.minuten","525600^^int");
+	handle("hi limit 2");
+//	handle(":limit 200");
+//	handle("jahr.minuten=525601^^int");
+//	assertResult("jahr.minuten","525600^^int");
 //	handle("jahr.minuten=525601");
 //	assertResult("jahr.minuten","525601^^int");
 //	handle("dog limit 10");
