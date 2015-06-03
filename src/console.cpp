@@ -247,8 +247,8 @@ NodeVector parse(const char* data) {
 	autoIds=true;
     
 	if (contains(data, "limit")) {
-		char* limit=(char*)strstr(data," limit");
-		sscanf(limit+1, "limit %d", &resultLimit);
+		char* limit=(char*)strstr(data,"limit");
+		sscanf(limit, "limit %d", &resultLimit);
 		lookupLimit=resultLimit*10;//todo
 		*limit=0;
         //		char* newdata=(char*) malloc(1000);
@@ -420,14 +420,18 @@ NodeVector parse(const char* data) {
 		show(da);
 		return nodeVectorWrap(da);
 	}
-    
-    
+
+	
+	if (startsWith(data, ":printlabels")){
+		printlabels();
+	}
+
 	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
 		const char* what=next_word(data).data();
 		appendFile("import/labels.csv",what);
 		char* wordOrId=args[1];
 		const char* label=next_word(what).data();
-		N n=getThe(args[1]);
+		N n=getThe(wordOrId);
 		setLabel(n, label);
 		return nodeVectorWrap(n);
 	}
@@ -491,7 +495,9 @@ NodeVector parse(const char* data) {
 
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
 		// || (contains(data, ":")) && !contains(data, " "))) {
-		return parseProperties(data);
+		if(!contains(data, "="))
+			return parseProperties(data);
+		else return nodeVectorWrap(learn(data));
 	}
 
 	if (args.size() >= 3 && eq(args[1], "to")) {

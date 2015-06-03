@@ -116,8 +116,9 @@ bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //
 bool contains(NodeVector& all, Node* node, bool fuzzy) {
 	for (int i=0; i < all.size(); i++) {
-		if ((Node*) all[i] == node) return true;
-		if (fuzzy && eq(all[i], node)) return true;
+		Node* n=(Node*) all[i];
+		if (n == node || (fuzzy && eq(n, node)))
+			return true;
 	}
 	return false;
 }
@@ -627,4 +628,12 @@ void appendFile(const char* fileName,const char* data){
 	if(fp==0){pf("CANNOT APPEND to FILE %s\n",fileName); return;}
 	fprintf(fp,"%s\n",data);
 	fclose(fp);
+}
+
+void printlabels(){
+	for (int i=0; i<statementCount(); i++) {
+		Statement* s= getStatement(i);
+		if(checkNode(s->predicate))
+			p(s->Predicate()->name);
+	}
 }

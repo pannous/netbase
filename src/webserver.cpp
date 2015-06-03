@@ -28,7 +28,7 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (80)
+#define SERVER_PORT  (81)
 static char server_root[1000] = "/Users/me/";
 
 int listener, conn,closing=0;
@@ -853,12 +853,12 @@ void start_server() {
 		Error_Quit("Call to listen failed.");
     
 	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
-    p(" [doesn't work with xcode, use ./compile.sh ]");
+    p(" [debugging server doesn't work with xcode, use ./compile.sh ]");
     
 	/*  Loop infinitely to accept and service connections  */
 	while (1) {
 		/*  Wait for connection  */
-		// NOT with XCODE -> WEBSERV: Error calling accept()! debugging not supported, are you debugging?
+		// NOT with XCODE -> WEBSERV
 		conn = accept(listener, NULL, NULL);
 		if (conn  < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");

@@ -24,3 +24,4 @@ int getFields(char* line, vector<char*>& fields, char separator = 0, int nameRow
 char* extractTagName(char* line);
 char* extractTagValue(char* line);
 Node* getFreebaseEntity(char* name);
+Node* rdfValue(char* name);

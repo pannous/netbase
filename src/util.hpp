@@ -99,3 +99,4 @@ string itoa(int i);
 void appendFile(const char* fileName,const char* data);
 #define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}
 #define minimum(a,b) (a<b?a:b)
+void printlabels();

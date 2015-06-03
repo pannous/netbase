@@ -58,6 +58,8 @@ NodeVector relationsFilter(Node* subject, NodeQueue * queue=null);
 NodeVector parseProperties(const char *data);
 NodeVector update(cchar* query);
 NodeVector nodeVectorWrap(Node* n);
+NodeVector nodeVectorWrap(Statement* n);
+
 //NodeVector parentFilter(Node* subject);
 //NodeVector memberFilter(Node* subject);
 //NodeVector hasFilter(Node* subject);

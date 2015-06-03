@@ -8,9 +8,12 @@
 //Since using #include <stdlib.h> dumps all declared names in the global namespace,
 //the preference should be to use #include <cstdlib>, unless you need compatibility with C
 #include <cstdlib>
+#include <string.h>
+
 //#include <stdlib.h> // system(cmd)
 #include <unistd.h> // getpid
-#include <string.h>
+#include <signal.h> // kill
+
 #include "util.hpp"
 #include "netbase.hpp"
 #include "init.hpp"
@@ -51,6 +54,14 @@ int semrm(key_t key, int id=0) {
 	if (id == -1) return -1;
 	return semctl(id, 0, IPC_RMID, arg);
 }
+
+
+void signal_handler(int signum) {
+	printf("Process %d got signal %d\n", getpid(), signum);
+	signal(signum, SIG_DFL);
+	kill(getpid(), signum);
+}
+
 void detach_shared_memory(){
         // TODO (?) programmatically
     p("If you cannot start netbase try:\n ./increase-shared-memory.sh || ./clear-shared-memory.sh");
@@ -183,11 +194,6 @@ void checkRootContext() {
 //	}
 }
 
-void signal_handler(int signum) {
-	printf("Process %d got signal %d\n", getpid(), signum);
-	//	signal(signum, SIG_DFL);
-//	kill(getpid(), signum);
-}
 extern "C" void init(bool relations) {
 	signal(SIGSEGV, signal_handler);
 

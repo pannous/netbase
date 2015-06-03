@@ -609,7 +609,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 	Context* context=getContext(contextId);
 	Node* node=&(context->nodes[context->nodeCount]);
 	if (context->nodeCount > maxNodes) {
-		pf("context->nodeCount > maxNodes %d>%ld",context->nodeCount ,maxNodes);
+		pf("context->nodeCount > maxNodes %d>%ld ",context->nodeCount ,maxNodes);
 		p("MEMORY FULL!!!");
         //		exit(1);
 		return 0;
@@ -1278,6 +1278,102 @@ Node* getType(Node* n){
     return s->Object();
 }
 
+
+Node* dateValue(const char* val) {
+	Node* n=getThe(val);
+	n->kind=Date->id;
+	return n;
+	//	return value(val, atoi(val), Date);
+}
+/*
+ <g.11vjx3759>   <measurement_unit.dated_percentage.source>      <g.11x1gf2m6>   .
+ <g.11vjx3759>   <#type> <measurement_unit.dated_percentage>     .
+ <g.11vjx3759>   <measurement_unit.dated_percentage.date>        "2005-04"^^<#gYearMonth>        .
+ <g.11vjx3759>   <measurement_unit.dated_percentage.rate>        4.5     .
+ <g.11vjx3759>   <#type> <measurement_unit.dated_percentage>     .
+ */
+Node* rdfValue(char* name) {
+	if (name[0] == '"') name++; // ignore quotes "33"
+	char* unit=strstr(name, "^");
+	if (!unit || unit > name + 1000 || unit < name) return 0;
+	while (unit[0] == '^'){unit[0]=0; unit++;}
+	if (unit[0] == '<') unit++;
+	if (unit[0] == '#') unit++;
+	if (unit[0] == '"') unit++;
+	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
+	if (eq(unit, "xsd:integer")) unit=0; //-> number
+	else if (eq(unit, "integer")) unit=0; //-> number
+	else if (eq(unit, "int")) unit=0; //-> number
+	else if (eq(unit, "double")) unit=0; //-> number
+	else if (eq(unit, "xsd:decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
+	else if (eq(unit, "xsd:float")) unit=0; //-> number
+	else if (eq(unit, "xsd:nonNegativeInteger")) unit=0; //-> number
+	else if (eq(unit, "yago0to100")) unit=0;
+	if (!unit) return value(name, atof(name), Number);// unit==0 means number, ignore extra chars 123\"
+
+	if (eq(unit, "m")) unit="Meter";
+	else if (eq(unit, "%")) ; // OK
+	else if (eq(unit, "s")) unit="Seconds";
+	else if (eq(unit, "second")) unit="Seconds";
+	else if (eq(unit, "r")) unit="Seconds";
+	else if (eq(unit, "/km")) unit="Kilometer";
+	else if (eq(unit, "km")) unit="Kilometer";
+	else if (eq(unit, "kilometre")) unit="Kilometer";
+	else if (eq(unit, "millimetre")) unit="mm";
+	else if (eq(unit, "centimetre"));
+	else if (eq(unit, "meter"));
+	else if (eq(unit, "tonne"));
+	else if (eq(unit, "volt"));
+	else if (eq(unit, "g")) unit="Gram";
+	else if (eq(unit, "gram")) unit="Gram";
+	else if (eq(unit, "kilogram")) unit="kg";
+	else if (eq(unit, "kilogramPerCubicMetre")) unit="kg/m^3";
+	else if (eq(unit, "milligram"));
+	else if (eq(unit, "hectopascal"));
+	else if (eq(unit, "kilowatt"));
+	else if (eq(unit, "byte"));
+	else if (eq(unit, "knot"));
+	else if (eq(unit, "litre"));
+	else if (eq(unit, "bar"));
+	else if (eq(unit, "kilonewton"));
+	else if (eq(unit, "megawatt"));
+	else if (eq(unit, "squareMetre"))unit="m^2";
+	else if (eq(unit, "kilometrePerHour"))unit="km/h";
+	else if (eq(unit, "xsd:date")) ; // parse! unit = 0; //-> number
+	else if (eq(unit, "kelvin")) ; // ignore
+	else if (eq(unit, "degreeCelsius")) unit="C"; // ignore
+	else if (eq(unit, "degreeFahrenheit")) unit="F"; // ignore
+	else if (eq(unit, "degreeRankine")) unit="R"; // ignore
+	else if (eq(unit, "degrees")) ; // ignore
+	else if (eq(unit, "dollar")) ; // ignore
+	else if (eq(unit, "usDollar"))unit="dollar" ; // ignore
+	else if (eq(unit, "euro")) ; // ignore
+	else if (eq(unit, "squareKilometre"))unit="km^2" ; // ignore
+	else if (eq(unit, "megabyte")) ; // ignore
+	else if (eq(unit, "gramPerCubicCentimetre"))unit="g/cm^3" ; // ignore
+	else if (eq(unit, "metrePerSecond"))unit="m/s" ; // ignore
+	else if (eq(unit, "kilometrePerSecond"))unit="km/s" ; // ignore
+
+
+	else if (eq(unit, "yagoISBN")) unit="ISBN"; // ignore
+	else if (eq(unit, "yagoTLD")) unit="TLD"; // ???
+	else if (eq(unit, "yagoMonetaryValue")) unit="dollar";// USD $
+	else if (eq(unit, "gYear")) unit="year"; //Date;
+	else if (eq(unit, "date")) return dateValue(name);
+	else if (eq(unit, "dateTime")) return dateValue(name);
+	else if (eq(unit, "gYearMonth")) return dateValue(name);
+	else if (eq(unit, "gMonthDay")) return dateValue(name);
+
+	else {
+		//		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
+		//		return 0;
+	}
+	//		, current_context, getYagoConcept(unit)->id
+	//	return add(name);
+	Node* unity=getThe(unit); // getThe(unit);//  getYagoConcept(unit);
+	return value(name, atof(name), unity);
+}
+
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
 Node* getAbstract(const char* thing) {			// AND CREATE!
@@ -1286,9 +1382,11 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
 		return 0;
 	}
     while(thing[0]==' '||thing[0] == '"')thing++;
+	if(contains(thing,"^^"))
+		return rdfValue(modifyConstChar(thing));
 //		if(startsWith(thing,"of "))
-	if(eq("of Directors",thing))
-		thing=thing+3;
+//	if(eq("of Directors",thing))// WTFFFFF???
+//		thing=thing+3;
     if(autoIds&&isInteger(thing))return get(atoi(thing));
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
@@ -1411,7 +1509,7 @@ bool show(Node* n, bool showStatements) {		//=true
 		while ((s=nextStatement(n, s))) {
 			if (i++ > resultLimit) break;
 			if (checkStatement(s)) showStatement(s);
-            else pf("NOOOOO %p",s);
+            else pf("NOOOOO! BROKEN STATEMENT: %p",s);
 		}
         printf("-----------------------^ %s #%d (kind: %d), %d statements ^---------------\n", n->name, n->id,n->kind,n->statementCount);
         flush();
@@ -2219,6 +2317,7 @@ Statement * learn(string sentence) {
 	ps("learning " + sentence);
 	Statement* s=evaluate(sentence);
 	if (checkStatement(s)) {
+		showStatement(s);
 		return s;
 	} else {
 		ps("not a valid statement:");
@@ -2287,21 +2386,26 @@ Node * getThe(Node* abstract, Node * type) {
     if (getRelation(abstract->name)) // not here! doch
         return getRelation(abstract->name);
     if (type<node_root||type>&node_root[maxNodes]) type=0;// default parameter hickup through JNA
+	if(checkNode(abstract->value.node) and eq(abstract->value.node->name,abstract->name))
+		return abstract->value.node; // abstract->value.node as cache for THE instance
 	if (type == 0) {
 		//		return getThe(abstract->name);
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		//		if (abstract->value.node)return abstract->value.node; // NODE!!! OR LABELS?? DANGER!!!
 		// CAREFUL: firstStatement INSTANCE MUST STAY FIRST~~~!!!
-		Statement* s=getStatement(abstract->lastStatement);
+		Statement* s=getStatement(abstract->firstStatement);
+//		Statement* s=getStatement(abstract->lastStatement); might be CRAP / check name AND nextStatement->previousStatement!!
 		if(s&&s->Predicate()==Instance)return s->Object();
 		else s=0;
 		while ((s=nextStatement(abstract, s)))
 			if (s->Predicate() == Instance) {		// ASSUME RIGHT ORDER!?
-				if (s->Subject() == abstract)
-                    //			abstract->value.node = last->Object; // + cace!
+				if (s->Subject() == abstract && eq(s->Object()->name,abstract->name))
+                    //			abstract->value.node = last->Object; // + cache!
 					return s->Object();
-				if (s->Object() == abstract) if (isAbstract(s->Subject())) return s->Object(); // abstract was not abstract!!!
-				//			abstract->value.node = last->Object; // + cace!
+				if (s->Object() == abstract && eq(s->Subject()->name,abstract->name))
+					if (isAbstract(s->Subject())) // abstract was not abstract!!!??
+						return s->Object();
+				//			abstract->value.node = last->Object; // + cache!
 				return s->Subject();
 			}
 		return add(abstract->name, 0); // NO SUCH!! CREATE!?

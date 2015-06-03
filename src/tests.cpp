@@ -1499,7 +1499,14 @@ void tests() {
 	p("ALL TESTS SUCCESSFUL!");
 	//    testLoop();
 }
-
+bool assertResult(char* query,char* value0){
+	NodeVector result=parse(query);
+//	cchar* result=query2(query).data();
+	Node* abstract=getAbstract(value0);
+	Node* value=getThe(abstract);
+	return check(contains(result,value) || contains(result,abstract));
+//	return check(eq(result,value));
+}
 
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
@@ -1510,8 +1517,13 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 	germanLabels=false;
 //	germanLabels=true;
-//	handle("all+pennsylvania+marijuana");
-	handle("dog limit 10");
+	//	handle("all+pennsylvania+marijuana");
+	handle(":limit 200");
+	handle("jahr.minuten=525601^^int");
+	assertResult("jahr.minuten","525600^^int");
+//	handle("jahr.minuten=525601");
+//	assertResult("jahr.minuten","525601^^int");
+//	handle("dog limit 10");
 //	importAll();
 //	handle(":rh");
 //	handle(":learn 240938 Label Diät");

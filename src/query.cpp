@@ -1377,6 +1377,11 @@ NodeVector nodeVectorWrap(Node* n) {
 	r.push_back(n);
 	return r;
 }
+NodeVector nodeVectorWrap(Statement* n) {
+	NodeVector r;
+	r.push_back(n->Subject());
+	return r;
+}
 
 NodeVector update(cchar* query){
     autoIds=true;
