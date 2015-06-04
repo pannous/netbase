@@ -249,7 +249,7 @@ NodeVector parse(const char* data) {
 	if (contains(data, "limit")) {
 		char* limit=(char*)strstr(data,"limit");
 		sscanf(limit, "limit %d", &resultLimit);
-		pf("SET LIMIT TO %d\n",resultLimit);
+		pf("LIMIT SET TO %d\n",resultLimit);
 		lookupLimit=resultLimit*10;//todo
 		if(limit>data) *(limit-1)=0;
 		*limit=0;
@@ -538,7 +538,7 @@ NodeVector parse(const char* data) {
 	//        findWord(currentContext()->id, data);
     //    if(isAbstract(a))
 	if (i == 0) {
-		lookupLimit=resultLimit;
+//		lookupLimit=resultLimit;
 		NV all=instanceFilter(a);
         all.push_back(a);// include abstract!
 		if (all.size() > 0) return all;

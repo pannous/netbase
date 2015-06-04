@@ -31,7 +31,7 @@
 #define SERVER_PORT  (81)
 static char server_root[1000] = "/Users/me/";
 
-int resultLimit = 100; // != lookuplimit reset with every fork !!
+int resultLimit = 200; // != lookuplimit reset with every fork !!
 int defaultLookupLimit = 1000;
 int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
 
