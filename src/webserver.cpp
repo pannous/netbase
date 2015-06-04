@@ -285,7 +285,7 @@ int handle(cchar* q0,int conn){
 			int count=0;
 			deque<Statement*> statements;
 
-			while ((s = nextStatement(node, s))&&count++<lookupLimit){
+			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
 				if (!checkStatement(s))break;
 				if (s->subject==node->id and s->predicate!=4)//_instance
 					statements.push_front(s);
