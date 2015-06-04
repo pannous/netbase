@@ -55,7 +55,8 @@ int semrm(key_t key, int id=0) {
 	return semctl(id, 0, IPC_RMID, arg);
 }
 
-
+// silent: in messages:
+//Jun  3 15:53:30 507 abrt[13188]: abrtd is not running. If it crashed, /proc/sys/kernel/core_pattern contains a stale value, consider resetting it to 'core'
 void signal_handler(int signum) {
 	printf("Process %d got signal %d\n", getpid(), signum);
 	signal(signum, SIG_DFL);

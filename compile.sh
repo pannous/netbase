@@ -2,7 +2,7 @@ cd ~/netbase
 #killall -SIGKILL gdb
 #killall -SIGKILL gdb-i386-apple-darwin
 #killall -SIGKILL netbase
-git pull 
+git pull || exit
 ./adjust.sh
 
 platform=`uname`

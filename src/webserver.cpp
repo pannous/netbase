@@ -72,7 +72,10 @@ bool checkHideStatement(Statement* s);
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-	if(len>1000)return 0;// SAFETY!
+	if(len>1000){
+		p("checkSanity len>1000");
+		return 0;// SAFETY!
+	}
     char* q=editable(q0);
 	checkSanity(q,len);
     while(q[0]=='/')q++;
@@ -280,10 +283,20 @@ int handle(cchar* q0,int conn){
             //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
-			while ((s = nextStatement(node, s))&&count++<resultLimit) {
+			deque<Statement*> statements;
+
+			while ((s = nextStatement(node, s))&&count++<lookupLimit){
+				if (!checkStatement(s))break;
+				if (s->subject==node->id)
+					statements.push_back(s);
+				else statements.push_front(s);
+			}
+
+//			while ((s = nextStatement(node, s))&&count++<resultLimit) {
+			for (int i = 0; i < statements.size() && i<=3; i++) {
+				Statement* s=statements.at(i);
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);
-				if (!checkStatement(s))continue;
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
@@ -425,7 +438,7 @@ void loadView(Node* n){
 
 void loadView(char* q){
 	N ex=get("excluded");// globally
-	if(ex &&   verbosity != alle )getIncludes(ex);
+	if(ex && verbosity != alle )getIncludes(ex);
 	ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
 	if(ex && verbosity != alle )getIncludes(ex);
 
