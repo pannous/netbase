@@ -287,13 +287,13 @@ int handle(cchar* q0,int conn){
 
 			while ((s = nextStatement(node, s))&&count++<lookupLimit){
 				if (!checkStatement(s))break;
-				if (s->subject==node->id)
-					statements.push_back(s);
-				else statements.push_front(s);
+				if (s->subject==node->id and s->predicate!=4)//_instance
+					statements.push_front(s);
+				else statements.push_back(s);
 			}
 
 //			while ((s = nextStatement(node, s))&&count++<resultLimit) {
-			for (int i = 0; i < statements.size() && i<=3; i++) {
+			for (int i = 0; i < statements.size() && i<=resultLimit; i++) {
 				Statement* s=statements.at(i);
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);

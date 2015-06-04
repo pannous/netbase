@@ -186,7 +186,7 @@ void initRelationsDE() {
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "Label");
 	BackLabel = addRelation(39, "Label von");
-	addRelation(40, "��hnlich");// hypernym?? no synonym
+	addRelation(40, "aehnlich");// hypernym?? no synonym
 	addRelation(50, "auch");// hypernym??
 	Category = addRelation(43, "Kategorie"); // tag
 	SubContext = addRelation(44, "Subcontext"); // tag
