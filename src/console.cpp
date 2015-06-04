@@ -249,7 +249,7 @@ NodeVector parse(const char* data) {
 	if (contains(data, "limit")) {
 		char* limit=(char*)strstr(data,"limit");
 		sscanf(limit, "limit %d", &resultLimit);
-		pf("SET LIMIT TO %d\n",resultLimit);
+		pf("LIMIT SET TO %d\n",resultLimit);
 		lookupLimit=resultLimit*10;//todo
 		if(limit>data) *(limit-1)=0;
 		*limit=0;
