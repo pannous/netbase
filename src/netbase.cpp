@@ -250,7 +250,11 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
 #endif
 		Statement* to_insert=&context->statements[statementId];
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
-		if (to_insert->Predicate() == Instance || (to_insert->Predicate() == Type&&to_insert->Object()==node) || to_insert->Predicate() == node) { // ALL!
+		bool push_back=to_insert->subject!=node->id;
+		push_back=push_back|| to_insert->Predicate() == Instance;
+		push_back=push_back||(to_insert->Predicate() == Type && to_insert->Object()==node);
+		push_back=push_back|| to_insert->Predicate() == node;
+		if (push_back) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
 			if(eq(add_here,statementId))return false;
 			appendLinkedListOfStatements(add_here, node, statementId); // append new to old
