@@ -183,6 +183,15 @@ char* cut_to(char* str, cchar* match){
     return i+strlen(match);
 }
 
+//#include <sstrings2.h> Linking with -lsstrings2
+//char* strrstr(const char* haystack, const char* needle);
+char* reverse_cut_to(char* str, char match){
+	for (size_t i=strlen(str); i>0; --i) {
+		if(str[i]==match)return str+i+1;//str[i]=0;
+	}
+	return str;
+}
+
 // NOT const !!
 char* keep_to(char* str, cchar* match){
     char* i=(char*)strstr(str,match);

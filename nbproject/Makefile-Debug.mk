@@ -70,7 +70,7 @@ LDLIBSOPTIONS=
 	"${MAKE}"  -f nbproject/Makefile-${CND_CONF}.mk netbase
 
 netbase: ${OBJECTFILES}
-	${LINK.cc} -o netbase ${OBJECTFILES} ${LDLIBSOPTIONS} -lreadline -g
+	${LINK.cc} -o netbase ${OBJECTFILES} ${LDLIBSOPTIONS} -lreadline -lz -g
 
 ${OBJECTDIR}/src/console.o: nbproject/Makefile-${CND_CONF}.mk src/console.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

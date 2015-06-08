@@ -101,14 +101,14 @@ int norm_wordnet_id(int synsetid,bool force=false) {
 //	10000000
 //	112353431
 //	10000000
-	if (!id&&synsetid<10000000) id=wordnet_synset_map[synsetid+10000000];
-	if (!id&&synsetid<20000000) id=wordnet_synset_map[synsetid+100000000];
+	if (!id&&synsetid<=10000000) id=wordnet_synset_map[synsetid+10000000];
+	if (!id&&synsetid<=20000000) id=wordnet_synset_map[synsetid+100000000];
 //	if (!id&&force)id=wordnet_synset_map[synsetid+200000000];
 //	if (!id&&force)id=wordnet_synset_map[synsetid+300000000];
 	if (!id){
         p(synsetid);
 //		if(synsetid==12353431||synsetid==112353431)
-			p("BAD ID!!!");
+//		p("BAD ID!!!");
 	}
 	//	id=id+10000;// NORM!!!
 	return id;
@@ -1193,7 +1193,7 @@ void fixLabel(char* label){
 	//    if(len>7&&label[len - 6]=='@')label[len - 7]=0;		// "@de .\n
 }
 
-bool importLabels(cchar* file, bool hash=false) {
+bool importLabels(cchar* file, bool hash=false,bool lookup=true) {
 	//  (Node**)malloc(1*billion*sizeof(Node*));
 	char line[10000];
 	//    char* line=(char*) malloc(100000) GEHT NICHT PERIOD!!!!!!!!!!!!!!!
@@ -1247,7 +1247,7 @@ bool importLabels(cchar* file, bool hash=false) {
 			//            setLabel(getAbstract(key),label);
 			//            continue;
 		}else if (!startsWith(test, "<#label")&&!startsWith(test, "<label")&&!startsWith(test, "label")) continue;
-
+		// description, altLabel?
 
 		int len=(int) strlen(label);
 		if (len > 50) {
@@ -1263,7 +1263,7 @@ bool importLabels(cchar* file, bool hash=false) {
 			label[100]=0;
 		}
 
-		if(hasWord(key)){
+		if(lookup && hasWord(key)){
 			setLabel(getAbstract(key),label,false,true);
 			continue;
 		}
@@ -1276,6 +1276,8 @@ bool importLabels(cchar* file, bool hash=false) {
 			if(startsWith(oldLabel->name,"<")){labels[key]=getAbstract(label); continue;}
 			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
 			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
+			freebaseKeysConflicts++;
+			continue;// don't overwrite german with english
 			//Stra��enverkehr || Stra\u00DFenverkehr
 //			printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
 //			setLabel(oldLabel, label,false,false);
@@ -1364,12 +1366,13 @@ Node* getFreebaseEntity(char* name) {
 		if(name[strlen(name) - 1]=='"')
 			name[strlen(name) - 1]=0;
 	}
+	for (size_t i=strlen(name); i>0; --i)// cut http://.../ namespaces
+		if(name[i]=='/'||name[i]=='#')
+			name=name+i+1;//str[i]=0;
 	cut_to(name," (");
 	if(name[0]!='0'){// ECHSE
-	Node* n=labels[name];
-	if (n) {
-		return n;
-	}
+		Node* n=labels[name];
+		if (n)return n;
 	}
 	// skip <m. but  LEAVE THE >
 	if (startsWith(name, "m.") || startsWith(name, "g.")) {
@@ -1412,22 +1415,94 @@ bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
 	return false;
 }
 
+
+#include <zlib.h>
+#define CHUNK 0x100
+#define OUT_CHUNK CHUNK*100
+unsigned char gzip_in[CHUNK];
+unsigned char gzip_out[OUT_CHUNK];
+char* first_line=(char*)&gzip_out[0];
+char* current_line=first_line;
+char* next_line=first_line;
+char hangover[1000];
+///* These are parameters to inflateInit2. See http://zlib.net/manual.html for the exact meanings. */
+#define windowBits 15
+#define ENABLE_ZLIB_GZIP 32
+z_stream init_gzip_stream(FILE* file,char* out){// unsigned
+		z_stream strm = {0};
+		strm.zalloc = Z_NULL;
+		strm.zfree = Z_NULL;
+		strm.opaque = Z_NULL;
+		strm.next_in = gzip_in;
+		strm.avail_in = 0;
+		strm.next_out = gzip_out;
+//	strm.next_out = (unsigned char* ) out;
+		inflateInit2 (& strm, windowBits | ENABLE_ZLIB_GZIP);
+	return strm;
+}
+
+bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
+//			if(ferror (file)){inflateEnd (& strm);exit (EXIT_FAILURE); } nonesense
+			strm.avail_in = (int)bytes_read;
+			do {
+				strm.avail_out = OUT_CHUNK;
+				inflate (& strm, Z_NO_FLUSH);
+//				printf ("%s",gzip_out);
+			}while (strm.avail_out == 0);
+			if (feof (file)) {
+				inflateEnd (& strm);
+				return false;
+			}
+	return true;// all OK
+}
+bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
+	if(!gzipped)
+		return fgets(line, sizeof(line), infile) != NULL;
+	else{
+		bool ok=true;
+		current_line=next_line;
+		if(!current_line || strlen(current_line)==0 || next_line-current_line>OUT_CHUNK){
+			current_line=first_line;
+			size_t bytes_read = fread (gzip_in, sizeof (char), CHUNK, infile);
+			ok=inflate_gzip(infile,strm,bytes_read);
+			strcpy(line,hangover);
+		}
+		if(ok){
+			next_line=strstr(current_line,"\n");
+			if(next_line){
+				next_line[0]=0;
+				next_line++;
+				strcpy(line+strlen(hangover),current_line);
+				hangover[0]=0;
+			}else{
+				strcpy(hangover,current_line);
+				line[0]=0;// skip that one!!
+			}
+		}
+		return ok;
+	}
+}
+
 bool importN3(cchar* file) {
 	//    if(hasWord("vote_value"))return true;
 	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
 	Node* subject;
 	Node* predicate;
 	Node* object;
-	char line[10000];
-	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD!!!!!!!!!!!!!!!
 	int ignored=0;
 	badCount=0;
 	char* objectName=(char*) malloc(10000);
 	char* predicateName=(char*) malloc(10000);
 	char* subjectName=(char*) malloc(10000);
-	FILE *infile=open_file(file);
 	int linecount=0;
-	while (fgets(line, sizeof(line), infile) != NULL) {
+	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD!!!!!!!!!!!!!!!
+	char line[0x10000];
+	FILE *infile=open_file(file);
+	bool gzipped=endsWith(file, ".gz");
+	z_stream strm;
+	if(gzipped)strm=init_gzip_stream(infile,&line[0]);
+	while (readFile(infile,line,strm,gzipped)) {
+		if(line[0]==0)continue;// skip gzip new_block
 		//        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
@@ -1960,7 +2035,22 @@ void importAllYago() {
 	addStatement(getAbstract("xsd:integer"), SuperClass, Number);
 }
 
-void importWikipedia() {
+void importWikiData() {
+	useHash=false;
+//	useHash=true;
+	importing=true;
+//	doDissectAbstracts=false; // if MAC
+	//		importLabels("dbpedia_de/labels.csv");
+	if(germanLabels)
+		importLabels("wikidata/wikidata-terms.de.nt");
+//	else
+		importLabels("wikidata/wikidata-terms.en.nt");// fill up missing!
+	importN3("wikidata/wikidata-instances.nt.gz");
+	importN3("wikidata/wikidata-properties.nt.gz");
+	importN3("wikidata/wikidata-simple-statements.nt.gz");
+//	importN3("wikidata/wikidata-sitelinks.nt");
+	importN3("wikidata/wikidata-statements.nt.gz");
+	importN3("wikidata/wikidata-taxonomy.nt.gz");
 }
 
 
@@ -1998,9 +2088,11 @@ void import(const char* type, const char* filename) {
 	} else if (startsWith(type, "images ")) {
 		importImageTripels(substr(type,7,-1));
 	} else if (eq(type, "wiki")) {
-		importWikipedia();
-	} else if (eq(type, "topic")) {
-		importWikipedia();
+			importWikiData();
+//	} else if (eq(type, "wiki")) {
+//		importWikipedia();
+//	} else if (eq(type, "topic")) {
+//		importWikipedia();
 	} else if (eq(type, "entities")) {
 		importEntities();
 	} else if (eq(type, "yago")) {
@@ -2047,7 +2139,8 @@ void importAllDE() {
 	importCsv("adressen.txt");
 	importNames();
 	doDissectAbstracts=true;// already? why not
-	importDBPediaDE();
+//	importDBPediaDE();
+	importWikiData();
 	importGeoDB();
 	//    importEntities();
 	importImagesDE();
@@ -2066,10 +2159,11 @@ void importAll() {
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	doDissectAbstracts=true;// already? why not
-	if(germanLabels)
-		importDBPediaDE();
-	else
-		importDBPediaEN();
+	importWikiData();
+//	if(germanLabels)
+//		importDBPediaDE();
+//	else
+//		importDBPediaEN();
 	//	importImages();
 	importGeoDB();
 	showContext(wordnet);
