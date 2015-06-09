@@ -159,12 +159,11 @@ Ahash *getAhash(int position){
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash*, bool> badAhashReported;// debug
 Ahash * insertAbstractHash(int position, Node * a) {
+	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
     if(a==0)
         return 0;
 	Ahash* ah=getAhash(position);
 	if (!checkHash(ah) || !checkNode(a) || a->name[0] == 0) return 0;
-	//    if(pos==hash("city"))
-	//		p(a->name);
 	int i=0;
 	while (ah&&ah->next) {
 		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
@@ -177,7 +176,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
             //			return 0;
 			return ah;
 		}
-        //		if (ah->next == ah) {
+        //		if (ah->next == ah) { // fixed
         //			debugAhash(position);
         //			p("insertAbstractHash LOOP");
         //			show(a);
@@ -190,7 +189,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		ah=getAhash(ah->next);
 	}
 
-	if (ah->abstract) { //schon was drin
+	if (ah->abstract && get(ah->abstract)) { //schon was drin
 		if (get(ah->abstract) == a)
 			return ah;
         if(eq(get(ah->abstract)->name, a->name, true)){
@@ -897,7 +896,6 @@ Node * get(int nodeId) {
 	    printf("nodeId Error: maxNodes > %d < 0\n", nodeId);
 	    return Error;
 	}
-	if (nodeId==4983416)return 0;
 	return &currentContext()->nodes[nodeId];
 }
 
@@ -1315,6 +1313,7 @@ Node* rdfValue(char* name) {
 	if (name[0] == '"') name++; // ignore quotes "33"
 	char* unit=strstr(name, "^");
 	if (!unit || unit > name + 1000 || unit < name) return 0;
+	if(unit[-1]=='"')unit[-1]=0;
 	while (unit[0] == '^'){unit[0]=0; unit++;}
 	if(name[0]==0)return 0;
 	if (unit[0] == '<') unit++;

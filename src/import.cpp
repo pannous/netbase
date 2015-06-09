@@ -45,6 +45,19 @@ FILE *open_file(const char* file) {
 	return infile;
 }
 
+void setText(Node *node, char* text) {
+	int len=(int) strlen(text);
+	Context* context=currentContext();
+	long slot=context->currentNameSlot;
+	char* label=context->nodeNames + slot;
+	strcpy(label, text); // can be freed now!
+	node->value.text=label;
+	context->nodeNames[slot + len]=0;
+	context->currentNameSlot=slot + len + 1;
+	//		addStatement(n,Label,getAbstract(definition));
+}
+
+
 void normImageTitle(char* title) {// blue_fin => bluefin // what?
 	int len=(int) strlen(title);
 	for (int i=len; i >= 0; --i) {
@@ -829,6 +842,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
+			exit(0);
 			break;
 		}
 	}
@@ -1085,6 +1099,7 @@ bool importYago(const char* file) {
 
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
+			exit(0);
 			break;
 		}
 		//		showStatement(s);
@@ -1167,18 +1182,8 @@ void testPrecious() {
 	check(freebaseKeys[testE] == testA->id);
 	//	if (linecount > 40000000)
 	//	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
-
-	//        if(contains(line,"molaresvolumen")){
-	//            p(key);
-	//            Node* n=labels[key];
-	//            p(n);
-	//            p(label);
-	//            Node* m=getAbstract("Molares Volumen");
 	//            check(!hasWord("molaresvolumen"));
 	//            check(hasWord("Molares Volumen"));
-	//            p(m);
-	//            check(labels[key]==getAbstract("Molares Volumen"));
-	//        }
 }
 
 
@@ -1188,18 +1193,10 @@ void fixLabel(char* label){
 	if(wo)wo[-1]=0;
 	wo=strstr(label+1,">");
 	if(wo)wo[-1]=0;
-	//            givenName
-
-	//    if(len>4&&label[len - 3]=='@')label[len - 4]=0;		// "@de .\n
-	//    if(len>5&&label[len - 4]=='@')label[len - 5]=0;		// "@de .\n
-	//    if(len>6&&label[len - 5]=='@')label[len - 6]=0;		// "@de .\n
-	//    if(len>7&&label[len - 6]=='@')label[len - 7]=0;		// "@de .\n
 }
 
-bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=true) {
-	//  (Node**)malloc(1*billion*sizeof(Node*));
-	char line[10000];
-	//    char* line=(char*) malloc(100000) GEHT NICHT PERIOD!!!!!!!!!!!!!!!
+bool importLabels(cchar* file, bool useHash=false,bool lookup=false,bool altLabel=false) {
+	char line[10000];// malloc(100000) GEHT NICHT PERIOD!
 	char* label0=(char*) malloc(10000);
 	char* label;
 	char* key0=(char*) malloc(10000);
@@ -1210,13 +1207,10 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=tr
 	int linecount=0;
 	int rowCount=3;
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		//		if (linecount > 10000000) break;
 #ifdef __APPLE__
-		//        		if (linecount > 100000) break;
+		        		if (linecount > 10000000) break;
 #endif
-		//		if (linecount % 100 == 0 && linecount>20000)
-		//			p(linecount);
-		if (linecount++ % 10000 == 0) {
+		if (++linecount % 10000 == 0) {
 			printf("%d labels, %d duplicates     \r", linecount, freebaseKeysConflicts);
 			fflush(stdout);
 			if (checkLowMemory()) break;
@@ -1236,8 +1230,8 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=tr
 		if (startsWith(key, "<")){ key++;key[strlen(key)-1]=0;}
 		fixNewline(label);
 		fixLabel(label);
-		if (!hash&&contains(label, "\\u")) continue;// no strange umlauts 'here'
-		if (hash){
+//		if (!useHash&&contains(label, "\\u")) continue;// no strange umlauts 'here'
+		if (useHash){
 			if(!startsWith(key, "m.") && !startsWith(key, "g.")) continue;
 			else key=key+2;
 		}
@@ -1245,13 +1239,17 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=tr
 		if (startsWith(label, "/")) continue; // "/wikipedia/de_title"@en etc
 		if (endsWith(label, "_id")) continue; // "/wikipedia/de_title"@en etc
 		if (endsWith(label, "_title")) continue; // "/wikipedia/de_title"@en etc
+		if(eq(key,"Q9486626")||eq(key,"P106"))
+			p(line);
+
+
 		if(eq(label,key))continue;
 		if(test==label){
 			//            setLabel(getAbstract(key),label);
 			//            continue;
 		}else{
-			if (!startsWith(test, "<#label")&&!startsWith(test, "<label")&&!startsWith(test, "label")) continue;
-//			&&!startsWith(test, "altLabel")&&!startsWith(test, "description") elsewhere!
+			bool isLabel=startsWith(test, "<#label")||startsWith(test, "<label")||startsWith(test, "label");
+			if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
 		}
 
 		int len=(int) strlen(label);
@@ -1267,9 +1265,6 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=tr
 			}
 			label[100]=0;
 		}
-
-		if(eq(key,"Vergil"))
-			p("Vergil!!");
 		if(lookup && hasWord(key)){
 			freebaseKeysConflicts++;
 			N old=getAbstract(key);
@@ -1278,22 +1273,33 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=tr
 		}
 
 		long h=freebaseHash(key);		// skip m.
-		//        bool old=false;
 		Node* oldLabel=labels[key];
+
+		if(eq(test,"description")){
+			if(checkNode(oldLabel)){
+				setText(oldLabel, label);
+				continue;
+			}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
+//			oldLabel->value.text=label;// copy!
+//			addStatement(oldLabel,Desc,getAbstract(label));
+
+		}
+
 		if(oldLabel){
+			if(!altLabel)continue;
 			if(eq(oldLabel->name,label))continue;// OK
 			if(startsWith(oldLabel->name,"<")){labels[key]=getAbstract(label); continue;}
 			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
 			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			freebaseKeysConflicts++;
-			printf("labels[key] duplicate! %s => %s || %s\n", key , label, oldLabel->name);
+			printf("labels[key] duplicate! %s => %s || %s\n", key , oldLabel->name, label);
 			addStatement(oldLabel,Label,getAbstract(label));
 			continue;// don't overwrite german with english
 			//Stra��enverkehr || Stra\u00DFenverkehr
 //			setLabel(oldLabel, label,false,false);
 		}
 
-		if (freebaseKeys[h] != 0 ) {
+		if (useHash && freebaseKeys[h] != 0 ) {
 			//            printf("freebaseKeys[key] already reUSED!! %s => %s || %s\n", key , label, freebaseKeys[key]->name);
 			//       freebaseKeysConflicts:2305228 not worth It
 			//				if(!eq(get(freebaseKeys[h])->name, label,false))
@@ -1311,12 +1317,12 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=tr
 		else n=getAbstract(label);
 		//		n->value.text=...
 		if (n) {
-			if (hash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
+			if (useHash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
 			//                freebaseKeys.insert(pair<long,int>(h,n->id));
 			else{
-				if(eq(key,"Vergil"))
-					p("Vergil!!");
 				labels[key]=n;
+				if(key[0]=='P')
+					labels[concat(key,"c")]=n;// wikidata "P106c" compound property? hack
 				if(contains((const char*)key,"_",false))
 					labels[replaceChar(key,'_',' ')]=n;
 			}
@@ -1384,8 +1390,11 @@ Node* getFreebaseEntity(char* name) {
 	if(name[0]!='0'){// ECHSE
 		Node* n=labels[name];
 		if (n)return n;
-		else if(name[0]=='Q')// AND WIKIDATA!!!
-			return 0;// ignore unlabled !
+		else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
+//			badCount++ later;//
+//			appendFile("missing.list",name);
+			return 0;// ignore unlabled!  i.e. https://www.wikidata.org/wiki/Q13983582
+		}
 	}
 	// skip <m. but  LEAVE THE >
 	if (startsWith(name, "m.") || startsWith(name, "g.")) {
@@ -1525,13 +1534,12 @@ bool importN3(cchar* file) {
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
+				exit(0);
 				break;
 			}
 		}
 //		if(linecount==4067932)continue;// MAC WTF
 		if(line[0]=='#')continue;
-		if(startsWith(line,"<Q1398>"))
-			p("VERGILL");
 		//        subjectName=line;
 		//        int i=0;
 		//        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
@@ -1541,6 +1549,8 @@ bool importN3(cchar* file) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		fixNewline(objectName);
+		if(startsWith(line,"<Q1398>"))
+			p("VERGIL!");
 //		if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
 //		if(filterFreebase(predicateName)){ignored++; continue;}
 //		if(filterFreebase(objectName)){ignored++;continue;}
@@ -1634,6 +1644,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 		else s=addStatement(subject, predicate, object, false); // todo: id
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
+			exit(0);
 			break;
 		}
 //		showStatement(s);
@@ -1822,17 +1833,6 @@ void importSenses() {
 	fclose(infile); /* Close the file */
 }
 
-void setText(Node *node, char* text) {
-	int len=(int) strlen(text);
-	Context* context=currentContext();
-	long slot=context->currentNameSlot;
-	char* label=context->nodeNames + slot;
-	strcpy(label, text); // can be freed now!
-	node->value.text=label;
-	context->nodeNames[slot + len]=0;
-	context->currentNameSlot=slot + len + 1;
-	//		addStatement(n,Label,getAbstract(definition));
-}
 
 void importSynsets() {
 	if(germanLabels)return;
@@ -2077,11 +2077,11 @@ void importWikiData() {
 	if(germanLabels){
 		importLabels("wikidata/wikidata-terms.de.nt");
 		importLabels("wikidata/wikidata-properties.de.nt");
-		importN3("wikidata/wikidata-terms.de.nt");// description + altLabels
+//		importN3("wikidata/wikidata-terms.de.nt");// description + altLabels
 	}
 //	else{
-		importLabels("wikidata/wikidata-terms.en.nt");// fill up missing!
-		importLabels("wikidata/wikidata-properties.en.nt");
+		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
+//		importLabels("wikidata/wikidata-properties.en.nt");
 //	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-instances.nt.gz");
@@ -2125,7 +2125,7 @@ void import(const char* type, const char* filename) {
 		importImages();
 	} else if (startsWith(type, "images ")) {
 		importImageTripels(substr(type,7,-1));
-	} else if (eq(type, "wiki")) {
+	} else if (eq(type, "wiki") || eq(type, "wikidata")) {
 			importWikiData();
 //	} else if (eq(type, "wiki")) {
 //		importWikipedia();
