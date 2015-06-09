@@ -548,7 +548,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {/
 		if(report){
         printf("node* >= maxNodes!!! %p > %p\n", node, maxNodePointer);
         p("OUT OF MEMORY or graph corruption");
-		exit(0);
+//		exit(0);
 		}
 		return false;
 	}
@@ -897,6 +897,7 @@ Node * get(int nodeId) {
 	    printf("nodeId Error: maxNodes > %d < 0\n", nodeId);
 	    return Error;
 	}
+	if (nodeId==4983416)return 0;
 	return &currentContext()->nodes[nodeId];
 }
 
@@ -1297,8 +1298,9 @@ Node* getType(Node* n){
 
 
 Node* dateValue(const char* val) {
-	Node* n=getThe(val);
+	Node* n=getAbstract(val);// getThe(val);
 	n->kind=Date->id;
+//	n->value == 	char *	"1732-02-22\""
 	return n;
 	//	return value(val, atoi(val), Date);
 }
@@ -1314,6 +1316,7 @@ Node* rdfValue(char* name) {
 	char* unit=strstr(name, "^");
 	if (!unit || unit > name + 1000 || unit < name) return 0;
 	while (unit[0] == '^'){unit[0]=0; unit++;}
+	if(name[0]==0)return 0;
 	if (unit[0] == '<') unit++;
 	if (unit[0] == '#') unit++;
 	if (unit[0] == '"') unit++;
@@ -2500,12 +2503,12 @@ void setName(int node, cchar* label){
     return setLabel(get(node),label,false,false);
 }
 void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
-    if(n!=get(n->id))n=save(n);
+//    if(addInstance && n!=get(n->id))n=save(n);// HOW!?! WHAT?
 //	if(label[0]=='<')
 //		badCount++; "<span dbpedia parser fuckup etc
     int len=(int)strlen(label);
     Context* c=currentContext();
-	char* newLabel=name_root+ c->currentNameSlot;
+	char* newLabel = name_root + c->currentNameSlot;
     if(n->name==0){
         n->name=newLabel;// c->currentNameSlot;
         if(!addInstance)n->kind=abstractId;
@@ -2560,6 +2563,7 @@ bool checkParams(int argc, char *argv[], const char* p) {
 string formatImage(Node* image,int size,bool thumb){
 	if (!image || !checkNode(image)) return "";
     char* name=replaceChar(image->name,' ','_');
+	if(startsWith(name, "File:")) name+=5;
 	string hash=md5(name);
 	string base="http://upload.wikimedia.org/wikipedia/commons/";
     if(!thumb)	return base + hash[0] + "/" + hash[0] + hash[1] + "/" +  name;

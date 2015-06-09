@@ -532,13 +532,16 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 
 void fixNewline(char* line) {
 	int len=(int) strlen(line)-1;
-	while(len>=0){
-		if (line[len] == '\n') line[len--]=0;
-		else if (line[len] == '\r') line[len--]=0;
-		else if (line[len] == '\t') line[len--]=0;
-		else if (line[len] == '"') line[len--]=0;
-		else if (line[len] == ' ') line[len--]=0;
-		else break;
+	if(len>=1000)
+		line[999]=0;
+	else
+		while(len>=0){
+			if (line[len] == '\n') line[len--]=0;
+			else if (line[len] == '\r') line[len--]=0;
+			else if (line[len] == '\t') line[len--]=0;
+			else if (line[len] == '"') line[len--]=0;
+			else if (line[len] == ' ') line[len--]=0;
+			else break;
 	}
 }
 
@@ -1193,7 +1196,7 @@ void fixLabel(char* label){
 	//    if(len>7&&label[len - 6]=='@')label[len - 7]=0;		// "@de .\n
 }
 
-bool importLabels(cchar* file, bool hash=false,bool lookup=true) {
+bool importLabels(cchar* file, bool hash=false,bool lookup=true,bool altLabel=true) {
 	//  (Node**)malloc(1*billion*sizeof(Node*));
 	char line[10000];
 	//    char* line=(char*) malloc(100000) GEHT NICHT PERIOD!!!!!!!!!!!!!!!
@@ -1246,8 +1249,10 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true) {
 		if(test==label){
 			//            setLabel(getAbstract(key),label);
 			//            continue;
-		}else if (!startsWith(test, "<#label")&&!startsWith(test, "<label")&&!startsWith(test, "label")) continue;
-		// description, altLabel?
+		}else{
+			if (!startsWith(test, "<#label")&&!startsWith(test, "<label")&&!startsWith(test, "label")) continue;
+//			&&!startsWith(test, "altLabel")&&!startsWith(test, "description") elsewhere!
+		}
 
 		int len=(int) strlen(label);
 		if (len > 50) {
@@ -1263,8 +1268,12 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true) {
 			label[100]=0;
 		}
 
+		if(eq(key,"Vergil"))
+			p("Vergil!!");
 		if(lookup && hasWord(key)){
-			setLabel(getAbstract(key),label,false,true);
+			freebaseKeysConflicts++;
+			N old=getAbstract(key);
+			setLabel(old,label,false,true);
 			continue;
 		}
 
@@ -1277,11 +1286,11 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true) {
 			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
 			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			freebaseKeysConflicts++;
+			printf("labels[key] duplicate! %s => %s || %s\n", key , label, oldLabel->name);
+			addStatement(oldLabel,Label,getAbstract(label));
 			continue;// don't overwrite german with english
 			//Stra��enverkehr || Stra\u00DFenverkehr
-//			printf("labels[key] already reUSED!! %s => %s || %s\n", key , label, oldLabel->name);
 //			setLabel(oldLabel, label,false,false);
-//			addStatement(oldLabel,Label,getAbstract(label));
 		}
 
 		if (freebaseKeys[h] != 0 ) {
@@ -1305,6 +1314,8 @@ bool importLabels(cchar* file, bool hash=false,bool lookup=true) {
 			if (hash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
 			//                freebaseKeys.insert(pair<long,int>(h,n->id));
 			else{
+				if(eq(key,"Vergil"))
+					p("Vergil!!");
 				labels[key]=n;
 				if(contains((const char*)key,"_",false))
 					labels[replaceChar(key,'_',' ')]=n;
@@ -1373,6 +1384,8 @@ Node* getFreebaseEntity(char* name) {
 	if(name[0]!='0'){// ECHSE
 		Node* n=labels[name];
 		if (n)return n;
+		else if(name[0]=='Q')// AND WIKIDATA!!!
+			return 0;// ignore unlabled !
 	}
 	// skip <m. but  LEAVE THE >
 	if (startsWith(name, "m.") || startsWith(name, "g.")) {
@@ -1424,7 +1437,7 @@ unsigned char gzip_out[OUT_CHUNK];
 char* first_line=(char*)&gzip_out[0];
 char* current_line=first_line;
 char* next_line=first_line;
-char hangover[1000];
+char hangover[10000];
 ///* These are parameters to inflateInit2. See http://zlib.net/manual.html for the exact meanings. */
 #define windowBits 15
 #define ENABLE_ZLIB_GZIP 32
@@ -1455,9 +1468,10 @@ bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
 			}
 	return true;// all OK
 }
+#define MAX_CHARS_PER_LINE 0x10000
 bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 	if(!gzipped)
-		return fgets(line, sizeof(line), infile) != NULL;
+		return fgets(line, MAX_CHARS_PER_LINE, infile) != NULL;
 	else{
 		bool ok=true;
 		current_line=next_line;
@@ -1496,7 +1510,7 @@ bool importN3(cchar* file) {
 	char* subjectName=(char*) malloc(10000);
 	int linecount=0;
 	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD!!!!!!!!!!!!!!!
-	char line[0x10000];
+	char line[MAX_CHARS_PER_LINE];
 	FILE *infile=open_file(file);
 	bool gzipped=endsWith(file, ".gz");
 	z_stream strm;
@@ -1506,16 +1520,18 @@ bool importN3(cchar* file) {
 		//        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
-			printf("\r%d triples   %d ignored + %d badCount - %d = MISSING: %d    ", linecount, ignored, badCount, MISSING,
-				   ignored + badCount - MISSING);
+			printf("\r%d triples   %d ignored + %d badCount - %d = MISSING: %d  GOOD: %d   ", linecount, ignored, badCount, MISSING,
+				   ignored + badCount - MISSING,linecount-ignored - MISSING);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
 				break;
 			}
 		}
-		if(linecount==4067932)continue;// MAC WTF
+//		if(linecount==4067932)continue;// MAC WTF
 		if(line[0]=='#')continue;
+		if(startsWith(line,"<Q1398>"))
+			p("VERGILL");
 		//        subjectName=line;
 		//        int i=0;
 		//        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
@@ -2035,18 +2051,40 @@ void importAllYago() {
 	addStatement(getAbstract("xsd:integer"), SuperClass, Number);
 }
 
+
+/*root@h1642655:~/netbase# l facts/
+ actedIn           during              hasChild           hasISBN                hasRevenue       interestedIn    isSubstanceOf    subClassOf
+ bornIn            establishedOnDate   hasCurrency        hasLabor               hasSuccessor     inTimeZone      livesIn          subPropertyOf
+ bornOnDate        exports             hasDuration        hasMotto               hasTLD           inUnit          locatedIn        type
+ created           familyNameOf        hasEconomicGrowth  hasNominalGDP          hasUnemployment  isAffiliatedTo  madeCoverFor     until
+ createdOnDate     foundIn             hasExpenses        hasNumberOfPeople      hasUTCOffset     isCalled        means            using
+ dealsWith         givenNameOf         hasExport          hasOfficialLanguage    hasValue         isCitizenOf     musicalRole      worksAt
+ describes         graduatedFrom       hasGDPPPP          hasPages               hasWaterPart     isLeaderOf      originatesFrom   writtenInYear
+ diedIn            happenedIn          hasGini            hasPopulation          hasWebsite       isMarriedTo     participatedIn   wrote
+ diedOnDate        hasAcademicAdvisor  hasHDI             hasPopulationDensity   hasWeight        isMemberOf      politicianOf
+ directed          hasArea             hasHeight          hasPoverty             hasWonPrize      isNativeNameOf  produced
+ discovered        hasBudget           hasImdb            hasPredecessor         imports          isNumber        publishedOnDate
+ discoveredOnDate  hasCallingCode      hasImport          hasProduct             influences       isOfGenre       range
+ domain            hasCapital          hasInflation       hasProductionLanguage  inLanguage       isPartOf        since
+ */
+
 void importWikiData() {
 	useHash=false;
 //	useHash=true;
 	importing=true;
 //	doDissectAbstracts=false; // if MAC
 	//		importLabels("dbpedia_de/labels.csv");
-	if(germanLabels)
+	if(germanLabels){
 		importLabels("wikidata/wikidata-terms.de.nt");
-//	else
+		importLabels("wikidata/wikidata-properties.de.nt");
+		importN3("wikidata/wikidata-terms.de.nt");// description + altLabels
+	}
+//	else{
 		importLabels("wikidata/wikidata-terms.en.nt");// fill up missing!
+		importLabels("wikidata/wikidata-properties.en.nt");
+//	}
+//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-instances.nt.gz");
-	importN3("wikidata/wikidata-properties.nt.gz");
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
 //	importN3("wikidata/wikidata-sitelinks.nt");
 	importN3("wikidata/wikidata-statements.nt.gz");
@@ -2176,18 +2214,3 @@ void importAll() {
 	//    importEntities();
 }
 
-/*root@h1642655:~/netbase# l facts/
- actedIn           during              hasChild           hasISBN                hasRevenue       interestedIn    isSubstanceOf    subClassOf
- bornIn            establishedOnDate   hasCurrency        hasLabor               hasSuccessor     inTimeZone      livesIn          subPropertyOf
- bornOnDate        exports             hasDuration        hasMotto               hasTLD           inUnit          locatedIn        type
- created           familyNameOf        hasEconomicGrowth  hasNominalGDP          hasUnemployment  isAffiliatedTo  madeCoverFor     until
- createdOnDate     foundIn             hasExpenses        hasNumberOfPeople      hasUTCOffset     isCalled        means            using
- dealsWith         givenNameOf         hasExport          hasOfficialLanguage    hasValue         isCitizenOf     musicalRole      worksAt
- describes         graduatedFrom       hasGDPPPP          hasPages               hasWaterPart     isLeaderOf      originatesFrom   writtenInYear
- diedIn            happenedIn          hasGini            hasPopulation          hasWebsite       isMarriedTo     participatedIn   wrote
- diedOnDate        hasAcademicAdvisor  hasHDI             hasPopulationDensity   hasWeight        isMemberOf      politicianOf
- directed          hasArea             hasHeight          hasPoverty             hasWonPrize      isNativeNameOf  produced
- discovered        hasBudget           hasImdb            hasPredecessor         imports          isNumber        publishedOnDate
- discoveredOnDate  hasCallingCode      hasImport          hasProduct             influences       isOfGenre       range
- domain            hasCapital          hasInflation       hasProductionLanguage  inLanguage       isPartOf        since
- */

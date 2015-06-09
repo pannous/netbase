@@ -74,6 +74,7 @@ var onerror_handled=0;
 function addImage(image,div){
 	if(imageAdded)return;
 	image=image.replace(/ /,"_")
+	var url="https://commons.wikimedia.org/wiki/"
 	// image=image.replace(/.150px.*/,"");
 	// image=image.replace("/thumb/","/")
 	var link=document.createElement("a");

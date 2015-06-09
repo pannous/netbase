@@ -176,6 +176,7 @@ cchar* cut_to(cchar* str, cchar* match){
     if(!i)return str;
     return i+strlen(match);
 }
+
 char* cut_to(char* str, cchar* match){
     char* i=strstr(str,match);
     if(!i)return str;
@@ -221,7 +222,7 @@ bool endsWith(const char* x, const char* y) {
 	return true;
 }
 bool startsWith(const char* x, const char* y) {
-    short len=strlen(y);
+	short len=strlen(y);
 	if (strlen(x) < len) return false;
 	for (int i=0; i < len; i++) {
 		if (x[i] != y[i]) return false;

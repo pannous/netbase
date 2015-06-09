@@ -1526,6 +1526,11 @@ void testBrandNewStuff() {
 //	handle("jahr.minuten=525601");
 //	assertResult("jahr.minuten","525601^^int");
 //	handle("dog limit 10");
+
+//	N n=get(16902);
+//	string im= getImage(n);
+//	p(im);
+//	check(im=="dfs");
 	importWikiData();
 //	importAll();
 //	handle(":rh");
