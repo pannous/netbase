@@ -36,6 +36,7 @@ extern Node* Labeled;
 //extern Node* Labels;
 //extern Node* LabeledNode;
 extern Node* Comment;
+extern Node* Description;
 
 extern Node* Category;
 extern Node* SubContext;

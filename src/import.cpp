@@ -1278,10 +1278,10 @@ bool importLabels(cchar* file, bool useHash=false,bool lookup=false,bool altLabe
 		if(eq(test,"description")){
 			if(checkNode(oldLabel)){
 				setText(oldLabel, label);
+//				addStatement(oldLabel,Description,getAbstract(label));
 				continue;
 			}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
 //			oldLabel->value.text=label;// copy!
-//			addStatement(oldLabel,Desc,getAbstract(label));
 
 		}
 
@@ -1568,6 +1568,11 @@ bool importN3(cchar* file) {
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
 		//    if(contains(line,"<Apple"))
 		//        p(line);
+		if(predicateName[0]=='.'){
+			badCount++;
+			p(line);
+			continue;
+		}
 		predicate=getFreebaseEntity(predicateName);
 		subject=getFreebaseEntity(subjectName); //
 		object=getFreebaseEntity(objectName);

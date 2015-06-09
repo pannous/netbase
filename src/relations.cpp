@@ -41,7 +41,7 @@ Node* Labeled; // labeledAE / labelledBE  adj.
 //Node* Labels;
 //Node* LabeledNode;
 Node* Comment;// or as text value
-//Node* Description;// or as text value
+Node* Description;// or as text value
 Node* Category;
 Node* SubContext;
 Node* SuperContext;
@@ -193,6 +193,7 @@ void initRelationsDE() {
 	SubContext = addRelation(44, "Subcontext"); // tag
 	SuperContext = addRelation(45, "Supercontext"); //
 	Comment = addRelation(46, "Kommentar");
+	Description = addRelation(49, "Beschreibung");
 
 	Internal = addRelation(_internal, "intern"); //ok
 	_Node = addRelation(_node, "Knoten");
@@ -322,6 +323,8 @@ void initRelations() {
 	Labeled = addRelation(39, "label of");
 	addRelation(40, "similar");// hypernym?? no synonym
 	addRelation(50, "also");// hypernym??
+	Description = addRelation(49, "description");
+
 	//	Labels = addRelation(40, "Label");//??
 	//	LabeledNode = addRelation(41, "LabeledNode");// ?? ugly!!
 	Category = addRelation(43, "category"); // tag
