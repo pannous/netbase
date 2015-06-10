@@ -127,7 +127,7 @@ typedef struct Node {
     // class country{ population{property:0} capital{property:1} }
 	// germany.index[0]=80Mio .index[1]=Berlin
 
-	virtual int key() const { return statementCount; }
+//	virtual int key() const { return statementCount; }
 }Node ;
 
 // norway captial oslo
