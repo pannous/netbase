@@ -1518,8 +1518,8 @@ void testBrandNewStuff() {
 //	germanLabels=false;
 	germanLabels=true;
 	NodeVector all= parse("darmstadt");
-	std::sort(all.begin(), all.end());// sorts by address/id !?
-	showNodes(all,false,false,false);
+//	std::sort(all.begin(), all.end());// sorts by address/id !?
+//	showNodes(all,false,false,false);
 
 	sortNodes(all);
 	showNodes(all,false,false,false);
