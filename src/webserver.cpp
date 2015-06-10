@@ -284,7 +284,7 @@ int handle(cchar* q0,int conn){
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 
 //			sortStatements(
-//			int count=0;
+
 //			deque<Statement*> statements;
 //			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
 //				if (!checkStatement(s))break;
@@ -292,10 +292,10 @@ int handle(cchar* q0,int conn){
 //					statements.push_front(s);
 //				else statements.push_back(s);
 //			}
-
+			int count=0;
 			while ((s = nextStatement(node, s))&&count++<resultLimit) {
 //			for (int i = 0; i < statements.size() && i<=resultLimit; i++) {
-				Statement* s=statements.at(i);
+//				Statement* s=statements.at(i);
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
