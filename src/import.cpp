@@ -1502,6 +1502,7 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 				next_line[0]=0;
 				next_line++;
 				strcpy(line+strlen(hangover),current_line);
+//				if(LEN) { *dst = '\0'; strncat(dst, src, LEN-1); }
 				hangover[0]=0;
 			}else{
 				memset(hangover,0,MAX_CHARS_PER_LINE);
@@ -2195,10 +2196,11 @@ void importAllDE() {
 	//	exit(0);
 	importCsv("adressen.txt");
 	importNames();
-	doDissectAbstracts=true;// already? why not
+//	doDissectAbstracts=true;// already? why not
+	doDissectAbstracts=false;//MESSES TOO MUCH!
+	importGeoDB();
 //	importDBPediaDE();
 	importWikiData();
-	importGeoDB();
 	//    importEntities();
 	importImagesDE();
 	importLabels("labels.csv");// todo: why again?
@@ -2216,15 +2218,16 @@ void importAll() {
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	doDissectAbstracts=true;// already? why not
+	importGeoDB();
 	importWikiData();
 //	if(germanLabels)
 //		importDBPediaDE();
 //	else
 //		importDBPediaEN();
 	//	importImages();
-	importGeoDB();
+
 	showContext(wordnet);
-	importFreebase();
+//	importFreebase();
 	showContext(wordnet);
 	//   	importAllYago();// BETTER THAN DBPEDIA!?
 	importImages();
