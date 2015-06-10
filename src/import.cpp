@@ -1217,7 +1217,10 @@ bool importLabels(cchar* file, bool useHash=false,bool lookup=false,bool altLabe
 			rowCount =countRows(line);
 		}
 		if(line[0]=='#')continue;
-		label0[0]=0;// remove old!!
+		memset(label0, 0, 10000);
+		memset(key0, 0, 10000);
+		memset(test, 0, 10000);
+//		label0[0]=0;// remove old!!
 		if(rowCount==2){
 			sscanf(line, "%s\t%[^\n]s", key0,label0);
 			test=label0;
@@ -1439,14 +1442,15 @@ bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
 
 
 #include <zlib.h>
-#define CHUNK 0x100
+#define CHUNK 0x1000
 #define OUT_CHUNK CHUNK*100
+#define MAX_CHARS_PER_LINE 0x1000
 unsigned char gzip_in[CHUNK];
 unsigned char gzip_out[OUT_CHUNK];
 char* first_line=(char*)&gzip_out[0];
 char* current_line=first_line;
 char* next_line=first_line;
-char hangover[10000];
+char hangover[MAX_CHARS_PER_LINE];
 ///* These are parameters to inflateInit2. See http://zlib.net/manual.html for the exact meanings. */
 #define windowBits 15
 #define ENABLE_ZLIB_GZIP 32
@@ -1477,30 +1481,36 @@ bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
 			}
 	return true;// all OK
 }
-#define MAX_CHARS_PER_LINE 0x10000
 bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 	if(!gzipped)
 		return fgets(line, MAX_CHARS_PER_LINE, infile) != NULL;
 	else{
 		bool ok=true;
 		current_line=next_line;
-		if(!current_line || strlen(current_line)==0 || next_line-current_line>OUT_CHUNK){
+		if(!current_line || strlen(current_line)==0 || next_line-first_line>OUT_CHUNK){
 			current_line=first_line;
+			memset(gzip_in, 0, CHUNK);
+			memset(gzip_out, 0, OUT_CHUNK);
+			memset(line, 0, MAX_CHARS_PER_LINE);
 			size_t bytes_read = fread (gzip_in, sizeof (char), CHUNK, infile);
 			ok=inflate_gzip(infile,strm,bytes_read);
 			strcpy(line,hangover);
 		}
 		if(ok){
 			next_line=strstr(current_line,"\n");
-			if(next_line){
+			if(next_line && next_line<first_line+OUT_CHUNK){
 				next_line[0]=0;
 				next_line++;
 				strcpy(line+strlen(hangover),current_line);
 				hangover[0]=0;
 			}else{
+				memset(hangover,0,MAX_CHARS_PER_LINE);
 				strcpy(hangover,current_line);
+				memset(line, 0, MAX_CHARS_PER_LINE);
 				line[0]=0;// skip that one!!
 			}
+		}else{
+			p("readFile DONE!");
 		}
 		return ok;
 	}
@@ -1538,6 +1548,10 @@ bool importN3(cchar* file) {
 				break;
 			}
 		}
+
+		memset(objectName, 0, 10000);
+		memset(predicateName, 0, 10000);
+		memset(subjectName, 0, 10000);
 //		if(linecount==4067932)continue;// MAC WTF
 		if(line[0]=='#')continue;
 		//        subjectName=line;
