@@ -5,7 +5,7 @@
 
 #include <cstdlib>
 #include <string.h>
-#include <algorithm> // std:reverse
+#include <algorithm> // std:reverse std:sort
 //#include <multimap> // to sort map
 
 int* enqueued; // 'parents'
@@ -1439,6 +1439,12 @@ NodeVector parseProperties(const char *data) {
 	return all;
 }
 
+static bool sortNodePredicate(Node* a, Node* b) {
+	return a->statementCount > b->statementCount;
+}
+
+
 void sortNodes(NodeVector all){
-	std::sort(all.begin(), all.end(), [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
+	std::sort(all.begin(), all.end(),sortNodePredicate);
+//			  [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
 }

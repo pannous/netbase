@@ -115,7 +115,13 @@ typedef struct Node {
     int firstStatement;
 	int lastStatement;// remove
     Value value; // for statements, numbers  WASTE!!! remove
-
+//	bool operator<(const Node *rhs) const {
+//		return statementCount > rhs->statementCount;
+//	}
+//	bool operator() (Node* a, Node* b) const
+//	{
+//		return a->statementCount > b->statementCount;
+//	}
     // INDEX
     // Node* index;//nur #properties+1 Nits!!
     // class country{ population{property:0} capital{property:1} }

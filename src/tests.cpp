@@ -1518,13 +1518,20 @@ void testBrandNewStuff() {
 //	germanLabels=false;
 	germanLabels=true;
 	NodeVector all= parse("darmstadt");
+	std::sort(all.begin(), all.end());// sorts by address/id !?
 	showNodes(all,false,false,false);
+
 	sortNodes(all);
-//	#include <algorithm>
-//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+	showNodes(all,false,false,false);
+
+	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+	showNodes(all,false,false,false);
+
+//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
+//	showNodes(all,false,false,false);
 
 //	std::sort(all.begin(),all.end(),);
-	showNodes(all,false,false,false);
+
 	//	importWikiData();
 	//	handle("all+pennsylvania+marijuana");
 //	handle("hi");
