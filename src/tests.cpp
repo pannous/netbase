@@ -1523,9 +1523,9 @@ void testBrandNewStuff() {
 
 	sortNodes(all);
 	showNodes(all,false,false,false);
-
-	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
-	showNodes(all,false,false,false);
+//
+//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+//	showNodes(all,false,false,false);
 
 //	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
 //	showNodes(all,false,false,false);
