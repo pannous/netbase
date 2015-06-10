@@ -159,12 +159,11 @@ Ahash *getAhash(int position){
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash*, bool> badAhashReported;// debug
 Ahash * insertAbstractHash(int position, Node * a) {
+	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
     if(a==0)
         return 0;
 	Ahash* ah=getAhash(position);
 	if (!checkHash(ah) || !checkNode(a) || a->name[0] == 0) return 0;
-	//    if(pos==hash("city"))
-	//		p(a->name);
 	int i=0;
 	while (ah&&ah->next) {
 		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
@@ -177,7 +176,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
             //			return 0;
 			return ah;
 		}
-        //		if (ah->next == ah) {
+        //		if (ah->next == ah) { // fixed
         //			debugAhash(position);
         //			p("insertAbstractHash LOOP");
         //			show(a);
@@ -190,7 +189,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		ah=getAhash(ah->next);
 	}
 
-	if (ah->abstract) { //schon was drin
+	if (ah->abstract && get(ah->abstract)) { //schon was drin
 		if (get(ah->abstract) == a)
 			return ah;
         if(eq(get(ah->abstract)->name, a->name, true)){
@@ -524,13 +523,8 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 	return node;
 }
 
-// return false if node not ok
-// remove when optimized!!!!!!!!!!
-bool checkNode(int nodeId, bool checkStatements, bool checkNames) {
-    if(nodeId<0||nodeId>=maxNodes)return false;
-    return checkNode(get(nodeId),nodeId , checkStatements,  checkNames);
-}
-bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
+bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {//,bool report
+	bool report=true;
 	if (node == 0) {
 		badCount++;
 		if (debug) printf("^"); // p("null node");
@@ -542,60 +536,78 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	void* maxNodePointer=&c->nodes[maxNodes];
 	if (node < c->nodes) {
 		badCount++;
+		if(report){// not for abstract.node (can be number etc)
 		printf("node* < c->nodes!!! %p < %p \n", node, c->nodes);
         p("OUT OF MEMORY or graph corruption");
+		}
 		return false;
 	}
 	if (node >= maxNodePointer) {
 		badCount++;
+		if(report){
         printf("node* >= maxNodes!!! %p > %p\n", node, maxNodePointer);
         p("OUT OF MEMORY or graph corruption");
-		exit(0);
+//		exit(0);
+		}
 		return false;
 	}
 #ifdef useContext
 	if (node->context < 0 || node->context > maxContexts) {
 		badCount++;
+		if(report){
 		p("wrong node context");
 		p("node:");
 		p(nodeId);
 		p("context:");
 		p(node->context);
+		}
 		return false;
 	}
 #endif
 	if (nodeId > maxNodes) {
 		badCount++;
+		if(report)
 		pf("nodeId>maxNodes %d>%ld", nodeId, maxNodes);
 		return false;
 	}
 
 	if (nodeId > 1 && node->id > 0 && node->id != nodeId) {
 		badCount++;
+		if(report)
 		pf("node->id!=nodeId %d!=%d", node->id, nodeId);
 		return false;
 	}
 
 	if (checkNames && node->name == 0) {// WHY AGAIN??
 		badCount++;
+		if(report)
 		printf("node->name == 0 %p\n", node);
 		return false;
 	}
 	if (checkNames && (node->name < c->nodeNames || node->name >= &c->nodeNames[averageNameLength * maxNodes])) {
 		badCount++;
+		if(report)
 		printf("node->name out of bounds %p\n", node);
 		return false;
 	}
 #ifdef inlineStatements
 	if (checkStatements && node->statements == null) { //
 		badCount++;
+		if(report){
 		p("node not loaded");
 		p(nodeId);
+		}
 		// initNode(subject,subjectId,(char*)NIL_string,0,contextId);
 		return false;
 	}
 #endif
 	return true;
+}
+// return false if node not ok
+// remove when optimized!!!!!!!!!!
+bool checkNode(int nodeId, bool checkStatements, bool checkNames) {
+	if(nodeId<0||nodeId>=maxNodes)return false;
+	return checkNode(get(nodeId),nodeId , checkStatements,  checkNames);
 }
 
 Node * add(const char* key, const char* nodeName) {
@@ -1284,8 +1296,9 @@ Node* getType(Node* n){
 
 
 Node* dateValue(const char* val) {
-	Node* n=getThe(val);
+	Node* n=getAbstract(val);// getThe(val);
 	n->kind=Date->id;
+//	n->value == 	char *	"1732-02-22\""
 	return n;
 	//	return value(val, atoi(val), Date);
 }
@@ -1300,7 +1313,9 @@ Node* rdfValue(char* name) {
 	if (name[0] == '"') name++; // ignore quotes "33"
 	char* unit=strstr(name, "^");
 	if (!unit || unit > name + 1000 || unit < name) return 0;
+	if(unit[-1]=='"')unit[-1]=0;
 	while (unit[0] == '^'){unit[0]=0; unit++;}
+	if(name[0]==0)return 0;
 	if (unit[0] == '<') unit++;
 	if (unit[0] == '#') unit++;
 	if (unit[0] == '"') unit++;
@@ -2487,12 +2502,12 @@ void setName(int node, cchar* label){
     return setLabel(get(node),label,false,false);
 }
 void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
-    if(n!=get(n->id))n=save(n);
+//    if(addInstance && n!=get(n->id))n=save(n);// HOW!?! WHAT?
 //	if(label[0]=='<')
 //		badCount++; "<span dbpedia parser fuckup etc
     int len=(int)strlen(label);
     Context* c=currentContext();
-	char* newLabel=name_root+ c->currentNameSlot;
+	char* newLabel = name_root + c->currentNameSlot;
     if(n->name==0){
         n->name=newLabel;// c->currentNameSlot;
         if(!addInstance)n->kind=abstractId;
@@ -2547,6 +2562,7 @@ bool checkParams(int argc, char *argv[], const char* p) {
 string formatImage(Node* image,int size,bool thumb){
 	if (!image || !checkNode(image)) return "";
     char* name=replaceChar(image->name,' ','_');
+	if(startsWith(name, "File:")) name+=5;
 	string hash=md5(name);
 	string base="http://upload.wikimedia.org/wikipedia/commons/";
     if(!thumb)	return base + hash[0] + "/" + hash[0] + hash[1] + "/" +  name;

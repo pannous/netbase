@@ -80,7 +80,7 @@
         </asmTool>
         <linkerTool>
           <output>netbase</output>
-          <commandLine>-lreadline -g</commandLine>
+          <commandLine>-lreadline -lz -g</commandLine>
         </linkerTool>
       </compileType>
       <packaging>
@@ -162,7 +162,7 @@
         </fortranCompilerTool>
         <linkerTool>
           <stripSymbols>true</stripSymbols>
-          <commandLine>-lreadline -s</commandLine>
+          <commandLine>-lreadline -lz -s</commandLine>
         </linkerTool>
       </compileType>
       <item path="src/console.cpp" ex="false" tool="1" flavor2="0">
@@ -237,7 +237,7 @@
         </ccTool>
         <linkerTool>
           <output>netbase</output>
-          <commandLine>-lreadline</commandLine>
+          <commandLine>-lreadline -lz</commandLine>
         </linkerTool>
       </compileType>
       <item path="src/console.cpp" ex="false" tool="1" flavor2="0">

@@ -1515,17 +1515,23 @@ void testBrandNewStuff() {
 //    testing=false;// NO RELATIONS!
 //    germanLabels=true;// false;
 	//    import("test.csv");
-	germanLabels=false;
-//	germanLabels=true;
+//	germanLabels=false;
+	germanLabels=true;
 	//	handle("all+pennsylvania+marijuana");
 //	handle("hi");
-		handle("all/hi limit 2");
+//		handle("all/hi limit 2");
 //	handle(":limit 200");
 //	handle("jahr.minuten=525601^^int");
 //	assertResult("jahr.minuten","525600^^int");
 //	handle("jahr.minuten=525601");
 //	assertResult("jahr.minuten","525601^^int");
 //	handle("dog limit 10");
+
+//	N n=get(16902);
+//	string im= getImage(n);
+//	p(im);
+//	check(im=="dfs");
+	importWikiData();
 //	importAll();
 //	handle(":rh");
 //	handle(":learn 240938 Label Diät");

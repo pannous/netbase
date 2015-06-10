@@ -321,7 +321,7 @@ extern Node* Active;
 extern Node* Passive;
 extern Node* Tag;
 extern Node* Label;
-extern Node* BackLabel;
+extern Node* Labeled;
 extern Node* Labels;
 extern Node* LabeledNode;
 extern Node* Category; // SuperClass or Type
@@ -397,6 +397,8 @@ Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId
 extern "C" Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
 bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
 bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
+//bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
+//bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
 bool addStatementToNode(Node* node, int statementNr);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
@@ -579,7 +581,7 @@ static int billion=GB;
 static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
 static long maxStatements = maxNodes*4;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 300*million;
+static long maxNodes = 30*million;
 static long maxStatements = maxNodes*3;
 #endif
 

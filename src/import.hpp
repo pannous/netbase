@@ -13,6 +13,7 @@ void importWordnet();
 void importGeoDB();
 void importNames();
 void importFreebase();
+void importWikiData();
 //void import(const char* file);
 void import(const char* type,const char* filename=0);
 void importList(const char* facts_file,const char* type);

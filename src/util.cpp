@@ -176,11 +176,21 @@ cchar* cut_to(cchar* str, cchar* match){
     if(!i)return str;
     return i+strlen(match);
 }
+
 char* cut_to(char* str, cchar* match){
     char* i=strstr(str,match);
     if(!i)return str;
     if(i)i[0]=0;
     return i+strlen(match);
+}
+
+//#include <sstrings2.h> Linking with -lsstrings2
+//char* strrstr(const char* haystack, const char* needle);
+char* reverse_cut_to(char* str, char match){
+	for (size_t i=strlen(str); i>0; --i) {
+		if(str[i]==match)return str+i+1;//str[i]=0;
+	}
+	return str;
 }
 
 // NOT const !!
@@ -212,7 +222,7 @@ bool endsWith(const char* x, const char* y) {
 	return true;
 }
 bool startsWith(const char* x, const char* y) {
-    short len=strlen(y);
+	short len=strlen(y);
 	if (strlen(x) < len) return false;
 	for (int i=0; i < len; i++) {
 		if (x[i] != y[i]) return false;

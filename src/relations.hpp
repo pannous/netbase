@@ -32,10 +32,11 @@ extern Node* Active;
 extern Node* Passive;
 extern Node* Tag;
 extern Node* Label;
-extern Node* BackLabel;
-extern Node* Labels;
-extern Node* LabeledNode;
+extern Node* Labeled;
+//extern Node* Labels;
+//extern Node* LabeledNode;
 extern Node* Comment;
+extern Node* Description;
 
 extern Node* Category;
 extern Node* SubContext;

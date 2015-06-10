@@ -37,10 +37,11 @@ Node* Active;
 Node* Passive;
 Node* Tag;
 Node* Label;
-Node* BackLabel;
-Node* Comment;
-Node* Labels;
-Node* LabeledNode;
+Node* Labeled; // labeledAE / labelledBE  adj.
+//Node* Labels;
+//Node* LabeledNode;
+Node* Comment;// or as text value
+Node* Description;// or as text value
 Node* Category;
 Node* SubContext;
 Node* SuperContext;
@@ -185,14 +186,15 @@ void initRelationsDE() {
 	Passive = addRelation(36, "Passiv");
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "Label");
-	BackLabel = addRelation(39, "Label von");
+	Labeled = addRelation(39, "Label von");
 	addRelation(40, "aehnlich");// hypernym?? no synonym
 	addRelation(50, "auch");// hypernym??
 	Category = addRelation(43, "Kategorie"); // tag
 	SubContext = addRelation(44, "Subcontext"); // tag
 	SuperContext = addRelation(45, "Supercontext"); //
 	Comment = addRelation(46, "Kommentar");
-    
+	Description = addRelation(49, "Beschreibung");
+
 	Internal = addRelation(_internal, "intern"); //ok
 	_Node = addRelation(_node, "Knoten");
 	Abstract = addRelation(_abstract, "Abstract");
@@ -318,9 +320,11 @@ void initRelations() {
 	Passive = addRelation(36, "passive");
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "label");
-	BackLabel = addRelation(39, "label of");
+	Labeled = addRelation(39, "label of");
 	addRelation(40, "similar");// hypernym?? no synonym
 	addRelation(50, "also");// hypernym??
+	Description = addRelation(49, "description");
+
 	//	Labels = addRelation(40, "Label");//??
 	//	LabeledNode = addRelation(41, "LabeledNode");// ?? ugly!!
 	Category = addRelation(43, "category"); // tag
@@ -338,7 +342,7 @@ void initRelations() {
 	36 Passive
 	37 Tag
 	38 Label
-	39 BackLabel
+	39 Labeled
 	41 LabeledNode
 	42 Attribute
 	 */
@@ -420,10 +424,10 @@ Node* invert(Node* relation) {
 	if (relation == Active)return Passive;
 	if (relation == Passive)return Active;
 	if (relation == Tag)return Tag; //gged
-	if (relation == Label)return BackLabel;
-	if (relation == BackLabel)return Label;
-	if(relation==Labels)return LabeledNode;
-	if(relation==LabeledNode)return Label;
+	if (relation == Label)return Labeled;
+	if (relation == Labeled)return Label;
+//	if(relation==Labels)return LabeledNode;
+//	if(relation==LabeledNode)return Label;
 	//if(relation==Category)return ;
 	if (relation == SubContext)return SuperContext;
 	if (relation == SuperContext)return SubContext;
