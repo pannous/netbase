@@ -262,14 +262,13 @@ int handle(cchar* q0,int conn){
         entity=(char*)cut_to(q," ");
         entity=keep_to(entity,"limit");
     }
-   	sortNodes(all);
+//   	sortNodes(all);
 	for (int i = 0; i < all.size() && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
 		if(last==node)continue;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
-        
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
         if(verbosity != alle)

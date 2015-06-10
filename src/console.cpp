@@ -536,13 +536,12 @@ NodeVector parse(const char* data) {
 	show(a);
     //	if (i == 0) showNodes(instanceFilter(a), true);
 	//        findWord(currentContext()->id, data);
-    //    if(isAbstract(a))
-	if (i == 0) {
-//		lookupLimit=resultLimit;
+    if(isAbstract(a)&&i == 0) {
+		lookupLimit=resultLimit;
 		NV all=instanceFilter(a);
         all.push_back(a);// include abstract!
 //		sortNodes(all);
-		if (all.size() > 0) return all;
+		return all;
 	}
 	return nodeVectorWrap(a);
 }
