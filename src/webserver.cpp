@@ -284,16 +284,16 @@ int handle(cchar* q0,int conn){
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 
 //			sortStatements(
-//			deque<Statement*> statements;
-//			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
-//				if (!checkStatement(s))break;
-//				if (s->subject==node->id and s->predicate!=4)//_instance
-//					statements.push_front(s);
-//				else statements.push_back(s);
-//			}
-			while ((s = nextStatement(node, s))&&count++<resultLimit) {
-//			for (int i = 0; i < statements.size() && i<=resultLimit; i++) {
-//				s=statements.at(i);
+			deque<Statement*> statements;
+			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
+				if (!checkStatement(s))break;
+				if (s->subject==node->id and s->predicate!=4)//_instance
+					statements.push_front(s);
+				else statements.push_back(s);
+			}
+			for (int i = 0; i < statements.size() && i<=resultLimit; i++) {
+				s=statements.at(i);
+//			while ((s = nextStatement(node, s))&&count++<resultLimit) {
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}

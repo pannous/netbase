@@ -253,7 +253,7 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
 			if(eq(add_here,statementId))return false;
 			appendLinkedListOfStatements(add_here, node, statementId); // append new to old
 			node->lastStatement=statementId;
-		} else {
+		} else { // invert sort -> sort again in webserver
 			if(eq(to_insert,node->firstStatement))return false;
 			prependLinkedListOfStatements(to_insert, node, node->firstStatement); // append old to new
 			node->firstStatement=statementId;
