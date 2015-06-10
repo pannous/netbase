@@ -1077,9 +1077,7 @@ int countInstances(Node * node) {
 }
 
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
-	NodeVector all;
-    
-	int i = 0;
+	NodeVector all;	int i = 0;
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);

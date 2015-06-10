@@ -483,11 +483,16 @@ Statement * nextStatement(Node* n, Statement* current, bool stopAtInstances) {
 	if (current == 0) return firstStatement(n);
 	if (stopAtInstances && current->Predicate() == Instance) return null;
 	//	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null; PUT TO END!!
-	if (current->Subject() == n) return getStatement(current->nextSubjectStatement);//, n->context);
-	if (current->Predicate() == n) return getStatement(current->nextPredicateStatement);//, n->context);
-	if (current->Object() == n) return getStatement(current->nextObjectStatement);//, n->context);
+	Statement* neu=null;
+	if (current->Subject() == n) neu= getStatement(current->nextSubjectStatement);//, n->context);
+	if (current->Predicate() == n) neu= getStatement(current->nextPredicateStatement);//, n->context);
+	if (current->Object() == n) neu= getStatement(current->nextObjectStatement);//, n->context);
+	if(current==neu){
+		p("MEGABUG: current==neu");
+		return null;
+	}
 	// check here?
-	return null;
+	return neu;
 }
 //NodeVector findPath(Node* from, Node* to){
 //
