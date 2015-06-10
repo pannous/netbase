@@ -2571,24 +2571,14 @@ string formatImage(Node* image,int size,bool thumb){
 	return base +"thumb/"+ hash[0] + "/" + hash[0] + hash[1] + "/" + name + "/" + ssize + "px-" + name;
 }
 
-string getImageThumb(const char* n, int size) {
-	Node* a=getAbstract(n);
-	Node* i=findMember(a, "wiki_image", false, false);
-	if(!i)i=findMember(a, "Bild", false, false);
-   return formatImage(i,size,true);
+string getImage(cchar* a, int size,bool thumb) {
+	return getImage(getAbstract(a),size,thumb);
 }
-
-string getImage(const char* n, int size) {
-	Node* a=getAbstract(n);
-	Node* i=findProperty(a, "wiki_image");
-	if(!i)i=findMember(a, "Bild", false, false);
- return formatImage(i,size,false);
-}
-
 string getImage(Node* a, int size,bool thumb) {
 	if(!a||!checkNode(a))return 0;
 	Node* i=findProperty(a, "wiki_image");
 	if(!i)i=findProperty(a, "Bild");
+	if(!i)i=findProperty(a, "Wappen");
 	if (!i || !checkNode(i)) return getImage(a->name);
     return formatImage(i,size,thumb);
 }

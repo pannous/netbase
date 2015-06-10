@@ -282,9 +282,10 @@ int handle(cchar* q0,int conn){
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
             //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
+
+//			sortStatements(
 			int count=0;
 			deque<Statement*> statements;
-
 			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
 				if (!checkStatement(s))break;
 				if (s->subject==node->id and s->predicate!=4)//_instance

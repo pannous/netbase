@@ -126,6 +126,8 @@ typedef struct Node {
     // Node* index;//nur #properties+1 Nits!!
     // class country{ population{property:0} capital{property:1} }
 	// germany.index[0]=80Mio .index[1]=Berlin
+
+	virtual int key() const { return statementCount; }
 }Node ;
 
 // norway captial oslo
@@ -450,8 +452,7 @@ Statement* findStatement(Node* n, string predicate, string object, int recurse =
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
 extern "C" bool hasNode(const char* thingy);
-string getImage(const char* n, int size = 30);
-string getImageThumb(const char* n, int size = 150);
+string getImage(const char* n, int size = 150,bool thumb=false);
 string getImage(Node* a, int size=150,bool thumb=false);
 
 

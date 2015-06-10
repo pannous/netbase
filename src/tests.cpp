@@ -1518,8 +1518,21 @@ void testBrandNewStuff() {
 //	germanLabels=false;
 	germanLabels=true;
 	NodeVector all= parse("darmstadt");
+
+	Node aa=*getAbstract("a");
+	Node* aaa=&aa;// !=getAbstract("a");!!!
+	Node* a=getAbstract("a");
+	Node* b=getAbstract("b");
+	Node* c=getAbstract("c");
+	a->statementCount=3;
+	b->statementCount=1;
+	c->statementCount=2;
+	all.push_back(a);
+	all.push_back(b);
+	all.push_back(c);
+
 //	std::sort(all.begin(), all.end());// sorts by address/id !?
-//	showNodes(all,false,false,false);
+	showNodes(all,false,false,false);
 
 	sortNodes(all);
 	showNodes(all,false,false,false);
@@ -1584,8 +1597,8 @@ void testBrandNewStuff() {
     
     check(!eq("=","a", true));
 //    check(hasNode("type"));
-    N a=getAbstract("a");
-    showNode(a);
+    N ab=getAbstract("a");
+    showNode(ab);
     check(getAbstract("a")->id>=1000);
     check(hasNode("Typ"));
     check(hasNode("1"));

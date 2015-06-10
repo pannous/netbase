@@ -1439,12 +1439,29 @@ NodeVector parseProperties(const char *data) {
 	return all;
 }
 
-static bool sortNodePredicate(Node* a, Node* b) {
-	return a->statementCount > b->statementCount;
+//inline int
+const static bool sortNodePredicate(Node* a, Node* b) {
+	int x=a->statementCount;
+	int y=b->statementCount;
+	return x>y;
+//	return (*a < *b);
+	//	return a<b;//-
+//	return (a->statementCount > b->statementCount);
+//	return (a->key()> b->key());
 }
-
-
 void sortNodes(NodeVector all){
+
+
+//	int count=0;
+//	deque<Node*> nodes;
+//			statements.push_front(s);
+//		else statements.push_back(s);
+//	}
+
+
 	std::sort(all.begin(), all.end(),sortNodePredicate);
+//	auto x=all.begin();
+//	auto y=all.end();
+//	std::sort(x, y, sortNodePredicate);
 //			  [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
 }
