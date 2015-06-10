@@ -68,5 +68,5 @@ NodeVector nodeVectorWrap(Statement* n);
 NodeVector shortestPath(Node* from,Node* to );// any
 NodeVector parentPath(Node* from, Node* to);
 NodeVector memberPath(Node* from, Node* to);
-
+void sortNodes(NodeVector all);
 #endif	/* QUERY_H */

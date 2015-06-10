@@ -152,9 +152,6 @@ NodeVector runScript(char* file){
 	return last;
 }
 
-void sortNodes(NodeVector all){
-	std::sort(all.begin(), all.end(), [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
-}
 
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;

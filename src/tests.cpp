@@ -1519,8 +1519,9 @@ void testBrandNewStuff() {
 	germanLabels=true;
 	NodeVector all= parse("darmstadt");
 	showNodes(all,false,false,false);
-//	sortNodes(all);
-	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+	sortNodes(all);
+//	#include <algorithm>
+//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
 
 //	std::sort(all.begin(),all.end(),);
 	showNodes(all,false,false,false);
