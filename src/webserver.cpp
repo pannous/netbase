@@ -280,22 +280,21 @@ int handle(cchar* q0,int conn){
             Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
+			int count=0;
             //            Writeline(",image:'"+getImage(node->name)+"'");
 			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 
 //			sortStatements(
-
-//			deque<Statement*> statements;
-//			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
-//				if (!checkStatement(s))break;
-//				if (s->subject==node->id and s->predicate!=4)//_instance
-//					statements.push_front(s);
-//				else statements.push_back(s);
-//			}
-			int count=0;
-			while ((s = nextStatement(node, s))&&count++<resultLimit) {
-//			for (int i = 0; i < statements.size() && i<=resultLimit; i++) {
-//				Statement* s=statements.at(i);
+			deque<Statement*> statements;
+			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
+				if (!checkStatement(s))break;
+				if (s->subject==node->id and s->predicate!=4)//_instance
+					statements.push_front(s);
+				else statements.push_back(s);
+			}
+//			while ((s = nextStatement(node, s))&&count++<resultLimit) {
+			for (int i = 0; i < statements.size() && i<=resultLimit; i++) {
+				Statement* s=statements.at(i);
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
