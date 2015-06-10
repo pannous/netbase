@@ -1195,7 +1195,7 @@ void fixLabel(char* label){
 	if(wo)wo[-1]=0;
 }
 
-bool importLabels(cchar* file, bool useHash=false,bool lookup=false,bool altLabel=false) {
+bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false) {
 	char line[10000];// malloc(100000) GEHT NICHT PERIOD!
 	char* label0=(char*) malloc(10000);
 	char* label;
@@ -1268,7 +1268,7 @@ bool importLabels(cchar* file, bool useHash=false,bool lookup=false,bool altLabe
 			}
 			label[100]=0;
 		}
-		if(lookup && hasWord(key)){
+		if(overwrite && hasWord(key)){
 			freebaseKeysConflicts++;
 			N old=getAbstract(key);
 			setLabel(old,label,false,true);
@@ -1336,7 +1336,7 @@ bool importLabels(cchar* file, bool useHash=false,bool lookup=false,bool altLabe
 	p("duplicates removed:");
 	p(freebaseKeysConflicts);
 	testPrecious();
-	pf("DONE importing labels from %s\n",file);
+	pf("DONE importing %d labels from %s\n",linecount,file);
 	return true;
 }
 
@@ -2124,7 +2124,7 @@ void import(const char* type, const char* filename) {
 	}else if (eq(type, "all")) {
 		importAll();
 	}else if (eq(type, "labels")) {
-		importLabels("labels.csv");
+		importLabels("labels.csv",false,true,true);
 	}else if (endsWith(type, "csv")) {
 		importCsv(filename);
 	} else if (eq(type, "wordnet")) {
