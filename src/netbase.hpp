@@ -400,10 +400,10 @@ NodeVector show(NodeVector all);// alias
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
 extern "C" Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
-bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
-bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
-//bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
-//bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
+//bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
+//bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
+bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
+bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
 bool addStatementToNode(Node* node, int statementNr);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);

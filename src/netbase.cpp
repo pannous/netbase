@@ -111,11 +111,6 @@ bool isAbstract(Node* object) {
 	return object->kind == abstractId || object->kind == singletonId;
 }
 
-inline Statement* firstStatement(Node* abstract) {
-    if(abstract->firstStatement==0)return 0;
-	return getStatement(abstract->firstStatement);
-}
-
 bool checkHash(Ahash* ah) {
 	if(!debug)return true;
 	//    if(pos>maxNodes*2)
@@ -480,23 +475,19 @@ Statement* nextStatement(int node,Statement* current) {
     return nextStatement(get(node),current);
 }
 Statement * nextStatement(Node* n, Statement* current, bool stopAtInstances) {
-	if (current == 0) return firstStatement(n);
+	if (current == 0) return getStatement(n->firstStatement);
 	if (stopAtInstances && current->Predicate() == Instance) return null;
 	//	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null; PUT TO END!!
 	Statement* neu=null;
-	if (current->Subject() == n) neu= getStatement(current->nextSubjectStatement);//, n->context);
-	if (current->Predicate() == n) neu= getStatement(current->nextPredicateStatement);//, n->context);
-	if (current->Object() == n) neu= getStatement(current->nextObjectStatement);//, n->context);
-	if(current==neu){
-		p("MEGABUG: current==neu");
-		return null;
-	}
-	// check here?
+	if (current->Subject() == n) return getStatement(current->nextSubjectStatement);
+	if (current->Predicate() == n)return  getStatement(current->nextPredicateStatement);
+	if (current->Object() == n) return getStatement(current->nextObjectStatement);
+//	if(current==neu){	// check here?
+//		p("MEGABUG: current==neu");
+//		return null;
+//	}
 	return neu;
 }
-//NodeVector findPath(Node* from, Node* to){
-//
-//}
 
 Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextId) {
 	Context* context=getContext(contextId);
@@ -528,8 +519,8 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 	return node;
 }
 
-bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {//,bool report
-	bool report=true;
+bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report) {//
+//	bool report=true;
 	if (node == 0) {
 		badCount++;
 		if (debug) printf("^"); // p("null node");
@@ -610,9 +601,9 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {/
 }
 // return false if node not ok
 // remove when optimized!!!!!!!!!!
-bool checkNode(int nodeId, bool checkStatements, bool checkNames) {
+bool checkNode(int nodeId, bool checkStatements, bool checkNames,bool report) {
 	if(nodeId<0||nodeId>=maxNodes)return false;
-	return checkNode(get(nodeId),nodeId , checkStatements,  checkNames);
+	return checkNode(get(nodeId),nodeId , checkStatements,  checkNames,report);
 }
 
 Node * add(const char* key, const char* nodeName) {
@@ -2404,38 +2395,36 @@ Statement * learn(string sentence) {
 //    add(name);
 //}
 //void cleanAbstracts(Context* c){
-Node * getThe(Node* abstract, Node * type) {
+Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	if (!abstract) return 0;
     if(abstract->kind==singletonId)return abstract;
     if (getRelation(abstract->name)) // not here! doch
         return getRelation(abstract->name);
     if (type<node_root||type>&node_root[maxNodes]) type=0;// default parameter hickup through JNA
-	if(checkNode(abstract->value.node) and eq(abstract->value.node->name,abstract->name))
+	if(checkNode(abstract->value.node,0,false,false,false) and eq(abstract->value.node->name,abstract->name))
 		return abstract->value.node; // abstract->value.node as cache for THE instance
 	if (type == 0) {
-		//		return getThe(abstract->name);
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
-		//		if (abstract->value.node)return abstract->value.node; // NODE!!! OR LABELS?? DANGER!!!
-		// CAREFUL: firstStatement INSTANCE MUST STAY FIRST~~~!!!
-		Statement* s=getStatement(abstract->firstStatement);
-//		Statement* s=getStatement(abstract->lastStatement); might be CRAP / check name AND nextStatement->previousStatement!!
-		if(s&&s->Predicate()==Instance)return s->Object();
-		else s=0;
+		Statement* s=0;
 		while ((s=nextStatement(abstract, s)))
 			if (s->Predicate() == Instance) {		// ASSUME RIGHT ORDER!?
-				if (s->Subject() == abstract && eq(s->Object()->name,abstract->name))
-                    //			abstract->value.node = last->Object; // + cache!
-					return s->Object();
-				if (s->Object() == abstract && eq(s->Subject()->name,abstract->name))
-					if (isAbstract(s->Subject())) // abstract was not abstract!!!??
-						return s->Object();
-				//			abstract->value.node = last->Object; // + cache!
-				return s->Subject();
+				abstract->value.node=s->Object();
+				return s->Object();
+//				if (s->Subject() == abstract && eq(s->Object()->name,abstract->name))
+//                    //			abstract->value.node = last->Object; // + cache!
+//					return s->Object();
+//				if (s->Object() == abstract && eq(s->Subject()->name,abstract->name))
+//					if (isAbstract(s->Subject())) // abstract was not abstract!!!??
+//						return s->Object();
+//				//			abstract->value.node = last->Object; // + cache!
+//				return s->Subject();
 			}
-		return add(abstract->name, 0); // NO SUCH!! CREATE!?
+		N first= add(abstract->name, 0); // NO SUCH!! CREATE!?
+		abstract->value.node=first;
+		return first;
 	}
 	if (type->id == abstractId || type->id == singletonId)
-        return getAbstract(abstract->name); // safe
+		return getAbstract(abstract->name); // safe
 
 	Statement * s=0;
     Node* best=0;
@@ -2584,7 +2573,7 @@ string getImage(Node* a, int size,bool thumb) {
 	Node* i=findProperty(a, "wiki_image");
 	if(!i)i=findProperty(a, "Bild");
 	if(!i)i=findProperty(a, "Wappen");
-	if (!i || !checkNode(i)) return getImage(a->name);
+	if (!i || !checkNode(i))if(a->kind!=abstractId)return getImage(a->name);
     return formatImage(i,size,thumb);
 }
 

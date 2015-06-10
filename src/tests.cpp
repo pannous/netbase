@@ -1517,8 +1517,12 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 //	germanLabels=false;
 	germanLabels=true;
-	NodeVector all= parse("darmstadt");
+	handle("angela merkel");
+	parse("7546026");
 
+	Node* ax=getNode(7546026);
+	show(ax);
+	NodeVector all= parse("darmstadt");
 	Node aa=*getAbstract("a");
 	Node* aaa=&aa;// !=getAbstract("a");!!!
 	Node* a=getAbstract("a");
