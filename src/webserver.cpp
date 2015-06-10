@@ -206,7 +206,7 @@ int handle(cchar* q0,int conn){
     NodeVector all = parse(q); // <<<<<<<< HANDLE QUERY WITH NETBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
+
     int size=(int)all.size();
     if(showExcludes){
         for (int i = 0; i < size; i++) {
@@ -262,7 +262,7 @@ int handle(cchar* q0,int conn){
         entity=(char*)cut_to(q," ");
         entity=keep_to(entity,"limit");
     }
-    
+    std::sort(all.begin(), all.end());
 	for (int i = 0; i < all.size() && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;

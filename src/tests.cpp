@@ -1517,6 +1517,14 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 //	germanLabels=false;
 	germanLabels=true;
+	NodeVector all= parse("darmstadt");
+	showNodes(all,false,false,false);
+//	sortNodes(all);
+	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+
+//	std::sort(all.begin(),all.end(),);
+	showNodes(all,false,false,false);
+	//	importWikiData();
 	//	handle("all+pennsylvania+marijuana");
 //	handle("hi");
 //		handle("all/hi limit 2");
@@ -1531,7 +1539,7 @@ void testBrandNewStuff() {
 //	string im= getImage(n);
 //	p(im);
 //	check(im=="dfs");
-	importWikiData();
+
 //	importAll();
 //	handle(":rh");
 //	handle(":learn 240938 Label Diät");

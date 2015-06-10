@@ -152,6 +152,10 @@ NodeVector runScript(char* file){
 	return last;
 }
 
+void sortNodes(NodeVector all){
+	std::sort(all.begin(), all.end(), [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
+}
+
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;
 	if (!isprint(data[0])) // ??
@@ -424,7 +428,6 @@ NodeVector parse(const char* data) {
 		return nodeVectorWrap(da);
 	}
 
-	
 	if (startsWith(data, ":printlabels")){
 		printlabels();
 	}
@@ -541,6 +544,7 @@ NodeVector parse(const char* data) {
 //		lookupLimit=resultLimit;
 		NV all=instanceFilter(a);
         all.push_back(a);// include abstract!
+//		sortNodes(all);
 		if (all.size() > 0) return all;
 	}
 	return nodeVectorWrap(a);

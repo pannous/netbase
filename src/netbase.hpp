@@ -111,7 +111,7 @@ typedef struct Node {
     int kind; // abstract,node,person,year, m^2     // via first slot? nah
     //int context; //implicit   | short context_id or int node_id
     //float rank;
-    int statementCount; //implicit, can be replaced with iterator
+    int statementCount; //explicit, can be made implicit and replaced with iterator
     int firstStatement;
 	int lastStatement;// remove
     Value value; // for statements, numbers  WASTE!!! remove
@@ -119,8 +119,7 @@ typedef struct Node {
     // INDEX
     // Node* index;//nur #properties+1 Nits!!
     // class country{ population{property:0} capital{property:1} }
-    // germany.index[0]=80Mio .index[1]=Berlin
-
+	// germany.index[0]=80Mio .index[1]=Berlin
 }Node ;
 
 // norway captial oslo
@@ -174,7 +173,7 @@ public:
     Node* Object(){return get(object);}
 #endif
 //    REORDER NEEDS NEW INDEX ON ALL SERVERS +JAVA!
-    int subject; // implicit!! Subject
+    int subject; // implicit if using explicitNodes: Subject->id
     int predicate;
     int object;
 
@@ -182,15 +181,13 @@ public:
     int nextPredicateStatement;
     int nextObjectStatement;
 
-//    int subject; // implicit!! Subject
-//    int predicate;
-//    int object;
     //  Node* meta; for reification, too expensive, how else now??
     // int subjectContext;//... na! nur in externer DB!
 } Statement;
 // manipulate via other statements (confidence, truth, author(!), ...)
 
 // union: context->hasNode->0 , name
+//typedef vector<Node*> NodeVector;
 typedef vector<Node*> NodeVector;
 typedef queue<Node*> NodeQueue;
 typedef Node** NodeList;
