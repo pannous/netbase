@@ -230,11 +230,11 @@ int handle(cchar* q0,int conn){
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
-	if (format == json)Writeline(conn, "{'results':[\n");
+	if (format == json)Writeline(conn, "{\"results\":[\n");
 	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d},\n";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
@@ -246,7 +246,7 @@ int handle(cchar* q0,int conn){
    	const char* entity_format = 0;
 	const char* entity_format_txt = "%s #%d statements:%d\n";
 	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
-	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statementCount':%d";
+	const char* entity_format_json = "   {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d";
    	const char* entity_format_csv = "%s\t%d\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
@@ -274,14 +274,14 @@ int handle(cchar* q0,int conn){
         if(verbosity != alle)
             loadView(node);
         if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
-            Writeline(conn, ", 'kind':"+itoa(node->kind));		
+            Writeline(conn, ", \"kind\":"+itoa(node->kind));		
         if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-            Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
+            Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
-            //            Writeline(",image:'"+getImage(node->name)+"'");
-			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
+            //            Writeline(",image:\""+getImage(node->name)+"\"");
+			if (format == json||format == html)Writeline(conn, ", \"statements\":[\n");
 
 //			sortStatements(
 			deque<Statement*> statements;
@@ -307,7 +307,7 @@ int handle(cchar* q0,int conn){
 		if (format == json||format == html)Writeline(conn, "},\n");
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
-		//		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
+		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
 	const char* html_end="]};</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
 	if (format == json)Writeline(conn, "]}\n");
@@ -793,11 +793,12 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	char buffer[100];
 	sprintf(buffer, "HTTP/1.1 %d OK\r\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-	Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
 	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
-	else if(contains(reqinfo->resource,"json/"))
+	else if(contains(reqinfo->resource,"json/")){
 		Writeline(conn, "Content-Type: application/json; charset=utf-8\r\n");
+		Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
+	}
 	else if(contains(reqinfo->resource,"csv/"))
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
 	else if(contains(reqinfo->resource,"tsv/"))
