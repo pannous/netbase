@@ -911,19 +911,18 @@ Node* getNode(int node){
     return get(node);
 }
 
-//	static
-//map<Node*, bool> dissected;
 
+static map<Node*, bool> dissected;
 void dissectParent(Node * subject,bool checkDuplicates) {
-    //	if (subject == (Node*) -1) dissected.clear();
+   	if (subject == (Node*) -1) dissected.clear();
 	if (!checkNode(subject, -1, false, true)) return;
 	//if(isAName(s)ret. // noe!
 	string str=replace_all(subject->name, " ", "_");
 	str=replace_all(str, "-", "_");
 
 
-    //	if (dissected[subject]) return;
-    //	dissected[subject]=1;
+   	if (dissected[subject]) return;
+   	dissected[subject]=true;
 
 	int len=(int)str.length();
 	bool plural=(char) str[len - 1] == 's' && (char) str[len - 2] != 's' && ((char) str[len - 2] != 'n' || (char) str[len - 3] == 'o');
@@ -987,7 +986,7 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 
 Node* dissectWord(Node * subject,bool checkDuplicates) {
 	Node* original=subject;
-    //	if (dissected[subject]) return;
+    if (dissected[subject]) return;
 	if (!checkNode(subject, true, true, true)) return original;
     if(subject->statementCount>1000)checkDuplicates=false;// expansive isA4 !!!!
     //    => todo dissectWord befor loading data!!!!!
@@ -1000,7 +999,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".") || (endsWith(thing, "s")&&!germanLabels))
 		dissectParent(subject); // <<
 
-    //	dissected[subject]=1;
+   	dissected[subject]=true;
 
 	int len=(int)str.length();
 	int type=(int)str.find(",");
