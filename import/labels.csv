@@ -25,7 +25,7 @@ Birth_date	Geburtsdatum
 Longitude	Längengrad
 Latitude	Breitengrad
 Population	Bevölkerung
-surname	Nachname
+surname		Nachname
 Elevation	Erhebung
 birthplace	Geburtsort
 countrycode	Ländercode
@@ -93,6 +93,9 @@ Rddez	Regentage_Dez
 4053234 Stadt
 altLabel	alternative_Bezeichnung
 5007046 wiki image
-bevDichte	Bevölkerungsdichte
-bevZunahme	Bevölkerungszunahme
-
+1170617 alte Postleitzahl
+Latitude Breitengrad
+611463 11.0
+606057 Längengrad
+longitude Längengrad
+1118374 Bürgermeister
