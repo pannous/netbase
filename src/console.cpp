@@ -530,9 +530,11 @@ NodeVector parse(const char* data) {
 	int i=atoi(data);
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
-    
+
+	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
+
 	Node* a=get(data);
-    dissectWord(a, true);
+	dissectWord(a, true);
 	show(a);
     //	if (i == 0) showNodes(instanceFilter(a), true);
 	//        findWord(currentContext()->id, data);

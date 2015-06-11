@@ -1522,7 +1522,7 @@ void testBrandNewStuff() {
 
 	Node* ax=getNode(7546026);
 	show(ax);
-	NodeVector all= parse("darmstadt");
+	NodeVector all= parse("angela merkel nachrichten");
 	Node aa=*getAbstract("a");
 	Node* aaa=&aa;// !=getAbstract("a");!!!
 	Node* a=getAbstract("a");
