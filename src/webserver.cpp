@@ -234,7 +234,7 @@ int handle(cchar* q0,int conn){
 	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d},\n";
+	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}\n";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
@@ -263,7 +263,8 @@ int handle(cchar* q0,int conn){
         entity=keep_to(entity,"limit");
     }
 //   	sortNodes(all);
-	for (int i = 0; i < all.size() && i<resultLimit; i++) {
+	int count=(int)all.size();
+	for (int i = 0; i < count && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
 		if(last==node)continue;
@@ -301,10 +302,15 @@ int handle(cchar* q0,int conn){
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
+				if(format == json && i<count-1)Writeline(conn, ",");
 			}
 			if (format == json||format == html)Writeline(conn, "]");
 		}
-		if (format == json||format == html)Writeline(conn, "},\n");
+		if (format == json||format == html){
+			if(i==count-1)Writeline(conn, "}\n");// last!
+			else Writeline(conn, "},\n");
+		}
+
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
