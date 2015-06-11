@@ -234,7 +234,7 @@ int handle(cchar* q0,int conn){
 	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}\n";
+	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
@@ -256,7 +256,7 @@ int handle(cchar* q0,int conn){
 	if (format == csv)entity_format = entity_format_csv;
 	Node* last=0;
     warnings=0;
-    
+	if (format == html)format=json;// inline json (hacky)
     char* entity=0;
     if(startsWith(q,"all")){
         entity=(char*)cut_to(q," ");
@@ -276,13 +276,13 @@ int handle(cchar* q0,int conn){
             loadView(node);
         if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
             Writeline(conn, ", \"kind\":"+itoa(node->kind));		
-        if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
+        if((format == json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
             Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
             //            Writeline(",image:\""+getImage(node->name)+"\"");
-			if (format == json||format == html)Writeline(conn, ", \"statements\":[\n");
+			if (format == json)Writeline(conn, ", \"statements\":[\n");
 
 //			sortStatements(
 			deque<Statement*> statements;
@@ -302,24 +302,26 @@ int handle(cchar* q0,int conn){
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
-				if(format == json && i<count-1)Writeline(conn, ",");
+				if(format == json && i<count-1)Writeline(conn, ",\n");
 			}
-			if (format == json||format == html)Writeline(conn, "]");
+			if (format == json)Writeline(conn, "]");
 		}
-		if (format == json||format == html){
-			if(i==count-1)Writeline(conn, "}\n");// last!
-			else Writeline(conn, "},\n");
+		if (format == json){
+			if(i<count-1)Writeline(conn, "},\n");
 		}
 
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
-	const char* html_end="]};</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
-	if (format == json)Writeline(conn, "]}\n");
-    if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
-	if (format == html)Writeline(conn, html_end);
+	const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
+	if (format == json)Writeline(conn, "}\n]}");
 	if (format == xml)Writeline(conn, "</results>\n");
+	if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
+	if(contains(q0,"html/"))Writeline(conn, html_end);
+	//		sprintf(buff,	"<script src='/js/%s'></script>",q0);
+	//		Writeline(conn, buff);
+	//	}
     pf("Warnings/excluded: %d\n",warnings);
     return 0;// 0K
 }
