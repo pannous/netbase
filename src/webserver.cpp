@@ -793,6 +793,7 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	char buffer[100];
 	sprintf(buffer, "HTTP/1.1 %d OK\r\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
+	Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
 	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
 	else if(contains(reqinfo->resource,"json/"))
