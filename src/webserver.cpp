@@ -270,6 +270,7 @@ int handle(cchar* q0,int conn){
 		if(last==node)continue;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
+		if (format == json)if(i>0)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
         if(verbosity != alle)
@@ -292,24 +293,20 @@ int handle(cchar* q0,int conn){
 					statements.push_front(s);
 				else statements.push_back(s);
 			}
-			for (int i = 0; i < statements.size() && i<=resultLimit; i++) {
-				s=statements.at(i);
+			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
+				s=statements.at(j);
 //			while ((s = nextStatement(node, s))&&count++<resultLimit) {
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
-				if(format == json && i>0)Writeline(conn, ",\n");
+				if(format == json && j>0)Writeline(conn, ",\n");
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
 			}
 			if (format == json)Writeline(conn, "]");
 		}
-		if (format == json){
-			if(i<count-1)Writeline(conn, "},\n");
-		}
-
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
