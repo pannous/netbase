@@ -347,6 +347,7 @@ void fixLabel(Node* n){
 		n->name[strlen(n->name)-1]=0;
 	replaceChar(n->name,'"',' ');
 	replaceChar(n->name,'\'',' ');
+	replaceChar(n->name,'\\',' ');
 	// todo: "'","%27" etc
 	//#include <curl/curl.h>
 	//char *curl_easy_escape( CURL * curl , char * url , int length );
