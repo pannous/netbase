@@ -300,9 +300,9 @@ int handle(cchar* q0,int conn){
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
+				if(format == json && i>0)Writeline(conn, ",\n");
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
-				if(format == json && i<count-1)Writeline(conn, ",\n");
 			}
 			if (format == json)Writeline(conn, "]");
 		}
