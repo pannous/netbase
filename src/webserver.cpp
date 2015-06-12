@@ -293,6 +293,7 @@ int handle(cchar* q0,int conn){
 					statements.push_front(s);
 				else statements.push_back(s);
 			}
+			int good=0;
 			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
 				s=statements.at(j);
 //			while ((s = nextStatement(node, s))&&count++<resultLimit) {
@@ -301,9 +302,10 @@ int handle(cchar* q0,int conn){
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
-				if(format == json && j>0)Writeline(conn, ",\n");
+				if(format == json && good>0)Writeline(conn, ",\n");
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
+				good++;
 			}
 			if (format == json)Writeline(conn, "]");
 		}
