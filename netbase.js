@@ -1,7 +1,7 @@
 // Netbase graph viewer - demo version = 1.0.2
 // (C) 2014 Pannous + Quasiris
 
-var div=document.getElementById("results");
+var div=document.getElementById("netbase_results");
 var server="/html/"; // "http://quasiris.big:3333/html/";
 
 function br(){

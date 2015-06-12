@@ -224,7 +224,7 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div>\n<script>var results={'results':[\n";
+    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='netbase_results'></div>\n<script>var results={'results':[\n";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];

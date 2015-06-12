@@ -29,4 +29,6 @@ import/babelnet/images.wn.all.csv
 import/data/images.txt
 *.orig
 .*.orig
-**/*.orig
+**/*.origimport/dbpedia_de/
+import/freebase.data.txt.2 import/freebase.labels.de.txt import/freebase.labels.en.txt import/freebase.labels.en.txt.2 import/freebase.rb import/freebase.seds.sh
+netbase.build/
