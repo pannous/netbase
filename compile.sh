@@ -10,6 +10,7 @@ platform=`uname`
 ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
 options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
+# options="-m64 --debug"
 #   -s -std=c++11 for sorting array!
 #  -L$RVM_HOME/usr/lib -I$ruby_include -Ibuild/
 
@@ -27,7 +28,7 @@ options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
 #g++ $options -L/Users/me/.rvm/usr/lib -I$ruby_include  -MF build/NetbaseRuby.o.d -o build/NetbaseRuby.o src/netbase-ruby.cpp
 
 mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
-options="-std=c++11 -m64 --debug"
+
 g++ $options  -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline && ./netbase :exit $@
 
 if [[ $platform == 'Darwin' ]]; then
