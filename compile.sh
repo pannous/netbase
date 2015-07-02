@@ -9,8 +9,8 @@ platform=`uname`
 
 ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
-options="-std=c++11 -m64 --debug -c -g -w -MMD -MP" #-MF #64bit
-#   -s
+options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
+#   -s -std=c++11 for sorting array!
 #  -L$RVM_HOME/usr/lib -I$ruby_include -Ibuild/
 
 #g++ $options -MF build/query.o.d -o build/query.o src/query.cpp

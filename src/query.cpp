@@ -1448,16 +1448,18 @@ const static bool sortNodePredicate(Node* a, Node* b) {
 //	return (a->key()> b->key());
 }
 void sortNodes(NodeVector all){
-
-
-//	int count=0;
-//	deque<Node*> nodes;
-//			statements.push_front(s);
-//		else statements.push_back(s);
-//	}
-
-
-	std::sort(all.begin(), all.end(),sortNodePredicate);
+	int count=0;
+	int max=0;
+	deque<Node*> sorted;
+	for (int i=0; i<all.size(); i++) {
+		Node* n=all[i];
+		if(n->statementCount>max){
+			sorted.push_front(n);
+			max=n->statementCount;
+		}
+		else sorted.push_back(n);
+	}
+//	std::sort(all.begin(), all.end(),sortNodePredicate);
 //	auto x=all.begin();
 //	auto y=all.end();
 //	std::sort(x, y, sortNodePredicate);
