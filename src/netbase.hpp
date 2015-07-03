@@ -404,13 +404,13 @@ extern "C" Node* add(const char* nodeName, int kind = /*_node*/ 101, int context
 //bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
 bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
 bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
-bool addStatementToNode(Node* node, int statementNr);
+bool addStatementToNode(Node* node, int statementNr,bool force_insert_at_start);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 
 extern "C"
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
-Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
+Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true,bool force_insert_at_start=false);
 //inline
 		Node* get(const char* node);
 //inline
@@ -439,6 +439,7 @@ Node* getSingleton(const char* thing) ;
 void showStatement(Statement* s);
 extern "C" void showStatement(int id);
 bool show(Node* n, bool showStatements = true);
+void show(Statement * s);
 Node * showNode(Node* n);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
@@ -582,7 +583,7 @@ static int billion=GB;
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 100*million;// long would need a new structure!!
+static long maxNodes /*max 32bit=4GB!*/= 40*million;// long would need a new structure!!
 static long maxStatements = maxNodes*3;// *10 = crude average of Statements per Node (yago:12!!)
 #else
 static long maxNodes = 200*million;

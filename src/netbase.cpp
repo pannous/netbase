@@ -225,7 +225,10 @@ bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statement
 bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int statementNr) {
 	return  appendLinkedListOfStatements(to_insert, node, statementNr); // append old to new
 }
-bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
+
+bool insert_at_start=true;// <<< TODO HACK, REMOVE!!
+
+bool addStatementToNode(Node* node, int statementId,bool force_insert_at_start=false) {
     if(statementId==0){
         p("WARNING statementNr==0");
         return false;
@@ -248,6 +251,7 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
 		push_back=push_back|| to_insert->Predicate() == Instance;
 		push_back=push_back||(to_insert->Predicate() == Type && to_insert->Object()==node);
 		push_back=push_back|| to_insert->Predicate() == node;
+		if(insert_at_start)push_back=false;// hack!
 		if (push_back) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
 			if(eq(add_here,statementId))return false;
@@ -263,11 +267,7 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
 	return true;
 }
 
-bool addStatementToNode(Node* node, int statementId) {
-	//	return addStatementToNodeDirect(node, statementNr);
-	return addStatementToNodeWithInstanceGap(node, statementId);
-}
-
+// ONLY USED IN mergeNode!
 bool addStatementToNodeDirect(Node* node, int statementId) {
 	int n=node->lastStatement;
 	if (n == 0) {
@@ -736,7 +736,7 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 	return statement;
 }
 
-Statement * addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate) {
+Statement * addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate,bool force_insert_at_start) {
 	if (!checkNode(subject)) return 0;
 	if (!checkNode(object)) return 0;
 	if (!checkNode(predicate)) return 0;
@@ -777,7 +777,7 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	statement->predicate=predicate->id;
 	statement->object=object->id;
 
-	bool ok=addStatementToNode(subject, id);
+	bool ok=addStatementToNode(subject, id,force_insert_at_start);
 	ok=ok&&addStatementToNode(predicate, id);
 	ok=ok&&addStatementToNode(object, id);
 //    if(!ok)p("warning: addStatementToNode skipped ");// probably quick duplicate check
@@ -1487,7 +1487,9 @@ void show(vector<char*>& v){
         p(v.at(i));
     }
 }
-
+void show(Statement * s){
+	showStatement(s);
+}
 bool show(Node* n, bool showStatements) {		//=true
 	//	if (quiet)return;
 	if (!checkNode(n)) return 0;

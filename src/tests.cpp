@@ -1509,6 +1509,43 @@ bool assertResult(char* query,char* value0){
 //	return check(eq(result,value));
 }
 
+void flattenGeographischeKoordinaten(){
+	N n=getThe("Geographische Koordinaten");
+	N b=getThe("Breitengrad");
+	N l=getThe("Längengrad");
+	Statement* s=0;
+	while (s=nextStatement(n->id, s)) {
+		if(s->predicate==n->id){
+			N ort=s->Subject();
+			N c=s->Object();
+			N bb=findProperty(c, "Breitengrad");
+			if(!bb)
+				bb=findProperty(c, "Latitude");
+			S sb=addStatement(ort,b,bb,false,true);
+			N ll=getProperty(c, "Längengrad");
+			S sl=addStatement(ort,l,ll,false,true);
+			show(ort);
+			showStatement(sb);
+			p(bb!=0);
+		}
+	}
+}
+void fixAllNames(){
+	for(int i=1000;i<43220221;i++){
+		N n= getNode(i);
+		if(!n->name)continue;
+		if(n==Error){
+			pf("STOPPING AT %d",i);
+			break;
+		}
+		if(endsWith(n->name, "\" .")){
+			keep_to(n->name,"\" .");
+		}
+		if(endsWith(n->name, " .")){
+			keep_to(n->name," .");
+		}
+	}
+}
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
@@ -1518,13 +1555,15 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 //	germanLabels=false;
 	germanLabels=true;
-	handle("angela merkel");
-	parse("7546026");
-
-
-	Node* ax=getNode(7546026);
-	show(ax);
-	NodeVector all= parse("angela merkel nachrichten");
+//	handle("angela merkel");
+//	parse("7546026");
+//
+//
+//	Node* ax=getNode(7546026);
+//	show(ax);
+//	NodeVector all= parse("angela merkel nachrichten");
+	flattenGeographischeKoordinaten();
+	fixAllNames();
 	//	importWikiData();
 	//	handle("all+pennsylvania+marijuana");
 //	handle("hi");
@@ -1540,8 +1579,7 @@ void testBrandNewStuff() {
 //	string im= getImage(n);
 //	p(im);
 //	check(im=="dfs");
-
-	importAll();
+//	importAll();
 //	handle(":rh");
 //	handle(":learn 240938 Label Diät");
 //	handle(":learn 240938 Label Kur");
