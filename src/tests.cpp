@@ -1521,9 +1521,11 @@ void flattenGeographischeKoordinaten(){
 			N bb=findProperty(c, "Breitengrad");
 			if(!bb)
 				bb=findProperty(c, "Latitude");
-			S sb=addStatement(ort,b,bb,false,true);
+//			S sb=addStatement(ort,b,bb,false,true);
+			S sb=addStatement(ort,b,bb,true,false);
 			N ll=getProperty(c, "Längengrad");
-			S sl=addStatement(ort,l,ll,false,true);
+//			S sl=addStatement(ort,l,ll,false,true);
+			S sl=addStatement(ort,l,ll,true,false);
 //			show(ort);
 //			showStatement(sb);
 //			p(bb!=0);
