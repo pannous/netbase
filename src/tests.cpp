@@ -1524,9 +1524,9 @@ void flattenGeographischeKoordinaten(){
 			S sb=addStatement(ort,b,bb,false,true);
 			N ll=getProperty(c, "Längengrad");
 			S sl=addStatement(ort,l,ll,false,true);
-			show(ort);
-			showStatement(sb);
-			p(bb!=0);
+//			show(ort);
+//			showStatement(sb);
+//			p(bb!=0);
 		}
 	}
 }
