@@ -78,6 +78,7 @@ void testScanf() {
 	//	exit(1);
 }
 
+
 void testBasics() {
 	//you have a pointer to some read-only characters
 	cchar* a="abc";
@@ -1520,35 +1521,10 @@ void testBrandNewStuff() {
 	handle("angela merkel");
 	parse("7546026");
 
+
 	Node* ax=getNode(7546026);
 	show(ax);
 	NodeVector all= parse("angela merkel nachrichten");
-	Node aa=*getAbstract("a");
-	Node* aaa=&aa;// !=getAbstract("a");!!!
-	Node* a=getAbstract("a");
-	Node* b=getAbstract("b");
-	Node* c=getAbstract("c");
-	a->statementCount=3;
-	b->statementCount=1;
-	c->statementCount=2;
-	all.push_back(a);
-	all.push_back(b);
-	all.push_back(c);
-
-//	std::sort(all.begin(), all.end());// sorts by address/id !?
-	showNodes(all,false,false,false);
-
-	sortNodes(all);
-	showNodes(all,false,false,false);
-//
-//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
-//	showNodes(all,false,false,false);
-
-//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
-//	showNodes(all,false,false,false);
-
-//	std::sort(all.begin(),all.end(),);
-
 	//	importWikiData();
 	//	handle("all+pennsylvania+marijuana");
 //	handle("hi");
@@ -1565,7 +1541,7 @@ void testBrandNewStuff() {
 //	p(im);
 //	check(im=="dfs");
 
-//	importAll();
+	importAll();
 //	handle(":rh");
 //	handle(":learn 240938 Label Diät");
 //	handle(":learn 240938 Label Kur");

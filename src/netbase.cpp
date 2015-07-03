@@ -2395,7 +2395,7 @@ Statement * learn(string sentence) {
 //}
 //void cleanAbstracts(Context* c){
 Node * getThe(Node* abstract, Node * type) {// first instance, TODO
-	if (!abstract) return 0;
+	if (!abstract || !abstract->name) return 0;
     if(abstract->kind==singletonId)return abstract;
     if (getRelation(abstract->name)) // not here! doch
         return getRelation(abstract->name);

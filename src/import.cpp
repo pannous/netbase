@@ -1518,6 +1518,7 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 }
 
 bool importN3(cchar* file) {
+	autoIds=false;
 	//    if(hasWord("vote_value"))return true;
 	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
 	Node* subject;
@@ -1967,6 +1968,7 @@ void importStatements() {
 }
 
 void importWordnet() {
+	autoIds=false;
 	load_wordnet_synset_map();
 	//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
@@ -2100,7 +2102,7 @@ void importWikiData() {
 //		importN3("wikidata/wikidata-terms.de.nt");// description + altLabels
 	}
 //	else{
-		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
+//		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
 //		importLabels("wikidata/wikidata-properties.en.nt");
 //	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
@@ -2189,6 +2191,7 @@ void import(const char* type, const char* filename) {
 void importAllDE() {
 	importing=true;
 	germanLabels=true;
+	autoIds=false;
 	p("importAll GERMAN");
 	importLabels("labels.csv");
 	importWordnet();
@@ -2210,6 +2213,7 @@ void importAllDE() {
 
 void importAll() {
 	importing=true;
+	autoIds=false;
 	if(germanLabels)
 		return importAllDE();
 	p("importAll ENGLISH");

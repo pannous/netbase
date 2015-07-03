@@ -1447,7 +1447,7 @@ const static bool sortNodePredicate(Node* a, Node* b) {
 //	return (a->statementCount > b->statementCount);
 //	return (a->key()> b->key());
 }
-void sortNodes(NodeVector all){
+void sortNodes(NodeVector& all){
 	int count=0;
 	int max=0;
 	deque<Node*> sorted;
@@ -1459,9 +1459,17 @@ void sortNodes(NodeVector all){
 		}
 		else sorted.push_back(n);
 	}
-//	std::sort(all.begin(), all.end(),sortNodePredicate);
+	for (int i=0; i<all.size(); i++) {
+		all[i]=sorted[i];
+	}
+	std::sort(all.begin(), all.end(),sortNodePredicate);
 //	auto x=all.begin();
 //	auto y=all.end();
-//	std::sort(x, y, sortNodePredicate);
-//			  [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
+//	std::sort(x, y, sortNodePredicate);// [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(),all.end(),);
+
 }
