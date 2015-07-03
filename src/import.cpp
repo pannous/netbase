@@ -250,9 +250,7 @@ void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 
 		lastTitle=clone(title); // only the first
 		//		if (!hasWord(title)) normImageTitle(title); //blue -_fin ==> bluefin
-
 		//		if (!hasWord(title)) continue; // currently only import matching words.
-
 		//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
 		//		if (getImage(title) != "")
 		//			continue; //already has one ; only one so far!
