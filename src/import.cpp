@@ -1317,7 +1317,11 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		if (hasWord(label)) n=getNew(label);		//get(1);//
 		else n=getAbstract(label);
 		//		n->value.text=...
+		addStatement(n, Labeled, getAbstract(key));// VERY EXPENSIVE ID !!!
+
+
 		if (n) {
+//			if(keepLabel)addStatement(n, ID, key);
 			if (useHash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
 			//                freebaseKeys.insert(pair<long,int>(h,n->id));
 			else{
@@ -1384,8 +1388,10 @@ Node* getFreebaseEntity(char* name) {
 		if(name[strlen(name) - 1]=='"')
 			name[strlen(name) - 1]=0;
 	}
-	for (size_t i=strlen(name); i>0; --i)// cut http://.../ namespaces
-		if(name[i]=='/'||name[i]=='#')
+	size_t len=strlen(name);
+	if(len==0)return 0;
+	for (size_t i=len-1; i>0; --i)
+		if(name[i]=='#')// name[i]=='/'|| // cut http://.../ namespaces
 			name=name+i+1;//str[i]=0;
 	cut_to(name," (");
 	if(name[0]!='0'){// ECHSE

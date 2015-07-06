@@ -1564,9 +1564,9 @@ void testBrandNewStuff() {
 //	Node* ax=getNode(7546026);
 //	show(ax);
 //	NodeVector all= parse("angela merkel nachrichten");
-	flattenGeographischeKoordinaten();
-	fixAllNames();
-	//	importWikiData();
+//	flattenGeographischeKoordinaten();
+//	fixAllNames();
+		importWikiData();
 	//	handle("all+pennsylvania+marijuana");
 //	handle("hi");
 //		handle("all/hi limit 2");
