@@ -1518,14 +1518,14 @@ void flattenGeographischeKoordinaten(){
 		if(s->predicate==n->id){
 			N ort=s->Subject();
 			N c=s->Object();
-			N bb=findProperty(c, "Breitengrad");
-			if(!bb)bb=findProperty(c, "Latitude");
-//			S sb=addStatement(ort,b,bb,false,true);
-			S sb=addStatement(ort,b,bb,true,false);
+//			N bb=findProperty(c, "Breitengrad");
+//			if(!bb)bb=findProperty(c, "Latitude");
+//			S sb=addStatement(ort,b,bb,true,false);
 			N ll=getProperty(c, "Längengrad");
 			if(!ll)ll=getProperty(c, "Longitude");
-//			S sl=addStatement(ort,l,ll,false,true);
-			S sl=addStatement(ort,l,ll,true,false);
+			//			S sl=addStatement(ort,l,ll,false,true);
+//			S sl=addStatement(ort,l,ll,true,false);
+			S sl=addStatement(ort,l,ll,false,false);
 //			show(ort);
 //			showStatement(sb);
 //			p(bb!=0);
@@ -1533,7 +1533,7 @@ void flattenGeographischeKoordinaten(){
 	}
 }
 void fixAllNames(){
-	for(int i=1000;i<43220221;i++){
+	for(int i=1000;i<54714717;i++){
 		N n= getNode(i);
 		if(!n->name)continue;
 		if(n==Error){
