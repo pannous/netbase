@@ -2201,7 +2201,7 @@ void importAllDE() {
 	importWordnet();
 	//	return;
 	//	exit(0);
-	importCsv("adressen.txt");
+//	importCsv("adressen.txt");
 	importNames();
 //	doDissectAbstracts=true;// already? why not
 	doDissectAbstracts=false;//MESSES TOO MUCH!
@@ -2222,7 +2222,7 @@ void importAll() {
 		return importAllDE();
 	p("importAll ENGLISH");
 	importWordnet();
-	importCsv("adressen.txt");
+//	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	doDissectAbstracts=true;// already? why not
