@@ -290,9 +290,9 @@ int handle(cchar* q0,int conn){
 			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
 				if (!checkStatement(s))break;
 				// filter statements
-				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
-				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
-					continue;
+//				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
+//				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
+//					continue;
 				if (s->subject==node->id and s->predicate!=4)//_instance
 					statements.push_front(s);
 				else statements.push_back(s);
