@@ -262,7 +262,7 @@ int handle(cchar* q0,int conn){
         entity=(char*)cut_to(q," ");
         entity=keep_to(entity,"limit");
     }
-//   	sortNodes(all);
+   	sortNodes(all);
 	int count=(int)all.size();
 	for (int i = 0; i < count && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
