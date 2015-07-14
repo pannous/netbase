@@ -264,14 +264,16 @@ int handle(cchar* q0,int conn){
     }
    	sortNodes(all);
 	int count=(int)all.size();
+	int good=0;
 	for (int i = 0; i < count && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
 		if(node->id==0)continue;
 		if(last==node)continue;
+		good++;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
-		if (format == json)if(i>0)Writeline(conn, "},\n");
+		if (format == json)if(good>0)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
         if(verbosity != alle)
