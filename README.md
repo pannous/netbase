@@ -1,4 +1,4 @@
-Netbase -- Semantic Graph Database 
+Netbase - Semantic Graph Database 
 ------------
 
 Netbase, your semantic web database.
