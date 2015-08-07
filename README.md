@@ -17,8 +17,8 @@ For example instead of asking about the "names of the daughters of Barack Obama"
 You can start *experimenting* with the API right away at https://www.mashape.com/pannous/netbase
 Or host your own graph database, it is very quick to load.
 
-You can start the console the console with ./netbase
-And get the available commands with :help
+You can start the console via `./netbase`
+and get the available commands with :help
 
 Extremely fast data import is provided for all common graph/data formats including n3, rdf, owl, csv, mysql, sql, xml
 The same formats are available for data access and data export together with the Blueprint standard.
