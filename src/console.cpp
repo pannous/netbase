@@ -262,7 +262,7 @@ NodeVector parse(const char* data) {
         //		strcpy((char*) data, newdata);
         //		p(resultLimit);
 	}
-	if (eq(data, ":load")) { // || eq(data, ":l")
+	if (eq(data, ":load")) { // || eq(data, ":l") learn?
 		load(false);
 		return OK;
 	}
@@ -278,7 +278,7 @@ NodeVector parse(const char* data) {
 	}
 	if (eq(data, ":hack")) {
 		Context* c=currentContext();
-		c->nodeCount-=1000; //hack!
+//		c->nodeCount-=1000; //hack!
 		//		maxNodes += 1000;
 		return OK;
 	}
@@ -513,7 +513,7 @@ NodeVector parse(const char* data) {
 	}
     
 	
-	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], ":!"))){
+	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){
 		string what=next_word(data);
 		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
