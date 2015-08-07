@@ -21,6 +21,6 @@ You can start the console via `./netbase`
 and get the available commands with :help
 
 Extremely fast data import is provided for all common graph/data formats including n3, rdf, owl, csv, mysql, sql, xml
-The same formats are available for data access and data export together with the Blueprint standard.
+The same formats are available for data access and data export together with the [Blueprints](http://github.com/pannous/blueprints-netbase) standard.
 
-This database is already used by millions of users through the Jeannie app.
+This database is already used by millions of users through the [Jeannie](http://jeannie-assistant.com/) app.
