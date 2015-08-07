@@ -15,12 +15,12 @@ Netbase is much more than a hyperfast triple store: it has the [wordnet](http://
 For example instead of asking about the "names of the daughters of Barack Obama" you could just search for "Obamas kids".
 
 You can start *experimenting* with the API right away at https://www.mashape.com/pannous/netbase
-Or host your own graph database, it is very quick to load.
+or host your own graph database, it is very quick to load.
 
 You can start the console via `./netbase`
 and get the available commands with :help
 
-Extremely fast data import is provided for all common graph/data formats including n3, rdf, owl, csv, mysql, sql, xml
-The same formats are available for data access and data export together with the [Blueprints](http://github.com/pannous/blueprints-netbase) standard.
+Extremely fast data import is provided for all common graph/data formats including n3, rdf, owl, csv, mysql, sql and xml;
+The same formats are available for data access and data export together with the [blueprints](http://github.com/pannous/blueprints-netbase) standard.
 
 This database is already used by millions of users through the [Jeannie](http://jeannie-assistant.com/) app.
