@@ -1,9 +1,7 @@
 Netbase - Semantic Graph Database 
-------------
+-----------
 
-Netbase, your semantic web database.
-
-We use it as Knowledge Graph containing over 600,000,000 nodes and statements, 
+We use netbase as Knowledge Graph containing over 600,000,000 nodes and statements, 
 from all the Internet's finest sources, 
 including [Freebase](http://www.freebase.com/), [WikiData](https://www.wikidata.org/wiki/Q54837), [DBPedia](http://wiki.dbpedia.org/), [Yago](https://en.wikipedia.org/wiki/YAGO_%28database%29), [Wordnet](https://en.wikipedia.org/wiki/WordNet), babelnet, ... 
 as well as many custom GraphDBs. 
@@ -23,3 +21,4 @@ Extremely fast data import is provided for all common graph/data formats includi
 The same formats are available for data access and data export together with the [blueprints](http://github.com/pannous/blueprints-netbase) standard.
 
 This database is already used by millions of users through the [Jeannie](http://jeannie-assistant.com/) app.
+Here we show the power of natural language queries to get instant answers.
