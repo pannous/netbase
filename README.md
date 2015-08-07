@@ -6,3 +6,6 @@ from all the Internet's finest sources, including Freebase, [WikiData](https://w
 as well as many custom GraphDBs. 
 
 From simple entities to complex queries, this is by far the fastest db of its kind.
+
+You can *start experimenting* with the API right away at https://www.mashape.com/pannous/netbase
+Or host your own graph database, it is very quick to load.
