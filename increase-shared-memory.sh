@@ -10,12 +10,12 @@ export shmmax=4294967296	# 4GB
 # export shmmax=68719476736 # 64GB
 
 # allow bigger shared memory
-		# echo "kernel.shmmax=$shmmax" >> /etc/sysctl.conf
-		# echo "kernel.shmall=$shmmax" >> /etc/sysctl.conf
-if [ $APPLE ] 
+if [[ $APPLE == 1 ]] 
 then
-sudo sysctl -w kern.sysv.shmmax=$shmmax && sudo sysctl -w kern.sysv.shmall=$shmmax
+			sudo sysctl -w kern.sysv.shmmax=$shmmax && sudo sysctl -w kern.sysv.shmall=$shmmax
 else 
-sysctl -w kernel.shmall=$shmmax && sysctl -w kernel.shmmax=$shmmax
+		#echo "kernel.shmmax=$shmmax" >> /etc/sysctl.conf
+		#echo "kernel.shmall=$shmmax" >> /etc/sysctl.conf
+sudo sysctl -w kernel.shmall=$shmmax && sudo sysctl -w kernel.shmmax=$shmmax
 #sudo sysctl -w sys.kernel.shmmax=$shmmax && sudo sysctl -w sys.kernel.shmmall=$shmmax
 fi
