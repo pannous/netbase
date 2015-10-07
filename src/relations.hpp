@@ -32,10 +32,11 @@ extern Node* Active;
 extern Node* Passive;
 extern Node* Tag;
 extern Node* Label;
-extern Node* BackLabel;
-extern Node* Labels;
-extern Node* LabeledNode;
+extern Node* Labeled;
+//extern Node* Labels;
+//extern Node* LabeledNode;
 extern Node* Comment;
+extern Node* Description;
 
 extern Node* Category;
 extern Node* SubContext;
@@ -78,7 +79,6 @@ extern Node* Float;
 extern Node* Integer;
 extern Node* Range;
 extern Node* Unit;
-
 
 extern Node* Bytes;// byte[] -> serialized java object etc etc
 extern Node* Map; // Map<String,T>
@@ -147,6 +147,7 @@ static const int noun = 110;
 static const int verb = 111;
 static const int adjective = 112;
 static const int adverb = 113;
+static const int preposition = 114;
 
 static const int _bytes = 119;
 static const int _map = 120;

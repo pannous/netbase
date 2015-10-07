@@ -23,6 +23,10 @@ extern bool useYetvisitedIsA;
 extern bool autoIds;
 extern bool testing;// don't implicitly init relations
 
+extern int resultLimit;
+extern int defaultLookupLimit;
+extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!!  TODO!!!
@@ -107,16 +111,23 @@ typedef struct Node {
     int kind; // abstract,node,person,year, m^2     // via first slot? nah
     //int context; //implicit   | short context_id or int node_id
     //float rank;
-    int statementCount; //implicit, can be replaced with iterator
+    int statementCount; //explicit, can be made implicit and replaced with iterator
     int firstStatement;
 	int lastStatement;// remove
     Value value; // for statements, numbers  WASTE!!! remove
-
+//	bool operator<(const Node *rhs) const {
+//		return statementCount > rhs->statementCount;
+//	}
+//	bool operator() (Node* a, Node* b) const
+//	{
+//		return a->statementCount > b->statementCount;
+//	}
     // INDEX
     // Node* index;//nur #properties+1 Nits!!
     // class country{ population{property:0} capital{property:1} }
-    // germany.index[0]=80Mio .index[1]=Berlin
+	// germany.index[0]=80Mio .index[1]=Berlin
 
+//	virtual int key() const { return statementCount; }
 }Node ;
 
 // norway captial oslo
@@ -170,7 +181,7 @@ public:
     Node* Object(){return get(object);}
 #endif
 //    REORDER NEEDS NEW INDEX ON ALL SERVERS +JAVA!
-    int subject; // implicit!! Subject
+    int subject; // implicit if using explicitNodes: Subject->id
     int predicate;
     int object;
 
@@ -178,15 +189,13 @@ public:
     int nextPredicateStatement;
     int nextObjectStatement;
 
-//    int subject; // implicit!! Subject
-//    int predicate;
-//    int object;
     //  Node* meta; for reification, too expensive, how else now??
     // int subjectContext;//... na! nur in externer DB!
 } Statement;
 // manipulate via other statements (confidence, truth, author(!), ...)
 
 // union: context->hasNode->0 , name
+//typedef vector<Node*> NodeVector;
 typedef vector<Node*> NodeVector;
 typedef queue<Node*> NodeQueue;
 typedef Node** NodeList;
@@ -287,7 +296,7 @@ typedef struct Context {
     long currentNameSlot;
     int nodeCount;
     int extrahashNr;
-    long statementCount; //first 1000 reserved!
+    int statementCount; //first 1000 reserved!
     bool use_logic;
     // Node nodes[maxNodes];
     // Statement statements[maxStatements];
@@ -317,7 +326,7 @@ extern Node* Active;
 extern Node* Passive;
 extern Node* Tag;
 extern Node* Label;
-extern Node* BackLabel;
+extern Node* Labeled;
 extern Node* Labels;
 extern Node* LabeledNode;
 extern Node* Category; // SuperClass or Type
@@ -391,15 +400,17 @@ NodeVector show(NodeVector all);// alias
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
 extern "C" Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
-bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
-bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
-bool addStatementToNode(Node* node, int statementNr);
+//bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
+//bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
+bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
+bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
+bool addStatementToNode(Node* node, int statementNr,bool force_insert_at_start);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 
 extern "C"
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
-Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
+Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true,bool force_insert_at_start=false);
 //inline
 		Node* get(const char* node);
 //inline
@@ -428,6 +439,7 @@ Node* getSingleton(const char* thing) ;
 void showStatement(Statement* s);
 extern "C" void showStatement(int id);
 bool show(Node* n, bool showStatements = true);
+void show(Statement * s);
 Node * showNode(Node* n);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
@@ -441,8 +453,7 @@ Statement* findStatement(Node* n, string predicate, string object, int recurse =
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
 extern "C" bool hasNode(const char* thingy);
-string getImage(const char* n, int size = 30);
-string getImageThumb(const char* n, int size = 150);
+string getImage(const char* n, int size = 150,bool thumb=false);
 string getImage(Node* a, int size=150,bool thumb=false);
 
 
@@ -572,18 +583,18 @@ static int billion=GB;
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 10*million;// long would need a new structure!!
-static long maxStatements = maxNodes;// *10 = crude average of Statements per Node  ; max=1000!
+static long maxNodes /*max 32bit=4GB!*/= 40*million;// long would need a new structure!!
+static long maxStatements = maxNodes*3;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 30*million;
-static long maxStatements = maxNodes*3;
+static long maxNodes = 100*million;
+static long maxStatements = maxNodes*2;
 #endif
 
 //static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
-
+#define _MAIN_
 int main(int argc, char *argv[]);
 static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize // against unused ahashSize ...
 

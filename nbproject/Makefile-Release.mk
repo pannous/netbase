@@ -71,7 +71,7 @@ LDLIBSOPTIONS=
 
 ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/netbase: ${OBJECTFILES}
 	${MKDIR} -p ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}
-	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/netbase ${OBJECTFILES} ${LDLIBSOPTIONS} -lreadline -s -Wl,-S
+	${LINK.cc} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/netbase ${OBJECTFILES} ${LDLIBSOPTIONS} -lreadline -lz -s -Wl,-S
 
 ${OBJECTDIR}/src/console.o: src/console.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

@@ -2,13 +2,16 @@ cd ~/netbase
 #killall -SIGKILL gdb
 #killall -SIGKILL gdb-i386-apple-darwin
 #killall -SIGKILL netbase
+git pull || exit
+./adjust.sh
 
 platform=`uname`
 
 ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
-options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
-#   -s
+# options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit cannot specify -o with -c or -S with multiple files
+options="-m64 --debug"
+#   -s -std=c++11 for sorting array!
 #  -L$RVM_HOME/usr/lib -I$ruby_include -Ibuild/
 
 #g++ $options -MF build/query.o.d -o build/query.o src/query.cpp
@@ -26,11 +29,7 @@ options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit
 
 mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
-#sed -i 's/81/80/' src/webserver.cpp 
-sed -i  's/300\*/30*/' src/netbase.hpp 
-
-g++ -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase  && ./netbase :exit $@
-
+g++ $options  -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline && ./netbase :exit $@
 
 if [[ $platform == 'Darwin' ]]; then
 cp netbase blueprints-netbase/lib/mac/libNetbase.dylib
@@ -42,7 +41,7 @@ cp netbase blueprints-netbase/lib/linux/libNetbase.a
 cp bin/libNetbase.so blueprints-netbase/lib/linux-x86-64/
 cp bin/libNetbase.so blueprints-netbase/lib/linux/
 fi
-cd blueprints-netbase; git pull --all; git commit -a -m "Updated library" && git push --all && git status
+# cd blueprints-netbase; git pull --all; git commit -a -m "Updated library" && git push --all && git status
 cd -
 
 #  -I/opt/local/include BOOST

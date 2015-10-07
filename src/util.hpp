@@ -28,6 +28,7 @@ bool endsWith(const char* x, const char* y);
 cchar* cut_to(cchar* str,cchar* match);
 char* cut_to(char* str,cchar* match);
 char* keep_to(char* str, cchar* match);
+bool contains(const char* x, const char y);
 bool contains(const char* x,const char* y,bool ignoreCase=false);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
@@ -45,9 +46,11 @@ void ps(const char* s);
 void ps(string s);// string geht nicht!?!
 void ps(string* s);
 void ps(NodeVector v);
-//void p(long l);
-void p(double l);
+void p(long l);
+void pl(long l);
+void pd(double l);
 //void p(int i);
+void pi(int i);
 void px(void* p);// 64 bit hex
 void p(char* s);
 void p(const char* s);
@@ -73,12 +76,13 @@ char* tolower(const char* x);
 void fixNewline(char* line);
 NodeVector intersect(NodeVector a,NodeVector b);
 unsigned int wordhash(const char *str);
-inline short normChar(char c);
+//inline short normChar(char c);
+short normChar(char c);
 string stem(string word);
 void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
 //NodeVector mergeVectors(NodeVector some, NodeVector more);
 void mergeVectors(NodeVector* some, NodeVector more);
-char* substr(char* what,int from,int to);
+char* substr(const char* what,int from,int to);
 char* match(char* input, cchar* pattern);
 char* clone(const char* line);
 char* editable(const char* line);
@@ -92,5 +96,7 @@ bool isAbstract(Node* object);
 bool contains(NodeVector& v, Node* o,bool fuzzy=false);
 char* replace(char* data,char what,char with);
 string itoa(int i);
+void appendFile(const char* fileName,const char* data);
 #define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}
 #define minimum(a,b) (a<b?a:b)
+void printlabels();

@@ -44,11 +44,9 @@ string next_word(string data) {
 	return data;
 }
 
-char* substr(char* what, int from, int to) {
+char* substr(const char* what, int from, int to) {
 	if (to == -1) to=(int)strlen(what);
-#ifndef DEBUG
-	if (from > to) return what; // ERROR!!
-#endif
+	if (from > to) return (char*)what; // const -> ERROR!! + danger!
 	char *result=(char*) malloc(sizeof(char) * (to - from + 1));
 	strncpy(result, what + from, to - from);
 	result[to - from]=0; // In case of unclean malloc
@@ -84,7 +82,12 @@ template void empty(vector<Statement*, std::allocator<Statement*> > &v);
 //    }
 //    return false;
 //}
-
+bool contains(const char* x, const char y){
+	for (int i=0; i<strlen(x); i++) {
+		if(x[i]==y)return true;
+	}
+	return false;
+}
 bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
 	if (!x || !y) return false;
@@ -113,8 +116,9 @@ bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //
 bool contains(NodeVector& all, Node* node, bool fuzzy) {
 	for (int i=0; i < all.size(); i++) {
-		if ((Node*) all[i] == node) return true;
-		if (fuzzy && eq(all[i], node)) return true;
+		Node* n=(Node*) all[i];
+		if (n == node || (fuzzy && eq(n, node)))
+			return true;
 	}
 	return false;
 }
@@ -172,11 +176,21 @@ cchar* cut_to(cchar* str, cchar* match){
     if(!i)return str;
     return i+strlen(match);
 }
+
 char* cut_to(char* str, cchar* match){
     char* i=strstr(str,match);
     if(!i)return str;
     if(i)i[0]=0;
     return i+strlen(match);
+}
+
+//#include <sstrings2.h> Linking with -lsstrings2
+//char* strrstr(const char* haystack, const char* needle);
+char* reverse_cut_to(char* str, char match){
+	for (size_t i=strlen(str); i>0; --i) {
+		if(str[i]==match)return str+i+1;//str[i]=0;
+	}
+	return str;
 }
 
 // NOT const !!
@@ -203,12 +217,14 @@ bool endsWith(const char* x, const char* y) {
 	int xlen=(int)strlen(x);
 	int ylen=(int)strlen(y);
 	if (xlen < ylen) return false;
+//	char* i=(char*)strstr(x,y);
+//	if(!i)return false;
 	for (int i=1; i <= ylen; i++)
 		if (x[xlen - i] != y[ylen - i]) return false;
 	return true;
 }
 bool startsWith(const char* x, const char* y) {
-    short len=strlen(y);
+	short len=strlen(y);
 	if (strlen(x) < len) return false;
 	for (int i=0; i < len; i++) {
 		if (x[i] != y[i]) return false;
@@ -308,23 +324,28 @@ void ps(const char* s) {
 	fflush(stdout);
 }
 
-void p(int i) {
+//void p(int i) {
+//	if (quiet) return;
+//	printf("%i\n", i);
+//	fflush(stdout);
+//}
+void pi(int i) {
 	if (quiet) return;
 	printf("%i\n", i);
 	fflush(stdout);
 }
 
-void p(double l) {
+void pd(double l) {
 	if (quiet) return;
 	printf("%f\n", l);
 	fflush(stdout);
 }
 
-//void p(long l) {
-//	if (quiet) return;
-//	printf("%lu\n", l);
-//	fflush(stdout);
-//}
+void p(long l) {
+	if (quiet) return;
+	printf("%lu\n", l);
+	fflush(stdout);
+}
 
 // 64 bit hex value
 
@@ -431,17 +452,24 @@ char* clone(const char* line) {
 	strcpy(line0, line);
 	return line0;
 }
+
+char* modifyConstChar(const char* line){
+	return editable(line);// FREE if not kept!
+}
 char* editable(const char* line) {
 	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
 	strcpy(line0, line);
-	return line0;
-}
-char* modifyConstChar(const char* line){
-    return editable(line);
+	return line0;// FREE if not kept!
 }
 
-// line MUST not be const!
+// line MUST not be const! tokens->out
 int splitStringC(char* line, char** tokens, char separator) {
+//	if(!contains(line, separator)){
+//		tokens[0]=line;
+//		tokens[1]=0;
+//		return 1;
+//////		return -1;
+//	}
 	char * token;
 	int row=0;
 	int len=(int)strlen(line);
@@ -460,7 +488,10 @@ int splitStringC(char* line, char** tokens, char separator) {
 		}
 		i++;
 	}
-	if (tokens) tokens[row]=lastgood;
+	if (tokens) {
+		tokens[row]=lastgood;
+		tokens[row+1]=0;// clean, be sure
+	}
 	return row + 1; //s
 }
 char** splitStringC(const char* line0, const char* separator) {
@@ -568,6 +599,7 @@ char* match(char* input,cchar* pattern) {
 	return group;
 }
 
+// std::remove(arg.begin(), arg.end(), ' ');
 char* fixQuotesAndTrim(char* tmp) {
 	bool quote=false;
 	while (tmp[0] == ' ' || tmp[0] == '_' || tmp[0] == '"') {
@@ -603,3 +635,17 @@ char* replace(char* data,char what,char with){
     return data;// chain
 }
 
+void appendFile(const char* fileName,const char* data){
+	FILE *fp= fopen(fileName,"a");
+	if(fp==0){pf("CANNOT APPEND to FILE %s\n",fileName); return;}
+	fprintf(fp,"%s\n",data);
+	fclose(fp);
+}
+
+void printlabels(){
+	for (int i=0; i<statementCount(); i++) {
+		Statement* s= getStatement(i);
+		if(checkNode(s->predicate))
+			p(s->Predicate()->name);
+	}
+}

@@ -1,21 +1,25 @@
 # increase shared memory limit
 # todo : use/set in netbase
 
-# export shmmax=2147483648 	# 2GB
-export shmmax=4294967296	# 4GB
-# export shmmax=6442450944	# 6GB
-# export shmmax=8589934592	# 8GB
-# export shmmax=17179869184	# 16GB
-# export shmmax=34359738368	# 32GB
-# export shmmax=68719476736 # 64GB
+shared_memory_2GB=2147483648  
+shared_memory_4GB=4294967296  
+shared_memory_6GB=6442450944	
+shared_memory_8GB=8589934592  
+shared_memory_16GB=17179869184
+shared_memory_32GB=34359738368
+shared_memory_64GB=68719476736
 
 # allow bigger shared memory
-if [[ $APPLE == 1 ]] 
+if [ $APPLE ] 
 then
-			sudo sysctl -w kern.sysv.shmmax=$shmmax && sudo sysctl -w kern.sysv.shmall=$shmmax
+  export shmmax=$shared_memory_8GB
+  sudo sysctl -w kern.sysv.shmmax=$shmmax && sudo sysctl -w kern.sysv.shmall=$shmmax
+  echo "kernel.sysv.shmmax        = $shmmax" | sudo tee -a /etc/sysctl.conf
+  echo "kernel.sysv.shmall        = $shmmax" | sudo tee -a /etc/sysctl.conf
 else 
-		#echo "kernel.shmmax=$shmmax" >> /etc/sysctl.conf
-		#echo "kernel.shmall=$shmmax" >> /etc/sysctl.conf
-sudo sysctl -w kernel.shmall=$shmmax && sudo sysctl -w kernel.shmmax=$shmmax
-#sudo sysctl -w sys.kernel.shmmax=$shmmax && sudo sysctl -w sys.kernel.shmmall=$shmmax
+  export shmmax=$shared_memory_32GB
+  sysctl -w kernel.shmall=$shmmax && sysctl -w kernel.shmmax=$shmmax
+  sudo sysctl -w sys.kernel.shmmax=$shmmax && sudo sysctl -w sys.kernel.shmmall=$shmmax
+  echo "kernel.shmmax              = $shmmax" | sudo tee --append /etc/sysctl.conf
+  echo "kernel.shmall              = $shmmax" | sudo tee --append /etc/sysctl.conf
 fi

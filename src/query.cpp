@@ -5,12 +5,8 @@
 
 #include <cstdlib>
 #include <string.h>
-#include <algorithm> // std:reverse
+#include <algorithm> // std:reverse std:sort
 //#include <multimap> // to sort map
-
-int resultLimit = 100; // != lookuplimit
-int defaultLookupLimit = 1000;
-int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
 
 int* enqueued; // 'parents'
 NodeVector EMPTY;
@@ -1081,9 +1077,7 @@ int countInstances(Node * node) {
 }
 
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
-	NodeVector all;
-    
-	int i = 0;
+	NodeVector all;	int i = 0;
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
@@ -1377,6 +1371,11 @@ NodeVector nodeVectorWrap(Node* n) {
 	r.push_back(n);
 	return r;
 }
+NodeVector nodeVectorWrap(Statement* n) {
+	NodeVector r;
+	r.push_back(n->Subject());
+	return r;
+}
 
 NodeVector update(cchar* query){
     autoIds=true;
@@ -1415,9 +1414,12 @@ NodeVector parseProperties(const char *data) {
 		thing=splat[0];
 		property=splat[1];
 	}
-	else if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
-	else if (contains(data, " by ")) sscanf(data, "%s by %s", property, thing);
-    
+	else if (contains(data, " of ")) sscanf(data, "%s of %[^\n]", property, thing);
+	else if (contains(data, " by ")) sscanf(data, "%s by %[^\n]", property, thing);
+	// OK: opponent+of+barack_obama
+    // todo : birth_place of james -> %[a-zA-Z _] or splitStringC
+	// sscanf is EVIL PERIOD!
+	
 	if (!property) {
 		char** splat=splitStringC(data, ' ');
 		thing=splat[0];
@@ -1425,12 +1427,49 @@ NodeVector parseProperties(const char *data) {
 	}
     
 	pf("does %s have %s?\n", thing, property);
-	NodeVector all=findProperties(thing, property);
+	NodeVector all=findProperties(thing, property,false);
 	if (all.size()==0&& property[strlen(property) - 1] == 's'){
 		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
 		all=findProperties(thing, property);
 	}
-    
+	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
 	showNodes(all);
 	return all;
+}
+
+//inline int
+const static bool sortNodePredicate(Node* a, Node* b) {
+	int x=a->statementCount;
+	int y=b->statementCount;
+	return x>y;
+//	return (*a < *b);
+	//	return a<b;//-
+//	return (a->statementCount > b->statementCount);
+//	return (a->key()> b->key());
+}
+void sortNodes(NodeVector& all){
+	int count=0;
+	int max=0;
+	deque<Node*> sorted;
+	for (int i=0; i<all.size(); i++) {
+		Node* n=all[i];
+		if(n->statementCount>max){
+			sorted.push_front(n);
+			max=n->statementCount;
+		}
+		else sorted.push_back(n);
+	}
+	for (int i=0; i<all.size(); i++) {
+		all[i]=sorted[i];
+	}
+	std::sort(all.begin(), all.end(),sortNodePredicate);
+//	auto x=all.begin();
+//	auto y=all.end();
+//	std::sort(x, y, sortNodePredicate);// [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(),all.end(),);
+
 }

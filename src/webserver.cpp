@@ -31,35 +31,15 @@
 #define SERVER_PORT  (81)
 static char server_root[1000] = "/Users/me/";
 
+int resultLimit = 200; // != lookuplimit reset with every fork !!
+int defaultLookupLimit = 1000;
+int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+
+
 int listener, conn,closing=0;
 pid_t pid;
 //    socklen_t
 struct sockaddr_in servaddr;
-
-enum result_format {
-	xml, json, txt,csv,html
-};
-
-enum result_verbosity {
-	shorter, normal, longer,verbose,alle
-}verbosity;
-
-
-void fixLabel(Node* n){
-    if(!checkNode(n))return;
-    if(n->name==0)return;// HOW? checkNames=false :(
-	if(n->name[0]=='"')n->name=n->name+1;
-
-	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
-		n->name[strlen(n->name)-1]=0;
-	if(n->name[strlen(n->name)-1]=='\\')
-		n->name[strlen(n->name)-1]=0;
-	replaceChar(n->name,'"',' ');
-	replaceChar(n->name,'\'',' ');
-// todo: "'","%27" etc
-//#include <curl/curl.h>
-//char *curl_easy_escape( CURL * curl , char * url , int length );
-}
 
 /// true = filter
 vector<char*>excluded;
@@ -71,138 +51,43 @@ int warnings=0;
 //static char* excluded=0;
 //static char* excluded2=0;
 //static char* excluded3=0;
-bool checkHideStatement(Statement* s){
-	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
-    if(s->subject==0||s->predicate==0||s->object==0){warnings++;return true;}
-	char* predicateName=s->Predicate()->name;
-	char* objectName=s->Object()->name;
-	char* subjectName=s->Subject()->name;
-    if(subjectName==0||predicateName==0||objectName==0){warnings++;return true;}
-    
-    if(showExcludes){
-        if(eq(subjectName,"exclude",1)||eq(predicateName,"exclude",1)||eq(objectName,"exclude",1))return false;
-        if(eq(subjectName,"include",1)||eq(predicateName,"include",1)||eq(objectName,"include",1))return false;
-        return true;
-    }
-    
-    if(eq(predicateName,"exclude")){excluded.push_back(objectName);return true;}
-    if(eq(predicateName,"include")){included.push_back(objectName);return true;}
-    if(predicateName[0]=='<')predicateName++;
-	if(eq(predicateName,"Key"))return true;
-   	if(eq(predicateName,"expected type"))return true;
-   	if(eq(predicateName,"Range"))return true;
-    if(eq(predicateName,"usage domain"))return true;
-    if(eq(predicateName,"schema"))return true;
-    if(startsWith(predicateName,"http"))return true;
-    
-    if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
-    	return true;// zh-ch, id ...
-    if(objectName[0]=='/'||objectName[1]=='/')return true;// ?
-    
-    
-    for(int i=0;i<excluded.size();i++){
-        char* exclude=excluded.at(i);
-        if(contains(subjectName,exclude,1)||contains(predicateName,exclude,1)||contains(objectName,exclude,1))return true;
-        if(eq(itoa(s->subject),exclude)||eq(itoa(s->predicate),exclude)||eq(itoa(s->object),exclude))return true;
-    }
-    bool ok=included.size()==0;// no filter
-    for(int i=0;i<included.size();i++){
-        char* include=included.at(i);
-        if(eq(predicateName,"Bundesland"))
-            p(s);
-        if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
-        if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))
-            ok=true;
-    }
-    
-    //    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
-    //    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
-    //    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
-   return !ok;
-//    return false;
-}
 
-void fixLabels(Statement* s){
-	fixLabel(s->Subject());
-	fixLabel(s->Predicate());
-	fixLabel(s->Object());
-}
+enum result_format {
+	xml, json, txt,csv,html
+};
 
-void getIncludes(Node* n){
-	if(verbosity==shorter||verbosity==alle)return;
-	if(n->id<1000)return;
-	if(eq("Release track",n->name))return;
-	if(eq("Recording",n->name))return;
-	if(eq("Document",n->name))return;
-	if(eq("Cataloged instance",n->name))return;
-    pf("getIncludes %d >>%s<<\n",n->id,n->name);
-    Statement *s=0;
-	int lookups=0;
-    while((s=nextStatement(n,s))){
-		if(++lookups>50)break;
-//        p(s);
-        if(eq(s->Predicate()->name,"exclude")){
-            excluded.push_back(s->Object()->name);
-            excludedIds.push_back(s->Object()->id);
-        }
-        if(eq(s->Predicate()->name,"include")){
-            included.push_back(s->Object()->name);
-            includedIds.push_back(s->Object()->id);
-        }
-    }
-    
-}
+enum result_verbosity {
+	shorter, normal, longer,verbose,alle
+}verbosity;
 
-void loadView(Node* n){
-    getIncludes(n);
-    N parent= getType(n);
-    if(parent)
-        getIncludes(parent);
-    if(parent&&parent->kind!=Abstract->kind)
-        getIncludes(getAbstract(parent->name));
-}
 
-void loadView(char* q){
-    N ex=get("excluded");// globally
-    if(ex &&   verbosity != alle )getIncludes(ex);
-    ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
-    if(ex && verbosity != alle )getIncludes(ex);
-    
-   char* exclude=q;
-    while(exclude&&contains(exclude," -")){
-        exclude=strstr(exclude," -");
-        if(exclude[2]!=' '){// not 2009 - 2010 etc
-            exclude[0]=0;
-            exclude+=2;
-            if(verbosity != alle)
-            excluded.push_back(exclude);
-        }else exclude=0;
-    }
-    char* include=q;
-    while(include&&contains(include," +")){
-        include=strstr(exclude," +");
-        include[0]=0;
-        include+=2;
-        if(verbosity != alle)
-        included.push_back(include);
-    }
-    
-}
+void fixLabels(Statement* s);
+void getIncludes(Node* n);
+void loadView(Node* n);
+void loadView(char* q);
+void fixLabel(Node* n);
+void checkSanity(char* q,int len);
+bool checkHideStatement(Statement* s);
 
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
+	int len=(int)strlen(q0);
+	if(len>1000){
+		p("checkSanity len>1000");
+		return 0;// SAFETY!
+	}
     char* q=editable(q0);
+	checkSanity(q,len);
     while(q[0]=='/')q++;
-	enum result_format format = txt;
+	enum result_format format = html;//txt; DANGER WITH ROBOTS
 	enum result_verbosity verbosity = normal;
-	int len=(int)strlen(q);
+
 	if (eq(q, "favicon.ico"))return 0;
     if(contains(q,"robots.txt")){
         Writeline(conn,"User-agent: *\n");
         Writeline("Disallow: /\n");
         return 0;
     }
-    
 	
 	char* jsonp=strstr(q,"jsonp");// ?jsonp=fun
 	if(jsonp){
@@ -210,7 +95,7 @@ int handle(cchar* q0,int conn){
 		jsonp+=6;
 		format = json;
 		}
-	else jsonp="parseResults";
+	else jsonp=(char*)"parseResults";
 
 	if (endsWith(q, ".json")) {
         format = json;
@@ -248,6 +133,10 @@ int handle(cchar* q0,int conn){
 			verbosity=verbose;
         q = q + 5;
     }
+	if (startsWith(q, "plain/")) {
+		format = txt;
+		q = q + 6;
+	}
 	if (startsWith(q, "text/")) {
 		format = txt;
 		q = q + 5;
@@ -295,7 +184,7 @@ int handle(cchar* q0,int conn){
     excluded.clear();
     included.clear();
     
-    if(contains(q,"statement count")){Writeline(conn,itoa(currentContext()->statementCount).data());return 0;}
+    if(contains(q,"statement count")){Writeline(conn,itoa((int)currentContext()->statementCount).data());return 0;}
     if(contains(q,"node count")){Writeline(conn,itoa(currentContext()->nodeCount).data());return 0;}
     
     
@@ -317,7 +206,7 @@ int handle(cchar* q0,int conn){
     NodeVector all = parse(q); // <<<<<<<< HANDLE QUERY WITH NETBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
+
     int size=(int)all.size();
     if(showExcludes){
         for (int i = 0; i < size; i++) {
@@ -335,29 +224,29 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div>\n<script>var results={'results':[\n";
+    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='netbase_results'></div>\n<script>var results={'results':[\n";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
-	if (format == json)Writeline(conn, "{'results':[\n");
+	if (format == json)Writeline(conn, "{\"results\":[\n");
 	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
-	const char* statement_format;
+	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == html)statement_format = statement_format_json;
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
     
-   	const char* entity_format;
+   	const char* entity_format = 0;
 	const char* entity_format_txt = "%s #%d statements:%d\n";
 	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
-	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statementCount':%d";
+	const char* entity_format_json = "   {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d";
    	const char* entity_format_csv = "%s\t%d\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
@@ -367,58 +256,228 @@ int handle(cchar* q0,int conn){
 	if (format == csv)entity_format = entity_format_csv;
 	Node* last=0;
     warnings=0;
-    
+	if (format == html)format=json;// inline json (hacky)
     char* entity=0;
     if(startsWith(q,"all")){
         entity=(char*)cut_to(q," ");
         entity=keep_to(entity,"limit");
     }
-    
-	for (int i = 0; i < all.size() && i<resultLimit; i++) {
+   	sortNodes(all);
+	int count=(int)all.size();
+	int good=0;
+	for (int i = 0; i < count && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
+		if(node->id==0)continue;
 		if(last==node)continue;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
-        
+		good++;
+		if (format == json)if(good>1)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
         if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
-            Writeline(conn, ", 'kind':"+itoa(node->kind));		
-        if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-            Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
+            Writeline(conn, ", \"kind\":"+itoa(node->kind));		
+        if((format == json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
+            Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
 		Statement* s = 0;
-		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !verbosity == shorter)) {
-            //            Writeline(",image:'"+getImage(node->name)+"'");
-			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
+		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
-			while ((s = nextStatement(node, s))&&count++<resultLimit) {
+            //            Writeline(",image:\""+getImage(node->name)+"\"");
+			if (format == json)Writeline(conn, ", \"statements\":[\n");
+
+//			sortStatements(
+			deque<Statement*> statements;
+			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
+				if (!checkStatement(s))break;
+				// filter statements
+				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
+				if(s->object==0)continue;
+//				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
+//					continue;
+				if (s->subject==node->id and s->predicate!=4)//_instance
+					statements.push_front(s);
+				else statements.push_back(s);
+			}
+			int good=0;
+			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
+				s=statements.at(j);
+//			while ((s = nextStatement(node, s))&&count++<resultLimit) {
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);
-				if (!checkStatement(s))continue;
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
+				if(format == json && good>0)Writeline(conn, ",\n");
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
+				good++;
 			}
-			if (format == json||format == html)Writeline(conn, "]");
+			if (format == json)Writeline(conn, "]");
 		}
-		if (format == json||format == html)Writeline(conn, "},\n");
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
-		//		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
+		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
-	const char* html_end="]};</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
-	if (format == json)Writeline(conn, "]}\n");
-    if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
-	if (format == html)Writeline(conn, html_end);
+	const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
+	if (format == json)Writeline(conn, "}\n]}");
 	if (format == xml)Writeline(conn, "</results>\n");
+	if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
+	if(contains(q0,"html/"))Writeline(conn, html_end);
+	//		sprintf(buff,	"<script src='/js/%s'></script>",q0);
+	//		Writeline(conn, buff);
+	//	}
     pf("Warnings/excluded: %d\n",warnings);
     return 0;// 0K
 }
+
+void checkSanity(char* q,int len){
+	bool bad=false;
+	if(q[0]==':'||q[0]=='!')bad=true;
+	for (int i=0; i<len; i++) {
+		if(q[i]>127)bad=true;
+	}
+	if(bad)
+		appendFile("netbase.warnings", q);
+}
+
+void fixLabel(Node* n){
+	if(!checkNode(n))return;
+	if(n->name==0)return;// HOW? checkNames=false :(
+	if(n->name[0]=='"')n->name=n->name+1;
+
+	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
+		n->name[strlen(n->name)-1]=0;
+	if(n->name[strlen(n->name)-1]=='\\')
+		n->name[strlen(n->name)-1]=0;
+	replaceChar(n->name,'"',' ');
+	replaceChar(n->name,'\'',' ');
+	replaceChar(n->name,'\\',' ');
+	// todo: "'","%27" etc
+	//#include <curl/curl.h>
+	//char *curl_easy_escape( CURL * curl , char * url , int length );
+}
+
+bool checkHideStatement(Statement* s){
+	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
+	if(s->subject==0||s->predicate==0||s->object==0){warnings++;return true;}
+	char* predicateName=s->Predicate()->name;
+	char* objectName=s->Object()->name;
+	char* subjectName=s->Subject()->name;
+	if(subjectName==0||predicateName==0||objectName==0){warnings++;return true;}
+
+	if(showExcludes){
+		if(eq(subjectName,"exclude",1)||eq(predicateName,"exclude",1)||eq(objectName,"exclude",1))return false;
+		if(eq(subjectName,"include",1)||eq(predicateName,"include",1)||eq(objectName,"include",1))return false;
+		return true;
+	}
+
+	if(eq(predicateName,"exclude")){excluded.push_back(objectName);return true;}
+	if(eq(predicateName,"include")){included.push_back(objectName);return true;}
+	if(predicateName[0]=='<')predicateName++;
+	if(eq(predicateName,"Key"))return true;
+	if(eq(predicateName,"expected type"))return true;
+	if(eq(predicateName,"Range"))return true;
+	if(eq(predicateName,"usage domain"))return true;
+	if(eq(predicateName,"schema"))return true;
+	if(startsWith(predicateName,"http"))return true;
+
+	if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
+		return true;// zh-ch, id ...
+	if(objectName[0]=='/'||objectName[1]=='/')return true;// ?
+
+
+	for(int i=0;i<excluded.size();i++){
+		char* exclude=excluded.at(i);
+		if(contains(subjectName,exclude,1)||contains(predicateName,exclude,1)||contains(objectName,exclude,1))return true;
+		if(eq(itoa(s->subject),exclude)||eq(itoa(s->predicate),exclude)||eq(itoa(s->object),exclude))return true;
+	}
+	bool ok=included.size()==0;// no filter
+	for(int i=0;i<included.size();i++){
+		char* include=included.at(i);
+		if(eq(predicateName,"Bundesland"))
+			p(s);
+		if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
+		if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))
+			ok=true;
+	}
+
+	//    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
+	//    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
+	//    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
+	return !ok;
+	//    return false;
+}
+
+void fixLabels(Statement* s){
+	fixLabel(s->Subject());
+	fixLabel(s->Predicate());
+	fixLabel(s->Object());
+}
+
+void getIncludes(Node* n){
+	if(verbosity==shorter||verbosity==alle)return;
+	if(n->id<1000)return;
+	if(eq("Release track",n->name))return;
+	if(eq("Recording",n->name))return;
+	if(eq("Document",n->name))return;
+	if(eq("Cataloged instance",n->name))return;
+	pf("getIncludes %d >>%s<<\n",n->id,n->name);
+	Statement *s=0;
+	int lookups=0;
+	while((s=nextStatement(n,s))){
+		if(++lookups>50)break;
+		//        p(s);
+		if(eq(s->Predicate()->name,"exclude")){
+			excluded.push_back(s->Object()->name);
+			excludedIds.push_back(s->Object()->id);
+		}
+		if(eq(s->Predicate()->name,"include")){
+			included.push_back(s->Object()->name);
+			includedIds.push_back(s->Object()->id);
+		}
+	}
+
+}
+
+void loadView(Node* n){
+	getIncludes(n);
+	N parent= getType(n);
+	if(parent)
+		getIncludes(parent);
+	if(parent&&parent->kind!=Abstract->kind)
+		getIncludes(getAbstract(parent->name));
+}
+
+void loadView(char* q){
+	N ex=get("excluded");// globally
+	if(ex && verbosity != alle )getIncludes(ex);
+	ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
+	if(ex && verbosity != alle )getIncludes(ex);
+
+	char* exclude=q;
+	while(exclude&&contains(exclude," -")){
+		exclude=strstr(exclude," -");
+		if(exclude[2]!=' '){// not 2009 - 2010 etc
+			exclude[0]=0;
+			exclude+=2;
+			if(verbosity != alle)
+				excluded.push_back(exclude);
+		}else exclude=0;
+	}
+	char* include=q;
+	while(include&&contains(include," +")){
+		include=strstr(exclude," +");
+		include[0]=0;
+		include+=2;
+		if(verbosity != alle)
+			included.push_back(include);
+	}
+
+}
+
 
 
 // WORKS FINE, but not when debugging
@@ -750,15 +809,21 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	char buffer[100];
 	sprintf(buffer, "HTTP/1.1 %d OK\r\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-	if(contains(reqinfo->resource,"html/"))
-		Writeline(conn, "Content-Type: text/html\r\n");
-	else if(contains(reqinfo->resource,"json/"))
-		Writeline(conn, "Content-Type: application/json\r\n");
+	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
+	else if(contains(reqinfo->resource,"json/")){
+		Writeline(conn, "Content-Type: application/json; charset=utf-8\r\n");
+		Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
+	}
+	else if(contains(reqinfo->resource,"csv/"))
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
+	else if(contains(reqinfo->resource,"tsv/"))
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
 	else if(contains(reqinfo->resource,"xml/"))
-		Writeline(conn, "Content-Type: text/html\r\n");// till entities are fixed
-//		Writeline(conn, "Content-Type: application/xml\r\n");
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");// till entities are fixed
+//		Writeline(conn, "Content-Type: application/xml; charset=utf-8\r\n");
 	else
-		Writeline(conn, "Content-Type: text/plain\r\n");
+		Writeline(conn, "Content-Type: text/html; charset=utf-8\r\n");
 	Writeline(conn, "Connection: close\r\n");
 	Writeline(conn, "Server: Netbase\r\n");
 	Writeline(conn, "\r\n", 2);
@@ -795,6 +860,7 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 
 void start_server() {
 	printf("STARTING SERVER!\n localhost:%d\n", SERVER_PORT);
+	if(SERVER_PORT<1024)p("sudo netbase if port < 1024 !!!");
 	flush();
 	/*  Create socket  */
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -822,11 +888,12 @@ void start_server() {
 		Error_Quit("Call to listen failed.");
     
 	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
-    p(" [doesn't work with xcode, use ./compile.sh ]");
+    p(" [debugging server doesn't work with xcode, use ./compile.sh ]");
     
 	/*  Loop infinitely to accept and service connections  */
 	while (1) {
 		/*  Wait for connection  */
+		// NOT with XCODE -> WEBSERV
 		conn = accept(listener, NULL, NULL);
 		if (conn  < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");

@@ -78,6 +78,7 @@ void testScanf() {
 	//	exit(1);
 }
 
+
 void testBasics() {
 	//you have a pointer to some read-only characters
 	cchar* a="abc";
@@ -121,7 +122,7 @@ void testBasics() {
 	showStatement(getStatementNr(syn, 0));
 	//    initContext(c);
 	int initialNodeCount=c->nodeCount;
-	int initialStatementCount=c->statementCount;
+	int initialStatementCount=(int)c->statementCount;
 	c->nodeCount=initialNodeCount; // reset for tests! dont save!
 	c->statementCount=initialStatementCount;
 
@@ -170,7 +171,7 @@ void testBasics() {
 	show(test);
 	show(is);
 	show(dead);
-	statementCount=c->statementCount;
+	statementCount=(int)c->statementCount;
 	// sonderf�����lle
 	addStatement4(-1, -2, -3, -4);
 	assert(c->statementCount == statementCount, "c.statementCount==1");
@@ -1499,20 +1500,98 @@ void tests() {
 	p("ALL TESTS SUCCESSFUL!");
 	//    testLoop();
 }
+bool assertResult(char* query,char* value0){
+	NodeVector result=parse(query);
+//	cchar* result=query2(query).data();
+	Node* abstract=getAbstract(value0);
+	Node* value=getThe(abstract);
+	return check(contains(result,value) || contains(result,abstract));
+//	return check(eq(result,value));
+}
 
-
+void flattenGeographischeKoordinaten(){
+	N n=getThe("Geographische Koordinaten");
+	N b=getThe("Breitengrad");
+	N l=getThe("Längengrad");
+	Statement* s=0;
+	while (s=nextStatement(n->id, s)) {
+		if(s->predicate==n->id){
+			N ort=s->Subject();
+			N c=s->Object();
+//			N bb=findProperty(c, "Breitengrad");
+//			if(!bb)bb=findProperty(c, "Latitude");
+//			S sb=addStatement(ort,b,bb,true,false);
+			S st=findStatement(c, getNode(1129), Any);
+			if(!st)continue;
+			N ll=st->Object();
+//			N ll=getProperty(c, "Längengrad");
+//			if(!ll)ll=getProperty(c, "Longitude");
+			//			S sl=addStatement(ort,l,ll,false,true);
+			S sl=addStatement(ort,l,ll,true,false);
+//			S sl=addStatement(ort,l,ll,false,false);
+//			show(ort);
+//			showStatement(sb);
+//			p(bb!=0);
+		}
+	}
+}
+void fixAllNames(){
+	for(int i=1000;i<54714717;i++){
+		N n= getNode(i);
+		if(!n->name)continue;
+		if(n==Error){
+			pf("STOPPING AT %d",i);
+			break;
+		}
+		if(endsWith(n->name, "\" .")){
+			keep_to(n->name,"\" .");
+		}
+		if(endsWith(n->name, " .")){
+			keep_to(n->name," .");
+		}
+	}
+}
 void testBrandNewStuff() {
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
 //    testing=false;// NO RELATIONS!
-    germanLabels=true;// false;
-    import("test.csv");
-    germanLabels=false;
-//	handle("all+pennsylvania+marijuana");
-	handle("all dog");      
-//    importAll();
-        exit(0);
+//    germanLabels=true;// false;
+	//    import("test.csv");
+//	germanLabels=false;
+	germanLabels=true;
+//	handle("angela merkel");
+//	parse("7546026");
+//
+//
+//	Node* ax=getNode(7546026);
+//	show(ax);
+//	NodeVector all= parse("angela merkel nachrichten");
+	import("labels");
+	flattenGeographischeKoordinaten();
+	fixAllNames();
+//		importWikiData();
+	//	handle("all+pennsylvania+marijuana");
+//	handle("hi");
+//		handle("all/hi limit 2");
+//	handle(":limit 200");
+//	handle("jahr.minuten=525601^^int");
+//	assertResult("jahr.minuten","525600^^int");
+//	handle("jahr.minuten=525601");
+//	assertResult("jahr.minuten","525601^^int");
+//	handle("dog limit 10");
+
+//	N n=get(16902);
+//	string im= getImage(n);
+//	p(im);
+//	check(im=="dfs");
+//	importAll();
+//	handle(":rh");
+//	handle(":learn 240938 Label Diät");
+//	handle(":learn 240938 Label Kur");
+//	dissectWord(getAbstract("Board of Directors"));
+//	handle(":server");
+    exit(0);
     p(statementCount());
     N s=get(244797);
     handle("Katarina Witt");
@@ -1542,8 +1621,8 @@ void testBrandNewStuff() {
     
     check(!eq("=","a", true));
 //    check(hasNode("type"));
-    N a=getAbstract("a");
-    showNode(a);
+    N ab=getAbstract("a");
+    showNode(ab);
     check(getAbstract("a")->id>=1000);
     check(hasNode("Typ"));
     check(hasNode("1"));

@@ -9,10 +9,6 @@
 #ifndef QUERY_H
 #define	QUERY_H
 
-extern int resultLimit;
-extern int defaultLookupLimit;
-extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
 NodeVector query(Query& q);
@@ -58,6 +54,8 @@ NodeVector relationsFilter(Node* subject, NodeQueue * queue=null);
 NodeVector parseProperties(const char *data);
 NodeVector update(cchar* query);
 NodeVector nodeVectorWrap(Node* n);
+NodeVector nodeVectorWrap(Statement* n);
+
 //NodeVector parentFilter(Node* subject);
 //NodeVector memberFilter(Node* subject);
 //NodeVector hasFilter(Node* subject);
@@ -70,5 +68,5 @@ NodeVector nodeVectorWrap(Node* n);
 NodeVector shortestPath(Node* from,Node* to );// any
 NodeVector parentPath(Node* from, Node* to);
 NodeVector memberPath(Node* from, Node* to);
-
+void sortNodes(NodeVector& all);
 #endif	/* QUERY_H */

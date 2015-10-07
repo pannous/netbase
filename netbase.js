@@ -1,7 +1,7 @@
 // Netbase graph viewer - demo version = 1.0.2
 // (C) 2014 Pannous + Quasiris
 
-var div=document.getElementById("results");
+var div=document.getElementById("netbase_results");
 var server="/html/"; // "http://quasiris.big:3333/html/";
 
 function br(){
@@ -74,6 +74,7 @@ var onerror_handled=0;
 function addImage(image,div){
 	if(imageAdded)return;
 	image=image.replace(/ /,"_")
+	var url="https://commons.wikimedia.org/wiki/"
 	// image=image.replace(/.150px.*/,"");
 	// image=image.replace("/thumb/","/")
 	var link=document.createElement("a");
@@ -82,9 +83,9 @@ function addImage(image,div){
 	link.style="float:right;width:200px";
 	img=document.createElement("img");
 	img.onerror=function() {
-		if(onerror_handled==0){this.src=this.src.replace(/.150px.*/,"")}
-		if(onerror_handled==1){this.src=this.src.replace("/thumb/","//");}
-		if(onerror_handled==2){this.src=this.src.replace("/commons/","/en/");}
+		if(onerror_handled==0){console.log(this.src);this.src=this.src.replace(/.150px.*/,"");}
+		if(onerror_handled==1){;console.log(this.src);this.src=this.src.replace("/thumb/","/");}
+		if(onerror_handled==2){;console.log(this.src);this.src=this.src.replace("/commons/","/en/");}
 		onerror_handled++;;
 	}
 	img.src=image;
