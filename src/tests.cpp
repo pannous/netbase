@@ -1514,24 +1514,26 @@ void flattenGeographischeKoordinaten(){
 	N b=getThe("Breitengrad");
 	N l=getThe("Längengrad");
 	Statement* s=0;
-	while (s=nextStatement(n->id, s)) {
+	while ((s=nextStatement(n->id, s))) {
 		if(s->predicate==n->id){
 			N ort=s->Subject();
 			N c=s->Object();
-//			N bb=findProperty(c, "Breitengrad");
-//			if(!bb)bb=findProperty(c, "Latitude");
-//			S sb=addStatement(ort,b,bb,true,false);
+			N bb=findProperty(c, "Breitengrad");
+			if(!bb)bb=findProperty(c, "Latitude");
+			S sb=addStatement(ort,b,bb,true,false);
 			S st=findStatement(c, getNode(1129), Any);
 			if(!st)continue;
-			N ll=st->Object();
-//			N ll=getProperty(c, "Längengrad");
-//			if(!ll)ll=getProperty(c, "Longitude");
-			//			S sl=addStatement(ort,l,ll,false,true);
-			S sl=addStatement(ort,l,ll,true,false);
+//			N ll=st->Object();
+			N ll=getProperty(c, "Längengrad");
+			if(!ll)ll=getProperty(c, "Longitude");
+			addStatement(ort,l,ll,true,false);
+//						S sl=addStatement(ort,l,ll,false,true);
+
 //			S sl=addStatement(ort,l,ll,false,false);
 //			show(ort);
 //			showStatement(sb);
 //			p(bb!=0);
+			sb=0;
 		}
 	}
 }

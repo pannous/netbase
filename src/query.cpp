@@ -539,7 +539,7 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 		if (found.size() >= limit)goto good;
 		all.clear(); // hack to reset all_instances
 		NodeVector all2 = all_instances((Node*) all[i], true, limit);
-		if (where)
+		if (where[0])
 			mergeVectors(&found, filter(all2, where)); //fields)
 	}
 	batch = 200000000;
@@ -1038,7 +1038,7 @@ Node * findMatch(Node* n, const char* match) {//
 		p("scanf not matching");
 	p(a);
 	p(b);
-	if (b != 0 && !eq(b, "")) {
+	if (b[0] != 0 && !eq(b, "")) {
 		p("n[a=b]");
 		if (!quiet)
 			printf("show(findStatement(%s,%s,%s))", n->name, a, b);
@@ -1448,7 +1448,7 @@ const static bool sortNodePredicate(Node* a, Node* b) {
 //	return (a->key()> b->key());
 }
 void sortNodes(NodeVector& all){
-	int count=0;
+//	int count=0;
 	int max=0;
 	deque<Node*> sorted;
 	for (int i=0; i<all.size(); i++) {

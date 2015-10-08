@@ -137,7 +137,7 @@ void console() {
 	}
 }
 
-NodeVector runScript(char* file){
+NodeVector runScript(const char* file){
 	FILE *fp= fopen(file,"r");
 	if(fp==0){return OK;}
 	char line[1000];
@@ -277,12 +277,12 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (eq(data, ":hack")) {
-		Context* c=currentContext();
+//		Context* c=currentContext();
 //		c->nodeCount-=1000; //hack!
 		//		maxNodes += 1000;
 		return OK;
 	}
-	if (eq(data, ":c")) {
+	if (eq(data, ":c")|| eq(data, ":context")) {
 		showContext(currentContext());
 		return OK;
 	}

@@ -630,7 +630,6 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	//	Node* UNKNOWN_OR_EMPTY=getThe("<unknown/>");
 	//	map<Node*,Node*> fields;
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (!line) break;
 		if (++linecount % 1000 == 0) {
 			pf("importXml %d    \r", linecount);
 			fflush(stdout);
@@ -763,7 +762,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	int fieldCount=0;
 	char* columnTitles;
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (!line) break;
 		fixNewline(line);
 		if (linecount == 0) {
 			columnTitles=line;
@@ -1740,7 +1738,7 @@ void importGermanLables(bool addLabels=false) {
 	char english[1000];
 	char german[1000];
 	char translations[2000];
-	char wordkind[1];
+	char *wordkind=(char*)malloc(100);
 	int linecount=0;
 	int id;
 	//    char pos;
@@ -1754,7 +1752,7 @@ void importGermanLables(bool addLabels=false) {
 		if(line[0]=='[')continue;
 		//		if(linecount==4951)continue;
 		fixNewline(line);
-		sscanf(line, "%d\t%s\t%s\t%s\t%[^\\]]s", &id, &wordkind, /*08950407n -> noun */english,german,translations);
+		sscanf(line, "%d\t%s\t%s\t%s\t%[^\\]]s", &id, wordkind, /*08950407n -> noun */english,german,translations);
 		//		id=id + 10000; //  label on abstract !?!
 
 		wn_labels[id]=german;
@@ -1771,7 +1769,7 @@ void importGermanLables(bool addLabels=false) {
 		id=norm_wordnet_id(id,true); // 100001740  -> 200000 etc
 		if(!id)continue;
 		Node* node=get(id);
-		Node* abstract=getAbstract(german);
+//		Node* abstract=getAbstract(german);
 		if(modify_english){
 			setLabel(node, german);// NOW?
 			//			addLabel(node, german);// to abstracts or words?? get(id) -> word

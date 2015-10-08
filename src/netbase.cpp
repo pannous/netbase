@@ -1306,14 +1306,15 @@ Node* dateValue(const char* val) {
  */
 Node* rdfValue(char* name) {
 	if (name[0] == '"') name++; // ignore quotes "33"
-	char* unit=strstr(name, "^");
-	if (!unit || unit > name + 1000 || unit < name) return 0;
-	if(unit[-1]=='"')unit[-1]=0;
-	while (unit[0] == '^'){unit[0]=0; unit++;}
+	char* unit0=strstr(name, "^");
+	if (!unit0 || unit0 > name + 1000 || unit0 < name) return 0;
+	if(unit0[-1]=='"')unit0[-1]=0;
+	while (unit0[0] == '^'){unit0[0]=0; unit0++;}
 	if(name[0]==0)return 0;
-	if (unit[0] == '<') unit++;
-	if (unit[0] == '#') unit++;
-	if (unit[0] == '"') unit++;
+	if (unit0[0] == '<') unit0++;
+	if (unit0[0] == '#') unit0++;
+	if (unit0[0] == '"') unit0++;
+	const char* unit=unit0;
 	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
 	if (eq(unit, "xsd:integer")) unit=0; //-> number
 	else if (eq(unit, "integer")) unit=0; //-> number
