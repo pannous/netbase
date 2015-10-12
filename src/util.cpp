@@ -105,16 +105,13 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 }
 
 bool contains2(NodeVector& all, Node* node) {
-	auto x=std::find(all.begin(), all.end(), node);
-	return x!= all.end();
+	return std::find(all.begin(), all.end(), node)!= all.end();
 }
 bool contains(NodeSet& all, Node* node) {
-	auto x=std::find(all.begin(), all.end(), node);
-	return x!= all.end();
+	return std::find(all.begin(), all.end(), node)!= all.end();
 }
 bool contains(NodeSet* all, Node* node) {
-	auto x=std::find(all->begin(), all->end(), node);
-	return x!= all->end();
+	return std::find(all->begin(), all->end(), node)!= all->end();
 }
 bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //	if(!fuzzy)
