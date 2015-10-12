@@ -200,24 +200,34 @@ void testBasics() {
 
 void testGeoDB(){
     
-//    if(nodeCount()<10000)
-        importGeoDB();
+//    if(nodeCount()<100000)
+		importGeoDB();
     //        execute("import ./import/cities1000.txt");
+
     defaultLookupLimit=100000;
-    show(a(Gehren));
-    showNode(getThe("Gehren"));
+	das(Gehren);
+    show((Gehren));
+	N latitude=getProperty(Gehren, "Latitude");//Gehren.Latitude
+	p(Gehren);
+	p(latitude);
+	p(latitude->value.number);
+	check(latitude->value.number==50.65);
     NV all;
     NodeVector cities=all_instances(getThe("city"),1);
     check(cities.size()>10);
 	all=query("city where Elevation=141");
+	N elevation=getProperty(all[0],"Elevation");
+	p(elevation);
+	check(getThe("141")->value.number==141)
+	check(elevation->value.number==141);
     check(all.size()>0);
     all=query("city where latitude=50.65");// todo: filter backwards!! 50.65<-latitude<-[city?] !
     check(all.size()>2);
     show(all[2]);
-    N latitude=getProperty(all[2],"latitude");
+    latitude=getProperty(all[2],"latitude");
 	p(latitude);
 	p(latitude->value.number);
-    check(latitude->value.number==50.65);// TOTO FOX
+//    check(latitude->value.number==50.65);// TOTO FOX
 
     all=query("city where population=3703");
     check(all.size()>0);
@@ -1614,7 +1624,8 @@ void testBrandNewStuff() {
 
 	if(!hasWord("bug"))
 		importWordnet();
-	testInstanceLogic();
+//	testInstanceLogic();
+	testGeoDB();
     testAll();
 //	testBasics();
 //		importWikiData();

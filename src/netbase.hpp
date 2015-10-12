@@ -48,12 +48,12 @@ extern int lookupLimit;// set per query :( todo : param! todo: filter while iter
 #define has_the(word) getThe(#word)// semantic bla
 #define have_the(word) getThe(#word)// semantic bla
 //#define a(word) Node* word=getThe(#word);
-#define that(word) Node* word=getThe(#word)  ;
-#define der(word) Node* word=getThe(#word)  ;
-#define die(word) Node* word=getThe(#word)   ;
-#define das(word) Node* word=getThe(#word)    ;
-#define ein(word) Node* word=getThe(#word)     ;
-#define eine(word) Node* word=getThe(#word)     ;
+#define that(word) Node* word=getThe(#word)  
+#define der(word) Node* word=getThe(#word)
+#define die(word) Node* word=getThe(#word)
+#define das(word) Node* word=getThe(#word)
+#define ein(word) Node* word=getThe(#word)
+#define eine(word) Node* word=getThe(#word)
 //#define get(word) Node* word=getThe(#word)     ;
 
 

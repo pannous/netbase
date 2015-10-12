@@ -643,11 +643,25 @@ NodeVector filter(NodeVector all, cchar* matches) {
 				match.replace(0, strlen(node->name), "");
 			if (match.find(".") == 0)
 				match.replace(0, 1, "");
-			int comp = (int)match.find("=");
+			int comp = (int)match.find("!=");
+			if (comp >= 0) {
+				Node *s = getThe(match.substr(0, comp).data());
+				Node *o = parseValue(match.substr(comp + 2).data());
+				filter(q, pattern(s, Not, o));
+				continue;
+			}
+			comp = (int)match.find("=");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
 				filter(q, pattern(s, Equals, o));
+				continue;
+			}
+			comp = (int)match.find("~");
+			if (comp >= 0) {
+				Node *s = getThe(match.substr(0, comp).data());
+				Node *o = parseValue(match.substr(comp + 1).data());
+				filter(q, pattern(s, Circa, o));// todo: approximately
 				continue;
 			}
 			comp = (int)match.find(">");

@@ -510,7 +510,8 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 #endif
 
     node->kind=kind;
-	if (node->value.number) node->value.number=0; //Necessary? overwrite WHEN??
+//	if (node->value.number)
+	node->value.number=0; //Necessary? overwrite WHEN??
 	if (id > 1000) {
 		node->statementCount=0; // reset Necessary? overwrite WHEN?? better loss than corrupt
 		node->lastStatement=0;
@@ -1180,6 +1181,10 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //    replaceChar((char*)thing,'_',' ');// NOT HERE!
 	Node* abstract=getAbstract(thing);
 	Node* insta=getThe(abstract, type); // todo: best?
+	if(insta && !insta->value.number && atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
+		insta->value.number=atof(thing);// hack, shouldn't be here!
+		if(!type)insta->kind=_number;
+	}
 	if (insta) return insta;
     if(type==More)type=0;
 	if (type) insta=add(thing, type->id);
@@ -1189,10 +1194,6 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		ps(thing);
 		return 0;
 	}
-    if(atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
-        insta->value.number=atof(thing);
-        if(!type)insta->kind=_number;
-    }
     // else if(atoi(thing)!=0)//&&eq(itoa(atoi(thing)),thing)){
     //     insta->value.number=atoi(thing);
     //     if(!type)insta->kind=_integer;
@@ -1989,6 +1990,7 @@ Node * has(Node* subject, Statement* match, int recurse, bool semantic, bool sym
 	else if (match->Predicate() == Greater) return isGreater(property_value, match->Object());
 	else if (match->Predicate() == Less) return isLess(property_value, match->Object());
 	else if (match->Predicate() == Circa) return isAproxymately(property_value, match->Object());
+	else if (match->Predicate() == Not) return isEqual(property_value, match->Object())? False: match->Object();//True;
 	else return has(subject, match->Predicate(), match->Object()); // match->Subject == Subject?
 
 	return 0;
