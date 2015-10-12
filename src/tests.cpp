@@ -130,7 +130,7 @@ void testBasics() {
 		//    memset(c->statements, 0, sizeof (Statement) * maxStatements() - 1);
 		//    memset(0,c->statements,maxStatementsPerNode)
 		deleteNode(a(test));
-		assertEquals(a(test)->statementCount,(int)0);
+		check(a(test)->statementCount==0);
 	}
 
 

@@ -104,33 +104,33 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 	return false;
 }
 
-bool contains2(NodeVector& all, Node* node) {
-	return std::find(all.begin(), all.end(), node)!= all.end();
-}
-bool contains(NodeSet& all, Node* node) {
-	return std::find(all.begin(), all.end(), node)!= all.end();
-}
-bool contains(NodeSet* all, Node* node) {
-	return std::find(all->begin(), all->end(), node)!= all->end();
-}
+//bool contains2(NodeVector& all, Node* node) {
+//	return std::find(all.begin(), all.end(), node)!= all.end();
+//}
+//bool contains(NodeSet& all, Node* node) {
+//	return std::find(all.begin(), all.end(), node)!= all.end();
+//}
+//bool contains(NodeSet* all, Node* node) {
+//	return std::find(all->begin(), all->end(), node)!= all->end();
+//}
 bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //	if(!fuzzy)
-		return contains2(all,&node);
-//	for (int i=0; i < all.size(); i++) {
-//		if ((Node*) all[i] == &node) return true;
-//		if (fuzzy && eq(all[i], &node)) return true;
-//	}
-//	return false;
+//		return contains2(all,&node);
+	for (int i=0; i < all.size(); i++) {
+		if ((Node*) all[i] == &node) return true;
+		if (fuzzy && eq(all[i], &node)) return true;
+	}
+	return false;
 }
 //
 bool contains(NodeVector& all, Node* node, bool fuzzy) {
-	return contains2(all,node);
-//	for (int i=0; i < all.size(); i++) {
-//		Node* n=(Node*) all[i];
-//		if (n == node || (fuzzy && eq(n, node)))
-//			return true;
-//	}
-//	return false;
+//	return contains2(all,node);
+	for (int i=0; i < all.size(); i++) {
+		Node* n=(Node*) all[i];
+		if (n == node || (fuzzy && eq(n, node)))
+			return true;
+	}
+	return false;
 }
 //
 //bool contains(NodeVector* v, Node* node,bool fuzzy) {
