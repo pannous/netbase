@@ -604,8 +604,8 @@ void mergeVectors(NodeSet* some, NodeVector more) {
 void mergeVectors(NodeVector* some, NodeVector more) { // bool keep destination unmodified=TRUE
 //	return std::set_union(some,&more);
 	for (int i=0; i < more.size(); i++) {
-//		/		if (!contains(*some, (Node*) more[i], false))
-		if (std::find(some->begin(), some->end(), more[i]) == some->end())// NOT contains x yet
+		if (!contains(*some, (Node*) more[i], false))
+//		if (std::find(some->begin(), some->end(), more[i]) == some->end())// NOT contains x yet
             some->push_back(more[i]);
 	}
 }
