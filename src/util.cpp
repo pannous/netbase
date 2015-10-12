@@ -110,9 +110,15 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 //bool contains(NodeSet& all, Node* node) {
 //	return std::find(all.begin(), all.end(), node)!= all.end();
 //}
-//bool contains(NodeSet* all, Node* node) {
+bool contains(NodeSet* all, Node* node) {
 //	return std::find(all->begin(), all->end(), node)!= all->end();
-//}
+	NodeSet::iterator it;
+	for(it=all->begin();it!=all->end();it++){
+		if ((Node*) *it == node) return true;
+//		if (fuzzy && eq(*it, node)) return true;
+	}
+	return false;
+}
 bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //	if(!fuzzy)
 //		return contains2(all,&node);
