@@ -228,9 +228,9 @@ bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int stateme
 	return  appendLinkedListOfStatements(to_insert, node, statementNr); // append old to new
 }
 
-bool insert_at_start=true;// <<< TODO HACK, REMOVE!!
+//bool insert_at_start=true;// <<< TODO HACK, REMOVE!!
 
-bool addStatementToNode(Node* node, int statementId,bool force_insert_at_start=false) {
+bool addStatementToNode(Node* node, int statementId,bool insert_at_start=false) {
     if(statementId==0){
         p("WARNING statementNr==0");
         return false;
@@ -253,7 +253,8 @@ bool addStatementToNode(Node* node, int statementId,bool force_insert_at_start=f
 		push_back=push_back|| to_insert->Predicate() == Instance;
 		push_back=push_back||(to_insert->Predicate() == Type && to_insert->Object()==node);
 		push_back=push_back|| to_insert->Predicate() == node;
-		if(insert_at_start)push_back=false;// hack!
+		// why is that important? to skip 100000 instances (cities) when accessing abstract properties
+		if(insert_at_start)push_back=false;// force
 		if (push_back) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
 			if(eq(add_here,statementId))return false;
@@ -1408,7 +1409,7 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
-    replaceChar((char*)thing,'_',' ');// wah! careful with const!!!
+//    replaceChar((char*)thing,'_',' ');// wah! careful with const!!! NOT HERE!
 	Node* abstract=hasWord(thing);
 	if (abstract) return abstract;
 	abstract=add(thing, abstractId, abstractId); // abstract context !!
@@ -2459,9 +2460,9 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 }
 
 Node * getProperty(Node* node, cchar* key) {
-    S s=findStatement(node, getThe(key), Any);
-//findStatement(node, getAbstract(key), Any); // todo? egal
-    if(!checkStatement(s))return 0;
+	S s=findStatement(node, getThe(key), Any);
+	//findStatement(node, getAbstract(key), Any); // todo? egal
+	if(!checkStatement(s))return 0;
 	return s->Object();
 }
 
@@ -2701,7 +2702,7 @@ int main(int argc, char *argv[]) {
 		//		return 0;
 		//		tests();
 	} else {
-		showHelp();
+		showHelpMessage();
 		// *******************************
 		parse(join(argv, argc).c_str()); // <<< HERE
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

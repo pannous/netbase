@@ -123,6 +123,10 @@ typedef struct Node {
 //	{
 //		return a->statementCount > b->statementCount;
 //	}
+//	Node* type(){
+//		Statement* s=findStatement(this, getThe("type"), 0);
+//		return s->Object();
+//	}
     // INDEX
     // Node* index;//nur #properties+1 Nits!!
     // class country{ population{property:0} capital{property:1} }
