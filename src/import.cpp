@@ -780,10 +780,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			pf("importXml %d    \r", linecount);
 			fflush(stdout);
 		}
-
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
-
 		int size=splitStringC(editable(line), values, separator);
 		if (fieldCount != size) {
 			//            printf("_");
@@ -800,12 +798,10 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		else if (values[nameRowNr] != lastValue) subject=getNew(values[nameRowNr], type);
 		else if (subject == null) //keep subject
 			subject=getThe(values[nameRowNr]);
-
 		lastValue=values[nameRowNr];
 
 		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
 		// 2 objects, 4 relations, 1 name
-
 		if (!checkNode(subject)) continue;
 		//		if (debug && subject && type && subject->kind > 0 && subject->kind != type->id) {		// subject->kind == 0 ??? MEANING?
 		//			pf("Found one with different type subject->kind != type->id %d,%d,%s,%s\n", subject->kind, type->id, subject->name, type->name);
@@ -818,9 +814,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
 			if (!vali || strlen(vali) == 0) continue; //HOW *vali<100??
-			if(atoi(vali)!=0&&eq(itoa(atoi(vali)),vali))
+			if(atoi(vali)!=0&&isInteger(vali))// eq(itoa(atoi(vali)),vali))
 				object=value(vali,atoi(vali),Integer);
-			else if(atof(vali)!=0&&eq(itoa(atof(vali)),vali))
+			else if(atof(vali)!=0&&isNumber(vali))// &&eq(itoa(atof(vali)),vali)
 				object=value(vali,atof(vali),Number);
 			else
 				object=getThe(vali);

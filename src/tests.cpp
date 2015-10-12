@@ -200,7 +200,7 @@ void testBasics() {
 
 void testGeoDB(){
     
-    if(nodeCount()<10000)
+//    if(nodeCount()<10000)
         importGeoDB();
     //        execute("import ./import/cities1000.txt");
     defaultLookupLimit=100000;
@@ -217,7 +217,7 @@ void testGeoDB(){
     N latitude=getProperty(all[2],"latitude");
 	p(latitude);
 	p(latitude->value.number);
-//    check(latitude->value.number==50.65); TOTO FOX
+    check(latitude->value.number==50.65);// TOTO FOX
 
     all=query("city where population=3703");
     check(all.size()>0);
@@ -877,8 +877,10 @@ void testValueLogic() {
 	check(!isA4(a(category), length));
 	check(!isA4(get(60350), length)); //category
 	check(!isA4(kind, length, 0, 0));
+	check(!isA4(kind, length, 8, 1 ,1));
 	clearAlgorithmHash();
-	showStatement(findStatement(kind, SuperClass, length, 1, 1, false));
+	S nos=findStatement(kind, SuperClass, length, 1, 1, false);
+	showStatement(nos);
 	check(!findStatement(kind, SuperClass, length, 1, 1, false));
 	check(!has(kind, SuperClass, length, 1, 1, false));
 	check(!isA4(kind, length, true, true));

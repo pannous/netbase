@@ -1,4 +1,4 @@
-#include <string>
+		#include <string>
 #include <sstream>
 #include <iostream>
 #include <map>
@@ -1243,7 +1243,7 @@ Node * hasWord(const char* thingy) {
 //#ifdef DEBUG
 //		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
 //			debugAhash(h);
-//			p("visited[found] == 1 How the hell can that even be??? ");
+//			p("visited[found] == 1 How the hell can that even be??? "); clear
 //			p(found->abstract);
 //			return 0;
 //		}
@@ -1651,13 +1651,15 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		bool objectMatch=s->Object() == object || object == Any || object->id==0|| isA4(s->Object(), object, false, false);// by name OK!
         objectMatch=objectMatch||(matchName&& eq(s->Object()->name,object->name ));
 
-		if (subjectMatch && predicateMatch && objectMatch) return s;
+		if (subjectMatch && predicateMatch && objectMatch){
+			return s;// GOT ONE!
+		}
 
 		// READ BACKWARDS
 		// OR<-PR<-SR
 		bool subjectMatchReverse = subject == s->Object() || subject == Any || isA4(s->Object(), subject, false, false);
 		subjectMatchReverse=subjectMatchReverse||(matchName&& eq(subject->name,s->Object()->name  ));
-		bool objectMatchReverse = object == s->Subject() || object == Any || isA4(s->Subject(), subject, false, false);
+		bool objectMatchReverse = object == s->Subject() || object == Any || isA4(s->Subject(), object, false, false);
 		objectMatchReverse=objectMatchReverse||(matchName&& eq(object->name,s->Subject()->name  ));
 		bool predicateMatchReverse=predicate == Any; // || inverse
 		symmetric=symmetric || s->Predicate() == Synonym || predicate == Synonym || s->Predicate() == Antonym || predicate == Antonym;
@@ -1679,7 +1681,9 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		//        predicateMatchReverse = predicateMatchReverse || predicate == SuperClass && s->Predicate == Instance;
 		//        predicateMatchReverse = predicateMatchReverse || predicate == SubClass && s->Predicate == Type;
 		//        predicateMatchReverse = predicateMatchReverse || predicate == Type && s->Predicate == SubClass;
-		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse) return s;
+		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse){
+			return s;// GOT ONE!
+		}
 
 		if (!semantic) continue;
 		///////////////////////// SEMANTIC /////////////////////////////
@@ -1690,15 +1694,18 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 			if (semanticPredicate) predicateMatch=predicateMatch || isA4(s->Predicate(), predicate, recurse, semantic);
 			else predicateMatch=predicateMatch || eq(s->Predicate()->name, predicate->name) || isA4(s->Predicate(), predicate, false, false);
 		}
-		if (subjectMatch && predicateMatch && objectMatch) return s;
+		if (subjectMatch && predicateMatch && objectMatch) {
+			return s;// GOT ONE!
+		}
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 		predicateMatchReverse=predicateMatchReverse || (symmetric && predicateMatch);
 		if (predicateMatchReverse) {
 			subjectMatchReverse=subjectMatchReverse || isA4(s->Object(), subject, recurse, semantic);
 			objectMatchReverse=objectMatchReverse || isA4(s->Subject(), object, recurse, semantic);
 		}
-		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse)
-            return s;
+		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse){
+			return s;// GOT ONE!
+		}
 		///////////////////////// END SEMANTIC /////////////////////////////
 	}
 	return null;
@@ -1708,9 +1715,9 @@ void removeStatement(Node* n, Statement * s) {
 	if (!n || !s) return;
 	Statement *last=0;
 	Statement *st=0;
-	while((st=nextStatement(n,st))){
-        //	for (int i=0; i < n->statementCount; i++) {
-        //		Statement* st=getStatementNr(n, i);
+//	while((st=nextStatement(n,st))){
+	for (int i=0; i < n->statementCount; i++) {
+    	Statement* st=getStatementNr(n, i);
 		if (st == s) {
 			if (last == 0) {
 				if (s->Subject() == n) n->firstStatement=s->nextSubjectStatement;
@@ -1732,7 +1739,7 @@ void deleteStatement(int id){
 void deleteStatement(Statement * s) {
 	if (!checkStatement(s, true, false)) return;
 	removeStatement(s->Subject(), s);
-	removeStatement(s->Predicate(), s);
+//	removeStatement(s->Predicate(), s);// can be very expensive a->is->b 10000000 is Statements!
 	removeStatement(s->Object(), s);
 	s->Subject()->statementCount--;
 	s->Predicate()->statementCount--;
@@ -1854,8 +1861,11 @@ Node * value(const char* name, double v, Node* unit/*kind*/) {
         }
         name=new_name;
     }
-    Node *n= getThe(name,unit);// 45cm != 45Volt !!!
-//	Node *n= getAbstract(name); // 45cm
+	Node *n;
+	if(!unit||unit->id<1000)
+		n= getAbstract(name); // 45
+	else
+		n= getThe(name,unit);// 45cm != 45Volt !!!
    	if (unit)n->kind=unit->id;
     else n->kind=_number;
 	n->value.number=v;
@@ -2414,7 +2424,7 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		Statement* s=0;
 		while ((s=nextStatement(abstract, s)))
-			if (s->Predicate() == Instance) {		// ASSUME RIGHT ORDER!?
+			if (s->Predicate() == Instance && s->object!=0) {		// ASSUME RIGHT ORDER!?
 				abstract->value.node=s->Object();
 				return s->Object();
 //				if (s->Subject() == abstract && eq(s->Object()->name,abstract->name))
