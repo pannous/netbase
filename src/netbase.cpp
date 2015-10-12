@@ -42,38 +42,40 @@ Statement* statement_root=0;
 char* name_root=0;
 Node* abstract_root=0;
 int* freebaseKey_root=0;
+int defaultLookupLimit = 1000;
+int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+
 //Node** keyhash_root=0;
 
-bool doDissectAbstracts=false;
+#ifdef USE_SEMANTICS
+bool useSemantics=true;
+#else
+bool useSemantics=false;
+#endif
+
+bool doDissectAbstracts=useSemantics;
 bool storeTypeExplicitly=true;
 bool exitOnFailure=true;
 bool autoIds=false;
 bool testing=false;// ;true
+
 #ifdef __NETBASE_DEBUG__
-bool debug=true;
-//bool debug=false;
+bool debug=true;// false
 #else
-bool debug=true;
-//bool debug=false;
+bool debug=true;// false
 #endif
+
 
 bool showAbstract=false;
 
 int maxRecursions=7;
 int runs=0;
 Context* contexts; //[maxContexts];// extern
-//typedef basic_string<char> string;
 std::string path=""; // extern
 string data_path="";
 string import_path="./import/";
 
-//int maxNodes() {
-//    return maxNodes;
-//}
-
-
 //extern "C" inline
-
 Context* currentContext() {
 	return &contexts[current_context];
 }
@@ -629,7 +631,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
     initNode(node, context->nodeCount, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == abstractId|| kind == singletonId) return node;
-	addStatement(getAbstract(nodeName), Instance, node, false);
+	addStatement(getAbstract(nodeName), Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly && kind > 105) // might cause loop?
         addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
 	//	    why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
@@ -778,8 +780,8 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	statement->object=object->id;
 
 	bool ok=addStatementToNode(subject, id,force_insert_at_start);
-	ok=ok&&addStatementToNode(predicate, id);
-	ok=ok&&addStatementToNode(object, id);
+	ok=addStatementToNode(predicate, id)&&ok;
+	ok=addStatementToNode(object, id)&&ok;
 //    if(!ok)p("warning: addStatementToNode skipped ");// probably quick duplicate check
     
 	//	subject->statements[subject->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
@@ -889,7 +891,7 @@ Node * get(const char* node) {
 Node * get(int nodeId) {
 	if (debug&&(nodeId<0 || nodeId > maxNodes)) { // remove when debugged
 	    if (quiet)return Error;
-	    printf("nodeId Error: maxNodes > %d < 0\n", nodeId);
+	    printf("Error: 0 > nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
 	    return Error;
 	}
 	return &currentContext()->nodes[nodeId];
@@ -1587,21 +1589,19 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 	if (recurse > 0) recurse++;
 	else recurse=maxRecursions;
 	if (recurse > maxRecursions || subject == 0) return 0;
-	//    if(recurse>maxRecursions/3)semantic = false;
 
 	Statement * s=0;
 	map<Statement*, bool> visited;
 	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
 		if (visited[s]) return 0;
 		visited[s]=1;
-//        if(s->id()==4334||subject->id==4904654)
+//        if(s->id()==4334||subject->id==4904654) // debug id
 //        p(s);
 		if (!checkStatement(s)) continue;
         //#ifdef useContext
 		if (s->context == _pattern) continue;
-        
-        if(predicate==Type&&s->predicate!=_Type&& visited.size()>100)return 0;// expect types on top HAS TO BE ORDERED!!
-
+        if(predicate==Type&&s->predicate!=_Type&& visited.size()>100)
+			return 0;// expect types on top HAS TO BE ORDERED!!
         //#endif
 
 		//		if(s->Predicate!=Any){
@@ -1613,11 +1613,11 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		if (s->Predicate() == get(92)) continue; // also bug !!
 		//		}
 		// ^^ todo
+
 		//		X any X error
 		//		native		derived		native		301562->81->251672
 		//		good		also		good		302044->50->302076
 		//		evil		attribute		evil		226940->60->302081
-
 		//		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
 
 		//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
@@ -1634,16 +1634,13 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 			break;// todo : make sure statements are ordered!
 		}
 #endif
+
 		if (s->Predicate() == Instance && predicate != Instance && predicate != Any) continue; //  return 0; // DANGER!
 		//		NOT COMPATIBLE WITH DISSECTED WORDS!!!!! PUT TO END!!!
-        
         if(predicate==Any&&eq(s->Subject()->name,s->Object()->name))continue;
-        
-//        p(s);
-		//		if(debug&&s->id>0)
 
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
-		bool subjectMatch=s->Subject() == subject || subject == Any || isA4(s->Subject(), subject, false, false); //DONT CHANGE quick isA4
+		bool subjectMatch=s->Subject() == subject || subject == Any || isA4(s->Subject(), subject, false, false); //DONT CHANGE quick
         subjectMatch=subjectMatch||(matchName&& eq(s->Subject()->name,subject->name ));
 		bool predicateMatch=(s->Predicate() == predicate || predicate == Any);
 		predicateMatch=predicateMatch || (predicate == Instance && s->Predicate() == SubClass);
@@ -1652,14 +1649,11 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
         predicateMatch=predicateMatch || ((matchName||semanticPredicate)&& eq(s->Predicate()->name, predicate->name ));
 		bool objectMatch=s->Object() == object || object == Any || object->id==0|| isA4(s->Object(), object, false, false);// by name OK!
         objectMatch=objectMatch||(matchName&& eq(s->Object()->name,object->name ));
-        
-		if(s->id()==5964173||s->id()==180846)
-			p(s);
-        
+
 		if (subjectMatch && predicateMatch && objectMatch) return s;
 
 		// READ BACKWARDS
-		// OR <- PR<-SR
+		// OR<-PR<-SR
 		bool subjectMatchReverse = subject == s->Object() || subject == Any || isA4(s->Object(), subject, false, false);
 		subjectMatchReverse=subjectMatchReverse||(matchName&& eq(subject->name,s->Object()->name  ));
 		bool objectMatchReverse = object == s->Subject() || object == Any || isA4(s->Subject(), subject, false, false);
@@ -1703,7 +1697,6 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 			objectMatchReverse=objectMatchReverse || isA4(s->Subject(), object, recurse, semantic);
 		}
 		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse)
-
             return s;
 		///////////////////////// END SEMANTIC /////////////////////////////
 	}
@@ -1787,8 +1780,12 @@ void deleteNode(Node * n) {
             Node* n=nv[i];
             deleteNode(n);
         }
-	}else //!!
+	}else{ //!!
+//		n->statementCount=0;// soft reset
+//		n->firstStatement=0;
+//		n->lastStatement=0;
         memset(n, 0, sizeof(Node)); // hole in context!
+	}
 }
 
 void deleteStatements(Node * n) {
@@ -2258,6 +2255,13 @@ Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
 NodeVector show(NodeVector all){
  return    showNodes(all);
 }
+void show(NodeSet all, bool showStatements, bool showRelation, bool showAbstracts){
+	NodeSet::iterator it;
+	for(it = all.begin(); it != all.end(); ++it) {
+			Node* node=(Node*)*it;
+			show(node, showStatements);
+	}
+}
 
 NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {
 	int size=(int)all.size();
@@ -2530,10 +2534,11 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
         if(!hasWord(label))
             insertAbstractHash(n);
         //        else
-        //            mergeNode(getAbstract(label),n);
+		//            mergeNode(getAbstract(label),n);
 	} else {
 		Node* a=getAbstract(label);
-		addStatement(a, Instance, n);
+		if(addInstance)
+			addStatement(a, Instance, n);
 	}
     //    p(n);
     //    return n->name;
@@ -2645,6 +2650,12 @@ int main(int argc, char *argv[]) {
 		//	start_server();
 	}
 
+	// load environment variables or fall back to defaults
+	SERVER_PORT= getenv("SERVER_PORT")? atoi(getenv("SERVER_PORT")): SERVER_PORT;
+	resultLimit= getenv("resultLimit")? atoi(getenv("resultLimit")): resultLimit;
+	lookupLimit= getenv("lookupLimit")? atoi(getenv("lookupLimit")): lookupLimit;
+	defaultLookupLimit=lookupLimit;
+
 	//    signal(SIGSEGV, handler); // only when fully debugged!
     //	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
 	//    setjmp(loop_context);
@@ -2663,7 +2674,6 @@ int main(int argc, char *argv[]) {
 
 	init();
 	//    import();
-
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
 
@@ -2697,16 +2707,12 @@ int main(int argc, char *argv[]) {
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	}
 	if (checkParams(argc, argv, "export")) export_csv();
-
-	if (checkParams(argc, argv, "test")) tests();
-
-
+	if (checkParams(argc, argv, "test")) testAll();
 	if (checkParams(argc, argv, "server") || checkParams(argc, argv, "daemon") || checkParams(argc, argv, "demon")) {
 		printf("starting server\n");
 		start_server();
 		return 0;
 	}
-
 
 	printf("Warnings: %d\n", badCount);
     printf("Node limit: %d\n",(int)maxNodes);

@@ -33,7 +33,7 @@ using namespace std;
 NodeVector OK;
 // static struct termios stored_settings;
 
-void showHelp() {
+void showHelpMessage() {
     ps("");
 	ps("AVAILABLE COMMANDS:");
 	ps("help :h or ?");
@@ -48,12 +48,13 @@ void showHelp() {
 	ps(":server");
 	ps(":quit :q");
 	ps(":clear :cl");
+	ps(":context :info");
 	ps("limit <n>");
 	ps("Type words, ids, or queries:");
 	//    ps("all animals that have feathers");
 	ps("all animals with feathers");
 	ps("select * from dogs where terrier");
-	ps("all city with countrycode ZW");
+	ps("all city with countrycode=ZW");
 	ps("Population of Gehren");
 	ps("opposite of bad");
     ps("learn Germany has Gehren");
@@ -173,7 +174,7 @@ NodeVector parse(const char* data) {
 	//		scanf ( "%s", data );
 	if (eq(data, ":exit")) return OK;
 	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
-		showHelp();
+		showHelpMessage();
 		//        printf("type exit or word");
 		return OK;
 	}
@@ -246,8 +247,16 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	autoIds=true;
-    
-	if (contains(data, "limit")) {
+	if (contains(data, "lookup")||contains(data, ":lookup")) {
+		char* limit=(char*)strstr(data,"lookup");
+		sscanf(limit, "lookup %d", &lookupLimit);
+		pf("LOOKUP LIMIT SET TO %d\n",lookupLimit);
+		defaultLookupLimit=lookupLimit;
+		if(limit>data) *(limit-1)=0;
+		*limit=0;
+		if(strlen(data)<2)return OK;
+	}
+	if (contains(data, "limit")||contains(data, ":limit")) {
 		char* limit=(char*)strstr(data,"limit");
 		sscanf(limit, "limit %d", &resultLimit);
 		pf("LIMIT SET TO %d\n",resultLimit);
@@ -255,12 +264,6 @@ NodeVector parse(const char* data) {
 		if(limit>data) *(limit-1)=0;
 		*limit=0;
 		if(strlen(data)<2)return OK;
-        //		char* newdata=(char*) malloc(1000);
-        //		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
-        //		if(!)
-        //		sscanf(data, "limit %d %s", &resultLimit, newdata);
-        //		strcpy((char*) data, newdata);
-        //		p(resultLimit);
 	}
 	if (eq(data, ":load")) { // || eq(data, ":l") learn?
 		load(false);
@@ -288,7 +291,7 @@ NodeVector parse(const char* data) {
 	}
 	if (eq(data, ":t") || eq(data, ":test") || eq(data, ":tests")) {
 		exitOnFailure=false;
-		tests();
+		testAll();
 		return OK;
 	}
 	if (eq(data, ":tb")||eq(data, ":tbn")) {
@@ -474,11 +477,13 @@ NodeVector parse(const char* data) {
 	
 
 //   update Stadt.Gemeindeart set type=244797 limit 100000
-	if (startsWith(data, "update")){
+	if (startsWith(data, "update")||startsWith(data, ":update")){
         update(data);
     }
     
-	if (eq(data, "server") ||eq(data, ":server") || eq(data, ":daemon") || eq(data, ":demon")) {
+	if (eq(data, "server") ||eq(data, ":server") || 
+		eq(data, ":daemon") || eq(data, ":demon")|| 
+		eq(data, "daemon") || eq(data, "demon")) {
 		printf("starting server\n");
 		start_server();
 		return OK;
@@ -541,7 +546,8 @@ NodeVector parse(const char* data) {
     if(isAbstract(a)&&i == 0) {
 		lookupLimit=resultLimit;
 		NV all=instanceFilter(a);
-        all.push_back(a);// include abstract!
+//		all.insert(a);// include abstract!
+		all.push_back(a);// include abstract!
 //		sortNodes(all);
 		return all;
 	}
@@ -557,7 +563,7 @@ extern "C"  Node** execute(const char* data,int* out){
     if(out) *out=hits;
     Node** results=(Node** ) malloc((1+hits)*nodeSize);
     for (int i=0; i< hits; i++) {
-        results[i]=result[i];
+//        results[i]=result[i];
 //        pf("%d %s | ",result[i]->id,result[i]->name);
 //        pf(" %ld\n",(long)(void*)result[i]);
         //        memccpy(&results[i],result[i],0,sizeof(Node));

@@ -28,13 +28,11 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (81)
+//#define SERVER_PORT  (81)
+int SERVER_PORT=81; //todo
 static char server_root[1000] = "/Users/me/";
 
 int resultLimit = 200; // != lookuplimit reset with every fork !!
-int defaultLookupLimit = 1000;
-int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-
 
 int listener, conn,closing=0;
 pid_t pid;

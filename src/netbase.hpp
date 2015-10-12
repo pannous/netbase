@@ -5,10 +5,11 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <set> // faster vector!
 #include <queue>
 using namespace std;
 
-
+extern bool useSemantics;
 extern bool germanLabels;
 extern bool exitOnFailure;
 extern int maxRecursions;
@@ -196,6 +197,9 @@ public:
 
 // union: context->hasNode->0 , name
 //typedef vector<Node*> NodeVector;
+//std::set O(log n) time - much more efficient with large numbers of elements.
+//std::set also guarantees all the added elements are unique
+typedef set<Node*> NodeSet;
 typedef vector<Node*> NodeVector;
 typedef queue<Node*> NodeQueue;
 typedef Node** NodeList;
@@ -250,8 +254,8 @@ public:
         maxFacets=20;
 //		recursions=0;
         autoFacet = true;
-        semantic = false;
-        predicatesemantic=false;
+        semantic = true;
+        predicatesemantic=true;
         matchNames = true;
     }
     enum QueryType queryType;
@@ -394,6 +398,7 @@ extern "C" int getId(char* node);
 Context* getContext(int contextId);
 void showContext(int nr);
 void showContext(Context* cp);
+void showNodes(NodeSet all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false);
 NodeVector showNodes(NodeVector all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false); // bool justTitles==showStatements
 NodeVector show(NodeVector all);// alias
 //string query2(string s,int limit=defaultLimit);
@@ -447,9 +452,9 @@ NodeVector* findWords(int context, const char* word, bool first= false,bool cont
 NodeVector* findAllWords(const char* word);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
 extern "C"
-Statement* findStatement(int subject, int predicate, int object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
-Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
-Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = false, bool symmetric = false);
+Statement* findStatement(int subject, int predicate, int object, int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
+Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false);
+Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = useSemantics, bool symmetric = false);
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
 extern "C" bool hasNode(const char* thingy);
@@ -459,7 +464,7 @@ string getImage(Node* a, int size=150,bool thumb=false);
 
 extern "C" Node* has(Node* n, Node* m);
 Node* has(const char* n, const char* m);
-Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);//naja!!!
+Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);
 Node* has(Node* subject, string predicate, string object, int recurse = true, bool semantic = true, bool symmetric = false);
 Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true, bool matchName=false);
 void setValue(Node* node, Node* property, Node* value);
@@ -494,7 +499,7 @@ Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
 //NodeVector& all_instances(Node* type, int recurse , int limit = defaultLimit);
 //NodeVector& all_instances(Node* type);
 //NodeVector all(Node* type,Node* slot,int recurse);
-Node* findMember(Node* n, string match, int recurse = false, bool semantic = false);
+Node* findMember(Node* n, string match, int recurse = false, bool semantic = useSemantics);
 //Node* findMatch(Node* n, const char* match);
 //NodeVector filter(Query& q, Node* _filter);
 //NodeVector filter(NodeVector all, char* matches);
@@ -567,6 +572,7 @@ extern "C" Node* getType(Node* n);// != kind!
 
 typedef Node* N;
 typedef Statement* S;
+typedef NodeVector Ns;
 typedef NodeVector NV;
 
 //#pragma warnings_off
@@ -583,7 +589,7 @@ static int billion=GB;
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 40*million;// long would need a new structure!!
+static long maxNodes /*max 32bit=4GB!*/= 10*million;// long would need a new structure!!
 static long maxStatements = maxNodes*3;// *10 = crude average of Statements per Node (yago:12!!)
 #else
 static long maxNodes = 100*million;

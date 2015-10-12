@@ -867,8 +867,86 @@ NodeVector & allInstances(Node * type) {
 
 // todo?: EXCLUDING classes and direct instances on demand!
 // WDYM direct instances ???
+
+NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
+	static NodeSet* all=new NodeSet;
+	if (type == 0) {
+		all->clear(); // hack!!!
+		return 0;
+	}
+	if (recurse > 0)recurse = recurse + 2; // recurse++; dont descend too deep! todo: as iterator anyways!
+	if (yetvisited[type])
+		return all;
+	yetvisited[type] = true;
+	if (recurse > maxRecursions)return all;
+	runs++;
+	if (runs > maxNodes)return all; // no infinite loops!
+	NodeVector subtypes;
+	bool is_abstract=isAbstract(type);
+	// todo : via instanceFilter see below
+	Statement* s = 0;
+	while ((s = nextStatement(type, s)) && all->size() <= max && subtypes.size() <= max) {
+		//	for (int i = 0; i < type->statementCount; i++) {
+		//		Statement* s = getStatementNr(type, i);
+		if (!checkStatement(s))continue;
+		if (s->Predicate() == type)continue; // NO Predicate matches!!
+		//		if (s->subject == 613424) {
+		//			showStatement(s);
+		//			show((Node*) (all.end() - 1).base());
+		//		}
+		//    	po
+		p(s);
+		if (s->Subject() == type) {// todo contains SLOW!!!
+			if (is_abstract && isA4(s->Predicate(), Instance, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (!is_abstract && isA4(s->Predicate(), Instance, false, false))if (!contains(all, s->Object()))all->insert(s->Object());
+			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+		} else {
+			if (isA4(s->Predicate(), Type, false, false))all->insert(s->Subject());
+			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+		}
+	}
+	p(all->size());
+	//	subtypes.push_back(type); NOT AGAIN
+	if (recurse)
+		for (int i = 0; i < subtypes.size(); i++) {// subtypes
+			if (all->size() >= max)
+				return all;
+			Node* x = (Node*) subtypes[i];
+			pf("all %d %s *%d\n", x->statementCount, x->name, x->id);
+			if (!checkNode(x))continue; // how??
+			//			if (recurse)
+			//				more = all_instances(x, recurse, max - all.size());// why sooo slooow ???
+			//			else
+			lookupLimit=max;
+			NodeVector more = instanceFilter(x);//,null,max); //   all_instances(x, recurse-1, max);
+			mergeVectors(all, more);
+		}
+	subtypes.push_back(type);
+	if (includeClasses)
+		mergeVectors(all, subtypes); // ja?
+	p(all->size());
+	return all;
+}
+
 NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses) {
+	NodeSet* a=all_instances3(type, recurse, max, includeClasses) ;
+	if(!a)return EMPTY;
+	//	NodeVector v(a->begin(),a->end());
+//	static NodeVector v(a->begin(),a->end());
+//	static NodeVector v(a->size());
+	NodeVector* v=new NodeVector(a->size());// LEAK!
+	std::copy(a->begin(), a->end(), v->begin());
+//	p(v.size());
+	return *v;
+}
+NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasses) {
 	static NodeVector& all = *new NodeVector; // empty before!
+//	static NodeSet& alles=*new NodeSet;
+	NodeVector v;
 	if (type == 0) {
 		all.clear(); // hack!!!
 		return EMPTY;
@@ -1379,8 +1457,9 @@ NodeVector nodeVectorWrap(Statement* n) {
 
 NodeVector update(cchar* query){
     autoIds=true;
-    char* data=modifyConstChar(query);
-    if(startsWith(data, "update "))data+=7;
+	char* data=modifyConstChar(query);
+	if(startsWith(data, "update "))data+=7;
+	if(startsWith(data, ":update "))data+=8;
     char* i=strstr(data, " set ");
     if(!i)throw "SYNTAX: UPDATE * SET x=y";// NOT OK;
     i[0]=0;

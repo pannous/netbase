@@ -20,6 +20,7 @@ string join(char** argv,int argc);
 bool eq(const char* x,const char* y,bool ignoreCase = true,bool ignoreUnderscore=true);
 bool eq(string x, const char* y);
 bool eq(string* x, const char* y);
+bool eq(int a,int b);
 Node* eq(Node* x, Node* y);
 bool startsWith(const char* x,const char* y);
 bool startsWith(string* x,const char* y);
@@ -37,6 +38,8 @@ bool contains(const char* x,const char* y,bool ignoreCase=false);
 //bool contains(NodeVector* v, Node* o);
 //bool contains(NodeVector v, Node* o);
 //bool contains(NodeVector& v, Node* o);
+bool contains(NodeSet& all, Node* node);
+bool contains(NodeSet* all, Node* node);
 bool contains(vector<char*>& all,char* node);
 bool contains(string x,const char* y);
 bool isNumber(const char* buf);
@@ -79,9 +82,10 @@ unsigned int wordhash(const char *str);
 //inline short normChar(char c);
 short normChar(char c);
 string stem(string word);
-void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
+//void addRange(NodeVector& some, NodeVector more,bool checkDuplicates=true);
 //NodeVector mergeVectors(NodeVector some, NodeVector more);
 void mergeVectors(NodeVector* some, NodeVector more);
+void mergeVectors(NodeSet* some, NodeVector more);
 char* substr(const char* what,int from,int to);
 char* match(char* input, cchar* pattern);
 char* clone(const char* line);
@@ -90,13 +94,21 @@ char* modifyConstChar(const char* line);
 const char* concat(const char* a,const  char* b);
 char* fixQuotesAndTrim(char* tmp);
 char* replaceChar(char* thing,char what,char with);
+char* replace(char* data,char what,char with);
 //inline
 bool isAbstract(Node* object);
 //bool contains(NodeVector& v, Node& o,bool fuzzy=false);
 bool contains(NodeVector& v, Node* o,bool fuzzy=false);
-char* replace(char* data,char what,char with);
+
 string itoa(int i);
 void appendFile(const char* fileName,const char* data);
-#define check(assertion) pf("TEST %s\n",#assertion);if(assertion)pf("PASSED %s\n",#assertion);else{pf("FAILED %s\n",#assertion);exit(0);}
+
+#define check(assertion) pf("TEST %s\n",#assertion);\
+	if(assertion)pf("PASSED %s\n",#assertion);\
+	else{pf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
+
+#define assertEquals(a,b) printf("TEST %s==%s\n",#a,#b);\
+	if(eq(a,b))p("PASSED\n");else{p(a);p("!=");p(b);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
+
 #define minimum(a,b) (a<b?a:b)
 void printlabels();

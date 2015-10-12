@@ -182,10 +182,10 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 		}
 		Node* object=getAbstract(image);
 		if(subject&&subject->id!=0)
-			addStatement(subject, wiki_image, object, false);
+			addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
 		if(!subject||subject->id==0||!isAbstract(subject)){
 			if(hasWord(title))
-				addStatement(getAbstract(title), wiki_image, object, false);
+				addStatement(getAbstract(title), wiki_image, object, !CHECK_DUPLICATES);
 		}
 	}
 	fclose(infile);
@@ -222,7 +222,7 @@ void importImagesDE() {// dbpedia
 		if (!hasWord(title)) continue; // currently only import matching words.
 		Node* subject=getAbstract(title);
 		Node* object=getAbstract(image+5);// ommit md5 part /9/9a/
-		addStatement(subject, wiki_image, object, false);
+		addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
 	}
 	fclose(infile);
 	good=0;
@@ -257,7 +257,7 @@ void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 		Node* subject=getAbstract(title);
 		Node* object=getAbstract(image); // getThe(image);;
 		//		if(endswith(image,".ogg")||endswith(image,".mid")||endswith(image,".mp3"))
-		addStatement(subject, wiki_image, object, false);
+		addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
 		printf("%s\n", title);
 		//		if (!eq(title, downcase(title),false))
 		//			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
@@ -592,7 +592,7 @@ void addAttributes(Node* subject, char* line) {
 		if (!attribute) break;
 		Node* predicate=getThe(attribute);
 		Node* object=getThe(value);
-		addStatement(subject, predicate, object);
+		addStatement(subject, predicate, object,false);
 	} while (attribute != 0);
 }
 
@@ -684,14 +684,12 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 
 				if (!contains(line, "><")) {				// else empty!
 					object=add(field);
-					addStatement(subject, Member, object,
-								 !CHECK_DUPLICATES);
+					addStatement(subject, Member, object,!CHECK_DUPLICATES);
 					subject=object;
 				} else {
 					object=getThe(field);
 					//					addStatement(subject, Unknown,object,!CHECK_DUPLICATES);//EMPTY
-					addStatement(subject, object, Unknown,
-								 !CHECK_DUPLICATES); //EMPTY
+					addStatement(subject, object, Unknown,!CHECK_DUPLICATES); //EMPTY
 					//					addStatement(subject, object,UNKNOWN_OR_EMPTY,!CHECK_DUPLICATES);//EMPTY
 				}
 				addAttributes(subject, line);
@@ -832,7 +830,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				continue;
 			}
 			//			Statement *s=
-			addStatement(subject, predicate, object, false);
+			addStatement(subject, predicate, object, !CHECK_DUPLICATES);
 			//			showStatement(s);
 		}
 
@@ -1091,7 +1089,7 @@ bool importYago(const char* file) {
 		//		if (contains(objectName, subjectName, true))
 		//			s = addStatement(subject, Member, object, false); // todo: id
 		//		else
-		s=addStatement(subject, predicate, object, false); // todo: id
+		s=addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
@@ -1292,7 +1290,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			freebaseKeysConflicts++;
 			printf("labels[key] duplicate! %s => %s || %s\n", key , oldLabel->name, label);
-			addStatement(oldLabel,Label,getAbstract(label));
+			addStatement(oldLabel,Label,getAbstract(label),!CHECK_DUPLICATES);
 			continue;// don't overwrite german with english
 			//Stra��enverkehr || Stra\u00DFenverkehr
 //			setLabel(oldLabel, label,false,false);
@@ -1315,7 +1313,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		if (hasWord(label)) n=getNew(label);		//get(1);//
 		else n=getAbstract(label);
 		//		n->value.text=...
-		addStatement(n, Labeled, getAbstract(key));// VERY EXPENSIVE ID !!!
+		addStatement(n, Labeled, getAbstract(key),!CHECK_DUPLICATES);// VERY EXPENSIVE ID !!!
 
 
 		if (n) {
@@ -1607,7 +1605,7 @@ bool importN3(cchar* file) {
 			badCount++;
 		} else {
 			//            else// Statement* s=
-			addStatement(subject, predicate, object, false); // todo: id
+			addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 		}
 		//		showStatement(s);
 	}
@@ -1663,8 +1661,8 @@ bool importFacts(const char* file, const char* predicateName="population") {
 		object=getAbstract(objectName);
 		dissectWord(subject);
 		Statement* s;
-		if (contains(objectName, subjectName, true)) s=addStatement(subject, Member, object, false); // todo: id
-		else s=addStatement(subject, predicate, object, false); // todo: id
+		if (contains(objectName, subjectName, true)) s=addStatement(subject, Member, object, !CHECK_DUPLICATES); // todo: id
+		else s=addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			exit(0);

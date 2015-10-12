@@ -104,23 +104,36 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 	return false;
 }
 
-
-
+bool contains2(NodeVector& all, Node* node) {
+	auto x=std::find(all.begin(), all.end(), node);
+	return x!= all.end();
+}
+bool contains(NodeSet& all, Node* node) {
+	auto x=std::find(all.begin(), all.end(), node);
+	return x!= all.end();
+}
+bool contains(NodeSet* all, Node* node) {
+	auto x=std::find(all->begin(), all->end(), node);
+	return x!= all->end();
+}
 bool contains(NodeVector& all, Node& node, bool fuzzy) {
-	for (int i=0; i < all.size(); i++) {
-		if ((Node*) all[i] == &node) return true;
-		if (fuzzy && eq(all[i], &node)) return true;
-	}
-	return false;
+//	if(!fuzzy)
+		return contains2(all,&node);
+//	for (int i=0; i < all.size(); i++) {
+//		if ((Node*) all[i] == &node) return true;
+//		if (fuzzy && eq(all[i], &node)) return true;
+//	}
+//	return false;
 }
 //
 bool contains(NodeVector& all, Node* node, bool fuzzy) {
-	for (int i=0; i < all.size(); i++) {
-		Node* n=(Node*) all[i];
-		if (n == node || (fuzzy && eq(n, node)))
-			return true;
-	}
-	return false;
+	return contains2(all,node);
+//	for (int i=0; i < all.size(); i++) {
+//		Node* n=(Node*) all[i];
+//		if (n == node || (fuzzy && eq(n, node)))
+//			return true;
+//	}
+//	return false;
 }
 //
 //bool contains(NodeVector* v, Node* node,bool fuzzy) {
@@ -289,6 +302,10 @@ string join(char** argv, int argc) {
 	return a;
 }
 
+bool eq(int a,int b){
+	return a==b;// for assertEquals
+}
+
 Node* eq(Node* x, Node* y) {
 	return isEqual(x, y);
 }
@@ -309,8 +326,9 @@ void ps(string s) {	// string geht nicht!?!
 
 void ps(NodeVector v) {
 	if (quiet) return;
-	for (int i=0; i < v.size(); i++)
-		show(v[i]);
+	NodeVector::iterator it;
+	for(it = v.begin(); it != v.end(); ++it)
+		show(*it);
 }
 void ps(string* s) {
 	if (quiet) return;
@@ -393,13 +411,17 @@ void p(Query& q) {
 }
 
 // todo: presorted jumplists
-
 NodeVector intersect(NodeVector a, NodeVector b) {
 	NodeVector c;
-	for (int i=0; i < a.size(); i++) {
-		Node* n=a[0];
-		if (contains(b, n)) c.push_back(n);
-	}
+	NodeVector::iterator it;
+	for(it = a.begin(); it != a.end(); ++it)
+		if (contains(b, *it))
+//			c.insert(*it);
+			c.push_back(*it);
+//	for (int i=0; i < a.size(); i++) {
+//		Node* n=a[0];
+//		if (contains(b, n)) c.push_back(n);
+//	}
     return c;
 }
 
@@ -549,14 +571,16 @@ unsigned int wordhash(const char *str) { // unsigned
 	return hash;
 }
 
+
 // call by object => destination unmodified!   (how) expensive?!
-void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool keep destination unmodified=TRUE
-	for (int i=0; i < more.size(); i++) {
-		Node*n=(Node*) more[i];
-		if (!checkNode(n)) continue;
-		if (!checkDuplicates || !contains(some, n)) some.push_back(n);
-	}
-}
+//void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool keep destination unmodified=TRUE
+//	some.insert(more.begin(),more.end());
+////	for (int i=0; i < more.size(); i++) {
+////		Node*n=(Node*) more[i];
+////		if (!checkNode(n)) continue;
+////		if (!checkDuplicates || !contains(some, n)) some.push_back(n);
+////	}
+//}
 
 //NodeVector mergeVectors(NodeVector some, NodeVector more) {// bool keep destination unmodified=TRUE
 //    for (int i = 0; i < more.size(); i++) {
@@ -566,9 +590,19 @@ void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool
 //    return some;
 //}
 
+//#include <algorithm>
+
+void mergeVectors(NodeSet* some, NodeSet more) {
+	some->insert(more.begin(), more.end());
+}
+void mergeVectors(NodeSet* some, NodeVector more) {
+	some->insert(more.begin(), more.end());
+}
 void mergeVectors(NodeVector* some, NodeVector more) { // bool keep destination unmodified=TRUE
+//	return std::set_union(some,&more);
 	for (int i=0; i < more.size(); i++) {
-		if (!contains(*some, (Node*) more[i], false))
+//		/		if (!contains(*some, (Node*) more[i], false))
+		if (std::find(some->begin(), some->end(), more[i]) == some->end())// NOT contains x yet
             some->push_back(more[i]);
 	}
 }
