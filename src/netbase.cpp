@@ -108,7 +108,9 @@ void flush() {
 }
 
 //inline
-
+void bad(){
+	badCount++;
+}
 bool isAbstract(Node* object) {
 	return object->kind == abstractId || object->kind == singletonId;
 }
@@ -164,7 +166,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	int i=0;
 	while (ah&&ah->next) {
 		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
-            badCount++;
+            bad();
             if(badAhashReported[ah])return ah;
             badAhashReported[ah]=true;
 			debugAhash(position);
@@ -458,12 +460,12 @@ Statement * getStatement(int id, int context_id) {
 		return null;// i.e. lastStatement
 	}
 	if (id < 0) {
-		badCount++;
+		bad();
 		return null;
 	}
 	if (id >= maxStatements) {
 		p("maxStatements reached!");
-		badCount++;
+		bad();
 		return null;
 	}
 	Context* context=getContext(context_id);
@@ -526,7 +528,7 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report) {//
 //	bool report=true;
 	if (node == 0) {
-		badCount++;
+		bad();
 		if (debug) printf("^"); // p("null node");
 		//		p(nodeId);
 		return false;
@@ -535,7 +537,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 	Context* c=currentContext(); // getContext(node->context);
 	void* maxNodePointer=&c->nodes[maxNodes];
 	if (node < c->nodes) {
-		badCount++;
+		bad();
 		if(report){// not for abstract.node (can be number etc)
 		printf("node* < c->nodes!!! %p < %p \n", node, c->nodes);
         p("OUT OF MEMORY or graph corruption");
@@ -543,7 +545,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 		return false;
 	}
 	if (node >= maxNodePointer) {
-		badCount++;
+		bad();
 		if(report){
         printf("node* >= maxNodes!!! %p > %p\n", node, maxNodePointer);
         p("OUT OF MEMORY or graph corruption");
@@ -553,7 +555,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 	}
 #ifdef useContext
 	if (node->context < 0 || node->context > maxContexts) {
-		badCount++;
+		bad();
 		if(report){
 		p("wrong node context");
 		p("node:");
@@ -565,34 +567,34 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 	}
 #endif
 	if (nodeId > maxNodes) {
-		badCount++;
+		bad();
 		if(report)
 		pf("nodeId>maxNodes %d>%ld", nodeId, maxNodes);
 		return false;
 	}
 
 	if (nodeId > 1 && node->id > 0 && node->id != nodeId) {
-		badCount++;
+		bad();
 		if(report)
 		pf("node->id!=nodeId %d!=%d", node->id, nodeId);
 		return false;
 	}
 
 	if (checkNames && node->name == 0) {// WHY AGAIN??
-		badCount++;
+		bad();
 		if(report)
 		printf("node->name == 0 %p\n", node);
 		return false;
 	}
 	if (checkNames && (node->name < c->nodeNames || node->name >= &c->nodeNames[averageNameLength * maxNodes])) {
-		badCount++;
+		bad();
 		if(report)
 		printf("node->name out of bounds %p\n", node);
 		return false;
 	}
 #ifdef inlineStatements
 	if (checkStatements && node->statements == null) { //
-		badCount++;
+		bad();
 		if(report){
 		p("node not loaded");
 		p(nodeId);
@@ -666,7 +668,7 @@ bool addStatementToNode2(Node* node, int statement) {
 		node->statementCount++;
 	} else {
 		if (maxStatementsPerNode == node->statementCount) { // warn once
-			badCount++;
+			bad();
 			// p("maxStatementsPerNode!!");
 			// p(node->name);
 		}
@@ -682,7 +684,7 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 		return 0;
 	}
 	if (contextId > maxContexts || subjectId > maxNodes || predicateId > maxNodes || objectId > maxNodes) {
-		badCount++;
+		bad();
 		p("WARNING contextId>maxContexts||subjectId>maxNodes||predicateId>maxNodes||objectId>maxNodes");
 		return 0;
 	}
@@ -808,20 +810,20 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 	//	if(nr==0)return 0;// todo ????
 //    	if (nr >= maxStatementsPerNode) {
-//    		badCount++;
+//    		bad();
 //    		return null;
 //    	}
 	if (n == null) {
-		badCount++;
+		bad();
 		return null;
 	}
-	//	if(n->statements==null){badCount++;return null;}
+	//	if(n->statements==null){bad();return null;}
 	if (nr >= n->statementCount) {
-		badCount++;
+		bad();
 		return null;
 	}
 	if (n->firstStatement < 0) {
-		badCount++;
+		bad();
 		return null;
 	}
 #ifdef useContext
@@ -835,7 +837,7 @@ Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 		if (statement == 0) {
 			p("CORRUPTED STATEMENTS!");
 			show(n);
-			badCount++;
+			bad();
 			return null;
 		}
 		if (!checkStatement(statement, true, false)) break;
@@ -1167,7 +1169,7 @@ Node * getThe(string thing, Node* type) {
 
 Node * getThe(const char* thing, Node* type){//, bool dissect) {
 	if (thing == 0 || thing[0] == 0) {
-		badCount++;
+		bad();
 		return 0;
 	}
 //	if(eq("of Directors",thing))
@@ -1397,7 +1399,7 @@ Node* rdfValue(char* name) {
 extern "C"
 Node* getAbstract(const char* thing) {			// AND CREATE!
 	if (thing == 0) {
-		badCount++;
+		bad();
 		return 0;
 	}
     while(thing[0]==' '||thing[0] == '"')thing++;
@@ -2117,7 +2119,7 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 	for (int i=0; i < n->statementCount; i++) {
 		Statement* s=getStatementNr(n, i); // Not using instant gap
 		if (!s) {
-			badCount++;
+			bad();
 			continue;
 		}
 		//		if (debug)showStatement(s);
@@ -2524,7 +2526,7 @@ void setName(int node, cchar* label){
 void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
 //    if(addInstance && n!=get(n->id))n=save(n);// HOW!?! WHAT?
 //	if(label[0]=='<')
-//		badCount++; "<span dbpedia parser fuckup etc
+//		bad(); "<span dbpedia parser fuckup etc
     int len=(int)strlen(label);
     Context* c=currentContext();
 	char* newLabel = name_root + c->currentNameSlot;

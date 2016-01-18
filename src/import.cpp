@@ -160,7 +160,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 		Node* subject=get(id);
 		if (!subject && !hasWord(title)){
 			p(line);
-			badCount++; continue; // currently only import matching words.
+			bad(); continue; // currently only import matching words.
 		}
 		Node* object=getAbstract(image);
 		if(subject&&subject->id!=0)
@@ -803,7 +803,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			else
 				object=getThe(vali);
 			if (!object || object->id > maxNodes) {
-				badCount++;
+				bad();
 				if (debug) printf("ERROR %s\n", line);
 				continue;
 			}
@@ -839,7 +839,7 @@ void importList(const char* file, const char* type) {
 		fixNewline(line);
 		object=getThe(line);
 		if (!object || object->id > maxNodes) {
-			badCount++;
+			bad();
 			if (debug) printf("ERROR %s\n", line);
 			continue;
 		}
@@ -1046,7 +1046,7 @@ bool importYago(const char* file) {
 
 			object=getYagoConcept(objectName);
 			if (object == Type) {
-				badCount++;
+				bad();
 				continue;            //!?
 			}
 			subject=getYagoConcept(subjectName); //
@@ -1059,7 +1059,7 @@ bool importYago(const char* file) {
 			//			subject==0 bug Disappears when debugging!!!
 			//			subject = getYagoConcept(subjectName); //
 			//			object = getYagoConcept(objectName);
-			badCount++;
+			bad();
 			pf("|>%d<", linecount);
 			continue;
 		}
@@ -1410,7 +1410,7 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 			#ifdef __APPLE__
 				return getThe("MISSING");// only 1M labels for now
 			#endif
-			badCount++;// later;
+			bad();// later;
 			appendFile("missing.list",name);
 			return 0;// ignore unlabled!  i.e. https://www.wikidata.org/wiki/Q13983582
 		}
@@ -1521,7 +1521,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		//    if(contains(line,"<Apple"))
 		//        p(line);
 		if(predicateName[0]=='.'){
-			badCount++;
+			bad();
 			p(line);
 			continue;
 		}
@@ -1538,7 +1538,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (!subject || !predicate || !object) {// G.o.d. dot problem !?
 			//            printf("_"); // ignored
 //			subject=getFreebaseEntity(subjectName);
-			badCount++;
+			bad();
 		} else {
 			//            else// Statement* s=
 			addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
@@ -2039,8 +2039,8 @@ void importWikiData() {
 
 	}
 //	else{
-		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
-		importLabels("wikidata/wikidata-properties.en.nt");
+//		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
+//		importLabels("wikidata/wikidata-properties.en.nt");
 //	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-instances.nt.gz");

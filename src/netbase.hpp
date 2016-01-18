@@ -617,3 +617,4 @@ extern Node* node_root;
 extern char* name_root;
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
+void bad();
