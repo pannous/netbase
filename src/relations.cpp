@@ -220,7 +220,7 @@ void initRelationsDE() {
     Bytes = addRelation(_bytes, "Daten");
     
 	Plural = addRelation(_plural, "Plural");
-	Translation = addRelation(translation, "��bersetzung");
+	Translation = addRelation(translation, "Übersetzung",is_transitive);// is_transitive if not mapped to abstract!
     
 	And = addRelation(_And, "Und");
 	Or = addRelation(_Or, "Oder");
@@ -368,7 +368,7 @@ void initRelations() {
     Array = addRelation(_array, "array");
 
 	Plural = addRelation(_plural, "plural");
-	Translation = addRelation(translation, "translation");
+	Translation = addRelation(translation, "translation",is_transitive);// is_transitive if not mapped to abstract!
 
 	And = addRelation(_And, "and");
 	Or = addRelation(_Or, "or");
@@ -496,6 +496,7 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "range")) return Range;
 	if (eq(thing, "domain")) return Domain;
 	if (eq(thing, "inverseOf")) return Antonym;
+	if (eq(thing, "Antonym")) return Antonym;
     
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;

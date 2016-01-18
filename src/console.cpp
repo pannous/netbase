@@ -469,7 +469,7 @@ NodeVector parse(const char* data) {
     //	if (startsWith(q, "m/")) {
 	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
 		p("<m.0c21rgr> needs showered memory or boost ");
-		Node* n=getFreebaseEntity((char*) data);
+		Node* n=getFreebaseEntity((char*) data,true);
 		show(n);    //<g.11vjx36lj>
 		return OK;
 	}

@@ -2,6 +2,9 @@
 #include <string>
 #include "netbase.hpp"
 
+//extern int MAX_CHARS_PER_LINE;
+#define MAX_CHARS_PER_LINE 0x1000
+
 using namespace std;
 
 #define null 0
@@ -112,3 +115,8 @@ void appendFile(const char* fileName,const char* data);
 
 #define minimum(a,b) (a<b?a:b)
 void printlabels();
+
+FILE *open_file(const char* file);
+//bool readFile(char* file,char* line);
+bool readFile(const char* file,char* line);
+void closeFile(const char* file);

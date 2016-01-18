@@ -27,24 +27,6 @@ bool getBest=false;// i.e. Madonna\Music | Madonna\Church
 bool germanLabels=false;//true;
 bool importing=false;
 
-FILE *open_file(const char* file) {
-	FILE *infile;
-	if ((infile=fopen((file), "r")) != NULL) return infile;
-	if (import_path.length() == 0) import_path="import/";
-	if(startsWith(file, "~/"))
-		file=concat(getenv("HOME"), file+1);
-	if(startsWith(file, "./"))
-		file=concat(getcwd(NULL, 0), file+1);
-	if (!startsWith(file, "/")) file=(import_path + file).data();
-	p(file);
-	if ((infile=fopen((file), "r")) == NULL) {
-		perror("Error opening file");
-		printf(" %s\n", (file));
-		exit(1);
-	}
-	return infile;
-}
-
 void setText(Node *node, char* text) {
 	int len=(int) strlen(text);
 	Context* context=currentContext();
@@ -1185,25 +1167,29 @@ void fixLabel(char* label){
 	if(wo)wo[-1]=0;
 }
 
-bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false) {
-	char line[10000];// malloc(100000) GEHT NICHT PERIOD!
+bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true) {
+	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
 	char* label0=(char*) malloc(10000);
 	char* label;
 	char* key0=(char*) malloc(10000);
 	char* key;
 	char* test=(char*) malloc(10000);
-	FILE *infile=open_file(file);
 
 	int linecount=0;
 	int rowCount=3;
-	while (fgets(line, sizeof(line), infile) != NULL) {
+//
+	while (readFile(file,&line[0])) {
+//	while (fgets(line, sizeof(line), infile) != NULL) {
 #ifdef __APPLE__
 		        		if (linecount > 10000000) break;
 #endif
 		if (++linecount % 10000 == 0) {
 			printf("%d labels, %d duplicates     \r", linecount, freebaseKeysConflicts);
 			fflush(stdout);
-			if (checkLowMemory()) break;
+			if (checkLowMemory()){
+				printf("Quitting import : id > maxNodes\n");
+				exit(0);
+			}
 			rowCount =countRows(line);
 		}
 		if(line[0]=='#')continue;
@@ -1279,11 +1265,13 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		}
 
 		if(oldLabel){
+
 			if(!altLabel)continue;
 			if(eq(oldLabel->name,label))continue;// OK
 			if(startsWith(oldLabel->name,"<")){labels[key]=getAbstract(label); continue;}
 			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
-			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
+			if(contains(label,"\\u"))
+				continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			freebaseKeysConflicts++;
 			printf("labels[key] duplicate! %s => %s || %s\n", key , oldLabel->name, label);
 			addStatement(oldLabel,Label,getAbstract(label),!CHECK_DUPLICATES);
@@ -1326,11 +1314,11 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		}
 	}
 	//		add(key,label);
-	fclose(infile); /* Close the file */
 	p("duplicates removed:");
 	p(freebaseKeysConflicts);
 	testPrecious();
 	pf("DONE importing %d labels from %s\n",linecount,file);
+	closeFile(file);
 	return true;
 }
 
@@ -1369,7 +1357,7 @@ Node *dissectFreebase(char* name) {
 }
 
 int MISSING=0;
-Node* getFreebaseEntity(char* name) {
+Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	if (name[0] == '<') {
 		name++;
 		if(name[strlen(name) - 1]=='>')
@@ -1382,19 +1370,32 @@ Node* getFreebaseEntity(char* name) {
 	}
 	size_t len=strlen(name);
 	if(len==0)return 0;
+	if (contains(name, "^^"))
+		return rdfValue(name);
 	for (size_t i=len-1; i>0; --i)
-		if(name[i]=='#')// name[i]=='/'|| // cut http://.../ namespaces
+		if(name[i]=='#' || (fixUrls && name[i]=='/')) // cut http://.../ namespaces
 			name=name+i+1;//str[i]=0;
+	bool fixNamespaces=!fixUrls;
+	if(fixNamespaces){
+		if(startsWith(name,"http://schema.org/"))
+			name=name+18;
+		if(startsWith(name,"http://www.wikidata.org/entity/"))
+			name=name+31;
+	}
+
+
+
 	cut_to(name," (");
-	if(name[0]!='0'){// ECHSE
+//	if(name[0]!='0'){// ECHSE
 		Node* n=labels[name];
 		if (n)return n;
 		else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
-//			badCount++ later;//
-//			appendFile("missing.list",name);
+			badCount++;// later;
+			appendFile("missing.list",name);
 			return 0;// ignore unlabled!  i.e. https://www.wikidata.org/wiki/Q13983582
 		}
-	}
+//	}
+
 	// skip <m. but  LEAVE THE >
 	if (startsWith(name, "m.") || startsWith(name, "g.")) {
 		long h=freebaseHash(name + 2);
@@ -1407,7 +1408,6 @@ Node* getFreebaseEntity(char* name) {
 		}
 	}
 	name=(char *) fixYagoName(name);
-	if (contains(name, "^^")) return rdfValue(name);
 	return dissectFreebase(name);
 }
 
@@ -1437,83 +1437,7 @@ bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
 }
 
 
-#include <zlib.h>
-#define CHUNK 0x1000
-#define OUT_CHUNK CHUNK*100
-#define MAX_CHARS_PER_LINE 0x1000
-unsigned char gzip_in[CHUNK];
-unsigned char gzip_out[OUT_CHUNK];
-char* first_line=(char*)&gzip_out[0];
-char* current_line=first_line;
-char* next_line=first_line;
-char hangover[MAX_CHARS_PER_LINE];
-///* These are parameters to inflateInit2. See http://zlib.net/manual.html for the exact meanings. */
-#define windowBits 15
-#define ENABLE_ZLIB_GZIP 32
-z_stream init_gzip_stream(FILE* file,char* out){// unsigned
-		z_stream strm = {0};
-		strm.zalloc = Z_NULL;
-		strm.zfree = Z_NULL;
-		strm.opaque = Z_NULL;
-		strm.next_in = gzip_in;
-		strm.avail_in = 0;
-		strm.next_out = gzip_out;
-//	strm.next_out = (unsigned char* ) out;
-		inflateInit2 (& strm, windowBits | ENABLE_ZLIB_GZIP);
-	return strm;
-}
-
-bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
-//			if(ferror (file)){inflateEnd (& strm);exit (EXIT_FAILURE); } nonesense
-			strm.avail_in = (int)bytes_read;
-			do {
-				strm.avail_out = OUT_CHUNK;
-				inflate (& strm, Z_NO_FLUSH);
-//				printf ("%s",gzip_out);
-			}while (strm.avail_out == 0);
-			if (feof (file)) {
-				inflateEnd (& strm);
-				return false;
-			}
-	return true;// all OK
-}
-bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
-	if(!gzipped)
-		return fgets(line, MAX_CHARS_PER_LINE, infile) != NULL;
-	else{
-		bool ok=true;
-		current_line=next_line;
-		if(!current_line || strlen(current_line)==0 || next_line-first_line>OUT_CHUNK){
-			current_line=first_line;
-			memset(gzip_in, 0, CHUNK);
-			memset(gzip_out, 0, OUT_CHUNK);
-			memset(line, 0, MAX_CHARS_PER_LINE);
-			size_t bytes_read = fread (gzip_in, sizeof (char), CHUNK, infile);
-			ok=inflate_gzip(infile,strm,bytes_read);
-			strcpy(line,hangover);
-		}
-		if(ok){
-			next_line=strstr(current_line,"\n");
-			if(next_line && next_line<first_line+OUT_CHUNK){
-				next_line[0]=0;
-				next_line++;
-				strcpy(line+strlen(hangover),current_line);
-//				if(LEN) { *dst = '\0'; strncat(dst, src, LEN-1); }
-				hangover[0]=0;
-			}else{
-				memset(hangover,0,MAX_CHARS_PER_LINE);
-				strcpy(hangover,current_line);
-				memset(line, 0, MAX_CHARS_PER_LINE);
-				line[0]=0;// skip that one!!
-			}
-		}else{
-			p("readFile DONE!");
-		}
-		return ok;
-	}
-}
-
-bool importN3(cchar* file) {
+bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	autoIds=false;
 	//    if(hasWord("vote_value"))return true;
 	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
@@ -1528,11 +1452,7 @@ bool importN3(cchar* file) {
 	int linecount=0;
 	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD!!!!!!!!!!!!!!!
 	char line[MAX_CHARS_PER_LINE];
-	FILE *infile=open_file(file);
-	bool gzipped=endsWith(file, ".gz");
-	z_stream strm;
-	if(gzipped)strm=init_gzip_stream(infile,&line[0]);
-	while (readFile(infile,line,strm,gzipped)) {
+	while (readFile(file,&line[0])) {
 		if(line[0]==0)continue;// skip gzip new_block
 		//        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
@@ -1585,9 +1505,9 @@ bool importN3(cchar* file) {
 			p(line);
 			continue;
 		}
-		predicate=getFreebaseEntity(predicateName);
-		subject=getFreebaseEntity(subjectName); //
-		object=getFreebaseEntity(objectName);
+		predicate=getFreebaseEntity(predicateName);//,fixNamespaces);
+		subject=getFreebaseEntity(subjectName);//,fixNamespaces); //
+		object=getFreebaseEntity(objectName,false);//,fixNamespaces);
 		if (predicate == Instance) {
 			predicate=Type;
 			N t=subject;
@@ -1605,9 +1525,8 @@ bool importN3(cchar* file) {
 		}
 		//		showStatement(s);
 	}
-	fclose(infile); /* Close the file */
 	p("import N3 ok");
-
+	closeFile(file);
 	pf("BAD: %d     MISSING: %d\n",badCount, MISSING);
 	currentContext()->use_logic=false;
 	//	freebaseKeys.clear();
@@ -2094,19 +2013,19 @@ void importWikiData() {
 	//		importLabels("dbpedia_de/labels.csv");
 	if(germanLabels){
 		importLabels("wikidata/wikidata-terms.de.nt");
-		importLabels("wikidata/wikidata-properties.de.nt");
-//		importN3("wikidata/wikidata-terms.de.nt");// description + altLabels
+//		importLabels("wikidata/wikidata-properties.de.nt");
+//		importN3("wikidata/wikidata-terms.de.nt.gz");// description + altLabels
 	}
-//	else{
-//		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
-//		importLabels("wikidata/wikidata-properties.en.nt");
-//	}
+	else{
+		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
+		importLabels("wikidata/wikidata-properties.en.nt");
+	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-instances.nt.gz");
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
-//	importN3("wikidata/wikidata-sitelinks.nt");
 	importN3("wikidata/wikidata-statements.nt.gz");
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
+	//	importN3("wikidata/wikidata-sitelinks.nt");
 }
 
 

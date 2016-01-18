@@ -870,12 +870,13 @@ NodeVector & nodesOfDirectType(int kind) {
 //}
 
 
-NodeVector & allInstances(Node * type) {
+//NodeVector & allInstances(Node * type) {
+NodeVector allInstances(Node * type) {
 	clearAlgorithmHash();
-	//	NodeVector all=instanceFilter(type);
-	//	return all;//  all_instances(getQuery(type));
+		NodeVector all=instanceFilter(type);
+		return all;//  all_instances(getQuery(type));
 	// COMPARE: !!
-	return all_instances(type, true, defaultLookupLimit, true);
+//	return all_instances(type, true, defaultLookupLimit, true);
 	//	return recurseFilter(type,true,resultLimit,instanceFilter);
 }
 
@@ -916,11 +917,13 @@ NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 		} else {
 			if (isA4(s->Predicate(), Type, false, false))all->insert(s->Subject());
 			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
 			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
 			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
 		}
 	}
 	p(all->size());
@@ -947,6 +950,7 @@ NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 }
 
 NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses) {
+//	RECURE BROKEN! use instanceFilter
 	NodeSet* a=all_instances3(type, recurse, max, includeClasses) ;
 	if(!a)return EMPTY;
 	//	NodeVector v(a->begin(),a->end());
@@ -993,12 +997,14 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 		} else {
 			if (isA4(s->Predicate(), Type, false, false))
 				all.push_back(s->Subject());
 			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
 			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
 			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
 		}
         
         
@@ -1256,6 +1262,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		// MORE :
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Plural;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Synonym;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Translation;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Instance;
 		//		predicateMatchReverse = predicateMatchReverse || isA4(s->Predicate)
@@ -1293,12 +1300,14 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 		bool predicateMatch = (s->Predicate() == Type);
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
+		predicateMatch = predicateMatch || s->Predicate() == Translation;
 		predicateMatch = predicateMatch || s->Predicate() == Plural;
         
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Instance; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Plural;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Synonym;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Translation;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
         
 		if (queue) {

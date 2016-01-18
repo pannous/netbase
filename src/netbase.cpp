@@ -1,4 +1,4 @@
-		#include <string>
+#include <string>
 #include <sstream>
 #include <iostream>
 #include <map>
@@ -1671,6 +1671,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		predicateMatchReverse=predicateMatchReverse || (predicate == SubClass && s->Predicate() == SuperClass);
 		predicateMatchReverse=predicateMatchReverse || (predicate == Antonym && s->Predicate() == Antonym);
 		predicateMatchReverse=predicateMatchReverse || (predicate == Synonym && s->Predicate() == Synonym);
+//		predicateMatchReverse=predicateMatchReverse || (predicate == Translation && s->Predicate() == Translation);
 		predicateMatchReverse=predicateMatchReverse || predicate == Any;
 		predicateMatchReverse=predicateMatchReverse || (predicateMatch && symmetric);
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
@@ -1716,9 +1717,9 @@ void removeStatement(Node* n, Statement * s) {
 	if (!n || !s) return;
 	Statement *last=0;
 	Statement *st=0;
-//	while((st=nextStatement(n,st))){
-	for (int i=0; i < n->statementCount; i++) {
-    	Statement* st=getStatementNr(n, i);
+	while((st=nextStatement(n,st))){ // FAST OK??
+//	for (int i=0; i < n->statementCount; i++) { // SAVE but slow
+//    	Statement* st=getStatementNr(n, i);
 		if (st == s) {
 			if (last == 0) {
 				if (s->Subject() == n) n->firstStatement=s->nextSubjectStatement;
@@ -1750,7 +1751,7 @@ void deleteStatement(Statement * s) {
 }
 
 void deleteWord(const char* data, bool completely) {
-	pf("delete %s \n", data);
+	pf("deleteWord %s \n", data);
 	Context* context=&contexts[current_context];
     if(data[0]=='$'){
         deleteStatement(&context->statements[atoi(data+1)]);
@@ -1782,19 +1783,19 @@ void deleteNode(int id){
 }
 void deleteNode(Node * n) {
 	if (!checkNode(n)) return;
-	deleteStatements(n);
 	if (n->kind == abstractId) {
         NodeVector nv=instanceFilter(n);
         for (int i=0; i < nv.size(); i++) {
             Node* n=nv[i];
             deleteNode(n);
         }
+		deleteStatements(n);
 	}else{ //!!
-//		n->statementCount=0;// soft reset
-//		n->firstStatement=0;
-//		n->lastStatement=0;
+		N a=getAbstract(n->name);
+		deleteStatements(n);
         memset(n, 0, sizeof(Node)); // hole in context!
 	}
+
 }
 
 void deleteStatements(Node * n) {
@@ -1864,7 +1865,7 @@ Node * value(const char* name, double v, Node* unit/*kind*/) {
     }
 	Node *n;
 	if(!unit||unit->id<1000)
-		n= getAbstract(name); // 45
+		n= getThe(name); // 69 (year vs number!!)
 	else
 		n= getThe(name,unit);// 45cm != 45Volt !!!
    	if (unit)n->kind=unit->id;
@@ -2015,6 +2016,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	//	if (n->id < 100 && match->id < 100)return false; // danger!
 	if (get(n->kind) && eq(get(n->kind)->name, match->name, true))return true;	// danger: instance, noun
 	if (n->id == match->id) return true; // how so??? "Type" overwritten by "kind" !!!!
+	if(isAbstract(match))matchName=true;
 	if (matchName&&eq(n->name, match->name, true)) return true;// only sometimes !!!
 	long badHash=n->id + match->id * 10000000;
 	if (useYetvisitedIsA) {
@@ -2041,6 +2043,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	//        if (recurse > maxRecursions / 3)
 	//            semantic = false;
 
+
 	// todo:semantic true (level1)
 	bool quickCheckSynonym=recurse == maxRecursions; // todo !?!??!
 	if (quickCheckSynonym && findStatement(n, Synonym, match, false, false, true)) {
@@ -2049,6 +2052,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	}
 
 	bool semantic2=semantic && recurse > 5; // && ... ?;
+
 	if (semantic && findStatement(n, Synonym, match, recurse, semantic2, true)) {
 		yetvisitedIsA[badHash]=true;
 		return true;
@@ -2413,6 +2417,8 @@ Statement * learn(string sentence) {
 //Node* nextNode(char* name){
 //    add(name);
 //}
+//69 (Q30203): year
+//69 (Q713048): natural number
 //void cleanAbstracts(Context* c){
 Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	if (!abstract || !abstract->name) return 0;
@@ -2439,7 +2445,8 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 //				return s->Subject();
 			}
 		N first= add(abstract->name, 0); // NO SUCH!! CREATE!?
-		abstract->value.node=first;
+		if(!atoi(abstract->name))
+			abstract->value.node=first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
 		return first;
 	}
 	if (type->id == abstractId || type->id == singletonId)
@@ -2481,16 +2488,16 @@ Node * getProperty(Node* node, cchar* key) {
 bool isA(Node* fro, Node * to) {
 	if (isA4(fro, to, 0, 0)) return true;
 
-	Statement* s=0; // x.son=milan => milan is_a son
+	Statement* s=0;
 	while ((s=nextStatement(fro, s)))
-		if (s->Object() == fro && isA4(s->Predicate(), to)) return true;
+		if (s->Object() == fro && isA4(s->Predicate(), to)) return true;// x.son=milan => milan is_a son
 
 	if (fro->kind == Abstract->id) {
 		NodeVector all=instanceFilter(fro);
 		for (int i=0; i < all.size(); i++) {
 			Node* d=(Node*) all[i];
 			while ((s=nextStatement(d, s)))
-				if (s->Object() == d && isA4(s->Predicate(), to)) return true;
+				if (s->Object() == d && isA4(s->Predicate(), to)) return true; // x.son=milan => milan is_a son
 			if (!findPath(d, to, parentFilter).empty()) return true;
 		}
 	}

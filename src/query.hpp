@@ -25,7 +25,8 @@ NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
 NodeVector find_all(cchar* name, int context=1, int recurse=0, int limit=resultLimit);
 NodeVector& all_instances(Node* type, int recurse, int max= resultLimit,bool includeClasses=true);
-NodeVector& allInstances(Node* type);
+//NodeVector& allInstances(Node* type);
+NodeVector allInstances(Node* type);
 NodeVector& all_instances(Query& q);
 
 NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*));
