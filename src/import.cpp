@@ -1160,11 +1160,20 @@ void testPrecious() {
 
 
 void fixLabel(char* label){
+	fixNewline(label);
 	label[0]=toupper(label[0]);
 	char* wo=strstr(label+1,"@");
 	if(wo)wo[-1]=0;
 	wo=strstr(label+1,">");
 	if(wo)wo[-1]=0;
+}
+char* dropUrl(char* name){
+	size_t len=strlen(name);
+	if(name[len-1]=='>')name[len-1]=0;
+	for (size_t i=len-1; i>0; --i)
+		if(name[i]=='#' || name[i]=='/') // cut http://.../ namespaces
+			return name+i+1;//str[i]=0;
+	return name;
 }
 
 bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true) {
@@ -1181,7 +1190,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 	while (readFile(file,&line[0])) {
 //	while (fgets(line, sizeof(line), infile) != NULL) {
 #ifdef __APPLE__
-		        		if (linecount > 10000000) break;
+		        		if (linecount > 1000000) break;
 #endif
 		if (++linecount % 10000 == 0) {
 			printf("%d labels, %d duplicates     \r", linecount, freebaseKeysConflicts);
@@ -1190,46 +1199,56 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 				printf("Quitting import : id > maxNodes\n");
 				exit(0);
 			}
+			if(!labels["Q1"]){printf("NO Q!");}
 			rowCount =countRows(line);
 		}
 		if(line[0]=='#')continue;
-		memset(label0, 0, 10000);
-		memset(key0, 0, 10000);
-		memset(test, 0, 10000);
+//		memset(label0, 0, 10000);
+//		memset(key0, 0, 10000);
+//		memset(test, 0, 10000);
 //		label0[0]=0;// remove old!!
+//		if(contains(line, "Q2696789"))
+//			rowCount=rowCount;
 		if(rowCount==2){
 			sscanf(line, "%s\t%[^\n]s", key0,label0);
 			test=label0;
 		}else
 			sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test, label0);
+		fixNewline(line);
 		key=key0;
 		label=label0;
 		if(strlen(label)==0)label=test;
-		if (startsWith(label, "\"")) label++;
-		if (startsWith(key, "<")){ key++;key[strlen(key)-1]=0;}
-		fixNewline(label);
-		fixLabel(label);
+		if(eq(label,key))continue;
+		test=dropUrl(test);
+		if(key[0]=='<')key++;
+		if(test[0]=='<')test++;
+		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label");
+		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
+
+//		if (startsWith(label, "\"")) label++;
+//		if (startsWith(key, "<")){ key++;key[strlen(key)-1]=0;}
+
+//		if(endsWith(line," .")){
+			if(germanLabels && !endsWith(line,"@de ."))continue;
+			if(!germanLabels&& !endsWith(line,"@en ."))continue;
+//		   }
 //		if (!useHash&&contains(label, "\\u")) continue;// no strange umlauts 'here'
 		if (useHash){
 			if(!startsWith(key, "m.") && !startsWith(key, "g.")) continue;
 			else key=key+2;
 		}
-		if (startsWith(label, "http")) continue;
-		if (startsWith(label, "/")) continue; // "/wikipedia/de_title"@en etc
-		if (endsWith(label, "_id")) continue; // "/wikipedia/de_title"@en etc
-		if (endsWith(label, "_title")) continue; // "/wikipedia/de_title"@en etc
-		if(eq(key,"Q9486626")||eq(key,"P106"))
+//		if (startsWith(label, "http")) continue;
+//		if (startsWith(label, "/")) continue; // "/wikipedia/de_title"@en etc
+//		if (endsWith(label, "_id")) continue; // "/wikipedia/de_title"@en etc
+//		if (endsWith(label, "_title")) continue; // "/wikipedia/de_title"@en etc
+
+
+		key=dropUrl(key);
+		fixLabel(label);
+		label=dropUrl(label);
+		if(eq(key,"Q2696789")||eq(key,"P106"))
 			p(line);
 
-
-		if(eq(label,key))continue;
-		if(test==label){
-			//            setLabel(getAbstract(key),label);
-			//            continue;
-		}else{
-			bool isLabel=startsWith(test, "<#label")||startsWith(test, "<label")||startsWith(test, "label");
-			if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
-		}
 
 		int len=(int) strlen(label);
 		if (len > 50) {
@@ -1255,17 +1274,15 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		Node* oldLabel=labels[key];
 
 		if(eq(test,"description")){
-			if(checkNode(oldLabel)){
+			if(oldLabel&&checkNode(oldLabel)){
 				setText(oldLabel, label);
 //				addStatement(oldLabel,Description,getAbstract(label));
 				continue;
 			}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
 //			oldLabel->value.text=label;// copy!
-
 		}
 
 		if(oldLabel){
-
 			if(!altLabel)continue;
 			if(eq(oldLabel->name,label))continue;// OK
 			if(startsWith(oldLabel->name,"<")){labels[key]=getAbstract(label); continue;}
@@ -1373,8 +1390,10 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	if (contains(name, "^^"))
 		return rdfValue(name);
 	for (size_t i=len-1; i>0; --i)
-		if(name[i]=='#' || (fixUrls && name[i]=='/')) // cut http://.../ namespaces
+		if(name[i]=='#' || (fixUrls && name[i]=='/')){ // cut http://.../ namespaces
 			name=name+i+1;//str[i]=0;
+			break;
+		}
 	bool fixNamespaces=!fixUrls;
 	if(fixNamespaces){
 		if(startsWith(name,"http://schema.org/"))
@@ -1382,8 +1401,6 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 		if(startsWith(name,"http://www.wikidata.org/entity/"))
 			name=name+31;
 	}
-
-
 
 	cut_to(name," (");
 //	if(name[0]!='0'){// ECHSE
@@ -1398,9 +1415,9 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 			return 0;// ignore unlabled!  i.e. https://www.wikidata.org/wiki/Q13983582
 		}
 //	}
-
+	bool useFreebase=false;
 	// skip <m. but  LEAVE THE >
-	if (startsWith(name, "m.") || startsWith(name, "g.")) {
+	if (useFreebase&& (startsWith(name, "m.") || startsWith(name, "g."))) {
 		long h=freebaseHash(name + 2);
 		int got=freebaseKeys[h];
 		if (got && get(got)->id != 0) return get(freebaseKeys[h]);
@@ -2016,13 +2033,15 @@ void importWikiData() {
 	//		importLabels("dbpedia_de/labels.csv");
 	if(germanLabels){
 		importLabels("wikidata/wikidata-terms.de.nt");
+		importLabels("wikidata/wikidata-properties.nt.gz");
 //		importLabels("wikidata/wikidata-properties.de.nt");
-//		importN3("wikidata/wikidata-terms.de.nt.gz");// description + altLabels
+//		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
+
 	}
-	else{
+//	else{
 		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
 		importLabels("wikidata/wikidata-properties.en.nt");
-	}
+//	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-instances.nt.gz");
 	importN3("wikidata/wikidata-simple-statements.nt.gz");

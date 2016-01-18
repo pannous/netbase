@@ -746,7 +746,7 @@ bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
 		//				printf ("%s",gzip_out);
 	}while (strm.avail_out == 0);
 	if (feof (file)) {
-		inflateEnd (& strm);
+//		inflateEnd (& strm);
 		return false;
 	}
 	return true;// all OK
@@ -781,7 +781,7 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 				line[0]=0;// skip that one!!
 			}
 		}else{
-			printf("readFile DONE!");// NEVER REACHED!! CALL closeFile manually!
+			printf("readFile DONE!\n");// NEVER REACHED? -> CALL closeFile manually!
 		}
 		return ok;
 	}
@@ -795,6 +795,7 @@ bool readFile(const char* file,char* line){
 	static z_stream strm;
 	static bool gzipped;
 	if(file==0||line==0){
+		printf("%s DONE!\n",file);
 		if(infile)fclose(infile);
 		infile=0;
 		gzipped=false;

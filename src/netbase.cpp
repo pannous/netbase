@@ -2426,7 +2426,7 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
     if (getRelation(abstract->name)) // not here! doch
         return getRelation(abstract->name);
     if (type<node_root||type>&node_root[maxNodes]) type=0;// default parameter hickup through JNA
-	if(checkNode(abstract->value.node,0,false,false,false) and eq(abstract->value.node->name,abstract->name))
+	if(abstract->value.node && checkNode(abstract->value.node,0,false,false,false) and eq(abstract->value.node->name,abstract->name))
 		return abstract->value.node; // abstract->value.node as cache for THE instance
 	if (type == 0) {
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
