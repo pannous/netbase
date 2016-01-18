@@ -1390,6 +1390,9 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 		Node* n=labels[name];
 		if (n)return n;
 		else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
+			#ifdef __APPLE__
+				return getThe("MISSING");// only 1M labels for now
+			#endif
 			badCount++;// later;
 			appendFile("missing.list",name);
 			return 0;// ignore unlabled!  i.e. https://www.wikidata.org/wiki/Q13983582
