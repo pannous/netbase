@@ -32,10 +32,11 @@ extern Node* Active;
 extern Node* Passive;
 extern Node* Tag;
 extern Node* Label;
-extern Node* BackLabel;
-extern Node* Labels;
-extern Node* LabeledNode;
+extern Node* Labeled;
+//extern Node* Labels;
+//extern Node* LabeledNode;
 extern Node* Comment;
+extern Node* Description;
 
 extern Node* Category;
 extern Node* SubContext;
@@ -78,7 +79,6 @@ extern Node* Float;
 extern Node* Integer;
 extern Node* Range;
 extern Node* Unit;
-
 
 extern Node* Bytes;// byte[] -> serialized java object etc etc
 extern Node* Map; // Map<String,T>

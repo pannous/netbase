@@ -42,38 +42,40 @@ Statement* statement_root=0;
 char* name_root=0;
 Node* abstract_root=0;
 int* freebaseKey_root=0;
+int defaultLookupLimit = 1000;
+int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+
 //Node** keyhash_root=0;
 
-bool doDissectAbstracts=false;
+#ifdef USE_SEMANTICS
+bool useSemantics=true;
+#else
+bool useSemantics=false;
+#endif
+
+bool doDissectAbstracts=useSemantics;
 bool storeTypeExplicitly=true;
 bool exitOnFailure=true;
 bool autoIds=false;
 bool testing=false;// ;true
+
 #ifdef __NETBASE_DEBUG__
-bool debug=true;
-//bool debug=false;
+bool debug=true;// false
 #else
-bool debug=true;
-//bool debug=false;
+bool debug=true;// false
 #endif
+
 
 bool showAbstract=false;
 
 int maxRecursions=7;
 int runs=0;
 Context* contexts; //[maxContexts];// extern
-//typedef basic_string<char> string;
 std::string path=""; // extern
 string data_path="";
 string import_path="./import/";
 
-//int maxNodes() {
-//    return maxNodes;
-//}
-
-
 //extern "C" inline
-
 Context* currentContext() {
 	return &contexts[current_context];
 }
@@ -106,14 +108,11 @@ void flush() {
 }
 
 //inline
-
+void bad(){
+	badCount++;
+}
 bool isAbstract(Node* object) {
 	return object->kind == abstractId || object->kind == singletonId;
-}
-
-inline Statement* firstStatement(Node* abstract) {
-    if(abstract->firstStatement==0)return 0;
-	return getStatement(abstract->firstStatement);
 }
 
 bool checkHash(Ahash* ah) {
@@ -159,16 +158,15 @@ Ahash *getAhash(int position){
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash*, bool> badAhashReported;// debug
 Ahash * insertAbstractHash(int position, Node * a) {
+	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
     if(a==0)
         return 0;
 	Ahash* ah=getAhash(position);
 	if (!checkHash(ah) || !checkNode(a) || a->name[0] == 0) return 0;
-	//    if(pos==hash("city"))
-	//		p(a->name);
 	int i=0;
 	while (ah&&ah->next) {
 		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
-            badCount++;
+            bad();
             if(badAhashReported[ah])return ah;
             badAhashReported[ah]=true;
 			debugAhash(position);
@@ -177,7 +175,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
             //			return 0;
 			return ah;
 		}
-        //		if (ah->next == ah) {
+        //		if (ah->next == ah) { // fixed
         //			debugAhash(position);
         //			p("insertAbstractHash LOOP");
         //			show(a);
@@ -190,7 +188,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		ah=getAhash(ah->next);
 	}
 
-	if (ah->abstract) { //schon was drin
+	if (ah->abstract && get(ah->abstract)) { //schon was drin
 		if (get(ah->abstract) == a)
 			return ah;
         if(eq(get(ah->abstract)->name, a->name, true)){
@@ -231,7 +229,10 @@ bool appendLinkedListOfStatements(Statement *add_here, Node* node, int statement
 bool prependLinkedListOfStatements(Statement *to_insert, Node* node, int statementNr) {
 	return  appendLinkedListOfStatements(to_insert, node, statementNr); // append old to new
 }
-bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
+
+//bool insert_at_start=true;// <<< TODO HACK, REMOVE!!
+
+bool addStatementToNode(Node* node, int statementId,bool insert_at_start=false) {
     if(statementId==0){
         p("WARNING statementNr==0");
         return false;
@@ -250,12 +251,18 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
 #endif
 		Statement* to_insert=&context->statements[statementId];
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
-		if (to_insert->Predicate() == Instance || (to_insert->Predicate() == Type&&to_insert->Object()==node) || to_insert->Predicate() == node) { // ALL!
+		bool push_back=to_insert->subject!=node->id;
+		push_back=push_back|| to_insert->Predicate() == Instance;
+		push_back=push_back||(to_insert->Predicate() == Type && to_insert->Object()==node);
+		push_back=push_back|| to_insert->Predicate() == node;
+		// why is that important? to skip 100000 instances (cities) when accessing abstract properties
+		if(insert_at_start)push_back=false;// force
+		if (push_back) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
 			if(eq(add_here,statementId))return false;
 			appendLinkedListOfStatements(add_here, node, statementId); // append new to old
 			node->lastStatement=statementId;
-		} else {
+		} else { // invert sort -> sort again in webserver
 			if(eq(to_insert,node->firstStatement))return false;
 			prependLinkedListOfStatements(to_insert, node, node->firstStatement); // append old to new
 			node->firstStatement=statementId;
@@ -265,11 +272,7 @@ bool addStatementToNodeWithInstanceGap(Node* node, int statementId) {
 	return true;
 }
 
-bool addStatementToNode(Node* node, int statementId) {
-	//	return addStatementToNodeDirect(node, statementNr);
-	return addStatementToNodeWithInstanceGap(node, statementId);
-}
-
+// ONLY USED IN mergeNode!
 bool addStatementToNodeDirect(Node* node, int statementId) {
 	int n=node->lastStatement;
 	if (n == 0) {
@@ -457,12 +460,12 @@ Statement * getStatement(int id, int context_id) {
 		return null;// i.e. lastStatement
 	}
 	if (id < 0) {
-		badCount++;
+		bad();
 		return null;
 	}
 	if (id >= maxStatements) {
 		p("maxStatements reached!");
-		badCount++;
+		bad();
 		return null;
 	}
 	Context* context=getContext(context_id);
@@ -477,18 +480,19 @@ Statement* nextStatement(int node,Statement* current) {
     return nextStatement(get(node),current);
 }
 Statement * nextStatement(Node* n, Statement* current, bool stopAtInstances) {
-	if (current == 0) return firstStatement(n);
+	if (current == 0) return getStatement(n->firstStatement);
 	if (stopAtInstances && current->Predicate() == Instance) return null;
 	//	if (stopAtInstances && current->Object == n && current->Predicate == Type)return null; PUT TO END!!
-	if (current->Subject() == n) return getStatement(current->nextSubjectStatement);//, n->context);
-	if (current->Predicate() == n) return getStatement(current->nextPredicateStatement);//, n->context);
-	if (current->Object() == n) return getStatement(current->nextObjectStatement);//, n->context);
-	// check here?
-	return null;
+	Statement* neu=null;
+	if (current->Subject() == n) return getStatement(current->nextSubjectStatement);
+	if (current->Predicate() == n)return  getStatement(current->nextPredicateStatement);
+	if (current->Object() == n) return getStatement(current->nextObjectStatement);
+//	if(current==neu){	// check here?
+//		p("MEGABUG: current==neu");
+//		return null;
+//	}
+	return neu;
 }
-//NodeVector findPath(Node* from, Node* to){
-//
-//}
 
 Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextId) {
 	Context* context=getContext(contextId);
@@ -508,7 +512,8 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 #endif
 
     node->kind=kind;
-	if (node->value.number) node->value.number=0; //Necessary? overwrite WHEN??
+//	if (node->value.number)
+	node->value.number=0; //Necessary? overwrite WHEN??
 	if (id > 1000) {
 		node->statementCount=0; // reset Necessary? overwrite WHEN?? better loss than corrupt
 		node->lastStatement=0;
@@ -520,15 +525,10 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 	return node;
 }
 
-// return false if node not ok
-// remove when optimized!!!!!!!!!!
-bool checkNode(int nodeId, bool checkStatements, bool checkNames) {
-    if(nodeId<0||nodeId>=maxNodes)return false;
-    return checkNode(get(nodeId),nodeId , checkStatements,  checkNames);
-}
-bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
+bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report) {//
+//	bool report=true;
 	if (node == 0) {
-		badCount++;
+		bad();
 		if (debug) printf("^"); // p("null node");
 		//		p(nodeId);
 		return false;
@@ -537,61 +537,79 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames) {
 	Context* c=currentContext(); // getContext(node->context);
 	void* maxNodePointer=&c->nodes[maxNodes];
 	if (node < c->nodes) {
-		badCount++;
+		bad();
+		if(report){// not for abstract.node (can be number etc)
 		printf("node* < c->nodes!!! %p < %p \n", node, c->nodes);
         p("OUT OF MEMORY or graph corruption");
+		}
 		return false;
 	}
 	if (node >= maxNodePointer) {
-		badCount++;
+		bad();
+		if(report){
         printf("node* >= maxNodes!!! %p > %p\n", node, maxNodePointer);
         p("OUT OF MEMORY or graph corruption");
-		exit(0);
+//		exit(0);
+		}
 		return false;
 	}
 #ifdef useContext
 	if (node->context < 0 || node->context > maxContexts) {
-		badCount++;
+		bad();
+		if(report){
 		p("wrong node context");
 		p("node:");
 		p(nodeId);
 		p("context:");
 		p(node->context);
+		}
 		return false;
 	}
 #endif
 	if (nodeId > maxNodes) {
-		badCount++;
+		bad();
+		if(report)
 		pf("nodeId>maxNodes %d>%ld", nodeId, maxNodes);
 		return false;
 	}
 
 	if (nodeId > 1 && node->id > 0 && node->id != nodeId) {
-		badCount++;
+		bad();
+		if(report)
 		pf("node->id!=nodeId %d!=%d", node->id, nodeId);
 		return false;
 	}
 
 	if (checkNames && node->name == 0) {// WHY AGAIN??
-		badCount++;
+		bad();
+		if(report)
 		printf("node->name == 0 %p\n", node);
 		return false;
 	}
 	if (checkNames && (node->name < c->nodeNames || node->name >= &c->nodeNames[averageNameLength * maxNodes])) {
-		badCount++;
+		bad();
+		if(report)
 		printf("node->name out of bounds %p\n", node);
 		return false;
 	}
 #ifdef inlineStatements
 	if (checkStatements && node->statements == null) { //
-		badCount++;
+		bad();
+		if(report){
 		p("node not loaded");
 		p(nodeId);
+		}
 		// initNode(subject,subjectId,(char*)NIL_string,0,contextId);
 		return false;
 	}
 #endif
 	return true;
+}
+// return false if node not ok
+// remove when optimized!!!!!!!!!!
+bool checkNode(int nodeId, bool checkStatements, bool checkNames,bool report) {
+	if(nodeId<0||nodeId>=maxNodes)return false;
+	return checkNode(get(nodeId),nodeId , checkStatements,  checkNames,report);
 }
 
 Node * add(const char* key, const char* nodeName) {
@@ -609,7 +627,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 	Context* context=getContext(contextId);
 	Node* node=&(context->nodes[context->nodeCount]);
 	if (context->nodeCount > maxNodes) {
-		pf("context->nodeCount > maxNodes %d>%ld",context->nodeCount ,maxNodes);
+		pf("context->nodeCount > maxNodes %d>%ld ",context->nodeCount ,maxNodes);
 		p("MEMORY FULL!!!");
         //		exit(1);
 		return 0;
@@ -617,7 +635,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
     initNode(node, context->nodeCount, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == abstractId|| kind == singletonId) return node;
-	addStatement(getAbstract(nodeName), Instance, node, false);
+	addStatement(getAbstract(nodeName), Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly && kind > 105) // might cause loop?
         addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
 	//	    why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
@@ -650,7 +668,7 @@ bool addStatementToNode2(Node* node, int statement) {
 		node->statementCount++;
 	} else {
 		if (maxStatementsPerNode == node->statementCount) { // warn once
-			badCount++;
+			bad();
 			// p("maxStatementsPerNode!!");
 			// p(node->name);
 		}
@@ -666,7 +684,7 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 		return 0;
 	}
 	if (contextId > maxContexts || subjectId > maxNodes || predicateId > maxNodes || objectId > maxNodes) {
-		badCount++;
+		bad();
 		p("WARNING contextId>maxContexts||subjectId>maxNodes||predicateId>maxNodes||objectId>maxNodes");
 		return 0;
 	}
@@ -724,7 +742,7 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 	return statement;
 }
 
-Statement * addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate) {
+Statement * addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate,bool force_insert_at_start) {
 	if (!checkNode(subject)) return 0;
 	if (!checkNode(object)) return 0;
 	if (!checkNode(predicate)) return 0;
@@ -765,9 +783,9 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	statement->predicate=predicate->id;
 	statement->object=object->id;
 
-	bool ok=addStatementToNode(subject, id);
-	ok=ok&&addStatementToNode(predicate, id);
-	ok=ok&&addStatementToNode(object, id);
+	bool ok=addStatementToNode(subject, id,force_insert_at_start);
+	ok=addStatementToNode(predicate, id)&&ok;
+	ok=addStatementToNode(object, id)&&ok;
 //    if(!ok)p("warning: addStatementToNode skipped ");// probably quick duplicate check
     
 	//	subject->statements[subject->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
@@ -792,20 +810,20 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 	//	if(nr==0)return 0;// todo ????
 //    	if (nr >= maxStatementsPerNode) {
-//    		badCount++;
+//    		bad();
 //    		return null;
 //    	}
 	if (n == null) {
-		badCount++;
+		bad();
 		return null;
 	}
-	//	if(n->statements==null){badCount++;return null;}
+	//	if(n->statements==null){bad();return null;}
 	if (nr >= n->statementCount) {
-		badCount++;
+		bad();
 		return null;
 	}
 	if (n->firstStatement < 0) {
-		badCount++;
+		bad();
 		return null;
 	}
 #ifdef useContext
@@ -819,7 +837,7 @@ Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 		if (statement == 0) {
 			p("CORRUPTED STATEMENTS!");
 			show(n);
-			badCount++;
+			bad();
 			return null;
 		}
 		if (!checkStatement(statement, true, false)) break;
@@ -877,7 +895,7 @@ Node * get(const char* node) {
 Node * get(int nodeId) {
 	if (debug&&(nodeId<0 || nodeId > maxNodes)) { // remove when debugged
 	    if (quiet)return Error;
-	    printf("nodeId Error: maxNodes > %d < 0\n", nodeId);
+	    printf("Error: 0 > nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
 	    return Error;
 	}
 	return &currentContext()->nodes[nodeId];
@@ -899,19 +917,18 @@ Node* getNode(int node){
     return get(node);
 }
 
-//	static
-//map<Node*, bool> dissected;
 
+static map<Node*, bool> dissected;
 void dissectParent(Node * subject,bool checkDuplicates) {
-    //	if (subject == (Node*) -1) dissected.clear();
+   	if (subject == (Node*) -1) dissected.clear();
 	if (!checkNode(subject, -1, false, true)) return;
 	//if(isAName(s)ret. // noe!
 	string str=replace_all(subject->name, " ", "_");
 	str=replace_all(str, "-", "_");
 
 
-    //	if (dissected[subject]) return;
-    //	dissected[subject]=1;
+   	if (dissected[subject]) return;
+   	dissected[subject]=true;
 
 	int len=(int)str.length();
 	bool plural=(char) str[len - 1] == 's' && (char) str[len - 2] != 's' && ((char) str[len - 2] != 'n' || (char) str[len - 3] == 'o');
@@ -975,7 +992,7 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 
 Node* dissectWord(Node * subject,bool checkDuplicates) {
 	Node* original=subject;
-    //	if (dissected[subject]) return;
+    if (dissected[subject]) return original;
 	if (!checkNode(subject, true, true, true)) return original;
     if(subject->statementCount>1000)checkDuplicates=false;// expansive isA4 !!!!
     //    => todo dissectWord befor loading data!!!!!
@@ -988,7 +1005,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".") || (endsWith(thing, "s")&&!germanLabels))
 		dissectParent(subject); // <<
 
-    //	dissected[subject]=1;
+   	dissected[subject]=true;
 
 	int len=(int)str.length();
 	int type=(int)str.find(",");
@@ -1152,7 +1169,7 @@ Node * getThe(string thing, Node* type) {
 
 Node * getThe(const char* thing, Node* type){//, bool dissect) {
 	if (thing == 0 || thing[0] == 0) {
-		badCount++;
+		bad();
 		return 0;
 	}
 //	if(eq("of Directors",thing))
@@ -1166,6 +1183,10 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //    replaceChar((char*)thing,'_',' ');// NOT HERE!
 	Node* abstract=getAbstract(thing);
 	Node* insta=getThe(abstract, type); // todo: best?
+	if(insta && !insta->value.number && atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
+		insta->value.number=atof(thing);// hack, shouldn't be here!
+		if(!type)insta->kind=_number;
+	}
 	if (insta) return insta;
     if(type==More)type=0;
 	if (type) insta=add(thing, type->id);
@@ -1175,10 +1196,6 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 		ps(thing);
 		return 0;
 	}
-    if(atof(thing)){//!=0&&eq(itoa(atof(thing)),thing)){
-        insta->value.number=atof(thing);
-        if(!type)insta->kind=_number;
-    }
     // else if(atoi(thing)!=0)//&&eq(itoa(atoi(thing)),thing)){
     //     insta->value.number=atoi(thing);
     //     if(!type)insta->kind=_integer;
@@ -1229,7 +1246,7 @@ Node * hasWord(const char* thingy) {
 //#ifdef DEBUG
 //		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
 //			debugAhash(h);
-//			p("visited[found] == 1 How the hell can that even be??? ");
+//			p("visited[found] == 1 How the hell can that even be??? "); clear
 //			p(found->abstract);
 //			return 0;
 //		}
@@ -1278,22 +1295,124 @@ Node* getType(Node* n){
     return s->Object();
 }
 
+
+Node* dateValue(const char* val) {
+	Node* n=getAbstract(val);// getThe(val);
+	n->kind=Date->id;
+//	n->value == 	char *	"1732-02-22\""
+	return n;
+	//	return value(val, atoi(val), Date);
+}
+/*
+ <g.11vjx3759>   <measurement_unit.dated_percentage.source>      <g.11x1gf2m6>   .
+ <g.11vjx3759>   <#type> <measurement_unit.dated_percentage>     .
+ <g.11vjx3759>   <measurement_unit.dated_percentage.date>        "2005-04"^^<#gYearMonth>        .
+ <g.11vjx3759>   <measurement_unit.dated_percentage.rate>        4.5     .
+ <g.11vjx3759>   <#type> <measurement_unit.dated_percentage>     .
+ */
+Node* rdfValue(char* name) {
+	if (name[0] == '"') name++; // ignore quotes "33"
+	char* unit0=strstr(name, "^");
+	if (!unit0 || unit0 > name + 1000 || unit0 < name) return 0;
+	if(unit0[-1]=='"')unit0[-1]=0;
+	while (unit0[0] == '^'){unit0[0]=0; unit0++;}
+	if(name[0]==0)return 0;
+	if (unit0[0] == '<') unit0++;
+	if (unit0[0] == '#') unit0++;
+	if (unit0[0] == '"') unit0++;
+	const char* unit=unit0;
+	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
+	if (eq(unit, "xsd:integer")) unit=0; //-> number
+	else if (eq(unit, "integer")) unit=0; //-> number
+	else if (eq(unit, "int")) unit=0; //-> number
+	else if (eq(unit, "double")) unit=0; //-> number
+	else if (eq(unit, "xsd:decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
+	else if (eq(unit, "xsd:float")) unit=0; //-> number
+	else if (eq(unit, "xsd:nonNegativeInteger")) unit=0; //-> number
+	else if (eq(unit, "yago0to100")) unit=0;
+	if (!unit) return value(name, atof(name), Number);// unit==0 means number, ignore extra chars 123\"
+
+	if (eq(unit, "m")) unit="Meter";
+	else if (eq(unit, "%")) ; // OK
+	else if (eq(unit, "s")) unit="Seconds";
+	else if (eq(unit, "second")) unit="Seconds";
+	else if (eq(unit, "r")) unit="Seconds";
+	else if (eq(unit, "/km")) unit="Kilometer";
+	else if (eq(unit, "km")) unit="Kilometer";
+	else if (eq(unit, "kilometre")) unit="Kilometer";
+	else if (eq(unit, "millimetre")) unit="mm";
+	else if (eq(unit, "centimetre"));
+	else if (eq(unit, "meter"));
+	else if (eq(unit, "tonne"));
+	else if (eq(unit, "volt"));
+	else if (eq(unit, "g")) unit="Gram";
+	else if (eq(unit, "gram")) unit="Gram";
+	else if (eq(unit, "kilogram")) unit="kg";
+	else if (eq(unit, "kilogramPerCubicMetre")) unit="kg/m^3";
+	else if (eq(unit, "milligram"));
+	else if (eq(unit, "hectopascal"));
+	else if (eq(unit, "kilowatt"));
+	else if (eq(unit, "byte"));
+	else if (eq(unit, "knot"));
+	else if (eq(unit, "litre"));
+	else if (eq(unit, "bar"));
+	else if (eq(unit, "kilonewton"));
+	else if (eq(unit, "megawatt"));
+	else if (eq(unit, "squareMetre"))unit="m^2";
+	else if (eq(unit, "kilometrePerHour"))unit="km/h";
+	else if (eq(unit, "xsd:date")) ; // parse! unit = 0; //-> number
+	else if (eq(unit, "kelvin")) ; // ignore
+	else if (eq(unit, "degreeCelsius")) unit="C"; // ignore
+	else if (eq(unit, "degreeFahrenheit")) unit="F"; // ignore
+	else if (eq(unit, "degreeRankine")) unit="R"; // ignore
+	else if (eq(unit, "degrees")) ; // ignore
+	else if (eq(unit, "dollar")) ; // ignore
+	else if (eq(unit, "usDollar"))unit="dollar" ; // ignore
+	else if (eq(unit, "euro")) ; // ignore
+	else if (eq(unit, "squareKilometre"))unit="km^2" ; // ignore
+	else if (eq(unit, "megabyte")) ; // ignore
+	else if (eq(unit, "gramPerCubicCentimetre"))unit="g/cm^3" ; // ignore
+	else if (eq(unit, "metrePerSecond"))unit="m/s" ; // ignore
+	else if (eq(unit, "kilometrePerSecond"))unit="km/s" ; // ignore
+
+
+	else if (eq(unit, "yagoISBN")) unit="ISBN"; // ignore
+	else if (eq(unit, "yagoTLD")) unit="TLD"; // ???
+	else if (eq(unit, "yagoMonetaryValue")) unit="dollar";// USD $
+	else if (eq(unit, "gYear")) unit="year"; //Date;
+	else if (eq(unit, "date")) return dateValue(name);
+	else if (eq(unit, "dateTime")) return dateValue(name);
+	else if (eq(unit, "gYearMonth")) return dateValue(name);
+	else if (eq(unit, "gMonthDay")) return dateValue(name);
+
+	else {
+		//		printf("UNIT %s \n", unit); // "<" => SIGSEGV !!
+		//		return 0;
+	}
+	//		, current_context, getYagoConcept(unit)->id
+	//	return add(name);
+	Node* unity=getThe(unit); // getThe(unit);//  getYagoConcept(unit);
+	return value(name, atof(name), unity);
+}
+
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
 Node* getAbstract(const char* thing) {			// AND CREATE!
 	if (thing == 0) {
-		badCount++;
+		bad();
 		return 0;
 	}
     while(thing[0]==' '||thing[0] == '"')thing++;
+	if(contains(thing,"^^"))
+		return rdfValue(modifyConstChar(thing));
 //		if(startsWith(thing,"of "))
-	if(eq("of Directors",thing))
-		thing=thing+3;
+//	if(eq("of Directors",thing))// WTFFFFF???
+//		thing=thing+3;
     if(autoIds&&isInteger(thing))return get(atoi(thing));
 	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
 	//	strcpy(thingy, thing);
 	//	fixNewline(thingy);
-    replaceChar((char*)thing,'_',' ');// wah! careful with const!!!
+//    replaceChar((char*)thing,'_',' ');// wah! careful with const!!! NOT HERE!
 	Node* abstract=hasWord(thing);
 	if (abstract) return abstract;
 	abstract=add(thing, abstractId, abstractId); // abstract context !!
@@ -1375,7 +1494,9 @@ void show(vector<char*>& v){
         p(v.at(i));
     }
 }
-
+void show(Statement * s){
+	showStatement(s);
+}
 bool show(Node* n, bool showStatements) {		//=true
 	//	if (quiet)return;
 	if (!checkNode(n)) return 0;
@@ -1411,7 +1532,7 @@ bool show(Node* n, bool showStatements) {		//=true
 		while ((s=nextStatement(n, s))) {
 			if (i++ > resultLimit) break;
 			if (checkStatement(s)) showStatement(s);
-            else pf("NOOOOO %p",s);
+            else pf("NOOOOO! BROKEN STATEMENT: %p",s);
 		}
         printf("-----------------------^ %s #%d (kind: %d), %d statements ^---------------\n", n->name, n->id,n->kind,n->statementCount);
         flush();
@@ -1472,21 +1593,19 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 	if (recurse > 0) recurse++;
 	else recurse=maxRecursions;
 	if (recurse > maxRecursions || subject == 0) return 0;
-	//    if(recurse>maxRecursions/3)semantic = false;
 
 	Statement * s=0;
 	map<Statement*, bool> visited;
 	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
 		if (visited[s]) return 0;
 		visited[s]=1;
-//        if(s->id()==4334||subject->id==4904654)
+//        if(s->id()==4334||subject->id==4904654) // debug id
 //        p(s);
 		if (!checkStatement(s)) continue;
         //#ifdef useContext
 		if (s->context == _pattern) continue;
-        
-        if(predicate==Type&&s->predicate!=_Type&& visited.size()>100)return 0;// expect types on top HAS TO BE ORDERED!!
-
+        if(predicate==Type&&s->predicate!=_Type&& visited.size()>100)
+			return 0;// expect types on top HAS TO BE ORDERED!!
         //#endif
 
 		//		if(s->Predicate!=Any){
@@ -1498,11 +1617,11 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		if (s->Predicate() == get(92)) continue; // also bug !!
 		//		}
 		// ^^ todo
+
 		//		X any X error
 		//		native		derived		native		301562->81->251672
 		//		good		also		good		302044->50->302076
 		//		evil		attribute		evil		226940->60->302081
-
 		//		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
 
 		//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
@@ -1519,16 +1638,13 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 			break;// todo : make sure statements are ordered!
 		}
 #endif
+
 		if (s->Predicate() == Instance && predicate != Instance && predicate != Any) continue; //  return 0; // DANGER!
 		//		NOT COMPATIBLE WITH DISSECTED WORDS!!!!! PUT TO END!!!
-        
         if(predicate==Any&&eq(s->Subject()->name,s->Object()->name))continue;
-        
-//        p(s);
-		//		if(debug&&s->id>0)
 
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
-		bool subjectMatch=s->Subject() == subject || subject == Any || isA4(s->Subject(), subject, false, false); //DONT CHANGE quick isA4
+		bool subjectMatch=s->Subject() == subject || subject == Any || isA4(s->Subject(), subject, false, false); //DONT CHANGE quick
         subjectMatch=subjectMatch||(matchName&& eq(s->Subject()->name,subject->name ));
 		bool predicateMatch=(s->Predicate() == predicate || predicate == Any);
 		predicateMatch=predicateMatch || (predicate == Instance && s->Predicate() == SubClass);
@@ -1537,17 +1653,16 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
         predicateMatch=predicateMatch || ((matchName||semanticPredicate)&& eq(s->Predicate()->name, predicate->name ));
 		bool objectMatch=s->Object() == object || object == Any || object->id==0|| isA4(s->Object(), object, false, false);// by name OK!
         objectMatch=objectMatch||(matchName&& eq(s->Object()->name,object->name ));
-        
-		if(s->id()==5964173||s->id()==180846)
-			p(s);
-        
-		if (subjectMatch && predicateMatch && objectMatch) return s;
+
+		if (subjectMatch && predicateMatch && objectMatch){
+			return s;// GOT ONE!
+		}
 
 		// READ BACKWARDS
-		// OR <- PR<-SR
+		// OR<-PR<-SR
 		bool subjectMatchReverse = subject == s->Object() || subject == Any || isA4(s->Object(), subject, false, false);
 		subjectMatchReverse=subjectMatchReverse||(matchName&& eq(subject->name,s->Object()->name  ));
-		bool objectMatchReverse = object == s->Subject() || object == Any || isA4(s->Subject(), subject, false, false);
+		bool objectMatchReverse = object == s->Subject() || object == Any || isA4(s->Subject(), object, false, false);
 		objectMatchReverse=objectMatchReverse||(matchName&& eq(object->name,s->Subject()->name  ));
 		bool predicateMatchReverse=predicate == Any; // || inverse
 		symmetric=symmetric || s->Predicate() == Synonym || predicate == Synonym || s->Predicate() == Antonym || predicate == Antonym;
@@ -1558,6 +1673,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		predicateMatchReverse=predicateMatchReverse || (predicate == SubClass && s->Predicate() == SuperClass);
 		predicateMatchReverse=predicateMatchReverse || (predicate == Antonym && s->Predicate() == Antonym);
 		predicateMatchReverse=predicateMatchReverse || (predicate == Synonym && s->Predicate() == Synonym);
+//		predicateMatchReverse=predicateMatchReverse || (predicate == Translation && s->Predicate() == Translation);
 		predicateMatchReverse=predicateMatchReverse || predicate == Any;
 		predicateMatchReverse=predicateMatchReverse || (predicateMatch && symmetric);
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
@@ -1569,7 +1685,9 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		//        predicateMatchReverse = predicateMatchReverse || predicate == SuperClass && s->Predicate == Instance;
 		//        predicateMatchReverse = predicateMatchReverse || predicate == SubClass && s->Predicate == Type;
 		//        predicateMatchReverse = predicateMatchReverse || predicate == Type && s->Predicate == SubClass;
-		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse) return s;
+		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse){
+			return s;// GOT ONE!
+		}
 
 		if (!semantic) continue;
 		///////////////////////// SEMANTIC /////////////////////////////
@@ -1580,16 +1698,18 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 			if (semanticPredicate) predicateMatch=predicateMatch || isA4(s->Predicate(), predicate, recurse, semantic);
 			else predicateMatch=predicateMatch || eq(s->Predicate()->name, predicate->name) || isA4(s->Predicate(), predicate, false, false);
 		}
-		if (subjectMatch && predicateMatch && objectMatch) return s;
+		if (subjectMatch && predicateMatch && objectMatch) {
+			return s;// GOT ONE!
+		}
 		// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 		predicateMatchReverse=predicateMatchReverse || (symmetric && predicateMatch);
 		if (predicateMatchReverse) {
 			subjectMatchReverse=subjectMatchReverse || isA4(s->Object(), subject, recurse, semantic);
 			objectMatchReverse=objectMatchReverse || isA4(s->Subject(), object, recurse, semantic);
 		}
-		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse)
-
-            return s;
+		if (subjectMatchReverse && predicateMatchReverse && objectMatchReverse){
+			return s;// GOT ONE!
+		}
 		///////////////////////// END SEMANTIC /////////////////////////////
 	}
 	return null;
@@ -1599,9 +1719,9 @@ void removeStatement(Node* n, Statement * s) {
 	if (!n || !s) return;
 	Statement *last=0;
 	Statement *st=0;
-	while((st=nextStatement(n,st))){
-        //	for (int i=0; i < n->statementCount; i++) {
-        //		Statement* st=getStatementNr(n, i);
+	while((st=nextStatement(n,st))){ // FAST OK??
+//	for (int i=0; i < n->statementCount; i++) { // SAVE but slow
+//    	Statement* st=getStatementNr(n, i);
 		if (st == s) {
 			if (last == 0) {
 				if (s->Subject() == n) n->firstStatement=s->nextSubjectStatement;
@@ -1623,7 +1743,7 @@ void deleteStatement(int id){
 void deleteStatement(Statement * s) {
 	if (!checkStatement(s, true, false)) return;
 	removeStatement(s->Subject(), s);
-	removeStatement(s->Predicate(), s);
+//	removeStatement(s->Predicate(), s);// can be very expensive a->is->b 10000000 is Statements!
 	removeStatement(s->Object(), s);
 	s->Subject()->statementCount--;
 	s->Predicate()->statementCount--;
@@ -1633,7 +1753,7 @@ void deleteStatement(Statement * s) {
 }
 
 void deleteWord(const char* data, bool completely) {
-	pf("delete %s \n", data);
+	pf("deleteWord %s \n", data);
 	Context* context=&contexts[current_context];
     if(data[0]=='$'){
         deleteStatement(&context->statements[atoi(data+1)]);
@@ -1665,15 +1785,19 @@ void deleteNode(int id){
 }
 void deleteNode(Node * n) {
 	if (!checkNode(n)) return;
-	deleteStatements(n);
 	if (n->kind == abstractId) {
         NodeVector nv=instanceFilter(n);
         for (int i=0; i < nv.size(); i++) {
             Node* n=nv[i];
             deleteNode(n);
         }
-	}else //!!
+		deleteStatements(n);
+	}else{ //!!
+		N a=getAbstract(n->name);
+		deleteStatements(n);
         memset(n, 0, sizeof(Node)); // hole in context!
+	}
+
 }
 
 void deleteStatements(Node * n) {
@@ -1741,8 +1865,11 @@ Node * value(const char* name, double v, Node* unit/*kind*/) {
         }
         name=new_name;
     }
-    Node *n= getThe(name,unit);// 45cm != 45Volt !!!
-//	Node *n= getAbstract(name); // 45cm
+	Node *n;
+	if(!unit||unit->id<1000)
+		n= getThe(name); // 69 (year vs number!!)
+	else
+		n= getThe(name,unit);// 45cm != 45Volt !!!
    	if (unit)n->kind=unit->id;
     else n->kind=_number;
 	n->value.number=v;
@@ -1866,6 +1993,7 @@ Node * has(Node* subject, Statement* match, int recurse, bool semantic, bool sym
 	else if (match->Predicate() == Greater) return isGreater(property_value, match->Object());
 	else if (match->Predicate() == Less) return isLess(property_value, match->Object());
 	else if (match->Predicate() == Circa) return isAproxymately(property_value, match->Object());
+	else if (match->Predicate() == Not) return isEqual(property_value, match->Object())? False: match->Object();//True;
 	else return has(subject, match->Predicate(), match->Object()); // match->Subject == Subject?
 
 	return 0;
@@ -1890,6 +2018,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	//	if (n->id < 100 && match->id < 100)return false; // danger!
 	if (get(n->kind) && eq(get(n->kind)->name, match->name, true))return true;	// danger: instance, noun
 	if (n->id == match->id) return true; // how so??? "Type" overwritten by "kind" !!!!
+	if(isAbstract(match))matchName=true;
 	if (matchName&&eq(n->name, match->name, true)) return true;// only sometimes !!!
 	long badHash=n->id + match->id * 10000000;
 	if (useYetvisitedIsA) {
@@ -1916,6 +2045,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	//        if (recurse > maxRecursions / 3)
 	//            semantic = false;
 
+
 	// todo:semantic true (level1)
 	bool quickCheckSynonym=recurse == maxRecursions; // todo !?!??!
 	if (quickCheckSynonym && findStatement(n, Synonym, match, false, false, true)) {
@@ -1924,6 +2054,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	}
 
 	bool semantic2=semantic && recurse > 5; // && ... ?;
+
 	if (semantic && findStatement(n, Synonym, match, recurse, semantic2, true)) {
 		yetvisitedIsA[badHash]=true;
 		return true;
@@ -1988,7 +2119,7 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 	for (int i=0; i < n->statementCount; i++) {
 		Statement* s=getStatementNr(n, i); // Not using instant gap
 		if (!s) {
-			badCount++;
+			bad();
 			continue;
 		}
 		//		if (debug)showStatement(s);
@@ -2143,6 +2274,13 @@ Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
 NodeVector show(NodeVector all){
  return    showNodes(all);
 }
+void show(NodeSet all, bool showStatements, bool showRelation, bool showAbstracts){
+	NodeSet::iterator it;
+	for(it = all.begin(); it != all.end(); ++it) {
+			Node* node=(Node*)*it;
+			show(node, showStatements);
+	}
+}
 
 NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {
 	int size=(int)all.size();
@@ -2219,6 +2357,7 @@ Statement * learn(string sentence) {
 	ps("learning " + sentence);
 	Statement* s=evaluate(sentence);
 	if (checkStatement(s)) {
+		showStatement(s);
 		return s;
 	} else {
 		ps("not a valid statement:");
@@ -2280,34 +2419,40 @@ Statement * learn(string sentence) {
 //Node* nextNode(char* name){
 //    add(name);
 //}
+//69 (Q30203): year
+//69 (Q713048): natural number
 //void cleanAbstracts(Context* c){
-Node * getThe(Node* abstract, Node * type) {
-	if (!abstract) return 0;
+Node * getThe(Node* abstract, Node * type) {// first instance, TODO
+	if (!abstract || !abstract->name) return 0;
     if(abstract->kind==singletonId)return abstract;
     if (getRelation(abstract->name)) // not here! doch
         return getRelation(abstract->name);
     if (type<node_root||type>&node_root[maxNodes]) type=0;// default parameter hickup through JNA
+	if(abstract->value.node && checkNode(abstract->value.node,0,false,false,false) and eq(abstract->value.node->name,abstract->name))
+		return abstract->value.node; // abstract->value.node as cache for THE instance
 	if (type == 0) {
-		//		return getThe(abstract->name);
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
-		//		if (abstract->value.node)return abstract->value.node; // NODE!!! OR LABELS?? DANGER!!!
-		// CAREFUL: firstStatement INSTANCE MUST STAY FIRST~~~!!!
-		Statement* s=getStatement(abstract->lastStatement);
-		if(s&&s->Predicate()==Instance)return s->Object();
-		else s=0;
+		Statement* s=0;
 		while ((s=nextStatement(abstract, s)))
-			if (s->Predicate() == Instance) {		// ASSUME RIGHT ORDER!?
-				if (s->Subject() == abstract)
-                    //			abstract->value.node = last->Object; // + cace!
-					return s->Object();
-				if (s->Object() == abstract) if (isAbstract(s->Subject())) return s->Object(); // abstract was not abstract!!!
-				//			abstract->value.node = last->Object; // + cace!
-				return s->Subject();
+			if (s->Predicate() == Instance && s->object!=0) {		// ASSUME RIGHT ORDER!?
+				abstract->value.node=s->Object();
+				return s->Object();
+//				if (s->Subject() == abstract && eq(s->Object()->name,abstract->name))
+//                    //			abstract->value.node = last->Object; // + cache!
+//					return s->Object();
+//				if (s->Object() == abstract && eq(s->Subject()->name,abstract->name))
+//					if (isAbstract(s->Subject())) // abstract was not abstract!!!??
+//						return s->Object();
+//				//			abstract->value.node = last->Object; // + cache!
+//				return s->Subject();
 			}
-		return add(abstract->name, 0); // NO SUCH!! CREATE!?
+		N first= add(abstract->name, 0); // NO SUCH!! CREATE!?
+		if(!atoi(abstract->name))
+			abstract->value.node=first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
+		return first;
 	}
 	if (type->id == abstractId || type->id == singletonId)
-        return getAbstract(abstract->name); // safe
+		return getAbstract(abstract->name); // safe
 
 	Statement * s=0;
     Node* best=0;
@@ -2336,25 +2481,25 @@ Node * getThe(Node* abstract, Node * type) {
 }
 
 Node * getProperty(Node* node, cchar* key) {
-    S s=findStatement(node, getThe(key), Any);
-//findStatement(node, getAbstract(key), Any); // todo? egal
-    if(!checkStatement(s))return 0;
+	S s=findStatement(node, getThe(key), Any);
+	//findStatement(node, getAbstract(key), Any); // todo? egal
+	if(!checkStatement(s))return 0;
 	return s->Object();
 }
 
 bool isA(Node* fro, Node * to) {
 	if (isA4(fro, to, 0, 0)) return true;
 
-	Statement* s=0; // x.son=milan => milan is_a son
+	Statement* s=0;
 	while ((s=nextStatement(fro, s)))
-		if (s->Object() == fro && isA4(s->Predicate(), to)) return true;
+		if (s->Object() == fro && isA4(s->Predicate(), to)) return true;// x.son=milan => milan is_a son
 
 	if (fro->kind == Abstract->id) {
 		NodeVector all=instanceFilter(fro);
 		for (int i=0; i < all.size(); i++) {
 			Node* d=(Node*) all[i];
 			while ((s=nextStatement(d, s)))
-				if (s->Object() == d && isA4(s->Predicate(), to)) return true;
+				if (s->Object() == d && isA4(s->Predicate(), to)) return true; // x.son=milan => milan is_a son
 			if (!findPath(d, to, parentFilter).empty()) return true;
 		}
 	}
@@ -2379,12 +2524,12 @@ void setName(int node, cchar* label){
     return setLabel(get(node),label,false,false);
 }
 void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
-    if(n!=get(n->id))n=save(n);
+//    if(addInstance && n!=get(n->id))n=save(n);// HOW!?! WHAT?
 //	if(label[0]=='<')
-//		badCount++; "<span dbpedia parser fuckup etc
+//		bad(); "<span dbpedia parser fuckup etc
     int len=(int)strlen(label);
     Context* c=currentContext();
-	char* newLabel=name_root+ c->currentNameSlot;
+	char* newLabel = name_root + c->currentNameSlot;
     if(n->name==0){
         n->name=newLabel;// c->currentNameSlot;
         if(!addInstance)n->kind=abstractId;
@@ -2411,10 +2556,11 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
         if(!hasWord(label))
             insertAbstractHash(n);
         //        else
-        //            mergeNode(getAbstract(label),n);
+		//            mergeNode(getAbstract(label),n);
 	} else {
 		Node* a=getAbstract(label);
-		addStatement(a, Instance, n);
+		if(addInstance)
+			addStatement(a, Instance, n);
 	}
     //    p(n);
     //    return n->name;
@@ -2439,6 +2585,7 @@ bool checkParams(int argc, char *argv[], const char* p) {
 string formatImage(Node* image,int size,bool thumb){
 	if (!image || !checkNode(image)) return "";
     char* name=replaceChar(image->name,' ','_');
+	if(startsWith(name, "File:")) name+=5;
 	string hash=md5(name);
 	string base="http://upload.wikimedia.org/wikipedia/commons/";
     if(!thumb)	return base + hash[0] + "/" + hash[0] + hash[1] + "/" +  name;
@@ -2447,22 +2594,15 @@ string formatImage(Node* image,int size,bool thumb){
 	return base +"thumb/"+ hash[0] + "/" + hash[0] + hash[1] + "/" + name + "/" + ssize + "px-" + name;
 }
 
-string getImageThumb(const char* n, int size) {
-	Node* a=getAbstract(n);
-	Node* i=findMember(a, "wiki_image", false, false);
-    return formatImage(i,size,true);
+string getImage(cchar* a, int size,bool thumb) {
+	return getImage(getAbstract(a),size,thumb);
 }
-
-string getImage(const char* n, int size) {
-	Node* a=getAbstract(n);
-   	Node* i=findProperty(a, "wiki_image");
-    return formatImage(i,size,false);
-}
-
 string getImage(Node* a, int size,bool thumb) {
 	if(!a||!checkNode(a))return 0;
 	Node* i=findProperty(a, "wiki_image");
-	if (!i || !checkNode(i)) return getImage(a->name);
+	if(!i)i=findProperty(a, "Bild");
+	if(!i)i=findProperty(a, "Wappen");
+	if (!i || !checkNode(i))if(a->kind!=abstractId)return getImage(a->name);
     return formatImage(i,size,thumb);
 }
 
@@ -2532,6 +2672,12 @@ int main(int argc, char *argv[]) {
 		//	start_server();
 	}
 
+	// load environment variables or fall back to defaults
+	SERVER_PORT= getenv("SERVER_PORT")? atoi(getenv("SERVER_PORT")): SERVER_PORT;
+	resultLimit= getenv("resultLimit")? atoi(getenv("resultLimit")): resultLimit;
+	lookupLimit= getenv("lookupLimit")? atoi(getenv("lookupLimit")): lookupLimit;
+	defaultLookupLimit=lookupLimit;
+
 	//    signal(SIGSEGV, handler); // only when fully debugged!
     //	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
 	//    setjmp(loop_context);
@@ -2550,7 +2696,6 @@ int main(int argc, char *argv[]) {
 
 	init();
 	//    import();
-
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
 
@@ -2578,22 +2723,18 @@ int main(int argc, char *argv[]) {
 		//		return 0;
 		//		tests();
 	} else {
-		showHelp();
+		showHelpMessage();
 		// *******************************
 		parse(join(argv, argc).c_str()); // <<< HERE
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	}
 	if (checkParams(argc, argv, "export")) export_csv();
-
-	if (checkParams(argc, argv, "test")) tests();
-
-
+	if (checkParams(argc, argv, "test")) testAll();
 	if (checkParams(argc, argv, "server") || checkParams(argc, argv, "daemon") || checkParams(argc, argv, "demon")) {
 		printf("starting server\n");
 		start_server();
 		return 0;
 	}
-
 
 	printf("Warnings: %d\n", badCount);
     printf("Node limit: %d\n",(int)maxNodes);

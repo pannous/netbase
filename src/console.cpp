@@ -33,7 +33,7 @@ using namespace std;
 NodeVector OK;
 // static struct termios stored_settings;
 
-void showHelp() {
+void showHelpMessage() {
     ps("");
 	ps("AVAILABLE COMMANDS:");
 	ps("help :h or ?");
@@ -48,12 +48,13 @@ void showHelp() {
 	ps(":server");
 	ps(":quit :q");
 	ps(":clear :cl");
+	ps(":context :info");
 	ps("limit <n>");
 	ps("Type words, ids, or queries:");
 	//    ps("all animals that have feathers");
 	ps("all animals with feathers");
 	ps("select * from dogs where terrier");
-	ps("all city with countrycode ZW");
+	ps("all city with countrycode=ZW");
 	ps("Population of Gehren");
 	ps("opposite of bad");
     ps("learn Germany has Gehren");
@@ -137,7 +138,7 @@ void console() {
 	}
 }
 
-NodeVector runScript(char* file){
+NodeVector runScript(const char* file){
 	FILE *fp= fopen(file,"r");
 	if(fp==0){return OK;}
 	char line[1000];
@@ -151,6 +152,7 @@ NodeVector runScript(char* file){
 	fclose(fp);
 	return last;
 }
+
 
 NodeVector parse(const char* data) {
 	if (eq(data, null)) return OK;
@@ -172,7 +174,7 @@ NodeVector parse(const char* data) {
 	//		scanf ( "%s", data );
 	if (eq(data, ":exit")) return OK;
 	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
-		showHelp();
+		showHelpMessage();
 		//        printf("type exit or word");
 		return OK;
 	}
@@ -245,20 +247,25 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	autoIds=true;
-    
-	if (contains(data, "limit")) {
-		char* limit=(char*)strstr(data," limit");
-		sscanf(limit+1, "limit %d", &resultLimit);
-		lookupLimit=resultLimit*10;//todo
+	if (contains(data, "lookup")||contains(data, ":lookup")) {
+		char* limit=(char*)strstr(data,"lookup");
+		sscanf(limit, "lookup %d", &lookupLimit);
+		pf("LOOKUP LIMIT SET TO %d\n",lookupLimit);
+		defaultLookupLimit=lookupLimit;
+		if(limit>data) *(limit-1)=0;
 		*limit=0;
-        //		char* newdata=(char*) malloc(1000);
-        //		sscanf(data, "%[0-9a-zA-Z \.:]s limit %d", newdata, &resultLimit);
-        //		if(!)
-        //		sscanf(data, "limit %d %s", &resultLimit, newdata);
-        //		strcpy((char*) data, newdata);
-        //		p(resultLimit);
+		if(strlen(data)<2)return OK;
 	}
-	if (eq(data, ":load")) { // || eq(data, ":l")
+	if (contains(data, "limit")||contains(data, ":limit")) {
+		char* limit=(char*)strstr(data,"limit");
+		sscanf(limit, "limit %d", &resultLimit);
+		pf("LIMIT SET TO %d\n",resultLimit);
+		lookupLimit=resultLimit*10;//todo
+		if(limit>data) *(limit-1)=0;
+		*limit=0;
+		if(strlen(data)<2)return OK;
+	}
+	if (eq(data, ":load")) { // || eq(data, ":l") learn?
 		load(false);
 		return OK;
 	}
@@ -273,18 +280,18 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (eq(data, ":hack")) {
-		Context* c=currentContext();
-		c->nodeCount-=1000; //hack!
+//		Context* c=currentContext();
+//		c->nodeCount-=1000; //hack!
 		//		maxNodes += 1000;
 		return OK;
 	}
-	if (eq(data, ":c")) {
+	if (eq(data, ":c")|| eq(data, ":context")) {
 		showContext(currentContext());
 		return OK;
 	}
 	if (eq(data, ":t") || eq(data, ":test") || eq(data, ":tests")) {
 		exitOnFailure=false;
-		tests();
+		testAll();
 		return OK;
 	}
 	if (eq(data, ":tb")||eq(data, ":tbn")) {
@@ -420,14 +427,17 @@ NodeVector parse(const char* data) {
 		show(da);
 		return nodeVectorWrap(da);
 	}
-    
-    
+
+	if (startsWith(data, ":printlabels")){
+		printlabels();
+	}
+
 	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
 		const char* what=next_word(data).data();
 		appendFile("import/labels.csv",what);
 		char* wordOrId=args[1];
 		const char* label=next_word(what).data();
-		N n=getThe(args[1]);
+		N n=getThe(wordOrId);
 		setLabel(n, label);
 		return nodeVectorWrap(n);
 	}
@@ -459,7 +469,7 @@ NodeVector parse(const char* data) {
     //	if (startsWith(q, "m/")) {
 	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
 		p("<m.0c21rgr> needs showered memory or boost ");
-		Node* n=getFreebaseEntity((char*) data);
+		Node* n=getFreebaseEntity((char*) data,true);
 		show(n);    //<g.11vjx36lj>
 		return OK;
 	}
@@ -467,11 +477,13 @@ NodeVector parse(const char* data) {
 	
 
 //   update Stadt.Gemeindeart set type=244797 limit 100000
-	if (startsWith(data, "update")){
+	if (startsWith(data, "update")||startsWith(data, ":update")){
         update(data);
     }
     
-	if (eq(data, "server") ||eq(data, ":server") || eq(data, ":daemon") || eq(data, ":demon")) {
+	if (eq(data, "server") ||eq(data, ":server") || 
+		eq(data, ":daemon") || eq(data, ":demon")|| 
+		eq(data, "daemon") || eq(data, "demon")) {
 		printf("starting server\n");
 		start_server();
 		return OK;
@@ -491,7 +503,9 @@ NodeVector parse(const char* data) {
 
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
 		// || (contains(data, ":")) && !contains(data, " "))) {
-		return parseProperties(data);
+		if(!contains(data, "="))
+			return parseProperties(data);
+		else return nodeVectorWrap(learn(data));
 	}
 
 	if (args.size() >= 3 && eq(args[1], "to")) {
@@ -504,7 +518,7 @@ NodeVector parse(const char* data) {
 	}
     
 	
-	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], ":!"))){
+	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){
 		string what=next_word(data);
 		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
@@ -521,18 +535,21 @@ NodeVector parse(const char* data) {
 	int i=atoi(data);
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
-    
+
+	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
+
 	Node* a=get(data);
-    dissectWord(a, true);
+	dissectWord(a, true);
 	show(a);
     //	if (i == 0) showNodes(instanceFilter(a), true);
 	//        findWord(currentContext()->id, data);
-    //    if(isAbstract(a))
-	if (i == 0) {
+    if(isAbstract(a)&&i == 0) {
 		lookupLimit=resultLimit;
 		NV all=instanceFilter(a);
-        all.push_back(a);// include abstract!
-		if (all.size() > 0) return all;
+//		all.insert(a);// include abstract!
+		all.push_back(a);// include abstract!
+//		sortNodes(all);
+		return all;
 	}
 	return nodeVectorWrap(a);
 }
@@ -546,7 +563,7 @@ extern "C"  Node** execute(const char* data,int* out){
     if(out) *out=hits;
     Node** results=(Node** ) malloc((1+hits)*nodeSize);
     for (int i=0; i< hits; i++) {
-        results[i]=result[i];
+//        results[i]=result[i];
 //        pf("%d %s | ",result[i]->id,result[i]->name);
 //        pf(" %ld\n",(long)(void*)result[i]);
         //        memccpy(&results[i],result[i],0,sizeof(Node));

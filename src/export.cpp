@@ -4,6 +4,7 @@
 
 bool save() {
     Context* c = currentContext();
+	mkdir((path+"data").c_str(),0777);
 	string data_path=path+"data/";
     FILE *fp;
     fp = fopen((data_path+"statements.bin").data(), "wb");
@@ -30,7 +31,8 @@ bool save() {
 //    fread(abstracts, sizeof (Node), c->nodeCount, fp);// todo
 //    fclose(fp);
 
-    ps("context saved!");
+    ps("context blob saved!");
+	printf("%d nodes dumped to ./data/ folder ",c->nodeCount);
 
     //    fp=fopen("test.bin", "wb");
     //    fwrite(test, sizeof(char), 100, fp);
@@ -75,6 +77,7 @@ bool export_csv(){
     fclose(fp);
 
     ps("context CSV saved!");
+	printf("%d nodes dumped to ./data/ folder ",c->nodeCount);
 	return true;
 }
 

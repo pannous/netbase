@@ -8,9 +8,12 @@
 //Since using #include <stdlib.h> dumps all declared names in the global namespace,
 //the preference should be to use #include <cstdlib>, unless you need compatibility with C
 #include <cstdlib>
-//#include <stdlib.h> // system(cmd)
-
 #include <string.h>
+
+//#include <stdlib.h> // system(cmd)
+#include <unistd.h> // getpid
+#include <signal.h> // kill
+
 #include "util.hpp"
 #include "netbase.hpp"
 #include "init.hpp"
@@ -51,9 +54,18 @@ int semrm(key_t key, int id=0) {
 	if (id == -1) return -1;
 	return semctl(id, 0, IPC_RMID, arg);
 }
+
+// silent: in messages:
+//Jun  3 15:53:30 507 abrt[13188]: abrtd is not running. If it crashed, /proc/sys/kernel/core_pattern contains a stale value, consider resetting it to 'core'
+void signal_handler(int signum) {
+	printf("Process %d got signal %d\n", getpid(), signum);
+	signal(signum, SIG_DFL);
+	kill(getpid(), signum);
+}
+
 void detach_shared_memory(){
         // TODO (?) programmatically
-    p("If you cannot start netbase try:\n ./increase-shared-memory.sh || ./clear-shared-memory.sh");
+    p("If you cannot start netbase try:\n ./increase-shared-memory.sh && ./clear-shared-memory.sh");
 //    sudo: no tty present and no askpass program specified
 //    system("ipcrm -M '0x69190'");
 //    system("ipcrm -M '0x69191'");
@@ -184,6 +196,8 @@ void checkRootContext() {
 }
 
 extern "C" void init(bool relations) {
+	signal(SIGSEGV, signal_handler);
+
     if(!relations)testing=true;
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key=0x69190;

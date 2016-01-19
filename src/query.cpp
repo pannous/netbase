@@ -5,12 +5,8 @@
 
 #include <cstdlib>
 #include <string.h>
-#include <algorithm> // std:reverse
+#include <algorithm> // std:reverse std:sort
 //#include <multimap> // to sort map
-
-int resultLimit = 100; // != lookuplimit
-int defaultLookupLimit = 1000;
-int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
 
 int* enqueued; // 'parents'
 NodeVector EMPTY;
@@ -543,7 +539,7 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 		if (found.size() >= limit)goto good;
 		all.clear(); // hack to reset all_instances
 		NodeVector all2 = all_instances((Node*) all[i], true, limit);
-		if (where)
+		if (where[0])
 			mergeVectors(&found, filter(all2, where)); //fields)
 	}
 	batch = 200000000;
@@ -647,11 +643,25 @@ NodeVector filter(NodeVector all, cchar* matches) {
 				match.replace(0, strlen(node->name), "");
 			if (match.find(".") == 0)
 				match.replace(0, 1, "");
-			int comp = (int)match.find("=");
+			int comp = (int)match.find("!=");
+			if (comp >= 0) {
+				Node *s = getThe(match.substr(0, comp).data());
+				Node *o = parseValue(match.substr(comp + 2).data());
+				filter(q, pattern(s, Not, o));
+				continue;
+			}
+			comp = (int)match.find("=");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
 				filter(q, pattern(s, Equals, o));
+				continue;
+			}
+			comp = (int)match.find("~");
+			if (comp >= 0) {
+				Node *s = getThe(match.substr(0, comp).data());
+				Node *o = parseValue(match.substr(comp + 1).data());
+				filter(q, pattern(s, Circa, o));// todo: approximately
 				continue;
 			}
 			comp = (int)match.find(">");
@@ -860,19 +870,101 @@ NodeVector & nodesOfDirectType(int kind) {
 //}
 
 
-NodeVector & allInstances(Node * type) {
+//NodeVector & allInstances(Node * type) {
+NodeVector allInstances(Node * type) {
 	clearAlgorithmHash();
-	//	NodeVector all=instanceFilter(type);
-	//	return all;//  all_instances(getQuery(type));
+		NodeVector all=instanceFilter(type);
+		return all;//  all_instances(getQuery(type));
 	// COMPARE: !!
-	return all_instances(type, true, defaultLookupLimit, true);
+//	return all_instances(type, true, defaultLookupLimit, true);
 	//	return recurseFilter(type,true,resultLimit,instanceFilter);
 }
 
 // todo?: EXCLUDING classes and direct instances on demand!
 // WDYM direct instances ???
+
+NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
+	static NodeSet* all=new NodeSet;
+	if (type == 0) {
+		all->clear(); // hack!!!
+		return 0;
+	}
+	if (recurse > 0)recurse = recurse + 2; // recurse++; dont descend too deep! todo: as iterator anyways!
+	if (yetvisited[type])
+		return all;
+	yetvisited[type] = true;
+	if (recurse > maxRecursions)return all;
+	runs++;
+	if (runs > maxNodes)return all; // no infinite loops!
+	NodeVector subtypes;
+	bool is_abstract=isAbstract(type);
+	// todo : via instanceFilter see below
+	Statement* s = 0;
+	while ((s = nextStatement(type, s)) && all->size() <= max && subtypes.size() <= max) {
+		//	for (int i = 0; i < type->statementCount; i++) {
+		//		Statement* s = getStatementNr(type, i);
+		if (!checkStatement(s))continue;
+		if (s->Predicate() == type)continue; // NO Predicate matches!!
+		//		if (s->subject == 613424) {
+		//			showStatement(s);
+		//			show((Node*) (all.end() - 1).base());
+		//		}
+		//    	po
+		p(s);
+		if (s->Subject() == type) {// todo contains SLOW!!!
+			if (is_abstract && isA4(s->Predicate(), Instance, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (!is_abstract && isA4(s->Predicate(), Instance, false, false))if (!contains(all, s->Object()))all->insert(s->Object());
+			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+		} else {
+			if (isA4(s->Predicate(), Type, false, false))all->insert(s->Subject());
+			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+		}
+	}
+	p(all->size());
+	//	subtypes.push_back(type); NOT AGAIN
+	if (recurse)
+		for (int i = 0; i < subtypes.size(); i++) {// subtypes
+			if (all->size() >= max)
+				return all;
+			Node* x = (Node*) subtypes[i];
+			pf("all %d %s *%d\n", x->statementCount, x->name, x->id);
+			if (!checkNode(x))continue; // how??
+			//			if (recurse)
+			//				more = all_instances(x, recurse, max - all.size());// why sooo slooow ???
+			//			else
+			lookupLimit=max;
+			NodeVector more = instanceFilter(x);//,null,max); //   all_instances(x, recurse-1, max);
+			mergeVectors(all, more);
+		}
+	subtypes.push_back(type);
+	if (includeClasses)
+		mergeVectors(all, subtypes); // ja?
+	p(all->size());
+	return all;
+}
+
 NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses) {
+//	RECURE BROKEN! use instanceFilter
+	NodeSet* a=all_instances3(type, recurse, max, includeClasses) ;
+	if(!a)return EMPTY;
+	//	NodeVector v(a->begin(),a->end());
+//	static NodeVector v(a->begin(),a->end());
+//	static NodeVector v(a->size());
+	NodeVector* v=new NodeVector(a->size());// LEAK!
+	std::copy(a->begin(), a->end(), v->begin());
+//	p(v.size());
+	return *v;
+}
+NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasses) {
 	static NodeVector& all = *new NodeVector; // empty before!
+//	static NodeSet& alles=*new NodeSet;
+	NodeVector v;
 	if (type == 0) {
 		all.clear(); // hack!!!
 		return EMPTY;
@@ -905,12 +997,14 @@ NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses
 			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
 		} else {
 			if (isA4(s->Predicate(), Type, false, false))
 				all.push_back(s->Subject());
 			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
 			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
 			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
 		}
         
         
@@ -1042,7 +1136,7 @@ Node * findMatch(Node* n, const char* match) {//
 		p("scanf not matching");
 	p(a);
 	p(b);
-	if (b != 0 && !eq(b, "")) {
+	if (b[0] != 0 && !eq(b, "")) {
 		p("n[a=b]");
 		if (!quiet)
 			printf("show(findStatement(%s,%s,%s))", n->name, a, b);
@@ -1081,9 +1175,7 @@ int countInstances(Node * node) {
 }
 
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
-	NodeVector all;
-    
-	int i = 0;
+	NodeVector all;	int i = 0;
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
@@ -1170,6 +1262,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		// MORE :
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Plural;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Synonym;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Translation;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Instance;
 		//		predicateMatchReverse = predicateMatchReverse || isA4(s->Predicate)
@@ -1207,12 +1300,14 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 		bool predicateMatch = (s->Predicate() == Type);
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
+		predicateMatch = predicateMatch || s->Predicate() == Translation;
 		predicateMatch = predicateMatch || s->Predicate() == Plural;
         
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Instance; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Plural;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Synonym;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Translation;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
         
 		if (queue) {
@@ -1377,11 +1472,17 @@ NodeVector nodeVectorWrap(Node* n) {
 	r.push_back(n);
 	return r;
 }
+NodeVector nodeVectorWrap(Statement* n) {
+	NodeVector r;
+	r.push_back(n->Subject());
+	return r;
+}
 
 NodeVector update(cchar* query){
     autoIds=true;
-    char* data=modifyConstChar(query);
-    if(startsWith(data, "update "))data+=7;
+	char* data=modifyConstChar(query);
+	if(startsWith(data, "update "))data+=7;
+	if(startsWith(data, ":update "))data+=8;
     char* i=strstr(data, " set ");
     if(!i)throw "SYNTAX: UPDATE * SET x=y";// NOT OK;
     i[0]=0;
@@ -1436,4 +1537,41 @@ NodeVector parseProperties(const char *data) {
 	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
 	showNodes(all);
 	return all;
+}
+
+//inline int
+const static bool sortNodePredicate(Node* a, Node* b) {
+	int x=a->statementCount;
+	int y=b->statementCount;
+	return x>y;
+//	return (*a < *b);
+	//	return a<b;//-
+//	return (a->statementCount > b->statementCount);
+//	return (a->key()> b->key());
+}
+void sortNodes(NodeVector& all){
+//	int count=0;
+	int max=0;
+	deque<Node*> sorted;
+	for (int i=0; i<all.size(); i++) {
+		Node* n=all[i];
+		if(n->statementCount>max){
+			sorted.push_front(n);
+			max=n->statementCount;
+		}
+		else sorted.push_back(n);
+	}
+	for (int i=0; i<all.size(); i++) {
+		all[i]=sorted[i];
+	}
+	std::sort(all.begin(), all.end(),sortNodePredicate);
+//	auto x=all.begin();
+//	auto y=all.end();
+//	std::sort(x, y, sortNodePredicate);// [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(),all.end(),);
+
 }

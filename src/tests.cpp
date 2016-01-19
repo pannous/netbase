@@ -78,6 +78,7 @@ void testScanf() {
 	//	exit(1);
 }
 
+
 void testBasics() {
 	//you have a pointer to some read-only characters
 	cchar* a="abc";
@@ -124,20 +125,26 @@ void testBasics() {
 	int initialStatementCount=(int)c->statementCount;
 	c->nodeCount=initialNodeCount; // reset for tests! dont save!
 	c->statementCount=initialStatementCount;
+	if(a(test)->statementCount>0){
+		//    memset(&c->nodes[initialNodeCount], 0, sizeof (Node) *( maxNodes() - initialNodeCount -1)); //calloc!
+		//    memset(c->statements, 0, sizeof (Statement) * maxStatements() - 1);
+		//    memset(0,c->statements,maxStatementsPerNode)
+		deleteNode(a(test));
+		check(a(test)->statementCount==0);
+	}
 
-	//    memset(&c->nodes[initialNodeCount], 0, sizeof (Node) *( maxNodes() - initialNodeCount -1)); //calloc!
-	//    memset(c->statements, 0, sizeof (Statement) * maxStatements() - 1);
-	//    memset(0,c->statements,maxStatementsPerNode)
 
 	Node* good=add("good", adjective, 1);
 	Node* is=add("is", verb, 1);
 	Node* test=add("test", noun, 1);
-	assert(is != null, "is!=null");
+	check(is != null);
+	p(test);
+	assertEquals(getStatementNr(test, 1)->Subject() , a(test));// 0=='noun'
 
 	showContext(current_context);
 	//	c->name="Public";
 	if (multipleContexts) assert(c->id == 1, "c.id==1 multipleContexts");
-	else assert(c->id == wordnet, "c.id==wordnet"); //wordnet if
+	else assert(c->id == wordnet, "c.id==wordnet"); //wordnet only context
 
 	//	assert(c->name=="Public","c.name==Public");
 	assert(c->nodeCount >= initialNodeCount + 3, "c.nodes==3"); //3+abstracts
@@ -152,21 +159,22 @@ void testBasics() {
 	Node* dead=&c->nodes[999];
 	// Statement* s=addStatement4(c.id, test->id,is->id,good->id);
 	int statementCount=c->statementCount;
-	Statement* s=addStatement(test, is, good);
+	Statement* s=addStatement(test, is, good,false,true);
 	p(c->statementCount);
-	//	assert(c->statementCount==statementCount+1,"c.statementCount==1");// if not yet there
+	assert(c->statementCount==statementCount+1,"c.statementCount==1");// if not yet there
 	assert(s->subject == test->id, "s->subject==test->id");
 	assert(s->Subject() == test, "s->Subject==test");
 	assert(s->Predicate() == is, "s->predicate==is");
 	assert(s->Object() == good, "s->object==good");
-
-	check(getStatementNr(test, 0)->Subject() == a(test));
-	check(getStatementNr(good, 0)->Subject() == a(good));
-	check(getStatementNr(test, 1)->Object() == &c->nodes[(noun)]);
-	check(getStatementNr(good, 1)->Object() == &c->nodes[(adjective)]);
-	check(getStatementNr(test, 2) == s);
-	check(getStatementNr(is, 2) == s);
-	check(getStatementNr(good, 2) == s);
+	p(test);
+	assertEquals(getStatementNr(test, 2)->Subject() , a(test));
+	p(good);
+	assertEquals(getStatementNr(good, 2)->Subject() , a(good));
+	assertEquals(getStatementNr(test, 1)->Object() , &c->nodes[(noun)]);
+	assertEquals(getStatementNr(good, 1)->Object() , &c->nodes[(adjective)]);
+	check(getStatementNr(test, 0) == s);// prepended
+	check(getStatementNr(is, 0) == s);
+	check(getStatementNr(good, 0) == s);
 	show(test);
 	show(is);
 	show(dead);
@@ -192,25 +200,38 @@ void testBasics() {
 
 void testGeoDB(){
     
-    if(nodeCount()<10000)
-        importGeoDB();
+//    if(nodeCount()<100000)
+		importGeoDB();
     //        execute("import ./import/cities1000.txt");
-    
-    show(a(Gehren));
-    showNode(getThe("Gehren"));
-    
+
+    defaultLookupLimit=100000;
+	das(Gehren);
+    show((Gehren));
+	N latitude=getProperty(Gehren, "Latitude");//Gehren.Latitude
+	p(Gehren);
+	p(latitude);
+	p(latitude->value.number);
+	check(latitude->value.number==50.65);
     NV all;
-    
     NodeVector cities=all_instances(getThe("city"),1);
     check(cities.size()>10);
-    
-    
-    all=query("city where latitude=50.65");
+	all=query("city where Elevation=141");
+    check(all.size()>0);
+	N elevation=getProperty(all[0],"Elevation");
+	p(elevation);
+	N e141=getThe("141");
+	p(e141->value.number);
+	check(getThe("141")->value.number==141.)
+	check(elevation->value.number==141.);
+//	check(e141==elevation);// Stored in ABSTRACT!
+    all=query("city where latitude=50.65");// todo: filter backwards!! 50.65<-latitude<-[city?] !
     check(all.size()>2);
     show(all[2]);
-    N latitude=getProperty(all[2],"latitude");
-    check(latitude->value.number==50.65);
-    
+    latitude=getProperty(all[2],"latitude");
+	p(latitude);
+	p(latitude->value.number);
+//    check(latitude->value.number==50.65);// TOTO FOX
+
     all=query("city where population=3703");
     check(all.size()>0);
 //    showNodes(all);
@@ -223,7 +244,10 @@ void testGeoDB(){
         show(all[0]);
     N countrycode=getProperty(all[0],"countrycode");
     check(eq(countrycode->name,"AD"));
-    
+
+	NV all_plural=query("all cities with countrycode=AD");// plural
+    check(all_plural.size()>0);
+	check(all[0]==all_plural[0])
 //    all=query("all city with countrycode AD");
 //    check(all.size()>0);
 //        show(all[0]);
@@ -326,7 +350,7 @@ void testDummyLogic() {
 	//	Node* n = (Node *)rows1[0];
 	p(testDummy);
 	clearAlgorithmHash();
-	NodeVector& testDummys=allInstances(testDummy);
+	NodeVector testDummys=allInstances(testDummy);
 	check(contains(testDummys, testDummy));
 	//	check(getThe("testDummy")==testDummy);
 	//	testDummys=all_instances(getThe("testDummy"));
@@ -415,7 +439,7 @@ void testDummyLogic() {
 	check(last(cuties) == beth);
 	assert(allInstances(people).size() > 0, "all_instances(people)>0");
 	assert(find_all("people", current_context, true).size() > 1, "find_all(people)>1");
-	check(contains(allInstances(people), beth));
+//	check(contains(allInstances(people), beth));
 	NodeVector all=find_all("people", current_context, true);
 	check(contains(all, beth));
 	//    check(isA(beth,cute));
@@ -537,16 +561,32 @@ void testInstancesAtEnd() {
 	Node* t=getThe("testInstancesAtEnd1");
 	Node* p=getThe("testInstancesAtEndP");
 	Node* o=getThe("testInstancesAtEndO");
-	addStatement(t, Type, o);
-	addStatement(t, Instance, o);
-	S s=addStatement(t, p, o, true);
-//	S s=addStatement(t, p, o, false);// warning: addStatementToNode skipped
+	addStatement(t, Type, o,!CHECK_DUPLICATES);
+	addStatement(t, Instance, o,!CHECK_DUPLICATES);
+//	S s=addStatement(t, p, o, true);
+	S s=addStatement(t, Instance, o, false,false);
+	addStatement(t, p, o, false,false);// warning: addStatementToNode skipped
 //	addStatement(t, Type, o, false); types up too
-	addStatement(t, Instance, o, false);
     showStatement(s);
-    printf("%d %d\n",t->firstStatement,s->id());
+    printf("%d %d\n",t->lastStatement,s->id());
     show(t);
-    printf("%p %p\n",getStatement(t->firstStatement),s);
+    printf("%p %p\n",getStatement(t->lastStatement),s);
+//	check(t->lastStatement == s->id());
+}
+void testInsertForceStart() {
+	Node* t=getThe("testInsertForceStart1");
+	Node* p=getThe("testInsertForceStartP");
+	Node* o=getThe("testInsertForceStart0");
+	addStatement(t, Type, o,!CHECK_DUPLICATES);
+	addStatement(t, Instance, o,!CHECK_DUPLICATES);
+	//	S s=addStatement(t, p, o, false);// warning: addStatementToNode skipped
+	//	addStatement(t, Type, o, false); types up too
+	addStatement(t, Instance, o, false);
+	S s=addStatement(t, p, o, false,true);
+	showStatement(s);
+	printf("%d %d\n",t->firstStatement,s->id());
+	show(t);
+	printf("%p %p\n",getStatement(t->firstStatement),s);
 	check(t->firstStatement == s->id());
 }
 
@@ -639,7 +679,7 @@ void testImportExport() {
 	 c->nodeCount=nodeCount;
 	 save();
 	 */
-    if (!hasWord("male firstname")||!hasWord("female firstname"))
+//    if (!hasWord("male firstname")||!hasWord("female firstname"))
         importNames();
 	//	deleteStatements(a(female firstname));
 	//	p(a(female firstname));
@@ -647,8 +687,10 @@ void testImportExport() {
 	//	addStatement(a(female firstname),Instance,get(489285),false);// bug hack
 	//	addStatement(get(9028726),Synonym,get(9025182),false);// bug hack
 
-	check(query("all names", 1000).size() > 500);
+	check(isA(a(Abdulajewitsch),a(name)));
+	check(query("all names", 1000).size() > 10);
 	check(allInstances(a(female firstname)).size() > 5); //
+	check(allInstances(a(name)).size() > 20);
 	check(query("all female firstnames", 10).size() > 5);
 
 	p(a(female firstname));
@@ -729,26 +771,38 @@ void testImages() {
 
 void testInstanceLogic() {
 	// needs addStatementToNodeWithInstanceGap instead of addStatementToNode
-	// why was that important? to skip 100000 instances (cities)
+	// why is that important? to skip 100000 instances (cities) when accessing abstract properties
+	deleteWord("test",true);
+	deleteWord("tester",true);
+//	deleteNode(a(test));
+	Node* test2=getThe("test", Noun);
 	Node* test3=getThe("test", Adjective); //add("test", adjective);
+	check(test3!=test2);// type Adjective vs Noun matters
+	check(getStatementNr(a(test), 1)->object==test3->id);
 	Node* test4=getThe("test", Adjective);
 	check(getThe("test", Adjective) == test3);
     deleteNode(test3);
-        deleteNode(test4);
+	deleteNode(test4);
 	//	exit(0);//test make!!
 	//    Node* aBaum=getAbstract("Baum");
-	ein(Baum);
-	Statement* s=addStatement(Baum, the(colour), _(blue));
-	addStatement(Baum, Instance, the(Ulme));
-	show(Baum);
-	addStatement(Baum, the(colour), _(green));
-	addStatement(Baum, the(colour), _(pink));
-	show(Baum);
-	Statement *c=getStatementNr(Baum, 1);
+	ein(tester);
+	Statement* s=addStatement(tester, the(colour), _(blue));
+	addStatement(tester, Instance, the(Ulme));
+	show(tester);
+	addStatement(tester, the(colour), _(green));
+	addStatement(tester, the(colour), _(pink));
+	show(tester);
+	Statement *c=getStatementNr(tester, 1);
 	check(c->Predicate() != Instance);
-	c=getStatementNr(Baum, 2);
+	c=getStatementNr(tester, 2);
 	check(c->Predicate() != Instance);
     deleteStatement(s);
+	NV cities=query("all cities");
+	N city=cities.front();
+	p(city);
+	N typ=getProperty(city,"type");
+	p(typ);
+//	check(isA(typ,a(city)))
 }
 
 void testValueLogic() {
@@ -838,8 +892,10 @@ void testValueLogic() {
 	check(!isA4(a(category), length));
 	check(!isA4(get(60350), length)); //category
 	check(!isA4(kind, length, 0, 0));
+	check(!isA4(kind, length, 8, 1 ,1));
 	clearAlgorithmHash();
-	showStatement(findStatement(kind, SuperClass, length, 1, 1, false));
+	S nos=findStatement(kind, SuperClass, length, 1, 1, false);
+	showStatement(nos);
 	check(!findStatement(kind, SuperClass, length, 1, 1, false));
 	check(!has(kind, SuperClass, length, 1, 1, false));
 	check(!isA4(kind, length, true, true));
@@ -984,7 +1040,6 @@ void testComparisonQuery() {
 	check(nv.size() > 10);
 	check(atoi(getProperty(nv[0], "population")->name) > 1300);
 
-	defaultLookupLimit=1000000;
 	q.instances=all_instances(the(city), true, defaultLookupLimit, false); // again??
 	q.limit=10;
 	//	check(q.instances.size() >= defaultLookupLimit);
@@ -1125,6 +1180,25 @@ void testReification() {
 	//	check(isA(re,_(pattern)));
 }
 
+void testDelete(){
+	Statement* s=learn("Peter loves Jule");
+	N P=the(Peter);
+	N aP=a(Peter);
+	show(P);
+	int statementCount=aP->statementCount;
+	deleteNode(the(Peter));
+	check(aP==a(Peter));
+	check(aP->statementCount==statementCount-1);
+	check(P->firstStatement==0);
+	check(P->name==0);
+//	check(P->id!=0); HOLE!
+	Statement* s2=learn("Peter loves Jule");
+	N P2=the(Peter);
+	check(s != s2);
+	check(P != P2);
+	p(P2);
+}
+
 void testFactLearning() {
 	Statement* s=learn("Peter loves Jule");
 	Statement* s2=learn("Peter loves Jule");
@@ -1134,6 +1208,7 @@ void testFactLearning() {
 	check(isA(s->Predicate(), a(loves)));
 	check(s->Object() == the(Jule) || s->Object() == a(Jule));
 	check(has(a(Peter), a(loves), a(Jule)));
+	p(the(Peter));
 	check(has(the(Peter), a(loves), a(Jule)));
 	//	check(has(the(Peter),a(loves),the(Jule))); how could he? todo : NO, but MAYBE!
 	addStatement(the(love), Plural, the(loves)); //the(tense) ??
@@ -1147,10 +1222,15 @@ void testFactLearning() {
 	check(isA(s->Predicate(), a(son)));
 	check(s->Object() == the(Milan));
 	check(has(the(Peter), a(son), the(Milan)));
+	addStatement(a(son), Synonym, a(cadet));
+	check(has(the(Peter),a(cadet),the(Milan)));
+	addStatement(a(son), Translation, a(Sohn));// not transitive
+	check(has(the(Peter),a(Sohn),the(Milan)));
+	addStatement(a(Sohn), Synonym, a(Sohnemann));// Translation not transitive
+//	check(has(the(Peter),a(Sohnemann),the(Milan)));
+	p(the(Milan));
 	check(isA(the(Milan), a(son)));
-	check(isA(a(Milan), a(son)));
-
-	//	check(has(the(Peter),a(Sohn),the(Milan)));
+	check(isA(a(Milan), a(son)));// erst recht!
 }
 
 void testPaths() {
@@ -1214,9 +1294,9 @@ void testOpposite() {
 	//	check(!isA(,a(derived)));
 
 	p(Antonym);
+	check(getThe("antonym") == Antonym);
 	Node* anto=getThe("Antonym");
 	check(anto == Antonym);
-	check(getThe("antonym") == Antonym);
 	checkWordnet();
 	Node* opposite0=getAbstract("opposite");
 	Node* the_opposite0=getThe(opposite0);
@@ -1255,14 +1335,10 @@ void testOpposite() {
 	//		check(isA4(Antonym,pa, false, false));
 	check(has(node, property));
 
-	//	Statement* s=addStatement(Antonym,Synonym,opposite,false);
-	//	p(s);
-	//	s=addStatement(Antonym,Synonym,the_opposite,false);
-	//	p(s);
-	//	s=addStatement(opposite,Synonym,Antonym,false);
-	//	p(s);
-	//	s=addStatement(the_opposite,Synonym,Antonym,false);
-	//	p(s);
+		Statement* s=addStatement(Antonym,Synonym,opposite);
+		s=addStatement(Antonym,Synonym,the_opposite);
+//		s=addStatement(opposite,Synonym,Antonym,false);
+//		s=addStatement(the_opposite,Synonym,Antonym,false);
 
 	//	p(getThe("antonym"));
 	//	check(getThe("antonym")==Antonym); no, wordnet now!!
@@ -1292,6 +1368,8 @@ void testOpposite() {
 	//	check(isA4(Antonym,a(opposite),false,false));// has to check Synonym Statement
 	//	check(isA4(a(opposite),Antonym,false,false));
 	check(has(a(good), Antonym));
+	N evil=has(a(good), Antonym);
+	p(evil);
 	//	check(has(the(good),Antonym));
 	check(has(a(good), Antonym, a(evil)));
 	//	addStatement(Antonym,Synonym,a(opposite));
@@ -1458,10 +1536,10 @@ void testInclude(){
 }
 
 
-void tests() {
-    
-
+void testAll() {
+//	clearMemory();
 	testInstancesAtEnd();
+	testInsertForceStart();
 	testHash();
 	testValueLogic();
 	testStringLogic();
@@ -1470,7 +1548,7 @@ void tests() {
 	testYago();
     testGeoDB();
     testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
-	testFactLearning();
+
 	testReification();
 	testStringLogic2();
     testOpposite();
@@ -1493,11 +1571,66 @@ void tests() {
 	testFacets();
 	testQuery();
    	testPaths();
+	testFactLearning();
 
 	// OK
     
 	p("ALL TESTS SUCCESSFUL!");
 	//    testLoop();
+}
+bool assertResult(char* query,char* value0){
+	NodeVector result=parse(query);
+//	cchar* result=query2(query).data();
+	Node* abstract=getAbstract(value0);
+	Node* value=getThe(abstract);
+	return check(contains(result,value) || contains(result,abstract));
+//	return check(eq(result,value));
+}
+
+void flattenGeographischeKoordinaten(){
+	N n=getThe("Geographische Koordinaten");
+	N b=getThe("Breitengrad");
+	N l=getThe("Längengrad");
+	Statement* s=0;
+	while ((s=nextStatement(n->id, s))) {
+		if(s->predicate==n->id){
+			N ort=s->Subject();
+			N c=s->Object();
+			N bb=findProperty(c, "Breitengrad");
+			if(!bb)bb=findProperty(c, "Latitude");
+			S sb=addStatement(ort,b,bb,true,false);
+			S st=findStatement(c, getNode(1129), Any);
+			if(!st)continue;
+//			N ll=st->Object();
+			N ll=getProperty(c, "Längengrad");
+			if(!ll)ll=getProperty(c, "Longitude");
+			addStatement(ort,l,ll,true,false);
+//						S sl=addStatement(ort,l,ll,false,true);
+
+//			S sl=addStatement(ort,l,ll,false,false);
+//			show(ort);
+//			showStatement(sb);
+//			p(bb!=0);
+			sb=0;
+		}
+	}
+}
+void fixAllNames(){
+	for(int i=1000;i<54714717;i++){
+		if(i>maxNodes)break;
+		N n= getNode(i);
+		if(!n->name)continue;
+		if(n==Error){
+			pf("STOPPING AT %d",i);
+			break;
+		}
+		if(endsWith(n->name, "\" .")){
+			keep_to(n->name,"\" .");
+		}
+		if(endsWith(n->name, " .")){
+			keep_to(n->name," .");
+		}
+	}
 }
 
 
@@ -1506,69 +1639,18 @@ void testBrandNewStuff() {
     quiet=false;
 	debug = true;
 //    testing=false;// NO RELATIONS!
-//    germanLabels=true;// false;
+	germanLabels=false; // for tests!
+//	testImportExport();
+//	testAll();
+
+	germanLabels=true;
 	//    import("test.csv");
-	germanLabels=false;
-//	germanLabels=true;
-//	handle("all+pennsylvania+marijuana");
-//	handle("all dog");
-	importAll();
-//	handle(":rh");
-//	handle(":learn 240938 Label Diät");
-//	handle(":learn 240938 Label Kur");
-//	dissectWord(getAbstract("Board of Directors"));
-//	handle(":server");
-    exit(0);
-    p(statementCount());
-    N s=get(244797);
-    handle("Katarina Witt");
-//    handle("//delete $564");
-//    handle("/html/all/Claudia Pechstein.Typ");
-//    update("update Stadt.Gemeindeart set typ=244797");
-//    parse("update Stadt.Gemeindeart set typ=244797 limit 100000");
-    exit(0);
-    show(s,true);
-    showNodes(relationsFilter(s));
-    handle("/html/Stadt");
+	if(!hasWord("bug"))importWordnet();
+	importWikiData();
 
-    
-    
-//    importGeoDB();
-//    showNode(1001);
-    parse("learn T-Online Typ Firma");
-    handle("json/verbose/excluded/T-Online");
-//    handle("/json/verbose/T-Online");
-    exit(0);
-    tests();
-    
-//    int hits;
-//    execute("Population of Gehren",&hits);
-//    p("hits");
-//    p(hits);
-    
-    check(!eq("=","a", true));
-//    check(hasNode("type"));
-    N a=getAbstract("a");
-    showNode(a);
-    check(getAbstract("a")->id>=1000);
-    check(hasNode("Typ"));
-    check(hasNode("1"));
+	//	flattenGeographischeKoordinaten();
+//	fixAllNames();
 
-    
-    parse("node count");
-//    parse("exclude Code");
-//    import("labels");
-//    handle("xml/510619 limit 4000 -Birth place -Death place",-1);// test web server
-//    handle("xml/510619",-1);// test web server
-    handle("/all/Unternehmen");
-
-
-    exit(0);
-    testSqlDe();
-    
-    tests();
-    string img= getImage("Spielkarte");
-    img=getImage(get(    221896));
-    check(contains(img,"jpg"));
+	//	handle("all+pennsylvania+marijuana");
 }
 

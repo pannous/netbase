@@ -104,20 +104,37 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 	return false;
 }
 
-
-
+//bool contains2(NodeVector& all, Node* node) {
+//	return std::find(all.begin(), all.end(), node)!= all.end();
+//}
+//bool contains(NodeSet& all, Node* node) {
+//	return std::find(all.begin(), all.end(), node)!= all.end();
+//}
+bool contains(NodeSet* all, Node* node) {
+//	return std::find(all->begin(), all->end(), node)!= all->end();
+	NodeSet::iterator it;
+	for(it=all->begin();it!=all->end();it++){
+		if ((Node*) *it == node) return true;
+//		if (fuzzy && eq(*it, node)) return true;
+	}
+	return false;
+}
 bool contains(NodeVector& all, Node& node, bool fuzzy) {
+//	if(!fuzzy)
+//		return contains2(all,&node);
 	for (int i=0; i < all.size(); i++) {
 		if ((Node*) all[i] == &node) return true;
 		if (fuzzy && eq(all[i], &node)) return true;
 	}
 	return false;
 }
-//
+
 bool contains(NodeVector& all, Node* node, bool fuzzy) {
+//	return contains2(all,node);
 	for (int i=0; i < all.size(); i++) {
-		if ((Node*) all[i] == node) return true;
-		if (fuzzy && eq(all[i], node)) return true;
+		Node* n=(Node*) all[i];
+		if (n == node || (fuzzy && eq(n, node)))
+			return true;
 	}
 	return false;
 }
@@ -175,11 +192,21 @@ cchar* cut_to(cchar* str, cchar* match){
     if(!i)return str;
     return i+strlen(match);
 }
+
 char* cut_to(char* str, cchar* match){
     char* i=strstr(str,match);
     if(!i)return str;
     if(i)i[0]=0;
     return i+strlen(match);
+}
+
+//#include <sstrings2.h> Linking with -lsstrings2
+//char* strrstr(const char* haystack, const char* needle);
+char* reverse_cut_to(char* str, char match){
+	for (size_t i=strlen(str); i>0; --i) {
+		if(str[i]==match)return str+i+1;//str[i]=0;
+	}
+	return str;
 }
 
 // NOT const !!
@@ -206,12 +233,14 @@ bool endsWith(const char* x, const char* y) {
 	int xlen=(int)strlen(x);
 	int ylen=(int)strlen(y);
 	if (xlen < ylen) return false;
+//	char* i=(char*)strstr(x,y);
+//	if(!i)return false;
 	for (int i=1; i <= ylen; i++)
 		if (x[xlen - i] != y[ylen - i]) return false;
 	return true;
 }
 bool startsWith(const char* x, const char* y) {
-    short len=strlen(y);
+	short len=strlen(y);
 	if (strlen(x) < len) return false;
 	for (int i=0; i < len; i++) {
 		if (x[i] != y[i]) return false;
@@ -276,6 +305,10 @@ string join(char** argv, int argc) {
 	return a;
 }
 
+bool eq(int a,int b){
+	return a==b;// for assertEquals
+}
+
 Node* eq(Node* x, Node* y) {
 	return isEqual(x, y);
 }
@@ -296,8 +329,9 @@ void ps(string s) {	// string geht nicht!?!
 
 void ps(NodeVector v) {
 	if (quiet) return;
-	for (int i=0; i < v.size(); i++)
-		show(v[i]);
+	NodeVector::iterator it;
+	for(it = v.begin(); it != v.end(); ++it)
+		show(*it);
 }
 void ps(string* s) {
 	if (quiet) return;
@@ -380,13 +414,17 @@ void p(Query& q) {
 }
 
 // todo: presorted jumplists
-
 NodeVector intersect(NodeVector a, NodeVector b) {
 	NodeVector c;
-	for (int i=0; i < a.size(); i++) {
-		Node* n=a[0];
-		if (contains(b, n)) c.push_back(n);
-	}
+	NodeVector::iterator it;
+	for(it = a.begin(); it != a.end(); ++it)
+		if (contains(b, *it))
+//			c.insert(*it);
+			c.push_back(*it);
+//	for (int i=0; i < a.size(); i++) {
+//		Node* n=a[0];
+//		if (contains(b, n)) c.push_back(n);
+//	}
     return c;
 }
 
@@ -536,14 +574,16 @@ unsigned int wordhash(const char *str) { // unsigned
 	return hash;
 }
 
+
 // call by object => destination unmodified!   (how) expensive?!
-void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool keep destination unmodified=TRUE
-	for (int i=0; i < more.size(); i++) {
-		Node*n=(Node*) more[i];
-		if (!checkNode(n)) continue;
-		if (!checkDuplicates || !contains(some, n)) some.push_back(n);
-	}
-}
+//void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool keep destination unmodified=TRUE
+//	some.insert(more.begin(),more.end());
+////	for (int i=0; i < more.size(); i++) {
+////		Node*n=(Node*) more[i];
+////		if (!checkNode(n)) continue;
+////		if (!checkDuplicates || !contains(some, n)) some.push_back(n);
+////	}
+//}
 
 //NodeVector mergeVectors(NodeVector some, NodeVector more) {// bool keep destination unmodified=TRUE
 //    for (int i = 0; i < more.size(); i++) {
@@ -553,9 +593,19 @@ void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool
 //    return some;
 //}
 
+//#include <algorithm>
+
+void mergeVectors(NodeSet* some, NodeSet more) {
+	some->insert(more.begin(), more.end());
+}
+void mergeVectors(NodeSet* some, NodeVector more) {
+	some->insert(more.begin(), more.end());
+}
 void mergeVectors(NodeVector* some, NodeVector more) { // bool keep destination unmodified=TRUE
+//	return std::set_union(some,&more);
 	for (int i=0; i < more.size(); i++) {
 		if (!contains(*some, (Node*) more[i], false))
+//		if (std::find(some->begin(), some->end(), more[i]) == some->end())// NOT contains x yet
             some->push_back(more[i]);
 	}
 }
@@ -627,4 +677,137 @@ void appendFile(const char* fileName,const char* data){
 	if(fp==0){pf("CANNOT APPEND to FILE %s\n",fileName); return;}
 	fprintf(fp,"%s\n",data);
 	fclose(fp);
+}
+
+void printlabels(){
+	for (int i=0; i<statementCount(); i++) {
+		Statement* s= getStatement(i);
+		if(checkNode(s->predicate))
+			p(s->Predicate()->name);
+	}
+}
+#include <cstdlib>
+#include <zlib.h>
+#include <unistd.h> //getcwd
+#include <stdio.h> //getcwd
+#include <string.h>
+
+#define CHUNK 0x1000
+#define OUT_CHUNK CHUNK*100
+unsigned char gzip_in[CHUNK];
+unsigned char gzip_out[OUT_CHUNK];
+char* first_line=(char*)&gzip_out[0];
+char* current_line=first_line;
+char* next_line=first_line;
+char hangover[MAX_CHARS_PER_LINE];
+///* These are parameters to inflateInit2. See http://zlib.net/manual.html for the exact meanings. */
+#define windowBits 15
+#define ENABLE_ZLIB_GZIP 32
+
+
+FILE *open_file(const char* file) {
+	FILE *infile;
+	if ((infile=fopen((file), "r")) != NULL) return infile;
+	if (import_path.length() == 0) import_path="import/";
+	if(startsWith(file, "~/"))
+		file=concat(getenv("HOME"), file+1);
+	if(startsWith(file, "./"))
+		file=concat(getcwd(NULL, 0), file+1);
+	if (!startsWith(file, "/")) file=(import_path + file).data();
+	p(file);
+	if ((infile=fopen((file), "r")) == NULL) {
+		perror("Error opening file");
+		printf(" %s\n", (file));
+		exit(1);
+	}
+	return infile;
+}
+
+
+z_stream init_gzip_stream(FILE* file,char* out){// unsigned
+	z_stream strm = {0};
+	strm.zalloc = Z_NULL;
+	strm.zfree = Z_NULL;
+	strm.opaque = Z_NULL;
+	strm.next_in = gzip_in;
+	strm.avail_in = 0;
+	strm.next_out = gzip_out;
+	//	strm.next_out = (unsigned char* ) out;
+	inflateInit2 (& strm, windowBits | ENABLE_ZLIB_GZIP);
+	return strm;
+}
+
+bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
+	//			if(ferror (file)){inflateEnd (& strm);exit (EXIT_FAILURE); } nonesense
+	strm.avail_in = (int)bytes_read;
+	do {
+		strm.avail_out = OUT_CHUNK;
+		inflate (& strm, Z_NO_FLUSH);
+		//				printf ("%s",gzip_out);
+	}while (strm.avail_out == 0);
+	if (feof (file)) {
+//		inflateEnd (& strm);
+		return false;
+	}
+	return true;// all OK
+}
+bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
+	if(!gzipped)
+		return fgets(line, MAX_CHARS_PER_LINE, infile) != NULL;
+	else{
+		bool ok=true;
+		current_line=next_line;
+		if(!current_line || strlen(current_line)==0 || next_line-first_line>OUT_CHUNK){
+			current_line=first_line;
+			memset(gzip_in, 0, CHUNK);
+			memset(gzip_out, 0, OUT_CHUNK);
+			memset(line, 0, MAX_CHARS_PER_LINE);
+			size_t bytes_read = fread (gzip_in, sizeof (char), CHUNK, infile);
+			ok=inflate_gzip(infile,strm,bytes_read);
+			strcpy(line,hangover);
+		}
+		if(ok){
+			next_line=strstr(current_line,"\n");
+			if(next_line && next_line<first_line+OUT_CHUNK){
+				next_line[0]=0;
+				next_line++;
+				strcpy(line+strlen(hangover),current_line);
+				//				if(LEN) { *dst = '\0'; strncat(dst, src, LEN-1); }
+				hangover[0]=0;
+			}else{
+				memset(hangover,0,MAX_CHARS_PER_LINE);
+				strcpy(hangover,current_line);
+				memset(line, 0, MAX_CHARS_PER_LINE);
+				line[0]=0;// skip that one!!
+			}
+		}else{
+			printf("readFile DONE!\n");// NEVER REACHED? -> CALL closeFile manually!
+		}
+		return ok;
+	}
+}
+void closeFile(const char* file){
+	readFile(file,0);
+}
+//bool readFile(char* file,char* line){
+bool readFile(const char* file,char* line){
+	static FILE *infile;
+	static z_stream strm;
+	static bool gzipped;
+	if(file==0||line==0){
+		printf("%s DONE!\n",file);
+		if(infile)fclose(infile);
+		infile=0;
+		gzipped=false;
+		return false;
+	}
+	if(!infile){
+		infile=open_file(file);
+		gzipped=endsWith(file, ".gz");
+		if(gzipped)strm=init_gzip_stream(infile,line);
+	}
+	bool ok= readFile(infile,line,strm,gzipped);
+	if(!ok)closeFile(file);
+	return ok;
+
 }

@@ -5,10 +5,11 @@
 #include <iostream>
 #include <map>
 #include <vector>
+#include <set> // faster vector!
 #include <queue>
 using namespace std;
 
-
+extern bool useSemantics;
 extern bool germanLabels;
 extern bool exitOnFailure;
 extern int maxRecursions;
@@ -22,6 +23,10 @@ extern int current_context;
 extern bool useYetvisitedIsA;
 extern bool autoIds;
 extern bool testing;// don't implicitly init relations
+
+extern int resultLimit;
+extern int defaultLookupLimit;
+extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
 
 // if test or called from other object
 
@@ -43,12 +48,12 @@ extern bool testing;// don't implicitly init relations
 #define has_the(word) getThe(#word)// semantic bla
 #define have_the(word) getThe(#word)// semantic bla
 //#define a(word) Node* word=getThe(#word);
-#define that(word) Node* word=getThe(#word)  ;
-#define der(word) Node* word=getThe(#word)  ;
-#define die(word) Node* word=getThe(#word)   ;
-#define das(word) Node* word=getThe(#word)    ;
-#define ein(word) Node* word=getThe(#word)     ;
-#define eine(word) Node* word=getThe(#word)     ;
+#define that(word) Node* word=getThe(#word)  
+#define der(word) Node* word=getThe(#word)
+#define die(word) Node* word=getThe(#word)
+#define das(word) Node* word=getThe(#word)
+#define ein(word) Node* word=getThe(#word)
+#define eine(word) Node* word=getThe(#word)
 //#define get(word) Node* word=getThe(#word)     ;
 
 
@@ -107,16 +112,27 @@ typedef struct Node {
     int kind; // abstract,node,person,year, m^2     // via first slot? nah
     //int context; //implicit   | short context_id or int node_id
     //float rank;
-    int statementCount; //implicit, can be replaced with iterator
+    int statementCount; //explicit, can be made implicit and replaced with iterator
     int firstStatement;
 	int lastStatement;// remove
     Value value; // for statements, numbers  WASTE!!! remove
-
+//	bool operator<(const Node *rhs) const {
+//		return statementCount > rhs->statementCount;
+//	}
+//	bool operator() (Node* a, Node* b) const
+//	{
+//		return a->statementCount > b->statementCount;
+//	}
+//	Node* type(){
+//		Statement* s=findStatement(this, getThe("type"), 0);
+//		return s->Object();
+//	}
     // INDEX
     // Node* index;//nur #properties+1 Nits!!
     // class country{ population{property:0} capital{property:1} }
-    // germany.index[0]=80Mio .index[1]=Berlin
+	// germany.index[0]=80Mio .index[1]=Berlin
 
+//	virtual int key() const { return statementCount; }
 }Node ;
 
 // norway captial oslo
@@ -170,7 +186,7 @@ public:
     Node* Object(){return get(object);}
 #endif
 //    REORDER NEEDS NEW INDEX ON ALL SERVERS +JAVA!
-    int subject; // implicit!! Subject
+    int subject; // implicit if using explicitNodes: Subject->id
     int predicate;
     int object;
 
@@ -178,15 +194,16 @@ public:
     int nextPredicateStatement;
     int nextObjectStatement;
 
-//    int subject; // implicit!! Subject
-//    int predicate;
-//    int object;
     //  Node* meta; for reification, too expensive, how else now??
     // int subjectContext;//... na! nur in externer DB!
 } Statement;
 // manipulate via other statements (confidence, truth, author(!), ...)
 
 // union: context->hasNode->0 , name
+//typedef vector<Node*> NodeVector;
+//std::set O(log n) time - much more efficient with large numbers of elements.
+//std::set also guarantees all the added elements are unique
+typedef set<Node*> NodeSet;
 typedef vector<Node*> NodeVector;
 typedef queue<Node*> NodeQueue;
 typedef Node** NodeList;
@@ -241,8 +258,8 @@ public:
         maxFacets=20;
 //		recursions=0;
         autoFacet = true;
-        semantic = false;
-        predicatesemantic=false;
+        semantic = true;
+        predicatesemantic=true;
         matchNames = true;
     }
     enum QueryType queryType;
@@ -317,7 +334,7 @@ extern Node* Active;
 extern Node* Passive;
 extern Node* Tag;
 extern Node* Label;
-extern Node* BackLabel;
+extern Node* Labeled;
 extern Node* Labels;
 extern Node* LabeledNode;
 extern Node* Category; // SuperClass or Type
@@ -385,21 +402,24 @@ extern "C" int getId(char* node);
 Context* getContext(int contextId);
 void showContext(int nr);
 void showContext(Context* cp);
+void showNodes(NodeSet all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false);
 NodeVector showNodes(NodeVector all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false); // bool justTitles==showStatements
 NodeVector show(NodeVector all);// alias
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
 extern "C" Node* add(const char* nodeName, int kind = /*_node*/ 101, int contextId = current_context);
-bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
-bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
-bool addStatementToNode(Node* node, int statementNr);
+//bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
+//bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
+bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
+bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
+bool addStatementToNode(Node* node, int statementNr,bool force_insert_at_start);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 
 extern "C"
 Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
-Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true);
+Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true,bool force_insert_at_start=false);
 //inline
 		Node* get(const char* node);
 //inline
@@ -428,6 +448,7 @@ Node* getSingleton(const char* thing) ;
 void showStatement(Statement* s);
 extern "C" void showStatement(int id);
 bool show(Node* n, bool showStatements = true);
+void show(Statement * s);
 Node * showNode(Node* n);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
@@ -435,20 +456,19 @@ NodeVector* findWords(int context, const char* word, bool first= false,bool cont
 NodeVector* findAllWords(const char* word);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
 extern "C"
-Statement* findStatement(int subject, int predicate, int object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
-Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = false, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
-Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = false, bool symmetric = false);
+Statement* findStatement(int subject, int predicate, int object, int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
+Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false);
+Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = useSemantics, bool symmetric = false);
 char* initContext(Context*);
 Node* hasWord(const char* thingy);
 extern "C" bool hasNode(const char* thingy);
-string getImage(const char* n, int size = 30);
-string getImageThumb(const char* n, int size = 150);
+string getImage(const char* n, int size = 150,bool thumb=false);
 string getImage(Node* a, int size=150,bool thumb=false);
 
 
 extern "C" Node* has(Node* n, Node* m);
 Node* has(const char* n, const char* m);
-Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);//naja!!!
+Node* has(Node* n, Statement* s, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true);
 Node* has(Node* subject, string predicate, string object, int recurse = true, bool semantic = true, bool symmetric = false);
 Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool semantic = true, bool symmetric = false,bool predicatesemantic=true, bool matchName=false);
 void setValue(Node* node, Node* property, Node* value);
@@ -483,7 +503,7 @@ Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
 //NodeVector& all_instances(Node* type, int recurse , int limit = defaultLimit);
 //NodeVector& all_instances(Node* type);
 //NodeVector all(Node* type,Node* slot,int recurse);
-Node* findMember(Node* n, string match, int recurse = false, bool semantic = false);
+Node* findMember(Node* n, string match, int recurse = false, bool semantic = useSemantics);
 //Node* findMatch(Node* n, const char* match);
 //NodeVector filter(Query& q, Node* _filter);
 //NodeVector filter(NodeVector all, char* matches);
@@ -556,6 +576,7 @@ extern "C" Node* getType(Node* n);// != kind!
 
 typedef Node* N;
 typedef Statement* S;
+typedef NodeVector Ns;
 typedef NodeVector NV;
 
 //#pragma warnings_off
@@ -572,11 +593,11 @@ static int billion=GB;
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
-static long maxStatements = maxNodes*4;// *10 = crude average of Statements per Node (yago:12!!)
+static long maxNodes /*max 32bit=4GB!*/= 10*million;// long would need a new structure!!
+static long maxStatements = maxNodes*3;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 300*million;
-static long maxStatements = maxNodes*3;
+static long maxNodes = 100*million;
+static long maxStatements = maxNodes*2;
 #endif
 
 //static long abstractHashSize = maxNodes*ahashSize;
@@ -596,3 +617,4 @@ extern Node* node_root;
 extern char* name_root;
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
+void bad();

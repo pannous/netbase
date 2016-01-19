@@ -1,3 +1,4 @@
+extern int SERVER_PORT;
 #pragma once
 
 

@@ -16,15 +16,15 @@ Node* Pattern; // temporary QUERY ONLY!
 //Node* Broader;
 Node* Antonym;
 Node* Parent;
-Node* SuperClass; // Parent
+Node* SuperClass; // Parent, HyponymOf
 // Node* IsA;// Parent
-Node* SubClass;
+Node* SubClass;// Hyponym
 Node* Cause;
 Node* Entailment; // Implication
 Node* Owner; //Owner inverse Member   (Prince of Persia) <=> (Persia has Prince)
 Node* Member;
 Node* Part;
-Node* PartOf;
+Node* PartOf;// Meronym:  "wheels" is a meronym of "automobile".
 Node* Substance;
 Node* Synonym;
 Node* Domain;
@@ -37,10 +37,11 @@ Node* Active;
 Node* Passive;
 Node* Tag;
 Node* Label;
-Node* BackLabel;
-Node* Comment;
-Node* Labels;
-Node* LabeledNode;
+Node* Labeled; // labeledAE / labelledBE  adj.
+//Node* Labels;
+//Node* LabeledNode;
+Node* Comment;// or as text value
+Node* Description;// or as text value
 Node* Category;
 Node* SubContext;
 Node* SuperContext;
@@ -185,14 +186,15 @@ void initRelationsDE() {
 	Passive = addRelation(36, "Passiv");
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "Label");
-	BackLabel = addRelation(39, "Label von");
-	addRelation(40, "��hnlich");// hypernym?? no synonym
+	Labeled = addRelation(39, "Label von");
+	addRelation(40, "aehnlich");// hypernym?? no synonym
 	addRelation(50, "auch");// hypernym??
 	Category = addRelation(43, "Kategorie"); // tag
 	SubContext = addRelation(44, "Subcontext"); // tag
 	SuperContext = addRelation(45, "Supercontext"); //
 	Comment = addRelation(46, "Kommentar");
-    
+	Description = addRelation(49, "Beschreibung");
+
 	Internal = addRelation(_internal, "intern"); //ok
 	_Node = addRelation(_node, "Knoten");
 	Abstract = addRelation(_abstract, "Abstract");
@@ -218,7 +220,7 @@ void initRelationsDE() {
     Bytes = addRelation(_bytes, "Daten");
     
 	Plural = addRelation(_plural, "Plural");
-	Translation = addRelation(translation, "��bersetzung");
+	Translation = addRelation(translation, "Übersetzung",is_transitive);// is_transitive if not mapped to abstract!
     
 	And = addRelation(_And, "Und");
 	Or = addRelation(_Or, "Oder");
@@ -318,9 +320,11 @@ void initRelations() {
 	Passive = addRelation(36, "passive");
 	Tag = addRelation(37, "tag"); // different to 'unknown' !!
 	Label = addRelation(38, "label");
-	BackLabel = addRelation(39, "label of");
+	Labeled = addRelation(39, "label of");
 	addRelation(40, "similar");// hypernym?? no synonym
 	addRelation(50, "also");// hypernym??
+	Description = addRelation(49, "description");
+
 	//	Labels = addRelation(40, "Label");//??
 	//	LabeledNode = addRelation(41, "LabeledNode");// ?? ugly!!
 	Category = addRelation(43, "category"); // tag
@@ -338,7 +342,7 @@ void initRelations() {
 	36 Passive
 	37 Tag
 	38 Label
-	39 BackLabel
+	39 Labeled
 	41 LabeledNode
 	42 Attribute
 	 */
@@ -364,7 +368,7 @@ void initRelations() {
     Array = addRelation(_array, "array");
 
 	Plural = addRelation(_plural, "plural");
-	Translation = addRelation(translation, "translation");
+	Translation = addRelation(translation, "translation",is_transitive);// is_transitive if not mapped to abstract!
 
 	And = addRelation(_And, "and");
 	Or = addRelation(_Or, "or");
@@ -420,10 +424,10 @@ Node* invert(Node* relation) {
 	if (relation == Active)return Passive;
 	if (relation == Passive)return Active;
 	if (relation == Tag)return Tag; //gged
-	if (relation == Label)return BackLabel;
-	if (relation == BackLabel)return Label;
-	if(relation==Labels)return LabeledNode;
-	if(relation==LabeledNode)return Label;
+	if (relation == Label)return Labeled;
+	if (relation == Labeled)return Label;
+//	if(relation==Labels)return LabeledNode;
+//	if(relation==LabeledNode)return Label;
 	//if(relation==Category)return ;
 	if (relation == SubContext)return SuperContext;
 	if (relation == SuperContext)return SubContext;
@@ -454,6 +458,7 @@ Node* invert(Node* relation) {
 	if (relation == Little)return Much;
 	if (has(relation, Antonym, Any, false, false, false, false))
 		return has(relation, Antonym);
+//	if(contains(relation->name," of "))return getThe(cut_to(relation->name, " of "));
 	else return Unknown;// null; //! or relation .name + "OF" ?  weight => weight OF
 }
 
@@ -491,9 +496,69 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "range")) return Range;
 	if (eq(thing, "domain")) return Domain;
 	if (eq(thing, "inverseOf")) return Antonym;
+	if (eq(thing, "Antonym")) return Antonym;
     
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;
+
+	if (eq(thing, "subClassOf")) return SuperClass;
+	if (eq(thing, "P1696")) return Antonym;// Opposite;
+	if (eq(thing, "P31")) return Type;
+	if (eq(thing, "P131")) return PartOf;// 'located in'
+	if (eq(thing, "P361")) return PartOf;
+	if (eq(thing, "P527")) return Part;// Holonym= has-part : transitive property!
+//	527> <label> "besteht aus"@de .
+	if (eq(thing, "P461")) return Antonym; // AntonymOf == Antonym LOL
+//	560> <label> "Richtung"@de .
+	//	551> <altLabel> "wohnt in"@de . < in
+//	558> <altLabel> "Einheitensymbol"@de .
+//	566> <description> "Synonym eines gültigen wissenschaftlichen Namens, von dem dieser abgeleitet ist"@de .
+//	566> <label> "Basionym"@de . NOOO lol
+//	571> <altLabel> "Erstellungsdatum"@de . Gründungsdatum etc
+//575> <label> "Entdeckungsdatum"@de .
+	//	576> <label> "Auflösungsdatum"@de .
+//	577> <altLabel> "Erscheinungsdatum"@de .
+//	619> <description> "Zeitangabe des Starts eines Raumfahrzeugs"@de . NOOOO LOL
+//	580> <altLabel> "Von"@de .
+//	582> <altLabel> "bis"@de .
+//	585> <altLabel> "Datum"@de .
+//	585> <altLabel> "Stand"@de .
+//	585> <label> "Zeitpunkt"@de .
+	if (eq(thing, "P585")) return Date;
+//625> <altLabel> "Geokoordinaten"@de .
+	if (eq(thing, "P642")) return Of;// aus in im von
+//	if (eq(thing, "P706")) return Place;// in Veranstaltungsort, liegt in etc !!
+//	840> <altLabel> "Ort der Handlung"@de . NOO
+//	794> <description> "generischer Qualifikator"@de .
+//	794> <label> "als"@de .
+
+
+//	if (eq(thing, "P856")) return getThe("URL");
+
+//1311> <description> "Datenbank gedeckter Brücken in den Vereinigten Staaten und Kanada"@de . WTF!!!?? LOL
+
+	//	if (eq(thing, "P155")) return Previous;
+	//	if (eq(thing, "P156")) return Next;
+//	18> <label> "Bild"@de . Abbildung  Foto Grafik
+//	58> <altLabel> "Autor"@de .
+//	103> <altLabel> "Sprache"@de .
+//	364> <altLabel> "Sprache"@de .
+//373> <label> "Commons-Kategorie"@de . DROP!!!! ohne Category: KEEP! interesting!
+//	367> <altLabel> "Symbol"@de .
+//	366> <altLabel> "Zweck"@de . usage
+	//	136> <label> "Genre"@de .etc
+//	248> <altLabel> "steht in"@de . quelle/source
+//	1343> <altLabel> "Quelle"@de .
+
+//	P1365 replaces ancestor
+//	1366> <altLabel> "ersetztes"@de . predecessor succeeded by
+	if (eq(thing, "P279")) return SuperClass;// ist Unterklasse von
+
+	if (eq(thing, "P131")) return PartOf;
+	if (eq(thing, "P131")) return PartOf;
+
+//	<P111> <altLabel> "misst"@de . <_> https://www.wikidata.org/wiki/Property:P1880 gemessen in
+
 //    if (eq(thing, "Klasse")) return SuperClass;
 
 //	if (eq(thing, "reverse_property")) return Owner;

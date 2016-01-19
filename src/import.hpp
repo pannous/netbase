@@ -13,6 +13,7 @@ void importWordnet();
 void importGeoDB();
 void importNames();
 void importFreebase();
+void importWikiData();
 //void import(const char* file);
 void import(const char* type,const char* filename=0);
 void importList(const char* facts_file,const char* type);
@@ -23,4 +24,5 @@ void importXml(const char* facts_file, char* nameField=0, const char* ignoredFie
 int getFields(char* line, vector<char*>& fields, char separator = 0, int nameRowNr = -1, const char* nameRow = 0);
 char* extractTagName(char* line);
 char* extractTagValue(char* line);
-Node* getFreebaseEntity(char* name);
+Node* getFreebaseEntity(char* name,bool fixNamespaces);
+Node* rdfValue(char* name);

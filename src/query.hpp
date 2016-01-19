@@ -9,10 +9,6 @@
 #ifndef QUERY_H
 #define	QUERY_H
 
-extern int resultLimit;
-extern int defaultLookupLimit;
-extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
 NodeVector query(Query& q);
@@ -29,7 +25,8 @@ NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
 NodeVector find_all(cchar* name, int context=1, int recurse=0, int limit=resultLimit);
 NodeVector& all_instances(Node* type, int recurse, int max= resultLimit,bool includeClasses=true);
-NodeVector& allInstances(Node* type);
+//NodeVector& allInstances(Node* type);
+NodeVector allInstances(Node* type);
 NodeVector& all_instances(Query& q);
 
 NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*));
@@ -58,6 +55,8 @@ NodeVector relationsFilter(Node* subject, NodeQueue * queue=null);
 NodeVector parseProperties(const char *data);
 NodeVector update(cchar* query);
 NodeVector nodeVectorWrap(Node* n);
+NodeVector nodeVectorWrap(Statement* n);
+
 //NodeVector parentFilter(Node* subject);
 //NodeVector memberFilter(Node* subject);
 //NodeVector hasFilter(Node* subject);
@@ -70,5 +69,5 @@ NodeVector nodeVectorWrap(Node* n);
 NodeVector shortestPath(Node* from,Node* to );// any
 NodeVector parentPath(Node* from, Node* to);
 NodeVector memberPath(Node* from, Node* to);
-
+void sortNodes(NodeVector& all);
 #endif	/* QUERY_H */

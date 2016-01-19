@@ -28,8 +28,11 @@
 
 /*  Service an HTTP request  */
 
-#define SERVER_PORT  (81)
+//#define SERVER_PORT  (80)
+int SERVER_PORT=80; //todo
 static char server_root[1000] = "/Users/me/";
+
+int resultLimit = 200; // != lookuplimit reset with every fork !!
 
 int listener, conn,closing=0;
 pid_t pid;
@@ -67,7 +70,10 @@ bool checkHideStatement(Statement* s);
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-	if(len>1000)return 0;// SAFETY!
+	if(len>1000){
+		p("checkSanity len>1000");
+		return 0;// SAFETY!
+	}
     char* q=editable(q0);
 	checkSanity(q,len);
     while(q[0]=='/')q++;
@@ -198,7 +204,7 @@ int handle(cchar* q0,int conn){
     NodeVector all = parse(q); // <<<<<<<< HANDLE QUERY WITH NETBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	
+
     int size=(int)all.size();
     if(showExcludes){
         for (int i = 0; i < size; i++) {
@@ -216,17 +222,17 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'><body><div id='results'></div>\n<script>var results={'results':[\n";
+    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/><body><div id='netbase_results'></div>\n<script>var results={'results':[\n";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
-	if (format == json)Writeline(conn, "{'results':[\n");
+	if (format == json)Writeline(conn, "{\"results\":[\n");
 	if (format == html)Writeline(conn,html_block);
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { 'id':%d, 'subject':\"%s\", 'predicate':\"%s\", 'object':\"%s\", 'sid':%d, 'pid':%d, 'oid':%d},\n";
+	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
@@ -238,7 +244,7 @@ int handle(cchar* q0,int conn){
    	const char* entity_format = 0;
 	const char* entity_format_txt = "%s #%d statements:%d\n";
 	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
-	const char* entity_format_json = "   {'name':\"%s\", 'id':%d, 'statementCount':%d";
+	const char* entity_format_json = "   {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d";
    	const char* entity_format_csv = "%s\t%d\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
@@ -248,55 +254,79 @@ int handle(cchar* q0,int conn){
 	if (format == csv)entity_format = entity_format_csv;
 	Node* last=0;
     warnings=0;
-    
+	if (format == html)format=json;// inline json (hacky)
     char* entity=0;
     if(startsWith(q,"all")){
         entity=(char*)cut_to(q," ");
         entity=keep_to(entity,"limit");
     }
-    
-	for (int i = 0; i < all.size() && i<resultLimit; i++) {
+   	sortNodes(all);
+	int count=(int)all.size();
+	int good=0;
+	for (int i = 0; i < count && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
+		if(node->id==0)continue;
 		if(last==node)continue;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
-        
+		good++;
+		if (format == json)if(good>1)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
         if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
-            Writeline(conn, ", 'kind':"+itoa(node->kind));		
-        if((format == json||format == html)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-            Writeline(", 'image':'"+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"'");
+            Writeline(conn, ", \"kind\":"+itoa(node->kind));		
+        if((format == json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
+            Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
-            //            Writeline(",image:'"+getImage(node->name)+"'");
-			if (format == json||format == html)Writeline(conn, ", 'statements':[\n");
 			int count=0;
-			while ((s = nextStatement(node, s))&&count++<resultLimit) {
+            //            Writeline(",image:\""+getImage(node->name)+"\"");
+			if (format == json)Writeline(conn, ", \"statements\":[\n");
+
+//			sortStatements(
+			deque<Statement*> statements;
+			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
+				if (!checkStatement(s))break;
+				// filter statements
+				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
+				if(s->object==0)continue;
+//				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
+//					continue;
+				if (s->subject==node->id and s->predicate!=4)//_instance
+					statements.push_front(s);
+				else statements.push_back(s);
+			}
+			int good=0;
+			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
+				s=statements.at(j);
+//			while ((s = nextStatement(node, s))&&count++<resultLimit) {
                 if(format==csv&&all.size()>1)break;// entities vs statements
                 p(s);
-				if (!checkStatement(s))continue;
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
+				if(format == json && good>0)Writeline(conn, ",\n");
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
+				good++;
 			}
-			if (format == json||format == html)Writeline(conn, "]");
+			if (format == json)Writeline(conn, "]");
 		}
-		if (format == json||format == html)Writeline(conn, "},\n");
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
-		//		if(img!="")Writeline(conn,"<img src='"+img+"'/>");
+		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
-	const char* html_end="]};</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
-	if (format == json)Writeline(conn, "]}\n");
-    if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
-	if (format == html)Writeline(conn, html_end);
+	const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
+	if (format == json)Writeline(conn, "}\n]}");
 	if (format == xml)Writeline(conn, "</results>\n");
+	if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
+	if(contains(q0,"html/"))Writeline(conn, html_end);
+	//		sprintf(buff,	"<script src='/js/%s'></script>",q0);
+	//		Writeline(conn, buff);
+	//	}
     pf("Warnings/excluded: %d\n",warnings);
     return 0;// 0K
 }
@@ -322,6 +352,7 @@ void fixLabel(Node* n){
 		n->name[strlen(n->name)-1]=0;
 	replaceChar(n->name,'"',' ');
 	replaceChar(n->name,'\'',' ');
+	replaceChar(n->name,'\\',' ');
 	// todo: "'","%27" etc
 	//#include <curl/curl.h>
 	//char *curl_easy_escape( CURL * curl , char * url , int length );
@@ -420,7 +451,7 @@ void loadView(Node* n){
 
 void loadView(char* q){
 	N ex=get("excluded");// globally
-	if(ex &&   verbosity != alle )getIncludes(ex);
+	if(ex && verbosity != alle )getIncludes(ex);
 	ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
 	if(ex && verbosity != alle )getIncludes(ex);
 
@@ -777,14 +808,20 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	sprintf(buffer, "HTTP/1.1 %d OK\r\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
 	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
-		Writeline(conn, "Content-Type: text/plain\r\n");
-	else if(contains(reqinfo->resource,"json/"))
-		Writeline(conn, "Content-Type: application/json\r\n");
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
+	else if(contains(reqinfo->resource,"json/")){
+		Writeline(conn, "Content-Type: application/json; charset=utf-8\r\n");
+		Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
+	}
+	else if(contains(reqinfo->resource,"csv/"))
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
+	else if(contains(reqinfo->resource,"tsv/"))
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
 	else if(contains(reqinfo->resource,"xml/"))
-		Writeline(conn, "Content-Type: text/plain\r\n");// till entities are fixed
-//		Writeline(conn, "Content-Type: application/xml\r\n");
+		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");// till entities are fixed
+//		Writeline(conn, "Content-Type: application/xml; charset=utf-8\r\n");
 	else
-		Writeline(conn, "Content-Type: text/html\r\n");
+		Writeline(conn, "Content-Type: text/html; charset=utf-8\r\n");
 	Writeline(conn, "Connection: close\r\n");
 	Writeline(conn, "Server: Netbase\r\n");
 	Writeline(conn, "\r\n", 2);
@@ -849,12 +886,12 @@ void start_server() {
 		Error_Quit("Call to listen failed.");
     
 	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
-    p(" [doesn't work with xcode, use ./compile.sh ]");
+    p(" [debugging server doesn't work with xcode, use ./compile.sh ]");
     
 	/*  Loop infinitely to accept and service connections  */
 	while (1) {
 		/*  Wait for connection  */
-		// NOT with XCODE -> WEBSERV: Error calling accept()! debugging not supported, are you debugging?
+		// NOT with XCODE -> WEBSERV
 		conn = accept(listener, NULL, NULL);
 		if (conn  < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
