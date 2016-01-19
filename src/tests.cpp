@@ -1635,6 +1635,7 @@ void fixAllNames(){
 
 
 void testBrandNewStuff() {
+	p("test -> SHELL");return;// for shell
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
