@@ -1260,12 +1260,13 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 //			rowCount=rowCount;
 		if(rowCount==2){
 			sscanf(line, "%s\t%[^\n]s", key0,label0);
-			test=label0;
+			test0=label0;
 		}else
-			sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test, label0);
+			sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);
 		key=key0;
 		label=label0;
+		test=test0;
 		if(strlen(label)==0)label=test;
 		if(eq(label,key))continue;
 		test=dropUrl(test);
@@ -1638,6 +1639,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 
 void importFreebase() {
 	useHash=true;
+	autoIds=false;
 	if (!freebaseKeys[freebaseHash("0zzxc3>")]) {					// always
 		importFreebaseLabels();
 		testPrecious2();
@@ -2049,6 +2051,7 @@ void importDBPediaDE() {
 // IMPORTANT: needs manual collectAbstracts() afterwards (for speed reasons??)
 
 void importAllYago() {
+	autoIds=false;
 	//    importYago("yagoGeonamesData.tsv");// expansive !!! don't dissect!
 	//	importYago()
 	load_wordnet_synset_map();
@@ -2109,6 +2112,7 @@ void importAllYago() {
 
 void importWikiData() {
 	useHash=false;
+	autoIds=false;
 //	useHash=true;
 	importing=true;
 //	doDissectAbstracts=false; // if MAC

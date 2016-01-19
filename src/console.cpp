@@ -219,7 +219,6 @@ NodeVector parse(const char* data) {
     if (eq(data, ":debug")||eq(data, ":!quiet")){debug=true; quiet=false;return OK;}
     
 	if (startsWith(data, ":if")) {
-		autoIds=false;
 		importFreebase();
 		return OK;
 	}
@@ -228,18 +227,15 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
-		autoIds=false;
 		if (endsWith(data, "!")) deleteWord("acceptant");
 		if (!hasWord("acceptant")) importWordnet();
 		return OK;
 	}
 	if (startsWith(data, ":iwd") || startsWith(data, ":wd")) {
-		autoIds=false;
 		importWikiData();
 		return OK;
 	}
 	if (startsWith(data, ":iy") || startsWith(data, ":yi")) {
-		autoIds=false;
 		if (endsWith(data, "!")) deleteWord("yagoGeoEntity");
 		importAllYago();
 		return OK;
