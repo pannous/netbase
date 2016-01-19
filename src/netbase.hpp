@@ -562,6 +562,7 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 void checkRootContext();
 Node* number(int n);
 Node* getProperty(Node* n,const char* s);
+Node* getPropertyDummy(const char* id);
 Node* findRelation(Node* from, Node* to);
 Node* findProperty(Node* n , const char* m,bool allowInverse=true);
 NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
@@ -593,8 +594,8 @@ static int billion=GB;
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 10*million;// long would need a new structure!!
-static long maxStatements = maxNodes*3;// *10 = crude average of Statements per Node (yago:12!!)
+static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
+static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
 #else
 static long maxNodes = 100*million;
 static long maxStatements = maxNodes*2;

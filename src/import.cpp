@@ -1178,13 +1178,59 @@ char* dropUrl(char* name){
 	return name;
 }
 
-bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true) {
+bool importWikiLabels(cchar* file,bool properties=false){
+	p("ONLY COMPATIBLE WITH PURE WIKIDATA");
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
 	char* label0=(char*) malloc(10000);
 	char* label;
 	char* key0=(char*) malloc(10000);
 	char* key;
-	char* test=(char*) malloc(10000);
+	char* test0=(char*) malloc(10000);
+	char* test;
+	int linecount=0;
+	while (readFile(file,&line[0])) {
+		if (++linecount % 10000 == 0) {
+			printf("%d labels, %d bad\r", linecount, badCount);
+			fflush(stdout);
+		}
+		if(line[0]=='#')continue;
+		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
+		fixNewline(line);
+		key=key0;// Make modifiable
+		label=label0;
+		test=test0;
+		if(strlen(label)==0)label=test;
+		if(eq(label,key))continue;
+		test=dropUrl(test);
+		if(key[0]=='<')key++;
+		if(test[0]=='<')test++;
+		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label");
+		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
+		if(germanLabels && !endsWith(line,"@de ."))continue;
+		if(!germanLabels&& !endsWith(line,"@en ."))continue;		key=dropUrl(key);
+		if(startsWith(test, "altLabel"))continue;//for now!
+		if(startsWith(test, "description"))continue;//for now!
+		fixLabel(label);
+		if(!label || label[0]==0){bad();continue;}
+		label=dropUrl(label);
+		int id=atoi(key+1);
+		if(properties)id=(int)maxNodes-id;
+		if(id<maxNodes)
+			add_force(0, id, label, abstractId);
+		else bad();
+	}
+	return true;
+}
+
+bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true) {
+	// TODO: RESTORE TO BEFORE!
+	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
+	char* label0=(char*) malloc(10000);
+	char* label;
+	char* key0=(char*) malloc(10000);
+	char* key;
+	char* test0=(char*) malloc(10000);
+	char* test;
 
 	int linecount=0;
 	int rowCount=3;
@@ -1198,7 +1244,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			printf("%d labels, %d duplicates     \r", linecount, freebaseKeysConflicts);
 			fflush(stdout);
 			if (checkLowMemory()){
-				printf("Quitting import : id > maxNodes\n");
+				printf("Quitting import\n");
 				exit(0);
 			}
 			//			if(!labels["Q1"]){printf("NO Q!");}
@@ -1366,6 +1412,7 @@ Node *dissectFreebase(char* name) {
 		N a=getRelation((const char*) name);
 		if (a) return a;
 		a=getAbstract(name);
+		if(!a)return 0;//BUG HOW??? out of memory!
 		if (a->lastStatement && getStatement(a->lastStatement)->predicate == _instance)
 			return getStatement(a->lastStatement)->Object();// LAST INSTANCE == 'THE' one !?!? In import flow?
 		else
@@ -1419,7 +1466,16 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 
 	cut_to(name," (");
 //	if(name[0]!='0'){// ECHSE
-//	if(name[0]=='Q')
+	if(name[0]=='Q'){//  && name[1]<='9'
+		if(contains(name, '-'))
+			return getPropertyDummy(name);// DUMMY!
+		int id=atoi(name+1);
+		if(id>maxNodes)return Error;// bad() counted before
+		if(id>0)return getNode(id);
+	}
+	if(name[0]=='P' && name[1]<='9'){
+		return getNode((int)maxNodes-atoi(name+1));
+	}
 	Node* n=labels[atoi(name+1)];
 	if (n)return n;
 	long hash=freebaseHash(name);
@@ -1561,7 +1617,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			object=t;
 		}
 
-		if (!subject || !predicate || !object) {// G.o.d. dot problem !?
+		if (!subject || !predicate || !object || !subject->id || !predicate->id || !object->id) {// G.o.d. dot problem !?
 			//            printf("_"); // ignored
 //			subject=getFreebaseEntity(subjectName);
 			bad();
@@ -2058,8 +2114,8 @@ void importWikiData() {
 //	doDissectAbstracts=false; // if MAC
 	//		importLabels("dbpedia_de/labels.csv");
 	if(germanLabels){
-		importLabels("wikidata/wikidata-terms.de.nt");
-		importLabels("wikidata/wikidata-properties.nt.gz");
+		importWikiLabels("wikidata/wikidata-terms.de.nt");
+		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 //		importLabels("wikidata/wikidata-properties.de.nt");
 //		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
 

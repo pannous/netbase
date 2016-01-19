@@ -796,7 +796,7 @@ bool readFile(const char* file,char* line){
 	static bool gzipped;
 	if(file==0||line==0){
 		printf("%s DONE!\n",file);
-		if(infile)fclose(infile);
+//		if(infile)fclose(infile); FUCK IT!
 		infile=0;
 		gzipped=false;
 		return false;

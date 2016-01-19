@@ -647,6 +647,7 @@ Node * add_force(int contextId, int id, const char* nodeName, int kind) {
 	Context* context=getContext(contextId);
 	// pi(context.nodes);// == &context.nodes[0] !!
 	if (id > maxNodes) {
+		bad();
 		if (quiet) return 0;
 		printf("int context %d, int id %d id>maxNodes", contextId, id);
 		return 0;
@@ -1395,6 +1396,11 @@ Node* rdfValue(char* name) {
 	return value(name, atof(name), unity);
 }
 
+Node* getPropertyDummy(const char* id) {
+	N p=getAbstract(id);
+	p->kind=propertyId;
+	return p;
+}
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
 Node* getAbstract(const char* thing) {			// AND CREATE!

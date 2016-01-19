@@ -1635,7 +1635,7 @@ void fixAllNames(){
 
 
 void testBrandNewStuff() {
-	p("test -> SHELL");return;// for shell
+//	p("test -> SHELL");return;// for shell
     p("Test Brand New Stuff");
     quiet=false;
 	debug = true;
@@ -1646,7 +1646,7 @@ void testBrandNewStuff() {
 
 	germanLabels=true;
 	//    import("test.csv");
-	if(!hasWord("bug"))importWordnet();
+//	if(!hasWord("bug"))importWordnet();
 	importWikiData();
 
 	//	flattenGeographischeKoordinaten();
