@@ -1,1 +1,1 @@
-gp && ./adjust.sh && mk && screen -R netbase
+git pull && ./adjust.sh && make -j8 && screen -R netbase
