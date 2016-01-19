@@ -1126,7 +1126,8 @@ shared_map freebaseKeys;
 #else
 map<long, int> freebaseKeys;
 #endif
-map<string, Node*> labels;
+//map<string, Node*> labels;
+map<int, Node*> labels;
 map<int,string> wn_labels;
 int freebaseKeysConflicts=0;
 
@@ -1199,7 +1200,8 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 				printf("Quitting import : id > maxNodes\n");
 				exit(0);
 			}
-			if(!labels["Q1"]){printf("NO Q!");}
+//			if(!labels["Q1"]){printf("NO Q!");}
+			if(!labels[1]){printf("NO Q!");}
 			rowCount =countRows(line);
 		}
 		if(line[0]=='#')continue;
@@ -1276,7 +1278,10 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		}
 
 		long h=freebaseHash(key);		// skip m.
-		Node* oldLabel=labels[key];
+		int kei=atoi(key+1);
+
+//		Node* oldLabel=labels[key];
+		Node* oldLabel=labels[kei];
 
 		if(eq(test,"description")){
 			if(oldLabel&&checkNode(oldLabel)){
@@ -1290,10 +1295,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		if(oldLabel){
 			if(!altLabel)continue;
 			if(eq(oldLabel->name,label))continue;// OK
-			if(startsWith(oldLabel->name,"<")){labels[key]=getAbstract(label); continue;}
-			if(contains(oldLabel->name,"\\u")){labels[key]=getAbstract(label); continue;}
-			if(contains(label,"\\u"))
-				continue; //Stra��enverkehr || Stra\u00DFenverkehr
+			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
 			freebaseKeysConflicts++;
 			printf("labels[key] duplicate! %s => %s || %s\n", key , oldLabel->name, label);
 			addStatement(oldLabel,Label,getAbstract(label),!CHECK_DUPLICATES);
@@ -1327,11 +1329,17 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			if (useHash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
 			//                freebaseKeys.insert(pair<long,int>(h,n->id));
 			else{
-				labels[key]=n;
-				if(key[0]=='P')
-					labels[concat(key,"c")]=n;// wikidata "P106c" compound property? hack
-				if(contains((const char*)key,"_",false))
-					labels[replaceChar(key,'_',' ')]=n;
+//				labels[key]=n;
+
+				if(key[0]=='P'){
+					labels[kei]=n;// overwrites labels!!!
+//					plabels[kei]=n;// overwrites labels!!!
+//					labels[concat(key,"c")]=n;// wikidata "P106c" compound property? hack
+//					labels[concat(key,"v")]=n;// wikidata "P106c" compound property? hack
+				}else
+					labels[kei]=n;
+//				if(contains((const char*)key,"_",false))
+//					labels[replaceChar(key,'_',' ')]=n;
 			}
 		}
 	}
@@ -1410,7 +1418,8 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 
 	cut_to(name," (");
 //	if(name[0]!='0'){// ECHSE
-	Node* n=labels[name];
+//	if(name[0]=='Q')
+	Node* n=labels[atoi(name+1)];
 	if (n)return n;
 	long hash=freebaseHash(name);
 	n=complex_values[hash];
