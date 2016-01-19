@@ -1,5 +1,5 @@
 # wikidata-terms.de.nt
-if [ $APPLE ] then
+if [ $APPLE ]; then
     alias zcat=gzcat
 fi
 zcat wikidata-terms.nt.gz| grep "@de ." | \
