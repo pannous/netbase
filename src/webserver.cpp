@@ -28,8 +28,8 @@
 
 /*  Service an HTTP request  */
 
-//#define SERVER_PORT  (81)
-int SERVER_PORT=81; //todo
+//#define SERVER_PORT  (80)
+int SERVER_PORT=80; //todo
 static char server_root[1000] = "/Users/me/";
 
 int resultLimit = 200; // != lookuplimit reset with every fork !!
