@@ -233,6 +233,11 @@ NodeVector parse(const char* data) {
 		if (!hasWord("acceptant")) importWordnet();
 		return OK;
 	}
+	if (startsWith(data, ":iwd") || startsWith(data, ":wd")) {
+		autoIds=false;
+		importWikiData();
+		return OK;
+	}
 	if (startsWith(data, ":iy") || startsWith(data, ":yi")) {
 		autoIds=false;
 		if (endsWith(data, "!")) deleteWord("yagoGeoEntity");

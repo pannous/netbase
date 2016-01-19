@@ -1620,7 +1620,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (!subject || !predicate || !object || !subject->id || !predicate->id || !object->id) {// G.o.d. dot problem !?
 			//            printf("_"); // ignored
 //			subject=getFreebaseEntity(subjectName);
-			bad();
+			bad(); // subject->id ==0 ZB Q5 (no German!) OK
 		} else {
 			//            else// Statement* s=
 			addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
