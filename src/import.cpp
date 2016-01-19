@@ -1377,7 +1377,7 @@ Node *dissectFreebase(char* name) {
 	return n;
 }
 
-map<string,Node*>complex_values;
+map<long,Node*>complex_values;
 int MISSING=0;
 Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	if (name[0] == '<') {
@@ -1411,13 +1411,14 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 //	if(name[0]!='0'){// ECHSE
 	Node* n=labels[name];
 	if (n)return n;
-	n=complex_values[name];
+	long hash=freebaseHash(name);
+	n=complex_values[hash];
 	if(n)
 		return n;
 	else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
 		if (contains(name, '-')) {
 			n=add("◊");
-			complex_values[name]=n;
+			complex_values[hash]=n;
 			return n;
 		}
 			#ifdef __APPLE__
@@ -1490,8 +1491,9 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		//        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
-			printf("\r%d triples   %d ignored + %d badCount - %d = MISSING: %d  GOOD: %d   ", linecount, ignored, badCount, MISSING,
-				   ignored + badCount - MISSING,linecount-ignored - MISSING);
+			long lost=ignored + badCount + MISSING;
+			printf("\r%d triples   %d ignored + %d badCount - %d MISSING: %ld  GOOD: %ld   ", linecount, ignored, badCount, MISSING,
+				 lost  ,linecount-lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
