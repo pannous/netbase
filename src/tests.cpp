@@ -1662,6 +1662,7 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 //	if(!hasWord("bug"))importWordnet();
 	importWikiData();
+//	handle("/41172206");
 
 	//	flattenGeographischeKoordinaten();
 //	fixAllNames();

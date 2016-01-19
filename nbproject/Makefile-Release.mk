@@ -85,6 +85,10 @@ ${OBJECTDIR}/src/import.o: src/import.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/import.o src/import.cpp
 
+${OBJECTDIR}/src/utf8.o: src/utf8.cpp 
+	${MKDIR} -p ${OBJECTDIR}/src
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/utf8.o src/utf8.cpp
+
 ${OBJECTDIR}/src/init.o: src/init.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src
 	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/init.o src/init.cpp

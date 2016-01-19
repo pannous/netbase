@@ -29,7 +29,7 @@ options="-m64 --debug"
 
 mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
-g++ $options  -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline && ./netbase :exit $@
+g++ $options  -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline -lz && ./netbase :exit $@
 
 if [[ $platform == 'Darwin' ]]; then
 cp netbase blueprints-netbase/lib/mac/libNetbase.dylib

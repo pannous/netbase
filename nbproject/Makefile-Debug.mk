@@ -37,6 +37,7 @@ OBJECTDIR=${CND_BUILDDIR}/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/src/console.o \
 	${OBJECTDIR}/src/export.o \
+	${OBJECTDIR}/src/utf8.o \
 	${OBJECTDIR}/src/import.o \
 	${OBJECTDIR}/src/init.o \
 	${OBJECTDIR}/src/md5.o \
@@ -81,6 +82,11 @@ ${OBJECTDIR}/src/export.o: nbproject/Makefile-${CND_CONF}.mk src/export.cpp
 	${MKDIR} -p ${OBJECTDIR}/src
 	${RM} "$@.d"
 	$(COMPILE.cc) -g -w -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include/darwin -I/Library/Java/JavaVirtualMachines/1.7.0_45.jdk/Contents/Home/include -MMD -MP -MF "$@.d" -o ${OBJECTDIR}/src/export.o src/export.cpp
+
+${OBJECTDIR}/src/utf8.o: src/utf8.c
+	${MKDIR} -p ${OBJECTDIR}/src
+	$(COMPILE.cc) -O2 -o ${OBJECTDIR}/src/utf8.o src/utf8.c
+
 
 ${OBJECTDIR}/src/import.o: nbproject/Makefile-${CND_CONF}.mk src/import.cpp 
 	${MKDIR} -p ${OBJECTDIR}/src

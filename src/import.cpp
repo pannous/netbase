@@ -9,6 +9,8 @@
 #include "sqlite3.h"
 #endif
 
+//#include <unicode/utf8.h>
+#include "utf8.hpp"
 #include "netbase.hpp"
 #include "util.hpp"
 #include "import.hpp"
@@ -1176,6 +1178,7 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			printf("%d labels, %d bad\r", linecount, badCount);
 			fflush(stdout);
 		}
+		u8_unescape(line,MAX_CHARS_PER_LINE,line);
 		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);

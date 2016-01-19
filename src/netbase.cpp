@@ -162,7 +162,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
     if(a==0)
         return 0;
 	Ahash* ah=getAhash(position);
-	if (!checkHash(ah) || !checkNode(a) || a->name[0] == 0) return 0;
+	if (!checkHash(ah) || !checkNode(a) || !a->name || !strlen(a->name)) return 0;
 	int i=0;
 	while (ah&&ah->next) {
 		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
@@ -501,7 +501,7 @@ Node * initNode(Node* node, int id, const char* nodeName, int kind, int contextI
 		return 0;
 	}
 	if (context->currentNameSlot + 1000 > averageNameLength * maxNodes) {
-		p("OUT OF MEMORY!");
+		p("OUT OF NAME MEMORY!");
 		return node;
 	}
 	node->id=id;
@@ -2555,7 +2555,7 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
     int len=(int)strlen(label);
     Context* c=currentContext();
 	char* newLabel = name_root + c->currentNameSlot;
-    if(n->name==0 || n->name[0]==0){
+    if(!n->name || !strlen(n->name)){
         n->name=newLabel;// c->currentNameSlot;
         if(!addInstance)n->kind=abstractId;
         //        addInstance=true;// unless abstract
@@ -2627,6 +2627,7 @@ string getImage(Node* a, int size,bool thumb) {
 	Node* i=findProperty(a, "wiki_image");
 	if(!i)i=findProperty(a, "Bild");
 	if(!i)i=findProperty(a, "Wappen");
+	if(!i)i=findProperty(a, "Positionskarte");
 	if (!i || !checkNode(i))if(a->kind!=abstractId)return getImage(a->name);
     return formatImage(i,size,thumb);
 }

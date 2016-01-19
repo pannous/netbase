@@ -47,20 +47,26 @@ function makeLink(name,url,elem)
 	elem.appendChild(document.createTextNode(" "));
 	return a; 
 }
+
+function fixUmlauts(x) {
+    return x.replace(/ u([0-9A-Fa-f]{4})/g, function() { return String.fromCharCode(parseInt(arguments[1], 16)); })
+};
+
 function makeStatement(statement,elem)
 {
 	if(statement.predicate=="nr in context")return; 
+	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	var top = document.createElement("tr");
 	makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
 	predicate=	makeRow(top)
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete $"+statement.id,predicate).style=tiny;
-	makeLink(statement.predicate,server+statement.pid,predicate);
+	makeLink(fixUmlauts(statement.predicate),server+statement.pid,predicate);
 	makeLink(" ^",clean(document.URL).replace(/html/,"html/short")+"."+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" -",document.URL+" -"+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" +",statement.sid+" include "+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
-	x=makeLink(statement.object,server+statement.oid,makeRow(top));
+	x=makeLink(fixUmlauts(statement.object),server+statement.oid,makeRow(top));
 	makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
 	elem.appendChild(top);
 	if(statement.predicate=="quasiris id")throw new Exception(); 
@@ -73,8 +79,10 @@ var imageAdded=false;
 var onerror_handled=0;
 function addImage(image,div){
 	if(imageAdded)return;
+	if(image.contains("/Q"))return;
 	image=image.replace(/ /,"_")
 	var url="https://commons.wikimedia.org/wiki/"
+	if(image.match(/http/))url="" // Already there
 	// image=image.replace(/.150px.*/,"");
 	// image=image.replace("/thumb/","/")
 	var link=document.createElement("a");
@@ -102,7 +110,7 @@ function makeEntity(entity)
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+entity.name,div).style=nolink+bold+blue+big
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
-	if(entity.image)addImage(entity.image,div);
+	if(entity.image && !entity.image.startsWith("Q"))addImage(entity.image,div);
 	// addImage(entity.image,div);
 	appendText("  statements: "+entity.statementCount,div).style="font-size:small;"
 	

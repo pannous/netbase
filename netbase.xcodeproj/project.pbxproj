@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		8C89F9B01C4EBC14006B9FCD /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = 8C89F9AE1C4EBC14006B9FCD /* utf8.c */; };
+		8C89F9B31C4EBE0F006B9FCD /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C89F9B11C4EBE0F006B9FCD /* utf8.cpp */; };
 		8CF8D08519C4922600575975 /* netbase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C423FBE19B73935006B8238 /* netbase.cpp */; };
 		8CF8D08619C4924F00575975 /* console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C423EFF19B73935006B8238 /* console.cpp */; };
 		8CF8D08719C4926000575975 /* export.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8C423F0119B73935006B8238 /* export.cpp */; };
@@ -65,6 +67,10 @@
 		8C42404119B73935006B8238 /* util.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = util.hpp; sourceTree = "<group>"; };
 		8C42404219B73935006B8238 /* webserver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = webserver.cpp; sourceTree = "<group>"; };
 		8C42404319B73935006B8238 /* webserver.hpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.h; path = webserver.hpp; sourceTree = "<group>"; };
+		8C89F9AE1C4EBC14006B9FCD /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
+		8C89F9AF1C4EBC14006B9FCD /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		8C89F9B11C4EBE0F006B9FCD /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
+		8C89F9B21C4EBE0F006B9FCD /* utf8.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utf8.hpp; sourceTree = "<group>"; };
 		8CF8D07C19C199B400575975 /* netbase */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = netbase; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -112,6 +118,10 @@
 				8C42404119B73935006B8238 /* util.hpp */,
 				8C42404219B73935006B8238 /* webserver.cpp */,
 				8C42404319B73935006B8238 /* webserver.hpp */,
+				8C89F9AE1C4EBC14006B9FCD /* utf8.c */,
+				8C89F9AF1C4EBC14006B9FCD /* utf8.h */,
+				8C89F9B11C4EBE0F006B9FCD /* utf8.cpp */,
+				8C89F9B21C4EBE0F006B9FCD /* utf8.hpp */,
 			);
 			name = src;
 			path = ../../cpp/netbase/src;
@@ -177,6 +187,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8C89F9B01C4EBC14006B9FCD /* utf8.c in Sources */,
 				8CF8D08B19C4927400575975 /* query.cpp in Sources */,
 				8CF8D08819C4926500575975 /* import.cpp in Sources */,
 				8CF8D08619C4924F00575975 /* console.cpp in Sources */,
@@ -184,6 +195,7 @@
 				8CF8D08E19C4928900575975 /* shared_map.cpp in Sources */,
 				8CF8D08F19C4929200575975 /* tests.cpp in Sources */,
 				8CF8D08519C4922600575975 /* netbase.cpp in Sources */,
+				8C89F9B31C4EBE0F006B9FCD /* utf8.cpp in Sources */,
 				8CF8D08C19C4927700575975 /* reflection.cpp in Sources */,
 				8CF8D09019C4929500575975 /* util.cpp in Sources */,
 				8CF8D08D19C4927B00575975 /* relations.cpp in Sources */,
