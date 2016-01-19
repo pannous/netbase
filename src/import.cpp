@@ -1201,8 +1201,8 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 				printf("Quitting import : id > maxNodes\n");
 				exit(0);
 			}
-//			if(!labels["Q1"]){printf("NO Q!");}
-			if(!labels[1]){printf("NO Q!");}
+			//			if(!labels["Q1"]){printf("NO Q!");}
+			//			if(!labels[1]){printf("NO Q!");}SIGSEV WHY??
 			rowCount =countRows(line);
 		}
 		if(line[0]=='#')continue;
