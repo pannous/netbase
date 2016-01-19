@@ -1269,6 +1269,10 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			setLabel(old,label,false,true);
 			continue;
 		}
+		if(!key){
+			printf("!KEY\n%s\n",line);
+			continue;
+		}
 
 		long h=freebaseHash(key);		// skip m.
 		Node* oldLabel=labels[key];
@@ -1373,6 +1377,7 @@ Node *dissectFreebase(char* name) {
 	return n;
 }
 
+map<long,Node*>complex_values;
 int MISSING=0;
 Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	if (name[0] == '<') {
@@ -1404,9 +1409,18 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 
 	cut_to(name," (");
 //	if(name[0]!='0'){// ECHSE
-		Node* n=labels[name];
-		if (n)return n;
-		else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
+	Node* n=labels[name];
+	if (n)return n;
+	long hash=freebaseHash(name);
+	n=complex_values[hash];
+	if(n)
+		return n;
+	else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
+		if (contains(name, '-')) {
+			n=add("◊");
+			complex_values[hash]=n;
+			return n;
+		}
 			#ifdef __APPLE__
 				return getThe("MISSING");// only 1M labels for now
 			#endif
@@ -1477,8 +1491,9 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		//        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
-			printf("\r%d triples   %d ignored + %d badCount - %d = MISSING: %d  GOOD: %d   ", linecount, ignored, badCount, MISSING,
-				   ignored + badCount - MISSING,linecount-ignored - MISSING);
+			long lost=ignored + badCount + MISSING;
+			printf("\r%d triples   %d ignored + %d badCount - %d MISSING: %ld  GOOD: %ld   ", linecount, ignored, badCount, MISSING,
+				 lost  ,linecount-lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -1675,7 +1690,7 @@ void importGermanLables(bool addLabels=false) {
 	int linecount=0;
 	int id;
 	//    char pos;
-	FILE *infile=open_file("babelnet/translations.tsv");
+	FILE *infile=open_file("translations.tsv");
 	//	char** translationList=(char**)malloc(100);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {

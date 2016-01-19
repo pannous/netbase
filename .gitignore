@@ -23,8 +23,6 @@ import/missing/
 import/wins.csv
 netbase_results.html
 adjust.sh
-
-import/images_de.nt
 import/babelnet/images.wn.all.csv
 import/data/images.txt
 *.orig
@@ -64,7 +62,6 @@ import/images_de_sql.txt
 import/images_en_uris_de.nt
 import/test.csv
 import/test.n3
-import/translations.txt
 import/units.txt
 import/wiki.pages.csv
 import/wiki_listen.txt
@@ -80,8 +77,9 @@ netbase.ipr
 netbase.iws
 netbase.png
 netbase.warnings
-netbase.xcodeproj
 query.log
 run-remote.sh
 test.json
 test/
+import
+import/babelnet/translations.tsv

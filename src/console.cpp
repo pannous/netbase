@@ -263,7 +263,7 @@ NodeVector parse(const char* data) {
 		lookupLimit=resultLimit*10;//todo
 		if(limit>data) *(limit-1)=0;
 		*limit=0;
-		if(strlen(data)<2)return OK;
+//		if(strlen(data)<2)return OK;
 	}
 	if (eq(data, ":load")) { // || eq(data, ":l") learn?
 		load(false);
