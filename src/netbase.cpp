@@ -2523,6 +2523,7 @@ void setValue(Node* node, Node* property, Node * value) {
 void setName(int node, cchar* label){
     return setLabel(get(node),label,false,false);
 }
+
 void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
 //    if(addInstance && n!=get(n->id))n=save(n);// HOW!?! WHAT?
 //	if(label[0]=='<')

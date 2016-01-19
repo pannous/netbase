@@ -1373,6 +1373,7 @@ Node *dissectFreebase(char* name) {
 	return n;
 }
 
+map<string,Node*>complex_values;
 int MISSING=0;
 Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	if (name[0] == '<') {
@@ -1404,9 +1405,17 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 
 	cut_to(name," (");
 //	if(name[0]!='0'){// ECHSE
-		Node* n=labels[name];
-		if (n)return n;
-		else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
+	Node* n=labels[name];
+	if (n)return n;
+	n=complex_values[name];
+	if(n)
+		return n;
+	else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
+		if (contains(name, '-')) {
+			n=add("◊");
+			complex_values[name]=n;
+			return n;
+		}
 			#ifdef __APPLE__
 				return getThe("MISSING");// only 1M labels for now
 			#endif
@@ -1675,7 +1684,7 @@ void importGermanLables(bool addLabels=false) {
 	int linecount=0;
 	int id;
 	//    char pos;
-	FILE *infile=open_file("babelnet/translations.tsv");
+	FILE *infile=open_file("translations.tsv");
 	//	char** translationList=(char**)malloc(100);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
