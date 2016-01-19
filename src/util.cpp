@@ -811,3 +811,21 @@ bool readFile(const char* file,char* line){
 	return ok;
 
 }
+
+
+void fixLabel(char* label){
+	fixNewline(label);
+	label[0]=toupper(label[0]);
+	char* wo=strstr(label+1,"@");
+	if(wo)wo[-1]=0;
+	wo=strstr(label+1,">");
+	if(wo)wo[-1]=0;
+}
+char* dropUrl(char* name){
+	size_t len=strlen(name);
+	if(name[len-1]=='>')name[len-1]=0;
+	for (size_t i=len-1; i>0; --i)
+		if(name[i]=='#' || name[i]=='/'|| name[i]==':') // cut http://.../ namespaces
+			return name+i+1;//str[i]=0;
+	return name;
+}

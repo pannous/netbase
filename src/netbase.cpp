@@ -905,7 +905,7 @@ Node * get(const char* node) {
 
 //inline
 Node * get(int nodeId) {
-	if (debug&&(nodeId<-propertySlots || nodeId > maxNodes)) { // remove when debugged
+	if (debug&&(nodeId<-propertySlots || nodeId > maxNodes-propertySlots)) { // remove when debugged
 	    if (quiet)return Error;
 	    printf("Error: 0 > nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
 	    return Error;
@@ -1332,15 +1332,17 @@ Node* rdfValue(char* name) {
 	if (unit0[0] == '<') unit0++;
 	if (unit0[0] == '#') unit0++;
 	if (unit0[0] == '"') unit0++;
+	if(startsWith(unit0, "http"))
+		unit0=dropUrl(unit0);//  km/s OK!
 	const char* unit=unit0;
-	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
+//	if (eq(unit, ",)")) return 0; // LOL_(^^,) BUG!
 	if (eq(unit, "xsd:integer")) unit=0; //-> number
 	else if (eq(unit, "integer")) unit=0; //-> number
 	else if (eq(unit, "int")) unit=0; //-> number
 	else if (eq(unit, "double")) unit=0; //-> number
-	else if (eq(unit, "xsd:decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
-	else if (eq(unit, "xsd:float")) unit=0; //-> number
-	else if (eq(unit, "xsd:nonNegativeInteger")) unit=0; //-> number
+	else if (eq(unit, "decimal")) unit=0; //-> number return value(key, atof(key), Number);; //-> number
+	else if (eq(unit, "float")) unit=0; //-> number
+	else if (eq(unit, "nonNegativeInteger")) unit=0; //-> number
 	else if (eq(unit, "yago0to100")) unit=0;
 	if (!unit) return value(name, atof(name), Number);// unit==0 means number, ignore extra chars 123\"
 
@@ -2553,7 +2555,7 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
     int len=(int)strlen(label);
     Context* c=currentContext();
 	char* newLabel = name_root + c->currentNameSlot;
-    if(n->name==0){
+    if(n->name==0 || n->name[0]==0){
         n->name=newLabel;// c->currentNameSlot;
         if(!addInstance)n->kind=abstractId;
         //        addInstance=true;// unless abstract

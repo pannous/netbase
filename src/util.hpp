@@ -120,3 +120,6 @@ FILE *open_file(const char* file);
 //bool readFile(char* file,char* line);
 bool readFile(const char* file,char* line);
 void closeFile(const char* file);
+
+void fixLabel(char* label);
+char* dropUrl(char* name);

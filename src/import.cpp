@@ -1161,23 +1161,6 @@ void testPrecious() {
 }
 
 
-void fixLabel(char* label){
-	fixNewline(label);
-	label[0]=toupper(label[0]);
-	char* wo=strstr(label+1,"@");
-	if(wo)wo[-1]=0;
-	wo=strstr(label+1,">");
-	if(wo)wo[-1]=0;
-}
-char* dropUrl(char* name){
-	size_t len=strlen(name);
-	if(name[len-1]=='>')name[len-1]=0;
-	for (size_t i=len-1; i>0; --i)
-		if(name[i]=='#' || name[i]=='/') // cut http://.../ namespaces
-			return name+i+1;//str[i]=0;
-	return name;
-}
-
 bool importWikiLabels(cchar* file,bool properties=false){
 	p("ONLY COMPATIBLE WITH PURE WIKIDATA");
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
@@ -1214,8 +1197,9 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		if(!label || label[0]==0){bad();continue;}
 		label=dropUrl(label);
 		int id=atoi(key+1);
-		if(properties)id=(int)maxNodes-id;
-		if(id<maxNodes){
+//		if(properties)id=(int)maxNodes-id;
+		if(properties)id=-10000-id;
+		if(id<maxNodes-propertySlots){
 			N n=add_force(0, id, label, abstractId);
 //			getAbstract(<#const char *word#>)
 			insertAbstractHash(n);
@@ -1456,11 +1440,13 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	if(endsWith(name, "\" .")){name[len-3]=0;len-=3;}
 	if (contains(name, "^^"))
 		return rdfValue(name);
-	for (size_t i=len-1; i>0; --i)
+	for (size_t i=len-1; i>0; --i){
 		if(name[i]=='#' || (fixUrls && name[i]=='/')){ // cut http://.../ namespaces
 			name=name+i+1;//str[i]=0;
 			break;
 		}
+		if(name[i]=='/')break;// speed
+	}
 	bool fixNamespaces=!fixUrls;
 	if(fixNamespaces){
 		if(startsWith(name,"http://schema.org/"))
@@ -1475,16 +1461,16 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 		if(contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
 		int id=atoi(name+1);
-		if(id>maxNodes)return Error;// bad() counted before
+		if(id>maxNodes-propertySlots)return Error;// bad() counted before
 		if(id>0)return getNode(id);
 	}
 	if(name[0]=='P' && name[1]<='9'){
-		return getNode((int)maxNodes-atoi(name+1));
+//		return getNode((int)maxNodes-atoi(name+1));
+		int kei=-atoi(name+1)-10000;
+		return get(kei);
 	}
-	Node* n=labels[atoi(name+1)];
-	if (n)return n;
 	long hash=freebaseHash(name);
-	n=complex_values[hash];
+	N n=complex_values[hash];
 	if(n)
 		return n;
 	else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
@@ -1588,8 +1574,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		fixNewline(objectName);
-		if(startsWith(line,"<Q1398>"))
-			p("VERGIL!");
+//		if(contains(line,"Q245200>")&& contains(line,"Q20900468"))
+//			p("VERGIL!");
 //		if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
 //		if(filterFreebase(predicateName)){ignored++; continue;}
 //		if(filterFreebase(objectName)){ignored++;continue;}

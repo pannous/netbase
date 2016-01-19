@@ -1549,7 +1549,8 @@ void testInclude(){
 
 
 void testAll() {
-//	clearMemory();
+	germanLabels=false; // for tests!
+	clearMemory();
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
 	testStringLogic();
 	testHash();
@@ -1648,19 +1649,19 @@ void fixAllNames(){
 
 
 void testBrandNewStuff() {
-//	p("test -> SHELL");return;// for shell
-    p("Test Brand New Stuff");
-    quiet=false;
+	quiet=false;
 	debug = true;
+//	p("test -> SHELL");return;// for shell
+
+	p("Test Brand New Stuff");
 //    testing=false;// NO RELATIONS!
-	germanLabels=false; // for tests!
 //	testImportExport();
-	testAll();
+//	testAll();
 
 	germanLabels=true;
 	//    import("test.csv");
 //	if(!hasWord("bug"))importWordnet();
-//	importWikiData();
+	importWikiData();
 
 	//	flattenGeographischeKoordinaten();
 //	fixAllNames();
