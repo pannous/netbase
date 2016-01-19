@@ -1215,8 +1215,11 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		label=dropUrl(label);
 		int id=atoi(key+1);
 		if(properties)id=(int)maxNodes-id;
-		if(id<maxNodes)
-			add_force(0, id, label, abstractId);
+		if(id<maxNodes){
+			N n=add_force(0, id, label, abstractId);
+//			getAbstract(<#const char *word#>)
+			insertAbstractHash(n);
+		}
 		else bad();
 	}
 	return true;
@@ -1450,6 +1453,7 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	}
 	size_t len=strlen(name);
 	if(len==0)return 0;
+	if(endsWith(name, "\" .")){name[len-3]=0;len-=3;}
 	if (contains(name, "^^"))
 		return rdfValue(name);
 	for (size_t i=len-1; i>0; --i)
@@ -1601,6 +1605,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (predicateName[3] == '-' || predicateName[3] == '_' || predicateName[3] == 0) continue;        // <zh-ch, id ...
 		if (predicateName[2] == '-' || predicateName[2] == '_' || predicateName[2] == 0) continue;        // zh-ch, id ...
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
+		if(startsWith(subjectName,"http"))continue;//
 		//    if(contains(line,"<Apple"))
 		//        p(line);
 		if(predicateName[0]=='.'){

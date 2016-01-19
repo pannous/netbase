@@ -536,7 +536,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 	if(!debug)return true;
 	Context* c=currentContext(); // getContext(node->context);
 	void* maxNodePointer=&c->nodes[maxNodes];
-	if (node < c->nodes) {
+	if (node < c->nodes - propertySlots) {
 		bad();
 		if(report){// not for abstract.node (can be number etc)
 		printf("node* < c->nodes!!! %p < %p \n", node, c->nodes);
@@ -572,11 +572,17 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 		pf("nodeId>maxNodes %d>%ld", nodeId, maxNodes);
 		return false;
 	}
+	if (nodeId < -propertySlots) {
+		bad();
+		if(report)
+			pf("nodeId < -propertySlots %d<%d", nodeId, -propertySlots);
+		return false;
+	}
 
 	if (nodeId > 1 && node->id > 0 && node->id != nodeId) {
 		bad();
 		if(report)
-		pf("node->id!=nodeId %d!=%d", node->id, nodeId);
+		pf("node->id!=nodeId %d!=%d\n", node->id, nodeId);
 		return false;
 	}
 
@@ -619,7 +625,8 @@ Node * add(const char* key, const char* nodeName) {
 }
 
 Node * add(const char* nodeName, int kind, int contextId) { //=node =current_context
-    if (kind<0||kind>maxNodes)kind=abstractId;// blueprint messup!
+    if (kind<-propertySlots||kind>maxNodes)
+		kind=abstractId;// blueprint messup!
 #ifndef DEBUG
 	if (!nodeName) return 0;
 #endif
@@ -680,10 +687,14 @@ bool addStatementToNode2(Node* node, int statement) {
 #endif
 
 Statement * addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool checkNodes) { //bool checkDuplicate
-	if (contextId < 0 || subjectId < 0 || predicateId < 0 || objectId < 0) {
-		p("WARNING contextId<0||subjectId<0||predicateId<0||objectId<0");
+	if (contextId < 0 || subjectId < -propertySlots || predicateId < -propertySlots || objectId < -propertySlots) {
+		p("WARNING contextId<0|| subjectId < -propertySlots || predicateId < -propertySlots || objectId < -propertySlots");
 		return 0;
 	}
+//	if (contextId < 0 || subjectId < 0 || predicateId < 0 || objectId < 0) {
+//		p("WARNING contextId<0||subjectId<0||predicateId<0||objectId<0");
+//		return 0;
+//	}
 	if (contextId > maxContexts || subjectId > maxNodes || predicateId > maxNodes || objectId > maxNodes) {
 		bad();
 		p("WARNING contextId>maxContexts||subjectId>maxNodes||predicateId>maxNodes||objectId>maxNodes");
@@ -894,7 +905,7 @@ Node * get(const char* node) {
 
 //inline
 Node * get(int nodeId) {
-	if (debug&&(nodeId<0 || nodeId > maxNodes)) { // remove when debugged
+	if (debug&&(nodeId<-propertySlots || nodeId > maxNodes)) { // remove when debugged
 	    if (quiet)return Error;
 	    printf("Error: 0 > nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
 	    return Error;
@@ -2435,7 +2446,8 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
         return getRelation(abstract->name);
     if (type<node_root||type>&node_root[maxNodes]) type=0;// default parameter hickup through JNA
 	if(abstract->value.node && checkNode(abstract->value.node,0,false,false,false) and eq(abstract->value.node->name,abstract->name))
-		return abstract->value.node; // abstract->value.node as cache for THE instance
+		if(type==0 || type==Any || type->id==abstract->value.node->kind)
+			return abstract->value.node; // abstract->value.node as cache for THE instance
 	if (type == 0) {
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		Statement* s=0;
@@ -2469,20 +2481,24 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 		if (!checkStatement(s, true, false)) continue;
 		bool subjectMatch=(s->Subject() == abstract || abstract == Any);
 		bool predicateMatch=(s->Predicate() == Instance);
-		bool typeMatch=(type == 0 || s->Object() == type || s->Object()->kind == type->id);
-		typeMatch=typeMatch||type==More || isA4(s->Object(), type, maxRecursions, true); //semantic, depth 0
+		N object=s->Object();
+		bool typeMatch=(type == 0 || object == type || object->kind == type->id);
+		typeMatch=typeMatch||type==More || isA4(object, type, maxRecursions, true); //semantic, depth 0
 		if (subjectMatch && predicateMatch && typeMatch){
             if(type!=More)
-                return s->Object();
-            if(!best||s->Object()->statementCount>best->statementCount)
-                best=s->Object();
+                return object;
+            if(!best||object->statementCount>best->statementCount)
+                best=object;
         }
-		bool subjectMatchReverse=s->Object() == abstract;
+		bool subjectMatchReverse= object == abstract;
 		bool predicateMatchReverse=s->Predicate() == Type; // || inverse
 		bool typeMatchReverse=(type == 0 || s->Subject() == type); // isA4(s->Object, type)
 
-		if (type!=More&&subjectMatchReverse && predicateMatchReverse && typeMatchReverse) return s->Subject();
+		if (type!=More&&subjectMatchReverse && predicateMatchReverse && typeMatchReverse){
+			best = s->Subject();
+		}
 	}
+	if(!best)best=add(abstract->name,type->id,0);
 	return best;
 }
 
@@ -2656,7 +2672,8 @@ Node* mergeNode(Node* target,Node* node){
             if(s->Subject()==node)s->subject=target->id;
             if(s->Predicate()==node)s->predicate=target->id;
             if(s->Object()==node)s->object=target->id;
-        }
+			addStatementToNodeDirect(target,s->id());
+		}
         s=next;
     }
     deleteNode(node);

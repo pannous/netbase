@@ -589,6 +589,7 @@ static int MB=1048576;
 static int GB=1024*MB;
 static int million=MB;
 static int billion=GB;
+static int propertySlots=10000;// PROPERTY RELATION SLOTS
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
 
 // FREEBASE: 600.000.000 Statements !!!

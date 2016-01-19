@@ -118,102 +118,107 @@ extern Node* StartsWith;
 extern Node* EndsWith;
 extern Context* Wordnet;
 
-static const int propertyId = 98;
-static const int singletonId = 99;
-static const int abstractId = 102;
+// NEGATIVE VALUES GO IN PROPERTYSLOTS!
+// remove '= -' if this scheme is detested
+
+static const int propertyId = -98;
+static const int singletonId = -99;
+static const int abstractId = -102;
 
 static const int wordnet = 0;// 303; //context==Class??   TODO!
 // DANGER!!
-static const int _internal = 100;
-static const int _node = 101;// dont change
-static const int _abstract = 102;
+static const int _internal = -100;
+static const int _node = -101;// dont change
+static const int _abstract = -102;
 //int Class=103;
-static const int _klass = 103;
-static const int _clazz = 103;
-static const int _concept = 103;
-static const int _object = 104;
+static const int _klass = -103;
+static const int _clazz = -103;
+static const int _concept = -103;
+static const int _object = -104;
+static const int _entity = -104;
 //int Object=104;
-static const int _relation = 105;
-static const int _person = 106;
-static const int _reification=107;//== _statement ??
-static const int _pattern = 108;
-static const int _statement = 109;
+static const int _relation = -105;
+static const int _person = -106;
+static const int _reification=107;//== -_statement ??
+static const int _pattern = -108;
+static const int _statement = -109;
 
 // wn: done via type(33) statements
 
-static const int attribute = 42;
-static const int noun = 110;
-static const int verb = 111;
-static const int adjective = 112;
-static const int adverb = 113;
-static const int preposition = 114;
+static const int attribute = -42;
+static const int noun = -110;
+static const int verb = -111;
+static const int adjective = -112;
+static const int adverb = -113;
+static const int preposition = -114;
 
-static const int _bytes = 119;
-static const int _map = 120;
-static const int _array = 121;
-static const int _list = 122;
-static const int _number = 123;
-static const int _integer = 124; //naa, see number
-static const int _float = 125; //naa, see number
-static const int _string = 126; // text
-static const int _date = 127;
-static const int unit = 128;
-static const int _range = 129;
+static const int _bytes = -119;
+static const int _map = -120;
+static const int _array = -121;
+static const int _list = -122;
+static const int _number = -123;
+static const int _integer = -124; //naa, see number
+static const int _float = -125; //naa, see number
+static const int _string = -126; // text
+static const int _date = -127;
+static const int unit = -128;
+static const int _range = -129;
 
 // syntactic relations:
-static const int singular = 130;
-static const int _plural = 131;
-static const int present_tense = 132;
-static const int past_tense = 133;
-static const int future_tense = 134;
-static const int translation = 139;
+static const int singular = -130;
+static const int _plural = -131;
+static const int present_tense = -132;
+static const int past_tense = -133;
+static const int future_tense = -134;
+static const int translation = -139;
 
-static const int _And = 140;
-static const int _Or = 141;
-static const int _Not = 142;
-static const int _Equals = 150;
-static const int _Greater = 151;
-static const int _Less = 152;
-static const int _Between = 153;
-static const int _Circa = 154;
-static const int _Much = 155;
-static const int _Very = 156;
-static const int _Contains = 157;
-static const int _StartsWith = 158;
-static const int _EndsWith = 159;
-static const int _false = 200;// not '0' by design!
-static const int _true = 201;
+static const int _And = -140;
+static const int _Or = -141;
+static const int _Not = -142;
+static const int _Equals = -150;
+static const int _Greater = -151;
+static const int _Less = -152;
+static const int _Between = -153;
+static const int _Circa = -154;
+static const int _Much = -155;
+static const int _Very = -156;
+static const int _Contains = -157;
+static const int _StartsWith = -158;
+static const int _EndsWith = -159;
+static const int _false = -200;// not '0' by design!
+static const int _true = -201;
 
-static const int _error=666;//-1 = evil in itself;//
+static const int _error= -666;//-1 = -evil in itself;//
 static const int _any=0;// !!!
-static const int _see=0,//50 also, 40 similar
-	_Hypernym=1,//SuperClass
-	_hyponym=2,//SubClass
-	_Type=3,
-	_instance=4,
-	_ENTAILMENT=21,// implies
-	_Part=11,
-	_PartOf=12,
-	_Member=13,
-	_Owner=14,
-	_Substance=15,
-	_SubstanceOwner=16,
-	_PARTICIPLE_OF_VERB=71,
-	_PERTAINYM=80,
-	_antonym=30,
-	_attribute=60,
-	_cause=23,
-	_derived=81,
+static const int _unknown=0;
+static const int _see= -50,//50 also, -40 similar
+	_Hypernym= -1,//SuperClass
+	_hyponym =2,//SubClass
+	_Type= -3,
+	_instance= -4,
+	_ENTAILMENT= -21,// implies
+	_Part= -11,
+	_PartOf= -12,
+	_Member= -13,
+	_Owner= -14,
+	_Substance= -15,
+	_SubstanceOwner= -16,
+	_PARTICIPLE_OF_VERB= -71,
+	_PERTAINYM= -80,
+	_antonym= -30,
+	_attribute= -60,
+	_cause= -23,
+	_derived= -81,
 //	_derived_from_noun=81,//?
-	_synonym=21,//32?
-	_DOMAIN_CATEGORY=91,
-	_DOMAIN_REGION=93,
-	_DOMAIN_USAGE=95,
-	_MEMBER_DOMAIN_CATEGORY=92,
-	_MEMBER_DOMAIN_REGION=94,
-	_MEMBER_DOMAIN_USAGE=96,
-	_VERB_GROUP=70;
-//int _see=0,
+	_synonym= -21,//32?
+	_DOMAIN_CATEGORY= -91,
+	_DOMAIN_REGION= -93,
+	_DOMAIN_USAGE= -95,
+	_MEMBER_DOMAIN_CATEGORY= -92,
+	_MEMBER_DOMAIN_REGION= -94,
+	_MEMBER_DOMAIN_USAGE= -96,
+	_VERB_GROUP= -70;
+//int _unknown=_any=0,
 //	_antonym=1,
 //	_attribute=2,
 //	_cause=3,

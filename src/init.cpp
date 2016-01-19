@@ -162,7 +162,7 @@ void initRootContext() {
 //	rootContext->id=1; // not virgin_memory any more
 	//	rootContext->nodes=(Node*)&context_root[contextOffset];
 	//	rootContext->statements=(Statement*)&context_root[contextOffset+nodeSize * maxNodes];
-	rootContext->nodes=(Node*) node_root;
+	rootContext->nodes=(Node*) node_root+ propertySlots;
 	rootContext->statements=(Statement*) statement_root;
 	rootContext->nodeNames=name_root;
 }
@@ -187,7 +187,7 @@ void checkRootContext() {
 //	}
     if (currentContext()->nodeNames!=name_root)
         fixPointers();
-    rootContext->nodes=(Node*) node_root;
+    rootContext->nodes=(Node*) node_root+ propertySlots;;
     rootContext->statements=statement_root;
 //	else if (currentContext()->nodes != rootContext->nodes) {
 //		fixPointers();
@@ -454,7 +454,7 @@ bool clearMemory() {
 	}
     initRootContext();
     if(testing){
-    memset(node_root+1000, 0, 100000); // for testing
+    memset(node_root+propertySlots, 0, 100000); // for testing
     memset(statement_root, 0, 100000); // for testing
     memset(name_root, 0, 100000); // for testing
 	memset(abstract_root, 0, maxNodes*ahashSize * 2);
@@ -484,7 +484,7 @@ char* initContext(Context* context) {
 //	long abstractOffset=contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize; //just put them at the end!!
 	if (node_root) {
 		p("Multiple shared memory segments");
-		nodes=(Node*) node_root;
+		nodes=(Node*) node_root+propertySlots;
 		nodeNames=(char*) name_root;
 		statements=(Statement*) statement_root;
 	} else if (context_root) {

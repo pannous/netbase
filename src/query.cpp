@@ -873,11 +873,12 @@ NodeVector & nodesOfDirectType(int kind) {
 //NodeVector & allInstances(Node * type) {
 NodeVector allInstances(Node * type) {
 	clearAlgorithmHash();
-		NodeVector all=instanceFilter(type);
-		return all;//  all_instances(getQuery(type));
-	// COMPARE: !!
-//	return all_instances(type, true, defaultLookupLimit, true);
-	//	return recurseFilter(type,true,resultLimit,instanceFilter);
+	NodeVector all; 	// COMPARE: !!
+//	all = instanceFilter(type);
+//	all = all_instances(getQuery(type));
+	all = all_instances(type, true, defaultLookupLimit, true);
+//	all = recurseFilter(type,true,resultLimit,instanceFilter);
+	return all;
 }
 
 // todo?: EXCLUDING classes and direct instances on demand!

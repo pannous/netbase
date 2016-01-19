@@ -214,8 +214,9 @@ void testGeoDB(){
 	check(latitude->value.number==50.65);
     NV all;
     NodeVector cities=all_instances(getThe("city"),1);
-    check(cities.size()>10);
-	all=query("city where Elevation=141");
+	check(cities.size()>10);
+	all=query("city where elevation=141");
+//	all=query("city where Elevation=141");
     check(all.size()>0);
 	N elevation=getProperty(all[0],"Elevation");
 	p(elevation);
@@ -772,19 +773,28 @@ void testImages() {
 void testInstanceLogic() {
 	// needs addStatementToNodeWithInstanceGap instead of addStatementToNode
 	// why is that important? to skip 100000 instances (cities) when accessing abstract properties
-	deleteWord("test",true);
-	deleteWord("tester",true);
+//	deleteWord("test",true);
+//	deleteWord("tester",true);
 //	deleteNode(a(test));
 	Node* test2=getThe("test", Noun);
+	check(test2->kind==noun);
+	check(!isA4(test2, Adjective, 6, true)); //semantic, depth 0
 	Node* test3=getThe("test", Adjective); //add("test", adjective);
+	check(!isA4(test2, Adjective, 6, true)); //semantic, depth 0
+	check(test3->kind==adjective);
 	check(test3!=test2);// type Adjective vs Noun matters
-	check(getStatementNr(a(test), 1)->object==test3->id);
+	N abstrac=a(test);
+	p(abstrac);
+	check(abstrac->kind==abstractId);
+//	check(getStatementNr(a(test), 1)->object==test3->id);
 	Node* test4=getThe("test", Adjective);
+	check(test3==test4);
 	check(getThe("test", Adjective) == test3);
     deleteNode(test3);
 	deleteNode(test4);
 	//	exit(0);//test make!!
 	//    Node* aBaum=getAbstract("Baum");
+	deleteWord("tester",true);
 	ein(tester);
 	Statement* s=addStatement(tester, the(colour), _(blue));
 	addStatement(tester, Instance, the(Ulme));
@@ -1172,12 +1182,10 @@ void testReification() {
 	Statement* p=pattern(_(karsten), Attribute, _(cool));
 	Node* re=reify(p);
 	show(re);
-	check(_statement == 109);
-	//	show(get(_statement));
-	//	check(get(_statement)->id==109);
-	//	check(isA(re, get(_statement)));
-	//	check(isA(re,Pattern));
-	//	check(isA(re,_(pattern)));
+	show(get(_statement));
+	check(isA(re, get(_statement)));
+//	check(isA(re,Pattern));
+//	check(isA(re,_(pattern)));
 }
 
 void testDelete(){
@@ -1413,12 +1421,16 @@ void testFreebase(){
     check(all.size()>0);
         showNodes(all);
 }
+
 void fixNames(){
 	char* x=name_root;
 	while(x<name_root+maxNodes*averageNameLength-10000){
 		int l=(int)strlen(x);
 		if(contains(x,"\"@")){
 			strstr(x,"\"@")[0]=0;
+		}
+		if(contains(x,"\" .")){
+			strstr(x,"\" .")[0]=0;
 		}
 		x=x+l+1;
 	}
@@ -1538,16 +1550,17 @@ void testInclude(){
 
 void testAll() {
 //	clearMemory();
-	testInstancesAtEnd();
-	testInsertForceStart();
-	testHash();
-	testValueLogic();
+	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
 	testStringLogic();
 	testHash();
 	testScanf();
 	testYago();
     testGeoDB();
-    testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
+
+	testInstancesAtEnd();
+	testInsertForceStart();
+	testHash();
+	testValueLogic();
 
 	testReification();
 	testStringLogic2();
@@ -1642,12 +1655,12 @@ void testBrandNewStuff() {
 //    testing=false;// NO RELATIONS!
 	germanLabels=false; // for tests!
 //	testImportExport();
-//	testAll();
+	testAll();
 
 	germanLabels=true;
 	//    import("test.csv");
 //	if(!hasWord("bug"))importWordnet();
-	importWikiData();
+//	importWikiData();
 
 	//	flattenGeographischeKoordinaten();
 //	fixAllNames();

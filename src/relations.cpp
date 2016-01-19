@@ -9,6 +9,7 @@
 
 Node* Error;
 Node* Unknown;
+Node* See;
 Node* Any;// QUERY ONLY!
 Node* Pattern; // temporary QUERY ONLY!
 //Node* IS; // QUERY ONLY! TypeOrParent
@@ -53,6 +54,7 @@ Node* Thing;
 Node* Item;
 Node* Abstract; // Thing
 Node* Class;
+Node* Entity;
 Node* Object;
 Node* Relation;
 Node* Reification;
@@ -132,10 +134,10 @@ Node* addRelation(int id, const char* name,bool transitive=false) {
 }
 
 void initRelationsDE() {
-//	Unknown = addRelation(_see, "siehe");
-	Unknown = addRelation(_see, "?");
-	Antonym = addRelation(_antonym, "Gegenteil");
 	Error = addRelation(_error, "Fehler");
+	Unknown = addRelation(_unknown, "?");
+	See = addRelation(_see, "Siehe");
+	Antonym = addRelation(_antonym, "Gegenteil");
     //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "Attribut"); // tag
 	Property=Attribute;
@@ -200,6 +202,7 @@ void initRelationsDE() {
 	Abstract = addRelation(_abstract, "Abstract");
 	Class = addRelation(_clazz, "Klasse");
 	Object = addRelation(_object, "Object");
+	Entity = addRelation(_entity, "Entität");
 	Relation = addRelation(_relation, "Relation");
 	Pattern = addRelation(_pattern, "Muster");
 	Reification = addRelation(_reification, "Reifikation");
@@ -258,7 +261,8 @@ void initRelations() {
     p("initRelations");
     currentContext()->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
-	Unknown = addRelation(_see, "unknown");
+	Unknown = addRelation(_unknown, "unknown");
+	See = addRelation(_see, "see also");
 
 	bool is_transitive=true;
 	Instance = addRelation(_instance, "instance",is_transitive);
@@ -352,6 +356,7 @@ void initRelations() {
 	Abstract = addRelation(_abstract, "abstract");
 	Class = addRelation(_clazz, "class");
 	Object = addRelation(_object, "object");
+	Entity = addRelation(_entity, "entity");
 	Relation = addRelation(_relation, "relation");
 	Pattern = addRelation(_pattern, "pattern");
 	Reification = addRelation(_reification, "reification");
@@ -466,6 +471,8 @@ Node* invert(Node* relation) {
 // expansive! todo! merge later
 Node * getRelation(const char* thing) {
 	if (thing[0] == '#') thing++;
+	if (eq(thing, "Item"))return Entity;
+//	if (eq(thing, "Item"))return Object;// Entity
 	if (eq(thing, "instance")) return Instance;
     if (eq(thing, "Contains")) return Part;
 //    if (eq(thing, "broader")) return Unknown;//Any;// Related, See Also SuperClass or Type
@@ -473,6 +480,7 @@ Node * getRelation(const char* thing) {
     if (eq(thing, "Broader topic")) return SuperClass;
     if (eq(thing, "narrower")) return SubClass;
     if (eq(thing, "narrower topic")) return SubClass;
+	if (eq(thing, "Unterklasse von"))return SuperClass;
 //    if (eq(thing, "Organism type")) return SuperClass;
     //    if (eq(thing, "Species")) return SuperClass;
     //    if (eq(thing, "Breed of")) return SuperClass;
@@ -485,6 +493,8 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "of")) return Owner;
    	if (eq(thing, "containedby")) return PartOf;
    	if (eq(thing, "partOf")) return PartOf;
+	if (eq(thing, "part")) return Part;
+	if (eq(thing, "Besteht aus")) return Part;
 	if (eq(thing, "by")) return Owner; // creator
 	if (eq(thing, "type")) return Type;
 	if (eq(thing, "property")) return Attribute; // Property;
@@ -497,7 +507,12 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "domain")) return Domain;
 	if (eq(thing, "inverseOf")) return Antonym;
 	if (eq(thing, "Antonym")) return Antonym;
-    
+	if (eq(thing, "seeAlso")) return See;
+	if (eq(thing, "see also")) return See;
+	if (eq(thing, "also see")) return See;
+	if (eq(thing, "also")) return See;
+
+	if (eq(thing, "Ist ein(e)")) return Type;
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;
 
