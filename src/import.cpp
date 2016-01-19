@@ -1269,6 +1269,10 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			setLabel(old,label,false,true);
 			continue;
 		}
+		if(!key){
+			printf("!KEY\n%s\n",line);
+			continue;
+		}
 
 		long h=freebaseHash(key);		// skip m.
 		Node* oldLabel=labels[key];
