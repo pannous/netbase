@@ -1127,7 +1127,8 @@ shared_map freebaseKeys;
 map<long, int> freebaseKeys;
 #endif
 //map<string, Node*> labels;
-map<int, Node*> labels;
+//map<int, Node*> labels;
+static map<int, Node*> labels;//=new map<int, Node*>();
 map<int,string> wn_labels;
 int freebaseKeysConflicts=0;
 
