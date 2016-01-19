@@ -1248,6 +1248,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		label=dropUrl(label);
 		if(eq(key,"Q2696789")||eq(key,"P106"))
 			p(line);
+		if(eq(key,"Q22335"))continue;// bug why?
 
 
 		int len=(int) strlen(label);
