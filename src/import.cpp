@@ -2124,9 +2124,9 @@ void importWikiData() {
 //	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-instances.nt.gz");
-	importN3("wikidata/wikidata-simple-statements.nt.gz");
-	importN3("wikidata/wikidata-statements.nt.gz");
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
+	importN3("wikidata/wikidata-simple-statements.nt.gz");
+//	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");
 }
 

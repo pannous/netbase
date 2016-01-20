@@ -394,8 +394,8 @@ Context * getContext(int contextId) {
 void showContext(Context * cp) {
 	if (quiet) return;
 	Context c=*cp;
-	cchar* format="Context#%d name:%s nodes:%d, statements:%d n#%p nN#%p s#%p\n";
-	printf(format, c.id, c.name, c.nodeCount, c.statementCount, c.nodes, c.nodeNames, c.statements);
+	cchar* format="Context#%d name:%s nodes:%d, statements:%d characters:%dl n#%p nN#%p s#%p\n";
+	printf(format, c.id, c.name, c.nodeCount, c.statementCount,c.currentNameSlot, c.nodes, c.nodeNames, c.statements);
 	flush();
 }
 

@@ -94,7 +94,7 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 	int READ_WRITE=0666; //
 	if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE)) == -1) {
 		ps("share_memory used for the first time");
-		pf("requesting 0x%lx bytes\n",sizeOfSharedMemory);
+		pf("requesting 0x%lx bytes ~ %ld MB \n",sizeOfSharedMemory,sizeOfSharedMemory/MB);
 		virgin_memory=1;
 		if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 			semrm(key); // clean and try again

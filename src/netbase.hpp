@@ -599,7 +599,7 @@ static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new str
 static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
 #else
 static long maxNodes = 100*million;
-static long maxStatements = maxNodes*6;
+static long maxStatements = maxNodes*3;
 #endif
 
 //static long abstractHashSize = maxNodes*ahashSize;
