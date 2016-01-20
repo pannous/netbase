@@ -1662,12 +1662,12 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 //	if(!hasWord("bug"))importWordnet();
 
-	importWikiData();
+//	importWikiData();
 	//	handle("/41172206");
 //	getContext(0)->statementCount-=100000;// make some room ONCE
 //	getContext(0)->nodeCount-=100000;// make some room ONCE
-	handle("/90962");
-
+//	handle("/90962");
+	handle("/-1");
 	//	flattenGeographischeKoordinaten();
 //	fixAllNames();
 

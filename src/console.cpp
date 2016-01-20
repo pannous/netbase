@@ -536,7 +536,7 @@ NodeVector parse(const char* data) {
 	int i=atoi(data);
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
-
+	if(autoIds && i)return nodeVectorWrap(get(i));
 	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
 
 	Node* a=get(data);
