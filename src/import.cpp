@@ -1618,7 +1618,11 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			bad(); // subject->id ==0 ZB Q5 (no German!) OK
 		} else {
 			//            else// Statement* s=
-			addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
+
+			if(endsWith(objectName, "#Class"))
+				predicate->kind=_clazz;
+			else
+				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 		}
 		//		showStatement(s);
 	}
@@ -1732,6 +1736,7 @@ void importAbstracts() {
 		name=name0;
 		//		if (hasWord(name)) continue; check earlier
 		id=id + 10000; // OVERWRITE EVERYTHING!!!
+//		id=-id - 100000; // OVERWRITE EVERYTHING below!!!
 		c->nodeCount=id; // hardcoded hack to sync ids!!!
 		Node* a=getAbstract(name);
 		//		a->context=wordnet;
@@ -1741,7 +1746,7 @@ void importAbstracts() {
 }
 
 int synonyms=400000;// pointer autoincrement
-//            ^^^^^^^ aaah !?? compatible with german??
+//            ^^^^^^^ aarg !?? compatible with german??
 
 void importGermanLables(bool addLabels=false) {
 	bool modify_english=hasWord("autoeroticism");//english already there
@@ -2123,8 +2128,8 @@ void importWikiData() {
 //		importLabels("wikidata/wikidata-properties.en.nt");
 //	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
-	importN3("wikidata/wikidata-instances.nt.gz");
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
+	importN3("wikidata/wikidata-instances.nt.gz");
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
 //	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");

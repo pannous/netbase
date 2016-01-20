@@ -192,8 +192,8 @@ static const int _error= -666;//-1 = -evil in itself;//
 static const int _any=0;// !!!
 static const int _unknown=0;
 static const int _see= -50,//50 also, -40 similar
-	_Hypernym= -1,//SuperClass
-	_hyponym = -2,//SubClass
+	_Hypernym= -1,//SuperClass  bugs=>ARE=>animals
+	_hyponym = -2,//SubClass	animals=>i.e.=>bugs  (turn around!)
 	_Type= -3,
 	_instance= -4,
 	_ENTAILMENT= -21,// implies

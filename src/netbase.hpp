@@ -598,8 +598,8 @@ static int propertySlots=100000;// PROPERTY RELATION SLOTS >-1000 internal, <-10
 static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
 static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 100*million;
-static long maxStatements = maxNodes*3;
+static long maxNodes = 50*million;
+static long maxStatements = maxNodes*4;
 #endif
 
 //static long abstractHashSize = maxNodes*ahashSize;

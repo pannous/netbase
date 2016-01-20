@@ -394,7 +394,7 @@ Context * getContext(int contextId) {
 void showContext(Context * cp) {
 	if (quiet) return;
 	Context c=*cp;
-	cchar* format="Context#%d name:%s nodes:%d, statements:%d characters:%dl n#%p nN#%p s#%p\n";
+	cchar* format="Context#%d name:%s nodes:%d, statements:%d chars:%d n#%p nN#%p s#%p\n";
 	printf(format, c.id, c.name, c.nodeCount, c.statementCount,c.currentNameSlot, c.nodes, c.nodeNames, c.statements);
 	flush();
 }
@@ -1484,7 +1484,7 @@ void showStatement(Statement * s) {
         //        if(s->Object->value.number)
         //            printf("%d\t%s\t\t%s\t\t%g %s\t%d\t%d\t%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->value.number,s->Object->name, s->subject, s->predicate, s->object);
         //        else
-        printf("<%d>\t%s\t\t%s\t\t%s\t\t%d->%d->%d\n", s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->subject, s->predicate,
+        printf("<%d>\t%s\t\t%s\t\t%s\t\t%d=>%d=>%d\n", s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->subject, s->predicate,
                s->object);
 
 	else printf("#%d %d->%d->%d  [%p]\n", s->id(), s->subject, s->predicate, s->object, s);
