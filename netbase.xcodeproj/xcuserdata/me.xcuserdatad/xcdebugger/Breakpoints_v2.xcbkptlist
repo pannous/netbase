@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../cpp/netbase/src/netbase.cpp"
-            timestampString = "474920932.717602"
+            timestampString = "474994158.406215"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2588"
-            endingLineNumber = "2588"
+            startingLineNumber = "2585"
+            endingLineNumber = "2585"
             landmarkName = "setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances)"
             landmarkType = "7">
          </BreakpointContent>
@@ -40,11 +40,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../cpp/netbase/src/netbase.cpp"
-            timestampString = "474920932.717602"
+            timestampString = "474987564.307563"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1730"
-            endingLineNumber = "1730"
+            startingLineNumber = "1729"
+            endingLineNumber = "1729"
             landmarkName = "findStatement(Node* subject, Node* predicate, Node* object, int recurse, bool semantic, bool symmetric, bool semanticPredicate,bool matchName)"
             landmarkType = "7">
          </BreakpointContent>
@@ -104,27 +104,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474920932.717602"
+            timestampString = "474987564.307563"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1788"
-            endingLineNumber = "1788"
-            landmarkName = "deleteWord(const char* data, bool completely)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/netbase.cpp"
-            timestampString = "474920932.717602"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1778"
-            endingLineNumber = "1778"
+            startingLineNumber = "1777"
+            endingLineNumber = "1777"
             landmarkName = "deleteWord(const char* data, bool completely)"
             landmarkType = "7">
          </BreakpointContent>
@@ -136,11 +120,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/util.cpp"
-            timestampString = "474820705.954287"
+            timestampString = "474982951.654541"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "811"
-            endingLineNumber = "811"
+            startingLineNumber = "813"
+            endingLineNumber = "813"
             landmarkName = "readFile(const char* file,char* line)"
             landmarkType = "7">
          </BreakpointContent>
@@ -152,11 +136,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474987417.76514"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1336"
-            endingLineNumber = "1336"
+            startingLineNumber = "1348"
+            endingLineNumber = "1348"
             landmarkName = "importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true)"
             landmarkType = "7">
          </BreakpointContent>
@@ -168,11 +152,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474985942.267092"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "808"
-            endingLineNumber = "808"
+            startingLineNumber = "813"
+            endingLineNumber = "813"
             landmarkName = "importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow)"
             landmarkType = "7">
          </BreakpointContent>
@@ -184,11 +168,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474985942.267092"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "165"
-            endingLineNumber = "165"
+            startingLineNumber = "170"
+            endingLineNumber = "170"
             landmarkName = "importWordnetImages(cchar* file)"
             landmarkType = "7">
          </BreakpointContent>
@@ -200,11 +184,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474985942.267092"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "844"
-            endingLineNumber = "844"
+            startingLineNumber = "849"
+            endingLineNumber = "849"
             landmarkName = "importList(const char* file, const char* type)"
             landmarkType = "7">
          </BreakpointContent>
@@ -216,11 +200,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474985942.267092"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1051"
-            endingLineNumber = "1051"
+            startingLineNumber = "1056"
+            endingLineNumber = "1056"
             landmarkName = "importYago(const char* file)"
             landmarkType = "7">
          </BreakpointContent>
@@ -232,11 +216,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474985942.267092"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1064"
-            endingLineNumber = "1064"
+            startingLineNumber = "1069"
+            endingLineNumber = "1069"
             landmarkName = "importYago(const char* file)"
             landmarkType = "7">
          </BreakpointContent>
@@ -248,11 +232,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474987417.76514"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1445"
-            endingLineNumber = "1445"
+            startingLineNumber = "1474"
+            endingLineNumber = "1474"
             landmarkName = "getFreebaseEntity(char* name,bool fixUrls=true)"
             landmarkType = "7">
          </BreakpointContent>
@@ -264,11 +248,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474987417.76514"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1250"
-            endingLineNumber = "1250"
+            startingLineNumber = "1262"
+            endingLineNumber = "1262"
             landmarkName = "importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true)"
             landmarkType = "7">
          </BreakpointContent>
@@ -280,11 +264,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474987417.76514"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1380"
-            endingLineNumber = "1380"
+            startingLineNumber = "1392"
+            endingLineNumber = "1392"
             landmarkName = "importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true)"
             landmarkType = "7">
          </BreakpointContent>
@@ -296,11 +280,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474891096.728628"
+            timestampString = "474983756.112249"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "463"
-            endingLineNumber = "463"
+            startingLineNumber = "464"
+            endingLineNumber = "464"
             landmarkName = "getStatement(int id, int context_id)"
             landmarkType = "7">
          </BreakpointContent>
@@ -308,47 +292,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1478"
-            endingLineNumber = "1478"
-            landmarkName = "getFreebaseEntity(char* name,bool fixUrls=true)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474987417.76514"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1482"
-            endingLineNumber = "1482"
-            landmarkName = "getFreebaseEntity(char* name,bool fixUrls=true)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1315"
-            endingLineNumber = "1315"
+            startingLineNumber = "1327"
+            endingLineNumber = "1327"
             landmarkName = "importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altLabel=false,bool checkDuplicates=true)"
             landmarkType = "7">
          </BreakpointContent>
@@ -360,7 +312,23 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474902816.947011"
+            timestampString = "474983756.112249"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "544"
+            endingLineNumber = "544"
+            landmarkName = "checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/netbase.cpp"
+            timestampString = "474983756.112249"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "543"
@@ -376,27 +344,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474902819.995058"
+            timestampString = "474983756.112249"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "542"
-            endingLineNumber = "542"
-            landmarkName = "checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/netbase.cpp"
-            timestampString = "474902823.483287"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "551"
-            endingLineNumber = "551"
+            startingLineNumber = "552"
+            endingLineNumber = "552"
             landmarkName = "checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report)"
             landmarkType = "7">
          </BreakpointContent>
@@ -424,28 +376,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474920932.717602"
+            timestampString = "474987564.307563"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2500"
-            endingLineNumber = "2500"
+            startingLineNumber = "2499"
+            endingLineNumber = "2499"
             landmarkName = "getThe(Node* abstract, Node * type)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/netbase.cpp"
-            timestampString = "474920932.717602"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1811"
-            endingLineNumber = "1811"
-            landmarkName = "deleteNode(Node * n)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -456,11 +392,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
+            timestampString = "474987417.76514"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1581"
-            endingLineNumber = "1581"
+            startingLineNumber = "1595"
+            endingLineNumber = "1595"
             landmarkName = "importN3(cchar* file)"
             landmarkType = "7">
          </BreakpointContent>
@@ -471,28 +407,12 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/import.cpp"
-            timestampString = "474922521.699469"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1465"
-            endingLineNumber = "1465"
-            landmarkName = "getFreebaseEntity(char* name,bool fixUrls=true)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474916543.629985"
+            timestampString = "474987564.307563"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1347"
-            endingLineNumber = "1347"
+            startingLineNumber = "1351"
+            endingLineNumber = "1351"
             landmarkName = "rdfValue(char* name)"
             landmarkType = "7">
          </BreakpointContent>
@@ -504,11 +424,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474916558.413415"
+            timestampString = "474987564.307563"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1878"
-            endingLineNumber = "1878"
+            startingLineNumber = "1877"
+            endingLineNumber = "1877"
             landmarkName = "value(const char* name, double v, Node* unit"
             landmarkType = "7">
          </BreakpointContent>
@@ -520,11 +440,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "474916566.565304"
+            timestampString = "474987564.307563"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1337"
-            endingLineNumber = "1337"
+            startingLineNumber = "1341"
+            endingLineNumber = "1341"
             landmarkName = "rdfValue(char* name)"
             landmarkType = "7">
          </BreakpointContent>
@@ -535,13 +455,29 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/query.cpp"
-            timestampString = "474977024.462555"
+            filePath = "src/netbase.cpp"
+            timestampString = "474983750.586085"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "930"
-            endingLineNumber = "930"
-            landmarkName = "all_instances3(Node* type, int recurse, int max, bool includeClasses)"
+            startingLineNumber = "623"
+            endingLineNumber = "623"
+            landmarkName = "add(const char* key, const char* nodeName)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/netbase.cpp"
+            timestampString = "474987630.733993"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "643"
+            endingLineNumber = "643"
+            landmarkName = "add(const char* nodeName, int kind, int contextId)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -551,13 +487,45 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/query.cpp"
-            timestampString = "474977046.277561"
+            filePath = "src/netbase.cpp"
+            timestampString = "474987998.307864"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "914"
-            endingLineNumber = "914"
-            landmarkName = "all_instances3(Node* type, int recurse, int max, bool includeClasses)"
+            startingLineNumber = "593"
+            endingLineNumber = "593"
+            landmarkName = "checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/tests.cpp"
+            timestampString = "474988545.284664"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "554"
+            endingLineNumber = "554"
+            landmarkName = "testStringLogic()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/init.cpp"
+            timestampString = "474994028.919679"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "530"
+            endingLineNumber = "530"
+            landmarkName = "initContext(Context* context)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

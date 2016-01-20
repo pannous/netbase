@@ -10,6 +10,7 @@
 Node* Error;
 Node* Unknown;
 Node* See;
+Node* Similar;
 Node* Any;// QUERY ONLY!
 Node* Pattern; // temporary QUERY ONLY!
 //Node* IS; // QUERY ONLY! TypeOrParent
@@ -136,7 +137,7 @@ Node* addRelation(int id, const char* name,bool transitive=false) {
 void initRelationsDE() {
 	Error = addRelation(_error, "Fehler");
 	Unknown = addRelation(_unknown, "?");
-	See = addRelation(_see, "Siehe");
+	See = addRelation(_see_also, "Siehe");
 	Antonym = addRelation(_antonym, "Gegenteil");
     //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "Attribut"); // tag
@@ -177,25 +178,25 @@ void initRelationsDE() {
 	addRelation(_VERB_GROUP, "Verb Gruppe");
 	//	RELATIONSHIP_COUNT =
     //	addRelation(25, "RELATIONSHIP_COUNT");
-	addRelation(97, "Domaine");
-	addRelation(98, "Hat");
+	addRelation(_DOMAIN, "Domaine");
+	addRelation(_DOMAIN_MEMBER, "Hat");
 	//	 Synonym = Relation(32, "synonym");// -> 21????? See see | tag
 	Type = addRelation(_Type, "Typ");// is_transitive?? // (instance->class) !=SuperClass
 	Instance = addRelation(_instance, "Instanz",is_transitive);
     
-   	Weight = addRelation(31, "Gewicht");
-	Active = addRelation(35, "Activ");
-	Passive = addRelation(36, "Passiv");
-	Tag = addRelation(37, "tag"); // different to 'unknown' !!
-	Label = addRelation(38, "Label");
-	Labeled = addRelation(39, "Label von");
-	addRelation(40, "aehnlich");// hypernym?? no synonym
-	addRelation(50, "auch");// hypernym??
-	Category = addRelation(43, "Kategorie"); // tag
-	SubContext = addRelation(44, "Subcontext"); // tag
-	SuperContext = addRelation(45, "Supercontext"); //
-	Comment = addRelation(46, "Kommentar");
-	Description = addRelation(49, "Beschreibung");
+   	Weight = addRelation(_weight, "Gewicht");
+	Active = addRelation(_active, "Activ");
+	Passive = addRelation(_passive, "Passiv");
+	Tag = addRelation(_tag, "tag"); // different to 'unknown' !! / label ?
+	Label = addRelation(_label, "Label");
+	Labeled = addRelation(_labeled, "Label von");
+	Similar = addRelation(_similar, "aehnlich");// hypernym?? no synonym
+//	See  = 	addRelation(_see_also, "auch");// hypernym??
+	Category = addRelation(_category, "Kategorie"); // tag
+	SubContext = addRelation(_subcontext, "Subcontext"); // tag
+	SuperContext = addRelation(_supercontext, "Supercontext"); //
+	Comment = addRelation(_comment, "Kommentar");
+	Description = addRelation(_description, "Beschreibung");
 
 	Internal = addRelation(_internal, "intern"); //ok
 	_Node = addRelation(_node, "Knoten");
@@ -239,7 +240,7 @@ void initRelationsDE() {
 	Between = addRelation(_Between, "Between");
 	Circa = addRelation(_Circa, "Circa");
 	Much = addRelation(_Much, "much");
-	Little = addRelation(_Much, "little");
+	Little = addRelation(_Little, "little");
 	Very = addRelation(_Very, "very");
 	Contains = addRelation(_Contains, "Contains");
 	StartsWith = addRelation(_StartsWith, "starts with");
@@ -262,7 +263,7 @@ void initRelations() {
     currentContext()->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_unknown, "unknown");
-	See = addRelation(_see, "see also");
+	See = addRelation(_see_also, "see also");
 
 	bool is_transitive=true;
 	Instance = addRelation(_instance, "instance",is_transitive);
@@ -313,28 +314,27 @@ void initRelations() {
 	addRelation(_VERB_GROUP, "verb group");
 	//	RELATIONSHIP_COUNT =
 //	addRelation(25, "RELATIONSHIP_COUNT");
-	addRelation(97, "domain");
-	addRelation(98, "MEMBER");// ??
+	addRelation(_DOMAIN, "domain");
+	addRelation(_DOMAIN_MEMBER, "DOMAIN_MEMBER");// ??
 
 
-	Weight = addRelation(31, "weight");
-	//	 Synonym = Relation(32, "synonym");// -> 21????? See see | tag
+	Weight = addRelation(_weight, "weight");
 	Type = addRelation(_Type, "type");// is_transitive?? // (instance->class) !=SuperClass
-	Active = addRelation(35, "active");
-	Passive = addRelation(36, "passive");
-	Tag = addRelation(37, "tag"); // different to 'unknown' !!
-	Label = addRelation(38, "label");
-	Labeled = addRelation(39, "label of");
-	addRelation(40, "similar");// hypernym?? no synonym
-	addRelation(50, "also");// hypernym??
-	Description = addRelation(49, "description");
+	Active = addRelation(_active, "active");
+	Passive = addRelation(_passive, "passive");
+	Tag = addRelation(_tag, "tag"); // different to 'unknown' !!
+	Label = addRelation(_label, "label");
+	Labeled = addRelation(_labeled, "label of");
+	Similar= addRelation(_similar, "similar");// hypernym?? no synonym
+//	See =  addRelation(_see_also, "also");// hypernym??
+	Description = addRelation(_description, "description");
 
 	//	Labels = addRelation(40, "Label");//??
 	//	LabeledNode = addRelation(41, "LabeledNode");// ?? ugly!!
-	Category = addRelation(43, "category"); // tag
-	SubContext = addRelation(44, "subcontext"); // tag
-	SuperContext = addRelation(45, "supercontext"); //
-	Comment = addRelation(46, "comment");
+	Category = addRelation(_category, "category"); // tag
+	SubContext = addRelation(_subcontext, "subcontext"); // tag
+	SuperContext = addRelation(_supercontext, "supercontext"); //
+	Comment = addRelation(_comment, "comment");
 
 	// Node Types!
 	/*
@@ -387,7 +387,7 @@ void initRelations() {
 	Between = addRelation(_Between, "Between");
 	Circa = addRelation(_Circa, "Circa");
 	Much = addRelation(_Much, "much");
-	Little = addRelation(_Much, "little");
+	Little = addRelation(_Little, "little");
 	Very = addRelation(_Very, "very");
 	Contains = addRelation(_Contains, "Contains");
 	StartsWith = addRelation(_StartsWith, "starts with");
@@ -437,12 +437,12 @@ Node* invert(Node* relation) {
 	if (relation == SubContext)return SuperContext;
 	if (relation == SuperContext)return SubContext;
 
-	if (relation->id==40)return get(50);
-	if (relation->id==50)return get(40);
+	if (relation->id== _similar)return get(_see_also);
+	if (relation->id==_see_also)return get(_similar);// wtf ;)
 
 
-	if (relation->id==97)return get(98);
-	if (relation->id==98)return get(97);
+	if (relation->id==_DOMAIN_MEMBER)return get(_DOMAIN);
+	if (relation->id==_DOMAIN)return get(_DOMAIN_MEMBER);
 
 	if (relation->id==_DOMAIN_CATEGORY)return get(_MEMBER_DOMAIN_CATEGORY);
 	if (relation->id==_DOMAIN_REGION)return get(_MEMBER_DOMAIN_REGION);

@@ -303,6 +303,7 @@ typedef struct Context {
     char* nodeNames;
     long currentNameSlot;
     int nodeCount;
+    int lastFree;
     int extrahashNr;
     int statementCount; //first 1000 reserved!
     bool use_logic;

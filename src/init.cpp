@@ -23,6 +23,8 @@
 //const void * shmat_root = (const void *) 0x101000000; // mac 64 bitpointer to it: */
 #ifdef i386
 const void * shmat_root = (const void *) 0x10000000; // just higher than system Recommendation
+#elif MEGA_DEBUG
+const void * shmat_root=(const void *) 0x0248000000;// java !
 #else
 //const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
 //const void * shmat_root = (const void *) 0x0101000000; // just higher than system Recommendation
@@ -126,7 +128,7 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 		printf("FYI: root_memory != desired shmat_root %p!=%p \n", root, desired);
 //		fixPointers();
 	}
-	printf("share_memory at %p	size = %zX	max = %p\n", root, sizeOfSharedMemory, (char*) root + sizeOfSharedMemory);
+	pf("share_memory at %p	size = %zX	max = %p\n", root, sizeOfSharedMemory, (char*) root + sizeOfSharedMemory);
 	return root;
 }
 
@@ -230,10 +232,12 @@ extern "C" void init(bool relations) {
 	checkRootContext();
 	getContext(current_context);
     if(relations){
-	initRelations();
-	if (currentContext()->nodeCount < 1000)
-        currentContext()->nodeCount=1000;
-    }
+		initRelations();
+		if (currentContext()->lastFree < 0)
+			currentContext()->lastFree=1;
+//	if (currentContext()->lastFree < 1000)
+//        currentContext()->lastFree=1000;
+	}
 }
 
 void fixNodes(Context* context, Node* oldNodes) {
@@ -376,7 +380,7 @@ void fixPointers(Context* context) {
 }
 
 int collectAbstracts() {
-	ps("collecting abstracts");// int now
+	ps("collecting abstracts = buildAbstractHashes");// int now
 	initRelations();
 	memset(abstracts, 0, maxNodes*ahashSize * 2);
 	Context* c=currentContext();
@@ -459,7 +463,9 @@ bool clearMemory() {
     memset(name_root, 0, 100000); // for testing
 	memset(abstract_root, 0, maxNodes*ahashSize * 2);
 //	memset(abstracts, 0, maxNodes*ahashSize * 2);
-    currentContext()->nodeCount=1000;// 0 = ANY
+//    currentContext()->nodeCount=1000;// 0 = ANY
+    currentContext()->nodeCount=1;// 0 = ANY
+	currentContext()->lastFree=1;
     currentContext()->nodeNames=name_root;
     currentContext()->statementCount=1;// 0 = ERROR
     }
@@ -470,7 +476,7 @@ bool clearMemory() {
 }
 
 char* initContext(Context* context) {
-	printf("Initiating context %d\n", context->id);
+	pf("Initiating context %d\n", context->id);
 	Node* nodes=0;
 	Statement* statements=0;
 	char* nodeNames=0;
@@ -520,8 +526,14 @@ char* initContext(Context* context) {
 	context->nodes=nodes;
 	context->statements=statements;
 	context->nodeNames=nodeNames;
+	if(context->currentNameSlot<=0)
+		context->currentNameSlot=1;
 	if(context->statementCount==0)// ??
 		context->statementCount=1;// 0 = error
+	if(context->nodeCount<=0)
+		context->nodeCount=1;
+	if(context->lastFree<=0)
+		context->lastFree=1;
 //	px(context);
 //	px(nodes);
 //	px(nodeNames);

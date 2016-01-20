@@ -452,7 +452,7 @@ void loadView(Node* n){
 void loadView(char* q){
 	N ex=get("excluded");// globally
 	if(ex && verbosity != alle )getIncludes(ex);
-	ex=getAbstract(getAbstract(q)->name);// todo AND TYPE city
+	ex=getAbstract(q);// todo AND TYPE city
 	if(ex && verbosity != alle )getIncludes(ex);
 
 	char* exclude=q;

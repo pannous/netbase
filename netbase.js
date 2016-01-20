@@ -3,7 +3,7 @@
 
 var div=document.getElementById("netbase_results");
 var server="/html/"; // "http://quasiris.big:3333/html/";
-
+var filterIds=[-10646,-50,-10508];
 function br(){
 	div.appendChild( document.createElement("br"));
 }

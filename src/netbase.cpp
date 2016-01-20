@@ -127,9 +127,6 @@ bool checkHash(Ahash* ah) {
 	return true;
 }
 
-Ahash* insertAbstractHash(Node* a) {
-	return insertAbstractHash(wordhash(a->name), a);
-}
 
 void debugAhash(int position) {
 	Ahash* ah=&abstracts[position];
@@ -203,6 +200,10 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	if(!checkHash(ah))return 0;
 	ah->abstract=a->id;
 	return ah;
+}
+
+Ahash* insertAbstractHash(Node* a) {
+	return insertAbstractHash(wordhash(a->name), a);
 }
 
 inline bool eq(Statement* s,Statement* s2){
@@ -373,9 +374,9 @@ Context * getContext(int contextId) {
     context->statementArrays = (int*) malloc(maxStatements());
 #endif
 	initContext(context);
-	if (contextId == wordnet) context->nodeCount=1000; //sick hack to reserve first 1000 words!
-	else context->nodeCount=0;
-	context->statementCount=1; //1000;
+//	if (contextId == wordnet) context->lastFree=1; //sick hack to reserve first 1000 words!
+//	else context->nodeCount=0;
+//	context->statementCount=1; //1000;
 	strcpy(context->name, "Public");
 	//
 	//		printf("\nxx %d\n",context);// ==
@@ -589,7 +590,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 	if (checkNames && node->name == 0) {// WHY AGAIN??
 		bad();
 		if(report)
-		printf("node->name == 0 %p\n", node);
+			printf("node->name == 0 %p\n", node);
 		return false;
 	}
 	if (checkNames && (node->name < c->nodeNames || node->name >= &c->nodeNames[averageNameLength * maxNodes])) {
@@ -630,16 +631,19 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 #ifndef DEBUG
 	if (!nodeName) return 0;
 #endif
-    contextId=wordnet;
-	Context* context=getContext(contextId);
-	Node* node=&(context->nodes[context->nodeCount]);
-	if (context->nodeCount > maxNodes) {
-		pf("context->nodeCount > maxNodes %d>%ld ",context->nodeCount ,maxNodes);
-		p("MEMORY FULL!!!");
+	Context* context=currentContext();
+	Node* node;
+	do{
+		context->lastFree++;// DON't MOVE!
+		node=&(context->nodes[context->lastFree]);
+		if (context->lastFree >= maxNodes - propertySlots) {
+			pf("context->lastFree > maxNodes %d>%ld ",context->lastFree ,maxNodes);
+			p("MEMORY FULL!!!");
         //		exit(1);
-		return 0;
-	}
-    initNode(node, context->nodeCount, nodeName, kind, contextId);
+			return Error;
+		}
+	}while(node->id!=0);
+    initNode(node, context->lastFree, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == abstractId|| kind == singletonId) return node;
 	addStatement(getAbstract(nodeName), Instance, node, false);// done in initNode//setLabel !
@@ -1409,11 +1413,6 @@ Node* rdfValue(char* name) {
 	return value(name, atof(name), unity);
 }
 
-Node* getPropertyDummy(const char* id) {
-	N p=getAbstract(id);
-	p->kind=propertyId;
-	return p;
-}
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
 Node* getAbstract(const char* thing) {			// AND CREATE!
@@ -1549,7 +1548,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	if (showStatements) {
 		Statement* s=0;
 		while ((s=nextStatement(n, s))) {
-			if (i++ > resultLimit) break;
+			if (i++ >= resultLimit) break;
 			if (checkStatement(s)) showStatement(s);
             else pf("NOOOOO! BROKEN STATEMENT: %p",s);
 		}
@@ -1812,7 +1811,7 @@ void deleteNode(Node * n) {
         }
 		deleteStatements(n);
 	}else{ //!!
-		N a=getAbstract(n->name);
+//		N a=getAbstract(n->name);
 		deleteStatements(n);
         memset(n, 0, sizeof(Node)); // hole in context!
 	}
@@ -2555,21 +2554,19 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
     int len=(int)strlen(label);
     Context* c=currentContext();
 	char* newLabel = name_root + c->currentNameSlot;
-    if(!n->name || !strlen(n->name)){
-        n->name=newLabel;// c->currentNameSlot;
-        if(!addInstance)n->kind=abstractId;
-        //        addInstance=true;// unless abstract
-    }
-    else if(eq(n->name, label,false))return;
+//    if(!n->name || !strlen(n->name)) n->name=newLabel;// prepare to write
+//    else
+	bool hasName=n->name && n->name>=c->nodeNames;
+	if(hasName && eq(n->name, label,false))return;
 
-	if (strlen(n->name)>=len){// reuse! NOT when sharing char*s !!
+	if(hasName && strlen(n->name)>=len){// reuse! NOT when sharing char*s !!
         strcpy(n->name, label);
         n->name[len]=0;
     }else{
         strcpy(newLabel, label);
         int len=(int)strlen(label);
-        newLabel[len]=0;
-        n->name=newLabel;// c->currentNameSlot;
+        newLabel[len]=0;// be sure!
+        n->name=newLabel;//
         c->currentNameSlot+=len + 1;
     }
 	if (n->kind == _internal)return;
@@ -2583,9 +2580,12 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
         //        else
 		//            mergeNode(getAbstract(label),n);
 	} else {
-		Node* a=getAbstract(label);
-		if(addInstance)
+		if(addInstance){
+			Node* a=getAbstract(label);
 			addStatement(a, Instance, n);
+		}
+		else
+			n=n;// all good
 	}
     //    p(n);
     //    return n->name;
@@ -2594,15 +2594,14 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
 bool checkParams(int argc, char *argv[], const char* p) {
 	string minus="-";
 	string colon=":";
+	string slash="/";
 	string equals="=";
 	for (int i=1; i <= argc; i++) {
 		if (eq(argv[i], p)) return true;
-		if (eq(argv[i], (colon + p[0]).c_str())) // import
-			return true;
+//		if (startsWith(argv[i], (slash+p).c_str()))return true;
+		if (eq(argv[i], (colon + p[0]).c_str()))return true; // import
 		if (eq(argv[i], (minus + p).c_str())) return true;
-		if (eq(argv[i], (minus + minus + p).c_str()))
-
-            return true;
+		if (eq(argv[i], (minus + minus + p).c_str()))return true;
 	}
 	return false;
 }
@@ -2720,6 +2719,17 @@ int main(int argc, char *argv[]) {
 
 	//	path=sprintf("%s/data",path);
 	if (checkParams(argc, argv, "quiet")) quiet=true;
+
+	if (checkParams(argc, argv, "query")||checkParams(argc, argv, "select")) {
+		quiet=true;
+		init();
+		load();
+//		quiet=false;
+		const char* query=(const char*)cut_to(cut_to(join(argv, argc).data(), "query "),"select");
+		parse(query);
+		exit(0);
+	}
+
 	if (checkParams(argc, argv, "quit")) exit(0);
 
 	init();
@@ -2727,12 +2737,6 @@ int main(int argc, char *argv[]) {
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
 
-	if (checkParams(argc, argv, "query")) {
-		load();
-		parse((const char*)cut_to(join(argv, argc).data(), "query "));
-		exit(0);
-		//        import();
-	}
 
 	if (checkParams(argc, argv, "import")) {
         if (checkParams(argc, argv, "all")||argc<2)
@@ -2773,3 +2777,4 @@ int main(int argc, char *argv[]) {
 	//    } catch (std::exception const& ex) {
 }
 // _MAIN_ ^^^
+

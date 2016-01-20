@@ -68,6 +68,11 @@ bool checkLowMemory() {
 		pf("%d nodes!\n", currentContext()->nodeCount);
 		return true;
 	}
+	if (currentContext()->lastFree + 30000 > maxNodes) {
+		p("OUT OF MEMORY!");
+		pf("%d nodes!\n", currentContext()->lastFree);
+		return true;
+	}
 	if (currentContext()->currentNameSlot + 300000 > maxNodes * averageNameLength) {
 		p("OUT OF MEMORY!");
 		pf("%ld characters!\n", currentContext()->currentNameSlot);
@@ -1173,6 +1178,8 @@ bool importWikiLabels(cchar* file,bool properties=false){
 	char* test0=(char*) malloc(10000);
 	char* test;
 	int linecount=0;
+	Context* context=currentContext();
+	bool english=contains(file, ".en.");
 	while (readFile(file,&line[0])) {
 		if (++linecount % 10000 == 0) {
 			printf("%d labels, %d bad\r", linecount, badCount);
@@ -1192,20 +1199,25 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		if(test[0]=='<')test++;
 		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label");
 		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
-		if(germanLabels && !endsWith(line,"@de ."))continue;
-		if(!germanLabels&& !endsWith(line,"@en ."))continue;		key=dropUrl(key);
+		if(germanLabels && !english && !endsWith(line,"@de ."))continue;
+		if(!(germanLabels || english) &&!endsWith(line,"@en ."))continue;
 		if(startsWith(test, "altLabel"))continue;//for now!
 		if(startsWith(test, "description"))continue;//for now!
 		fixLabel(label);
 		if(!label || label[0]==0){bad();continue;}
 		label=dropUrl(label);
+		key=dropUrl(key);
 		int id=atoi(key+1);
 //		if(properties)id=(int)maxNodes-id;
 		if(properties)id=-10000-id;
-		if(id<maxNodes-propertySlots){
-			N n=add_force(0, id, label, abstractId);
+		if(id<maxNodes/2-propertySlots){
+			Node* node=&context->nodes[id];
+			if(english&&node->name)
+				continue;
+			initNode(node, id, label, _entity, 0);// _entity -> class later
+//			N n=add_force(0, id, label, abstractId);
 //			getAbstract(<#const char *word#>)
-			insertAbstractHash(n);
+			insertAbstractHash(node);// HAACK!
 		}
 		else bad();
 	}
@@ -1425,8 +1437,25 @@ Node *dissectFreebase(char* name) {
 	return n;
 }
 
+
 map<long,Node*>complex_values;
 int MISSING=0;
+
+
+Node* getPropertyDummy(const char* id) {
+	//	N p=getAbstract(id);
+	long hash=freebaseHash(id);
+	N p=complex_values[hash];
+	if(p)
+		return p;
+	p=add("◊");
+	p->kind=propertyId;
+	complex_values[hash]=p;
+	return p;
+}
+
+
+
 Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	if (name[0] == '<') {
 		name++;
@@ -1460,7 +1489,10 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 
 	cut_to(name," (");
 //	if(name[0]!='0'){// ECHSE
-	if(name[0]=='Q'){//  && name[1]<='9'
+
+	if((name[0]=='V' && name[1]<='C') || (name[0]=='n' && name[1]<='m'))
+			return getPropertyDummy(name);// DUMMY!
+	if(name[0]=='Q' && name[1]<='9'){
 		if(contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
 		int id=atoi(name+1);
@@ -1472,24 +1504,6 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 		int kei=-atoi(name+1)-10000;
 		return get(kei);
 	}
-	long hash=freebaseHash(name);
-	N n=complex_values[hash];
-	if(n)
-		return n;
-	else if((name[0]=='Q' || name[0]=='P') && name[1]<='9'){// WIKIDATA Q12345!!!
-		if (contains(name, '-')) {
-			n=add("◊");
-			complex_values[hash]=n;
-			return n;
-		}
-			#ifdef __APPLE__
-				return getThe("MISSING");// only 1M labels for now
-			#endif
-			bad();// later;
-			appendFile("missing.list",name);
-			return 0;// ignore unlabled!  i.e. https://www.wikidata.org/wiki/Q13983582
-		}
-//	}
 	bool useFreebase=false;
 	// skip <m. but  LEAVE THE >
 	if (useFreebase&& (startsWith(name, "m.") || startsWith(name, "g."))) {
@@ -1993,7 +2007,7 @@ void importWordnet() {
 	if(germanLabels)
 		importGermanLables();
 	importSenses();
-	getContext(wordnet)->nodeCount=synonyms; //200000+117659;//WTH!
+	getContext(wordnet)->lastFree=synonyms; //200000+117659;//WTH!
 	importSynsets();
 	importDescriptions();// English!
 	importStatements();
@@ -2116,16 +2130,21 @@ void importWikiData() {
 	importing=true;
 //	doDissectAbstracts=false; // if MAC
 	//		importLabels("dbpedia_de/labels.csv");
+//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
+//	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
 	if(germanLabels){
 		importWikiLabels("wikidata/wikidata-terms.de.nt");
 		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
+		showContext(current_context);
+		currentContext()->lastFree=(int)maxNodes/2;// hack
+		collectAbstracts();
 //		importLabels("wikidata/wikidata-properties.de.nt");
 //		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
 
 	}
 //	else{
-//		importLabels("wikidata/wikidata-terms.en.nt",false,true,false);// fill up missing ONLY!
-//		importLabels("wikidata/wikidata-properties.en.nt");
+//		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
+//		importWikiLabels("wikidata/wikidata-properties.en.nt",true);
 //	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");

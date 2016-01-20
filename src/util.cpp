@@ -31,11 +31,11 @@ bool assert(bool test, cchar* what) { // bool nix gut
 
 
 bool isInteger(const char* buf) {
-	return strlen(buf) == strspn(buf, "0123456789");
+	return strlen(buf) == strspn(buf, "-0123456789");
 }
 
 bool isNumber(const char* buf) {
-	return strlen(buf) == strspn(buf, "0123456789,.");
+	return strlen(buf) == strspn(buf, "-0123456789,.");// 2E19
 }
 
 string next_word(string data) {
@@ -251,7 +251,9 @@ bool startsWith(const char* x, const char* y) {
 bool startsWith(string* x, const char* y) {
 	return (int)x->find(y) >= 0;
 }
-
+bool startsWith(string* x, string* y) {
+	return (int)x->find(y->c_str()) >= 0;
+}
 
 const char* concat(const char* a,const  char* b){
 	int la=(int)strlen(a);

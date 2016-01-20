@@ -47,7 +47,7 @@ bool contains(vector<char*>& all,char* node);
 bool contains(string x,const char* y);
 bool isNumber(const char* buf);
 bool isInteger(const char* buf);
-#define pf(x,...) printf(x, __VA_ARGS__)
+#define pf(x,...) if(!quiet){printf(x, __VA_ARGS__);}
 void ps(const char* s);
 void ps(string s);// string geht nicht!?!
 void ps(string* s);
@@ -107,8 +107,8 @@ string itoa(int i);
 void appendFile(const char* fileName,const char* data);
 
 #define check(assertion) pf("TEST %s\n",#assertion);\
-	if(assertion)pf("PASSED %s\n",#assertion);\
-	else{pf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
+	if(assertion)printf("PASSED %s\n",#assertion);\
+	else{printf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
 
 #define assertEquals(a,b) printf("TEST %s==%s\n",#a,#b);\
 	if(eq(a,b))p("PASSED\n");else{p(a);p("!=");p(b);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}

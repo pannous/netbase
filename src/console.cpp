@@ -260,7 +260,7 @@ NodeVector parse(const char* data) {
 	if (contains(data, "limit")||contains(data, ":limit")) {
 		char* limit=(char*)strstr(data,"limit");
 		sscanf(limit, "limit %d", &resultLimit);
-		pf("LIMIT SET TO %d\n",resultLimit);
+		pf("LIMIT SET TO %d\n",resultLimit);// quiet bug
 		lookupLimit=resultLimit*10;//todo
 		if(limit>data) *(limit-1)=0;
 		*limit=0;
@@ -536,7 +536,7 @@ NodeVector parse(const char* data) {
 	int i=atoi(data);
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
-	if(autoIds && i)return nodeVectorWrap(get(i));
+//	if(autoIds && i)return nodeVectorWrap(get(i));
 	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
 
 	Node* a=get(data);
