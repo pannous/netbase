@@ -63,7 +63,7 @@ bool checkLowMemory() {
 		return true;
 	}
 	//		|| currentSize*1.2>sizeOfSharedMemory||
-	if (currentContext()->nodeCount + 20000 > maxNodes) {
+	if (currentContext()->nodeCount + 30000 > maxNodes) {
 		p("OUT OF MEMORY!");
 		pf("%d nodes!\n", currentContext()->nodeCount);
 		return true;

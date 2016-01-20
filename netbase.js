@@ -48,9 +48,9 @@ function makeLink(name,url,elem)
 	return a; 
 }
 
-function fixUmlauts(x) {
-    return x.replace(/ u([0-9A-Fa-f]{4})/g, function() { return String.fromCharCode(parseInt(arguments[1], 16)); })
-};
+// function fixUmlauts(x) {
+//     return x.replace(/ u([0-9A-Fa-f]{4})/g, function() { return String.fromCharCode(parseInt(arguments[1], 16)); })
+// };
 
 function makeStatement(statement,elem)
 {
@@ -60,13 +60,13 @@ function makeStatement(statement,elem)
 	makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
 	predicate=	makeRow(top)
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete $"+statement.id,predicate).style=tiny;
-	makeLink(fixUmlauts(statement.predicate),server+statement.pid,predicate);
+	makeLink(statement.predicate,server+statement.pid,predicate);
 	makeLink(" ^",clean(document.URL).replace(/html/,"html/short")+"."+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" -",document.URL+" -"+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" +",statement.sid+" include "+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
-	x=makeLink(fixUmlauts(statement.object),server+statement.oid,makeRow(top));
+	x=makeLink(statement.object,server+statement.oid,makeRow(top));
 	makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
 	elem.appendChild(top);
 	if(statement.predicate=="quasiris id")throw new Exception(); 

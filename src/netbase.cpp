@@ -2610,7 +2610,8 @@ bool checkParams(int argc, char *argv[], const char* p) {
 string formatImage(Node* image,int size,bool thumb){
 	if (!image || !checkNode(image)) return "";
     char* name=replaceChar(image->name,' ','_');
-	if(startsWith(name, "File:")) name+=5;
+	char* start=strstr(name, "File:");
+	if(start) name=start+5;
 	string hash=md5(name);
 	string base="http://upload.wikimedia.org/wikipedia/commons/";
     if(!thumb)	return base + hash[0] + "/" + hash[0] + hash[1] + "/" +  name;
