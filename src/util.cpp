@@ -2,7 +2,7 @@
 #include <string>
 #include <vector>
 using namespace std;
-
+#include <algorithm> // sort
 // malloc, exit:
 #include <cstdlib>
 // strcmp
