@@ -1709,7 +1709,7 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 //	if(!hasWord("bug"))importWordnet();
 
-	importWikiData();
+//	importWikiData();
 	//	handle("/41172206");
 //	handle("/90962");
 //	handle(":server");
