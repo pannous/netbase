@@ -1202,6 +1202,9 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		if(startsWith(test, "description"))continue;//for now!
 		fixLabel(label);
 		if(!label || label[0]==0){bad();continue;}
+		if(contains(key, '-')){
+			bad();continue;// doesn't happen
+		}
 		label=dropUrl(label);
 		key=dropUrl(key);
 		int id=atoi(key+1);
@@ -1496,10 +1499,14 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 		if(contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
 		int id=atoi(name+1);
-		if(id>maxNodes-propertySlots)return Missing;// bad() counted before
+		if(id>maxNodes/2)//-propertySlots)
+			return getPropertyDummy(name);
+//			return Missing;// bad() counted before
 		if(id>0)return getNode(id);
 	}
 	if(name[0]=='P' && name[1]<='9'){
+		if(contains(name, '-'))// "P2430S28b08e46-49c5-061b-4035-1142c2c62e62"
+			return getPropertyDummy(name);// DUMMY!
 //		return getNode((int)maxNodes-atoi(name+1));
 		int kei=-atoi(name+1)-10000;
 		return get(kei);
@@ -1567,9 +1574,9 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	Node* object;
 	int ignored=0;
 	badCount=0;
-	char* objectName=(char*) malloc(10000);
-	char* predicateName=(char*) malloc(10000);
 	char* subjectName=(char*) malloc(10000);
+	char* predicateName=(char*) malloc(10000);
+	char* objectName=(char*) malloc(10000);
 	int linecount=0;
 	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD!!!!!!!!!!!!!!!
 	char line[MAX_CHARS_PER_LINE];
@@ -1643,10 +1650,14 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			object=t;
 		}
 
-		if (!subject || !predicate || !object || !subject->id || !predicate->id || !object->id || subject==Error) {// G.o.d. dot problem !?
+		if (!subject || !predicate || !object ||
+			!subject->id || !predicate->id || !object->id ||
+			subject==Error || predicate==Error || object==Error ) {// G.o.d. dot problem !?
+			// KEEP MISSING
 			//            printf("_"); // ignored
 //			subject=getFreebaseEntity(subjectName);
-			bad(); // subject->id ==0 ZB Q5 (no German!) OK
+//			if(!subject)// try again / debug
+				bad(); // subject->id ==0 ZB Q5 (no German!) OK
 		} else {
 			//            else// Statement* s=
 			if(endsWith(objectName, "#Class"))
