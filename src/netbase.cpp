@@ -158,6 +158,8 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
     if(a==0)
         return 0;
+	if(a==Error)
+		return 0;
 	Ahash* ah=getAhash(position);
 	if (!checkHash(ah) || !checkNode(a) || !a->name || !strlen(a->name)) return 0;
 	int i=0;
@@ -1438,6 +1440,7 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
 	//	collectAbstractInstances(abstract am Ende);
 	return abstract;
 }
+
 void collectAbstractInstances(Node* abstract) {
 	Context* c=getContext(current_context);
 	for (int i=0; i < c->nodeCount; i++) {
@@ -1584,7 +1587,9 @@ NodeVector* findWords(int context, const char* word, bool first,bool containsWor
 }
 
 NodeVector* findAllWords(const char* word) {
-    return findWords(current_context,word,false,false);
+    NodeVector* all=findWords(current_context,word,false,false);
+	collectAbstractInstances(getAbstract(word));
+	return all;
 }
 NodeVector* findAllMatches(const char* word) {
     return findWords(current_context,word,false,true);

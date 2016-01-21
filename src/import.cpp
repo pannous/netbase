@@ -1660,8 +1660,10 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 				bad(); // subject->id ==0 ZB Q5 (no German!) OK
 		} else {
 			//            else// Statement* s=
-			if(endsWith(objectName, "#Class"))
+			if(object==Class|| endsWith(objectName, "#Class"))
 				subject->kind=_clazz;
+			else if(object==Entity||endsWith(objectName, "#Entity"))
+					subject->kind=_entity;
 			else
 				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 		}

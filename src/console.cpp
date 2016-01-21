@@ -326,7 +326,7 @@ NodeVector parse(const char* data) {
 	}
     //    Ch��teau
 	if (eq(args[0], ":all"))
-		return *findAllWords(data + 9);
+		return *findAllWords(data + 5);
 	if (eq(args[0], ":matches"))
 		return *findWords(wordnet, data + 13, false,true);
 	if (eq(args[0], ":find"))

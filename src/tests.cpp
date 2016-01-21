@@ -183,11 +183,11 @@ void testBasics() {
 	addStatement4(-1, -2, -3, -4);
 	assert(c->statementCount == statementCount, "c.statementCount==1");
 
-    //#ifdef inlineName // todo!
-//	Node* instance=getThe("instance");
-//	Node* instance2=getThe("instance");
-//	assert(instance == instance2, "instance==instance2"); //  it failes when strings are lost
-//#endif
+	//#ifdef inlineName // todo!
+	//	Node* instance=getThe("instance");
+	//	Node* instance2=getThe("instance");
+	//	assert(instance == instance2, "instance==instance2"); //  it failes when strings are lost
+	//#endif
 	// todo: Important! keep Context string pool in other .cpp object files!!!!!
 	//#define inlineName true no good resolution!
 	//	assert(instance==Instance,"instance==Instance");
@@ -199,63 +199,63 @@ void testBasics() {
 }
 
 void testGeoDB(){
-    
-//    if(nodeCount()<100000)
-		importGeoDB();
-    //        execute("import ./import/cities1000.txt");
 
-    defaultLookupLimit=100000;
+	//    if(nodeCount()<100000)
+	importGeoDB();
+	//        execute("import ./import/cities1000.txt");
+
+	defaultLookupLimit=100000;
 	das(Gehren);
-    show((Gehren));
+	show((Gehren));
 	N latitude=getProperty(Gehren, "Latitude");//Gehren.Latitude
 	p(latitude);
 	check(checkNode(latitude));
 	p(latitude->value.number);
 	check(latitude->value.number==50.65);
-    NV all;
-    NodeVector cities=all_instances(getThe("city"),1);
+	NV all;
+	NodeVector cities=all_instances(getThe("city"),1);
 	check(cities.size()>10);
 	all=query("city where elevation=141");
-//	all=query("city where Elevation=141");
-    check(all.size()>0);
+	//	all=query("city where Elevation=141");
+	check(all.size()>0);
 	N elevation=getProperty(all[0],"Elevation");
 	p(elevation);
 	N e141=getThe("141");
 	p(e141->value.number);
 	check(getThe("141")->value.number==141.)
 	check(elevation->value.number==141.);
-//	check(e141==elevation);// Stored in ABSTRACT!
-    all=query("city where latitude=50.65");// todo: filter backwards!! 50.65<-latitude<-[city?] !
-    check(all.size()>2);
-    show(all[2]);
-    latitude=getProperty(all[2],"latitude");
+	//	check(e141==elevation);// Stored in ABSTRACT!
+	all=query("city where latitude=50.65");// todo: filter backwards!! 50.65<-latitude<-[city?] !
+	check(all.size()>2);
+	show(all[2]);
+	latitude=getProperty(all[2],"latitude");
 	p(latitude);
 	p(latitude->value.number);
-//    check(latitude->value.number==50.65);// TOTO FOX
+	//    check(latitude->value.number==50.65);// TOTO FOX
 
-    all=query("city where population=3703");
-    check(all.size()>0);
-//    showNodes(all);
-    show(all[0]);
-    N population=getProperty(all[0],"population");
-    check(population->value.number==3703);
-    
-    all=query("all city with countrycode=AD");
-    check(all.size()>0);
-        show(all[0]);
-    N countrycode=getProperty(all[0],"countrycode");
-    check(eq(countrycode->name,"AD"));
+	all=query("city where population=3703");
+	check(all.size()>0);
+	//    showNodes(all);
+	show(all[0]);
+	N population=getProperty(all[0],"population");
+	check(population->value.number==3703);
+
+	all=query("all city with countrycode=AD");
+	check(all.size()>0);
+	show(all[0]);
+	N countrycode=getProperty(all[0],"countrycode");
+	check(eq(countrycode->name,"AD"));
 
 	NV all_plural=query("all cities with countrycode=AD");// plural
-    check(all_plural.size()>0);
+	check(all_plural.size()>0);
 	check(all[0]==all_plural[0])
-//    all=query("all city with countrycode AD");
-//    check(all.size()>0);
-//        show(all[0]);
-//    countrycode=getProperty(all[0],"countrycode");
-//    check(eq(countrycode->name,"AD"));
-    
-    
+	//    all=query("all city with countrycode AD");
+	//    check(all.size()>0);
+	//        show(all[0]);
+	//    countrycode=getProperty(all[0],"countrycode");
+	//    check(eq(countrycode->name,"AD"));
+
+
 
 }
 
@@ -306,9 +306,9 @@ void testDummyLogic() {
 	Statement* s4=addStatement(CEO, Instance, karsten);
 	check(eq(karsten->name, "karsten"));
 	Statement* s4a=addStatement(manager, SubClass, CEO);
-//    Statement* s4a = addStatement(CEO, SuperClass, manager);
+	//    Statement* s4a = addStatement(CEO, SuperClass, manager);
 	Statement* s4b=addStatement(manager, is, a(worker));
-    s1=s2=s2a=s3=s4=s4a=s4b=0;// as a counter measure against warnings
+	s1=s2=s2a=s3=s4=s4a=s4b=0;// as a counter measure against warnings
 	check(isA(CEO, manager));
 	clearAlgorithmHash();
 	check(isA(karsten, CEO));
@@ -440,7 +440,7 @@ void testDummyLogic() {
 	check(last(cuties) == beth);
 	assert(allInstances(people).size() > 0, "all_instances(people)>0");
 	assert(find_all("people", current_context, true).size() > 1, "find_all(people)>1");
-//	check(contains(allInstances(people), beth));
+	//	check(contains(allInstances(people), beth));
 	NodeVector all=find_all("people", current_context, true);
 	check(contains(all, beth));
 	//    check(isA(beth,cute));
@@ -564,15 +564,15 @@ void testInstancesAtEnd() {
 	Node* o=getThe("testInstancesAtEndO");
 	addStatement(t, Type, o,!CHECK_DUPLICATES);
 	addStatement(t, Instance, o,!CHECK_DUPLICATES);
-//	S s=addStatement(t, p, o, true);
+	//	S s=addStatement(t, p, o, true);
 	S s=addStatement(t, Instance, o, false,false);
 	addStatement(t, p, o, false,false);// warning: addStatementToNode skipped
-//	addStatement(t, Type, o, false); types up too
-    showStatement(s);
-    printf("%d %d\n",t->lastStatement,s->id());
-    show(t);
-    printf("%p %p\n",getStatement(t->lastStatement),s);
-//	check(t->lastStatement == s->id());
+	//	addStatement(t, Type, o, false); types up too
+	showStatement(s);
+	printf("%d %d\n",t->lastStatement,s->id());
+	show(t);
+	printf("%p %p\n",getStatement(t->lastStatement),s);
+	//	check(t->lastStatement == s->id());
 }
 void testInsertForceStart() {
 	Node* t=getThe("testInsertForceStart1");
@@ -592,8 +592,8 @@ void testInsertForceStart() {
 }
 
 void testStringLogic2() {
-//    NV t= parse("label 4557271 woooot");
-//    check(eq(t[0]->name,"woooot"));// OK
+	//    NV t= parse("label 4557271 woooot");
+	//    check(eq(t[0]->name,"woooot"));// OK
 	eine(Schlacht);
 	Node* Schlacht_bei_Guinegate=getThe(editable("Guinegate_(14791),_Schlacht_bei")); // intellij display bug!
 	//    deleteNode(Schlacht_bei_Guinegate);
@@ -639,12 +639,12 @@ void testHash() {
 	Node* city=getAbstract(thing);
 	ps(city->name);
 	check(eq(city->name, "city"));
-    //	insertAbstractHash(wordhash(Circa->name), Domain);
-    //	insertAbstractHash(Circa);
-    //#ifdef inlineName
-    //	Node* a2 = getAbstract(Circa->name);
-    //	check(a2 == Circa);
-    //#endif
+	//	insertAbstractHash(wordhash(Circa->name), Domain);
+	//	insertAbstractHash(Circa);
+	//#ifdef inlineName
+	//	Node* a2 = getAbstract(Circa->name);
+	//	check(a2 == Circa);
+	//#endif
 }
 
 void testImportContacts() {
@@ -680,8 +680,8 @@ void testImportExport() {
 	 c->nodeCount=nodeCount;
 	 save();
 	 */
-//    if (!hasWord("male firstname")||!hasWord("female firstname"))
-        importNames();
+	//    if (!hasWord("male firstname")||!hasWord("female firstname"))
+	importNames();
 	//	deleteStatements(a(female firstname));
 	//	p(a(female firstname));
 	//	addStatement(a(female firstname),Instance,the(female firstname),false);// bug hack
@@ -708,17 +708,17 @@ void testImportExport() {
 	//	check(all_instances(a(female firstnames)).size()>5);// plural in system OK
 
 
-    //	addStatement(all(female firstname), a(gender), a(female));
-    //	addStatement(all(female firstname), Owner, a(female));
-    //	addStatement(all(male firstname), are, a(firstname));
-    //	addStatement(all(male firstname), a(gender), a(male));
-    //	addStatement(all(firstname), are, a(name));
+	//	addStatement(all(female firstname), a(gender), a(female));
+	//	addStatement(all(female firstname), Owner, a(female));
+	//	addStatement(all(male firstname), are, a(firstname));
+	//	addStatement(all(male firstname), a(gender), a(male));
+	//	addStatement(all(firstname), are, a(name));
 	check(isA(a(female firstname), a(name)));
 	check(isA(a(Ahney), a(female firstname)));
-   	check(isA(a(Ahney), the(female firstname)));
+	check(isA(a(Ahney), the(female firstname)));
 
 	clearAlgorithmHash();
-    addStatement(a(female firstname),is_a, a(name));
+	addStatement(a(female firstname),is_a, a(name));
 	check(isA(a(Ahney), a(name)));
 	clearAlgorithmHash();
 
@@ -726,7 +726,7 @@ void testImportExport() {
 	show(getThe("Zilla"));
 	check(isA(a(Zilla), _(female firstname)));
 	clearAlgorithmHash();
-    addStatement(a(firstname),is_a, a(name));
+	addStatement(a(firstname),is_a, a(name));
 	check(isA(a(firstname), a(name)));
 	clearAlgorithmHash(true);
 	check(isA(a(Zilla), a(name)));
@@ -740,9 +740,9 @@ void testImportExport() {
 	//    check(isA(a(Zilla), _(firstname)));// OK, not 'THE'
 	check(isA(a(Zilla), a(name)));
 
-    clearAlgorithmHash(true);
-    check(isA(word(James), _(male firstname)));
-    check(isA(word(James), _(name)));
+	clearAlgorithmHash(true);
+	check(isA(word(James), _(male firstname)));
+	check(isA(word(James), _(name)));
 
 	check(query("all firstnames", 10).size() > 5);
 	check(query("all names", 100).size() > 50);
@@ -773,9 +773,9 @@ void testImages() {
 void testInstanceLogic() {
 	// needs addStatementToNodeWithInstanceGap instead of addStatementToNode
 	// why is that important? to skip 100000 instances (cities) when accessing abstract properties
-//	deleteWord("test",true);
-//	deleteWord("tester",true);
-//	deleteNode(a(test));
+	//	deleteWord("test",true);
+	//	deleteWord("tester",true);
+	//	deleteNode(a(test));
 	Node* test2=getThe("test", Noun);
 	check(test2->kind==noun);
 	check(!isA4(test2, Adjective, 6, true)); //semantic, depth 0
@@ -786,15 +786,15 @@ void testInstanceLogic() {
 	N abstrac=a(test);
 	p(abstrac);
 	check(abstrac->kind==abstractId);
-//	check(getStatementNr(a(test), 1)->object==test3->id);
+	//	check(getStatementNr(a(test), 1)->object==test3->id);
 	Node* test4=getThe("test", Adjective);
 	check(test3==test4);
 	check(getThe("test", Adjective) == test3);
-    deleteNode(test3);
+	deleteNode(test3);
 	deleteNode(test4);
 	//	exit(0);//test make!!
 	//    Node* aBaum=getAbstract("Baum");
-//	deleteWord("tester",true);
+	//	deleteWord("tester",true);
 	ein(tester);
 	show(tester);
 	Statement* s=addStatement(tester, the(colour), _(blue));
@@ -807,7 +807,7 @@ void testInstanceLogic() {
 	check(c->Predicate() != Instance);
 	c=getStatementNr(tester, 2);
 	check(c->Predicate() != Instance);
-    deleteStatement(s);
+	deleteStatement(s);
 }
 
 void testValueLogic() {
@@ -827,11 +827,11 @@ void testValueLogic() {
 	Node* mm15=value("15000",15000 , "mm");
 	Node* m143=value("14.3", 14.3, "meter");
 	Node* m1430=value("", 14.30, "meter");
-//	Node* m1430=value("14.30", 14.30, "meter");
+	//	Node* m1430=value("14.30", 14.30, "meter");
 	Node* m1433=value("14.330", 14.330, "meter");
 	Node* m1433_duplicate=value("14.330", 14.330, "meter");
 	check(m1433_duplicate == m1433);
-    check(m1430->value.number==14.3);
+	check(m1430->value.number==14.3);
 
 	Statement* boot_length=addStatement(Booot, a(length), m143);
 	show(Booot);
@@ -856,11 +856,11 @@ void testValueLogic() {
 	check(!isGreater(m1430, m15));
 	check(isEqual(m143, m1430));
 	check(isAproxymately(m1433, m1430));
-    bool convert=false;// not yet
-    if(convert){
-        check(isEqual(m14, mm14));
-        check(isEqual(m15, mm15));
-    }
+	bool convert=false;// not yet
+	if(convert){
+		check(isEqual(m14, mm14));
+		check(isEqual(m15, mm15));
+	}
 	//    check(isA(m14,m143));
 	//    check(isA(m14,m1432));
 	check(isA(m143, m1430));
@@ -871,10 +871,10 @@ void testValueLogic() {
 
 	//    getA("length")
 	show(Booot);
-    show(m1430);
-    p(m1430->value.number);
-//    p(m1430->value.datetime);
-    
+	show(m1430);
+	p(m1430->value.number);
+	//    p(m1430->value.datetime);
+
 	check(has(Booot, the(length), m1430));
 	check(has(Booot, a(length), m1430));
 
@@ -916,7 +916,7 @@ void testValueLogic() {
 	//    show(m143); //   417287
 	//    show(has(Booot, a(length)));
 	Node *n=has(Booot, the(length));
-    check(eq(n,m143));
+	check(eq(n,m143));
 	//    show(n); // 413730
 	//    check(has(Booot,the(length))==m143);
 	check(eq(has(Booot, a(length)), m143));
@@ -999,7 +999,7 @@ void testValueQuery() {
 void testPropertyQuery() {
 	if (!hasWord("Sheberghan"))
 		importCsv("/Users/me/data/base/geo/geonames/cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid",
-                  "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
+				  "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 
 	//	show(the(Sheberghan));
 	//    check(has(the(Sheberghan),the(population),the(55641)));// ?
@@ -1168,7 +1168,7 @@ void testQuery() {
 	testPropertyQuery();
 	testSelectQuery();
 	testFacets();
-    //	testQueryMore();
+	//	testQueryMore();
 }
 
 //#define sn showNode
@@ -1179,8 +1179,8 @@ void testReification() {
 	show(re);
 	show(get(_statement));
 	check(isA(re, get(_statement)));
-//	check(isA(re,Pattern));
-//	check(isA(re,_(pattern)));
+	//	check(isA(re,Pattern));
+	//	check(isA(re,_(pattern)));
 }
 
 void testDelete(){
@@ -1194,7 +1194,7 @@ void testDelete(){
 	check(aP->statementCount==statementCount-1);
 	check(P->firstStatement==0);
 	check(P->name==0);
-//	check(P->id!=0); HOLE!
+	//	check(P->id!=0); HOLE!
 	Statement* s2=learn("Peter loves Jule");
 	N P2=the(Peter);
 	check(s != s2);
@@ -1215,7 +1215,7 @@ void testFactLearning() {
 	check(has(the(Peter), a(loves), a(Jule)));
 	//	check(has(the(Peter),a(loves),the(Jule))); how could he? todo : NO, but MAYBE!
 	addStatement(the(love), Plural, the(loves)); //the(tense) ??
-    //	check(has(the(Peter), a(love), the(Jule), 1, 1, 1));// todo
+	//	check(has(the(Peter), a(love), the(Jule), 1, 1, 1));// todo
 
 	addStatement(the(german_translation), is_a, Translation, true);
 	addStatement(the(son), the(german_translation), the(Sohn), true);
@@ -1230,7 +1230,7 @@ void testFactLearning() {
 	addStatement(a(son), Translation, a(Sohn));// not transitive
 	check(has(the(Peter),a(Sohn),the(Milan)));
 	addStatement(a(Sohn), Synonym, a(Sohnemann));// Translation not transitive
-//	check(has(the(Peter),a(Sohnemann),the(Milan)));
+	//	check(has(the(Peter),a(Sohnemann),the(Milan)));
 	p(the(Milan));
 	check(isA(the(Milan), a(son)));
 	check(isA(a(Milan), a(son)));// erst recht!
@@ -1263,7 +1263,7 @@ void testCities() {
 	clearMemory();
 	if (!hasWord("Mersing")) {
 		cchar* ignore=
-        "alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
+		"alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
 		importCsv("cities1000.txt", the(city), '\t', ignore);
 	}
 	p(the(Mersing));
@@ -1282,7 +1282,7 @@ void testSplit() {
 }
 
 void testOpposite() {
-    checkWordnet();
+	checkWordnet();
 	check(has(a(good), Antonym, Any));
 
 	check(!findStatement(the(evil), Instance, Synonym, 6, 1, 0, 0));
@@ -1338,10 +1338,10 @@ void testOpposite() {
 	//		check(isA4(Antonym,pa, false, false));
 	check(has(node, property));
 
-		Statement* s=addStatement(Antonym,Synonym,opposite);
-		s=addStatement(Antonym,Synonym,the_opposite);
-//		s=addStatement(opposite,Synonym,Antonym,false);
-//		s=addStatement(the_opposite,Synonym,Antonym,false);
+	Statement* s=addStatement(Antonym,Synonym,opposite);
+	s=addStatement(Antonym,Synonym,the_opposite);
+	//		s=addStatement(opposite,Synonym,Antonym,false);
+	//		s=addStatement(the_opposite,Synonym,Antonym,false);
 
 	//	p(getThe("antonym"));
 	//	check(getThe("antonym")==Antonym); no, wordnet now!!
@@ -1408,13 +1408,13 @@ void testYago() {
 }
 
 void testFreebase(){
-    N m=getThe("Madonna",More);
-    check(m->statementCount>100);
-    m=getThe(getAbstract("Madonna"),More);
-    check(m->statementCount>100);
-    NV all=findProperties("Carlos Barbot","type");
-    check(all.size()>0);
-        showNodes(all);
+	N m=getThe("Madonna",More);
+	check(m->statementCount>100);
+	m=getThe(getAbstract("Madonna"),More);
+	check(m->statementCount>100);
+	NV all=findProperties("Carlos Barbot","type");
+	check(all.size()>0);
+	showNodes(all);
 }
 
 void fixNames(){
@@ -1432,75 +1432,75 @@ void fixNames(){
 }
 
 void testSqlDe(){
-  	cchar* sql = "Karin with Rufnummer";
-    //    char* sql="select Synonym from dogs where anhinga";
+	cchar* sql = "Karin with Rufnummer";
+	//    char* sql="select Synonym from dogs where anhinga";
 	NodeVector r = query(sql);
 	check(r.size() >= 1);
-    p(r[0]->name);
-    check(eq(r[0]->name,"Karin"));
+	p(r[0]->name);
+	check(eq(r[0]->name,"Karin"));
 }
 void testSqlDe2(){
-    //	char* sql="select Klasse from dogs where Doenges";
-    //	char* sql = "select Kette from dogs where Tock";
-    //    	char* sql = "select Klasse from dogs where Schlangenhalsvögel";
-    //        	char* sql = "select Kontext from frau where Anrede"; // 2
-    //            	char* sql = "select Kontext from frau where Eva";
-  	cchar* sql = "select Klasse from grau where Anthrazit";
-    //    char* sql="select Synonym from dogs where anhinga";
+	//	char* sql="select Klasse from dogs where Doenges";
+	//	char* sql = "select Kette from dogs where Tock";
+	//    	char* sql = "select Klasse from dogs where Schlangenhalsvögel";
+	//        	char* sql = "select Kontext from frau where Anrede"; // 2
+	//            	char* sql = "select Kontext from frau where Eva";
+	cchar* sql = "select Klasse from grau where Anthrazit";
+	//    char* sql="select Synonym from dogs where anhinga";
 	NodeVector r = query(sql);
 	check(r.size() == 1);
-    p(r[0]->name);
-    check(eq(r[0]->name,"Achromatische farbe"));
+	p(r[0]->name);
+	check(eq(r[0]->name,"Achromatische farbe"));
 
 }
 void old_to_remove(){
-    
-    //    load(true);
-    //    save();
-    //    export_csv();
-    //    setLabel(get("surname"), "Nachname");
-    //    parse("surname");
-    //    parse("surname");
-    //        parse("surname");
-    
-    //    importCsv("couchdb/entities.csv");
-    //    		import("entities");
-    //    import("images");
-    //    		import("dbpedia");
-    //    import("linkedin_connections_export_microsoft_outlook.csv");
-    //    tests();
-    //    fixNames();
-    //    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
-    //    importAll();
-    //    import("yago","yagoLabels.tsv");
-    //    showNodes(parse("all 42650559"));
-    //    deleteNode(get(42032201));
-    
-    //	int var=0;
-    //    start_server();
-    //    p("statementSize)");
-    //    p( statementSize);
-    //    importFreebase();
-    //    testFreebase();
-    //	if(context->nodeCount<10000)importAll();
-    //	testHash();
-    //	checkWordnet();
-    //    const char* x=concat("ab","cde");
-    //    check(eq(x,"abcde"));
-    //	import("freebase");
-    //    importFreebase();// needs /Volumes/Data/BIG/ !
-    //    	import("yago");
-    //    check(hasWord("Tom_Hartley"));
-    //    N a=    getAbstract("Tom_Hartley");
-    //    N b=   getThe("Tom_Hartley");
-    //    N a1=    getAbstract("Tom Hartley");
-    //    N b1=   getThe("Tom Hartley");
-    //    N a2=    getAbstract("Tom_Hartley");
-    //    N b2=   getThe("Tom_Hartley");
-    //    check(a==a2);
-    //        check(b==b2);
-    //    importAll();
-    //	tests();
+
+	//    load(true);
+	//    save();
+	//    export_csv();
+	//    setLabel(get("surname"), "Nachname");
+	//    parse("surname");
+	//    parse("surname");
+	//        parse("surname");
+
+	//    importCsv("couchdb/entities.csv");
+	//    		import("entities");
+	//    import("images");
+	//    		import("dbpedia");
+	//    import("linkedin_connections_export_microsoft_outlook.csv");
+	//    tests();
+	//    fixNames();
+	//    check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
+	//    importAll();
+	//    import("yago","yagoLabels.tsv");
+	//    showNodes(parse("all 42650559"));
+	//    deleteNode(get(42032201));
+
+	//	int var=0;
+	//    start_server();
+	//    p("statementSize)");
+	//    p( statementSize);
+	//    importFreebase();
+	//    testFreebase();
+	//	if(context->nodeCount<10000)importAll();
+	//	testHash();
+	//	checkWordnet();
+	//    const char* x=concat("ab","cde");
+	//    check(eq(x,"abcde"));
+	//	import("freebase");
+	//    importFreebase();// needs /Volumes/Data/BIG/ !
+	//    	import("yago");
+	//    check(hasWord("Tom_Hartley"));
+	//    N a=    getAbstract("Tom_Hartley");
+	//    N b=   getThe("Tom_Hartley");
+	//    N a1=    getAbstract("Tom Hartley");
+	//    N b1=   getThe("Tom Hartley");
+	//    N a2=    getAbstract("Tom_Hartley");
+	//    N b2=   getThe("Tom_Hartley");
+	//    check(a==a2);
+	//        check(b==b2);
+	//    importAll();
+	//	tests();
 	//	testQueryMore();
 	//	testQuery();
 	//	testFacets();
@@ -1512,34 +1512,34 @@ void old_to_remove(){
 }
 
 void testInclude(){
-    //    parse("include hamburg Population");
-    //    parse("include city Elevation");
-    //    NV l= parse("learn hamburg type city");
-    //    show(l[0]);
-    //    check(has(l[0],"type","city"));
-    
-    //    parse("learn 5463914 type 2000586");
-    //    parse("include hamburg Bundesland");
-    
-    //    addStatement(getThe("hamburg"),Type,getThe("city"));
-    //    addStatement(a("hamburg"),Type,getThe("city"));
-    //    parse("city include Erhebung");
-    //    parse("city include Erhebung");
-    parse("5136347 include Erhebung");
-    
-    
-    
-    //    Nachname
-    //    parse("exclude fafdafds");
-    //    1459866
-    //    handle("/xml/all/1459866");
-    //    handle("/xml/verbose/1459866");
-    //    handle("/xml/excluded/1459866");
-    //    handle("/xml/excluded/Hamburg");
-    //    handle("/xml/long/Hamburg");
-    handle("/xml/all/Hamburg +type");
-    //    handle("/xml/all/Hamburg +type");
-    //    handle("/xml/excluded");
+	//    parse("include hamburg Population");
+	//    parse("include city Elevation");
+	//    NV l= parse("learn hamburg type city");
+	//    show(l[0]);
+	//    check(has(l[0],"type","city"));
+
+	//    parse("learn 5463914 type 2000586");
+	//    parse("include hamburg Bundesland");
+
+	//    addStatement(getThe("hamburg"),Type,getThe("city"));
+	//    addStatement(a("hamburg"),Type,getThe("city"));
+	//    parse("city include Erhebung");
+	//    parse("city include Erhebung");
+	parse("5136347 include Erhebung");
+
+
+
+	//    Nachname
+	//    parse("exclude fafdafds");
+	//    1459866
+	//    handle("/xml/all/1459866");
+	//    handle("/xml/verbose/1459866");
+	//    handle("/xml/excluded/1459866");
+	//    handle("/xml/excluded/Hamburg");
+	//    handle("/xml/long/Hamburg");
+	handle("/xml/all/Hamburg +type");
+	//    handle("/xml/all/Hamburg +type");
+	//    handle("/xml/excluded");
 }
 
 
@@ -1551,7 +1551,7 @@ void testAll() {
 	testHash();
 	testScanf();
 	testYago();
-    testGeoDB();
+	testGeoDB();
 
 	testInstancesAtEnd();
 	testInsertForceStart();
@@ -1560,41 +1560,41 @@ void testAll() {
 
 	testReification();
 	testStringLogic2();
-    testOpposite();
+	testOpposite();
 	//    share_memory();
 	//    init();
-    
+
 	//    testBasics();
 	//	clearTestContext();
 	//	testBrandNewStuff();// LOOP!
 	//    testStringLogic2();
 	//    testLogic();// test wordnet intersection
-    germanLabels=false;
+	germanLabels=false;
 	testImportExport();
 	checkWordnet();
-    checkGeo();	//	testDummyLogic();// too big
-    testInclude();
-    
+	checkGeo();	//	testDummyLogic();// too big
+	testInclude();
+
 	// shaky
 	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
 	testFacets();
 	testQuery();
-   	testPaths();
+	testPaths();
 	testFactLearning();
 
 	// OK
-    
+
 	p("ALL TESTS SUCCESSFUL!");
 	//    testLoop();
 }
 bool assertResult(char* query,char* value0){
 	NodeVector result=parse(query);
-//	cchar* result=query2(query).data();
+	//	cchar* result=query2(query).data();
 	Node* abstract=getAbstract(value0);
 	Node* value=getThe(abstract);
 	check(contains(result,value) || contains(result,abstract));
 	return 1;
-//	return check(eq(result,value));
+	//	return check(eq(result,value));
 }
 
 void flattenGeographischeKoordinaten(){
@@ -1611,16 +1611,16 @@ void flattenGeographischeKoordinaten(){
 			S sb=addStatement(ort,b,bb,true,false);
 			S st=findStatement(c, getNode(1129), Any);
 			if(!st)continue;
-//			N ll=st->Object();
+			//			N ll=st->Object();
 			N ll=getProperty(c, "Längengrad");
 			if(!ll)ll=getProperty(c, "Longitude");
 			addStatement(ort,l,ll,true,false);
-//						S sl=addStatement(ort,l,ll,false,true);
+			//						S sl=addStatement(ort,l,ll,false,true);
 
-//			S sl=addStatement(ort,l,ll,false,false);
-//			show(ort);
-//			showStatement(sb);
-//			p(bb!=0);
+			//			S sl=addStatement(ort,l,ll,false,false);
+			//			show(ort);
+			//			showStatement(sb);
+			//			p(bb!=0);
 			sb=0;
 		}
 	}
@@ -1647,21 +1647,38 @@ void fixRelations(){
 	for(int i=1;i<context->statementCount;i++){
 		S s=&context->statements[i];
 		if(s->predicate==-10031)s->predicate=_Type; // Ist ein(e)
+		if(s->predicate==-10460)s->predicate=_synonym;// Als gleichwertig bezeichnet
+		if(s->predicate==-10361)s->predicate=_PartOf;// Ist Teil von
+		if(s->predicate==-10527)s->predicate=_Part;// Besteht aus
+		if(s->predicate==-10150)s->predicate=_Part;// x Untereinheit (administrative Einheit)  // HAS
+
 	}
 }
+
 void getClasses(){
-//	NodeVector all;
+	NodeVector all;
+	for(int i=1;i<max(context->nodeCount,context->lastNode);i++){
+		N n=&context->nodes[i];
+		if(!n->id||n->name<context->nodeNames||n->name > context->nodeNames+context->currentNameSlot)continue;
+		if(startsWith(n->name, "http"))continue;
+		if(startsWith(n->name, "_"))continue;
+		if(eq(n->name, "◊"))continue;
+		if(isNumber(n->name))continue;
+		if(n->kind==_clazz)//_entity
+			all.push_back(n);
+		//			printf("%s	Q%d\n",n->name,n->id);
+	}
+
+	sortNodes(all);
+	for(int i=1;i<all.size();i++){
+		N n=all[i];
+		printf("%d	%s	Q%d\n",n->statementCount,n->name,n->id);
+	}
+
+}
+
+void getSuperClasses(){
 	NodeSet all;
-//	for(int i=1;i<max(context->nodeCount,context->lastNode);i++){
-//		N n=&context->nodes[i];
-//		if(!n->id||n->name<context->nodeNames||n->name > context->nodeNames+context->currentNameSlot)continue;
-//		if(startsWith(n->name, "http"))continue;
-//		if(eq(n->name, "◊"))continue;
-//		if(isNumber(n->name))continue;
-//		if(n->kind==_clazz)//_entity
-//			all.push_back(n);
-////			printf("%s	Q%d\n",n->name,n->id);
-//	}
 	for(int i=1;i<context->statementCount;i++){
 		S s=&context->statements[i];
 		if(!checkStatement(s,1,0))continue;
@@ -1670,18 +1687,19 @@ void getClasses(){
 			if(!n->id||n->name<context->nodeNames||n->name > context->nodeNames+context->currentNameSlot)continue;
 			if(startsWith(n->name, "http"))continue;
 			if(eq(n->name, "◊"))continue;
+			if(startsWith(n->name, "_"))continue;
 			if(isNumber(n->name))continue;
-//			if(!contains(all,))// NodeSet auto dedupe!
-				all.insert(n);// .push_back(n);
+			//			if(!contains(all,))// NodeSet auto dedupe!
+			all.insert(n);// .push_back(n);
 		}
 	}
-//	sortNodes(all);
+	//	sortNodes(all);
 	NodeSet::iterator it;
-//	for(it=all->begin();it!=all->end();it++){
-//		for(int i=1;i<all.size();i++){
+	//	for(it=all->begin();it!=all->end();it++){
+	//		for(int i=1;i<all.size();i++){
 	for(it=all.begin();it!=all.end();it++){
 		N n=(Node*) *it;
-//		N n=all[i];
+		//		N n=all[i];
 		printf("%s	Q%d\n",n->name,n->id);
 	}
 
@@ -1691,32 +1709,46 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 //	p("test -> SHELL");return;// for shell
-//	fixRelations();
-	context=getContext(current_context);
-
-//		getContext(0)->statementCount-=100000;// make some room ONCE
-//		getContext(0)->nodeCount-=100000;// make some room ONCE
-//		getContext(0)->lastNode-=100000;
-//	importN3("wikidata/wikidata-taxonomy.nt.gz");
-	getClasses();
 	p("Test Brand New Stuff");
-//    testing=false;// NO RELATIONS!
-//	testImportExport();
-//	testStringLogic();
-//	testAll();
+
+	//	fixRelations();
+	context=getContext(current_context);
+	context->statementCount-=100000;// make some room ONCE
+	context->nodeCount-=100000;// make some room ONCE
+	context->lastNode-=1000000;// hilft nicht wenn alle voll sind :  context->lastNode++
+	context->lastNode=1;// RADICAL: fill all empty slots!
+	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
+	//	getClasses();
+	//	fixRelations();
+//	N h=get(566123);
+//	char* test="Hasloh";
+	char* test="Gehren";
+//	check(eq(h->name,test));
+	N a=getAbstract(test);
+	check(a);
+	p(a->name);
+
+	check(eq(a->name,test));
+
+
+
+	//    testing=false;// NO RELATIONS!
+	//	testImportExport();
+	//	testStringLogic();
+	//	testAll();
 
 	germanLabels=true;
 	//    import("test.csv");
-//	if(!hasWord("bug"))importWordnet();
+	//	if(!hasWord("bug"))importWordnet();
 
-//	importWikiData();
+	//	importWikiData();
 	//	handle("/41172206");
-//	handle("/90962");
-//	handle(":server");
-//	handle("/-1");
+	//	handle("/90962");
+	//	handle(":server");
+	//	handle("/-1");
 	//	flattenGeographischeKoordinaten();
-//	fixAllNames();
-
+	//	fixAllNames();
+	
 	//	handle("all+pennsylvania+marijuana");
 }
 

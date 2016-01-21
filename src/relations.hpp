@@ -57,6 +57,7 @@ extern Node* Thing;
 extern Node* Item;
 extern Node* Abstract; // Thing
 extern Node* Class;
+extern Node* Entity; // == ?
 extern Node* Object;
 extern Node* Relation;
 extern Node* Reification;
