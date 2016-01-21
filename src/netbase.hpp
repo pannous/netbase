@@ -303,7 +303,7 @@ typedef struct Context {
     char* nodeNames;
     long currentNameSlot;
     int nodeCount;
-    int lastFree;
+    int lastNode;
     int extrahashNr;
     int statementCount; //first 1000 reserved!
     bool use_logic;
@@ -429,8 +429,9 @@ Statement* addStatement(Node* subject, Node* predicate, Node* object, bool check
 Node* get(int NodeId);
 
 //extern "C" /* <== don't mingle name! */ inline
-Context* currentContext();
-
+#ifndef _context
+static Context* context;
+#endif
 extern "C" Node* getAbstract(const char* word);
 int collectAbstracts();
 int collectInstances();
@@ -532,7 +533,6 @@ Node* isLess(Node* subject, Node* object);
 Node* isAproxymately(Node* subject, Node* object);
 
 
-Context* currentContext();
 //void initRelations();
 Node* add_force(int contextId, int id, const char* nodeName, int kind);
 
@@ -575,8 +575,11 @@ NodeVector parse(const char* data);// and act
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);
 extern "C" Node* getType(Node* n);// != kind!
+//extern
+
 
 typedef Node* N;
+typedef Context* C;
 typedef Statement* S;
 typedef NodeVector Ns;
 typedef NodeVector NV;

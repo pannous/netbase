@@ -23,23 +23,14 @@
 //const void * shmat_root = (const void *) 0x101000000; // mac 64 bitpointer to it: */
 #ifdef i386
 const void * shmat_root = (const void *) 0x10000000; // just higher than system Recommendation
-#elif MEGA_DEBUG
-const void * shmat_root=(const void *) 0x0248000000;// java !
 #else
-//const void * shmat_root=(const void *) 0x300000000; // just higher than system Recommendation
-//const void * shmat_root = (const void *) 0x0101000000; // just higher than system Recommendation
-//const void * shmat_root=(const void *) 0x0120000000; // just higher than system Recommendation
-//const void * shmat_root=(const void *) 0x021000000;// java !
 const void * shmat_root=(const void *) 0x0220000000;// java !
-//const void * shmat_root = (const void *) 0x0100137000;
 #endif
-//const void * shmat_root = (const void *)0x105800000;//test
 
 bool virgin_memory=false;
 #if defined(__FreeBSD__) || defined(__APPLE__)
 /* union semun is defined by including <sys/sem.h> */
 #else
-
 /* according to X/OPEN we have to define it ourselves */
 union semun {
 	int val; /* Value for SETVAL */
@@ -123,7 +114,7 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 		perror("share_memory failed: shmat! Not enough memory?");
 		exit(1);
 	}
-//	Context* c=currentContext(); // getContext(node->context);
+//	Context* c=context; // getContext(node->context);
 	if ((char*) root != (char*) desired) { // 64 BIT : %x -> %016llX
 		printf("FYI: root_memory != desired shmat_root %p!=%p \n", root, desired);
 //		fixPointers();
@@ -180,20 +171,20 @@ void checkRootContext() {
 
 	p("USING SHARED MEMORY");
 ////	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
-//	if (currentContext()->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
+//	if (context->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
 //		p("rootContext->nodes != (Node*) node_root");
 //		pf("%X != %X\n",rootContext->nodes,node_root);
 //		showContext(rootContext);
 //		
-////		currentContext()->nodes=rootContext->nodes;	// hack
+////		context->nodes=rootContext->nodes;	// hack
 //	}
-    if (currentContext()->nodeNames!=name_root)
+    if (context->nodeNames!=name_root)
         fixPointers();
     rootContext->nodes=(Node*) node_root+ propertySlots;;
     rootContext->statements=statement_root;
-//	else if (currentContext()->nodes != rootContext->nodes) {
+//	else if (context->nodes != rootContext->nodes) {
 //		fixPointers();
-//		currentContext()->nodes=rootContext->nodes;
+//		context->nodes=rootContext->nodes;
 //	}
 }
 
@@ -213,7 +204,8 @@ extern "C" void init(bool relations) {
 //	p("abstract_root:");
 	abstract_root=(Node*) share_memory(key , abstract_size * 2, abstract_root,root);//  ((char*) context_root) + context_size
 //	p("name_root:");
-	name_root=(char*) share_memory(key + 1, name_size, name_root, ((char*) abstract_root) + abstract_size * 2);
+	int mega_debug=getenv("MEGA_DEBUG")?0x40000:0;
+	name_root=(char*) share_memory(key + 1, name_size, name_root, ((char*) abstract_root) + abstract_size * 2 + mega_debug);
 //	p("node_root:");
 	node_root=(Node*) share_memory(key + 2, node_size, node_root, name_root + name_size);
 //	p("statement_root:");
@@ -229,14 +221,14 @@ extern "C" void init(bool relations) {
 	abstracts=(Ahash*) (abstract_root); // reuse or reinit
 	extrahash=(Ahash*) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts=(Context*) context_root;
+	context=getContext(current_context);
 	checkRootContext();
-	getContext(current_context);
     if(relations){
 		initRelations();
-		if (currentContext()->lastFree < 0)
-			currentContext()->lastFree=1;
-//	if (currentContext()->lastFree < 1000)
-//        currentContext()->lastFree=1000;
+		if (context->lastNode < 0)
+			context->lastNode=1;
+//	if (context->lastNode < 1000)
+//        context->lastNode=1000;
 	}
 }
 
@@ -271,7 +263,7 @@ void load(bool force) {
 //	double diff;
 	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 
-	Context* c=currentContext();
+	Context* c=context;
 	//    showContext(c->id);
 	Node* oldNodes=c->nodes;
 	char* oldnodeNames=c->nodeNames;
@@ -340,7 +332,7 @@ void load(bool force) {
 	}
 
 	collectAbstracts(); //or load abstracts->bin
-	showContext(currentContext());
+	showContext(context);
 
 	//    initContext(c);//
 	//
@@ -353,15 +345,14 @@ void load(bool force) {
 }
 
 void fixPointers() {
-    if(currentContext()->nodeNames==name_root)
+    if(context->nodeNames==name_root)
         return;// all INT now, no more pointers!!! except chars
 	p("ADJUSTING SHARED MEMORY");
-	Context* context=currentContext();
 //	if(!checkC)
 	//	showContext(context);
 	fixPointers(context);
 	//	showContext(context);
-	//	context = currentContext();// &contexts[wordnet]; // todo: all
+	//	context = context;// &contexts[wordnet]; // todo: all
 	//	showContext(context);
 	//	fixPointers(context);
 	showContext(context);
@@ -383,7 +374,7 @@ int collectAbstracts() {
 	ps("collecting abstracts = buildAbstractHashes");// int now
 	initRelations();
 	memset(abstracts, 0, maxNodes*ahashSize * 2);
-	Context* c=currentContext();
+	Context* c=context;
 	int max=c->nodeCount; // maxNodes;
 	int count=0;
 	// collect Abstracts
@@ -403,7 +394,7 @@ int collectInstances() {
 	ps("collecting instances");// int now
 	initRelations();
 	memset(abstracts, 0, maxNodes*ahashSize * 2);
-	Context* c=currentContext();
+	Context* c=context;
 	int max=c->nodeCount; // maxNodes;
 	int count=0;
 	// collect Abstracts
@@ -463,16 +454,16 @@ bool clearMemory() {
     memset(name_root, 0, 100000); // for testing
 	memset(abstract_root, 0, maxNodes*ahashSize * 2);
 //	memset(abstracts, 0, maxNodes*ahashSize * 2);
-//    currentContext()->nodeCount=1000;// 0 = ANY
-    currentContext()->nodeCount=1;// 0 = ANY
-	currentContext()->lastFree=1;
-    currentContext()->nodeNames=name_root;
-    currentContext()->statementCount=1;// 0 = ERROR
+//    context->nodeCount=1000;// 0 = ANY
+    context->nodeCount=1;// 0 = ANY
+	context->lastNode=1;
+    context->nodeNames=name_root;
+    context->statementCount=1;// 0 = ERROR
     }
 //    if(!testing)
 	initRelations();
 	return true;
-	//		Context* context=currentContext();
+	//		Context* context=context;
 }
 
 char* initContext(Context* context) {
@@ -532,8 +523,8 @@ char* initContext(Context* context) {
 		context->statementCount=1;// 0 = error
 	if(context->nodeCount<=0)
 		context->nodeCount=1;
-	if(context->lastFree<=0)
-		context->lastFree=1;
+	if(context->lastNode<=0)
+		context->lastNode=1;
 //	px(context);
 //	px(nodes);
 //	px(nodeNames);

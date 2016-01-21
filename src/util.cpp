@@ -110,6 +110,8 @@ bool contains(const char* x, const char* y, bool ignoreCase) {
 //bool contains(NodeSet& all, Node* node) {
 //	return std::find(all.begin(), all.end(), node)!= all.end();
 //}
+
+// automatic de-duping!!!
 bool contains(NodeSet* all, Node* node) {
 //	return std::find(all->begin(), all->end(), node)!= all->end();
 	NodeSet::iterator it;
@@ -119,6 +121,7 @@ bool contains(NodeSet* all, Node* node) {
 	}
 	return false;
 }
+
 bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //	if(!fuzzy)
 //		return contains2(all,&node);
@@ -830,4 +833,42 @@ char* dropUrl(char* name){
 		if(name[i]=='#' || name[i]=='/'|| name[i]==':') // cut http://.../ namespaces
 			return name+i+1;//str[i]=0;
 	return name;
+}
+
+
+//inline int
+const static bool sortNodePredicate(Node* a, Node* b) {
+	int x=a->statementCount;
+	int y=b->statementCount;
+	return x>y;
+	//	return (*a < *b);
+	//	return a<b;//-
+	//	return (a->statementCount > b->statementCount);
+	//	return (a->key()> b->key());
+}
+void sortNodes(NodeVector& all){
+	//	int count=0;
+	int max=0;
+	deque<Node*> sorted;
+	for (int i=0; i<all.size(); i++) {
+		Node* n=all[i];
+		if(n->statementCount>max){
+			sorted.push_front(n);
+			max=n->statementCount;
+		}
+		else sorted.push_back(n);
+	}
+	for (int i=0; i<all.size(); i++) {
+		all[i]=sorted[i];
+	}
+	std::sort(all.begin(), all.end(),sortNodePredicate);
+	//	auto x=all.begin();
+	//	auto y=all.end();
+	//	std::sort(x, y, sortNodePredicate);// [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
+	//	showNodes(all,false,false,false);
+	//	std::sort(all.begin(),all.end(),);
+	
 }

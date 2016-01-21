@@ -123,3 +123,4 @@ void closeFile(const char* file);
 
 void fixLabel(char* label);
 char* dropUrl(char* name);
+void sortNodes(NodeVector& all);

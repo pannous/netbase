@@ -76,9 +76,9 @@ string data_path="";
 string import_path="./import/";
 
 //extern "C" inline
-Context* currentContext() {
-	return &contexts[current_context];
-}
+//Context* context {
+//	return &contexts[current_context];
+//}
 
 int badCount;
 int current_context=wordnet;
@@ -185,16 +185,11 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		ah=getAhash(ah->next);
 	}
 
-	if (ah->abstract && get(ah->abstract)) { //schon was drin
-		if (get(ah->abstract) == a)
+	N ab=ah->abstract ? get(ah->abstract) : 0;
+	if (ab) { //schon was drin
+		if (ab == a || eq(ab->name, a->name, true))
 			return ah;
-        if(eq(get(ah->abstract)->name, a->name, true)){
-            //            bool ok=hasWord(a->name);
-            //            bool ok2=hasWord(a->name);
-            return ah;
-        }
-        //        ah->next=extrahash++;
-        ah->next=currentContext()->extrahashNr++;
+        ah->next=context->extrahashNr++;
         ah=getAhash(ah->next);
 	}
 	if(!checkHash(ah))return 0;
@@ -246,9 +241,7 @@ bool addStatementToNode(Node* node, int statementId,bool insert_at_start=false) 
 		node->lastStatement=statementId;
 	} else {
 #ifdef useContext
-		Context* context=getContext(node->context);
-#else
-        Context* context=currentContext();
+		context=getContext(node->context);
 #endif
 		Statement* to_insert=&context->statements[statementId];
 		//		if (to_insert->Predicate == Instance && to_insert->Subject == node || to_insert->Predicate == Type && to_insert->Object == node) {
@@ -284,9 +277,7 @@ bool addStatementToNodeDirect(Node* node, int statementId) {
 	} else {
 		int statement2Nr=0; // find free empty (S|P|O)statement slot of lastStatement
 #ifdef useContext
-		Context* context=getContext(node->context);
-#else
-        Context* context=currentContext();
+	context=getContext(node->context);
 #endif
 		Statement* statement0=&context->statements[node->lastStatement]; // last statement
 		Statement* statement1=&context->statements[statementId]; // target
@@ -311,9 +302,9 @@ bool addStatementToNodeDirect(Node* node, int statementId) {
 }
 
 char* statementString(Statement * s) {
-	char* name=&currentContext()->nodeNames[currentContext()->currentNameSlot];
+	char* name=&context->nodeNames[context->currentNameSlot];
 	sprintf(name, "(%s %s %s)", s->Subject()->name, s->Predicate()->name, s->Object()->name);
-    currentContext()->currentNameSlot=    currentContext()->currentNameSlot+(int)strlen(name)+1;
+    context->currentNameSlot=    context->currentNameSlot+(int)strlen(name)+1;
 	return name;
 }
 
@@ -374,7 +365,7 @@ Context * getContext(int contextId) {
     context->statementArrays = (int*) malloc(maxStatements());
 #endif
 	initContext(context);
-//	if (contextId == wordnet) context->lastFree=1; //sick hack to reserve first 1000 words!
+//	if (contextId == wordnet) context->lastNode=1; //sick hack to reserve first 1000 words!
 //	else context->nodeCount=0;
 //	context->statementCount=1; //1000;
 	strcpy(context->name, "Public");
@@ -535,12 +526,12 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 		return false;
 	}
 	if(!debug)return true;
-	Context* c=currentContext(); // getContext(node->context);
-	void* maxNodePointer=&c->nodes[maxNodes];
-	if (node < c->nodes - propertySlots) {
+	context=getContext(current_context);
+	void* maxNodePointer=&context->nodes[maxNodes];
+	if (node < context->nodes - propertySlots) {
 		bad();
 		if(report){// not for abstract.node (can be number etc)
-		printf("node* < c->nodes!!! %p < %p \n", node, c->nodes);
+		printf("node* < context->nodes!!! %p < %p \n", node, context->nodes);
         p("OUT OF MEMORY or graph corruption");
 		}
 		return false;
@@ -593,7 +584,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 			printf("node->name == 0 %p\n", node);
 		return false;
 	}
-	if (checkNames && (node->name < c->nodeNames || node->name >= &c->nodeNames[averageNameLength * maxNodes])) {
+	if (checkNames && (node->name < context->nodeNames || node->name >= &context->nodeNames[averageNameLength * maxNodes])) {
 		bad();
 		if(report)
 		printf("node->name out of bounds %p\n", node);
@@ -631,19 +622,18 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 #ifndef DEBUG
 	if (!nodeName) return 0;
 #endif
-	Context* context=currentContext();
 	Node* node;
 	do{
-		context->lastFree++;// DON't MOVE!
-		node=&(context->nodes[context->lastFree]);
-		if (context->lastFree >= maxNodes - propertySlots) {
-			pf("context->lastFree > maxNodes %d>%ld ",context->lastFree ,maxNodes);
+		context->lastNode++;// DON't MOVE!
+		node=&(context->nodes[context->lastNode]);
+		if (context->lastNode >= maxNodes - propertySlots) {
+			pf("context->lastNode > maxNodes %d>%ld ",context->lastNode ,maxNodes);
 			p("MEMORY FULL!!!");
         //		exit(1);
 			return Error;
 		}
 	}while(node->id!=0);
-    initNode(node, context->lastFree, nodeName, kind, contextId);
+    initNode(node, context->lastNode, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == abstractId|| kind == singletonId) return node;
 	addStatement(getAbstract(nodeName), Instance, node, false);// done in initNode//setLabel !
@@ -771,7 +761,6 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 		Statement* old=findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		if (old) return old; // showStatement(old)
 	}
-	Context* context=currentContext(); //  getContext(subject->context); // todo!
 	// pi(context.nodes);// == &context.nodes[0] !!
 
 	//	if(isAbstract(object)&&( predicate==Type||predicate==SuperClass))
@@ -845,7 +834,7 @@ Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 #ifdef useContext
     Context* c=getContext(n->context);
 #else
-    Context* c=currentContext();
+    Context* c=context;
 #endif
 	Statement* statement=&c->statements[n->firstStatement];
 	Statement* laststatement=statement;
@@ -914,7 +903,7 @@ Node * get(int nodeId) {
 	    printf("Error: 0 > nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
 	    return Error;
 	}
-	return &currentContext()->nodes[nodeId];
+	return &context->nodes[nodeId];
 }
 
 int getId(char* node){
@@ -1296,12 +1285,12 @@ Node* number(int nr){
 }
 
 extern "C" int nodeCount(){
-    return currentContext()->nodeCount;
+    return context->nodeCount;
 }extern "C" int statementCount(){
-    return currentContext()->statementCount;
+    return context->statementCount;
 }
 extern "C" int nextId(){
-    return currentContext()->nodeCount++;
+    return context->nodeCount++;
 }
 
 extern "C"
@@ -1469,7 +1458,7 @@ void showStatement(int id){
 }
 void showStatement(Statement * s) {
 	//	if (quiet)return;
-	Context* c=currentContext();
+	Context* c=context;
 	if (s < c->statements || s > &c->statements[maxStatements]) {
 		if (quiet) return;
 		p("illegal statement:");
@@ -1561,7 +1550,7 @@ Node * showNode(Node* n) {
     show(n);return n;
 }
 Node * showNode(int id) {
-	Node* n=&currentContext()->nodes[id];
+	Node* n=&context->nodes[id];
 	if (!checkNode(n, id)) return 0;
 	show(n);
 	return n;
@@ -1766,7 +1755,7 @@ void deleteStatement(Statement * s) {
 	s->Subject()->statementCount--;
 	s->Predicate()->statementCount--;
 	s->Object()->statementCount--;
-	//	currentContext()->statements[s->id]=0;
+	//	context->statements[s->id]=0;
 	memset(s, 0, sizeof(Statement));
 }
 
@@ -1900,11 +1889,11 @@ Node * value(const char* name, double v, Node* unit/*kind*/) {
 extern "C" void saveData(int node,void* data,int size,bool copy){
     N n=getNode(node);
     if(!copy){n->value.data=data;return;}
-    void* target=&currentContext()->nodeNames[currentContext()->currentNameSlot];
+    void* target=&context->nodeNames[context->currentNameSlot];
     
     memcpy(target, data,size);
     n->value.data=target;// data
-    currentContext()->currentNameSlot+=size+1;
+    context->currentNameSlot+=size+1;
 }
 
 extern "C" void* getData(int node){
@@ -2386,7 +2375,7 @@ Statement * learn(string sentence) {
 
 /*
  int collectAbstracts3() {
- Context* c = currentContext();
+ Context* c = context;
  Node* found = 0;
  int abstractId = Abstract->id;
  int max = c->nodeCount; // maxNodes;
@@ -2552,7 +2541,7 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
 //	if(label[0]=='<')
 //		bad(); "<span dbpedia parser fuckup etc
     int len=(int)strlen(label);
-    Context* c=currentContext();
+    Context* c=context;
 	char* newLabel = name_root + c->currentNameSlot;
 //    if(!n->name || !strlen(n->name)) n->name=newLabel;// prepare to write
 //    else
@@ -2745,7 +2734,13 @@ int main(int argc, char *argv[]) {
 		if (checkParams(argc, argv, "save")) save();
 	}
 	if (checkParams(argc, argv, "load")) load(false);
-	else if (checkParams(argc, argv, "load_files")) load(true);
+
+	printf("Warnings: %d\n", badCount);
+	showContext(0);
+	printf("Node limit: %d\n",(int)maxNodes);
+	printf("Statements: %d\n",(int)maxStatements);
+
+	if (checkParams(argc, argv, "load_files")) load(true);
 	else if (checkParams(argc, argv, "debug")) {
 		printf("debugging\n");
 		//        load();
@@ -2767,10 +2762,6 @@ int main(int argc, char *argv[]) {
 		start_server();
 		return 0;
 	}
-
-	printf("Warnings: %d\n", badCount);
-    printf("Node limit: %d\n",(int)maxNodes);
-    printf("Statements: %d\n",(int)maxStatements);
 	if (checkParams(argc, argv, "exit")) exit(0);
 	//	testBrandNewStuff();
 	console();

@@ -164,7 +164,7 @@ NodeVector parse(const char* data) {
 
 	data=fixQuotesAndTrim(editable(data));
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
-
+	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
 	if(data[0]==':')appendFile("commands.log",data);
 	else appendFile("query.log", data);
 
@@ -281,13 +281,13 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	if (eq(data, ":hack")) {
-//		Context* c=currentContext();
+//		Context* c=context;
 //		c->nodeCount-=1000; //hack!
 		//		maxNodes += 1000;
 		return OK;
 	}
 	if (eq(data, ":c")|| eq(data, ":context")) {
-		showContext(currentContext());
+		showContext(context);
 		return OK;
 	}
 	if (eq(data, ":t") || eq(data, ":test") || eq(data, ":tests")) {
@@ -543,7 +543,7 @@ NodeVector parse(const char* data) {
 	dissectWord(a, true);
 	show(a);
     //	if (i == 0) showNodes(instanceFilter(a), true);
-	//        findWord(currentContext()->id, data);
+	//        findWord(context->id, data);
     if(isAbstract(a)&&i == 0) {
 		lookupLimit=resultLimit;
 		NV all=instanceFilter(a);

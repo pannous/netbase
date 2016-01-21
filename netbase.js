@@ -3,7 +3,7 @@
 
 var div=document.getElementById("netbase_results");
 var server="/html/"; // "http://quasiris.big:3333/html/";
-var filterIds=[-10646,-50,-10508];
+var filterIds=[-10646,-50,-10508,-10910];
 function br(){
 	div.appendChild( document.createElement("br"));
 }
@@ -54,7 +54,17 @@ function makeLink(name,url,elem)
 
 function makeStatement(statement,elem)
 {
+    if(filterIds.indexOf(statement.pid)>=0)return;
+    if(statement.sid==-666)return;// Error/Missing
 	if(statement.predicate=="nr in context")return; 
+	if(statement.predicate.match(/ID/))return;
+	if(statement.predicate=="GND")return;
+	if(statement.predicate=="DDC")return;
+	if(statement.subject=="◊")return;
+	if(statement.subject.startsWith("http"))return;
+	if(statement.object.match(/rdf/))return;
+	if(statement.object.match(/wikimedia.org/))return;
+	if(1+statement.subject>1)return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	var top = document.createElement("tr");
 	makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
@@ -66,7 +76,8 @@ function makeStatement(statement,elem)
 	makeLink(" +",statement.sid+" include "+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
 	makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
-	x=makeLink(statement.object,server+statement.oid,makeRow(top));
+	var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
+	var x=makeLink(statement.object,objectUrl,makeRow(top));
 	makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
 	elem.appendChild(top);
 	if(statement.predicate=="quasiris id")throw new Exception(); 

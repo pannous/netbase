@@ -797,8 +797,8 @@ void enqueueClass(Query& q, queue<Node*>& classQueue, Node * c) {
 
 NodeVector & nodesOfDirectType(int kind) {
 	NodeVector* all=new NodeVector;
-	for (int i = 0; i < currentContext()->nodeCount; i++) {
-		Node* n = &currentContext()->nodes[i];
+	for (int i = 0; i < context->nodeCount; i++) {
+		Node* n = &context->nodes[i];
 		if (checkNode(n, i, false, false) && n->kind == kind)
 			all->push_back(n);
 	}
@@ -1397,13 +1397,13 @@ bool enqueue(Node* current, Node* d, NodeQueue * q) {
 
 NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	//    map<Node*, Node*>enqueued;
-	enqueued = (int*) malloc(maxNodes * sizeof (int)); //currentContext()->nodeCount * 2
+	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	NodeQueue q;
 	if (enqueued == 0) {
 		p("out of memory for findPath");
 		throw "out of memory for findPath";
 	}
-	memset(enqueued, 0, currentContext()->nodeCount * sizeof (int));
+	memset(enqueued, 0, context->nodeCount * sizeof (int));
     
 	ps("LOAD!");
 	q.push(fro);
@@ -1538,41 +1538,4 @@ NodeVector parseProperties(const char *data) {
 	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
 	showNodes(all);
 	return all;
-}
-
-//inline int
-const static bool sortNodePredicate(Node* a, Node* b) {
-	int x=a->statementCount;
-	int y=b->statementCount;
-	return x>y;
-//	return (*a < *b);
-	//	return a<b;//-
-//	return (a->statementCount > b->statementCount);
-//	return (a->key()> b->key());
-}
-void sortNodes(NodeVector& all){
-//	int count=0;
-	int max=0;
-	deque<Node*> sorted;
-	for (int i=0; i<all.size(); i++) {
-		Node* n=all[i];
-		if(n->statementCount>max){
-			sorted.push_front(n);
-			max=n->statementCount;
-		}
-		else sorted.push_back(n);
-	}
-	for (int i=0; i<all.size(); i++) {
-		all[i]=sorted[i];
-	}
-	std::sort(all.begin(), all.end(),sortNodePredicate);
-//	auto x=all.begin();
-//	auto y=all.end();
-//	std::sort(x, y, sortNodePredicate);// [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
-	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b)->bool { return a->statementCount < b->statementCount; });
-	//	showNodes(all,false,false,false);
-	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
-	//	showNodes(all,false,false,false);
-	//	std::sort(all.begin(),all.end(),);
-
 }

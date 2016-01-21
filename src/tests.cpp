@@ -671,7 +671,7 @@ void testImportExport() {
 	//    check(query("all firstnames starting with 'a'").size() > 0);
 
 	/* NOO dont overwrite nodes.bin ...
-	 Context* c=currentContext();
+	 Context* c=context;
 	 int nodeCount=c->nodeCount;
 	 c->nodeCount=9999;
 	 save();
@@ -1482,7 +1482,7 @@ void old_to_remove(){
     //    p( statementSize);
     //    importFreebase();
     //    testFreebase();
-    //	if(currentContext()->nodeCount<10000)importAll();
+    //	if(context->nodeCount<10000)importAll();
     //	testHash();
     //	checkWordnet();
     //    const char* x=concat("ab","cde");
@@ -1643,12 +1643,62 @@ void fixAllNames(){
 	}
 }
 
+void fixRelations(){
+	for(int i=1;i<context->statementCount;i++){
+		S s=&context->statements[i];
+		if(s->predicate==-10031)s->predicate=_Type; // Ist ein(e)
+	}
+}
+void getClasses(){
+//	NodeVector all;
+	NodeSet all;
+//	for(int i=1;i<max(context->nodeCount,context->lastNode);i++){
+//		N n=&context->nodes[i];
+//		if(!n->id||n->name<context->nodeNames||n->name > context->nodeNames+context->currentNameSlot)continue;
+//		if(startsWith(n->name, "http"))continue;
+//		if(eq(n->name, "◊"))continue;
+//		if(isNumber(n->name))continue;
+//		if(n->kind==_clazz)//_entity
+//			all.push_back(n);
+////			printf("%s	Q%d\n",n->name,n->id);
+//	}
+	for(int i=1;i<context->statementCount;i++){
+		S s=&context->statements[i];
+		if(!checkStatement(s,1,0))continue;
+		if(s->predicate==-10031 || s->predicate==_Type || s->Predicate()==SuperClass){ // Ist ein(e)
+			N n=s->Object();
+			if(!n->id||n->name<context->nodeNames||n->name > context->nodeNames+context->currentNameSlot)continue;
+			if(startsWith(n->name, "http"))continue;
+			if(eq(n->name, "◊"))continue;
+			if(isNumber(n->name))continue;
+//			if(!contains(all,))// NodeSet auto dedupe!
+				all.insert(n);// .push_back(n);
+		}
+	}
+//	sortNodes(all);
+	NodeSet::iterator it;
+//	for(it=all->begin();it!=all->end();it++){
+//		for(int i=1;i<all.size();i++){
+	for(it=all.begin();it!=all.end();it++){
+		N n=(Node*) *it;
+//		N n=all[i];
+		printf("%s	Q%d\n",n->name,n->id);
+	}
+
+}
 
 void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 //	p("test -> SHELL");return;// for shell
+//	fixRelations();
+	context=getContext(current_context);
 
+//		getContext(0)->statementCount-=100000;// make some room ONCE
+//		getContext(0)->nodeCount-=100000;// make some room ONCE
+//		getContext(0)->lastNode-=100000;
+//	importN3("wikidata/wikidata-taxonomy.nt.gz");
+	getClasses();
 	p("Test Brand New Stuff");
 //    testing=false;// NO RELATIONS!
 //	testImportExport();
@@ -1661,9 +1711,6 @@ void testBrandNewStuff() {
 
 //	importWikiData();
 	//	handle("/41172206");
-//	getContext(0)->statementCount-=100000;// make some room ONCE
-//	getContext(0)->nodeCount-=100000;// make some room ONCE
-//	getContext(0)->lastFree-=100000;
 //	handle("/90962");
 //	handle(":server");
 //	handle("/-1");

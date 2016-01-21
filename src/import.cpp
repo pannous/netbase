@@ -31,7 +31,6 @@ bool importing=false;
 
 void setText(Node *node, char* text) {
 	int len=(int) strlen(text);
-	Context* context=currentContext();
 	long slot=context->currentNameSlot;
 	char* label=context->nodeNames + slot;
 	strcpy(label, text); // can be freed now!
@@ -63,24 +62,24 @@ bool checkLowMemory() {
 		return true;
 	}
 	//		|| currentSize*1.2>sizeOfSharedMemory||
-	if (currentContext()->nodeCount + 30000 > maxNodes) {
+	if (context->nodeCount + 30000 > maxNodes) {
 		p("OUT OF MEMORY!");
-		pf("%d nodes!\n", currentContext()->nodeCount);
+		pf("%d nodes!\n", context->nodeCount);
 		return true;
 	}
-	if (currentContext()->lastFree + 30000 > maxNodes) {
+	if (context->lastNode + 30000 > maxNodes) {
 		p("OUT OF MEMORY!");
-		pf("%d nodes!\n", currentContext()->lastFree);
+		pf("%d nodes!\n", context->lastNode);
 		return true;
 	}
-	if (currentContext()->currentNameSlot + 300000 > maxNodes * averageNameLength) {
+	if (context->currentNameSlot + 300000 > maxNodes * averageNameLength) {
 		p("OUT OF MEMORY!");
-		pf("%ld characters!\n", currentContext()->currentNameSlot);
+		pf("%ld characters!\n", context->currentNameSlot);
 		return true;
 	}
-	if (currentContext()->statementCount + 40000 > maxStatements) {
+	if (context->statementCount + 40000 > maxStatements) {
 		p("OUT OF MEMORY!");
-		pf("%d statements!\n", currentContext()->statementCount);
+		pf("%d statements!\n", context->statementCount);
 		if(importing)exit(0);
 		return true;
 	}
@@ -563,7 +562,6 @@ bool isNameField(char* field, char* nameField) {
 }
 
 Node* namify(Node* node, char* name) {
-	Context* context=currentContext();
 	node->name=name_root+context->currentNameSlot;
 	strcpy(node->name, name); // can be freed now!
 	int len=(int) strlen(name);
@@ -1178,7 +1176,6 @@ bool importWikiLabels(cchar* file,bool properties=false){
 	char* test0=(char*) malloc(10000);
 	char* test;
 	int linecount=0;
-	Context* context=currentContext();
 	bool english=contains(file, ".en.");
 	while (readFile(file,&line[0])) {
 		if (++linecount % 10000 == 0) {
@@ -1469,6 +1466,9 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	}
 	size_t len=strlen(name);
 	if(len==0)return 0;
+	if(name[0]=='_' && name[0]==':')
+		return getPropertyDummy(name);// Missing;// _:node1a8gbf20dx14041
+
 	if(endsWith(name, "\" .")){name[len-3]=0;len-=3;}
 	if (contains(name, "^^"))
 		return rdfValue(name);
@@ -1496,7 +1496,7 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 		if(contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
 		int id=atoi(name+1);
-		if(id>maxNodes-propertySlots)return Error;// bad() counted before
+		if(id>maxNodes-propertySlots)return Missing;// bad() counted before
 		if(id>0)return getNode(id);
 	}
 	if(name[0]=='P' && name[1]<='9'){
@@ -1520,11 +1520,22 @@ Node* getFreebaseEntity(char* name,bool fixUrls=true) {
 	return dissectFreebase(name);
 }
 
+// true=
 bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
-	if (startsWith(name, "<book.isbn")) return true;
-	if (startsWith(name, "<biology.gene")) return true;
-	if (startsWith(name, "<freebase.")) return true;
-	if (eq(name, "<common.topic>")) return true;
+	bool DROP=true;
+	bool KEEP=false;
+	if(endsWith(name,"#propertyStatementLinkage>"))return DROP;
+	if(startsWith(name,"http")||startsWith(name,"<http")){
+		if(startsWith(name,"<http://www.wikidata.org/entity/"))return KEEP;
+		return DROP;
+	}
+	if(name[0]<='9')return DROP;// || name[1]<='9')continue;//
+	return KEEP;
+
+	if (startsWith(name, "<book.isbn")) return DROP;
+	if (startsWith(name, "<biology.gene")) return DROP;
+	if (startsWith(name, "<freebase.")) return DROP;
+	if (eq(name, "<common.topic>")) return DROP;
 	// nutrition_information
 	if (eq(name, "\"/#type\"")) return true;
 
@@ -1549,7 +1560,8 @@ bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
 bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	autoIds=false;
 	//    if(hasWord("vote_value"))return true;
-	pf("Current nodeCount: %d\n", currentContext()->nodeCount);
+	context=getContext(current_context);
+	pf("Current nodeCount: %d\n", context->nodeCount);
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -1582,6 +1594,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		memset(subjectName, 0, 10000);
 //		if(linecount==4067932)continue;// MAC WTF
 		if(line[0]=='#')continue;
+
 		//        subjectName=line;
 		//        int i=0;
 		//        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
@@ -1589,11 +1602,14 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		//        for (;i<10000;i++)if(line[i]=='\t')line[i]=0;
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
+		if(startsWith(subjectName, "http"))continue;
+		u8_unescape(objectName, (int)strlen(objectName), objectName);
+		u8_unescape(subjectName, (int)strlen(subjectName), subjectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		fixNewline(objectName);
 //		if(contains(line,"Q245200>")&& contains(line,"Q20900468"))
 //			p("VERGIL!");
-//		if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
+		if(filterFreebase(subjectName)){ignored++; continue;}//p(line);}
 //		if(filterFreebase(predicateName)){ignored++; continue;}
 //		if(filterFreebase(objectName)){ignored++;continue;}
 
@@ -1608,7 +1624,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (predicateName[3] == '-' || predicateName[3] == '_' || predicateName[3] == 0) continue;        // <zh-ch, id ...
 		if (predicateName[2] == '-' || predicateName[2] == '_' || predicateName[2] == 0) continue;        // zh-ch, id ...
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
-		if(startsWith(subjectName,"http"))continue;//
+//		if(startsWith(subjectName,"http")||startsWith(subjectName,"<http"))continue;//
+//		if(subjectName[0]<='9' || subjectName[1]<='9')continue;//
 		//    if(contains(line,"<Apple"))
 		//        p(line);
 		if(predicateName[0]=='.'){
@@ -1626,15 +1643,14 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			object=t;
 		}
 
-		if (!subject || !predicate || !object || !subject->id || !predicate->id || !object->id) {// G.o.d. dot problem !?
+		if (!subject || !predicate || !object || !subject->id || !predicate->id || !object->id || subject==Error) {// G.o.d. dot problem !?
 			//            printf("_"); // ignored
 //			subject=getFreebaseEntity(subjectName);
 			bad(); // subject->id ==0 ZB Q5 (no German!) OK
 		} else {
 			//            else// Statement* s=
-
 			if(endsWith(objectName, "#Class"))
-				predicate->kind=_clazz;
+				subject->kind=_clazz;
 			else
 				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 		}
@@ -1643,7 +1659,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	p("import N3 ok");
 	closeFile(file);
 	pf("BAD: %d     MISSING: %d\n",badCount, MISSING);
-	currentContext()->use_logic=false;
+	context->use_logic=false;
 	//	freebaseKeys.clear();
 	//	free(freebaseKeys);
 	return true;
@@ -2007,7 +2023,7 @@ void importWordnet() {
 	if(germanLabels)
 		importGermanLables();
 	importSenses();
-	getContext(wordnet)->lastFree=synonyms; //200000+117659;//WTH!
+	getContext(wordnet)->lastNode=synonyms; //200000+117659;//WTH!
 	importSynsets();
 	importDescriptions();// English!
 	importStatements();
@@ -2020,7 +2036,7 @@ void importWordnet() {
 	addStatement(Antonym, Synonym, getAbstract("opposite"));
 	if(germanLabels)
 		importGermanLables(true);// Now the other labels (otherwise abstracts might fail?)
-	currentContext()->use_logic=true;
+	context->use_logic=true;
 }
 
 void importWordnet2() {
@@ -2124,6 +2140,7 @@ void importAllYago() {
  */
 
 void importWikiData() {
+	context=getContext(wikidata);
 	useHash=false;
 	autoIds=false;
 //	useHash=true;
@@ -2136,7 +2153,7 @@ void importWikiData() {
 		importWikiLabels("wikidata/wikidata-terms.de.nt");
 		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 		showContext(current_context);
-		currentContext()->lastFree=(int)maxNodes/2;// hack
+		context->lastNode=(int)maxNodes/2;// hack
 		collectAbstracts();
 //		importLabels("wikidata/wikidata-properties.de.nt");
 //		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!

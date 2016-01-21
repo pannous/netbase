@@ -3,7 +3,7 @@
 #include <sys/stat.h> // mkdir
 
 bool save() {
-    Context* c = currentContext();
+    Context* c = context;
 	mkdir((path+"data").c_str(),0777);
 	string data_path=path+"data/";
     FILE *fp;
@@ -42,7 +42,7 @@ bool save() {
 
 // what for??
 bool export_csv(){
-    Context* c = currentContext();
+    Context* c = context;
     FILE *fp;
 	// To write numbers in octal, precede the value with a 0. Thus, 023 is 238 (which is 19 in base 10).
 	mkdir((path+"export").c_str(),0777);

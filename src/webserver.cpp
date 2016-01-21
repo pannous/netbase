@@ -182,8 +182,8 @@ int handle(cchar* q0,int conn){
     excluded.clear();
     included.clear();
     
-    if(contains(q,"statement count")){Writeline(conn,itoa((int)currentContext()->statementCount).data());return 0;}
-    if(contains(q,"node count")){Writeline(conn,itoa(currentContext()->nodeCount).data());return 0;}
+    if(contains(q,"statement count")){Writeline(conn,itoa((int)context->statementCount).data());return 0;}
+    if(contains(q,"node count")){Writeline(conn,itoa(context->nodeCount).data());return 0;}
     
     
 	if (startsWith(q, "all/")) {

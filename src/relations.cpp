@@ -8,6 +8,7 @@
 #include "relations.hpp"
 
 Node* Error;
+Node* Missing;
 Node* Unknown;
 Node* See;
 Node* Similar;
@@ -136,6 +137,7 @@ Node* addRelation(int id, const char* name,bool transitive=false) {
 
 void initRelationsDE() {
 	Error = addRelation(_error, "Fehler");
+	Missing = addRelation(_missing, "Fehlend");
 	Unknown = addRelation(_unknown, "?");
 	See = addRelation(_see_also, "Siehe");
 	Antonym = addRelation(_antonym, "Gegenteil");
@@ -260,7 +262,8 @@ void initRelationsDE() {
 void initRelations() {
 //    if(testing){p("testing");return;}
     p("initRelations");
-    currentContext()->currentNameSlot++;// not 0!
+	context=getContext(current_context);
+    context->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_unknown, "unknown");
 	See = addRelation(_see_also, "see also");
@@ -270,6 +273,7 @@ void initRelations() {
 	Any = addRelation(_any, "?");
 
     Error = addRelation(_error, "Error");
+	Missing = addRelation(_missing, "Missing");
 	Antonym = addRelation(_antonym, "antonym");
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "attribute"); // tag

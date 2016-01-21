@@ -12,6 +12,7 @@
 
 extern Node* Unknown;
 extern Node* Error;
+extern Node* Missing;
 extern Node* Antonym;
 extern Node* Parent;
 extern Node* SuperClass;// Parent
@@ -118,14 +119,15 @@ extern Node* StartsWith;
 extern Node* EndsWith;
 extern Context* Wordnet;
 
-// NEGATIVE VALUES GO IN PROPERTYSLOTS!
-// remove '= -' if this scheme is detested
+// NEGATIVE VALUES GO IN PROPERTY_SLOTS!
+// remove '-' if this scheme is detested
 
 static const int propertyId = -98;
 static const int singletonId = -99;
 static const int abstractId = -102;
 
 static const int wordnet = 0;// 303; //context==Class??   TODO!
+static const int wikidata = 0;// for now
 // DANGER!!
 static const int _internal = -100;
 static const int _node = -101;// dont change
@@ -190,6 +192,7 @@ static const int _false = -200;// not '0' by design!
 static const int _true = -201;
 
 static const int _error= -666;//-1 = -evil in itself;//
+static const int _missing= -999;
 static const int _any=0;// !!!
 static const int _unknown=0;
 static const int _see= -50,//50 also, -40 similar
