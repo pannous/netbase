@@ -241,7 +241,7 @@ int handle(cchar* q0,int conn){
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
     
-   	const char* entity_format = 0;
+	const char* entity_format = 0;
 	const char* entity_format_txt = "%s #%d statements:%d\n";
 	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
 	const char* entity_format_json = "   {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d";

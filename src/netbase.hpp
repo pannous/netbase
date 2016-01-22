@@ -565,7 +565,7 @@ Node* number(int n);
 Node* getProperty(Node* n,const char* s);
 Node* getPropertyDummy(const char* id);
 Node* findRelation(Node* from, Node* to);
-Node* findProperty(Node* n , const char* m,bool allowInverse=true);
+Node* findProperty(Node* n , const char* m,bool allowInverse=true,int limit=0);
 NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);

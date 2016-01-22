@@ -1713,25 +1713,18 @@ void testBrandNewStuff() {
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
 	context=getContext(current_context);
-//	context->statementCount-=100000;// make some room ONCE
-//	context->nodeCount-=100000;// make some room ONCE
-//	context->lastNode-=1000000;// hilft nicht wenn alle voll sind :  context->lastNode++
-//	context->lastNode=1;// RADICAL: fill all empty slots!
+	context->lastNode=1;// RADICAL: fill all empty slots!
+
 	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	//	getClasses();
 	//	fixRelations();
-//	N h=get(566123);
-	//	char* test="Hasloh";
-	//	char* test="Gehren";
-		germanLabels=true;
-
-
 	//	testAll();
 
 	germanLabels=true;
 	//    import("test.csv");
 	//	if(!hasWord("bug"))importWordnet();
-		importWikiData();
+//		importWikiData();
+	handle("Mensch");
 	//	handle("/41172206");
 	//	handle("/90962");
 	//	handle(":server");

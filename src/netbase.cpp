@@ -2159,13 +2159,15 @@ Statement * isStatement(Node * n) {
 	return 0;
 }
 
-Node* findProperty(Node* n , const char* m,bool allowInverse){
-Statement* s=0;
-while ((s=nextStatement(n,s))) {
-    if(eq(s->Predicate()->name,m,true))
-		if(allowInverse||eq(s->Subject(),n))
-        return s->Object();
-}
+Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
+	Statement* s=0;
+	int count=0;
+	while ((s=nextStatement(n,s))) {
+		if(limit && count++>limit)break;
+		if(eq(s->Predicate()->name,m,true))
+			if(allowInverse||eq(s->Subject(),n))
+				return s->Object();
+	}
     return 0;
 }
 
@@ -2623,11 +2625,16 @@ string getImage(cchar* a, int size,bool thumb) {
 }
 string getImage(Node* a, int size,bool thumb) {
 	if(!a||!checkNode(a))return 0;
-	Node* i=findProperty(a, "wiki_image");
-	if(!i)i=findProperty(a, "Bild");
-	if(!i)i=findProperty(a, "Wappen");
-	if(!i)i=findProperty(a, "Positionskarte");
-	if (!i || !checkNode(i))if(a->kind!=abstractId)return getImage(a->name);
+	Node* i=0;
+//	if(!i)i=findProperty(a, "wiki_image",false,1000);
+	if(!i)i=findProperty(a, "Bild",false,1000);
+	if(!i)i=findProperty(a, "Wappen",false,1000);
+	if(!i)i=findProperty(a, "Positionskarte",false,1000);
+	if (!i || !checkNode(i)){
+		N ab=getAbstract(a->name);
+		if(ab!=a)
+			return getImage(ab,size,thumb);
+	}
     return formatImage(i,size,thumb);
 }
 

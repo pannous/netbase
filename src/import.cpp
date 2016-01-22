@@ -1182,9 +1182,7 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			printf("%d labels, %d bad\r", linecount, badCount);
 			fflush(stdout);
 		}
-#ifdef __APPLE__
-					if(linecount>100)break;
-#endif
+//		if(debug)if(linecount>100)break;
 		u8_unescape(line,MAX_CHARS_PER_LINE,line);
 		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
@@ -1602,9 +1600,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 				break;
 			}
 		}
-#ifdef __APPLE__
-		if(linecount>100)break;
-#endif
+//		if(debug)if(linecount>100)break;
 		memset(objectName, 0, 10000);
 		memset(predicateName, 0, 10000);
 		memset(subjectName, 0, 10000);
@@ -2191,7 +2187,8 @@ void importWikiData() {
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
 //	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");
-	if(germanLabels)importWikiLabels("wikidata/wikidata-terms.en.nt",false);// now fill up missing!
+//	if(germanLabels)importWikiLabels("wikidata/wikidata-terms.en.nt",false);// now fill up missing!
+	context->lastNode=1;// now allow Gaps! // DANGER WITH ENGLISH!
 }
 
 
