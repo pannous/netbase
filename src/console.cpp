@@ -398,8 +398,13 @@ NodeVector parse(const char* data) {
 //        addStatement(get("included"), Instance,getAbstract(data+8));
 //        return nodeVectorWrap(get("included"));
 //    }
-//    ///
-    if (startsWith(data, "handle ")) {handle((char*)data+7);return OK;}// no ":" here!
+
+	if (args.size() >= 2 && (eq(args[0], "handle")||eq(args[0], ":handle"))){
+		string what=next_word(data);
+		handle(what.c_str());
+		return OK;
+	}
+
 	if (startsWith(data, "select ")) return query(data);
 	if (startsWith(data, "all ")||startsWith(data, "show ")||startsWith(data, ":all ")||startsWith(data, ":show ")) {
 		lookupLimit=100;

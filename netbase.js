@@ -64,7 +64,7 @@ function makeStatement(statement,elem)
 	if(statement.subject=="◊")return;
 	if(statement.subject.startsWith("http"))return;
 	if(statement.object.match(/rdf/))return;
-	if(statement.object.match(/wikimedia.org/))return;
+	if(statement.object.match(/wikimedia/i))return;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
 	if(1+statement.subject>1)return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	var top = document.createElement("tr");
@@ -121,6 +121,13 @@ function makeEntity(entity)
 {
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+entity.name,div).style=nolink+bold+blue+big
+	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
+	link.style=nolink+bold+blue+big
+	link.target="_blank"
+	img=document.createElement("img");
+	img.src="http://pannous.net/files/wikipedia.png";
+	img.width=20
+	link.appendChild(img);
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
 	if(entity.image && !entity.image.startsWith("Q"))addImage(entity.image,div);
 	// addImage(entity.image,div);

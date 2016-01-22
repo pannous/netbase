@@ -309,7 +309,14 @@ int handle(cchar* q0,int conn){
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				if(format == json && good>0)Writeline(conn, ",\n");
-				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, s->Object()->name, s->Subject()->id, s->Predicate()->id, s->Object()->id);
+				char* objectName=s->Object()->name;
+
+				if(s->Predicate()==Instance){
+					N type=findProperty(s->Object(),Type->name,0,3);
+					if(  checkNode(type))
+						objectName=(char*)(concat(concat(objectName, ": "),type->name));
+			}
+				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, objectName, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
 				good++;
 			}

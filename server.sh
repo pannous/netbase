@@ -1,3 +1,3 @@
 killall netbase
-make
+make -j8
 sudo ~/netbase/netbase server $@

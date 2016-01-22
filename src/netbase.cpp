@@ -2159,6 +2159,7 @@ Statement * isStatement(Node * n) {
 	return 0;
 }
 
+// see getProperty
 Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
 	Statement* s=0;
 	int count=0;
@@ -2504,6 +2505,7 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	return best;
 }
 
+// see findProperty
 Node * getProperty(Node* node, cchar* key) {
 	S s=findStatement(node, getThe(key), Any);
 	//findStatement(node, getAbstract(key), Any); // todo? egal

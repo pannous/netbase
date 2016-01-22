@@ -1651,6 +1651,7 @@ void fixRelations(){
 		if(s->predicate==-10361)s->predicate=_PartOf;// Ist Teil von
 		if(s->predicate==-10527)s->predicate=_Part;// Besteht aus
 		if(s->predicate==-10150)s->predicate=_Part;// x Untereinheit (administrative Einheit)  // HAS
+		if(s->predicate==-10171)s->predicate=_SuperClass;// übergeordnetes Taxon
 
 	}
 }
@@ -1723,8 +1724,9 @@ void testBrandNewStuff() {
 	germanLabels=true;
 	//    import("test.csv");
 	//	if(!hasWord("bug"))importWordnet();
-//		importWikiData();
-	handle("Mensch");
+	//		importWikiData();
+	handle("/verbose/Mensch");
+//	handle("Mensch");
 	//	handle("/41172206");
 	//	handle("/90962");
 	//	handle(":server");
