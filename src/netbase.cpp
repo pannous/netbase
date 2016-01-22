@@ -608,7 +608,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 // return false if node not ok
 // remove when optimized!!!!!!!!!!
 bool checkNode(int nodeId, bool checkStatements, bool checkNames,bool report) {
-	if(nodeId<0||nodeId>=maxNodes)return false;
+	if(nodeId<-propertySlots||nodeId>=maxNodes)return false;
 	return checkNode(get(nodeId),nodeId , checkStatements,  checkNames,report);
 }
 
@@ -1227,14 +1227,18 @@ bool hasNode(const char* thingy) {
     return hasWord(thingy);
 }
 
+// merge with getAbstract bool create
 Node * hasWord(const char* thingy) {
 	if (!thingy || thingy[0] == 0) return 0;
     //	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
     //    char* fixed=editable(thingy); // free!!!
     //	thingy=(const char*) fixQuotesAndTrim(fixed);// NOT HERE!
 	int h=wordhash(thingy);
-	Ahash* found=&abstracts[abs(h) % maxNodes]; // TODO: abstract=first word!!! (with new 'next' ptr!)
-    Node* first;
+	long pos=abs(h) % maxNodes;
+	Ahash* found=&abstracts[pos]; // TODO: abstract=first word!!! (with new 'next' ptr!)
+    Node* first=0;
+	if(h==15581587)
+		h=h;
 	if (found&& found->abstract>0 && (first=get(found->abstract))){
         //		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
         //			return found->abstract;
@@ -2436,7 +2440,8 @@ Statement * learn(string sentence) {
 //void cleanAbstracts(Context* c){
 Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	if (!abstract || !abstract->name) return 0;
-    if(abstract->kind==singletonId)return abstract;
+	if(abstract->kind==singletonId)return abstract;
+	if(abstract->kind==_entity)return abstract;// hack! first _entity wikidata is best? see importWikiLabels
     if (getRelation(abstract->name)) // not here! doch
         return getRelation(abstract->name);
     if (type<node_root||type>&node_root[maxNodes]) type=0;// default parameter hickup through JNA

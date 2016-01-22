@@ -1182,6 +1182,9 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			printf("%d labels, %d bad\r", linecount, badCount);
 			fflush(stdout);
 		}
+#ifdef __APPLE__
+					if(linecount>100)break;
+#endif
 		u8_unescape(line,MAX_CHARS_PER_LINE,line);
 		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
@@ -1202,9 +1205,6 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		if(startsWith(test, "description"))continue;//for now!
 		fixLabel(label);
 		if(!label || label[0]==0){bad();continue;}
-		if(contains(key, '-')){
-			bad();continue;// doesn't happen
-		}
 		label=dropUrl(label);
 		key=dropUrl(key);
 		int id=atoi(key+1);
@@ -1214,10 +1214,17 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			Node* node=&context->nodes[id];
 			if(english&&node->name)
 				continue;
-			initNode(node, id, label, _entity, 0);// _entity -> class later
+			N n=initNode(node, id, label, _entity, 0);// _entity -> class later
 //			N n=add_force(0, id, label, abstractId);
 //			getAbstract(<#const char *word#>)
-			insertAbstractHash(node);// HAACK!
+			N a=hasWord(label);
+			if(!a)
+			   Ahash* ya=insertAbstractHash(node);// HAACK!
+			else{
+				if(isAbstract(a))continue;
+//				ab=createAbstract(label)
+				addStatement(a, Instance, node);// uff todo!  Instance->Alternative on top
+			}
 		}
 		else bad();
 	}
@@ -1595,7 +1602,9 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 				break;
 			}
 		}
-
+#ifdef __APPLE__
+		if(linecount>100)break;
+#endif
 		memset(objectName, 0, 10000);
 		memset(predicateName, 0, 10000);
 		memset(subjectName, 0, 10000);
@@ -2167,21 +2176,22 @@ void importWikiData() {
 		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 		showContext(current_context);
 		context->lastNode=(int)maxNodes/2;// hack
-		collectAbstracts();
+//		collectAbstracts(); BREAKS THINGS!
 //		importLabels("wikidata/wikidata-properties.de.nt");
 //		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
 
 	}
-//	else{
-//		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
-//		importWikiLabels("wikidata/wikidata-properties.en.nt",true);
-//	}
+	else{
+		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
+		importWikiLabels("wikidata/wikidata-properties.en.nt",true);
+	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	importN3("wikidata/wikidata-instances.nt.gz");
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
 //	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");
+	if(germanLabels)importWikiLabels("wikidata/wikidata-terms.en.nt",false);// now fill up missing!
 }
 
 

@@ -1710,45 +1710,35 @@ void testBrandNewStuff() {
 	debug = true;
 //	p("test -> SHELL");return;// for shell
 	p("Test Brand New Stuff");
-
+	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
 	context=getContext(current_context);
-	context->statementCount-=100000;// make some room ONCE
-	context->nodeCount-=100000;// make some room ONCE
-	context->lastNode-=1000000;// hilft nicht wenn alle voll sind :  context->lastNode++
-	context->lastNode=1;// RADICAL: fill all empty slots!
+//	context->statementCount-=100000;// make some room ONCE
+//	context->nodeCount-=100000;// make some room ONCE
+//	context->lastNode-=1000000;// hilft nicht wenn alle voll sind :  context->lastNode++
+//	context->lastNode=1;// RADICAL: fill all empty slots!
 	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	//	getClasses();
 	//	fixRelations();
 //	N h=get(566123);
-//	char* test="Hasloh";
-	char* test="Gehren";
-//	check(eq(h->name,test));
-	N a=getAbstract(test);
-	check(a);
-	p(a->name);
-
-	check(eq(a->name,test));
+	//	char* test="Hasloh";
+	//	char* test="Gehren";
+		germanLabels=true;
 
 
-
-	//    testing=false;// NO RELATIONS!
-	//	testImportExport();
-	//	testStringLogic();
 	//	testAll();
 
 	germanLabels=true;
 	//    import("test.csv");
 	//	if(!hasWord("bug"))importWordnet();
-
-	//	importWikiData();
+		importWikiData();
 	//	handle("/41172206");
 	//	handle("/90962");
 	//	handle(":server");
 	//	handle("/-1");
 	//	flattenGeographischeKoordinaten();
 	//	fixAllNames();
-	
 	//	handle("all+pennsylvania+marijuana");
-}
+
+} // Continue with shell
 

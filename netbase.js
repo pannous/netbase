@@ -3,7 +3,7 @@
 
 var div=document.getElementById("netbase_results");
 var server="/html/"; // "http://quasiris.big:3333/html/";
-var filterIds=[-10646,-50,-10508,-10910];
+var filterIds=[-10646,-50,-10508,-10910,-11566];
 function br(){
 	div.appendChild( document.createElement("br"));
 }
@@ -53,13 +53,14 @@ function makeLink(name,url,elem)
 // };
 
 function makeStatement(statement,elem)
-{
+{  // if Wikimedia-Kategorie  BREAK!
     if(filterIds.indexOf(statement.pid)>=0)return;
     if(statement.sid==-666)return;// Error/Missing
 	if(statement.predicate=="nr in context")return; 
 	if(statement.predicate.match(/ID/))return;
 	if(statement.predicate=="GND")return;
 	if(statement.predicate=="DDC")return;
+	if(statement.predicate=="VIAF")return;	
 	if(statement.subject=="◊")return;
 	if(statement.subject.startsWith("http"))return;
 	if(statement.object.match(/rdf/))return;
