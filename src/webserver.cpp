@@ -327,7 +327,7 @@ int handle(cchar* q0,int conn){
 		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
 	const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
-	if (format == json)Writeline(conn,good>1?"}\n]}":"]}");
+	if (format == json)Writeline(conn,good>0?"}\n]}":"]}");
 	if (format == xml)Writeline(conn, "</results>\n");
 	if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
 	if(contains(q0,"html/"))Writeline(conn, html_end);
