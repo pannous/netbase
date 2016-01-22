@@ -539,6 +539,8 @@ NodeVector parse(const char* data) {
 	data=replace((char*) data, ' ', '_');
     
 	int i=atoi(data);
+	if(data[0]=='P' && data[1]<='9')return nodeVectorWrap(get(-atoi(++data)-10000));// P106 -> -10106
+
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 //	if(autoIds && i)return nodeVectorWrap(get(i));

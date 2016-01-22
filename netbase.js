@@ -64,6 +64,7 @@ function makeStatement(statement,elem)
 	if(statement.subject=="◊")return;
 	if(statement.subject.startsWith("http"))return;
 	if(statement.object.match(/rdf/))return;
+	if(statement.object.match(/ObjectProperty/))return;
 	if(statement.object.match(/wikimedia/i))return;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
 	if(1+statement.subject>1)return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);

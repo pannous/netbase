@@ -1725,7 +1725,8 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 	//	if(!hasWord("bug"))importWordnet();
 	//		importWikiData();
-	handle("/verbose/Mensch");
+//	handle("/verbose/Mensch");
+	handle("/P106");
 //	handle("Mensch");
 	//	handle("/41172206");
 	//	handle("/90962");
