@@ -129,6 +129,7 @@ function makeEntity(entity)
 	img.src="http://pannous.net/files/wikipedia.png";
 	img.width=20
 	link.appendChild(img);
+	makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
 	if(entity.image && !entity.image.startsWith("Q"))addImage(entity.image,div);
 	// addImage(entity.image,div);

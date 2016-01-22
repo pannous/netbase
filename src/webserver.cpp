@@ -29,7 +29,7 @@
 /*  Service an HTTP request  */
 
 //#define SERVER_PORT  (80)
-int SERVER_PORT=80; //todo
+int SERVER_PORT=81; //todo
 static char server_root[1000] = "/Users/me/";
 
 int resultLimit = 200; // != lookuplimit reset with every fork !!
@@ -327,7 +327,7 @@ int handle(cchar* q0,int conn){
 		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
 	const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
-	if (format == json)Writeline(conn, "}\n]}");
+	if (format == json)Writeline(conn,good>1?"}\n]}":"]}");
 	if (format == xml)Writeline(conn, "</results>\n");
 	if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
 	if(contains(q0,"html/"))Writeline(conn, html_end);
