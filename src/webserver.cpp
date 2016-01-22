@@ -312,7 +312,7 @@ int handle(cchar* q0,int conn){
 				char* objectName=s->Object()->name;
 
 				if(s->Predicate()==Instance){
-					N type=findProperty(s->Object(),Type->name,0,3);
+					N type=findProperty(s->Object(),Type->name,0,50);
 					if(  checkNode(type))
 						objectName=(char*)(concat(concat(objectName, ": "),type->name));
 			}
