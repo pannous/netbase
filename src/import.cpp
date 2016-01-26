@@ -96,7 +96,9 @@ bool checkLowMemory() {
 std::map<int, int> wordnet_synset_map;
 
 // 100001740    ->  200000 and so on, no gaps
-int norm_wordnet_id(int synsetid,bool force=false) {
+int norm_wordnet_id2(int synsetid,bool force=false) {
+	if(synsetid < 1000 || (synsetid>10000&&synsetid < 14000))
+		p("problem!");
 	if (synsetid < million && !force) return synsetid;
 	int id=wordnet_synset_map[synsetid];
 //	10000000
@@ -114,6 +116,10 @@ int norm_wordnet_id(int synsetid,bool force=false) {
 	//	id=id+10000;// NORM!!!
 	return id;
 	//	return (synsetid%million)+200000;
+}
+
+int norm_wordnet_id(int synsetid,bool force=false) {
+	return -norm_wordnet_id2(synsetid,force);// NEGATIVE!
 }
 
 void load_wordnet_synset_map() {
@@ -281,7 +287,7 @@ void importNodes() {
 
 	char line[100];
 
-	char* name0=(char*) malloc(10000);
+	char* name0=(char*) malloc(1000);
 	int linecount=0;
 	FILE *infile=open_file(nodes_file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -1784,7 +1790,6 @@ void importAbstracts() {
 	int id;
 	doDissectAbstracts=false;
 	//	memset(abstracts, 0, abstractHashSize * 2);
-	Context* c=getContext(wordnet);
 	FILE *infile=open_file("wordnet/abstracts.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
@@ -1796,12 +1801,14 @@ void importAbstracts() {
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 		name=name0;
 		//		if (hasWord(name)) continue; check earlier
-		id=id + 10000; // OVERWRITE EVERYTHING!!!
-//		id=-id - 100000; // OVERWRITE EVERYTHING below!!!
-		c->nodeCount=id; // hardcoded hack to sync ids!!!
-		Node* a=getAbstract(name);
-		//		a->context=wordnet;
-		a->kind=abstractId;
+//		id=id + 10000; // OVERWRITE EVERYTHING!!!
+		id=-id - 100000; // OVERWRITE EVERYTHING below!!!
+		N a=add_force(current_context, id, name, abstractId);
+		insertAbstractHash(a);
+//		c->nodeCount=id; // hardcoded hack to sync ids!!!
+//		Node* a=getAbstract(name);
+//		//		a->context=wordnet;
+//		a->kind=abstractId;
 	}
 	fclose(infile); /* Close the file */
 }
@@ -1846,7 +1853,7 @@ void importGermanLables(bool addLabels=false) {
 		id=norm_wordnet_id(id,true); // 100001740  -> 200000 etc
 		if(!id)continue;
 		Node* node=get(id);
-		if(!isAbstract(node))		node->kind=kind;
+		if(!isAbstract(node))node->kind=kind;
 //		Node* abstract=getAbstract(german);
 		if(modify_english){
 			setLabel(node, german);// NOW?

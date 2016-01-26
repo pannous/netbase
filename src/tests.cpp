@@ -1599,6 +1599,7 @@ bool assertResult(char* query,char* value0){
 
 void flattenGeographischeKoordinaten(){
 	N n=getThe("Geographische Koordinaten");
+	if(isAbstract(n))n=get(-10625);
 	N b=getThe("Breitengrad");
 	N l=getThe("Längengrad");
 	Statement* s=0;
@@ -1609,8 +1610,8 @@ void flattenGeographischeKoordinaten(){
 			N bb=findProperty(c, "Breitengrad");
 			if(!bb)bb=findProperty(c, "Latitude");
 			S sb=addStatement(ort,b,bb,true,false);
-			S st=findStatement(c, getNode(1129), Any);
-			if(!st)continue;
+//			S st=findStatement(c, getNode(1129), Any);
+//			if(!st)continue;
 			//			N ll=st->Object();
 			N ll=getProperty(c, "Längengrad");
 			if(!ll)ll=getProperty(c, "Longitude");
@@ -1726,6 +1727,8 @@ void testBrandNewStuff() {
 	//	if(!hasWord("bug"))importWordnet();
 	//		importWikiData();
 //	handle("/verbose/Mensch");
+	importWordnet();
+//		flattenGeographischeKoordinaten();
 //	handle("/P106");
 //	parse(":server");
 //	handle("Mensch");
@@ -1733,7 +1736,6 @@ void testBrandNewStuff() {
 	//	handle("/90962");
 	//	handle(":server");
 	//	handle("/-1");
-	//	flattenGeographischeKoordinaten();
 	//	fixAllNames();
 	//	handle("all+pennsylvania+marijuana");
 

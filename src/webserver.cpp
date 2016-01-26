@@ -940,8 +940,8 @@ void start_server() {
 				Error_Quit("Error closing connection socket.");
 			exit(EXIT_SUCCESS);
 		}else{
-            //            p("not forked yet");
-            //            Service_Request(conn);// whatever
+            p("not forked yet");
+//            Service_Request(conn);// whatever
         }
 		/*  If we get here, we are still in the parent process,
          so close the connected socket, clean up child processes,

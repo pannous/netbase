@@ -180,9 +180,10 @@ Ahash * insertAbstractHash(int position, Node * a) {
         //			show(a);
         //			return 0;
         //		}
-		if (get(ah->abstract) == a)
+		N ab=get(ah->abstract);
+		if (ab == a)
             return ah; //schon da
-        if(eq(get(ah->abstract)->name, a->name, true))
+        if(ab && eq(ab->name, a->name, true))
             return ah; // NAME schon da!!
 		ah=getAhash(ah->next);
 	}
@@ -569,28 +570,29 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 	}
 	if (nodeId < -propertySlots) {
 		bad();
-		if(report)
-			pf("nodeId < -propertySlots %d<%d", nodeId, -propertySlots);
+		if(report)pf("nodeId < -propertySlots %d<%d", nodeId, -propertySlots);
 		return false;
 	}
 
 	if (nodeId > 1 && node->id > 0 && node->id != nodeId) {
 		bad();
-		if(report)
-		pf("node->id!=nodeId %d!=%d\n", node->id, nodeId);
+		if(report)pf("node->id!=nodeId %d!=%d\n", node->id, nodeId);
 		return false;
 	}
 
 	if (checkNames && node->name == 0) {// WHY AGAIN??
 		bad();
-		if(report)
-			printf("node->name == 0 %p\n", node);
+		if(report)printf("node->name == 0 %p\n", node);
 		return false;
 	}
-	if (checkNames && (node->name < context->nodeNames || node->name >= &context->nodeNames[averageNameLength * maxNodes])) {
+	if (checkNames && (node->name >= &context->nodeNames[averageNameLength * maxNodes])) {
 		bad();
-		if(report)
-		printf("node->name out of bounds %p\n", node);
+		if(report)printf("node->name out of bounds %p\n", node);
+		return false;
+	}
+	if (checkNames && (node->name < context->nodeNames)) {
+		bad();
+		if(report)printf("node->name out of bounds %p\n", node);
 		return false;
 	}
 #ifdef inlineStatements
@@ -902,10 +904,15 @@ Node * get(const char* node) {
 
 //inline
 Node * get(int nodeId) {
-	if (debug&&(nodeId<-propertySlots || nodeId > maxNodes-propertySlots)) { // remove when debugged
-	    if (quiet)return Error;
-	    printf("Error: 0 > nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
-	    return Error;
+	if (debug&&(nodeId<-propertySlots)) { // remove when debugged
+		if (quiet)return Error;
+		printf("Error: nodeId < -propertySlots  %d < %d \n", nodeId, -propertySlots);
+		return Error;
+	}
+	if (debug&&(nodeId > maxNodes-propertySlots)) { // remove when debugged
+		if (quiet)return Error;
+		printf("Error: nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
+		return Error;
 	}
 	return &context->nodes[nodeId];
 }
