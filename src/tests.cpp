@@ -1727,7 +1727,7 @@ void testBrandNewStuff() {
 	//		importWikiData();
 //	handle("/verbose/Mensch");
 //	handle("/P106");
-	parse(":server");
+//	parse(":server");
 //	handle("Mensch");
 	//	handle("/41172206");
 	//	handle("/90962");

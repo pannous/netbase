@@ -117,7 +117,7 @@ Node *parseProperty(const char *data) {
 		show(found);
 		pf("ANSWER: %s\n", found->name);
 	}
-//	free(property);
+	free(property);
 	return found;
 }
 
@@ -169,7 +169,10 @@ NodeVector parse(const char* data) {
 	if(data[0]==':')appendFile("commands.log",data);
 	else appendFile("query.log", data);
 
-	vector<char*> args=splitString(data, " "); // WITH 0==cmd!!!
+	vector<string> args=splitString(data, " "); // WITH 0==cmd!!!
+//	vector<char*> args=vector<char*>(splitStringC(data, ' ')); // WITH 0==cmd!!!
+//	char** args=splitStringC(data, ' '); // WITH 0==cmd!!!
+
 	clearAlgorithmHash(true); //  maybe messed up
     
 	//		scanf ( "%s", data );
@@ -319,7 +322,8 @@ NodeVector parse(const char* data) {
     
     if(contains(data,":english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
     if(contains(data,":german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
-    
+	if(args.size()==0)
+		return OK;
     if (eq(args[0], "show")) {// not ":show" here!!
 		N da=getAbstract(data + 5);
         show(da,true);
@@ -342,17 +346,17 @@ NodeVector parse(const char* data) {
         else if(target)
             return showNodes(nodeVectorWrap(mergeAll(targetNode->name)));
         else
-            return showNodes(nodeVectorWrap(mergeAll(args[1])));// merge <string>
+            return showNodes(nodeVectorWrap(mergeAll(args[1].c_str())));// merge <string>
     }
     
 	if (startsWith(data, ":path ") || startsWith(data, ":p ")) {
-		Node* from=getAbstract(args.at(1));
-		Node* to=getAbstract(args.at(2));
+		Node* from=getAbstract(args[1]);
+		Node* to=getAbstract(args[2]);
 		return shortestPath(from, to);
 	}
     
 	if (startsWith(data, ":script ")) {
-		char* file=args.at(1);
+		cchar* file=args[1].c_str();
 		return runScript(file);
 	}
 	if (startsWith(data, ":rh")) {
@@ -442,7 +446,7 @@ NodeVector parse(const char* data) {
 	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
 		const char* what=next_word(data).data();
 		appendFile("import/labels.csv",what);
-		char* wordOrId=args[1];
+		cchar* wordOrId=args[1].c_str();
 		const char* label=next_word(what).data();
 		N n=getThe(wordOrId);
 		setLabel(n, label);

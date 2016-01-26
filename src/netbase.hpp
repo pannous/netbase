@@ -433,6 +433,7 @@ Node* get(int NodeId);
 static Context* context;
 #endif
 extern "C" Node* getAbstract(const char* word);
+Node* getAbstract(string thing);
 int collectAbstracts();
 int collectInstances();
 unsigned int hash(const char *str); //unsigned
@@ -570,7 +571,7 @@ NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
-Node* mergeAll(char* target);
+Node* mergeAll(const char* target);
 NodeVector parse(const char* data);// and act
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);

@@ -187,7 +187,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		ah=getAhash(ah->next);
 	}
 
-	N ab=ah->abstract ? get(ah->abstract) : 0;
+	N ab=ah && ah->abstract ? get(ah->abstract) : 0;
 	if (ab) { //schon was drin
 		if (ab == a || eq(ab->name, a->name, true))
 			return ah;
@@ -387,6 +387,7 @@ Context * getContext(int contextId) {
 
 void showContext(Context * cp) {
 	if (quiet) return;
+	if(!cp)cp=getContext(current_context);
 	Context c=*cp;
 	cchar* format="Context#%d name:%s nodes:%d, statements:%d chars:%d n#%p nN#%p s#%p\n";
 	printf(format, c.id, c.name, c.nodeCount, c.statementCount,c.currentNameSlot, c.nodes, c.nodeNames, c.statements);
@@ -793,6 +794,7 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	bool ok=addStatementToNode(subject, id,force_insert_at_start);
 	ok=addStatementToNode(predicate, id)&&ok;
 	ok=addStatementToNode(object, id)&&ok;
+	if(!ok)bad();
 //    if(!ok)p("warning: addStatementToNode skipped ");// probably quick duplicate check
     
 	//	subject->statements[subject->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
@@ -1059,7 +1061,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		return original;
 	}
 	type=(int)str.find("_from_");
-	if (type >= 0 && len - type > 2) {
+	if (type >= 0 && len - type > 4) {
 		Node* from=getThe("from");
 		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
 		Node* ort=getThe(str.substr(type + 6).c_str());
@@ -1067,8 +1069,8 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(subject, from, ort, checkDuplicates);
 	}
 	type=(int)str.find("_for_");
-	type=(int)str.find("_für_");
-	if (type >= 0 && len - type > 2) {
+	if(type<0)type=(int)str.find("_für_");
+	if (type >= 0 && len - type > 5) {
 		Node* from=getThe("for");
 		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
 		Node* obj=getThe(str.substr(type + 5).c_str());
@@ -1263,7 +1265,7 @@ Node * hasWord(const char* thingy) {
 //		}
 //		visited[found->abstract]=1;
 //#endif
-		if (checkNode(found->abstract)) {
+		if (found&&checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
 			if (eq(get(found->abstract)->name, thingy, true))			//teuer? n��, if 1.letter differs
@@ -1444,7 +1446,9 @@ Node* getAbstract(const char* thing) {			// AND CREATE!
 	//	collectAbstractInstances(abstract am Ende);
 	return abstract;
 }
-
+Node* getAbstract(string thing){
+	return getAbstract(thing.c_str());
+}
 void collectAbstractInstances(Node* abstract) {
 	Context* c=getContext(current_context);
 	for (int i=0; i < c->nodeCount; i++) {
@@ -2362,11 +2366,11 @@ void initUnits() {
 	addStatement(a(length), has_the("unit"), u);
 
 	//    addSynonyms(u,"m");
-	u=getThe("m^2", Unit);
-	u=getThe("km^2", Unit);
-	u=getThe("millisecond", Unit);
-	u=getThe("mile", Unit);
-	u=getThe("km", Unit);
+	getThe("m^2", Unit);
+	getThe("km^2", Unit);
+	getThe("millisecond", Unit);
+	getThe("mile", Unit);
+	getThe("km", Unit);
 	//    u=add("phone number",String);// normalize!
 	//    addSynonyms(u,"m^2","sqm");
 }
@@ -2640,7 +2644,7 @@ string getImage(Node* a, int size,bool thumb) {
     return formatImage(i,size,thumb);
 }
 
-Node* mergeAll(char* target){
+Node* mergeAll(cchar* target){
     Node* node=getAbstract(target);
     NV all=instanceFilter(node);
     for(int i=0;i<all.size();i++)

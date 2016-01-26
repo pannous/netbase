@@ -176,6 +176,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 				addStatement(getAbstract(title), wiki_image, object, !CHECK_DUPLICATES);
 		}
 	}
+	free(title);
 	fclose(infile);
 }
 
@@ -190,8 +191,6 @@ void importImagesDE() {// dbpedia
 	addStatement(wiki_image, is_a, getThe("image"));
 	char image[1000];
 	char *title=(char *) malloc(1000);
-	int good=0;
-	//	int bad=0;
 	FILE* infile=open_file((char*) images_file_de);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
@@ -212,8 +211,8 @@ void importImagesDE() {// dbpedia
 		Node* object=getAbstract(image+5);// ommit md5 part /9/9a/
 		addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
 	}
+	free(title);
 	fclose(infile);
-	good=0;
 }
 
 void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
@@ -254,8 +253,8 @@ void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 			p(good);
 		}
 	}
+	free(title);
 	fclose(infile);
-	good=0;
 }
 
 void importImagesEN() { // 18 MILLION!   // 18496249
@@ -281,6 +280,8 @@ void importNodes() {
 	//2026896532	103	dry_out	Verb	\N	\N	11	103
 
 	char line[100];
+
+	char* name0=(char*) malloc(10000);
 	int linecount=0;
 	FILE *infile=open_file(nodes_file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -292,6 +293,7 @@ void importNodes() {
 			fflush(stdout);
 		}
 		strcpy(tokens, line);
+		char* name=name0;
 		//        replaceChar(tokens,, <#char what#>, <#char with#>)
 		//		int x=0; // replace ' ' with '_'
 		//		while (tokens[x]) {
@@ -299,7 +301,6 @@ void importNodes() {
 		//			x++;
 		//		}
 		// char name[1000];
-		char* name=(char*) malloc(100);
 		// But if you are actually writing C++, then using the new [] syntax is better:
 		// double *factors = new double [q-2];
 		// (Note that this requires using delete[] factors instead of free(factors))
@@ -338,6 +339,7 @@ void importNodes() {
 		wn_map[Id]=n->id;
 		//		wn_map2[n->id]=Id;
 	}
+	free(name0);
 	fclose(infile); /* Close the file */
 	p("\nnode import ok\n");
 }
@@ -459,14 +461,16 @@ const char* parseWikiTitle(char* item, int id=0, int context=current_context) {
 	return word.c_str(); // TODO!! MEMLEAK!!
 }
 
-void extractUnit() {
-	string s="397.1#/km^2";
-}
+//void extractUnit() {
+//	string s="397.1#/km^2";
+//}
 
 char* charToCharPointer(char c) {
-	char separator[2]= { c, 0 };
-	char* separatorx=separator;
-	return separatorx;
+	char* separator=(char*)malloc(sizeof(char)*2);
+	separator[0]=c;
+	separator[1]=0;
+//	char separator[2]= { c, 0 };
+	return separator;
 }
 
 char guessSeparator(char* line) {
@@ -504,13 +508,13 @@ int getNameRow(char** tokens, int nameRowNr=-1, const char* nameRow=0) {
 }
 
 // BROKEN!!!??!!
-
+// fields will brake once line is freed!
 int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, const char* nameRow) {
 	char * token;
 	cchar* separators=",;\t|";
 	if (separator) separators=charToCharPointer(separator);
 	//	line=editable(line);
-	token=strtok(line, separators);
+	token=strtok(line, separators);// token will brake once line is freed!
 	int row=0;
 	while (token != NULL) {
 		fields.push_back(token);
@@ -595,9 +599,9 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	p("\nimport XML start");
 	//	bool dissect=false;
 	char line[1000];
-	char* line0=(char*) malloc(sizeof(char*) * 100);
-	char* field=(char*) malloc(sizeof(char*) * 100);
-	char* value=(char*) malloc(sizeof(char*) * 10000000); // uiuiui!
+	char* line0=(char*) malloc(sizeof(char) * 100);
+	char* field=(char*) malloc(sizeof(char) * 100);
+	char* value=(char*) malloc(sizeof(char) * 10000000); // uiuiui!
 
 	Node* root=0;
 	Node* parent=0; // keep track of 1 layer
@@ -622,7 +626,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			fflush(stdout);
 		}
 		fixNewline(line);
-		line0=line; // readable in Debugger!
+//		line0=line; // readable in Debugger!
 		if (contains(line, "<?xml")) continue;
 		if (!subject) {
 			if (root) subject=add(extractTagName(line));
@@ -705,6 +709,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			continue;
 		}
 	}
+	free(value);// line0	field
 	fclose(infile); /* Close the file */
 	p("import xml ok ... items imported:");
 	p(linecount);
@@ -741,8 +746,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 	//	char* objectName=(char*) malloc(100);
 	vector<Node*> predicates=*new vector<Node*>();
-	vector<char*> ignoreFields=splitString(ignoredFields, ",");
-	vector<char*>& includeFields=splitString(includedFields, ",");
+	vector<string>& ignoreFields=splitString(ignoredFields, ",");
+	vector<string>& includeFields=splitString(includedFields, ",");
 
 	int fieldCount=0;
 	char* columnTitles;
@@ -1068,7 +1073,7 @@ bool importYago(const char* file) {
 			pf("|>%d<", linecount);
 			continue;
 		}
-		Statement* s;
+		Statement* s=0;
 		//		if (contains(objectName, subjectName, true))
 		//			s = addStatement(subject, Member, object, false); // todo: id
 		//		else
@@ -1079,8 +1084,10 @@ bool importYago(const char* file) {
 			exit(0);
 			break;
 		}
+		if(!s)bad();
 		//		showStatement(s);
 	}
+			free(id);free(subjectName);free(objectName);	free(predicateName);
 	fclose(infile); /* Close the file */
 	pf("import %s ok\n", file);
 	return true;
@@ -1399,6 +1406,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		}
 	}
 	//		add(key,label);
+		free(test0);free(label0);	free(key0);
 	p("duplicates removed:");
 	p(freebaseKeysConflicts);
 	testPrecious();
@@ -1678,6 +1686,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	closeFile(file);
 	pf("BAD: %d     MISSING: %d\n",badCount, MISSING);
 	context->use_logic=false;
+		free(subjectName);free(objectName);	free(predicateName);
 	//	freebaseKeys.clear();
 	//	free(freebaseKeys);
 	return true;
@@ -1725,16 +1734,20 @@ bool importFacts(const char* file, const char* predicateName="population") {
 		subject=getAbstract(subjectName); //
 		object=getAbstract(objectName);
 		dissectWord(subject);
-		Statement* s;
-		if (contains(objectName, subjectName, true)) s=addStatement(subject, Member, object, !CHECK_DUPLICATES); // todo: id
-		else s=addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
+		Statement* s=0;
+		if (contains(objectName, subjectName, true))
+			s=addStatement(subject, Member, object, !CHECK_DUPLICATES); // todo: id
+		else
+			s=addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			exit(0);
 			break;
 		}
+		if(!s)bad();
 //		showStatement(s);
 	}
+	free(subjectName);free(objectName);
 	fclose(infile); /* Close the file */
 	p("import facts ok");
 	return true;
@@ -1833,6 +1846,7 @@ void importGermanLables(bool addLabels=false) {
 		id=norm_wordnet_id(id,true); // 100001740  -> 200000 etc
 		if(!id)continue;
 		Node* node=get(id);
+		if(!isAbstract(node))		node->kind=kind;
 //		Node* abstract=getAbstract(german);
 		if(modify_english){
 			setLabel(node, german);// NOW?
@@ -1917,6 +1931,7 @@ void importSenses() {
 		if(!germanLabels)
 			addStatement(sense,Sense,number(sensenum), false);
 	}
+	free(name0);
 	fclose(infile); /* Close the file */
 }
 

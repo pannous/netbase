@@ -324,6 +324,13 @@ NodeVector nodeVector(vector<char*> v) {
 	}
 	return nv;
 }
+NodeVector nodeVector(vector<string> v) {
+	NodeVector nv;
+	for (int i = 0; i < v.size(); i++) {
+		nv.push_back(getThe(v[i]));
+	}
+	return nv;
+}
 
 // sentenceToStatement
 
@@ -393,7 +400,7 @@ Statement *parseFilter(string s) {
     
 	Node* subject = Any;
 	Node* predicate = Any;
-	Node* object = Any;
+	Node* object;// Any;
 	// a.b=>(a,Member,b);
 	// a.b=c => (a,b,c);
 	if (s.find(".") != s.npos) {
@@ -482,7 +489,7 @@ Query parseQuery(string s, int limit) {
     if(!eq(fields,"*"))
 		q.fields = nodeVector(splitString(fields, ","));
 	if(eq(match,"*"))return q;
-	vector<char*> matches = splitString(replace_all(match, " and ", ","), ",");
+	vector<string> matches = splitString(replace_all(match, " and ", ","), ",");
 	for (int i = 0; i < matches.size(); i++) {
 		string f = matches[i];
 		p(f);
@@ -523,7 +530,7 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	p(type);
 	p(where);
     
-	int batch = limit * 50; // 200000000;//// dont limit wegen filter!! limit + 100;
+//	int batch = limit * 50; // 200000000;//// dont limit wegen filter!! limit + 100;
 	//    while (found.size() < limit && batch < 200000000) {
 	//        batch = batch * 100; //=> max 9 runs
 	// what if all==1000000 but limit==3?
@@ -542,7 +549,6 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 		if (where[0])
 			mergeVectors(&found, filter(all2, where)); //fields)
 	}
-	batch = 200000000;
     
 good:
 	if (found.size() > limit)// dont deliver too much
@@ -1536,6 +1542,8 @@ NodeVector parseProperties(const char *data) {
 		all=findProperties(thing, property);
 	}
 	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
+	free(property);
+	free(thing);
 	showNodes(all);
 	return all;
 }

@@ -497,7 +497,7 @@ char* initContext(Context* context) {
 		nodeNames=(char*) &context_root[contextOffset + nodeSegmentSize];
 		statements=(Statement*) &context_root[contextOffset + nodeSegmentSize + nameSegmentSize];
 	} else do {
-		p("malloc memory segments");
+		p("NO shared memory -> MALLOC memory segments");
 		statements=(Statement*) malloc(statementSegmentSize + 1);
 		nodes=(Node*) malloc(nodeSegmentSize + 1);
 		nodeNames=(char*) malloc(nameSegmentSize + 1);

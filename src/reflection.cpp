@@ -5,7 +5,7 @@
  * Created on October 12, 2013, 2:26 PM
  */
 
-
+#define max(x,y) x>y?x:y
 
 
 #if defined(__unix__) || defined(__unix) || defined(unix) || (defined(__APPLE__) && defined(__MACH__))
@@ -56,8 +56,8 @@ size_t getFreeSystemMemory(){
 //                   mib[3] = i;// other process pid
                    len = sizeof(kp);
                    int res=sysctl(mib, 2, &kp, &len, NULL, 0);
-				   res=sysctlbyname("hw.logicalcpu", &kp, &len, NULL, 0);
-				   return res;//kp.kp_eproc.;
+				   int res2=sysctlbyname("hw.logicalcpu", &kp, &len, NULL, 0);
+				   return max(res,res2);//kp.kp_eproc.;
 //				   return kp.kp_proc.p_cpticks;
 //                           perror("sysctl");
 //                   else if (len > 0)

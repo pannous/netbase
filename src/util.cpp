@@ -122,6 +122,15 @@ bool contains(NodeSet* all, Node* node) {
 	return false;
 }
 
+
+bool contains(vector<string>& all, char* name) {
+	for (int i=0; i < all.size(); i++) {
+		if (eq((string) all[i],name)) return true;
+//		if (fuzzy && eq(all[i], &node)) return true;
+	}
+	return false;
+}
+
 bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //	if(!fuzzy)
 //		return contains2(all,&node);
@@ -434,14 +443,15 @@ NodeVector intersect(NodeVector a, NodeVector b) {
 }
 
 // AAAHH NEVER WORKS!!! use splitStringC !!!
-vector<char*>& splitString(string line0, const char* separator) {
+vector<string>& splitString(string line0, const char* separator) {
 	return splitString(line0.data(), separator);
 }
 
 // AAAHH NEVER WORKS!!! use splitStringC !!!
-vector<char*>& splitString(const char* line0, const char* separator) {
+vector<string>& splitString(const char* line0, const char* separator) {
 	char * token;
-	vector<char*>& v=*new vector<char*>;
+//	vector<char*>& v=*new vector<char*>;
+	vector<string>& v=*new vector<string>;
 	if (line0 == 0) {
 		ps("empty splitString!");
 		return v;
@@ -450,10 +460,11 @@ vector<char*>& splitString(const char* line0, const char* separator) {
 	strcpy(line, line0);
 	token=strtok(line, separator);
 	while (token != NULL) {
-		v.push_back(token);
+		v.push_back(token);// ok, new string!
 		token=strtok(NULL, separator);
 	}
-	//free(line);// ja? NEIN: incorrect checksum for freed object - object was probably modified after being freed.
+	free(line);// ja? NEIN: incorrect checksum for freed object :
+	// tokens depend on line NOT being freed
 	return v;
 }
 
@@ -524,6 +535,7 @@ int splitStringC(char* line, char** tokens, char separator) {
 	}
 	return row + 1; //s
 }
+
 char** splitStringC(const char* line0, const char* separator) {
 	return splitStringC(editable(line0), separator[0]);
 }
@@ -570,15 +582,15 @@ short normChar(char c) {// 0..36 damn ;)
 // ./clear-shared-memory.sh After changing anything here!!
 unsigned int wordhash(const char *str) { // unsigned
 	if (!str) return 0;
-	unsigned int c,hash=5381; // long
+	unsigned int c,hash=5381,hash2=7; // long
 	while ((c=*str++)) {
+		hash2 = hash2*31 + (short)(c);
 		int next=normChar(c);//a_b-c==AbC
 		if (next <= 0)continue;
 		hash=hash*33 + next;// ((hash << 5) + hash
 		hash=hash % maxNodes;
 	}
-	if(hash==0)
-		return (unsigned int) std::hash<std::string>()(str)%maxNodes;
+	if(hash==0)return hash2;
 	return hash;
 }
 

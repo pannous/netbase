@@ -125,6 +125,27 @@ int handle(cchar* q0,int conn){
 		Writeline(conn, "(");
 		format = js;
 	}
+	// todo : dedup!!
+	if (startsWith(q, "all/")) {
+		cut_to(q," +");
+		cut_to(q," -");
+		q = q + 4;
+		showExcludes=false;
+		verbosity = alle;
+	}
+	if (startsWith(q, "long/")) {
+		verbosity = longer;
+		q = q + 5;
+	}
+	if (startsWith(q, "verbose/")) {
+		verbosity = verbose;
+		q = q + 8;
+	}
+	if (startsWith(q, "short/")) {
+		verbosity = shorter;
+		q = q + 6;
+	}
+
 	if (startsWith(q, "html/")) {
         format = html;
         if(!contains(q,".")&&!contains(q,":"))
@@ -493,7 +514,7 @@ int Service_Request(int conn) {
 	/*  Get HTTP request  */
 	if (Get_Request(conn, &reqinfo) < 0)
 		return -1;
-	if (reqinfo.type == FULL)
+	else if(reqinfo.type == FULL)
 		Output_HTTP_Headers(conn, &reqinfo);
 	// file system:	//		Serve_Resource(ReqInfo  reqinfo,int conn)
 	CleanURL(reqinfo.resource);
@@ -764,6 +785,7 @@ void InitReqInfo(struct ReqInfo * reqinfo) {
 	reqinfo->resource = NULL;
 	reqinfo->method = UNSUPPORTED;
 	reqinfo->status = 200;
+	reqinfo->type=(Req_Type)FULL;// SIMPLE, FULL
 }
 
 void FreeReqInfo(struct ReqInfo * reqinfo) {
