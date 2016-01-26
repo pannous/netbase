@@ -537,6 +537,7 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 			} else if (eq(nameRow, token)) nameRowNr=row;
 		}
 	}
+//	if (separator)free(&separators); fuck it
 	return nameRowNr;
 }
 
@@ -606,10 +607,11 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	p("\nimport XML start");
 	//	bool dissect=false;
 	char line[1000];
-	char* line0=(char*) malloc(sizeof(char) * 100);
-	char* field=(char*) malloc(sizeof(char) * 100);
-	char* value=(char*) malloc(sizeof(char) * 10000000); // uiuiui!
-
+//	char* line0=(char*) malloc(sizeof(char) * 100);
+//	char* field=(char*) malloc(sizeof(char) * 100);
+	char* field;
+	char* value0=(char*) malloc(sizeof(char) * 10000000); // uiuiui!
+	char* value;
 	Node* root=0;
 	Node* parent=0; // keep track of 1 layer
 	Node* subject=0;
@@ -716,7 +718,9 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			continue;
 		}
 	}
-	free(value);// line0	field
+	free(value0);
+//	free(field);
+//	free(line0);
 	fclose(infile); /* Close the file */
 	p("import xml ok ... items imported:");
 	p(linecount);
@@ -757,11 +761,11 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	vector<string>& includeFields=splitString(includedFields, ",");
 
 	int fieldCount=0;
-	char* columnTitles;
+//	char* columnTitles;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		fixNewline(line);
 		if (linecount == 0) {
-			columnTitles=line;
+//			columnTitles=line;
 			if (!separator) separator=guessSeparator(editable(line)); // would kill fieldCount
 			fieldCount=splitStringC(line, values, separator);
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
@@ -835,6 +839,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			break;
 		}
 	}
+	free(values);
 	fclose(infile); /* Close the file */
 	p("import csv ok ... lines imported:");
 	p(linecount);
@@ -1030,7 +1035,7 @@ bool importYago(const char* file) {
 			fflush(stdout);
 		}
 		int ok=rows=countRows(line);
-		if (labels && line[0] == ' ') ok=sscanf(line + 1, " %s\t%s\t\"%[^\"]s", subjectName, predicateName, objectName);
+		if (labels && line[0] == ' ') ok+=sscanf(line + 1, " %s\t%s\t\"%[^\"]s", subjectName, predicateName, objectName);
 		else if (labels) ok=sscanf(line, "%*s\t%s\t%s\t\"%[^\"]s", subjectName, predicateName, objectName);
 		else if (rows == 4 && leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
 		else if (rows == 4 && !leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", subjectName, predicateName, objectName, id); // data
@@ -1226,12 +1231,12 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			Node* node=&context->nodes[id];
 			if(english&&node->name)
 				continue;
-			N n=initNode(node, id, label, _entity, 0);// _entity -> class later
+			initNode(node, id, label, _entity, 0);// _entity -> class later
 //			N n=add_force(0, id, label, abstractId);
 //			getAbstract(<#const char *word#>)
 			N a=hasWord(label);
 			if(!a)
-			   Ahash* ya=insertAbstractHash(node);// HAACK!
+			   insertAbstractHash(node);// HAACK!
 			else{
 				if(isAbstract(a))continue;
 //				ab=createAbstract(label)
@@ -1240,6 +1245,9 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		}
 		else bad();
 	}
+	free(key0);
+	free(label0);
+	free(test0);
 	return true;
 }
 
@@ -1862,12 +1870,13 @@ void importGermanLables(bool addLabels=false) {
 			setLabel(node, german);// NOW?
 			//			addLabel(node, german);// to abstracts or words?? get(id) -> word
 		}else{
-			//			initNode(node, id, german,kind, wordnet);
+			initNode(node, id, german,kind, wordnet);
+			insertAbstractHash(node);
 			//			^^ later: in importSenses, via:
 		}
 		wn_labels[id]=german;
 		wn_labels[-id]=german;
-		if(addLabels&&strlen(translations)>2){
+		if(addLabels&&strlen(translations)>2){// later, when settled (?)
 			char** translationList=(char**)malloc(1000);
 			char sep=',';
 			char* translationz=modifyConstChar(translations);
@@ -1885,7 +1894,7 @@ void importGermanLables(bool addLabels=false) {
 		}
 		//		addStatement(get(id),Label,getAbstract(definition));
 	}
-
+	free(wordkind);
 	fclose(infile); /* Close the file */
 }
 
@@ -1904,7 +1913,7 @@ void importSenses() {
 		}
 		fixNewline(line);
 		sscanf(line, "%d\t%d\t%d\t%d\t%d\t%*d\t%*d\t%s", &id, &labelid, &synsetid0, &senseid,&sensenum,/*&lexid,&tags,*/ name0);
-		//		if(id<1000)continue;// skip :(
+		if(id<1000)continue;// skip relations
 //		id=id + 10000; // NORM!!!
 		id=-id-10000;
 		//		if (130172 == id) p(line);
@@ -1930,8 +1939,15 @@ void importSenses() {
 			//            OR add label!
 		}else name=name0;
 
-		Node* word=get(id);// redundant and risky! just use
-		word=get(name);
+//		Node* word=get(id);// redundant and risky! just use
+		Node* word=get(name);
+//		if(word!=word2){
+//			printf("bug");
+//		}
+//		if(word->name&&!eq(word->name,name)){
+//			printf("bug");
+//		}
+
 
 		if (!sense->id) {
 			initNode(sense, synsetid_mapped, name, 0, wordnet);

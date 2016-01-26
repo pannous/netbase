@@ -308,6 +308,7 @@ void testDummyLogic() {
 	Statement* s4a=addStatement(manager, SubClass, CEO);
 	//    Statement* s4a = addStatement(CEO, SuperClass, manager);
 	Statement* s4b=addStatement(manager, is, a(worker));
+	if(s1||s2||s3||s2a||s4||s4a||s4b)
 	s1=s2=s2a=s3=s4=s4a=s4b=0;// as a counter measure against warnings
 	check(isA(CEO, manager));
 	clearAlgorithmHash();
@@ -595,10 +596,11 @@ void testStringLogic2() {
 	//    NV t= parse("label 4557271 woooot");
 	//    check(eq(t[0]->name,"woooot"));// OK
 	eine(Schlacht);
-	Node* Schlacht_bei_Guinegate=getThe(editable("Guinegate_(14791),_Schlacht_bei")); // intellij display bug!
+	Node* Schlacht_bei_Guinegate2=getThe(editable("Guinegate_(14791),_Schlacht_bei")); // intellij display bug!
+	p(Schlacht_bei_Guinegate2);
 	//    deleteNode(Schlacht_bei_Guinegate);
 	//    Schlacht_bei_Guinegate=getThe("Guinegate_(1479),_Schlacht_bei");
-	Schlacht_bei_Guinegate=getThe(editable("Schlacht_bei_Guinegate_(14791)"));
+	Node* Schlacht_bei_Guinegate=getThe(editable("Schlacht_bei_Guinegate_(14791)"));
 	//	deleteNode(Schlacht_bei_Guinegate);
 	//	Schlacht_bei_Guinegate=getThe("Schlacht_bei_Guinegate_(1479)");
 	dissectWord(Schlacht_bei_Guinegate);
@@ -1338,8 +1340,9 @@ void testOpposite() {
 	//		check(isA4(Antonym,pa, false, false));
 	check(has(node, property));
 
-	Statement* s=addStatement(Antonym,Synonym,opposite);
-	s=addStatement(Antonym,Synonym,the_opposite);
+//	Statement* s=
+	addStatement(Antonym,Synonym,opposite);
+	addStatement(Antonym,Synonym,the_opposite);
 	//		s=addStatement(opposite,Synonym,Antonym,false);
 	//		s=addStatement(the_opposite,Synonym,Antonym,false);
 
@@ -1544,6 +1547,7 @@ void testInclude(){
 
 
 void testAll() {
+	#ifndef __clang_analyzer__
 	germanLabels=false; // for tests!
 	clearMemory();
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
@@ -1585,6 +1589,7 @@ void testAll() {
 	// OK
 
 	p("ALL TESTS SUCCESSFUL!");
+#endif
 	//    testLoop();
 }
 bool assertResult(char* query,char* value0){
@@ -1609,7 +1614,7 @@ void flattenGeographischeKoordinaten(){
 			N c=s->Object();
 			N bb=findProperty(c, "Breitengrad");
 			if(!bb)bb=findProperty(c, "Latitude");
-			S sb=addStatement(ort,b,bb,true,false);
+			addStatement(ort,b,bb,true,false);
 //			S st=findStatement(c, getNode(1129), Any);
 //			if(!st)continue;
 			//			N ll=st->Object();
@@ -1622,7 +1627,6 @@ void flattenGeographischeKoordinaten(){
 			//			show(ort);
 			//			showStatement(sb);
 			//			p(bb!=0);
-			sb=0;
 		}
 	}
 }
@@ -1708,6 +1712,7 @@ void getSuperClasses(){
 }
 
 void testBrandNewStuff() {
+	#ifndef __clang_analyzer__
 	quiet=false;
 	debug = true;
 //	p("test -> SHELL");return;// for shell
@@ -1738,6 +1743,6 @@ void testBrandNewStuff() {
 	//	handle("/-1");
 	//	fixAllNames();
 	//	handle("all+pennsylvania+marijuana");
-
+#endif
 } // Continue with shell
 

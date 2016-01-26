@@ -468,25 +468,25 @@ vector<string>& splitString(const char* line0, const char* separator) {
 	return v;
 }
 
-// never works! use splitStringC
-char** splitStringC1(const char* line0, const char* separator, int maxRows) {
-	if (line0 == 0) {
-		ps("empty splitString!");
-		return 0;
-	}
-	char * token;
-	char** tokens=(char**) malloc(maxRows);
-	char* line=(char*) malloc(strlen(line0) * 2 + 1); //dont free!
-	strcpy(line, line0);
-	token=strtok(line, separator);
-	int row=0;
-	while (token != NULL) {
-		token=strtok(NULL, separator);
-		tokens[row++]=token;
-	}
-	//free(line);// ja? NEIN: incorrect checksum for freed object - object was probably modified after being freed.
-	return tokens;
-}
+//// never works! use splitStringC
+//char** splitStringC1(const char* line0, const char* separator, int maxRows) {
+//	if (line0 == 0) {
+//		ps("empty splitString!");
+//		return 0;
+//	}
+//	char * token;
+//	char** tokens=(char**) malloc(maxRows);
+//	char* line=(char*) malloc(strlen(line0) * 2 + 1); //dont free!
+//	strcpy(line, line0);
+//	token=strtok(line, separator);
+//	int row=0;
+//	while (token != NULL) {
+//		token=strtok(NULL, separator);
+//		tokens[row++]=token;
+//	}
+//	//free(line);// ja? NEIN: incorrect checksum for freed object - object was probably modified after being freed.
+//	return tokens;
+//}
 
 char* clone(const char* line) {
 	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!

@@ -1372,13 +1372,13 @@ NodeVector anyFilterRandom(Node* subject, NodeQueue * queue) {
 NodeVector reconstructPath(Node* from, Node * to) {
 	Node* current = to;
 	NodeVector all;
-	bool ok = true;
+//	bool ok = true;
 	//	p("++++++++ FOUND PATH ++++++++++++++");
 	while (current && current != from) {
 		all.push_back(current);
 		int id = enqueued[current->id];
 		if (id <= 0) {
-			ok = false;
+//			ok = false;
 			break;
 		}
 		current = get(id);
@@ -1514,7 +1514,7 @@ NodeVector parseProperties(const char *data) {
 	if (contains(data, ":")) {
 		//			sscanf(data,"%s:%s",property,thing);
 		char** splat=splitStringC(data, ':');
-		thing=splat[1];
+		thing=splat[1];// can't free no more
 		property=splat[0];
         //		bool inverse=1;
 	} else if (contains(data, ".")) {

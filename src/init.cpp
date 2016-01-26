@@ -266,7 +266,7 @@ void load(bool force) {
 	Context* c=context;
 	//    showContext(c->id);
 	Node* oldNodes=c->nodes;
-	char* oldnodeNames=c->nodeNames;
+	char* oldnodeNames;//=c->nodeNames;
 	oldnodeNames=initContext(c);
 
 	//  #include <sys/stat.h>
@@ -498,9 +498,12 @@ char* initContext(Context* context) {
 		statements=(Statement*) &context_root[contextOffset + nodeSegmentSize + nameSegmentSize];
 	} else do {
 		p("NO shared memory -> MALLOC memory segments");
+		// 'POTENTIAL LEAK' OK! keep alive as long as app runs!
+		#ifndef __clang_analyzer__
 		statements=(Statement*) malloc(statementSegmentSize + 1);
 		nodes=(Node*) malloc(nodeSegmentSize + 1);
 		nodeNames=(char*) malloc(nameSegmentSize + 1);
+		#endif
 		//        nodeNames=(char*)malloc(sizeof(char)*nameBatch);// incremental
 		if (nodes == 0 || statements == 0 || nodeNames == 0) {
 			ps("System has not enough memory to support ");
@@ -512,6 +515,7 @@ char* initContext(Context* context) {
 	} while (nodes == 0 || statements == 0);
 //	if (!context_root || virgin_memory) clearMemory();
 //	Statement* oldstatements=context->statements;
+	if (!context)context=getContext(current_context);
 	char* oldnodeNames=context->nodeNames;
 //	Node* oldnodes=context->nodes;
 	context->nodes=nodes;
@@ -525,6 +529,7 @@ char* initContext(Context* context) {
 		context->nodeCount=1;
 	if(context->lastNode<=0)
 		context->lastNode=1;
+
 //	px(context);
 //	px(nodes);
 //	px(nodeNames);

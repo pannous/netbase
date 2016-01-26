@@ -195,7 +195,7 @@ Ahash * insertAbstractHash(int position, Node * a) {
         ah->next=context->extrahashNr++;
         ah=getAhash(ah->next);
 	}
-	if(!checkHash(ah))return 0;
+	if(!ah||!checkHash(ah))return 0;
 	ah->abstract=a->id;
 	return ah;
 }
@@ -733,6 +733,7 @@ Statement * addStatement4(int contextId, int subjectId, int predicateId, int obj
 
     int id=context->statementCount;
 	Statement* statement=&context->statements[id]; // union of statement, node??? nee
+	if(!statement)return 0;
     //	statement->id()=context->statementCount;
 	context->statementCount++;
 #ifdef explicitNodes
@@ -1283,7 +1284,7 @@ Node * hasWord(const char* thingy) {
         //			p("found->next == found How the hell can that even be? ");
         //			break;
         //		}
-        if(!found->next)break;
+		if(!found||!found->next)break;
         if(found->next<=0||found->next>maxNodes*2||found==&abstracts[found->next])break;
 		found=&abstracts[found->next];
 	}

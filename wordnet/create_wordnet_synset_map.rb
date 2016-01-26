@@ -3,7 +3,7 @@
 h={}
 i=200000;
 IO.foreach("synsets.tsv") do |l|
-  puts l.to_i.to_s+"\t"+ i.to_s#+" "+l
+  puts l.to_i.to_s+"\t"+ i.to_s# I+" "+l
   i=i+1
   # puts l.to_i%1000000
   # z=l.to_i%1000000
