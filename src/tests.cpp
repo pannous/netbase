@@ -1726,7 +1726,8 @@ void testBrandNewStuff() {
 	//	if(!hasWord("bug"))importWordnet();
 	//		importWikiData();
 //	handle("/verbose/Mensch");
-	handle("/P106");
+//	handle("/P106");
+	parse(":server");
 //	handle("Mensch");
 	//	handle("/41172206");
 	//	handle("/90962");

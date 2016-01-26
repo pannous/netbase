@@ -542,7 +542,8 @@ char* replaceChar(char* thing,char what,char with){
     for(int i=0;i<strlen(thing);i++)if(thing[i]==what)thing[i]=with;
     return thing;
 }
-inline short normChar(char c) {// 0..36 damn ;)
+//inline
+short normChar(char c) {// 0..36 damn ;)
 	if (c >= '0' && c <= '9') return c-'0'+26;
 	if (c >= 'a' && c <= 'z') return c-'a'+1;// NOT 0!!!
 	if (c >= 'A' && c <= 'Z') return c-'A'+1;
@@ -576,6 +577,8 @@ unsigned int wordhash(const char *str) { // unsigned
 		hash=hash*33 + next;// ((hash << 5) + hash
 		hash=hash % maxNodes;
 	}
+	if(hash==0)
+		return (unsigned int) std::hash<std::string>()(str)%maxNodes;
 	return hash;
 }
 

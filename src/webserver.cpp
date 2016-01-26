@@ -51,7 +51,7 @@ int warnings=0;
 //static char* excluded3=0;
 
 enum result_format {
-	xml, json, txt,csv,html
+	xml, js, json, txt,csv,html
 };
 
 enum result_verbosity {
@@ -77,7 +77,7 @@ int handle(cchar* q0,int conn){
     char* q=editable(q0);
 	checkSanity(q,len);
     while(q[0]=='/')q++;
-	enum result_format format = html;//txt; DANGER WITH ROBOTS
+	enum result_format format = html;//txt; html DANGER WITH ROBOTS
 	enum result_verbosity verbosity = normal;
 
 	if (eq(q, "favicon.ico"))return 0;
@@ -123,7 +123,7 @@ int handle(cchar* q0,int conn){
 		q[len-3]=0;
 		Writeline(conn, jsonp);
 		Writeline(conn, "(");
-		format = json;
+		format = js;
 	}
 	if (startsWith(q, "html/")) {
         format = html;
@@ -159,7 +159,7 @@ int handle(cchar* q0,int conn){
 		q = q + 3;
 		Writeline(conn, jsonp);
 		Writeline(conn, "(");
-		format = json;
+		format = js;
 	}
 	if (startsWith(q, "long/")) {
 		verbosity = longer;
@@ -222,14 +222,16 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/><body><div id='netbase_results'></div>\n<script>var results={'results':[\n";
+    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/><body><div id='netbase_results'></div>\n<script>var results=";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
+
+	bool use_json= format == json || format == js || format == html;
 	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
-	if (format == json)Writeline(conn, "{\"results\":[\n");
 	if (format == html)Writeline(conn,html_block);
+	if (use_json)Writeline(conn, "{\"results\":[\n");
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
@@ -248,13 +250,11 @@ int handle(cchar* q0,int conn){
    	const char* entity_format_csv = "%s\t%d\t%d\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
-	if (format == html)entity_format = entity_format_json;
-	if (format == json)entity_format = entity_format_json;
 	if (format == txt)entity_format = entity_format_txt;
 	if (format == csv)entity_format = entity_format_csv;
+	if (use_json)	  entity_format = entity_format_json;
 	Node* last=0;
     warnings=0;
-	if (format == html)format=json;// inline json (hacky)
     char* entity=0;
     if(startsWith(q,"all")){
         entity=(char*)cut_to(q," ");
@@ -271,20 +271,20 @@ int handle(cchar* q0,int conn){
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
 		good++;
-		if (format == json)if(good>1)Writeline(conn, "},\n");
+		if (use_json)if(good>1)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
-        if(format == json && (verbosity==verbose||verbosity==shorter))// lol // just name
+        if(use_json && (verbosity==verbose||verbosity==shorter))// lol // just name
             Writeline(conn, ", \"kind\":"+itoa(node->kind));		
-        if((format == json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
+        if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
             Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
             //            Writeline(",image:\""+getImage(node->name)+"\"");
-			if (format == json)Writeline(conn, ", \"statements\":[\n");
+			if (use_json)Writeline(conn, ", \"statements\":[\n");
 
 //			sortStatements(
 			deque<Statement*> statements;
@@ -308,7 +308,7 @@ int handle(cchar* q0,int conn){
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
-				if(format == json && good>0)Writeline(conn, ",\n");
+				if(use_json && good>0)Writeline(conn, ",\n");
 				char* objectName=s->Object()->name;
 
 				if(s->Predicate()==Instance){
@@ -320,17 +320,18 @@ int handle(cchar* q0,int conn){
 				Writeline(conn, buff);
 				good++;
 			}
-			if (format == json)Writeline(conn, "]");
+			if (use_json)Writeline(conn, "]");
 		}
 		if (format == xml)Writeline(conn, "</entity>\n");
 		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
-	const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
-	if (format == json)Writeline(conn,good>0?"}\n]}":"]}");
+
+	if (use_json || format == html || format == js)Writeline(conn,good>0?"}\n]}":"]}");
 	if (format == xml)Writeline(conn, "</results>\n");
-	if(contains(q0,"js/"))Writeline(conn, ")");// jsonp
-	if(contains(q0,"html/"))Writeline(conn, html_end);
+	if(format == js)Writeline(conn, ")");// jsonp
+		const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
+	if(format == html)Writeline(conn, html_end);
 	//		sprintf(buff,	"<script src='/js/%s'></script>",q0);
 	//		Writeline(conn, buff);
 	//	}
@@ -424,7 +425,7 @@ void fixLabels(Statement* s){
 
 void getIncludes(Node* n){
 	if(verbosity==shorter||verbosity==alle)return;
-	if(n->id<1000)return;
+	if(n->id<0)return;
 	if(eq("Release track",n->name))return;
 	if(eq("Recording",n->name))return;
 	if(eq("Document",n->name))return;

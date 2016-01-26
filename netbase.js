@@ -58,7 +58,7 @@ function makeStatement(statement,elem)
     if(statement.sid==-666)return;// Error/Missing
 	if(statement.predicate=="nr in context")return; 
 	if(statement.predicate.match(/ID/))return;
-	if(statement.predicate=="GND")return;
+	if(statement.predicate.match(/GND/))return;
 	if(statement.predicate=="DDC")return;
 	if(statement.predicate=="VIAF")return;	
 	if(statement.subject=="◊")return;
@@ -129,7 +129,10 @@ function makeEntity(entity)
 	img.src="http://pannous.net/files/wikipedia.png";
 	img.width=20
 	link.appendChild(img);
-	makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
+	if(entity.id>0)
+	    makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
+	if(entity.id<-10000)
+	    makeLink("P","https://www.wikidata.org/wiki/Property:P"+ ( -10000 - entity.id) ,div)
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
 	if(entity.image && !entity.image.startsWith("Q"))addImage(entity.image,div);
 	// addImage(entity.image,div);

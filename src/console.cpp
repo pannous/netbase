@@ -117,6 +117,7 @@ Node *parseProperty(const char *data) {
 		show(found);
 		pf("ANSWER: %s\n", found->name);
 	}
+//	free(property);
 	return found;
 }
 
