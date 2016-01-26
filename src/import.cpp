@@ -97,7 +97,8 @@ std::map<int, int> wordnet_synset_map;
 
 // 100001740    ->  200000 and so on, no gaps
 int norm_wordnet_id2(int synsetid,bool force=false) {
-	if(synsetid < 1000 || (synsetid>10000&&synsetid < 14000))
+	if(synsetid < 1000 )return synsetid;// relations!
+	if(synsetid>10000&&synsetid < 14000)
 		p("problem!");
 	if (synsetid < million && !force) return synsetid;
 	int id=wordnet_synset_map[synsetid];
@@ -1854,6 +1855,8 @@ void importGermanLables(bool addLabels=false) {
 		if(!id)continue;
 		Node* node=get(id);
 		if(!isAbstract(node))node->kind=kind;
+		if((id<1000&&id>-1000)|| id >1000)
+			printf("MOMENT!");
 //		Node* abstract=getAbstract(german);
 		if(modify_english){
 			setLabel(node, german);// NOW?
@@ -1863,6 +1866,7 @@ void importGermanLables(bool addLabels=false) {
 			//			^^ later: in importSenses, via:
 		}
 		wn_labels[id]=german;
+		wn_labels[-id]=german;
 		if(addLabels&&strlen(translations)>2){
 			char** translationList=(char**)malloc(1000);
 			char sep=',';
@@ -1901,11 +1905,15 @@ void importSenses() {
 		fixNewline(line);
 		sscanf(line, "%d\t%d\t%d\t%d\t%d\t%*d\t%*d\t%s", &id, &labelid, &synsetid0, &senseid,&sensenum,/*&lexid,&tags,*/ name0);
 		//		if(id<1000)continue;// skip :(
-		id=id + 10000; // NORM!!!
+//		id=id + 10000; // NORM!!!
+		id=-id-10000;
 		//		if (130172 == id) p(line);
 
 		synsetid_mapped=norm_wordnet_id(synsetid0);// 100001740    ->  200000 and so on, no gaps
-		if (synsetid_mapped < 200000) continue;
+		if (synsetid_mapped < 200000 && synsetid_mapped>-200000){
+				printf("MOMENT!");
+				continue;
+		}
 		Node* sense=get(synsetid_mapped);
 		for (int i=0; i < strlen(name0); i++)
 			if (name0[i] == '%') name0[i]=0;
@@ -1988,9 +1996,10 @@ void importDescriptions() {
 		}
 		fixNewline(line);
 		sscanf(line, "%*d\t%d\t%[^\n]s", &id, /*&lexdomain,*/definition);
-		id=id + 10000; //  label on abstract !?!
+//		id=id + 10000; //  label on abstract !?!
+				id=-id -10000; //  label on abstract !?!
 		//		id=norm_wordnet_id(id);
-		if (id >= 200000) {
+		if (id >= 200000||id <= -200000) {
 			p(line);
 			continue;
 		}
@@ -2018,8 +2027,10 @@ void importLexlinks() {
 		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		//		if (old)return old; // showStatement(old)
 		//
-		s=s + 10000;
-		o=o + 10000;
+//		s=s + 10000;
+//		o=o + 10000;
+		s=-s -10000;
+		o=-o -10000;
 		if (p == SubClass->id) continue; // Redundant data!
 		if (p == Instance->id) continue; // Redundant data!
 
@@ -2057,6 +2068,7 @@ void importStatements() {
 
 void importWordnet() {
 	autoIds=false;
+	context=getContext(wordnet);
 	load_wordnet_synset_map();
 	//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
