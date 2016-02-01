@@ -1181,6 +1181,9 @@ int countInstances(Node * node) {
 	return i;
 }
 
+// put as callback into findPath for recursion
+// NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*))
+// edgeFilter:
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
 	NodeVector all;	int i = 0;
 	Statement* s = 0;
@@ -1203,6 +1206,32 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 }
 
 
+// put as callback into findPath for recursion
+NodeVector subclassFilter(Node* subject, NodeQueue * queue){
+	NodeVector all;	int i = 0;
+	Statement* s = 0;
+	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
+		bool subjectMatch = (s->Subject() == subject || subject == Any)  && !eq(s->Object()->name,"◊");;
+		bool predicateMatch = (s->Predicate() == SubClass);
+
+		bool subjectMatchReverse = s->Object() == subject && !eq(s->Subject()->name,"◊");
+		bool predicateMatchReverse = s->Predicate() == SuperClass; // || inverse
+		if(s->subject==23||s->object==23)
+			printf("");
+		if (queue) {
+			if (subjectMatch&&predicateMatch)
+				enqueue(subject, s->Object(), queue);
+			if (subjectMatchReverse&& predicateMatchReverse)
+				enqueue(subject, s->Subject(), queue);
+		} else {
+			if (subjectMatch && predicateMatch)all.push_back(s->Object());
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
+		}
+	}
+	return all;
+}
+
+// put as callback into findPath for recursion
 NodeVector relationsFilter(Node* subject, NodeQueue * queue){//, int max) {
 	NodeVector all;
 //    vector<int> relations;
@@ -1217,7 +1246,7 @@ NodeVector relationsFilter(Node* subject, NodeQueue * queue){//, int max) {
 
 
 // how to find paths with property predicates??
-
+// put as callback into findPath for recursion
 NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 	NodeVector all;
 	int i = 0;
@@ -1288,6 +1317,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		return all;
 }
 
+// put as callback into findPath for recursion
 NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	NodeVector all;
 	int i = 0;
@@ -1334,7 +1364,7 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 
 // todo : memory LEAK NodeVector ?
 // todo : enqueue instances?
-
+// put as callback into findPath for recursion
 NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 	if (!includeRelations && subject->id < 1000)return EMPTY;
 	NodeVector all;
@@ -1387,31 +1417,82 @@ NodeVector reconstructPath(Node* from, Node * to) {
 	}
 	all.push_back(from); // done
 	std::reverse(all.begin(), all.end());
-	free(enqueued);
 	return all;
 }
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
-	if (!d || enqueued[d->id])return false; // already done -> continue;
+	if (!d || enqueued[d->id+propertySlots])return false; // already done -> continue;
 	//	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
-	enqueued[d->id] = current->id;
+	enqueued[d->id+propertySlots] = current->id;
 	q->push(d);
 	runs++;
 	return true;
 }
-
-NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
-	//    map<Node*, Node*>enqueued;
+#define min(x,y) x<y?x:y
+// i.e. findAll(a(Person),subclassFilter)
+NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
+//	bool* enqueued = (bool*) malloc(maxNodes * sizeof (bool)); //context->nodeCount * 2
 	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	if (enqueued == 0) throw "out of memory for findPath";
+//	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
-	if (enqueued == 0) {
-		p("out of memory for findPath");
-		throw "out of memory for findPath";
+	q.push(fro);
+	// NOT neccessary for anyPath , ...
+	NodeVector instances;
+	if (isAbstract(fro) && edgeFilter != anyFilterNoKinds && edgeFilter != instanceFilter && edgeFilter != anyFilterRandom) // && edgeFilter!=
+		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
+	for (int i = 0; i < instances.size(); i++) {
+		Node* d = instances[i];
+		enqueued[d->id] = fro->id;
+		q.push(d);
+		pf("FROM %d %s\n", d->id, d->name);
 	}
-	memset(enqueued, 0, context->nodeCount * sizeof (int));
-    
+	Node* current;
+	NodeSet all;
+	while ((current = q.front())) {
+//		if(enqueued[current->id+propertySlots])continue;
+//		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
+		all.insert(current);
+		if (q.empty())break;
+		q.pop();
+		if (!checkNode(current, 0, true)||(current->name[0]<'A'))
+			continue;
+		if(startsWith(current->name,"http"))
+			continue;
+		N pa=get(enqueued[current->id+propertySlots]);
+		if(!pa)pa=Unknown;// Error;// Nil;
+//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
+		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
+		NodeVector more = edgeFilter(current, &q);// enqued => empty!
+
+//		show(more);
+//		mergeVectors(&all, more);
+	}
+	free(enqueued);
+	return all;
+}
+
+//NodeVector NodeVectorFrom(NodeSet& input){
+NodeVector setToVector(NodeSet& input){
+	NodeVector neu;
+	std::copy(input.begin(), input.end(), std::back_inserter(neu));
+	return neu;
+}
+
+// ok to return NodeVector, not &NodeVector !! see S.O.
+NodeVector findAllSubclasses(Node *fro){
+	NodeSet all=findAll(fro, subclassFilter);
+	return setToVector(all);
+}
+
+// ONE path! See findAll for all leaves
+NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
+	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	if (enqueued == 0)throw "out of memory for findPath";
+	memset(enqueued, 0, context->nodeCount * sizeof (int));// Necessary?
 	ps("LOAD!");
+	NodeQueue q;
 	q.push(fro);
 	runs = 0;
     
@@ -1430,27 +1511,32 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	p("GO!");
     
 	Node* current;
-    
+	NodeVector path=EMPTY;
 	while ((current = q.front())) {
 		if (q.empty())break;
 		q.pop();
 		//		if(current->id==230608)
 		//			pf("?? %d %s\n",current->id,current->name);
-		if (to == current)
-			return reconstructPath(fro, to);
+		if (to == current){// GOT ONE!
+			path=reconstructPath(fro, to); // shortcut
+			break;
+		}
 		if (!checkNode(current, 0, true))
 			continue;
 		NodeVector all = edgeFilter(current, &q);
 		if (all != EMPTY)// no queue
 			for (int i = 0; i < all.size(); i++) {
 				Node* d = (Node*) all[i];
-				if (to == current)return reconstructPath(fro, to); // shortcut
+				if (to == current){// GOT ONE!
+					path=reconstructPath(fro, to); // shortcut
+					break;
+				}
 				enqueue(current, d, &q);
 			}
 	}
-	pf("NO PATH FOUND! Touched nodes: %d\n", runs);
-	return EMPTY; // NONE FOUND!
-	//	return reconstructPath(fro, to);
+	free(enqueued);
+//	pf("NO PATH FOUND! Touched nodes: %d\n", runs);
+	return path;
 }
 
 NodeVector memberPath(Node* from, Node * to) {

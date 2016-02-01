@@ -23,7 +23,8 @@ Statement* pattern(Node* subject, Node* predicate, Node* object);
 void clearAlgorithmHash(bool all=false);
 NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
-NodeVector find_all(cchar* name, int context=1, int recurse=0, int limit=resultLimit);
+NodeVector find_all(cchar* name, int context=1, int recurse=0, int limit=resultLimit);// all city
+NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*));// all subclassFilter etc
 NodeVector& all_instances(Node* type, int recurse, int max= resultLimit,bool includeClasses=true);
 //NodeVector& allInstances(Node* type);
 NodeVector allInstances(Node* type);
@@ -44,6 +45,7 @@ bool enqueue(Node* current, Node* d, NodeQueue* q);
 NodeVector findPath(Node* fro, Node* to,NodeVector (*edgeFilter)(Node*,NodeQueue*) );
 
 NodeVector parentFilter(Node* subject,NodeQueue* queue=null);
+NodeVector subclassFilter(Node* subject, NodeQueue * queue);
 NodeVector memberFilter(Node* subject,NodeQueue* queue=null);
 NodeVector hasFilter(Node* subject,NodeQueue* queue=null);
 NodeVector childFilter(Node* subject,NodeQueue* queue=null);

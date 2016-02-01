@@ -112,7 +112,7 @@ void bad(){
 	badCount++;
 }
 bool isAbstract(Node* object) {
-	return object->kind == abstractId || object->kind == singletonId;
+	return object->kind == abstractId || object->kind == singletonId || object->kind ==0;// 0 WTF how?
 }
 
 bool checkHash(Ahash* ah) {
@@ -611,7 +611,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 // return false if node not ok
 // remove when optimized!!!!!!!!!!
 bool checkNode(int nodeId, bool checkStatements, bool checkNames,bool report) {
-	if(nodeId<-propertySlots||nodeId>=maxNodes)return false;
+	if(nodeId<-propertySlots||nodeId>=maxNodes-propertySlots)return false;
 	return checkNode(get(nodeId),nodeId , checkStatements,  checkNames,report);
 }
 
@@ -1513,6 +1513,16 @@ char* getLabel(Node * n) {
 	if (s) return s->Object()->name;
 
 	return 0;
+}
+
+void show(NodeSet& all){
+	NodeSet::iterator it;
+	for(it=all.begin();it!=all.end();it++){
+		Node* node= (Node*) *it;
+		if(!checkNode(node))continue;
+//		pf("%d	%s\n",node->id,node->name);
+		pf("%s	Q%d\n",node->name,node->id);
+	}
 }
 
 void show(vector<char*>& v){

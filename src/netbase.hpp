@@ -584,6 +584,7 @@ typedef Context* C;
 typedef Statement* S;
 typedef NodeVector Ns;
 typedef NodeVector NV;
+typedef NodeSet NS;
 
 //#pragma warnings_off
 static int averageNameLength =40;// 20; // used for malloc
@@ -594,8 +595,8 @@ static int MB=1048576;
 static int GB=1024*MB;
 static int million=MB;
 static int billion=GB;
-//static int propertySlots=100000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata
-static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet!
+static int propertySlots=20000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata
+//static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet!
 // 200000-317658 for wordnet + other !
 
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
@@ -628,3 +629,4 @@ extern char* name_root;
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
 void bad();
+void show(NodeSet& all);

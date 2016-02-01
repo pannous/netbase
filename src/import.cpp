@@ -1006,9 +1006,7 @@ int countRows(char* line) {
 bool importYago(const char* file) {
 	autoIds=false;
 	pf("import YAGO %s start\n", file);
-	//	if (!contains(file, "/")) file=(((string) "/data/base/BIG/yago/") + file).data();
 	if (!contains(file, "/")) file=concat("yago/", file);
-	//		file = concat("/Users/me/data/base/BIG/yago/", file);
 	Node* subject;
 	Node* predicate;
 	Node* object;
@@ -1226,7 +1224,8 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		key=dropUrl(key);
 		int id=atoi(key+1);
 //		if(properties)id=(int)maxNodes-id;
-		if(properties)id=-10000-id;
+		if(properties)
+			id=-10000-id;
 		if(id<maxNodes/2-propertySlots){
 			Node* node=&context->nodes[id];
 			if(english&&node->name)
@@ -2218,18 +2217,18 @@ void importWikiData() {
 //	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
 //	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
 	if(germanLabels){
-		importWikiLabels("wikidata/wikidata-terms.de.nt");
-		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
-		showContext(current_context);
 		context->lastNode=(int)maxNodes/2;// hack
+		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
+		importWikiLabels("wikidata/wikidata-terms.de.nt");
+		showContext(current_context);
 //		collectAbstracts(); BREAKS THINGS!
 //		importLabels("wikidata/wikidata-properties.de.nt");
 //		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
 
 	}
 	else{
-		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
 		importWikiLabels("wikidata/wikidata-properties.en.nt",true);
+		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
 	}
 //	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");

@@ -1706,21 +1706,34 @@ void getSuperClasses(){
 	for(it=all.begin();it!=all.end();it++){
 		N n=(Node*) *it;
 		//		N n=all[i];
-		printf("%s	Q%d\n",n->name,n->id);
+		printf("%s	%d\n",n->name,n->id);
 	}
 
 }
+void recursiveTaxonomy(){
+//	NS all= findAll(the(Person),subclassFilter);
+	//	NS all= findAll(get(5113),subclassFilter);
+//	NS all= findAll(get(5),subclassFilter);// Mensch
+	NS all= findAll(get(28640),subclassFilter);// Beruf
+//	NS all= findAll(get(-10106),subclassFilter);// Tätigkeit
 
+	printf("------------------------------------\n");
+//	show(all); //already done
+}
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	quiet=false;
 	debug = true;
+	germanLabels=true;
 //	p("test -> SHELL");return;// for shell
 	p("Test Brand New Stuff");
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
+//	if(!eq(get(1)->name,"Universe"))
+//		importWikiData();
+	recursiveTaxonomy();
 	context=getContext(current_context);
-	context->lastNode=1;// RADICAL: fill all empty slots!
+//	context->lastNode=1;// RADICAL: fill all empty slots!
 
 	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	//	getClasses();
@@ -1732,7 +1745,7 @@ void testBrandNewStuff() {
 	//	if(!hasWord("bug"))importWordnet();
 	//		importWikiData();
 //	handle("/verbose/Mensch");
-	importWordnet();
+//	importWordnet();
 //		flattenGeographischeKoordinaten();
 //	handle("/P106");
 //	parse(":server");
