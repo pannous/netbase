@@ -1752,7 +1752,7 @@ void testBrandNewStuff() {
 	//	handle("/P106");
 	//	parse(":server");
 //		parse(":all Bug");
-	parse("query :all Mensch limit 1000000");
+//	parse("query :all Mensch limit 1000000");
 //	handle("Mensch");
 	//	handle("/41172206");
 	//	handle("/90962");

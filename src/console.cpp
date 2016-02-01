@@ -51,15 +51,21 @@ void showHelpMessage() {
 	ps(":context :info");
 	ps("limit <n>");
 	ps("Type words, ids, or queries:");
+	ps("Abraham Lincoln");
+	ps("Q5");
+	ps("subclasses of human");
+	ps("entities of human limit 1000");
 	//    ps("all animals that have feathers");
 	ps("all animals with feathers");
-	ps("select * from dogs where terrier");
+//	ps("select * from dogs where terrier");
 	ps("all city with countrycode=ZW");
+	ps("select longitude,latitude from city where Population>10000000");
 	ps("Population of Gehren");
 	ps("opposite of bad");
     ps("learn Germany has Gehren");
-    ps("learn 1001 1003 2442 (via ids)");
-    ps("update Stadt.Gemeindeart set typ=244797");
+	ps("learn 1001 5 2442 (via ids)");
+	ps("set Gehren.Population to 244797");
+	ps("update Gehren.Population set current=244797");
 //    ps("delete from Stadt.Gemeindeart where typ=244797");
     ps("");
 	//	ps("update city set type=town where population<10000");
@@ -422,8 +428,9 @@ NodeVector parse(const char* data) {
 	//Big the Cat 	x Species ^ - + -- -!
 	if (startsWith(data, "show ")||startsWith(data, ":show ")||// show?? really?
 		startsWith(data, ":tree")||startsWith(data, ":subclasses")||startsWith(data, "subclasses")){
-		N da=getAbstract(next_word(data).data());
-		if(eq(da->name,"of"))da=getAbstract(next_word(data).data());
+		data=next_word(data).data();
+		if(startsWith(data,"of"))data=next_word(data).data();
+		N da=getAbstract(data);
 		NS all=findAll(da,subclassFilter);// ok, show!
 //		show(all);
 		return setToVector(all);
