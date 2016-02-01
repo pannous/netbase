@@ -1713,8 +1713,8 @@ void getSuperClasses(){
 void recursiveTaxonomy(){
 //	NS all= findAll(the(Person),subclassFilter);
 	//	NS all= findAll(get(5113),subclassFilter);
-//	NS all= findAll(get(5),subclassFilter);// Mensch
-	NS all= findAll(get(28640),subclassFilter);// Beruf
+	NS all= findAll(get(5),subclassFilter);// Mensch
+//	NS all= findAll(get(28640),subclassFilter);// Beruf
 //	NS all= findAll(get(-10106),subclassFilter);// Tätigkeit
 
 	printf("------------------------------------\n");
