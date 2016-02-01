@@ -455,7 +455,8 @@ void show(Statement * s);
 Node * showNode(Node* n);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
-NodeVector* findWords(int context, const char* word, bool first= false,bool containsWord=false);
+//NodeVector* findWords(int context, const char* word, bool first= false,bool containsWord=false);
+NodeVector* findWordsByName(int context, const char* word, bool first= false,bool containsWord=false);
 NodeVector* findAllWords(const char* word);
 //NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
 extern "C"

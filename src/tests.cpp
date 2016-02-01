@@ -1712,8 +1712,10 @@ void getSuperClasses(){
 }
 void recursiveTaxonomy(){
 //	NS all= findAll(the(Person),subclassFilter);
-	//	NS all= findAll(get(5113),subclassFilter);
-	NS all= findAll(get(5),subclassFilter);// Mensch
+
+		NS all= findAll(get(7569),subclassFilter);// Kind: Test
+//	NS all= findAll(get(215627),subclassFilter);// Person
+//	NS all= findAll(get(5),subclassFilter);// Mensch
 //	NS all= findAll(get(28640),subclassFilter);// Beruf
 //	NS all= findAll(get(-10106),subclassFilter);// Tätigkeit
 
@@ -1731,7 +1733,7 @@ void testBrandNewStuff() {
 	//	fixRelations();
 //	if(!eq(get(1)->name,"Universe"))
 //		importWikiData();
-	recursiveTaxonomy();
+//	recursiveTaxonomy();
 	context=getContext(current_context);
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 
@@ -1747,8 +1749,10 @@ void testBrandNewStuff() {
 //	handle("/verbose/Mensch");
 //	importWordnet();
 //		flattenGeographischeKoordinaten();
-//	handle("/P106");
-//	parse(":server");
+	//	handle("/P106");
+	//	parse(":server");
+//		parse(":all Bug");
+	parse("query :all Mensch limit 1000000");
 //	handle("Mensch");
 	//	handle("/41172206");
 	//	handle("/90962");

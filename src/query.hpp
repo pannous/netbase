@@ -66,7 +66,8 @@ NodeVector nodeVectorWrap(Statement* n);
 //NodeVector ownerFilter(Node* subject);
 //NodeVector anyFilter(Node* subject);
 //NodeVector instanceFilter(Node* subject);
-
+NodeVector nodeSetToNodeVector(NodeSet& input);
+NodeVector setToVector(NodeSet& input);
 
 NodeVector shortestPath(Node* from,Node* to );// any
 NodeVector parentPath(Node* from, Node* to);

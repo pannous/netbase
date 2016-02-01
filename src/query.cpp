@@ -1184,19 +1184,21 @@ int countInstances(Node * node) {
 // put as callback into findPath for recursion
 // NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*))
 // edgeFilter:
+//childFilter == instanceFilter (+SubClass or not?)
+// todo:  deduplicate code: childFilter=filter<Instance,SubClass>
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
 	NodeVector all;	int i = 0;
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
-		bool predicateMatch = (s->Predicate() == Instance);
+		bool predicateMatch = (s->Predicate() == Instance)|| (s->Predicate() == SubClass);
         
 		bool subjectMatchReverse = s->Object() == subject;
-		bool predicateMatchReverse = s->Predicate() == Type; // || inverse
+		bool predicateMatchReverse = s->Predicate() == Type || s->Predicate() == SuperClass; // || inverse
         
 		if (queue) {
-			if (subjectMatch)enqueue(subject, s->Object(), queue);
-			if (subjectMatchReverse)enqueue(subject, s->Subject(), queue);
+			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object(), queue);
+			if (subjectMatchReverse&& predicateMatchReverse)enqueue(subject, s->Subject(), queue);
 		} else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
@@ -1454,6 +1456,7 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 //		if(enqueued[current->id+propertySlots])continue;
 //		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
 		all.insert(current);
+		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
 		if (!checkNode(current, 0, true)||(current->name[0]<'A'))
@@ -1464,8 +1467,8 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		if(!pa)pa=Unknown;// Error;// Nil;
 //		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
 		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
-		NodeVector more = edgeFilter(current, &q);// enqued => empty!
-
+		if(q.size()<lookupLimit)// bad (?) : refill after pop()
+			NodeVector more = edgeFilter(current, &q);// enqued => empty!
 //		show(more);
 //		mergeVectors(&all, more);
 	}
@@ -1479,6 +1482,12 @@ NodeVector setToVector(NodeSet& input){
 	std::copy(input.begin(), input.end(), std::back_inserter(neu));
 	return neu;
 }
+NodeVector nodeSetToNodeVector(NodeSet& input){
+	NodeVector neu;
+	std::copy(input.begin(), input.end(), std::back_inserter(neu));
+	return neu;
+}
+
 
 // ok to return NodeVector, not &NodeVector !! see S.O.
 NodeVector findAllSubclasses(Node *fro){

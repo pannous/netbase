@@ -1586,15 +1586,15 @@ Node * showNode(int id) {
 }
 
 // saver than iterating through abstracts?
-NodeVector* findWords(int context, const char* word, bool first,bool containsWord) {	//=false
+NodeVector* findWordsByName(int context, const char* word, bool first,bool containsWord) {	//=false
 	// pi(context);
 	NodeVector* all=new NodeVector();
 	Context* c=getContext(context);
 	for (int i=0; i < c->nodeCount; i++) {
 		Node* n=&c->nodes[i];
 		if (n->id==0||!checkNode(n, i, true, false)) continue;
-        bool good=eq(n->name, word, true);
-        if(containsWord)good=good||contains(n->name, word,true);
+		bool good=eq(n->name, word, true);
+		if(containsWord)good=good||contains(n->name, word,true);
 		if (good) {
 			all->push_back(n);
 			show(n);
@@ -1612,13 +1612,14 @@ NodeVector* findWords(int context, const char* word, bool first,bool containsWor
 	return all;
 }
 
+// see findAll for recursive children of subclasses / instances
 NodeVector* findAllWords(const char* word) {
-    NodeVector* all=findWords(current_context,word,false,false);
-	collectAbstractInstances(getAbstract(word));
+	NodeVector* all=findWordsByName(current_context,word,/*first*/false,/*containsWord*/false);
+	collectAbstractInstances(getAbstract(word));// woot?
 	return all;
-}
+} // diff :??
 NodeVector* findAllMatches(const char* word) {
-    return findWords(current_context,word,false,true);
+	return findWordsByName(current_context,word,false,true);
 }
 
 Statement* findStatement(int subject, int predicate, int object, int recurse, bool semantic, bool symmetric, bool semanticPredicate,bool matchName) {
@@ -1801,7 +1802,7 @@ void deleteWord(const char* data, bool completely) {
 	if (id <= 0) {
 		deleteNode(getThe(data));
 		if (completely) {
-			NodeVector* words=findWords(current_context, data, true,false); //getAbstract(data);
+			NodeVector* words=findWordsByName(current_context, data, true,false); //getAbstract(data);
 			for(int i=0;i<words->size();i++){
 				Node* word=words->at(i);
 				pf("deleteNode %s \n", word->name);

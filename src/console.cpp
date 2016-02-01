@@ -252,6 +252,10 @@ NodeVector parse(const char* data) {
 		return OK;
 	}
 	autoIds=true;
+
+	if (startsWith(data, ":select") || startsWith(data, "select")||startsWith(data, ":query") || startsWith(data, "query")) {
+		data=next_word(data).data();
+	}
 	if (contains(data, "lookup")||contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
 		sscanf(limit, "lookup %d", &lookupLimit);
@@ -329,14 +333,7 @@ NodeVector parse(const char* data) {
         show(da,true);
 		return nodeVectorWrap(da);
 	}
-    //    Ch��teau
-	if (eq(args[0], ":all"))
-		return *findAllWords(data + 5);
-	if (eq(args[0], ":matches"))
-		return *findWords(wordnet, data + 13, false,true);
-	if (eq(args[0], ":find"))
-		return *findWords(wordnet, data + 6, false);
-    
+
 	if (startsWith(data, ":merge ")) {
         int target,node=0;
 		sscanf(data, ":merge %d %d", &target,&node);
@@ -411,18 +408,41 @@ NodeVector parse(const char* data) {
 	}
 
 	if (startsWith(data, "select ")) return query(data);
-	if (startsWith(data, "all ")||startsWith(data, "show ")||startsWith(data, ":all ")||startsWith(data, ":show ")) {
-		lookupLimit=100;
-		bool allowInverse=true;// ONLY inverse of superclass!!
-		NodeVector all=findProperties(next_word(data).c_str(),"superclass",allowInverse);
-		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
-		//Big the Cat 	x Species ^ - + -- -!
-		if(all.size()<resultLimit){
-			NodeVector more=query(data);
-			mergeVectors(&all,more);
-		}
-		return showNodes(all,true);
+
+
+	//    Ch��teau
+	if (eq(args[0], ":words"))// all // ambiguous!
+		return *findAllWords(data + 5);
+	if (eq(args[0], ":matches"))// ambiguous!
+		return *findWordsByName(wordnet, data + 13, false,true);
+	if (eq(args[0], ":find"))// ambiguous!
+		return *findWordsByName(wordnet, data + 6, false);
+
+	//		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
+	//Big the Cat 	x Species ^ - + -- -!
+	if (startsWith(data, "show ")||startsWith(data, ":show ")||// show?? really?
+		startsWith(data, ":tree")||startsWith(data, ":subclasses")||startsWith(data, "subclasses")){
+		N da=getAbstract(next_word(data).data());
+		if(eq(da->name,"of"))da=getAbstract(next_word(data).data());
+		NS all=findAll(da,subclassFilter);// ok, show!
+//		show(all);
+		return setToVector(all);
+//		lookupLimit=100;
+//		bool allowInverse=true;// ONLY inverse of superclass!!
+//		NodeVector all=findProperties(next_word(data).c_str(),"superclass",allowInverse);
+//		if(all.size()<resultLimit){
+//			NodeVector more=query(data);
+//			mergeVectors(&all,more);
+//		}
+//		return showNodes(all,true);
 	}
+	if (startsWith(data, ":all ")||startsWith(data, "all ")||startsWith(data, ":children")||startsWith(data, "instances")||startsWith(data, ":instances")||startsWith(data, ":entities")||startsWith(data, "entities")){//||startsWith(data, "children ")
+		N da=getAbstract(next_word(data).data());
+		NS all=findAll(da,instanceFilter);// childFilter
+//		show(all);// ok, show!
+		return setToVector(all);
+	}
+
 	if (startsWith(data, "these ")) return query(data);
 	if (contains(data, "that ")) return query(data);
 	if (contains(data, "who ")) // who loves jule
@@ -442,6 +462,7 @@ NodeVector parse(const char* data) {
 	if (startsWith(data, ":printlabels")){
 		printlabels();
 	}
+
 
 	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
 		const char* what=next_word(data).data();
