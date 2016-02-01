@@ -1459,7 +1459,7 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
-		if (!checkNode(current, 0, true)||(current->name[0]<'A'))
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/)||(current->name[0]<'A'))
 			continue;
 		if(startsWith(current->name,"http"))
 			continue;
