@@ -2725,7 +2725,7 @@ int main(int argc, char *argv[]) {
 	if (data) {
 		printf("Content-Type: text/plain;charset=us-ascii\n\n");
 		printf("got QUERY_STRING %s", data);
-		init();
+		initSharedMemory();
 		parse(data);
 		//	start_server();
 	}
@@ -2753,7 +2753,7 @@ int main(int argc, char *argv[]) {
 
 	if (checkParams(argc, argv, "query")||checkParams(argc, argv, "select")) {
 		quiet=true;
-		init();
+		initSharedMemory();
 		load();
 //		quiet=false;
 		const char* query=(const char*)cut_to(cut_to(join(argv, argc).data(), "query "),"select");
@@ -2763,8 +2763,8 @@ int main(int argc, char *argv[]) {
 
 	if (checkParams(argc, argv, "quit")) exit(0);
 
-	init();
 	//    import();
+	initSharedMemory(); // <<<
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
 

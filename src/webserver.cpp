@@ -518,7 +518,7 @@ int Service_Request(int conn) {
 		Output_HTTP_Headers(conn, &reqinfo);
 	// file system:	//		Serve_Resource(ReqInfo  reqinfo,int conn)
 	CleanURL(reqinfo.resource);
-	init(); // for each forked process!
+	initSharedMemory(); // for each forked process!
     if(strlen(reqinfo.resource)>1000)return 0;
 	char* q = substr(reqinfo.resource, 1, -1);
 	// ::::::::::::::::::::::::::::::

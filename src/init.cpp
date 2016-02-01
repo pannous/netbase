@@ -188,7 +188,8 @@ void checkRootContext() {
 //	}
 }
 
-extern "C" void init(bool relations) {
+
+extern "C" void initSharedMemory(bool relations) {
 	signal(SIGSEGV, signal_handler);
 
     if(!relations)testing=true;
@@ -204,13 +205,13 @@ extern "C" void init(bool relations) {
 //	p("abstract_root:");
 	abstract_root=(Node*) share_memory(key , abstract_size * 2, abstract_root,root);//  ((char*) context_root) + context_size
 //	p("name_root:");
-	int mega_debug=getenv("MEGA_DEBUG")?0x40000:0;
+	int mega_debug=getenv("MEGA_DEBUG")?0x40000:0; // objective xcode zombie diagnostics etc
 	name_root=(char*) share_memory(key + 1, name_size, name_root, ((char*) abstract_root) + abstract_size * 2 + mega_debug);
 //	p("node_root:");
 	node_root=(Node*) share_memory(key + 2, node_size, node_root, name_root + name_size);
 //	p("statement_root:");
 	statement_root=(Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
-//	p("keyhash_root:");
+//	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 //   	p("context_root:");
@@ -227,10 +228,13 @@ extern "C" void init(bool relations) {
 		initRelations();
 		if (context->lastNode < 0)
 			context->lastNode=1;
-//	if (context->lastNode < 1000)
-//        context->lastNode=1000;
 	}
 }
+
+extern "C" void init(bool relations) {
+	initSharedMemory(relations);
+}
+
 
 void fixNodes(Context* context, Node* oldNodes) {
 #ifndef explicitNodes
@@ -434,7 +438,7 @@ bool clearMemory() {
     if (!virgin_memory) {
 		ps("Cleansing Memory!");
         detach_shared_memory();
-        init();
+        initSharedMemory();
         //		if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
         // EXPENSIVE on big machines!! like: 10 minutes!!
 //		else {
