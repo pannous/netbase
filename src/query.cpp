@@ -1695,8 +1695,11 @@ NV findEntites(char* query){
 	NV topics;	// Politik
 	vector<cchar*> forbidden;
 	forbidden.push_back("The");
+	forbidden.push_back("bzw");
+	forbidden.push_back("von");
 	forbidden.push_back("BZW");
 	forbidden.push_back("Für");
+	forbidden.push_back("für");
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
 	int min_chars=3;//
 	int len=(int)strlen(query);
