@@ -38,6 +38,13 @@ bool isNumber(const char* buf) {
 	return strlen(buf) == strspn(buf, "-0123456789,.");// 2E19
 }
 
+char* next_word(char* data){
+	while (data[0]!=0 && data[0]!=' ') {
+		data++;
+	}
+	if(data[0]==' ')data++;
+	return data;
+}
 string next_word(string data) {
 	int spc=(int)data.find(" ");
 	if (spc >= 0) return data.substr(spc + 1);
@@ -150,6 +157,23 @@ bool contains(NodeVector& all, Node* node, bool fuzzy) {
 	}
 	return false;
 }
+
+bool contains(vector<const char*>& all, const char* node) {
+	for (int i=0; i < all.size(); i++) {
+		const char* ali=all[i];
+		if (eq(ali, node)) return true;
+	}
+	return false;
+}
+
+
+bool contains(vector<char*>& all, char* node) {
+	for (int i=0; i < all.size(); i++) {
+		char* ali=all[i];
+		if (eq(ali, node)) return true;
+	}
+	return false;
+}
 //
 //bool contains(NodeVector* v, Node* node,bool fuzzy) {
 //    for (int i = 0; i < v->size(); i++)
@@ -178,13 +202,6 @@ bool contains(NodeVector& all, Node* node, bool fuzzy) {
 //}
 //
 
-bool contains(vector<char*>& all, char* node) {
-	for (int i=0; i < all.size(); i++) {
-		char* ali=all[i];
-		if (eq(ali, node)) return true;
-	}
-	return false;
-}
 
 bool contains(string x, const char* y) {
 	return x.find(string(y)) != string::npos;

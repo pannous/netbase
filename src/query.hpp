@@ -68,6 +68,7 @@ NodeVector nodeVectorWrap(Statement* n);
 //NodeVector instanceFilter(Node* subject);
 NodeVector nodeSetToNodeVector(NodeSet& input);
 NodeVector setToVector(NodeSet& input);
+NV findEntites(char* query);
 
 NodeVector shortestPath(Node* from,Node* to );// any
 NodeVector parentPath(Node* from, Node* to);

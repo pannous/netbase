@@ -1642,3 +1642,79 @@ NodeVector parseProperties(const char *data) {
 	showNodes(all);
 	return all;
 }
+
+bool containsSubstring(vector<char*>& words, char* sub) {
+	for (int j=0; j < words.size(); j++) {
+		char* word=words[j];
+		if (contains(word, sub,true/*ignoreCase*/)){
+			if(eq(word,sub))
+				continue;// only true substrings!
+			else
+				return true;
+		}
+	}
+	return false;
+}
+
+NV filterCandidates(NV all){
+	VC words;
+	for(int i=(int)all.size()-1;i>=0;i--)
+		words.push_back(all[i]->name);
+
+	for(int i=(int)all.size()-1;i>=0;i--){
+		N entity=all[i];
+		if(containsSubstring(words, entity->name)){
+			all.erase(all.begin() +i);
+//			all.erase(&all[i]);
+//			all[i]=0;
+		}
+	}
+//	all.shrink_to_fit();
+//	for(int i=0;i<all.size();i++){
+//		N entity=all[i];
+//		NV more=allInstances(entity);
+//		mergeVectors(&all, more);
+//	}
+	return all;
+}
+
+NV findEntites(char* query){
+	query=modifyConstChar(query);
+	NV all;
+	NV entities;// Merkel
+	NV classes; // Politiker
+	NV topics;	// Politik
+	vector<cchar*> forbidden;
+	forbidden.push_back("The");
+	int max_words=6;// max words per entity: 'president of the United States of America' == 7
+	int min_chars=3;//
+	int len=(int)strlen(query);
+	char* start=query;
+	char* end=&query[len];
+	char* mid=strstr(start," ");
+	while(start<end){
+		int words=1;
+		while(mid<=end && words<max_words && mid-start>=min_chars){
+			mid[0]=0;// Artificial cut
+			p(start);
+			N entity=hasWord(start);
+			mid[0]=' ';// fix
+			// the United https://www.wikidata.org/wiki/Q7771566
+			// 239790	United				9 statements
+			if(entity && !contains(forbidden,entity->name)){
+//				p(entity);
+				all.push_back(entity);
+			}
+			if(mid==end)break;
+			mid=strstr(mid+1," ");// expand
+			if(!mid)mid=end;
+			words++;
+		}
+		while(start[0]!=' ' && start!=end) start++;
+		start++; // skip ' '
+		if(start>=end)break;
+		mid=strstr(start," ");// first sub-word
+		if(!mid)break;
+	}
+	return filterCandidates(all);
+}

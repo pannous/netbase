@@ -586,6 +586,10 @@ typedef Statement* S;
 typedef NodeVector Ns;
 typedef NodeVector NV;
 typedef NodeSet NS;
+typedef vector<char*> VC;
+typedef vector<char*> CV;
+typedef vector<char*> VCC;
+typedef vector<char*> CCV;
 
 //#pragma warnings_off
 static int averageNameLength =40;// 20; // used for malloc

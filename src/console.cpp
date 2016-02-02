@@ -161,15 +161,15 @@ NodeVector runScript(const char* file){
 }
 
 
-NodeVector parse(const char* data) {
-	if (eq(data, null)) return OK;
-	if (!isprint(data[0])) // ??
+NodeVector parse(const char* data0) {
+	if (eq(data0, null)) return OK;
+	if (!isprint(data0[0])) // ??
 		return OK;
-	if (eq(data, "")) {
+	if (eq(data0, "")) {
 		return OK;
 	}
 
-	data=fixQuotesAndTrim(editable(data));
+	char* data=fixQuotesAndTrim(editable(data0));
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
 	if(data[0]==':')appendFile("commands.log",data);
@@ -260,7 +260,7 @@ NodeVector parse(const char* data) {
 	autoIds=true;
 
 	if (startsWith(data, ":select") || startsWith(data, "select")||startsWith(data, ":query") || startsWith(data, "query")) {
-		data=next_word(data).data();
+		data=next_word(data);
 	}
 	if (contains(data, "lookup")||contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
@@ -428,8 +428,8 @@ NodeVector parse(const char* data) {
 	//Big the Cat 	x Species ^ - + -- -!
 	if (startsWith(data, "show ")||startsWith(data, ":show ")||// show?? really?
 		startsWith(data, ":tree")||startsWith(data, ":subclasses")||startsWith(data, "subclasses")){
-		data=next_word(data).data();
-		if(startsWith(data,"of"))data=next_word(data).data();
+		data=next_word(data);
+		if(startsWith(data,"of"))data=next_word(data);
 		N da=getAbstract(data);
 		NS all=findAll(da,subclassFilter);// ok, show!
 //		show(all);
@@ -443,8 +443,12 @@ NodeVector parse(const char* data) {
 //		}
 //		return showNodes(all,true);
 	}
-	if (startsWith(data, ":all ")||startsWith(data, "all ")||startsWith(data, ":children")||startsWith(data, "instances")||startsWith(data, ":instances")||startsWith(data, ":entities")||startsWith(data, "entities")){//||startsWith(data, "children ")
-		N da=getAbstract(next_word(data).data());
+	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee ")||startsWith(data, ":ee")){
+		data=next_word(data);
+		return show(findEntites(data));
+	}
+	if (startsWith(data, ":all ")||startsWith(data, "all ")||startsWith(data, ":children")||startsWith(data, "instances")||startsWith(data, ":instances")){//||startsWith(data, "children ")
+		N da=getAbstract(next_word(data));
 		NS all=findAll(da,instanceFilter);// childFilter
 //		show(all);// ok, show!
 		return setToVector(all);
@@ -456,12 +460,12 @@ NodeVector parse(const char* data) {
 		return query(data);
     
 	if (eq(args[0], "the") || eq(args[0], "my")) {
-		N da=getThe(next_word(data).data(), More);
+		N da=getThe(next_word(data), More);
 		show(da);
 		return nodeVectorWrap(da);
 	}
 	if (eq(args[0], "a") || eq(args[0], "abstract")) {
-		N da=getAbstract(next_word(data).data());
+		N da=getAbstract(next_word(data));
 		show(da);
 		return nodeVectorWrap(da);
 	}
@@ -472,7 +476,7 @@ NodeVector parse(const char* data) {
 
 
 	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
-		const char* what=next_word(data).data();
+		const char* what=next_word(data);
 		appendFile("import/labels.csv",what);
 		cchar* wordOrId=args[1].c_str();
 		const char* label=next_word(what).data();

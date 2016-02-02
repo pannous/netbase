@@ -44,6 +44,7 @@ bool contains(const char* x,const char* y,bool ignoreCase=false);
 bool contains(NodeSet& all, Node* node);
 bool contains(NodeSet* all, Node* node);
 bool contains(vector<char*>& all,char* node);
+bool contains(vector<const char*>& all, const char* node) ;
 bool contains(vector<string>& all, char* name);
 bool contains(string x,const char* y);
 bool isNumber(const char* buf);
@@ -68,6 +69,7 @@ void p(NodeVector& n);
 void p(string s);
 //char* next(char* data);
 string next_word(string data);
+char* next_word(char* data);
 
 //vector<char*>& splitString(string line0,const char* separator="\t");
 //vector<char*>& splitString(const char* line0,const char* separator="\t");
@@ -105,6 +107,7 @@ char* replace(char* data,char what,char with);
 bool isAbstract(Node* object);
 //bool contains(NodeVector& v, Node& o,bool fuzzy=false);
 bool contains(NodeVector& v, Node* o,bool fuzzy=false);
+bool contains(vector<char*>& all, const char* node);
 
 string itoa(int i);
 void appendFile(const char* fileName,const char* data);

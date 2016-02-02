@@ -894,13 +894,13 @@ Statement * getStatement2(Node* n, int nr) {
 
 // Abstract notes are necessary in cases where it is not known whether it is the noun/verb etc.
 //inline
-
 Node * get(const char* node) {
 	return getAbstract(node);
 }
-//inline Node* get(char* node) {
-//	return getAbstract(node);
-//}
+//inline
+Node* get(char* node) {
+	return getAbstract(node);
+}
 
 
 //inline
@@ -1420,7 +1420,7 @@ Node* rdfValue(char* name) {
 
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
-Node* getAbstract(const char* thing) {			// AND CREATE!
+Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!!
 	if (thing == 0) {
 		bad();
 		return 0;
@@ -2314,14 +2314,15 @@ Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
 }
 
 NodeVector show(NodeVector all){
- return    showNodes(all);
+ return showNodes(all);
 }
-void show(NodeSet all, bool showStatements, bool showRelation, bool showAbstracts){
+NodeSet show(NodeSet all, bool showStatements, bool showRelation, bool showAbstracts){
 	NodeSet::iterator it;
 	for(it = all.begin(); it != all.end(); ++it) {
 			Node* node=(Node*)*it;
 			show(node, showStatements);
 	}
+	return all;
 }
 
 NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, bool showAbstracts) {

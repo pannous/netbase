@@ -1722,17 +1722,25 @@ void recursiveTaxonomy(){
 	printf("------------------------------------\n");
 //	show(all); //already done
 }
+void testEntities(){
+	char* query="president of the United States of America";
+	NV all=findEntites(query);
+	show(all);
+}
+
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	quiet=false;
 	debug = true;
 	germanLabels=true;
 //	p("test -> SHELL");return;// for shell
+	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
+		importWikiData();
 	p("Test Brand New Stuff");
+	testEntities();
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
-//	if(!eq(get(1)->name,"Universe"))
-//		importWikiData();
+
 //	recursiveTaxonomy();
 	context=getContext(current_context);
 //	context->lastNode=1;// RADICAL: fill all empty slots!
