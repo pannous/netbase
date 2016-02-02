@@ -521,7 +521,7 @@ char* editable(const char* line) {
 }
 
 // line MUST not be const! tokens->out
-int splitStringC(char* line, char** tokens, char separator) {
+int splitStringC(char* line, char** tokens, char separator) {// leeeeak!
 //	if(!contains(line, separator)){
 //		tokens[0]=line;
 //		tokens[1]=0;
@@ -558,13 +558,13 @@ char** splitStringC(const char* line0, const char* separator) {
 }
 
 char** splitStringC(const char* line0, char separator) {
-	return splitStringC(editable(line0), separator);
+	return splitStringC(editable(line0), separator);// leeeeak!
 }
 
 char** splitStringC(char* line0, char separator, int maxRows) {
 	char** tokens=(char**) malloc(maxRows);
 //	memset(tokens,0,maxRows);
-	splitStringC(line0, tokens, separator);
+	splitStringC(line0, tokens, separator);// leeeeak!
 	return tokens;
 }
 char* replaceChar(char* thing,char what,char with){

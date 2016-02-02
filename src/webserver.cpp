@@ -214,6 +214,9 @@ int handle(cchar* q0,int conn){
 		showExcludes=false;
 		verbosity = alle;
     }
+	if (startsWith(q, "entities/")) {
+		q[8]=' ';
+	}
     loadView(q);
     
     if(contains(q,"exclude")||contains(q,"include")){

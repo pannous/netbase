@@ -1604,8 +1604,8 @@ NodeVector update(cchar* query){
 
 NodeVector parseProperties(const char *data) {
 	lookupLimit=10000;
-	char *thing=(char *) malloc(1000);
-	char *property=(char *) malloc(1000);
+	char *thing=0;//=(char *) malloc(1000);
+	char *property;//=(char *) malloc(1000);
 	if (contains(data, ":")) {
 		//			sscanf(data,"%s:%s",property,thing);
 		char** splat=splitStringC(data, ':');
@@ -1618,16 +1618,24 @@ NodeVector parseProperties(const char *data) {
 		thing=splat[0];
 		property=splat[1];
 	}
-	else if (contains(data, " of ")) sscanf(data, "%s of %[^\n]", property, thing);
-	else if (contains(data, " by ")) sscanf(data, "%s by %[^\n]", property, thing);
+	else if (contains(data, " of ")){
+		thing=(char *) malloc(1000);
+		property=(char *) malloc(1000);
+		sscanf(data, "%s of %[^\n]", property, thing);
+	}
+	else if (contains(data, " by ")){
+		thing=(char *) malloc(1000);
+		property=(char *) malloc(1000);
+		sscanf(data, "%s by %[^\n]", property, thing);
+	}
 	// OK: opponent+of+barack_obama
     // todo : birth_place of james -> %[a-zA-Z _] or splitStringC
 	// sscanf is EVIL PERIOD!
 	
 	if (!property) {
-		char** splat=splitStringC(data, ' ');
+		char** splat=splitStringC(data, ' ');// leeeeak!
 		thing=splat[0];
-		property=splat[2];
+		property=splat[2];//  pointer being freed was not allocated
 	}
     
 	pf("does %s have %s?\n", thing, property);
@@ -1637,8 +1645,9 @@ NodeVector parseProperties(const char *data) {
 		all=findProperties(thing, property);
 	}
 	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
-	free(property);
-	free(thing);
+//	if(malloc(ed)
+//	free(property);
+//	free(thing);
 	showNodes(all);
 	return all;
 }
