@@ -560,7 +560,7 @@ extern map <double, short> yetvisitedIsA;
 //Ahash* getAbstractHash(int hashkey);
 //Node* getAbstractHash(const char* word);
 //Ahash* insertAbstractHash(long hashkey, Node* abstract); //debug only
-Ahash* insertAbstractHash(uint hashkey, Node* abstract,bool overwrite=false); //debug only
+Ahash* insertAbstractHash(unsigned int hashkey, Node* abstract,bool overwrite=false); //debug only
 Ahash* insertAbstractHash(Node* abstract,bool overwrite=false);
 
 void deleteWord(string* s);
