@@ -1687,6 +1687,7 @@ NV filterCandidates(NV all){
 	return all;
 }
 
+// Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(char* query){
 	query=modifyConstChar(query);
 	NV all;
@@ -1731,4 +1732,25 @@ NV findEntites(char* query){
 		if(!mid)break;
 	}
 	return filterCandidates(all);
+}
+
+NV getTopics(NV entities){
+	NV topics;
+	for(int i=0;i<(int)entities.size();i++){
+		N n=entities[i];
+		if(isAbstract(n))
+			n=getThe(n);// best!
+//		NV classes=findStatements(n->id, _SuperClass, _any);
+		NV papas=findProperties(n,SuperClass);
+		if(papas.size()==0)
+			papas=findProperties(n,Type);
+		if(papas.size()>0){
+			N p=papas[0];
+			topics.push_back(p);
+		}else{
+			pf("Unknown type: %s\n",n->name);
+			topics.push_back(Entity);// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+		}
+	}
+	return topics;
 }

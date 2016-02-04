@@ -35,8 +35,6 @@ NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilte
 NodeVector filter(Query& q, Node* _filter,int limit=0);
 NodeVector filter(Query& q, Statement* filterTree,int limit=0);
 NodeVector filter(NodeVector all, cchar* matches);
-
-
 NodeVector filter(NodeVector all, Node* filterTree);
 //NodeVector filter(NodeVector all, Statement* filterTree);
 
@@ -69,6 +67,7 @@ NodeVector nodeVectorWrap(Statement* n);
 NodeVector nodeSetToNodeVector(NodeSet& input);
 NodeVector setToVector(NodeSet& input);
 NV findEntites(char* query);
+NV getTopics(NV entities);
 
 NodeVector shortestPath(Node* from,Node* to );// any
 NodeVector parentPath(Node* from, Node* to);

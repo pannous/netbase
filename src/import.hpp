@@ -14,6 +14,7 @@ void importGeoDB();
 void importNames();
 void importFreebase();
 void importWikiData();
+void importTest();// Test new impart features
 //void import(const char* file);
 void import(const char* type,const char* filename=0);
 void importList(const char* facts_file,const char* type);
@@ -24,5 +25,5 @@ bool importN3(const char* file);
 int getFields(char* line, vector<char*>& fields, char separator = 0, int nameRowNr = -1, const char* nameRow = 0);
 char* extractTagName(char* line);
 char* extractTagValue(char* line);
-Node* getFreebaseEntity(char* name,bool fixNamespaces);
+Node* getEntity(char* name,bool fixUrls=true,bool create=true);
 Node* rdfValue(char* name);

@@ -455,6 +455,13 @@ void show(Statement * s);
 Node * showNode(Node* n);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
+
+
+Node* findRelation(Node* from, Node* to);
+Node* findProperty(Node* n , const char* m,bool allowInverse=true,int limit=0);
+NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
+NodeVector findProperties(Node* n, const char* m,bool allowInverse=true);
+NodeVector findProperties(Node* n , Node* m,bool allowInverse=true);
 //NodeVector* findWords(int context, const char* word, bool first= false,bool containsWord=false);
 NodeVector* findWordsByName(int context, const char* word, bool first= false,bool containsWord=false);
 NodeVector* findAllWords(const char* word);
@@ -553,8 +560,8 @@ extern map <double, short> yetvisitedIsA;
 //Ahash* getAbstractHash(int hashkey);
 //Node* getAbstractHash(const char* word);
 //Ahash* insertAbstractHash(long hashkey, Node* abstract); //debug only
-Ahash* insertAbstractHash(int hashkey, Node* abstract); //debug only
-Ahash* insertAbstractHash(Node* abstract);
+Ahash* insertAbstractHash(uint hashkey, Node* abstract,bool overwrite=false); //debug only
+Ahash* insertAbstractHash(Node* abstract,bool overwrite=false);
 
 void deleteWord(string* s);
 void deleteWord(const char* data,bool completely=true);
@@ -565,11 +572,7 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 void checkRootContext();
 Node* number(int n);
 Node* getProperty(Node* n,const char* s);
-Node* getPropertyDummy(const char* id);
-Node* findRelation(Node* from, Node* to);
-Node* findProperty(Node* n , const char* m,bool allowInverse=true,int limit=0);
-NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
-void dissectParent(Node* subject,bool checkDuplicates=false);
+Node* getPropertyDummy(const char* id);void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
@@ -584,7 +587,7 @@ typedef Node* N;
 typedef Context* C;
 typedef Statement* S;
 typedef NodeVector Ns;
-typedef NodeVector NV;
+typedef NodeVector NV;// ok no &NodeVector needed
 typedef NodeSet NS;
 typedef vector<char*> VC;
 typedef vector<char*> CV;

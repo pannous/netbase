@@ -511,8 +511,8 @@ NodeVector parse(const char* data0) {
     
     //	if (startsWith(q, "m/")) {
 	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
-		p("<m.0c21rgr> needs showered memory or boost ");
-		Node* n=getFreebaseEntity((char*) data,true);
+		p("<m.0c21rgr> needs shared memory or boost ");
+		Node* n=getEntity((char*) data,true);
 		show(n);    //<g.11vjx36lj>
 		return OK;
 	}

@@ -787,7 +787,7 @@ void testInstanceLogic() {
 	check(test3!=test2);// type Adjective vs Noun matters
 	N abstrac=a(test);
 	p(abstrac);
-	check(abstrac->kind==abstractId);
+	check(abstrac->kind==_abstract);
 	//	check(getStatementNr(a(test), 1)->object==test3->id);
 	Node* test4=getThe("test", Adjective);
 	check(test3==test4);
@@ -1725,7 +1725,9 @@ void recursiveTaxonomy(){
 void testEntities(){
 	char* query="president of the United States of America";
 	NV all=findEntites(query);
+	NV topics=getTopics(all);
 	show(all);
+	show(topics);
 }
 
 void testBrandNewStuff() {
@@ -1737,6 +1739,8 @@ void testBrandNewStuff() {
 	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
 		importWikiData();
 	p("Test Brand New Stuff");
+//	show(get(1));
+//	importTest();
 	testEntities();
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();

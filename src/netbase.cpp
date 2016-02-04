@@ -112,7 +112,7 @@ void bad(){
 	badCount++;
 }
 bool isAbstract(Node* object) {
-	return object->kind == abstractId || object->kind == singletonId || object->kind ==0;// 0 WTF how?
+	return object->kind == _abstract || object->kind == singletonId || object->kind ==0;// 0 WTF how?
 }
 
 bool checkHash(Ahash* ah) {
@@ -154,7 +154,7 @@ Ahash *getAhash(int position){
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash*, bool> badAhashReported;// debug
-Ahash * insertAbstractHash(int position, Node * a) {
+Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
 	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
     if(a==0)
         return 0;
@@ -183,8 +183,10 @@ Ahash * insertAbstractHash(int position, Node * a) {
 		N ab=get(ah->abstract);
 		if (ab == a)
             return ah; //schon da
-        if(ab && eq(ab->name, a->name, true))
+		if(ab && eq(ab->name, a->name, true)){
+			if(overwrite)ah->abstract=a->id;
             return ah; // NAME schon da!!
+		}
 		ah=getAhash(ah->next);
 	}
 
@@ -200,8 +202,8 @@ Ahash * insertAbstractHash(int position, Node * a) {
 	return ah;
 }
 
-Ahash* insertAbstractHash(Node* a) {
-	return insertAbstractHash(wordhash(a->name), a);
+Ahash* insertAbstractHash(Node* a,bool overwrite/*=false*/) {
+	return insertAbstractHash(wordhash(a->name), a,overwrite);
 }
 
 inline bool eq(Statement* s,Statement* s2){
@@ -623,7 +625,7 @@ Node * add(const char* key, const char* nodeName) {
 
 Node * add(const char* nodeName, int kind, int contextId) { //=node =current_context
     if (kind<-propertySlots||kind>maxNodes)
-		kind=abstractId;// blueprint messup!
+		kind=_abstract;// blueprint messup!
 #ifndef DEBUG
 	if (!nodeName) return 0;
 #endif
@@ -640,7 +642,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 	}while(node->id!=0);
     initNode(node, context->lastNode, nodeName, kind, contextId);
 	context->nodeCount++;
-	if (kind == abstractId|| kind == singletonId) return node;
+	if (kind == _abstract|| kind == singletonId) return node;
 	addStatement(getAbstract(nodeName), Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly && kind > 105) // might cause loop?
         addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
@@ -1438,7 +1440,7 @@ Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!
 //    replaceChar((char*)thing,'_',' ');// wah! careful with const!!! NOT HERE!
 	Node* abstract=hasWord(thing);
 	if (abstract) return abstract;
-	abstract=add(thing, abstractId, abstractId); // abstract context !!
+	abstract=add(thing, _abstract, _abstract); // abstract context !!
 	if (!abstract) {
 		p("out of memory!");
 		//		exit(0);
@@ -1547,7 +1549,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	//    printf("%s  (#%d)\n", n->name, n->id);
 	string img="";
 	cchar* text="";
-	bool showLabel=false;//!debug;
+	bool showLabel=true;//false;//!debug;
 	if (showLabel) img=getImage(n->name);
 	if (showLabel && getLabel(n)) text=getLabel(n);
 	//    if(n->value.number)
@@ -1555,7 +1557,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	//    else
 	//		printf("Node#%p: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%p)\n", n->id, n->name,text, img.data(),n);
-	printf("%d\t%s\t\t%s\t%s\t%d statements\n", n->id, n->name, text, img.data(), n->statementCount);
+	printf("%d\t%s\t\t%s\t%s\t(%d statements)\n", n->id, n->name, text, img.data(), n->statementCount);
 //    if(n->statementCount<=1)return false;
 	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
@@ -1570,7 +1572,7 @@ bool show(Node* n, bool showStatements) {		//=true
 			if (checkStatement(s)) showStatement(s);
             else pf("NOOOOO! BROKEN STATEMENT: %p",s);
 		}
-        printf("-----------------------^ %s #%d (kind: %d), %d statements ^---------------\n", n->name, n->id,n->kind,n->statementCount);
+        printf("-----------------------^ %s #%d (kind: %s #%d), %d statements --- %s ^---------------\n", n->name, n->id,get(n->kind)->name, n->kind,n->statementCount,text);
         flush();
 	}
 	return 1; // daisy
@@ -1824,7 +1826,7 @@ void deleteNode(int id){
 }
 void deleteNode(Node * n) {
 	if (!checkNode(n)) return;
-	if (n->kind == abstractId) {
+	if (n->kind == _abstract) {
         NodeVector nv=instanceFilter(n);
         for (int i=0; i < nv.size(); i++) {
             Node* n=nv[i];
@@ -2195,7 +2197,7 @@ Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
     return 0;
 }
 
-NodeVector findProperties(Node* n, const char* m,bool allowInverse=true){
+NodeVector findProperties(Node* n, const char* m,bool allowInverse/*=true*/){
     if(isInteger(m)) m=getThe(m)->name;
     NodeVector good;
     Statement* s=0;
@@ -2212,7 +2214,8 @@ NodeVector findProperties(Node* n, const char* m,bool allowInverse=true){
     return good;
 }
 
-NodeVector findProperties(Node* n , Node* m,bool allowInverse=true){
+
+NodeVector findProperties(Node* n , Node* m,bool allowInverse/*=true*/){
     NodeVector good;
     if(!m){
         pf("Warning: empty property null for node %d\t%s",n->id,n->name);
@@ -2413,7 +2416,7 @@ Statement * learn(string sentence) {
  int collectAbstracts3() {
  Context* c = context;
  Node* found = 0;
- int abstractId = Abstract->id;
+ int _abstract = Abstract->id;
  int max = c->nodeCount; // maxNodes;
 
  // collect Abstracts
@@ -2421,7 +2424,7 @@ Statement * learn(string sentence) {
  Node* n = &c->nodes[i];
  if (n == null || n->name == null || n->id == 0 || n->context == 0)
  continue;
- if (n->kind == abstractId)
+ if (n->kind == _abstract)
  insertAbstractHash(n);
  }
  for (int i = 0; i < max; i++) {
@@ -2436,12 +2439,12 @@ Statement * learn(string sentence) {
  }
  Node* abstract = hasWord(n->name);
  if (abstract) {
- if (n->kind == abstractId)
+ if (n->kind == _abstract)
  continue;
  else
  addStatement(abstract, Instance, n);//what?? no possible
  } else {
- if (n->kind == abstractId) {
+ if (n->kind == _abstract) {
  printf("%s should already be mapped!?!", n->name);
  insertAbstractHash(n);
  continue;
@@ -2496,7 +2499,7 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 			abstract->value.node=first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
 		return first;
 	}
-	if (type->id == abstractId || type->id == singletonId)
+	if (type->id == _abstract || type->id == singletonId)
 		return getAbstract(abstract->name); // safe
 
 	Statement * s=0;
@@ -2597,7 +2600,7 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
         c->currentNameSlot+=len + 1;
     }
 	if (n->kind == _internal)return;
-	if (n->kind == abstractId) {
+	if (n->kind == _abstract) {
 		if(!renameInstances)return;
         NV all=instanceFilter(n);
         for(int i=0;i<all.size();i++)

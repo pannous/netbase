@@ -123,23 +123,20 @@ extern Context* Wordnet;
 // NEGATIVE VALUES GO IN PROPERTY_SLOTS!
 // remove '-' if this scheme is detested
 
-static const int propertyId = -98;
-static const int singletonId = -99;
-static const int abstractId = -102;
-
 static const int wordnet = 0;// 303; //context==Class??   TODO!
 static const int wikidata = 0;// for now
 // DANGER!!
+static const int propertyId = -98;
+static const int singletonId = -99;
+static const int abstractId = -102;// use _abstract!
 static const int _internal = -100;
-static const int _node = -101;// dont change
+static const int _node = -101;// Unspecified type:
 static const int _abstract = -102;
-//int Class=103;
 static const int _klass = -103;
 static const int _clazz = -103;
 static const int _concept = -103;
 static const int _object = -104;
 static const int _entity = -104;
-//int Object=104;
 static const int _relation = -105;
 static const int _person = -106;
 static const int _reification=107;//== -_statement ??
