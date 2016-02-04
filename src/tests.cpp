@@ -1723,7 +1723,7 @@ void recursiveTaxonomy(){
 //	show(all); //already done
 }
 void testEntities(){
-	char* query="president of the United States of America";
+	cchar* query="president of the United States of America";
 	NV all=findEntites(query);
 	NV topics=getTopics(all);
 	show(all);

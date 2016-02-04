@@ -580,6 +580,8 @@ NodeVector parse(const char* data);// and act
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);
 extern "C" Node* getType(Node* n);// != kind!
+extern "C" char* getText(Node* n);
+static char* NO_TEXT="";
 //extern
 
 
@@ -595,7 +597,7 @@ typedef vector<char*> VCC;
 typedef vector<char*> CCV;
 
 //#pragma warnings_off
-static int averageNameLength =40;// 20; // used for malloc
+
 static int nodeSize=sizeof(Node);// 40
 static int statementSize=sizeof(Statement);// 26 after refactor !! // was 56!!
 static int ahashSize=sizeof(Ahash);
@@ -618,9 +620,10 @@ static long maxStatements = maxNodes*2;// *10 = crude average of Statements per 
 static long maxNodes = 50*million;
 static long maxStatements = maxNodes*4;
 #endif
-
 //static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;
+static int averageNameLength =20;
+static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
 #define _MAIN_

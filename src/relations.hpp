@@ -126,9 +126,8 @@ extern Context* Wordnet;
 static const int wordnet = 0;// 303; //context==Class??   TODO!
 static const int wikidata = 0;// for now
 // DANGER!!
-static const int propertyId = -98;
-static const int singletonId = -99;
-static const int abstractId = -102;// use _abstract!
+static const int _property = -98;
+static const int _singleton = -99;
 static const int _internal = -100;
 static const int _node = -101;// Unspecified type:
 static const int _abstract = -102;
@@ -138,13 +137,14 @@ static const int _concept = -103;
 static const int _object = -104;
 static const int _entity = -104;
 static const int _relation = -105;
-static const int _person = -106;
-static const int _reification=107;//== -_statement ??
+static const int _person = -106;// wow, really?
+static const int _reification=107;//== _statement ??
 static const int _pattern = -108;
 static const int _statement = -109;
+//static const int _variable ...
+static const int abstractId = _abstract;// use _abstract !
 
 // wn: done via type(33) statements
-
 static const int attribute = -42;
 static const int noun = -110;
 static const int verb = -111;

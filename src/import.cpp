@@ -103,17 +103,17 @@ int norm_wordnet_id2(int synsetid,bool force=false) {
 		p("problem!");
 	if (synsetid < million && !force) return synsetid;
 	int id=wordnet_synset_map[synsetid];
-//	10000000
-//	112353431
-//	10000000
+	//	10000000
+	//	112353431
+	//	10000000
 	if (!id&&synsetid<=10000000) id=wordnet_synset_map[synsetid+10000000];
 	if (!id&&synsetid<=20000000) id=wordnet_synset_map[synsetid+100000000];
-//	if (!id&&force)id=wordnet_synset_map[synsetid+200000000];
-//	if (!id&&force)id=wordnet_synset_map[synsetid+300000000];
+	//	if (!id&&force)id=wordnet_synset_map[synsetid+200000000];
+	//	if (!id&&force)id=wordnet_synset_map[synsetid+300000000];
 	if (!id){
-        p(synsetid);
-//		if(synsetid==12353431||synsetid==112353431)
-//		p("BAD ID!!!");
+		p(synsetid);
+		//		if(synsetid==12353431||synsetid==112353431)
+		//		p("BAD ID!!!");
 	}
 	//	id=id+10000;// NORM!!!
 	return id;
@@ -132,8 +132,8 @@ void load_wordnet_synset_map() {
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		fixNewline(line);
 		sscanf(line, "%d\t%d", &s, &id);
-//		if(s==112353431||id==266407)
-//			s=s;
+		//		if(s==112353431||id==266407)
+		//			s=s;
 		wordnet_synset_map[s]=id;
 	}
 }
@@ -477,7 +477,7 @@ char* charToCharPointer(char c) {
 	char* separator=(char*)malloc(sizeof(char)*2);
 	separator[0]=c;
 	separator[1]=0;
-//	char separator[2]= { c, 0 };
+	//	char separator[2]= { c, 0 };
 	return separator;
 }
 
@@ -538,7 +538,7 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 			} else if (eq(nameRow, token)) nameRowNr=row;
 		}
 	}
-//	if (separator)free(&separators); fuck it
+	//	if (separator)free(&separators); fuck it
 	return nameRowNr;
 }
 
@@ -554,7 +554,7 @@ void fixNewline(char* line) {
 			else if (line[len] == '"') line[len--]=0;
 			else if (line[len] == ' ') line[len--]=0;
 			else break;
-	}
+		}
 }
 
 char* extractTagName(char* line) {
@@ -608,8 +608,8 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	p("\nimport XML start");
 	//	bool dissect=false;
 	char line[1000];
-//	char* line0=(char*) malloc(sizeof(char) * 100);
-//	char* field=(char*) malloc(sizeof(char) * 100);
+	//	char* line0=(char*) malloc(sizeof(char) * 100);
+	//	char* field=(char*) malloc(sizeof(char) * 100);
 	char* field;
 	char* value0=(char*) malloc(sizeof(char) * 10000000); // uiuiui!
 	char* value;
@@ -636,7 +636,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			fflush(stdout);
 		}
 		fixNewline(line);
-//		line0=line; // readable in Debugger!
+		//		line0=line; // readable in Debugger!
 		if (contains(line, "<?xml")) continue;
 		if (!subject) {
 			if (root) subject=add(extractTagName(line));
@@ -720,8 +720,8 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 		}
 	}
 	free(value0);
-//	free(field);
-//	free(line0);
+	//	free(field);
+	//	free(line0);
 	fclose(infile); /* Close the file */
 	p("import xml ok ... items imported:");
 	p(linecount);
@@ -762,11 +762,11 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	vector<string>& includeFields=splitString(includedFields, ",");
 
 	int fieldCount=0;
-//	char* columnTitles;
+	//	char* columnTitles;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		fixNewline(line);
 		if (linecount == 0) {
-//			columnTitles=line;
+			//			columnTitles=line;
 			if (!separator) separator=guessSeparator(editable(line)); // would kill fieldCount
 			fieldCount=splitStringC(line, values, separator);
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
@@ -1098,7 +1098,7 @@ bool importYago(const char* file) {
 		if(!s)bad();
 		//		showStatement(s);
 	}
-			free(id);free(subjectName);free(objectName);	free(predicateName);
+	free(id);free(subjectName);free(objectName);	free(predicateName);
 	fclose(infile); /* Close the file */
 	pf("import %s ok\n", file);
 	return true;
@@ -1182,7 +1182,7 @@ void testPrecious() {
 	//            check(!hasWord("molaresvolumen"));
 	//            check(hasWord("Molares Volumen"));
 }
-
+map<int,bool> wiki_abstracts;
 bool importWikiLabels(cchar* file,bool properties=false){
 	p("ONLY COMPATIBLE WITH PURE WIKIDATA");
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
@@ -1199,9 +1199,11 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			printf("%d labels, %d bad\r", linecount, badCount);
 			fflush(stdout);
 		}
-//		if(debug)if(linecount>100)break;
+		if(line[0]==0)
+			continue;
+		//		if(debug)if(linecount>100)break;
 		u8_unescape(line,MAX_CHARS_PER_LINE,line);
-		if(line[0]=='#')continue;
+		//		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);
 		key=key0;// Make modifiable
@@ -1214,43 +1216,68 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		if(test[0]=='<')test++;
 		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label");
 		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
-		if(germanLabels && !english && !endsWith(line,"@de ."))continue;
+		if(germanLabels && !english && !endsWith(line,"@de ."))
+			continue;
 		if(!(germanLabels || english) &&!endsWith(line,"@en ."))continue;
-		if(startsWith(test, "altLabel"))continue;//for now!
-		if(startsWith(test, "description")){
-			N oldLabel=getEntity(key,false,false);
-			if(!oldLabel || oldLabel==Error)continue;
-				if(oldLabel&&checkNode(oldLabel)){
-					setText(oldLabel, label); //addStatement(oldLabel,Description,getAbstract(label));
-					continue;
-				}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
-		}
+
 		fixLabel(label);
 		if(!label || label[0]==0){bad();continue;}
 		label=dropUrl(label);
 		key=dropUrl(key);
 		int id=atoi(key+1);
-//		if(properties)id=(int)maxNodes-id;
 		if(properties)
 			id=-10000-id;
+		if(startsWith(test, "altLabel")){
+			N oldLabel=getEntity(key,false,false);
+			if(!oldLabel || oldLabel==Error)continue;
+			addStatement(oldLabel,Label,getAbstract(label));
+			continue;//for now!
+		}
+		if(startsWith(test, "description")){
+			N oldLabel=getEntity(key,false,false);
+			if(startsWith(label,"Wikimedia")){
+				wiki_abstracts[id]=true;
+				oldLabel->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
+				continue;
+			}
+			if(!oldLabel || oldLabel==Error)continue;
+			if(oldLabel&&checkNode(oldLabel)){
+				// _singleton vs _abstract->value conflict !?
+				setText(oldLabel, label); //addStatement(oldLabel,Description,getAbstract(label));
+				continue;
+			}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
+		}
+
+		//		if(properties)id=(int)maxNodes-id;
+		if(id==2)
+			p("ERde");
+
 		if(id<maxNodes/2-propertySlots){
 			Node* node=&context->nodes[id];
 			if(english&&node->name)
-				continue;
-			initNode(node, id, label, _entity, 0);// _entity -> class later
-//			N n=add_force(0, id, label, _abstract);
-//			getAbstract()
-			N a=hasWord(label);
-			if(!a)
-			   insertAbstractHash(node);// HAACK!
-			else{
-				if(isAbstract(a))continue;
-				N ab=add(label);//createAbstract(label)
-				insertAbstractHash(ab,true);
-				addStatement(ab, Instance,a);
+				continue;// Only set labels of entities that don't have a German translation
+			N old=hasWord(label);
+			if(!old){
+				context->nodeCount++;
+				if(wiki_abstracts[id])
+					initNode(node, id, label, _abstract, 0);// _entity -> class later
+				else
+					initNode(node, id, label, _singleton, 0);// _entity -> class later
+				insertAbstractHash(node);// _singleton as abstract!? HACK, DANGER !
+			}else{
+				if(old==node)
+					continue;//  WHY: a->kind= _entity; no longer _singleton
+				if(!node->name)initNode(node, id, label, _entity, 0);
+				N ab;
+				if(wiki_abstracts[id]||isAbstract(old)){
+					ab=old;
+					ab->kind=_abstract;
+				}else{
+					ab=add(label,_abstract);// moment, Maybe there will be a wiki disambiguation later!
+					insertAbstractHash(ab,true);
+					addStatement(ab, Instance, old);
+				}
 				addStatement(ab, Instance, node);
-				N t=get(label);
-				check(t==ab);
 			}
 		}
 		else bad();
@@ -1273,11 +1300,11 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 
 	int linecount=0;
 	int rowCount=3;
-//
+	//
 	while (readFile(file,&line[0])) {
-//	while (fgets(line, sizeof(line), infile) != NULL) {
+		//	while (fgets(line, sizeof(line), infile) != NULL) {
 #ifdef __APPLE__
-		        		if (linecount > 1000000) break;
+		if (linecount > 1000000) break;
 #endif
 		if (++linecount % 10000 == 0) {
 			printf("%d labels, %d duplicates     \r", linecount, freebaseKeysConflicts);
@@ -1291,12 +1318,12 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			rowCount =countRows(line);
 		}
 		if(line[0]=='#')continue;
-//		memset(label0, 0, 10000);
-//		memset(key0, 0, 10000);
-//		memset(test, 0, 10000);
-//		label0[0]=0;// remove old!!
-//		if(contains(line, "Q2696789"))
-//			rowCount=rowCount;
+		//		memset(label0, 0, 10000);
+		//		memset(key0, 0, 10000);
+		//		memset(test, 0, 10000);
+		//		label0[0]=0;// remove old!!
+		//		if(contains(line, "Q2696789"))
+		//			rowCount=rowCount;
 		if(rowCount==2){
 			sscanf(line, "%s\t%[^\n]s", key0,label0);
 			test0=label0;
@@ -1314,22 +1341,22 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label");
 		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
 
-//		if (startsWith(label, "\"")) label++;
-//		if (startsWith(key, "<")){ key++;key[strlen(key)-1]=0;}
+		//		if (startsWith(label, "\"")) label++;
+		//		if (startsWith(key, "<")){ key++;key[strlen(key)-1]=0;}
 
-//		if(endsWith(line," .")){
-			if(germanLabels && !endsWith(line,"@de ."))continue;
-			if(!germanLabels&& !endsWith(line,"@en ."))continue;
-//		   }
-//		if (!useHash&&contains(label, "\\u")) continue;// no strange umlauts 'here'
+		//		if(endsWith(line," .")){
+		if(germanLabels && !endsWith(line,"@de ."))continue;
+		if(!germanLabels&& !endsWith(line,"@en ."))continue;
+		//		   }
+		//		if (!useHash&&contains(label, "\\u")) continue;// no strange umlauts 'here'
 		if (useHash){
 			if(!startsWith(key, "m.") && !startsWith(key, "g.")) continue;
 			else key=key+2;
 		}
-//		if (startsWith(label, "http")) continue;
-//		if (startsWith(label, "/")) continue; // "/wikipedia/de_title"@en etc
-//		if (endsWith(label, "_id")) continue; // "/wikipedia/de_title"@en etc
-//		if (endsWith(label, "_title")) continue; // "/wikipedia/de_title"@en etc
+		//		if (startsWith(label, "http")) continue;
+		//		if (startsWith(label, "/")) continue; // "/wikipedia/de_title"@en etc
+		//		if (endsWith(label, "_id")) continue; // "/wikipedia/de_title"@en etc
+		//		if (endsWith(label, "_title")) continue; // "/wikipedia/de_title"@en etc
 
 
 		key=dropUrl(key);
@@ -1367,16 +1394,16 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		long h=freebaseHash(key);		// skip m.
 		int kei=atoi(key+1);
 
-//		Node* oldLabel=labels[key];
+		//		Node* oldLabel=labels[key];
 		Node* oldLabel=labels[kei];
 
 		if(eq(test,"description")){
 			if(oldLabel&&checkNode(oldLabel)){
 				setText(oldLabel, label);
-//				addStatement(oldLabel,Description,getAbstract(label));
+				//				addStatement(oldLabel,Description,getAbstract(label));
 				continue;
 			}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
-//			oldLabel->value.text=label;// copy!
+			//			oldLabel->value.text=label;// copy!
 		}
 
 		if(oldLabel){
@@ -1388,7 +1415,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			addStatement(oldLabel,Label,getAbstract(label),!CHECK_DUPLICATES);
 			continue;// don't overwrite german with english
 			//Stra��enverkehr || Stra\u00DFenverkehr
-//			setLabel(oldLabel, label,false,false);
+			//			setLabel(oldLabel, label,false,false);
 		}
 
 		if (useHash && freebaseKeys[h] != 0 ) {
@@ -1412,26 +1439,26 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 
 
 		if (n) {
-//			if(keepLabel)addStatement(n, ID, key);
+			//			if(keepLabel)addStatement(n, ID, key);
 			if (useHash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
 			//                freebaseKeys.insert(pair<long,int>(h,n->id));
 			else{
-//				labels[key]=n;
+				//				labels[key]=n;
 
 				if(key[0]=='P'){
 					labels[kei]=n;// overwrites labels!!!
-//					plabels[kei]=n;// overwrites labels!!!
-//					labels[concat(key,"c")]=n;// wikidata "P106c" compound property? hack
-//					labels[concat(key,"v")]=n;// wikidata "P106c" compound property? hack
+					//					plabels[kei]=n;// overwrites labels!!!
+					//					labels[concat(key,"c")]=n;// wikidata "P106c" compound property? hack
+					//					labels[concat(key,"v")]=n;// wikidata "P106c" compound property? hack
 				}else
 					labels[kei]=n;
-//				if(contains((const char*)key,"_",false))
-//					labels[replaceChar(key,'_',' ')]=n;
+				//				if(contains((const char*)key,"_",false))
+				//					labels[replaceChar(key,'_',' ')]=n;
 			}
 		}
 	}
 	//		add(key,label);
-		free(test0);free(label0);	free(key0);
+	free(test0);free(label0);	free(key0);
 	p("duplicates removed:");
 	p(freebaseKeysConflicts);
 	testPrecious();
@@ -1487,7 +1514,7 @@ Node* getPropertyDummy(const char* id) {
 	if(p)
 		return p;
 	p=add("◊");
-	p->kind=propertyId;
+	p->kind=_property;
 	complex_values[hash]=p;
 	return p;
 }
@@ -1529,10 +1556,10 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 	}
 
 	cut_to(name," (");
-//	if(name[0]!='0'){// ECHSE
+	//	if(name[0]!='0'){// ECHSE
 
 	if((name[0]=='V' && name[1]<='C') || (name[0]=='n' && name[1]<='m'))
-			return getPropertyDummy(name);// DUMMY!
+		return getPropertyDummy(name);// DUMMY!
 	if(name[0]=='Q' && name[1]<='9'){
 		if(contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
@@ -1540,14 +1567,14 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 		if(id>maxNodes/2){//-propertySlots)
 			if(!create)return Error;
 			return getPropertyDummy(name);
-//			return Missing;// bad() counted before
+			//			return Missing;// bad() counted before
 		}
 		if(id>0)return getNode(id);
 	}
 	if(name[0]=='P' && name[1]<='9'){
 		if(contains(name, '-'))// "P2430S28b08e46-49c5-061b-4035-1142c2c62e62"
 			return getPropertyDummy(name);// DUMMY!
-//		return getNode((int)maxNodes-atoi(name+1));
+		//		return getNode((int)maxNodes-atoi(name+1));
 		int kei=-atoi(name+1)-10000;
 		return get(kei);
 	}
@@ -1575,12 +1602,16 @@ bool dropBadSubject(char* name) {
 		if(startsWith(name,"<http://www.wikidata.org/entity/"))return KEEP;
 		return DROP;
 	}
-return KEEP;
+	return KEEP;
 }
 
 bool dropBadPredicate(char* name) {
-//	if(name[0]=='.')return DROP;
+	//	if(name[0]=='.')return DROP;
 	if(strstr(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
+	return KEEP;
+}
+bool dropBadObject(char* name) {
+	//	if(strstr(name,"Q4167410>"))return DROP;// Wikimedia-Begriffsklärungsseite later |  Merge with abstract!
 	return KEEP;
 }
 bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
@@ -1638,7 +1669,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (++linecount % 10000 == 0) {
 			long lost=ignored + badCount + MISSING;
 			printf("\r%d triples   %d ignored + %d badCount - %d MISSING: %ld  GOOD: %ld   ", linecount, ignored, badCount, MISSING,
-				 lost  ,linecount-lost);
+				   lost  ,linecount-lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -1646,7 +1677,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 				break;
 			}
 		}
-//		if(debug)if(linecount>100)break;
+		//		if(debug)if(linecount>100)break;
 		memset(objectName, 0, 10000);
 		memset(predicateName, 0, 10000);
 		memset(subjectName, 0, 10000);
@@ -1661,6 +1692,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		if(dropBadSubject(subjectName)){ignored++; continue;}//p(line);}
 		if(dropBadPredicate(predicateName)){ignored++; continue;}
+		if(dropBadObject(predicateName)){ignored++; continue;}
 		//		if(filterFreebase(objectName)){ignored++;continue;}
 		fixNewline(objectName);
 		// deCamel(predicateName);
@@ -1687,15 +1719,15 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			subject==Error || predicate==Error || object==Error ) {// G.o.d. dot problem !?
 			// KEEP MISSING
 			//            printf("_"); // ignored
-//			subject=getEntity(subjectName);
-//			if(!subject)// try again / debug
-				bad(); // subject->id ==0 ZB Q5 (no German!) OK
+			//			subject=getEntity(subjectName);
+			//			if(!subject)// try again / debug
+			bad(); // subject->id ==0 ZB Q5 (no German!) OK
 		} else {
 			//            else// Statement* s=
 			if(object==Class|| endsWith(objectName, "#Class"))
 				subject->kind=_clazz;
 			else if(object==Entity||endsWith(objectName, "#Entity"))
-					subject->kind=_entity;
+				subject->kind=_entity;
 			else
 				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 		}
@@ -1705,7 +1737,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	closeFile(file);
 	pf("BAD: %d     MISSING: %d\n",badCount, MISSING);
 	context->use_logic=false;
-		free(subjectName);free(objectName);	free(predicateName);
+	free(subjectName);free(objectName);	free(predicateName);
 	//	freebaseKeys.clear();
 	//	free(freebaseKeys);
 	return true;
@@ -1764,7 +1796,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 			break;
 		}
 		if(!s)bad();
-//		showStatement(s);
+		//		showStatement(s);
 	}
 	free(subjectName);free(objectName);
 	fclose(infile); /* Close the file */
@@ -1814,14 +1846,14 @@ void importAbstracts() {
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 		name=name0;
 		//		if (hasWord(name)) continue; check earlier
-//		id=id + 10000; // OVERWRITE EVERYTHING!!!
+		//		id=id + 10000; // OVERWRITE EVERYTHING!!!
 		id=-id - 100000; // OVERWRITE EVERYTHING below!!!
 		N a=add_force(current_context, id, name, _abstract);
 		insertAbstractHash(a);
-//		c->nodeCount=id; // hardcoded hack to sync ids!!!
-//		Node* a=getAbstract(name);
-//		//		a->context=wordnet;
-//		a->kind=_abstract;
+		//		c->nodeCount=id; // hardcoded hack to sync ids!!!
+		//		Node* a=getAbstract(name);
+		//		//		a->context=wordnet;
+		//		a->kind=_abstract;
 	}
 	fclose(infile); /* Close the file */
 }
@@ -1853,8 +1885,8 @@ void importGermanLables(bool addLabels=false) {
 		//		id=id + 10000; //  label on abstract !?!
 
 		wn_labels[id]=german;
-//		if(eq(german,"Autoerotik"))
-//			p(line);
+		//		if(eq(german,"Autoerotik"))
+		//			p(line);
 		int kind=noun;
 		if(wordkind[0]=='n')kind=noun;
 		else if(wordkind[0]=='v'){kind=verb;id+=200000000;}
@@ -1869,7 +1901,7 @@ void importGermanLables(bool addLabels=false) {
 		if(!isAbstract(node))node->kind=kind;
 		if((id<1000&&id>-1000)|| id >1000)
 			printf("MOMENT!");
-//		Node* abstract=getAbstract(german);
+		//		Node* abstract=getAbstract(german);
 		if(modify_english){
 			setLabel(node, german);// NOW?
 			//			addLabel(node, german);// to abstracts or words?? get(id) -> word
@@ -1918,39 +1950,39 @@ void importSenses() {
 		fixNewline(line);
 		sscanf(line, "%d\t%d\t%d\t%d\t%d\t%*d\t%*d\t%s", &id, &labelid, &synsetid0, &senseid,&sensenum,/*&lexid,&tags,*/ name0);
 		if(id<1000)continue;// skip relations
-//		id=id + 10000; // NORM!!!
+		//		id=id + 10000; // NORM!!!
 		id=-id-10000;
 		//		if (130172 == id) p(line);
 
 		synsetid_mapped=norm_wordnet_id(synsetid0);// 100001740    ->  200000 and so on, no gaps
 		if (synsetid_mapped < 200000 && synsetid_mapped>-200000){
-				printf("MOMENT!");
-				continue;
+			printf("MOMENT!");
+			continue;
 		}
 		Node* sense=get(synsetid_mapped);
 		for (int i=0; i < strlen(name0); i++)
 			if (name0[i] == '%') name0[i]=0;
 
-//		if(eq(name0,"autoeroticism"))
-//			pf("id %d synsetid0 %d synsetid %d name %s",id,synsetid0,synsetid_mapped,name0);
+		//		if(eq(name0,"autoeroticism"))
+		//			pf("id %d synsetid0 %d synsetid %d name %s",id,synsetid0,synsetid_mapped,name0);
 		if(germanLabels){
 			const char* german=wn_labels[synsetid_mapped].data();
 			if(!german||strlen(german)==0){
-//				pf("id %d synsetid0 %d synsetid %d >>> %s\n",id,synsetid0,synsetid_mapped,name0);
+				//				pf("id %d synsetid0 %d synsetid %d >>> %s\n",id,synsetid0,synsetid_mapped,name0);
 				name=name0;// DEBUG with english!! //continue;
 			}
 			else name=german;
 			//            OR add label!
 		}else name=name0;
 
-//		Node* word=get(id);// redundant and risky! just use
+		//		Node* word=get(id);// redundant and risky! just use
 		Node* word=get(name);
-//		if(word!=word2){
-//			printf("bug");
-//		}
-//		if(word->name&&!eq(word->name,name)){
-//			printf("bug");
-//		}
+		//		if(word!=word2){
+		//			printf("bug");
+		//		}
+		//		if(word->name&&!eq(word->name,name)){
+		//			printf("bug");
+		//		}
 
 
 		if (!sense->id) {
@@ -2016,8 +2048,8 @@ void importDescriptions() {
 		}
 		fixNewline(line);
 		sscanf(line, "%*d\t%d\t%[^\n]s", &id, /*&lexdomain,*/definition);
-//		id=id + 10000; //  label on abstract !?!
-				id=-id -10000; //  label on abstract !?!
+		//		id=id + 10000; //  label on abstract !?!
+		id=-id -10000; //  label on abstract !?!
 		//		id=norm_wordnet_id(id);
 		if (id >= 200000||id <= -200000) {
 			p(line);
@@ -2047,8 +2079,8 @@ void importLexlinks() {
 		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		//		if (old)return old; // showStatement(old)
 		//
-//		s=s + 10000;
-//		o=o + 10000;
+		//		s=s + 10000;
+		//		o=o + 10000;
 		s=-s -10000;
 		o=-o -10000;
 		if (p == SubClass->id) continue; // Redundant data!
@@ -2219,33 +2251,34 @@ void importWikiData() {
 	context=getContext(wikidata);
 	useHash=false;
 	autoIds=false;
-//	useHash=true;
+	//	useHash=true;
 	importing=true;
-//	doDissectAbstracts=false; // if MAC
+	//	doDissectAbstracts=false; // if MAC
 	//		importLabels("dbpedia_de/labels.csv");
-//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
-//	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
+	//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
+	//	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
 	if(germanLabels){
 		context->lastNode=(int)maxNodes/2;// hack
 		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 		importWikiLabels("wikidata/wikidata-terms.de.nt");
 		showContext(current_context);
-//		collectAbstracts(); BREAKS THINGS!
-//		importLabels("wikidata/wikidata-properties.de.nt");
-//		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
+		//		collectAbstracts(); BREAKS THINGS!
+		//		importLabels("wikidata/wikidata-properties.de.nt");
+		//		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
 
 	}
 	else{
 		importWikiLabels("wikidata/wikidata-properties.en.nt",true);
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
 	}
-//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
+	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	importN3("wikidata/wikidata-instances.nt.gz");
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
-//	importN3("wikidata/wikidata-statements.nt.gz");
+	//	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");
-//	if(germanLabels)importWikiLabels("wikidata/wikidata-terms.en.nt",false);// now fill up missing!
+	if(germanLabels)// now fill up missing! Not before otherwise would get useless statements.
+		importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 	context->lastNode=1;// now allow Gaps! // DANGER WITH ENGLISH!
 }
 
@@ -2284,11 +2317,11 @@ void import(const char* type, const char* filename) {
 	} else if (startsWith(type, "images ")) {
 		importImageTripels(substr(type,7,-1));
 	} else if (eq(type, "wiki") || eq(type, "wikidata")) {
-			importWikiData();
-//	} else if (eq(type, "wiki")) {
-//		importWikipedia();
-//	} else if (eq(type, "topic")) {
-//		importWikipedia();
+		importWikiData();
+		//	} else if (eq(type, "wiki")) {
+		//		importWikipedia();
+		//	} else if (eq(type, "topic")) {
+		//		importWikipedia();
 	} else if (eq(type, "entities")) {
 		importEntities();
 	} else if (eq(type, "yago")) {
@@ -2333,12 +2366,12 @@ void importAllDE() {
 	importWordnet();
 	//	return;
 	//	exit(0);
-//	importCsv("adressen.txt");
+	//	importCsv("adressen.txt");
 	importNames();
-//	doDissectAbstracts=true;// already? why not
+	//	doDissectAbstracts=true;// already? why not
 	doDissectAbstracts=false;//MESSES TOO MUCH!
 	importGeoDB();
-//	importDBPediaDE();
+	//	importDBPediaDE();
 	importWikiData();
 	//    importEntities();
 	importImagesDE();
@@ -2354,20 +2387,20 @@ void importAll() {
 		return importAllDE();
 	p("importAll ENGLISH");
 	importWordnet();
-//	importCsv("adressen.txt");
+	//	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
 	importNames();
 	doDissectAbstracts=true;// already? why not
 	importGeoDB();
 	importWikiData();
-//	if(germanLabels)
-//		importDBPediaDE();
-//	else
-//		importDBPediaEN();
+	//	if(germanLabels)
+	//		importDBPediaDE();
+	//	else
+	//		importDBPediaEN();
 	//	importImages();
 
 	showContext(wordnet);
-//	importFreebase();
+	//	importFreebase();
 	showContext(wordnet);
 	//   	importAllYago();// BETTER THAN DBPEDIA!?
 	importImages();

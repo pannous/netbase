@@ -199,7 +199,7 @@ extern "C" void initSharedMemory(bool relations) {
 	long context_size=contextOffset;
 	long node_size=maxNodes * nodeSize;
 	long abstract_size=maxNodes * ahashSize * 2;
-	long name_size=maxNodes * averageNameLength;
+	long name_size=maxChars;
 	long statement_size=maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
 //	p("abstract_root:");

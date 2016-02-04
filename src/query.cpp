@@ -1688,8 +1688,8 @@ NV filterCandidates(NV all){
 }
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
-NV findEntites(char* query){
-	query=modifyConstChar(query);
+NV findEntites(cchar* query0){
+	char* query=modifyConstChar(query0);
 	NV all;
 	NV entities;// Merkel
 	NV classes; // Politiker
@@ -1731,6 +1731,7 @@ NV findEntites(char* query){
 		mid=strstr(start," ");// first sub-word
 		if(!mid)break;
 	}
+	free(query);
 	return filterCandidates(all);
 }
 

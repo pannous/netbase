@@ -470,12 +470,20 @@ Node* invert(Node* relation) {
 //	if(contains(relation->name," of "))return getThe(cut_to(relation->name, " of "));
 	else return Unknown;// null; //! or relation .name + "OF" ?  weight => weight OF
 }
+void initWikiRelations(){
+//	https://www.wikidata.org/wiki/Property:P131
+	addStatement4(current_context,-10131, _SuperClass, _PartOf);
+//	addStatement4(current_context,-10131, _SuperClass, In->id);
+	addStatement4(current_context,-10706, _SuperClass, _PartOf);
+//	getEntity( "P131")) return In;//PartOf;// 'located in administrative...'
+//	if (eq(thing, "P706")) return In;// PartOf;// 'located in geographic'
+}
 
 
 // expansive! todo! merge later
 Node * getRelation(const char* thing) {
 	if (thing[0] == '#') thing++;
-	if (eq(thing, "Item"))return Entity;
+	if (eq(thing, "Item"))return Entity;// <http://www.wikidata.org/entity/Q9486626> <#type> <http://www.wikidata.org/ontology#Item> .
 //	if (eq(thing, "Item"))return Object;// Entity
 	if (eq(thing, "instance")) return Instance;
     if (eq(thing, "Contains")) return Part;
@@ -523,7 +531,8 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "subClassOf")) return SuperClass;
 	if (eq(thing, "P1696")) return Antonym;// Opposite;
 	if (eq(thing, "P31")) return Type;
-	if (eq(thing, "P131")) return PartOf;// 'located in'
+//	if (eq(thing, "P131")) return In;//PartOf;// 'located in administrative...'
+//	if (eq(thing, "P706")) return In;// PartOf;// 'located in geographic'
 	if (eq(thing, "P361")) return PartOf;
 	if (eq(thing, "P527")) return Part;// Holonym= has-part : transitive property!
 //	527> <label> "besteht aus"@de .

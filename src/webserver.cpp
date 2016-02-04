@@ -105,7 +105,7 @@ int handle(cchar* q0,int conn){
         q[len-4]=0;
     }
     
-	if (endsWith(q, ".csv")) {
+	if (endsWith(q, ".csv")||endsWith(q, ".tsv")) {
         format = csv;
         q[len-4]=0;
     }
@@ -168,7 +168,7 @@ int handle(cchar* q0,int conn){
 		format = xml;
 		q = q + 4;
 	}
-	if (startsWith(q, "csv/")) {
+	if (startsWith(q, "csv/")||startsWith(q, "tsv/")) {
 		format = csv;
 		q = q + 4;
 	}
@@ -246,7 +246,7 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<html><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/><body><div id='netbase_results'></div>\n<script>var results=";
+    const char* html_block="<html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head><body><div id='netbase_results'></div>\n<script>var results=";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
@@ -268,10 +268,10 @@ int handle(cchar* q0,int conn){
 	if (format == csv)statement_format = statement_format_csv;
     
 	const char* entity_format = 0;
-	const char* entity_format_txt = "%s #%d statements:%d\n";
-	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d'>\n";
-	const char* entity_format_json = "   {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d";
-   	const char* entity_format_csv = "%s\t%d\t%d\n";
+	const char* entity_format_txt = "%s #%d (statements:%d) %s\n";
+	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d' description='%s'>\n";
+	const char* entity_format_json = "   {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d, \"description\":\"%s\"";
+   	const char* entity_format_csv = "%s\t%d\t%d\t%s\n";
     if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
 	if (format == txt)entity_format = entity_format_txt;
@@ -296,14 +296,16 @@ int handle(cchar* q0,int conn){
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
 		good++;
 		if (use_json)if(good>1)Writeline(conn, "},\n");
-		sprintf(buff, entity_format, node->name, node->id,node->statementCount);
+		sprintf(buff, entity_format, node->name, node->id,node->statementCount,getText(node));
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
         if(use_json && (verbosity==verbose||verbosity==shorter))// lol // just name
-            Writeline(conn, ", \"kind\":"+itoa(node->kind));		
-        if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-            Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
+			Writeline(conn, ", \"kind\":"+itoa(node->kind));
+		if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
+			Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
+//		if((use_json)&&getText(node)[0]!=0)
+//			Writeline(", \"description\":\""+string(getText(node))+"\"");
 		Statement* s = 0;
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;

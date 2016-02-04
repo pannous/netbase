@@ -1,5 +1,5 @@
-// Netbase graph viewer - demo version = 1.0.2
-// (C) 2014 Pannous + Quasiris
+// Netbase Graph Viewer - version = 1.2.3
+// (C) 2014 - 2016 Pannous + Quasiris
 
 var div=document.getElementById("netbase_results");
 var server="/html/"; // "http://quasiris.big:3333/html/";
@@ -122,6 +122,7 @@ function makeEntity(entity)
 {
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+entity.name,div).style=nolink+bold+blue+big
+	if(entity.description) appendText(" "+entity.description+" ",div)
 	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
 	link.style=nolink+bold+blue+big
 	link.target="_blank"
@@ -137,6 +138,7 @@ function makeEntity(entity)
 	if(entity.image && !entity.image.startsWith("Q"))addImage(entity.image,div);
 	// addImage(entity.image,div);
 	appendText("  statements: "+entity.statementCount,div).style="font-size:small;"
+
 	
 	try{
 		table=append("table",div,"sorted");

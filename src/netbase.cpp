@@ -112,7 +112,7 @@ void bad(){
 	badCount++;
 }
 bool isAbstract(Node* object) {
-	return object->kind == _abstract || object->kind == singletonId || object->kind ==0;// 0 WTF how?
+	return object->kind == _abstract || object->kind == _singleton || object->kind ==0;// 0 WTF how?
 }
 
 bool checkHash(Ahash* ah) {
@@ -192,8 +192,12 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
 
 	N ab=ah && ah->abstract ? get(ah->abstract) : 0;
 	if (ab) { //schon was drin
-		if (ab == a || eq(ab->name, a->name, true))
-			return ah;
+		if (ab == a)
+			return ah; //schon da
+		if(ab && eq(ab->name, a->name, true)){
+			if(overwrite)ah->abstract=a->id;
+			return ah; // NAME schon da!!
+		}
         ah->next=context->extrahashNr++;
         ah=getAhash(ah->next);
 	}
@@ -392,8 +396,12 @@ void showContext(Context * cp) {
 	if (quiet) return;
 	if(!cp)cp=getContext(current_context);
 	Context c=*cp;
-	cchar* format="Context#%d name:%s nodes:%d, statements:%d chars:%d n#%p nN#%p s#%p\n";
-	printf(format, c.id, c.name, c.nodeCount, c.statementCount,c.currentNameSlot, c.nodes, c.nodeNames, c.statements);
+	printf("Context#%d name:%s\n", c.id, c.name);
+	printf("Pointer nodes:%p\tstatements:%p chars:%p\n",	   c.nodes, c.statements , c.nodeNames);
+	printf("Current nodes:%d\tstatements:%d\tchars:%ld\n", c.nodeCount, c.statementCount,c.currentNameSlot);
+	printf("Maximum nodes:%ld\tstatements:%ld\tchars:%ld\n", maxNodes,maxStatements,maxChars);
+	printf("Usage   nodes:%.2f%%\t\tstatements:%.2f%%\tchars:%.2f%%\n",
+		 100.*c.nodeCount/maxNodes,100.*c.statementCount/maxStatements,100.*c.currentNameSlot/maxChars);
 	flush();
 }
 
@@ -642,7 +650,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 	}while(node->id!=0);
     initNode(node, context->lastNode, nodeName, kind, contextId);
 	context->nodeCount++;
-	if (kind == _abstract|| kind == singletonId) return node;
+	if (kind == _abstract|| kind == _singleton) return node;
 	addStatement(getAbstract(nodeName), Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly && kind > 105) // might cause loop?
         addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
@@ -1550,7 +1558,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	string img="";
 	cchar* text="";
 	bool showLabel=true;//false;//!debug;
-	if (showLabel) img=getImage(n->name);
+	if (showLabel && n->name) img=getImage(n->name);
 	if (showLabel && getLabel(n)) text=getLabel(n);
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
@@ -2470,7 +2478,7 @@ Statement * learn(string sentence) {
 //void cleanAbstracts(Context* c){
 Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	if (!abstract || !abstract->name) return 0;
-	if(abstract->kind==singletonId)return abstract;
+	if(abstract->kind==_singleton)return abstract;
 	if(abstract->kind==_entity)return abstract;// hack! first _entity wikidata is best? see importWikiLabels
     if (getRelation(abstract->name)) // not here! doch
         return getRelation(abstract->name);
@@ -2499,7 +2507,7 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 			abstract->value.node=first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
 		return first;
 	}
-	if (type->id == _abstract || type->id == singletonId)
+	if (type->id == _abstract || type->id == _singleton)
 		return getAbstract(abstract->name); // safe
 
 	Statement * s=0;
@@ -2634,6 +2642,14 @@ bool checkParams(int argc, char *argv[], const char* p) {
 		if (eq(argv[i], (minus + minus + p).c_str()))return true;
 	}
 	return false;
+}
+
+char* getText(Node* n){
+	context=getContext(current_context);
+	if(n->value.text>=context->nodeNames && context->nodeNames<=&context->nodeNames[context->currentNameSlot]){
+		return n->value.text;
+	}
+	return NO_TEXT;
 }
 
 string formatImage(Node* image,int size,bool thumb){
@@ -2783,8 +2799,6 @@ int main(int argc, char *argv[]) {
 
 	printf("Warnings: %d\n", badCount);
 	showContext(0);
-	printf("Node limit: %d\n",(int)maxNodes);
-	printf("Statements: %d\n",(int)maxStatements);
 
 	if (checkParams(argc, argv, "load_files")) load(true);
 	else if (checkParams(argc, argv, "debug")) {
