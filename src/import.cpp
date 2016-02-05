@@ -1229,7 +1229,7 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			id=-10000-id;
 		if(startsWith(test, "altLabel")){
 			N oldLabel=getEntity(key,false,false);
-			if(!oldLabel || oldLabel==Error)continue;
+			if(!oldLabel|| oldLabel->id==0 || oldLabel==Error){bad();continue;}// NOT YET?
 			N the_label=getAbstract(label);
 			addStatement(oldLabel,Label,the_label);
 			continue;//for now!
@@ -1286,7 +1286,7 @@ bool importWikiLabels(cchar* file,bool properties=false){
 				addStatement(ab, Instance, node);
 			}
 		}
-		else bad();
+		else bad();// Not enough memory :(
 	}
 	free(key0);
 	free(label0);

@@ -1734,13 +1734,14 @@ void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	quiet=false;
 	debug = true;
-	germanLabels=true;
+//	germanLabels=true;
+	germanLabels=false;
 //	p("test -> SHELL");return;// for shell
 	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
 		importWikiData();
 	p("Test Brand New Stuff");
 //	show(get(1));
-	importTest();
+//	importTest();
 	testEntities();
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();

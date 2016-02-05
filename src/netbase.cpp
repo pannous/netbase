@@ -818,7 +818,7 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 	//	object->statementCount++;
 	// pi(context->statementCount);
 	// context->nodeCount++;
-    
+
 	context->statementCount++;
 	return statement;
 }
@@ -1455,8 +1455,8 @@ Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!
 		//		throw "out of memory exception";
 		return 0;
 	}
-    //	Ahash* ok=
-    insertAbstractHash(wordhash(thing), abstract);
+	Ahash* ok=insertAbstractHash(wordhash(thing), abstract);
+	if (ok == 0)return Error;// full!
     //	if (ok == 0) insertAbstractHash(wordhash(thing), abstract);		// debug
 	if (doDissectAbstracts && (contains(thing, "_") || contains(thing, " ") || contains(thing, ".")))
 		dissectParent(abstract);// later! else mess!?
@@ -2677,8 +2677,8 @@ string getImage(Node* a, int size,bool thumb) {
 	if(!i)i=findProperty(a, "Positionskarte",false,1000);
 	if (!i || !checkNode(i)){
 		N ab=getAbstract(a->name);
-		if(ab!=a)
-			return getImage(ab,size,thumb);
+		if(!ab||ab==Error||!(isAbstract(ab)))return "";
+		if(ab!=a)return getImage(ab,size,thumb);
 	}
     return formatImage(i,size,thumb);
 }
