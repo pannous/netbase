@@ -470,15 +470,6 @@ Node* invert(Node* relation) {
 //	if(contains(relation->name," of "))return getThe(cut_to(relation->name, " of "));
 	else return Unknown;// null; //! or relation .name + "OF" ?  weight => weight OF
 }
-void initWikiRelations(){
-//	https://www.wikidata.org/wiki/Property:P131
-	addStatement4(current_context,-10131, _SuperClass, _PartOf);
-//	addStatement4(current_context,-10131, _SuperClass, In->id);
-	addStatement4(current_context,-10706, _SuperClass, _PartOf);
-//	getEntity( "P131")) return In;//PartOf;// 'located in administrative...'
-//	if (eq(thing, "P706")) return In;// PartOf;// 'located in geographic'
-}
-
 
 // expansive! todo! merge later
 Node * getRelation(const char* thing) {
@@ -565,33 +556,40 @@ Node * getRelation(const char* thing) {
 
 //1311> <description> "Datenbank gedeckter Brücken in den Vereinigten Staaten und Kanada"@de . WTF!!!?? LOL
 
-	//	if (eq(thing, "P155")) return Previous;
+	//	if (eq(thing, "P155")) return Previous; predecessor follows
 	//	if (eq(thing, "P156")) return Next;
+//		if (eq(thing, "P18")) return Image;
 //	18> <label> "Bild"@de . Abbildung  Foto Grafik
 //	58> <altLabel> "Autor"@de .
-//	103> <altLabel> "Sprache"@de .
-//	364> <altLabel> "Sprache"@de .
+//	103> <altLabel> "Sprache"@de . Muttersprache
+//	364> <altLabel> "Sprache"@de . Sprache des Originalwerks
 //373> <label> "Commons-Kategorie"@de . DROP!!!! ohne Category: KEEP! interesting!
 //	367> <altLabel> "Symbol"@de .
 //	366> <altLabel> "Zweck"@de . usage
 	//	136> <label> "Genre"@de .etc
 //	248> <altLabel> "steht in"@de . quelle/source
 //	1343> <altLabel> "Quelle"@de .
-
 //	P1365 replaces ancestor
 //	1366> <altLabel> "ersetztes"@de . predecessor succeeded by
 	if (eq(thing, "P279")) return SuperClass;// ist Unterklasse von
-
 	if (eq(thing, "P131")) return PartOf;
 	if (eq(thing, "P131")) return PartOf;
 
 //	<P111> <altLabel> "misst"@de . <_> https://www.wikidata.org/wiki/Property:P1880 gemessen in
-
 //    if (eq(thing, "Klasse")) return SuperClass;
-
 //	if (eq(thing, "reverse_property")) return Owner;
-    
-    
 	//	if (eq(thing, "in"))return Loc;
 	return 0;
+}
+
+
+void initWikiRelations(){
+	//	https://www.wikidata.org/wiki/Property:P131
+	addStatement4(current_context,-10131, _SuperClass, _PartOf);
+	//	addStatement4(current_context,-10131, _SuperClass, In->id);
+	addStatement4(current_context,-10706, _SuperClass, _PartOf);
+	addStatement4(current_context,-10035, _synonym, getThe("Präsident")->id);
+
+	//	getEntity( "P131")) return In;//PartOf;// 'located in administrative...'
+	//	if (eq(thing, "P706")) return In;// PartOf;// 'located in geographic'
 }

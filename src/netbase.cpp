@@ -1558,14 +1558,14 @@ bool show(Node* n, bool showStatements) {		//=true
 	string img="";
 	cchar* text="";
 	bool showLabel=true;//false;//!debug;
-	if (showLabel && n->name) img=getImage(n->name);
+//	if (showLabel && n->name) img=getImage(n->name);
 	if (showLabel && getLabel(n)) text=getLabel(n);
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
 	//		printf("Node#%p: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%p)\n", n->id, n->name,text, img.data(),n);
-	printf("%d\t%s\t\t%s\t%s\t(%d statements)\n", n->id, n->name, text, img.data(), n->statementCount);
+	printf("%d\t%s\t\t%s\t(%d statements)\n", n->id, n->name, text, n->statementCount);//img.data(),
 //    if(n->statementCount<=1)return false;
 	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
