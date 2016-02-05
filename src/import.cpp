@@ -1230,17 +1230,19 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		if(startsWith(test, "altLabel")){
 			N oldLabel=getEntity(key,false,false);
 			if(!oldLabel || oldLabel==Error)continue;
-			addStatement(oldLabel,Label,getAbstract(label));
+			N the_label=getAbstract(label);
+			addStatement(oldLabel,Label,the_label);
 			continue;//for now!
 		}
 		if(startsWith(test, "description")){
+			if(english)continue;
 			N oldLabel=getEntity(key,false,false);
 			if(startsWith(label,"Wikimedia")){
 				wiki_abstracts[id]=true;
 				oldLabel->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
 				continue;
 			}
-			if(!oldLabel || oldLabel==Error)continue;
+			if(!oldLabel || oldLabel==Error||oldLabel->value.text)continue;
 			if(oldLabel&&checkNode(oldLabel)){
 				// _singleton vs _abstract->value conflict !?
 				setText(oldLabel, label); //addStatement(oldLabel,Description,getAbstract(label));
@@ -1254,7 +1256,7 @@ bool importWikiLabels(cchar* file,bool properties=false){
 
 		if(id<maxNodes/2-propertySlots){
 			Node* node=&context->nodes[id];
-			if(english&&node->name)
+			if(english&&germanLabels&&node->name)
 				continue;// Only set labels of entities that don't have a German translation
 			N old=hasWord(label);
 			if(!old){
@@ -1267,7 +1269,11 @@ bool importWikiLabels(cchar* file,bool properties=false){
 			}else{
 				if(old==node)
 					continue;//  WHY: a->kind= _entity; no longer _singleton
-				if(!node->name)initNode(node, id, label, _entity, 0);
+				if(!node->name){
+					context->nodeCount++;
+					initNode(node, id, label, _entity, 0);
+					if(english&&germanLabels)continue;
+				}
 				N ab;
 				if(wiki_abstracts[id]||isAbstract(old)){
 					ab=old;
@@ -2245,7 +2251,8 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-	importWikiLabels("wikidata/wikidata-terms.de.nt");
+//	importWikiLabels("wikidata/wikidata-terms.de.nt");
+	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 }
 void importWikiData() {
 	context=getContext(wikidata);
@@ -2257,8 +2264,8 @@ void importWikiData() {
 	//		importLabels("dbpedia_de/labels.csv");
 	//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
 	//	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
+	context->lastNode=(int)maxNodes/2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	if(germanLabels){
-		context->lastNode=(int)maxNodes/2;// hack
 		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 		importWikiLabels("wikidata/wikidata-terms.de.nt");
 		showContext(current_context);
@@ -2280,6 +2287,7 @@ void importWikiData() {
 	if(germanLabels)// now fill up missing! Not before otherwise would get useless statements.
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 	context->lastNode=1;// now allow Gaps! // DANGER WITH ENGLISH!
+	showContext(current_context);
 }
 
 

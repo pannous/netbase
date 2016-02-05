@@ -397,10 +397,10 @@ void showContext(Context * cp) {
 	if(!cp)cp=getContext(current_context);
 	Context c=*cp;
 	printf("Context#%d name:%s\n", c.id, c.name);
-	printf("Pointer nodes:%p\tstatements:%p chars:%p\n",	   c.nodes, c.statements , c.nodeNames);
-	printf("Current nodes:%d\tstatements:%d\tchars:%ld\n", c.nodeCount, c.statementCount,c.currentNameSlot);
-	printf("Maximum nodes:%ld\tstatements:%ld\tchars:%ld\n", maxNodes,maxStatements,maxChars);
-	printf("Usage   nodes:%.2f%%\t\tstatements:%.2f%%\tchars:%.2f%%\n",
+	printf("Pointer nodes:%p\t\tstatements:%p\tchars:%p\n",	   c.nodes, c.statements , c.nodeNames);
+	printf("Current nodes:%d\t\tstatements:%d\t\tchars:%ld\n", c.nodeCount, c.statementCount,c.currentNameSlot);
+	printf("Maximum nodes:%ld\t\tstatements:%ld\t\tchars:%ld\n", maxNodes,maxStatements,maxChars);
+	printf("Usage   nodes:%.2f%%\t\t\tstatements:%.2f%%\t\tchars:%.2f%%\n",
 		 100.*c.nodeCount/maxNodes,100.*c.statementCount/maxStatements,100.*c.currentNameSlot/maxChars);
 	flush();
 }

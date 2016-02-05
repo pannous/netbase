@@ -130,7 +130,7 @@ function makeEntity(entity)
 	img.src="http://pannous.net/files/wikipedia.png";
 	img.width=20
 	link.appendChild(img);
-	if(entity.id>0)
+	if(entity.id>0 && entity.id<20000000)
 	    makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
 	if(entity.id<-10000)
 	    makeLink("P","https://www.wikidata.org/wiki/Property:P"+ ( -10000 - entity.id) ,div)

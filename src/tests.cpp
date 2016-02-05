@@ -1740,7 +1740,7 @@ void testBrandNewStuff() {
 		importWikiData();
 	p("Test Brand New Stuff");
 //	show(get(1));
-//	importTest();
+	importTest();
 	testEntities();
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
