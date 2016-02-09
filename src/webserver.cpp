@@ -214,6 +214,9 @@ int handle(cchar* q0,int conn){
 		showExcludes=false;
 		verbosity = alle;
     }
+	if (startsWith(q, "ee/")) {
+		q[2]=' ';
+	}
 	if (startsWith(q, "entities/")) {
 		q[8]=' ';
 	}
@@ -300,7 +303,7 @@ int handle(cchar* q0,int conn){
 		Writeline(conn, buff);
         if(verbosity != alle)
             loadView(node);
-        if(use_json && (verbosity==verbose||verbosity==shorter))// lol // just name
+        if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
 		if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
 			Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");

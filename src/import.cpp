@@ -1183,7 +1183,7 @@ void testPrecious() {
 	//            check(hasWord("Molares Volumen"));
 }
 map<int,bool> wiki_abstracts;
-bool importWikiLabels(cchar* file,bool properties=false){
+bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 	p("ONLY COMPATIBLE WITH PURE WIKIDATA");
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
 	char* label0=(char*) malloc(10000);
@@ -1228,14 +1228,16 @@ bool importWikiLabels(cchar* file,bool properties=false){
 		if(properties)
 			id=-10000-id;
 		if(startsWith(test, "altLabel")){
+			if(!altLabels)continue;
 			N oldLabel=getEntity(key,false,false);
 			if(!oldLabel|| oldLabel->id==0 || oldLabel==Error){bad();continue;}// NOT YET?
-			N the_label=getAbstract(label);
+			N the_label=getAbstract(label);// NOT YET!  getTHE??
 			addStatement(oldLabel,Label,the_label);
 			continue;//for now!
 		}
 		if(startsWith(test, "description")){
-			if(english)continue;
+			if(!altLabels)continue;
+			if(english&&germanLabels)continue;
 			N oldLabel=getEntity(key,false,false);
 			if(startsWith(label,"Wikimedia")){
 				wiki_abstracts[id]=true;
@@ -1249,6 +1251,7 @@ bool importWikiLabels(cchar* file,bool properties=false){
 				continue;
 			}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
 		}
+		if(altLabels)continue;//  important in second run only!
 
 		//		if(properties)id=(int)maxNodes-id;
 		if(id==2)
@@ -1604,6 +1607,13 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 bool dropBadSubject(char* name) {
 	if(name[0]<='9')return DROP;// || name[1]<='9')continue;//
 	if(endsWith(name,"#propertyStatementLinkage>"))return DROP;
+	if(startsWith(name,"P352"))return DROP; //	UniProt ID
+	if(startsWith(name,"P637"))return DROP; //	RefSeq Protein ID
+	if(startsWith(name,"P705"))return DROP; //	Ensembl Protein ID
+	if(startsWith(name,"P536"))return DROP; //	ATP ID
+
+	if(startsWith(name,"Q5570970"))return DROP; // Globe
+	if(startsWith(name,"Q26956302"))return DROP; // rdf.freebase.com id?
 	if(startsWith(name,"http")||startsWith(name,"<http")){
 		if(startsWith(name,"<http://www.wikidata.org/entity/"))return KEEP;
 		return DROP;
@@ -1613,7 +1623,24 @@ bool dropBadSubject(char* name) {
 
 bool dropBadPredicate(char* name) {
 	//	if(name[0]=='.')return DROP;
-	if(strstr(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
+	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
+	if(startsWith(name,"P646>"))return DROP;
+	if(startsWith(name,"P508>"))return DROP;
+	if(startsWith(name,"P910>"))return DROP;
+	if(startsWith(name,"P1566>"))return DROP;
+	if(startsWith(name,"P268>"))return DROP; // Amerigo Vespucci BnF-ID 12234845j 47674->-10268
+	if(startsWith(name,"P950>"))return DROP;
+	if(startsWith(name,"P349>"))return DROP;
+	if(startsWith(name,"P1006>"))return DROP;
+	if(startsWith(name,"P269>"))return DROP;
+	if(startsWith(name,"P409>"))return DROP;
+	if(startsWith(name,"P1017>"))return DROP;
+	if(startsWith(name,"P691>"))return DROP;
+	if(startsWith(name,"P906>"))return DROP;
+	if(startsWith(name,"P1005>"))return DROP;
+	if(startsWith(name,"P949>"))return DROP;
+	if(startsWith(name,"P734>"))return DROP;
+	if(startsWith(name,"P1207>"))return DROP;
 	return KEEP;
 }
 bool dropBadObject(char* name) {
@@ -2268,15 +2295,16 @@ void importWikiData() {
 	if(germanLabels){
 		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 		importWikiLabels("wikidata/wikidata-terms.de.nt");
+		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
 		showContext(current_context);
 		//		collectAbstracts(); BREAKS THINGS!
 		//		importLabels("wikidata/wikidata-properties.de.nt");
 		//		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
-
 	}
 	else{
 		importWikiLabels("wikidata/wikidata-properties.en.nt",true);
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
+		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
 	}
 	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
@@ -2284,8 +2312,10 @@ void importWikiData() {
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
 	//	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");
-	if(germanLabels)// now fill up missing! Not before otherwise would get useless statements.
+	if(germanLabels){// now fill up missing! Not before, otherwise would get useless statements.
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);
+		importWikiLabels("wikidata/wikidata-terms.en.nt",false,true);
+	}
 	context->lastNode=1;// now allow Gaps! // DANGER WITH ENGLISH!
 	showContext(current_context);
 }

@@ -4,4 +4,4 @@ if [ $APPLE ]
 then
   open http://localhost:81/html/1
 fi
-sudo ~/netbase/netbase server $@ &
+sudo ~/netbase/netbase server $@ 

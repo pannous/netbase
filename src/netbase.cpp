@@ -53,7 +53,7 @@ bool useSemantics=true;
 bool useSemantics=false;
 #endif
 
-bool doDissectAbstracts=useSemantics;
+bool doDissectAbstracts=useSemantics;// ?
 bool storeTypeExplicitly=true;
 bool exitOnFailure=true;
 bool autoIds=false;
@@ -1436,16 +1436,9 @@ Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!
 		return 0;
 	}
     while(thing[0]==' '||thing[0] == '"')thing++;
-	if(contains(thing,"^^"))
+	if(contains(thing,"^^"))// NOT HERE!
 		return rdfValue(modifyConstChar(thing));
-//		if(startsWith(thing,"of "))
-//	if(eq("of Directors",thing))// WTFFFFF???
-//		thing=thing+3;
     if(autoIds&&isInteger(thing))return get(atoi(thing));
-	//	char* thingy = (char*) malloc(1000); // todo: replace \\" ...
-	//	strcpy(thingy, thing);
-	//	fixNewline(thingy);
-//    replaceChar((char*)thing,'_',' ');// wah! careful with const!!! NOT HERE!
 	Node* abstract=hasWord(thing);
 	if (abstract) return abstract;
 	abstract=add(thing, _abstract, _abstract); // abstract context !!
@@ -1456,10 +1449,10 @@ Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!
 		return 0;
 	}
 	Ahash* ok=insertAbstractHash(wordhash(thing), abstract);
-	if (ok == 0)return Error;// full!
     //	if (ok == 0) insertAbstractHash(wordhash(thing), abstract);		// debug
+	if (ok == 0)return Error;// full!
 	if (doDissectAbstracts && (contains(thing, "_") || contains(thing, " ") || contains(thing, ".")))
-		dissectParent(abstract);// later! else mess!?
+		dissectParent(abstract);// later! else MESS!?
     //	else dissectAbstracts(am Ende)
 	//	collectAbstractInstances(abstract am Ende);
 	return abstract;
@@ -1521,7 +1514,6 @@ char* getLabel(Node * n) {
 	if (n->value.text > context->nodeNames && n->value.text < context->nodeNames + context->currentNameSlot) return n->value.text;
 	Statement * s=findStatement(n, Label, Any, 0, false, false);
 	if (s) return s->Object()->name;
-
 	return 0;
 }
 
@@ -1546,7 +1538,7 @@ void show(Statement * s){
 bool show(Node* n, bool showStatements) {		//=true
 	//	if (quiet)return;
 	if (!checkNode(n)) return 0;
-    if(n->statementCount<=1){
+    if(n->statementCount<=1){// x->instance->x
         //        pf("%d|",n->id);
         //        return false;// !!! HIDE!!!
     }
@@ -1556,10 +1548,9 @@ bool show(Node* n, bool showStatements) {		//=true
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
 	//    printf("%s  (#%d)\n", n->name, n->id);
 	string img="";
-	cchar* text="";
-	bool showLabel=true;//false;//!debug;
-//	if (showLabel && n->name) img=getImage(n->name);
-	if (showLabel && getLabel(n)) text=getLabel(n);
+	cchar* text=getText(n);
+	bool showLabel=true;//false;//!debug; getLabel(n);
+	//	if (showLabel && n->name) img=getImage(n->name); EVIL!!!
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
 	//    else
@@ -1572,13 +1563,12 @@ bool show(Node* n, bool showStatements) {		//=true
 	// printf("Node: id=%d name=%s statementCount=%d\n",n->id,n->name,n->statementCount);
 	int i=0;
     //	int maxShowStatements=40; //hm
-
 	if (showStatements) {
 		Statement* s=0;
 		while ((s=nextStatement(n, s))) {
 			if (i++ >= resultLimit) break;
 			if (checkStatement(s)) showStatement(s);
-            else pf("NOOOOO! BROKEN STATEMENT: %p",s);
+            else pf("BROKEN STATEMENT: %p",s);// break?
 		}
         printf("-----------------------^ %s #%d (kind: %s #%d), %d statements --- %s ^---------------\n", n->name, n->id,get(n->kind)->name, n->kind,n->statementCount,text);
         flush();

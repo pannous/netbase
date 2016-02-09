@@ -1734,8 +1734,8 @@ void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	quiet=false;
 	debug = true;
-//	germanLabels=true;
-	germanLabels=false;
+	germanLabels=true;
+//	germanLabels=false;
 //	p("test -> SHELL");return;// for shell
 	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
 		importWikiData();
@@ -1759,7 +1759,8 @@ void testBrandNewStuff() {
 	//    import("test.csv");
 	//	if(!hasWord("bug"))importWordnet();
 	//		importWikiData();
-//	handle("/verbose/Mensch");
+	//	handle("/verbose/Mensch");
+		handle("/ee/Mensch");
 //	importWordnet();
 //		flattenGeographischeKoordinaten();
 	//	handle("/P106");

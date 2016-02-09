@@ -3,7 +3,8 @@
 
 var div=document.getElementById("netbase_results");
 var server="/html/"; // "http://quasiris.big:3333/html/";
-var filterIds=[-10646,-50,-10508,-10910,-11566];
+var filterIds=[-10646,-50,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207];//   Amerigo Vespucci BnF-ID 12234845j 47674->-10268->36430981 etc
+var abstract=-102;// Summary nodes
 function br(){
 	div.appendChild( document.createElement("br"));
 }
@@ -16,6 +17,7 @@ function append(tag,elem,clazz){
 }
 
 function appendText(text,elem){
+	if(!elem)elem=div;
 	elem.appendChild(document.createTextNode(text));
 	return elem;
 }
@@ -122,7 +124,9 @@ function makeEntity(entity)
 {
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+entity.name,div).style=nolink+bold+blue+big
-	if(entity.description) appendText(" "+entity.description+" ",div)
+	
+	if(entity.kind==abstract)appendText("*");
+	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
 	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
 	link.style=nolink+bold+blue+big
 	link.target="_blank"

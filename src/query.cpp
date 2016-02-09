@@ -1687,6 +1687,24 @@ NV filterCandidates(NV all){
 	return all;
 }
 
+vector<cchar*> loadBlacklist(){
+	static vector<cchar*> forbidden;
+	if(forbidden.size()>0)return forbidden;
+	FILE *infile=open_file("blacklist.csv");
+	char line[1000];
+	while (fgets(line, sizeof(line), infile) != NULL) {
+		fixNewline(line);
+		forbidden.push_back(line);
+	}
+	forbidden.push_back("The");
+	forbidden.push_back("bzw");
+	forbidden.push_back("von");
+	forbidden.push_back("BZW");
+	forbidden.push_back("Für");
+	forbidden.push_back("für");
+	return forbidden;
+}
+
 // Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(cchar* query0){
 	char* query=modifyConstChar(query0);
@@ -1694,13 +1712,7 @@ NV findEntites(cchar* query0){
 	NV entities;// Merkel
 	NV classes; // Politiker
 	NV topics;	// Politik
-	vector<cchar*> forbidden;
-	forbidden.push_back("The");
-	forbidden.push_back("bzw");
-	forbidden.push_back("von");
-	forbidden.push_back("BZW");
-	forbidden.push_back("Für");
-	forbidden.push_back("für");
+	vector<cchar*> forbidden=loadBlacklist();
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
 	int min_chars=3;//
 	int len=(int)strlen(query);
@@ -1747,6 +1759,7 @@ NV getTopics(NV entities){
 			papas=findProperties(n,Type);
 		if(papas.size()>0){
 			N p=papas[0];
+			if(p->id!=4167410)//	Wikimedia disambiguation page	
 			topics.push_back(p);
 		}else{
 			pf("Unknown type: %s\n",n->name);
