@@ -114,6 +114,9 @@ void bad(){
 bool isAbstract(Node* object) {
 	return object->kind == _abstract || object->kind == _singleton || object->kind ==0;// 0 WTF how?
 }
+bool isValue(Node* object) {
+	return object->value.number!=0;
+}
 
 bool checkHash(Ahash* ah) {
 	if(!debug)return true;
@@ -1018,6 +1021,7 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 //Zeitschriftenverlag     Verlag_Technik
 
 Node* dissectWord(Node * subject,bool checkDuplicates) {
+	autoIds=false;
 	Node* original=subject;
     if (dissected[subject]) return original;
 	if (!checkNode(subject, true, true, true)) return original;
@@ -1153,7 +1157,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(ort, hat, subject, checkDuplicates);
 	}
 	type=(int)str.find("._");
-	if (type >= 0 && len - type > 2) {
+	if (type >= 0 && len - type > 2 && isNumber(str.data())) {
 		Node* nr=getThe(str.substr(0, type).c_str()); //deCamel
 		Node* word=getThe(str.substr(type + 2).c_str());
 		addStatement(word, Instance, subject, checkDuplicates);
@@ -1548,7 +1552,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
 	//    printf("%s  (#%d)\n", n->name, n->id);
 	string img="";
-	cchar* text=getText(n);
+	cchar* text="";//getText(n);
 	bool showLabel=true;//false;//!debug; getLabel(n);
 	//	if (showLabel && n->name) img=getImage(n->name); EVIL!!!
 	//    if(n->value.number)
@@ -1556,7 +1560,10 @@ bool show(Node* n, bool showStatements) {		//=true
 	//    else
 	//		printf("Node#%p: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%p)\n", n->id, n->name,text, img.data(),n);
-	printf("%d\t%s\t\t%s\t(%d statements)\n", n->id, n->name, text, n->statementCount);//img.data(),
+	if(!text||isAbstract(n)||isValue(n)|| strlen(text)==0)
+		printf("%d\t%s\t\t(%d statements)\n", n->id, n->name, n->statementCount);//img.data(),
+	else
+		printf("%d\t%s\t\t%s\t(%d statements)\n", n->id, n->name, text, n->statementCount);//img.data(),
 //    if(n->statementCount<=1)return false;
 	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
@@ -2634,9 +2641,11 @@ bool checkParams(int argc, char *argv[], const char* p) {
 	return false;
 }
 
+// description
 char* getText(Node* n){
+	if(isAbstract(n))return NO_TEXT;
 	context=getContext(current_context);
-	if(n->value.text>=context->nodeNames && context->nodeNames<=&context->nodeNames[context->currentNameSlot]){
+	if(n->value.text>=context->nodeNames && n->value.text<=&context->nodeNames[context->currentNameSlot]){
 		return n->value.text;
 	}
 	return NO_TEXT;

@@ -1760,7 +1760,9 @@ void testBrandNewStuff() {
 	//	if(!hasWord("bug"))importWordnet();
 	//		importWikiData();
 	//	handle("/verbose/Mensch");
-		handle("/ee/Mensch");
+//		handle("/ee/Mensch are bool and ignoreCase");
+//	handle("/ee/The United States of America");
+	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
 //	importWordnet();
 //		flattenGeographischeKoordinaten();
 	//	handle("/P106");

@@ -44,7 +44,7 @@ bool contains(const char* x,const char* y,bool ignoreCase=false);
 bool contains(NodeSet& all, Node* node);
 bool contains(NodeSet* all, Node* node);
 bool contains(vector<char*>& all,char* node);
-bool contains(vector<const char*>& all, const char* node) ;
+bool contains(vector<const char*>& all, const char* node,bool ignoreCase=false);
 bool contains(vector<string>& all, char* name);
 bool contains(string x,const char* y);
 bool isNumber(const char* buf);

@@ -24,6 +24,7 @@
 #include "util.hpp"
 #include "init.hpp"
 #include "query.hpp"
+#include "relations.hpp" // Node* Entity;
 //#include "helper.h"
 
 /*  Service an HTTP request  */
@@ -214,11 +215,14 @@ int handle(cchar* q0,int conn){
 		showExcludes=false;
 		verbosity = alle;
     }
+	bool get_topic=false;
 	if (startsWith(q, "ee/")) {
 		q[2]=' ';
+		get_topic=true;
 	}
 	if (startsWith(q, "entities/")) {
 		q[8]=' ';
+		get_topic=true;
 	}
     loadView(q);
     
@@ -232,6 +236,7 @@ int handle(cchar* q0,int conn){
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+	autoIds=false;
     int size=(int)all.size();
     if(showExcludes){
         for (int i = 0; i < size; i++) {
@@ -299,12 +304,22 @@ int handle(cchar* q0,int conn){
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
 		good++;
 		if (use_json)if(good>1)Writeline(conn, "},\n");
-		sprintf(buff, entity_format, node->name, node->id,node->statementCount,getText(node));
+		char* text=getText(node);
+		sprintf(buff, entity_format, node->name, node->id,node->statementCount,text);
 		Writeline(conn, buff);
         if(verbosity != alle)
-            loadView(node);
-        if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
+			loadView(node);
+		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
+		if(use_json && get_topic){
+			N t=getTopic(node);
+			if(t!=Entity && checkNode(t)){
+				Writeline(conn, ", \"topicid\":"+itoa(t->id));
+				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
+//				Writeline(conn, ", \"typeid\":"+itoa(t->id));
+//				Writeline(conn, ", \"type\":\""+string(t->name)+"\"");
+			}
+		}
 		if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
 			Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
 //		if((use_json)&&getText(node)[0]!=0)

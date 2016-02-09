@@ -158,10 +158,11 @@ bool contains(NodeVector& all, Node* node, bool fuzzy) {
 	return false;
 }
 
-bool contains(vector<const char*>& all, const char* node) {
+bool contains(vector<const char*>& all, const char* node,bool ignoreCase /*false*/) {
 	for (int i=0; i < all.size(); i++) {
-		const char* ali=all[i];
-		if (eq(ali, node)) return true;
+		const char* ali=all.at(i);
+		if (eq(ali, node,ignoreCase))
+			return true;
 	}
 	return false;
 }
@@ -696,6 +697,7 @@ char* fixQuotesAndTrim(char* tmp) {
 	return tmp;
 }
 
+//#define str string
 string itoa(int i) {
 	std::stringstream ss;
 	ss << i;

@@ -1236,14 +1236,15 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 			continue;//for now!
 		}
 		if(startsWith(test, "description")){
+			if(startsWith(label,"Wikimedia")){
+				N a=getEntity(key,false,false);
+				wiki_abstracts[id]=true;
+				a->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
+				continue;
+			}
 			if(!altLabels)continue;
 			if(english&&germanLabels)continue;
 			N oldLabel=getEntity(key,false,false);
-			if(startsWith(label,"Wikimedia")){
-				wiki_abstracts[id]=true;
-				oldLabel->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
-				continue;
-			}
 			if(!oldLabel || oldLabel==Error||oldLabel->value.text)continue;
 			if(oldLabel&&checkNode(oldLabel)){
 				// _singleton vs _abstract->value conflict !?

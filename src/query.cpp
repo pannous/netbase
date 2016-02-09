@@ -8,6 +8,7 @@
 #include <algorithm> // std:reverse std:sort
 //#include <multimap> // to sort map
 
+
 int* enqueued; // 'parents'
 NodeVector EMPTY;
 
@@ -1688,33 +1689,32 @@ NV filterCandidates(NV all){
 }
 
 vector<cchar*> loadBlacklist(){
-	static vector<cchar*> forbidden;
+	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
 	if(forbidden.size()>0)return forbidden;
 	FILE *infile=open_file("blacklist.csv");
 	char line[1000];
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		fixNewline(line);
-		forbidden.push_back(line);
+		forbidden.push_back(editable(line));
 	}
-	forbidden.push_back("The");
-	forbidden.push_back("bzw");
-	forbidden.push_back("von");
-	forbidden.push_back("BZW");
-	forbidden.push_back("Für");
-	forbidden.push_back("für");
 	return forbidden;
 }
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(cchar* query0){
 	char* query=modifyConstChar(query0);
+	query=replaceChar(query,'.',' ');
+	query=replaceChar(query,'?',' ');
+	query=replaceChar(query,'!',' ');
+	query=replaceChar(query,'(',' ');
+	query=replaceChar(query,')',' ');
 	NV all;
 	NV entities;// Merkel
 	NV classes; // Politiker
 	NV topics;	// Politik
 	vector<cchar*> forbidden=loadBlacklist();
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
-	int min_chars=3;//
+	int min_chars=4;//
 	int len=(int)strlen(query);
 	char* start=query;
 	char* end=&query[len];
@@ -1725,10 +1725,15 @@ NV findEntites(cchar* query0){
 			mid[0]=0;// Artificial cut
 			p(start);
 			N entity=hasWord(start);
+			if(endsWith(start, "s")){
+				mid[-1]=0;
+				entity=hasWord(start);
+				mid[-1]='s';// HAHA HAxk! ;)
+			}
 			mid[0]=' ';// fix
 			// the United https://www.wikidata.org/wiki/Q7771566
 			// 239790	United				9 statements
-			if(entity && !contains(forbidden,entity->name)){
+			if(entity && !contains(forbidden,entity->name,true/*ignoreCase*/)){
 //				p(entity);
 				all.push_back(entity);
 			}
@@ -1746,25 +1751,62 @@ NV findEntites(cchar* query0){
 	free(query);
 	return filterCandidates(all);
 }
+NV findSubEntites(cchar* query0){
+	char* query=modifyConstChar(query0);
+	NV all;
+	NV entities;// Merkel
+	NV classes; // Politiker
+	NV topics;	// Politik
+	vector<cchar*> forbidden=loadBlacklist();
+	int min_chars=4;// inefficient!
+	int max_chars=40;
+	int len=(int)strlen(query);
+	char* start=query;
+	char* end=&query[len];
+	char* mid=start+min_chars;
+	while(start<end){
+		mid=start+min_chars;
+		while(mid<=end && mid-start<=max_chars && mid-start>=min_chars){
+			mid[0]=0;// Artificial cut
+			p(start);
+			N entity=hasWord(start);
+			mid[0]=' ';
+			if(entity && !contains(forbidden,entity->name,true/*ignoreCase*/)){
+				all.push_back(entity);
+			}
+			if(mid==end)break;
+			mid=mid+1;
+		}
+		start++; // skip ' '
+		if(start>=end)break;
+	}
+	free(query);
+	return filterCandidates(all);
+}
+
+N getTopic(N n){// n-Titty = entity
+	if(isAbstract(n))
+		n=getThe(n);// best!
+	//		NV classes=findStatements(n->id, _SuperClass, _any);
+	NV papas=findProperties(n,SuperClass);
+	if(papas.size()==0)
+		papas=findProperties(n,Type);
+	if(papas.size()>0){
+		N p=papas[0];
+		if(p->id==134556)return 0;// Single : ignore!
+		if(p->id!=4167836)// Wikimedia-Kategorie
+			return p;
+	}else
+		pf("Unknown type: %s\n",n->name);
+	return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+}
 
 NV getTopics(NV entities){
 	NV topics;
 	for(int i=0;i<(int)entities.size();i++){
-		N n=entities[i];
-		if(isAbstract(n))
-			n=getThe(n);// best!
-//		NV classes=findStatements(n->id, _SuperClass, _any);
-		NV papas=findProperties(n,SuperClass);
-		if(papas.size()==0)
-			papas=findProperties(n,Type);
-		if(papas.size()>0){
-			N p=papas[0];
-			if(p->id!=4167410)//	Wikimedia disambiguation page	
-			topics.push_back(p);
-		}else{
-			pf("Unknown type: %s\n",n->name);
-			topics.push_back(Entity);// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+		N entity=entities[i];
+		N topic=getTopic(entity);
+		topics.push_back(topic);
 		}
-	}
 	return topics;
 }
