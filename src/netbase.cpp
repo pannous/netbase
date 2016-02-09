@@ -1023,29 +1023,29 @@ void dissectParent(Node * subject,bool checkDuplicates) {
 Node* dissectWord(Node * subject,bool checkDuplicates) {
 	autoIds=false;
 	Node* original=subject;
-    if (dissected[subject]) return original;
+	if (dissected[subject]) return original;
 	if (!checkNode(subject, true, true, true)) return original;
-    if(subject->statementCount>1000)checkDuplicates=false;// expansive isA4 !!!!
-    //    => todo dissectWord befor loading data!!!!!
+	if(subject->statementCount>1000)checkDuplicates=false;// expansive isA4 !!!!
+	//    => todo dissectWord befor loading data!!!!!
 
-	string str=replace_all(subject->name, " ", "_");
-	str=replace_all(str, "-", "_");
+	string str=replace_all(subject->name, "_", " ");
+	str=replace_all(str, "-", " ");
 	//        p("dissectWord");
 	//        p(subject->name);
 	const char *thing=str.data();
-	if (contains(thing, "_") || contains(thing, " ") || contains(thing, ".") || (endsWith(thing, "s")&&!germanLabels))
+	if (contains(thing, " ") || contains(thing, "_") || contains(thing, ".") || (endsWith(thing, "s")&&!germanLabels))
 		dissectParent(subject); // <<
 
-   	dissected[subject]=true;
+	dissected[subject]=true;
 
 	int len=(int)str.length();
 	int type=(int)str.find(",");
 	if (type >= 0 && len - type > 2) {
-		//		char* t=(str.substr(type + 2) + "_" + str.substr(0, type)).c_str();
+		//		char* t=(str.substr(type + 2) + " " + str.substr(0, type)).data();
 		//		Node* word = getThe(t); //deCamel
 		//		addStatement(word, Synonym, subject, true);
-		Node* a=getThe((str.substr(0, type).c_str()));
-		Node* b=getThe((str.substr(type + 2).c_str()));
+		Node* a=getThe((str.substr(0, type).data()));
+		Node* b=getThe((str.substr(type + 2).data()));
 		addStatement(a, Instance, subject, true);
 		addStatement(b, Instance, subject, true);
 		dissectWord(a,checkDuplicates);
@@ -1058,10 +1058,10 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	if (type > 0 && len - type > 2) {		// not (030)4321643 !
 		int to=(int)str.find(")");
 		string str2=str.substr(type + 1, to - type - 1);
-		Node* clazz=getThe(str2.c_str()); //,str.find(")")
+		Node* clazz=getThe(str2.data()); //,str.find(")")
 		Node* word;
-		if (type > 0) word=getThe(str.substr(0, type - 1).c_str()); //deCamel
-		else word=getThe(str.substr(to + 1, len - 1).c_str()); //deCamel
+		if (type > 0) word=getThe(str.substr(0, type - 1).data()); //deCamel
+		else word=getThe(str.substr(to + 1, len - 1).data()); //deCamel
 		addStatement(word, Instance, subject, true);
 		addStatement(clazz, Instance, word, true);
 		//        addStatement(clazz, Member, word, true);
@@ -1070,84 +1070,75 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		str=word->name;
 		//        subject=word;
 	}
-	type=(int)str.find("_in_");
-	if (type < 0) type=(int)str.find("_am_");
-	if (type < 0) type=(int)str.find("_at_");
+	type=(int)str.find(" in ");
+	if (type < 0) type=(int)str.find(" am ");
+	if (type < 0) type=(int)str.find(" at ");
 	if (type >= 0 && len - type > 2) {
 		Node* at=the(location);
-		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
-		Node* ort=getThe(str.substr(type + 4).c_str());
+		Node* word=getThe(str.substr(0, type).data()); //deCamel
+		Node* ort=getThe(str.substr(type + 4).data());
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, at, ort,checkDuplicates);
 		dissectParent(ort,checkDuplicates);
 		return original;
 	}
-	type=(int)str.find("_from_");
+	type=(int)str.find(" from ");
 	if (type >= 0 && len - type > 4) {
 		Node* from=getThe("from");
-		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
-		Node* ort=getThe(str.substr(type + 6).c_str());
+		Node* word=getThe(str.substr(0, type).data()); //deCamel
+		Node* ort=getThe(str.substr(type + 6).data());
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, from, ort, checkDuplicates);
 	}
-	type=(int)str.find("_for_");
-	if(type<0)type=(int)str.find("_für_");
+	type=(int)str.find(" for ");
+	if(type<0)type=(int)str.find(" für ");
 	if (type >= 0 && len - type > 5) {
 		Node* from=getThe("for");
-		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
-		Node* obj=getThe(str.substr(type + 5).c_str());
+		Node* word=getThe(str.substr(0, type).data()); //deCamel
+		Node* obj=getThe(str.substr(type + 5).data());
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, from, obj, checkDuplicates);
 	}
-	type=(int)str.find("_bei_");
+	type=(int)str.find(" bei ");
 	if (type >= 0 && len - type > 2) {
 		Node* in=getThe("near");
 		//        check(eq(getThe("near")->name,"near"));
-		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
-		Node* ort=getThe(str.substr(type + 5).c_str());
+		Node* word=getThe(str.substr(0, type).data()); //deCamel
+		Node* ort=getThe(str.substr(type + 5).data());
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, in, ort, checkDuplicates);
 		if (original != subject) addStatement(original, in, ort, checkDuplicates);
 		addStatement(subject, the(location), ort, checkDuplicates);
 	}
 
-	type=(int)str.find("'s_");
-	if (type < 0) type=(int)str.find("s'_");// Oswalds' Cave ?
+	type=(int)str.find("'s ");
+	if (type < 0) type=(int)str.find("s' ");// Oswalds' Cave ?
 	if (type >= 0 && len - type > 2) {
-		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
-		const char* o=str.substr(type + 4).c_str();
+		Node* word=getThe(str.substr(0, type).data()); //deCamel
+		const char* o=str.substr(type + 4).data();
 		Node* ort=getThe(o);
 		addStatement(ort, Instance, subject, checkDuplicates);
 		addStatement(subject, Member, ort, checkDuplicates);
-        //		addStatement(word, Member, ort, checkDuplicates);
+		//		addStatement(word, Member, ort, checkDuplicates);
 		addStatement(word, Instance, subject, checkDuplicates);
 	}
-	type=(int)str.find("_of_");// board of directors
-	if (type < 0) type=(int)str.find("_de_"); // de_la_Casa
-	if (type < 0) type=(int)str.find("_du_");
-	//_della_ de la del des
+	type=(int)str.find(" of ");// board of directors
+	if (type < 0) type=(int)str.find(" de "); // de la Casa
+	if (type < 0) type=(int)str.find(" du ");
+	// della  de la del des
 	if (type >= 0 && len - type > 2) {
 		Node* hat=Member;
-		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
-		const char* o=str.substr(type + 4).c_str();
+		Node* word=getThe(str.substr(0, type).data()); //deCamel
+		const char* o=str.substr(type + 4).data();
 		Node* ort=getThe(o);
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(ort, hat, subject, checkDuplicates);
-//		addStatement(ort, hat, word, checkDuplicates);
+		//		addStatement(ort, hat, word, checkDuplicates);
 	}
-	type=(int)str.find("_der_");
-	if (type < 0) type=(int)str.find("_des_");
-	if (type < 0) type=(int)str.find("_del_");
-	//_della_
-	if (type >= 0 && len - type > 2) {
-		Node* hat=Member;
-		Node* word=getThe(str.substr(0, type).c_str()); //deCamel
-		string so=str.substr(type + 5); // keep! dont autofree
-		Node* ort=getThe(so.data());
-		addStatement(word, Instance, subject, checkDuplicates);
-		addStatement(ort, hat, subject, checkDuplicates);
-	}
-	type=(int)str.find("_von_");
+	type=(int)str.find(" der ");
+	if (type < 0) type=(int)str.find(" des ");
+	if (type < 0) type=(int)str.find(" del ");
+	// della
 	if (type >= 0 && len - type > 2) {
 		Node* hat=Member;
 		Node* word=getThe(str.substr(0, type).data()); //deCamel
@@ -1156,22 +1147,31 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(ort, hat, subject, checkDuplicates);
 	}
-	type=(int)str.find("._");
+	type=(int)str.find(" von ");
+	if (type >= 0 && len - type > 2) {
+		Node* hat=Member;
+		Node* word=getThe(str.substr(0, type).data()); //deCamel
+		string so=str.substr(type + 5); // keep! dont autofree
+		Node* ort=getThe(so.data());
+		addStatement(word, Instance, subject, checkDuplicates);
+		addStatement(ort, hat, subject, checkDuplicates);
+	}
+	type=(int)str.find(". ");
 	if (type >= 0 && len - type > 2 && isNumber(str.data())) {
-		Node* nr=getThe(str.substr(0, type).c_str()); //deCamel
-		Node* word=getThe(str.substr(type + 2).c_str());
+		Node* nr=getThe(str.substr(0, type).data()); //deCamel
+		Node* word=getThe(str.substr(type + 2).data());
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, Number, nr, checkDuplicates);
 	}
-	type=(int)str.find("_");
+	type=(int)str.find(" ");
 	if (type >= 0 && len - type > 2) {
-		const char* rest=str.substr(type + 1).c_str();
-		if(startsWith(rest, "of_"))rest+=3;// ...
+		const char* rest=str.substr(type + 1).data();
+		if(startsWith(rest, "of "))rest+=3;// ...
 		Node* word=getThe(rest);
 		addStatement(word, Instance, subject, checkDuplicates);
 	}
-    return original;
-	// todo: zu (ort/name) _der_ (nicht:name) bei von auf_der auf am (Angriff_)gegen (Schlacht_)um...
+	return original;
+	// todo: zu (ort/name)  der  (nicht:name) bei von auf der auf am (Angriff )gegen (Schlacht )um...
 	//    free(str);
 }
 
