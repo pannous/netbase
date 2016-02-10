@@ -1545,7 +1545,7 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 	}
 	size_t len=strlen(name);
 	if(len==0)return 0;
-	if(name[0]=='_' && name[0]==':')
+	if(name[0]=='_' && name[1]==':')//  	_:
 		return getPropertyDummy(name);// Missing;// _:node1a8gbf20dx14041
 
 	if(endsWith(name, "\" .")){name[len-3]=0;len-=3;}

@@ -573,7 +573,7 @@ char* replaceChar(char* thing,char what,char with){
     return thing;
 }
 //inline
-bool ignoreNonLatin=false;// true;
+bool ignoreNonLatin=false;// true; against insertAbstractHash FULL!
 short normChar(char c) {// 0..36 damn ;)
 //	if(c=='ä')c='a'; etc
 	if (c >= '0' && c <= '9') return c-'0'+26;
