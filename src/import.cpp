@@ -1286,6 +1286,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 					ab=add(label,_abstract);// moment, Maybe there will be a wiki disambiguation later!
 					insertAbstractHash(ab,true);
 					addStatement(ab, Instance, old);
+					old->kind=_entity;// LOST _singleton status
 				}
 				addStatement(ab, Instance, node);
 			}

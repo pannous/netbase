@@ -1290,7 +1290,8 @@ Node * hasWord(const char* thingy) {
 		if (found&&checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
-			if (eq(get(found->abstract)->name, thingy, true))			//teuer? n��, if 1.letter differs
+			char* ab=get(found->abstract)->name;
+			if (eq(ab, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return get(found->abstract);
 		}
         //		if (get(found->next) == found) {

@@ -572,9 +572,9 @@ Node * getRelation(const char* thing) {
 //	P1365 replaces ancestor
 //	1366> <altLabel> "ersetztes"@de . predecessor succeeded by
 	if (eq(thing, "P279")) return SuperClass;// ist Unterklasse von
-	if (eq(thing, "P523")) return PartOf;// 	Has part
-	if (eq(thing, "P131")) return PartOf;//located in the administrative
-	if (eq(thing, "P706")) return PartOf;// located on terrain
+	if (eq(thing, "P523")) return Part;// 	Has part
+//	if (eq(thing, "P131")) return PartOf;//located in the administrative
+//	if (eq(thing, "P706")) return PartOf;// located on terrain
 
 //	<P111> <altLabel> "misst"@de . <_> https://www.wikidata.org/wiki/Property:P1880 gemessen in
 //    if (eq(thing, "Klasse")) return SuperClass;
@@ -586,9 +586,11 @@ Node * getRelation(const char* thing) {
 
 void initWikiRelations(){
 	//	https://www.wikidata.org/wiki/Property:P131
-	addStatement4(current_context,-10131, _SuperClass, _PartOf);//located in the administrative
 	//	addStatement4(current_context,-10131, _SuperClass, In->id);
+	addStatement4(current_context,-10131, _SuperClass, _PartOf);//located in the administrative
+	addStatement4(current_context,-10150, _SuperClass, _Part);//  Untereinheit (administrative Einheit)
 	addStatement4(current_context,-10706, _SuperClass, _PartOf);// located on terrain
+
 	addStatement4(current_context,-10035, _synonym, getThe("Präsident")->id);
 
 	addStatement4(current_context,-10527, _SuperClass, _Part);// 	Has part

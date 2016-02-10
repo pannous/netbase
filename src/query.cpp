@@ -1725,9 +1725,9 @@ NV findEntites(cchar* query0){
 			mid[0]=0;// Artificial cut
 			p(start);
 			N entity=hasWord(start);
-			if(endsWith(start, "s")){
+			if(!entity && !germanLabels && endsWith(start, "s")){
 				mid[-1]=0;
-				entity=hasWord(start);
+				entity=hasWord(start);// abstract OK
 				mid[-1]='s';// HAHA HAxk! ;)
 			}
 			mid[0]=' ';// fix
@@ -1794,6 +1794,7 @@ N getTopic(N n){// n-Titty = entity
 	if(papas.size()>0){
 		N p=papas[0];
 		if(p->id==134556)return 0;// Single : ignore!
+		if(p->id==11424)return 0;// Film 'Eine Familie' wtf : ignore!
 		if(p->id!=4167836)// Wikimedia-Kategorie
 			return p;
 	}else
