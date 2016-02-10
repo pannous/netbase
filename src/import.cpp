@@ -1268,7 +1268,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 				if(wiki_abstracts[id])
 					initNode(node, id, label, _abstract, 0);// _entity -> class later
 				else
-					initNode(node, id, label, _singleton, 0);// _entity -> class later
+					initNode(node, id, label, _singleton, 0);// MAY LOOSE _singleton status!!  _entity -> class later
 				insertAbstractHash(node);// _singleton as abstract!? HACK, DANGER !
 			}else{
 				if(old==node)
@@ -1279,7 +1279,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 					if(english&&germanLabels)continue;
 				}
 				N ab;
-				if(wiki_abstracts[id]||isAbstract(old)){
+				if(wiki_abstracts[id]||old->kind == _abstract){
 					ab=old;
 					ab->kind=_abstract;
 				}else{
@@ -1608,10 +1608,6 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 bool dropBadSubject(char* name) {
 	if(name[0]<='9')return DROP;// || name[1]<='9')continue;//
 	if(endsWith(name,"#propertyStatementLinkage>"))return DROP;
-	if(startsWith(name,"P352"))return DROP; //	UniProt ID
-	if(startsWith(name,"P637"))return DROP; //	RefSeq Protein ID
-	if(startsWith(name,"P705"))return DROP; //	Ensembl Protein ID
-	if(startsWith(name,"P536"))return DROP; //	ATP ID
 
 	if(startsWith(name,"Q5570970"))return DROP; // Globe
 	if(startsWith(name,"Q26956302"))return DROP; // rdf.freebase.com id?
@@ -1625,6 +1621,15 @@ bool dropBadSubject(char* name) {
 bool dropBadPredicate(char* name) {
 	//	if(name[0]=='.')return DROP;
 	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
+
+	if(startsWith(name,"P352"))return DROP; //	UniProt ID
+	if(startsWith(name,"P637"))return DROP; //	RefSeq Protein ID
+	if(startsWith(name,"P705"))return DROP; //	Ensembl Protein ID
+	if(startsWith(name,"P536"))return DROP; //	ATP ID
+
+	if(startsWith(name,"P213>"))return DROP;//	 	ISNI
+	if(startsWith(name,"P214>"))return DROP;//	 	VIAF
+
 	if(startsWith(name,"P646>"))return DROP;
 	if(startsWith(name,"P508>"))return DROP;
 	if(startsWith(name,"P910>"))return DROP;

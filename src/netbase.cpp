@@ -112,7 +112,7 @@ void bad(){
 	badCount++;
 }
 bool isAbstract(Node* object) {
-	return object->kind == _abstract || object->kind == _singleton || object->kind ==0;// 0 WTF how?
+	return object->kind == _abstract || object->kind == _singleton;// || object->kind ==0;// 0 WTF how?
 }
 bool isValue(Node* object) {
 	return object->value.number!=0;
