@@ -573,11 +573,14 @@ char* replaceChar(char* thing,char what,char with){
     return thing;
 }
 //inline
+bool ignoreNonLatin=false;// true;
 short normChar(char c) {// 0..36 damn ;)
+//	if(c=='ä')c='a'; etc
 	if (c >= '0' && c <= '9') return c-'0'+26;
 	if (c >= 'a' && c <= 'z') return c-'a'+1;// NOT 0!!!
 	if (c >= 'A' && c <= 'Z') return c-'A'+1;
-    return 0;// no chinese etc!
+	if(ignoreNonLatin)
+		return 0;// no chinese etc! why not? (small) problem: €==$ Жабка == Λάδων  etc
     switch (c) {
         case '"':return 0;
             break;

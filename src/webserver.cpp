@@ -134,8 +134,8 @@ int handle(cchar* q0,int conn){
 		showExcludes=false;
 		verbosity = alle;
 	}
-	if (startsWith(q, "long/")) {
-		verbosity = longer;
+	if (startsWith(q, "long/")||startsWith(q, "full/")) {
+		verbosity =  verbose;//longer;
 		q = q + 5;
 	}
 	if (startsWith(q, "verbose/")) {
