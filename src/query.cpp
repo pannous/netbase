@@ -1748,6 +1748,7 @@ NV findEntites(cchar* query0){
 	char* start=query;
 	char* end=&query[len];
 	char* mid=strstr(start," ");
+	if(!mid)mid=end;
 	while(start<end){
 		int words=1;
 		while(mid<=end && words<max_words && mid-start>=min_chars){
