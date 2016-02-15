@@ -878,19 +878,20 @@ NodeVector & nodesOfDirectType(int kind) {
 
 
 //NodeVector & allInstances(Node * type) {
-NodeVector allInstances(Node * type) {
+NodeVector allInstances(Node * type, int recurse, int max, bool includeClasses) {
 	clearAlgorithmHash();
 	NodeVector all; 	// COMPARE: !!
-//	all = instanceFilter(type);
+	if(!recurse)
+		all = instanceFilter(type);
 //	all = all_instances(getQuery(type));
-	all = all_instances(type, true, defaultLookupLimit, true);
+	else
+		all = all_instances(type, recurse, max, includeClasses);
 //	all = recurseFilter(type,true,resultLimit,instanceFilter);
 	return all;
 }
 
 // todo?: EXCLUDING classes and direct instances on demand!
 // WDYM direct instances ???
-
 NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 	static NodeSet* all=new NodeSet;
 	if (type == 0) {
@@ -1319,13 +1320,31 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 	else
 		return all;
 }
-
+#define DROP true
+#define KEEP false
+bool filterWikiType(int object){
+	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
+	if(object==4167836)return DROP; // Wikimedia-Kategorie
+	if(object==35120)return DROP; // Entität
+	if(object==5127848)return DROP; // Gruppe
+	if(object==27948)return DROP; // Liste
+	if(object==827335)return DROP; // Abstrakter Datentyp
+	if(object==1979154)return DROP; // 	Modell
+	if(object==386724)return DROP; //	Werk	Q386724	=> Produkt	Q2424752
+	if(object==28877)return DROP; //	Gut	Q28877	=> Produkt	Q2424752
+	if(object==7184903)return DROP; //	Abstraktes Objekt
+	if(object==853614)return DROP; //	 Identifikator
+	if(object==2221906)return DROP; //		Standort
+	if(object==9158768)return DROP; //			Speicher
+	return KEEP;
+}
 // put as callback into findPath for recursion
 NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	NodeVector all;
 	int i = 0;
 	Statement* s = 0;
-	while (i++ < 1000 && (s = nextStatement(subject, s, false))) {// true !!!!
+	int type_lookup_limit=10;// type statements should be at the very beginning
+	while (i++ < type_lookup_limit && (s = nextStatement(subject, s, false))) {// true !!!!
         //#ifdef useContext
 		if (s->context == _pattern)continue;// important!!//        else it always matches!!!
         //#endif
@@ -1334,6 +1353,8 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 		if (s->Predicate() == Derived)continue;
 		//		if (s->Predicate==DerivedFromNoun)continue;
 		if (s->Predicate() == get(_attribute))continue;
+		if(filterWikiType(s->object))continue;
+
 		//		if(s->Predicate==Instance && !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 		//		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
@@ -1449,7 +1470,7 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		Node* d = instances[i];
 		enqueued[d->id] = fro->id;
 		q.push(d);
-		pf("FROM %d %s\n", d->id, d->name);
+		pf("instance %d %s\n", d->id, d->name);
 	}
 	Node* current;
 	NodeSet all;
@@ -1723,7 +1744,7 @@ NV findEntites(cchar* query0){
 		int words=1;
 		while(mid<=end && words<max_words && mid-start>=min_chars){
 			mid[0]=0;// Artificial cut
-			p(start);
+//			p(start);
 			N entity=hasWord(start);
 			if(!entity && endsWith(start, "s")){ //!germanLabels &&
 				mid[-1]=0; // ^^ Minimum stemming
@@ -1808,11 +1829,13 @@ NV getTopics(N entity){
 	deque<Node*> sorted;
 	for(int i=0;i<(int)topics.size();i++){
 		N topic=topics[i];
+		if(eq(topic->name,"◊"))continue;
 		if(contains(entity->name, getText(topic))) // a great politician , politician
 			sorted.push_front( topic);
-		else sorted.push_back(topic);
+		else
+			sorted.push_back(topic);
 	}
-	for (int i=0; i<all.size(); i++) {
+	for (int i=0; i<sorted.size(); i++) {
 		topics[i]=sorted[i];
 	}
 	return topics;

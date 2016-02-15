@@ -1725,12 +1725,31 @@ void recursiveTaxonomy(){
 void testEntities(){
 	cchar* query="president of the United States of America";
 	NV all=findEntites(query);
-	show(all);
+//	show(all);
 	//	NV topics=getTopics(all);
 	for(int i=0;i<(int)all.size();i++){
 		N entity=all[i];
+		printf("====================================\n");
+		p(entity->name);
+		if(isAbstract(entity)){
+			NV instances=allInstances(entity);
+//			all_instances3(Node* type, int recurse, int max, bool includeClasses)
+			for(int j=0;j<(int)instances.size();j++){
+				entity=instances[j];
+				printf("------------------------------------\n");
+				NV topics=getTopics(entity);
+				if(topics.size()<=2)continue;// self + abstract
+				printf("------------------------------------\n");
+				show(topics);
+			}
+		}else{
+		printf("===SHOULD BE A*?=================================\n");
+		p(entity->name);
+		printf("------------------------------------\n");
 		NV topics=getTopics(entity);
-		show(topics);
+		printf("------------------------------------\n");
+//		show(topics);
+		}
 	}
 }
 
@@ -1739,6 +1758,9 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 	germanLabels=true;
+
+	context=getContext(current_context);
+	context->lastNode=1;// RADICAL: fill all empty slots!
 //	germanLabels=false;
 //	p("test -> SHELL");return;// for shell
 	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
@@ -1747,13 +1769,11 @@ void testBrandNewStuff() {
 
 //	show(get(1));
 //	importTest();
-//	testEntities();
+	testEntities();
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
 
 //	recursiveTaxonomy();
-	context=getContext(current_context);
-//	context->lastNode=1;// RADICAL: fill all empty slots!
 
 	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	//	getClasses();
@@ -1767,7 +1787,7 @@ void testBrandNewStuff() {
 	//	handle("/verbose/Mensch");
 //		handle("/ee/Mensch are bool and ignoreCase");
 //	handle("/ee/The United States of America");
-	handle("/ee/Ladon (griechisch Λάδων) ist");
+//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
 //	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
 //	importWordnet();
 //		flattenGeographischeKoordinaten();

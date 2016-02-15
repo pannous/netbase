@@ -1245,7 +1245,10 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 			if(!altLabels)continue;
 			if(english&&germanLabels)continue;
 			N oldLabel=getEntity(key,false,false);
-			if(!oldLabel || oldLabel==Error||oldLabel->value.text)continue;
+			if(!oldLabel || oldLabel==Error)continue;
+			if(oldLabel->value.text){
+				p(oldLabel->value.text);
+			}
 			if(oldLabel&&checkNode(oldLabel)){
 				// _singleton vs _abstract->value conflict !?
 				setText(oldLabel, label); //addStatement(oldLabel,Description,getAbstract(label));

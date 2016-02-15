@@ -27,7 +27,7 @@ NodeVector find_all(cchar* name, int context=1, int recurse=0, int limit=resultL
 NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*));// all subclassFilter etc
 NodeVector& all_instances(Node* type, int recurse, int max= resultLimit,bool includeClasses=true);
 //NodeVector& allInstances(Node* type);
-NodeVector allInstances(Node* type);
+NodeVector allInstances(Node* type, int recurse=false, int max=100, bool includeClasses=false);
 NodeVector& all_instances(Query& q);
 
 NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*));
