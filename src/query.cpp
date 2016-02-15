@@ -1709,16 +1709,23 @@ NV filterCandidates(NV all){
 	return all;
 }
 
-vector<cchar*> loadBlacklist(){
-	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
-	if(forbidden.size()>0)return forbidden;
+
+
+//vector<cchar*>
+N loadBlacklist(){
+	N blacklist=getAbstract("entity blacklist");
+	if(blacklist->statementCount>1000)return blacklist;
+//	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
+//	if(forbidden.size()>0)return forbidden;
 	FILE *infile=open_file("blacklist.csv");
 	char line[1000];
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		fixNewline(line);
-		forbidden.push_back(editable(line));
+		addStatement(blacklist, Part, getAbstract(line),false);
+//		forbidden.push_back(editable(line));
 	}
-	return forbidden;
+//	return forbidden;
+	return blacklist;
 }
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
@@ -1733,7 +1740,8 @@ NV findEntites(cchar* query0){
 	NV entities;// Merkel
 	NV classes; // Politiker
 	NV topics;	// Politik
-	vector<cchar*> forbidden=loadBlacklist();
+//	vector<cchar*> forbidden=loadBlacklist();
+	N forbidden=loadBlacklist();
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
 	int min_chars=4;//
 	int len=(int)strlen(query);
@@ -1778,7 +1786,8 @@ NV findSubEntites(cchar* query0){
 	NV entities;// Merkel
 	NV classes; // Politiker
 	NV topics;	// Politik
-	vector<cchar*> forbidden=loadBlacklist();
+//	vector<cchar*> forbidden=
+	N forbidden=loadBlacklist();
 	int min_chars=4;// inefficient!
 	int max_chars=40;
 	int len=(int)strlen(query);

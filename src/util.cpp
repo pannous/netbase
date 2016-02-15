@@ -158,6 +158,16 @@ bool contains(NodeVector& all, Node* node, bool fuzzy) {
 	return false;
 }
 
+bool contains(Node* list, char* object, bool fuzzy) {
+	S s=0;
+	while((s=nextStatement(list->id, s))){
+		Node* n=(Node*) s->Object();
+		if (eq(n->name , object,fuzzy))
+			return true;
+	}
+	return false;
+}
+
 bool contains(vector<const char*>& all, const char* node,bool ignoreCase /*false*/) {
 	for (int i=0; i < all.size(); i++) {
 		const char* ali=all.at(i);
