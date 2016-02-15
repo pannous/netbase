@@ -1725,9 +1725,13 @@ void recursiveTaxonomy(){
 void testEntities(){
 	cchar* query="president of the United States of America";
 	NV all=findEntites(query);
-	NV topics=getTopics(all);
 	show(all);
-	show(topics);
+	//	NV topics=getTopics(all);
+	for(int i=0;i<(int)all.size();i++){
+		N entity=all[i];
+		NV topics=getTopics(entity);
+		show(topics);
+	}
 }
 
 void testBrandNewStuff() {
@@ -1740,6 +1744,7 @@ void testBrandNewStuff() {
 	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
 		importWikiData();
 	p("Test Brand New Stuff");
+
 //	show(get(1));
 //	importTest();
 //	testEntities();

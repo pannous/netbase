@@ -68,6 +68,7 @@ NodeVector nodeSetToNodeVector(NodeSet& input);
 NodeVector setToVector(NodeSet& input);
 NV findEntites(cchar* query);
 N getTopic(N n);
+NV getTopics(N entity);
 NV getTopics(NV entities);
 
 NodeVector shortestPath(Node* from,Node* to );// any

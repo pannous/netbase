@@ -147,7 +147,6 @@ void debugAhash(int position) {
         if(ah->next<0||ah->next>maxNodes)break;
 		ah=&abstracts[ah->next];
 	}
-	p("////4");
 }
 
 Ahash *getAhash(int position){
@@ -2156,7 +2155,6 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 }
 
 // todo: a.b=c findMember(b,b) error
-
 Node * findMember(Node* n, string match, int recurse, bool semantic) {
 	if (!n) return 0;
 	if (recurse > 0) recurse++;

@@ -1725,8 +1725,8 @@ NV findEntites(cchar* query0){
 			mid[0]=0;// Artificial cut
 			p(start);
 			N entity=hasWord(start);
-			if(!entity && !germanLabels && endsWith(start, "s")){
-				mid[-1]=0;
+			if(!entity && endsWith(start, "s")){ //!germanLabels &&
+				mid[-1]=0; // ^^ Minimum stemming
 				entity=hasWord(start);// abstract OK
 				mid[-1]='s';// HAHA HAxk! ;)
 			}
@@ -1800,6 +1800,22 @@ N getTopic(N n){// n-Titty = entity
 	}else
 		pf("Unknown type: %s\n",n->name);
 	return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+}
+
+NV getTopics(N entity){
+	NodeSet all=findAll(entity, parentFilter);
+	NV topics=	setToVector(all);
+	deque<Node*> sorted;
+	for(int i=0;i<(int)topics.size();i++){
+		N topic=topics[i];
+		if(contains(entity->name, getText(topic))) // a great politician , politician
+			sorted.push_front( topic);
+		else sorted.push_back(topic);
+	}
+	for (int i=0; i<all.size(); i++) {
+		topics[i]=sorted[i];
+	}
+	return topics;
 }
 
 NV getTopics(NV entities){
