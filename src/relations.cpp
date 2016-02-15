@@ -261,7 +261,7 @@ void initRelationsDE() {
 
 void initRelations() {
 //    if(testing){p("testing");return;}
-    p("initRelations");
+//    p("initRelations");
 	context=getContext(current_context);
     context->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}

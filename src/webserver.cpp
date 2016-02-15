@@ -218,11 +218,11 @@ int handle(cchar* q0,int conn){
 	bool get_topic=false;
 	if (startsWith(q, "ee/")) {
 		q[2]=' ';
-		get_topic=true;
+//		get_topic=true;
 	}
 	if (startsWith(q, "entities/")) {
 		q[8]=' ';
-		get_topic=true;
+//		get_topic=true;
 	}
     loadView(q);
     
@@ -963,7 +963,7 @@ void start_server() {
 				Error_Quit("Error closing connection socket.");
 			exit(EXIT_SUCCESS);
 		}else{
-            p("not forked yet");
+//            p("not forked yet"); // !!?!
 //            Service_Request(conn);// whatever
         }
 		/*  If we get here, we are still in the parent process,
