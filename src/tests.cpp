@@ -1784,7 +1784,9 @@ void testBrandNewStuff() {
 	//	handle("/verbose/Mensch");
 //		handle("/ee/Mensch are bool and ignoreCase");
 //	handle("/ee/The United States of America");
-	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
+	//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
+	handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
+//	handle("/entities/verbose/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
 //	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
 //	importWordnet();
 //		flattenGeographischeKoordinaten();

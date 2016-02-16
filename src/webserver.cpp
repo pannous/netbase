@@ -134,8 +134,12 @@ int handle(cchar* q0,int conn){
 		showExcludes=false;
 		verbosity = alle;
 	}
-	if (startsWith(q, "long/")||startsWith(q, "full/")) {
-		verbosity =  verbose;//longer;
+	if (startsWith(q, "long/")){
+		verbosity =  longer;
+		q = q + 5;
+	}
+	if (startsWith(q, "full/")) {
+		verbosity =  verbose;
 		q = q + 5;
 	}
 	if (startsWith(q, "verbose/")) {
@@ -214,8 +218,9 @@ int handle(cchar* q0,int conn){
 		q = q + 4;
 		showExcludes=false;
 		verbosity = alle;
-    }
+	}
 	bool get_topic=false;
+	bool sort=false;
 	if (startsWith(q, "ee/")) {
 		q[2]=' ';
 		get_topic=true;
@@ -223,6 +228,7 @@ int handle(cchar* q0,int conn){
 	if (startsWith(q, "entities/")) {
 		q[8]=' ';
 		get_topic=true;
+//		verbosity=longer;
 	}
     loadView(q);
     
@@ -331,15 +337,17 @@ int handle(cchar* q0,int conn){
 //		if((use_json)&&getText(node)[0]!=0)
 //			Writeline(", \"description\":\""+string(getText(node))+"\"");
 		Statement* s = 0;
-		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle ||showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
+		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle || showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
             //            Writeline(",image:\""+getImage(node->name)+"\"");
 			if (use_json)Writeline(conn, ", \"statements\":[\n");
 
 //			sortStatements(
 			deque<Statement*> statements;
-			while ((s = nextStatement(node, s))&&count++<lookupLimit*100){
+			while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
 				if (!checkStatement(s))break;
+				if(get_topic && verbosity != verbose && s->predicate>1000)
+					break;// only important stuff here!
 				// filter statements
 				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
 				if(s->object==0)continue;
