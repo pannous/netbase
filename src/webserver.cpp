@@ -218,11 +218,11 @@ int handle(cchar* q0,int conn){
 	bool get_topic=false;
 	if (startsWith(q, "ee/")) {
 		q[2]=' ';
-//		get_topic=true;
+		get_topic=true;
 	}
 	if (startsWith(q, "entities/")) {
 		q[8]=' ';
-//		get_topic=true;
+		get_topic=true;
 	}
     loadView(q);
     
@@ -300,11 +300,17 @@ int handle(cchar* q0,int conn){
 		if(!checkNode(node))continue;
 		if(node->id==0)continue;
 		if(last==node)continue;
+		if(eq(node->name,"◊"))continue;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
+		char* text=getText(node);
+		if(use_json && get_topic){
+			if(empty(text))continue;//!
+//			if(isAbstract(node))continue;
+//			N t=getTopic(node);
+		}
 		good++;
 		if (use_json)if(good>1)Writeline(conn, "},\n");
-		char* text=getText(node);
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount,text);
 		Writeline(conn, buff);
         if(verbosity != alle)

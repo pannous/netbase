@@ -1728,27 +1728,23 @@ void testEntities(){
 	NV all=findEntites(query);
 //	show(all);
 	//	NV topics=getTopics(all);
+	bool splitAbstract=false;
 	for(int i=0;i<(int)all.size();i++){
 		N entity=all[i];
 		printf("====================================\n");
-		p(entity->name);
 		if(isAbstract(entity)){
+			if(!splitAbstract)continue;
 			NV instances=allInstances(entity);
 //			all_instances3(Node* type, int recurse, int max, bool includeClasses)
 			for(int j=0;j<(int)instances.size();j++){
 				entity=instances[j];
-				printf("------------------------------------\n");
 				NV topics=getTopics(entity);
 				if(topics.size()<=2)continue;// self + abstract
 				printf("------------------------------------\n");
 				show(topics);
 			}
 		}else{
-		printf("===SHOULD BE A*?=================================\n");
-		p(entity->name);
-		printf("------------------------------------\n");
 		NV topics=getTopics(entity);
-		printf("------------------------------------\n");
 //		show(topics);
 		}
 	}
@@ -1770,7 +1766,7 @@ void testBrandNewStuff() {
 
 //	show(get(1));
 //	importTest();
-	testEntities();
+//	testEntities();
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
 
@@ -1788,7 +1784,7 @@ void testBrandNewStuff() {
 	//	handle("/verbose/Mensch");
 //		handle("/ee/Mensch are bool and ignoreCase");
 //	handle("/ee/The United States of America");
-//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
+	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
 //	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
 //	importWordnet();
 //		flattenGeographischeKoordinaten();

@@ -2797,7 +2797,7 @@ int main(int argc, char *argv[]) {
 
 	printf("Warnings: %d\n", badCount);
 	showContext(0);
-
+	loadBlacklist(true);
 	if (checkParams(argc, argv, "load_files")) load(true);
 	else if (checkParams(argc, argv, "debug")) {
 		printf("debugging\n");

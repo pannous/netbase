@@ -1689,10 +1689,11 @@ bool containsSubstring(vector<char*>& words, char* sub) {
 
 NV filterCandidates(NV all){
 	VC words;
-	for(int i=(int)all.size()-1;i>=0;i--)
+	int size=(int)all.size();
+	for(int i=size-1;i>=0;i--)
 		words.push_back(all[i]->name);
 
-	for(int i=(int)all.size()-1;i>=0;i--){
+	for(int i=size-1;i>=0;i--){
 		N entity=all[i];
 		if(containsSubstring(words, entity->name)){
 			all.erase(all.begin() +i);
@@ -1701,27 +1702,36 @@ NV filterCandidates(NV all){
 		}
 	}
 //	all.shrink_to_fit();
-//	for(int i=0;i<all.size();i++){
-//		N entity=all[i];
-//		NV more=allInstances(entity);
-//		mergeVectors(&all, more);
-//	}
+	for(int i=0;i<size;i++){
+		N entity=all[i];
+		NV more=allInstances(entity);
+		mergeVectors(&all, more);
+	}
 	return all;
 }
 
 
 
 //vector<cchar*>
-N loadBlacklist(){
+N loadBlacklist(bool reload/*=false*/){
 	N blacklist=getAbstract("entity blacklist");
-	if(blacklist->statementCount>1000)return blacklist;
+	if(!reload && blacklist->statementCount>1000)return blacklist;
 //	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
 //	if(forbidden.size()>0)return forbidden;
 	FILE *infile=open_file("blacklist.csv");
 	char line[1000];
+	bool check=blacklist->statementCount>1000;
+	map<int,bool> doubles;
+		while (fgets(line, sizeof(line), infile) != NULL) {
+			doubles[wordhash(line)]=true;
+		}
 	while (fgets(line, sizeof(line), infile) != NULL) {
+		if(check&& doubles[wordhash(line)])continue;// already loaded
+			//contains(blacklist,line,true/*ignoreCase*/))
 		fixNewline(line);
 		addStatement(blacklist, Part, getAbstract(line),false);
+		addStatement(blacklist, Part, getAbstract(concat(line,"e")),false);// sein -> seine  Berg -> Berge
+		addStatement(blacklist, Part, getAbstract(concat(line,"en")),false);// sein -> seinen Berg -> Bergen
 //		forbidden.push_back(editable(line));
 	}
 //	return forbidden;
@@ -1760,12 +1770,20 @@ NV findEntites(cchar* query0){
 				entity=hasWord(start);// abstract OK
 				mid[-1]='s';// HAHA HAxk! ;)
 			}
+			if(!entity && germanLabels && endsWith(start, "e")){ // Berge -> Berg
+				mid[-1]=0; // ^^ Minimum stemming
+				entity=hasWord(start);// abstract OK
+				mid[-1]='s';// HAHA HAxk! ;)
+			}
 			mid[0]=' ';// fix
 			// the United https://www.wikidata.org/wiki/Q7771566
 			// 239790	United				9 statements
-			if(entity && !contains(forbidden,entity->name,true/*ignoreCase*/)){
-//				p(entity);
-				all.push_back(entity);
+			if(atoi(start))entity=0;// no numbers hack
+			if(entity){
+
+				//				p(entity);
+				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
+					all.push_back(entity);
 			}
 			if(mid==end)break;
 			mid=strstr(mid+1," ");// expand
@@ -1781,6 +1799,8 @@ NV findEntites(cchar* query0){
 	free(query);
 	return filterCandidates(all);
 }
+
+// ignore space!
 NV findSubEntites(cchar* query0){
 	char* query=modifyConstChar(query0);
 	NV all;
@@ -1815,27 +1835,7 @@ NV findSubEntites(cchar* query0){
 	return filterCandidates(all);
 }
 
-N getTopic(N n){// n-Titty = entity
-	if(isAbstract(n))
-		n=getThe(n);// best!
-	//		NV classes=findStatements(n->id, _SuperClass, _any);
-	NV papas=findProperties(n,SuperClass);
-	if(papas.size()==0)
-		papas=findProperties(n,Type);
-	if(papas.size()>0){
-		N p=papas[0];
-		if(p->id==134556)return 0;// Single : ignore!
-		if(p->id==11424)return 0;// Film 'Eine Familie' wtf : ignore!
-		if(p->id!=4167836)// Wikimedia-Kategorie
-			return p;
-	}else
-		pf("Unknown type: %s\n",n->name);
-	return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
-}
-
-NV getTopics(N entity){
-	NodeSet all=findAll(entity, parentFilter);
-	NV topics=	setToVector(all);
+NV sortTopics(NV topics,N entity){
 	deque<Node*> sorted;
 	for(int i=0;i<(int)topics.size();i++){
 		N topic=topics[i];
@@ -1848,6 +1848,34 @@ NV getTopics(N entity){
 	for (int i=0; i<sorted.size(); i++) {
 		topics[i]=sorted[i];
 	}
+	return topics;
+}
+
+N getTopic(N n){// n-Titty = entity
+	if(isAbstract(n))
+		return Abstract;
+	//		n=getThe(n);// best!
+	//		NV classes=findStatements(n->id, _SuperClass, _any);
+	NV papas=findProperties(n,SuperClass);
+	if(papas.size()==0)
+		papas=findProperties(n,Type);
+	if(papas.size()>0){
+		papas=sortTopics(papas, n);
+		N p=papas[0];
+		//		if(p->id==134556)return 0;// Single : ignore!
+		//		if(p->id==11424)return 0;// Film 'Eine Familie' wtf : ignore!
+		if(eq(p->name,"◊"))return Entity;
+		if(p->id!=4167836)// Wikimedia-Kategorie
+			return p;
+	}else
+		pf("Unknown type: %s\n",n->name);
+	return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+}
+
+NV getTopics(N entity){
+	NodeSet all=findAll(entity, parentFilter);
+	NV topics=	setToVector(all);
+	topics=sortTopics(topics,entity);
 	return topics;
 }
 

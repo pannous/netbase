@@ -919,3 +919,7 @@ void sortNodes(NodeVector& all){
 	//	std::sort(all.begin(),all.end(),);
 	
 }
+
+bool empty(char* c){
+	return c==0||c[0]==0;
+}
