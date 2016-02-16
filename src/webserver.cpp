@@ -260,7 +260,8 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head><body><div id='netbase_results'></div>\n<script>var results=";
+    const char* html_block="<!DOCTYPE html><html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head>"\
+							"<body><div id='netbase_results'></div>\n<script>var results=";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
@@ -347,7 +348,7 @@ int handle(cchar* q0,int conn){
 			while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
 				if (!checkStatement(s))break;
 				if(get_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
-					break;// only important stuff here!
+					continue;// only important stuff here!
 				// filter statements
 				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
 				if(s->object==0)continue;
