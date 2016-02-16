@@ -343,10 +343,10 @@ int handle(cchar* q0,int conn){
 			if (use_json)Writeline(conn, ", \"statements\":[\n");
 
 //			sortStatements(
-			deque<Statement*> statements;
+			deque<Statement*> statements;// sort
 			while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
 				if (!checkStatement(s))break;
-				if(get_topic && verbosity != verbose && s->predicate>1000)
+				if(get_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
 					break;// only important stuff here!
 				// filter statements
 				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
