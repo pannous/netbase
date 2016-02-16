@@ -587,9 +587,11 @@ Node * getRelation(const char* thing) {
 void initWikiRelations(){
 	//	https://www.wikidata.org/wiki/Property:P131
 	//	addStatement4(current_context,-10131, _SuperClass, In->id);
+	addStatement4(current_context,-10361, _SuperClass, _PartOf);// DIRECTLY!
 	addStatement4(current_context,-10131, _SuperClass, _PartOf);//located in the administrative
 	addStatement4(current_context,-10150, _SuperClass, _Part);//  Untereinheit (administrative Einheit)
 	addStatement4(current_context,-10706, _SuperClass, _PartOf);// located on terrain
+	addStatement4(current_context,-10279,_SuperClass,_SubClass);//Unterklasse von
 
 	addStatement4(current_context,-10035, _synonym, getThe("Präsident")->id);
 

@@ -2225,7 +2225,9 @@ NodeVector findProperties(Node* n , Node* m,bool allowInverse/*=true*/){
         pf("Warning: empty property null for node %d\t%s",n->id,n->name);
      return good;
     }
-    NV all=    instanceFilter(n);// need big lookuplimit here :( todo: filter onthe fly!
+	NV all;
+	if(isAbstract(n))
+		all=instanceFilter(n);// need big lookuplimit here :( todo: filter onthe fly!
     //    if(!isAbstract(n))
     all.push_back(n);// especially for freebase singletons!
     // OR//    findStatement(Node *subject, Node *predicate, Node *object)

@@ -1750,6 +1750,11 @@ void testEntities(){
 	}
 }
 
+void testLabelInstances(){
+	NV all=allInstances(getAbstract("amazon"));
+	check(contains(all, get(3884)));
+}
+
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	quiet=false;
@@ -1764,6 +1769,8 @@ void testBrandNewStuff() {
 		importWikiData();
 	p("Test Brand New Stuff");
 
+
+	testLabelInstances();
 //	show(get(1));
 //	importTest();
 //	testEntities();

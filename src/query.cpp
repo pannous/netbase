@@ -1196,7 +1196,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 		bool predicateMatch = (s->Predicate() == Instance)|| (s->Predicate() == SubClass);
         
 		bool subjectMatchReverse = s->Object() == subject;
-		bool predicateMatchReverse = s->Predicate() == Type || s->Predicate() == SuperClass; // || inverse
+		bool predicateMatchReverse = s->Predicate() == Type || s->Predicate() == SuperClass || s->Predicate() == Label ; // || inverse
         
 		if (queue) {
 			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object(), queue);
