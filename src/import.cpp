@@ -743,7 +743,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	char** values=(char**) malloc(sizeof(char*) * 100);
 	char* lastValue=0;
 	char* line0;
-	memset(values, 0, 100);
+	char* line1;
 	//    vector<char*> values;
 	map<char*, Node*> valueCache;
 	Node* subject=0;
@@ -761,6 +761,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	vector<string>& ignoreFields=splitString(ignoredFields, ",");
 	vector<string>& includeFields=splitString(includedFields, ",");
 
+	bool cut_amazon=contains(file, "amazon");
 	int fieldCount=0;
 	//	char* columnTitles;
 //	while (  fgets(line, sizeof(line), infile) != NULL) {
@@ -773,8 +774,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			pf("FOUND %d columns:\n",size);
 //			p(line);
 			//			columnTitles=line;
-			line0=editable(line);
-			if (!separator) separator=guessSeparator(line0); // would kill fieldCount
+			line1=editable(line);
+			if (!separator) separator=guessSeparator(line1); // would kill fieldCount
 			fieldCount=size;
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
@@ -782,7 +783,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				char* field=values[i];
 				p(field);
 				Node* fielt=getThe(field); // Firma		instance		Terror_Firma LOL
-				dissectWord(fielt);
+//				dissectWord(fielt);
 				predicates.push_back(fielt);
 			}
 			++linecount;
@@ -794,12 +795,12 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		}
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
-		if (size==1){bad();continue;}
+		if (size==1){continue;}
 		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
 			bad();
 //			p(line);
 //			            printf("_");
-			if(debug) printf("Warning: fieldCount!=columns (%d!=%d) in line %d  %s \n", fieldCount, size,linecount - 1, file);
+//			if(debug) printf("Warning: fieldCount!=columns (%d!=%d) in line %d  %s \n", fieldCount, size,linecount - 1, file);
 			//            ps(columnTitles); // only 1st word:
 			continue;
 		}
@@ -808,10 +809,15 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		//        if(contains(line,"Xherdan Shaqiri"))
 		//            p(line);
 		char* name=values[nameRowNr];
+		if(cut_amazon){
+			replaceChar(name, ',', 0);// cut!
+			if(hasWord(name))continue;//!
+		}
 		if(!name){
 			bad();
 			continue;
 		}
+
 		if(getSingletons)
 			subject=getSingleton(name);
 		else if (getBest)
@@ -830,6 +836,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		//            //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
 		//		}
 		for (int i=0; i < size; i++) {
+			if(i==nameRowNr)continue;
 			predicate=predicates[i];
 			if (predicate == null) continue;
 			if (contains(ignoreFields, predicate->name)) continue;
@@ -853,7 +860,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			addStatement(subject, predicate, object, !CHECK_DUPLICATES);
 			//			showStatement(s);
 		}
-
+		free(line0);
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			exit(0);
@@ -2223,13 +2230,16 @@ void importGeoDB() {
 void importAmazon(){
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
-const char* includedFields = "asins,brand,author,artist,title,imagepathmedium,topcategory,ean,productdescription,platforms,releasedate,salerank,browsenode1,subcategorypath1,subcategorypath2,gender,color,size,price1,availablity1,shipping1,url1";
-	const char* ignoredFields=0;// rest!
+
+const char* includedFields = "asins,brand,author,artist,title,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1";
+//	"asins,brand,author,artist,title,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,browsenode1,subcategorypath1,subcategorypath2,gender,color,size,price1,availablity1,shipping1url1";
+	const char* ignoredFields=0;// rest! productdescription :(
 	const char* in=includedFields;
 	const char* out=ignoredFields;
 	const char* t="title";
 //	,out,in,6,t
 //	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,6,t);
+	getSingletons=true;
 	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe("Amazon apparel product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_automotive_retail_delta_20151209.base.csv.gz",getThe("Amazon automotive product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_baby_retail_delta_20151210.base.csv.gz",getThe("Amazon baby product"),',',out,in,6,t);

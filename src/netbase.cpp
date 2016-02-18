@@ -264,11 +264,13 @@ bool addStatementToNode(Node* node, int statementId,bool insert_at_start=false) 
 		if(insert_at_start)push_back=false;// force
 		if (push_back) { // ALL!
 			Statement* add_here=&context->statements[node->lastStatement];
-			if(eq(add_here,statementId))return false;
+			if(eq(add_here,statementId))
+				return true;//false;
 			appendLinkedListOfStatements(add_here, node, statementId); // append new to old
 			node->lastStatement=statementId;
 		} else { // invert sort -> sort again in webserver
-			if(eq(to_insert,node->firstStatement))return false;
+			if(eq(to_insert,node->firstStatement))
+				return true;//false;// already there
 			prependLinkedListOfStatements(to_insert, node, node->firstStatement); // append old to new
 			node->firstStatement=statementId;
 		}

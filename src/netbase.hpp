@@ -616,7 +616,7 @@ static long maxStatements = maxNodes*4;
 #endif
 //static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;
-static int averageNameLength =20;
+static int averageNameLength =40;// for amazon! else 20
 static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;

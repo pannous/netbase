@@ -528,10 +528,11 @@ char* clone(const char* line) {
 char* modifyConstChar(const char* line){
 	return editable(line);// FREE if not kept!
 }
+
 char* editable(const char* line) {
 	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
 	strcpy(line0, line);
-	return line0;// FREE if not kept!
+	return line0;// callers duty to manually FREE if not kept!
 }
 
 // line MUST not be const! tokens->out
