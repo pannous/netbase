@@ -454,6 +454,14 @@ NodeVector parse(const char* data0) {
 		return setToVector(all);
 	}
 
+	if (startsWith(data, "an ")) return query(data);
+	if (startsWith(data, "a ")) return query(data);
+	if (startsWith(data, "any ")) return query(data);
+
+	//        if(startsWith(data,"is ")){  check_statement(data);return OK;}
+	//        if(startsWith(data,"does ")){  check_statement(data);return OK;}
+	if (contains(data, " in ")) return query(data);
+
 	if (startsWith(data, "these ")) return query(data);
 	if (contains(data, "that ")) return query(data);
 	if (contains(data, "who ")) // who loves jule
@@ -484,14 +492,6 @@ NodeVector parse(const char* data0) {
 		setLabel(n, label);
 		return nodeVectorWrap(n);
 	}
-	if (startsWith(data, "an ")) return query(data);
-	if (startsWith(data, "a ")) return query(data);
-	if (startsWith(data, "any ")) return query(data);
-    
-	//        if(startsWith(data,"is ")){  check_statement(data);return OK;}
-	//        if(startsWith(data,"does ")){  check_statement(data);return OK;}
-	if (contains(data, " in ")) return query(data);
-    
 	//	if (args.size() > 2 && eq(args[1], "of")) {
 	//		clearAlgorithmHash();
 	//		Node* property = getThe(args[0]);

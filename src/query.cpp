@@ -1713,20 +1713,25 @@ NV filterCandidates(NV all){
 
 
 //vector<cchar*>
-N loadBlacklist(bool reload/*=false*/){
+//N
+map<int,bool> loadBlacklist(bool reload/*=false*/){
 	N blacklist=getAbstract("entity blacklist");
-	if(!reload && blacklist->statementCount>1000)return blacklist;
-//	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
-//	if(forbidden.size()>0)return forbidden;
+	map<int,bool> forbidden; // int: wordhash
+	// todo
 	FILE *infile=open_file("blacklist.csv");
 	char line[1000];
-	bool check=blacklist->statementCount>1000;
-	map<int,bool> doubles;
-		while (fgets(line, sizeof(line), infile) != NULL) {
-			doubles[wordhash(line)]=true;
-		}
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		if(check&& doubles[wordhash(line)])continue;// already loaded
+		forbidden[wordhash(line)]=true;
+	}
+	if(!reload && blacklist->statementCount>1000)return forbidden;
+//	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
+//	if(forbidden.size()>0)return forbidden;
+
+	bool check=blacklist->statementCount>1000;
+
+	while (fgets(line, sizeof(line), infile) != NULL) {
+		if(check&& forbidden[wordhash(line)])continue;// already loaded
+		forbidden[wordhash(line)]=true;
 			//contains(blacklist,line,true/*ignoreCase*/))
 		fixNewline(line);
 		addStatement(blacklist, Part, getAbstract(line),false);
@@ -1734,8 +1739,8 @@ N loadBlacklist(bool reload/*=false*/){
 		addStatement(blacklist, Part, getAbstract(concat(line,"en")),false);// sein -> seinen Berg -> Bergen
 //		forbidden.push_back(editable(line));
 	}
-//	return forbidden;
-	return blacklist;
+	return forbidden;
+//	return blacklist;
 }
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
@@ -1751,7 +1756,8 @@ NV findEntites(cchar* query0){
 	NV classes; // Politiker
 	NV topics;	// Politik
 //	vector<cchar*> forbidden=loadBlacklist();
-	N forbidden=loadBlacklist();
+//	N forbidden=loadBlacklist();
+	map<int,bool> forbidden=loadBlacklist();
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
 	int min_chars=4;//
 	int len=(int)strlen(query);
@@ -1782,7 +1788,8 @@ NV findEntites(cchar* query0){
 			if(entity){
 
 				//				p(entity);
-				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
+//				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
+				if(!forbidden[ wordhash(entity->name)])
 					all.push_back(entity);
 			}
 			if(mid==end)break;
@@ -1799,41 +1806,43 @@ NV findEntites(cchar* query0){
 	free(query);
 	return filterCandidates(all);
 }
-
-// ignore space!
-NV findSubEntites(cchar* query0){
-	char* query=modifyConstChar(query0);
-	NV all;
-	NV entities;// Merkel
-	NV classes; // Politiker
-	NV topics;	// Politik
-//	vector<cchar*> forbidden=
-	N forbidden=loadBlacklist();
-	int min_chars=4;// inefficient!
-	int max_chars=40;
-	int len=(int)strlen(query);
-	char* start=query;
-	char* end=&query[len];
-	char* mid=start+min_chars;
-	while(start<end){
-		mid=start+min_chars;
-		while(mid<=end && mid-start<=max_chars && mid-start>=min_chars){
-			mid[0]=0;// Artificial cut
-			p(start);
-			N entity=hasWord(start);
-			mid[0]=' ';
-			if(entity && !contains(forbidden,entity->name,true/*ignoreCase*/)){
-				all.push_back(entity);
-			}
-			if(mid==end)break;
-			mid=mid+1;
-		}
-		start++; // skip ' '
-		if(start>=end)break;
-	}
-	free(query);
-	return filterCandidates(all);
-}
+//
+//// ignore space!
+//NV findSubEntites(cchar* query0){
+//	char* query=modifyConstChar(query0);
+//	NV all;
+//	NV entities;// Merkel
+//	NV classes; // Politiker
+//	NV topics;	// Politik
+////	vector<cchar*> forbidden=
+////	N forbidden=loadBlacklist();
+//
+//	map<int,bool> forbidden=loadBlacklist();
+//	int min_chars=4;// inefficient!
+//	int max_chars=40;
+//	int len=(int)strlen(query);
+//	char* start=query;
+//	char* end=&query[len];
+//	char* mid=start+min_chars;
+//	while(start<end){
+//		mid=start+min_chars;
+//		while(mid<=end && mid-start<=max_chars && mid-start>=min_chars){
+//			mid[0]=0;// Artificial cut
+//			p(start);
+//			N entity=hasWord(start);
+//			mid[0]=' ';
+//			if(entity && !contains(forbidden,entity->name,true/*ignoreCase*/)){
+//				all.push_back(entity);
+//			}
+//			if(mid==end)break;
+//			mid=mid+1;
+//		}
+//		start++; // skip ' '
+//		if(start>=end)break;
+//	}
+//	free(query);
+//	return filterCandidates(all);
+//}
 
 NV sortTopics(NV topics,N entity){
 	deque<Node*> sorted;

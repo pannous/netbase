@@ -66,7 +66,8 @@ NodeVector nodeVectorWrap(Statement* n);
 //NodeVector instanceFilter(Node* subject);
 NodeVector nodeSetToNodeVector(NodeSet& input);
 NodeVector setToVector(NodeSet& input);
-N loadBlacklist(bool reload=false);
+//N loadBlacklist(bool reload=false);
+map<int,bool> loadBlacklist(bool reload=false);// int: wordhash
 NV findEntites(cchar* query);
 N getTopic(N n);
 NV getTopics(N entity);

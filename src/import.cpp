@@ -2196,6 +2196,16 @@ void importGeoDB() {
 			  "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
 
+/*
+ asins,parentASIN,sku,brand,author,artist,title,imagepathmedium,imagepathsmall,imagepathlarge,topcategory,ean,mpn,eanlist,mpnlist,productdescription,platforms,releasedate,eec,salerank,browsenode1,browsenode2,subcategorypath1,subcategorypath2,gender,color,size,stp,info1,info2,price1,availablity1,shipping1,salerestriction1,url1,merchantId1,PPU1,promo1,claimcode1,startdate1,enddate1,price2,availablity2,shipping2,salerestriction2,url2,merchantId2,PPU2,promo2,claimcode2,startdate2,enddate2,deltaflag
+ B00ERMAYT4,,"","","","","Kurs auf Marcus 12",http://ecx.images-amazon.com/images/I/41gUL5lpi-L._SL160_.jpg,http://ecx.images-amazon.com/images/I/41gUL5lpi-L._SL75_.jpg,http://ecx.images-amazon.com/images/I/41gUL5lpi-L.jpg,"TV Series Episode Video on Demand",,"","","","Kurs auf Marcus 12","",2012-12-31,"",105111,3015916031,3356021031,"Amazon Video/Kategorien/Serien","Amazon Video/Specialty Stores/Custom Stores/Specialty Stores in Amazon Video/Kaufen und Leihen/Serien","unisex","","",,,,2.99,"Versandfertig in 1 - 2 Werktagen",3.00,"siehe Website",http://www.amazon.de/dp/B00ERMAYT4/ref=asc_df_B00ERMAYT430533458?smid=A3HBS5CIENBL3I&tag=ihre_partner_id&linkCode=df0&creative=22506&creativeASIN=B00ERMAYT4&childASIN=B00ERMAYT4,A3HBS5CIENBL3I,"","",,,,,"",siehe Website,"siehe Website",,,"","",,,
+ */
+void importAmazon(){
+//	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
+//	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
+
+	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',"","",6,"title");
+}
 
 void importDBPediaEN() {
 	useHash=false;
@@ -2441,6 +2451,7 @@ void importAll() {
 	doDissectAbstracts=true;// already? why not
 	importGeoDB();
 	importWikiData();
+	importAmazon();
 	//	if(germanLabels)
 	//		importDBPediaDE();
 	//	else

@@ -95,6 +95,7 @@ bool contains(const char* x, const char y){
 	}
 	return false;
 }
+
 bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
 	if (!x || !y) return false;
