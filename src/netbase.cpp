@@ -424,44 +424,6 @@ void checkExpand(Context * context) {
 		} else if (!quiet) p("context->names checkExpanded");
 	}
 }
-//bool isA4(Node* n, string match, bool recurse, bool semantic){
-// return	isA4(n, match, recurse?1:0, semantic);
-//}
-bool isA4(Node* n, string match, int recurse, bool semantic) {
-
-	if (!checkNode(n)) return false;
-	if (eq(n->name, match.c_str())) return true; //&& n->name==match
-	if (get(n->kind) && eq(get(n->kind)->name, match.c_str())) return true;
-
-	if (recurse > 0) recurse++;
-	else recurse=maxRecursions;
-	if (recurse > maxRecursions) return false;
-
-	if (semantic && has(n, "synonym", match, false, false, true)) return true;
-	if (semantic && has(n, "plural", match, false, false, true)) return true;
-	if (semantic && has(n, "type", match, false, false, false)) return true;
-	if (semantic && has(n, "parent", match, false, false, false)) return true;
-	//    if(semantic && has(n,"kind",match,false,false,false))return true;//?
-	if (semantic && has(n, "name", match, false, false, false)) return true;
-	if (semantic && has(n, "label", match, false, false, false)) return true;
-	if (semantic && has(n, "is", match, false, false, false)) return true; // --
-
-	if (semantic && n->kind == Abstract->id) { //|| isA(n,List)
-		Statement* s=0;
-		while ((s=nextStatement(n, s, false))) {
-			if (s->Predicate() == Instance) if (isA4(s->Object(), match, recurse, semantic)) return true;
-			if (s->Predicate() == Type) if (isA4(s->Subject(), match, recurse, semantic)) return true;
-		}
-		//		for (int i = 0; i < n->statementCount; i++) {// todo : iterate nextStatement(n,current)
-		//			Statement* s = getStatementNr(n, i);
-		//			if (s->Predicate == Instance)
-		//				if (isA4(s->Object, match, recurse, semantic))
-		//					return true;
-		//		}
-	}
-	return false;
-}
-
 // global Statement
 Statement * getStatement(int id, int context_id) {
 	if (id == 0) {
@@ -1945,6 +1907,11 @@ extern "C" Value getValue(int node){
     return n->value;
 }
 
+
+Node * has(const char* n, const char* m) {
+	return has(getAbstract(n), getAbstract(m));
+}
+
 Node * has(Node* n, string predicate, string object, int recurse, bool semantic, bool symmetric) {
 	return has(n, getAbstract(predicate.data()), getAbstract(object.data()), recurse, semantic, symmetric,true);
 }
@@ -2047,136 +2014,9 @@ Node * has(Node* subject, Statement* match, int recurse, bool semantic, bool sym
 }
 int recursions=0;
 
-bool hasValue(Node * n) {
-
-	return (*(int*) &n->value) != 0;
-}
-
 bool areAll(Node* a, Node * b) {
 
 	return isA4(a, b, true, true); // greedy isA4
-}
-
-bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
-	if (n == match) return true;
-	if (!n || !n->name || !match || !match->name) return false; //!!
-	if (n->kind == match->id) return true; //
-	//	if (n->id < 100 && match->id < 100)return false; // danger!
-	if (get(n->kind) && eq(get(n->kind)->name, match->name, true))return true;	// danger: instance, noun
-	if (n->id == match->id) return true; // how so??? "Type" overwritten by "kind" !!!!
-	if(isAbstract(match))matchName=true;
-	if (matchName&&eq(n->name, match->name, true)) return true;// only sometimes !!!
-	long badHash=n->id + match->id * 10000000;
-	if (useYetvisitedIsA) {
-		if (yetvisitedIsA[badHash] == -1) return false;
-		if (yetvisitedIsA[badHash] == 1) return true;
-	}
-	//        else if (yetvisitedIsA[n]==null)yetvisitedIsA[n]=true;
-	//        else yetvisitedIsA[n]++;
-
-	if (recurse > 0) recurse++;
-	//    else recurse=maxRecursions;
-	if (recurse > maxRecursions) return false;
-	runs++;
-
-	if (hasValue(n)) {	// false else?
-		//        if(isA4(n->kind,match->kind))
-		if (n->kind == match->kind) {
-			if (n->value.number == match->value.number) return true;
-			if (n->value.datetime == match->value.datetime) return true;
-			if (n->value.statement == match->value.statement) return true;
-			else return false;
-		}
-	}
-	//        if (recurse > maxRecursions / 3)
-	//            semantic = false;
-
-
-	// todo:semantic true (level1)
-	bool quickCheckSynonym=recurse == maxRecursions; // todo !?!??!
-	if (quickCheckSynonym && findStatement(n, Synonym, match, false, false, true)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	}
-
-	bool semantic2=semantic && recurse > 5; // && ... ?;
-
-	if (semantic && findStatement(n, Synonym, match, recurse, semantic2, true)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	}
-	//    if(semantic && has(n,Plural,match,false,false,true))return true;
-	if (semantic && has(n, SuperClass, match, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	}
-	if (semantic && has(n, Type, match, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	}
-	if (semantic && has(match, Instance, n, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	}
-	if (semantic && has(match, SubClass, n, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	}
-	if (semantic && has(n, Label, match, false, false, false)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	}
-	if (semantic && recurse > 0 && findStatement(n, Plural, match, maxRecursions - 1, semantic2)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	} //(n,Plural,match,0,true,true))return true;
-	if (semantic && recurse > 0 && findStatement(match, Plural, n, maxRecursions - 1, semantic2)) {
-		yetvisitedIsA[badHash]=true;
-		return true;
-	} //(n,Plural,match,0,true,true))return true;
-
-	//    if(isA(n,match->name,false,false))return true;// compare by name
-	if (isAbstract(n) && recurse>0 && recurse < 3) { //|| isA(n,List)
-		Statement* s=0;
-		map<Statement*, bool> visited;
-		while ((s=nextStatement(n, s, false))) {
-			if (visited[s]) return 0;
-			visited[s]=1;
-			if (s->Predicate() == Instance) if (recurse && isA4(s->Object(), match, recurse, semantic)) {
-				yetvisitedIsA[badHash]=true;
-				return true;
-			}
-		}
-	}
-    if(useYetvisitedIsA)
-        yetvisitedIsA[badHash]=-1;
-
-	return false;
-}
-
-// todo: a.b=c findMember(b,b) error
-Node * findMember(Node* n, string match, int recurse, bool semantic) {
-	if (!n) return 0;
-	if (recurse > 0) recurse++;
-	if (recurse > maxRecursions) return 0;
-	//	if (debug&&!eq(match.data(),"wiki_image"))
-	//		show(n);
-	for (int i=0; i < n->statementCount; i++) {
-		Statement* s=getStatementNr(n, i); // Not using instant gap
-		if (!s) {
-			bad();
-			continue;
-		}
-		//		if (debug)showStatement(s);
-		if (isA4(s->Predicate(), match, recurse, semantic)){
-            if (s->Subject() == n) return s->Object();
-            else return s->Subject();
-        }
-		if (isA4(s->Object(), match, recurse, semantic)) return s->Object();
-
-		if (isA4(s->Subject(), match, recurse, semantic)) return s->Subject();
-	}
-	return null;
 }
 
 // xpath    cities[population>100000, location=europe]
@@ -2186,140 +2026,6 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 Statement * isStatement(Node * n) {
 	if (n && n->kind == _statement) return n->value.statement;
 	return 0;
-}
-
-// see getProperty
-Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
-	Statement* s=0;
-	int count=0;
-	while ((s=nextStatement(n,s))) {
-		if(limit && count++>limit)break;
-		if(eq(s->Predicate()->name,m,true))
-			if(allowInverse||eq(s->Subject(),n))
-				return s->Object();
-	}
-    return 0;
-}
-
-NodeVector findProperties(Node* n, const char* m,bool allowInverse/*=true*/){
-    if(isInteger(m)) m=getThe(m)->name;
-    NodeVector good;
-    Statement* s=0;
-    while ((s=nextStatement(n,s))) {// todont: lookuplimit
-        if(eq(s->Predicate()->name,m,true)){
-            if(s->Object()==n&&allowInverse)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
-                good.push_back(s->Subject());
-            else if (!contains(good, s->Object(), false))
-				if(allowInverse||eq(s->Subject(),n))
-                good.push_back(s->Object());
-            if(good.size()>resultLimit)return good;
-        }
-    }
-    return good;
-}
-
-
-NodeVector findProperties(Node* n , Node* m,bool allowInverse/*=true*/){
-    NodeVector good;
-    if(!m){
-        pf("Warning: empty property null for node %d\t%s",n->id,n->name);
-     return good;
-    }
-	NV all;
-	if(isAbstract(n))
-		all=instanceFilter(n);// need big lookuplimit here :( todo: filter onthe fly!
-    //    if(!isAbstract(n))
-    all.push_back(n);// especially for freebase singletons!
-    // OR//    findStatement(Node *subject, Node *predicate, Node *object)
-    for (int i=0; i<all.size(); i++){
-        mergeVectors(&good, findProperties(all[i],m->name,false));
-        if(good.size()>resultLimit)return good;
-    }
-	if(allowInverse)
-	for (int i=0; i<all.size(); i++){
-		mergeVectors(&good, findProperties(all[i],m->name,true));
-        if(good.size()>resultLimit)return good;
-    }
-    return good;
-}
-
-NodeVector findProperties(const char* n, const char* m,bool allowInverse){
-    if(isInteger(n)) return findProperties(getAbstract(n),m,allowInverse);
-    if(isInteger(m)) return findProperties(getAbstract(n),getThe(m),allowInverse);
-    NodeVector good;
-    N a=getAbstract(n);
-    NV all=    instanceFilter(a);// need big lookuplimit here :( todo: filter onthe fly!
-    all.push_back(a);// especially for freebase singletons!
-    for (int i=0; i<all.size(); i++){
-        NV more=findProperties(all[i],m,allowInverse);
-        mergeVectors(&good, more);
-        if(good.size()>resultLimit)return good;
-    }
-    return good;// dedup(good);
-}
-
-Node * has(const char* n, const char* m) {
-	return has(getAbstract(n), getAbstract(m));
-}
-
-Node * has(Node* n, Node * m) {
-	clearAlgorithmHash(true);
-	int tmp=resultLimit;
-	resultLimit=1;
-	NodeVector all=memberPath(n, m);
-	resultLimit=tmp;
-	if (all.size() > 0) return all.front();
-
-	// how to find paths with property predicates?? so:
-	clearAlgorithmHash();
-	Node *no=0;
-	if (!no) no=has(n, m, Any); // TODO: test
-	return no; // others already done!!
-
-	// deprecated:
-	//	if (m->value.text != 0)// hasloh population:3000
-	//		no = has(n, m, m->value); // TODO: test
-	//    findPath(n,m,hasFilter);// Todo new algoritym
-	if (!no) no=has(n, Part, m);
-	if (!no) no=has(n, Attribute, m);
-	if (!no) no=has(n, Substance, m);
-	if (!no) no=has(n, Member, m);
-	if (!no) no=has(n, UsageContext, m);
-	if (!no) no=has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
-	if (!no) no=has(n, get(_MEMBER_DOMAIN_REGION), m);
-	if (!no) no=has(n, get(_MEMBER_DOMAIN_USAGE), m);
-	//inverse
-	if (!no) no=has(m, Owner, n);
-	if (!no) no=has(m, PartOf, n);
-	if (!no) no=has(m, get(_DOMAIN_CATEGORY), n);
-	if (!no) no=has(m, get(_DOMAIN_REGION), n);
-	if (!no) no=has(m, get(_DOMAIN_USAGE), n);
-
-	//    if(!n)n=has(n,Predicate,m);// TODO!
-	//	if (!no)no = has(save, Any, m); //TODO: really?
-	return no;
-}
-
-Statement * findRelations(Node* from, Node * to) {
-	Statement* s=findStatement(from, Any, to, false, false, false, false);
-	if (!s) return findStatement(to, Any, from, false, false, false, false);
-	else return s;
-}
-
-Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
-	Statement* s=findStatement(from, Any, to, false, false, false, false);
-	if (!s) s=findStatement(to, Any, from, false, false, false, false);
-	if (s) {
-		if (s->Subject() == from) return s->Predicate();
-		if (s->Object() == to) return s->Predicate();
-		if (s->Subject() == to) return invert(s->Predicate());
-		if (s->Object() == from) return invert(s->Predicate());
-		//		if(s->Subject==from)return s->Predicate;
-		//		else if(s->Object==from) return invert(s->Predicate);
-		//		if(s->Object==to)return s->Predicate;
-		//		else if(s->Subject==to) return invert(s->Predicate);
-	}
-	return null;
 }
 
 NodeVector show(NodeVector all){

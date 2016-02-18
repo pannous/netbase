@@ -77,4 +77,27 @@ NodeVector shortestPath(Node* from,Node* to );// any
 NodeVector parentPath(Node* from, Node* to);
 NodeVector memberPath(Node* from, Node* to);
 void sortNodes(NodeVector& all);
+
+Node* findRelation(Node* from, Node* to);
+Node* findProperty(Node* n , const char* m,bool allowInverse=true,int limit=0);
+NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
+NodeVector findProperties(Node* n, const char* m,bool allowInverse=true);
+NodeVector findProperties(Node* n , Node* m,bool allowInverse=true);
+//NodeVector* findWords(int context, const char* word, bool first= false,bool containsWord=false);
+NodeVector* findWordsByName(int context, const char* word, bool first= false,bool containsWord=false);
+NodeVector* findAllWords(const char* word);
+//NodeVector find_all(char* name, int context = current_context, int recurse = false, int limit = defaultLimit);
+extern "C"
+Statement* findStatement(int subject, int predicate, int object, int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=false, bool matchName=false);
+Statement* findStatement(Node* subject, Node* predicate, Node* object, int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false);
+Statement* findStatement(Node* n, string predicate, string object, int recurse = false, bool semantic = useSemantics, bool symmetric = false);
+
+void setValue(Node* node, Node* property, Node* value);
+//void value(
+//void setKind
+bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
+bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool matchName=false);
+bool isA(Node* fro, Node* to);
+
+Statement * findRelations(Node* from, Node * to);
 #endif	/* QUERY_H */
