@@ -21,8 +21,8 @@ then
 else 
   export shmmax=$shared_memory_16GB
   let "shmall=$shmmax/4096" # pages,  4096 bytes per page
-  sysctl -w kernel.shmmax=$shmmax
-  sysctl -w kernel.shmall=$shmall
+  sudo sysctl -w kernel.shmmax=$shmmax
+  sudo sysctl -w kernel.shmall=$shmall
   # sudo sysctl -w sys.kernel.shmmax=$shmmax
   #   sudo sysctl -w sys.kernel.shmmall=$shmmax
   # echo "kernel.shmmax              = $shmmax" | sudo tee --append /etc/sysctl.conf

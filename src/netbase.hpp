@@ -390,6 +390,18 @@ extern Node* Contains;
 extern Node* StartsWith;
 extern Node* EndsWith;
 
+typedef Node* N;
+typedef Context* C;
+typedef Statement* S;
+typedef NodeVector Ns;
+typedef NodeVector NV;// ok no &NodeVector needed
+typedef NodeSet NS;
+typedef vector<char*> VC;
+typedef vector<char*> CV;
+typedef vector<char*> VCC;
+typedef vector<char*> CCV;
+
+
 
 ////////////////////////
 void flush();
@@ -582,19 +594,21 @@ extern "C" Node* save(Node* n);
 extern "C" Node* getType(Node* n);// != kind!
 extern "C" char* getText(Node* n);
 static char* NO_TEXT="";
-//extern
+#define _MAIN_
+int main(int argc, char *argv[]);
+static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize // against unused ahashSize ...
 
-
-typedef Node* N;
-typedef Context* C;
-typedef Statement* S;
-typedef NodeVector Ns;
-typedef NodeVector NV;// ok no &NodeVector needed
-typedef NodeSet NS;
-typedef vector<char*> VC;
-typedef vector<char*> CV;
-typedef vector<char*> VCC;
-typedef vector<char*> CCV;
+extern "C" int test2();// extern "C" -> don't mangle!
+extern Context* contexts; //[maxContexts];
+extern Statement* statement_root;
+extern Context* context_root; // else: void value not ignored as it ought to be
+extern Node* abstract_root;
+extern Node* node_root;
+extern char* name_root;
+extern int* freebaseKey_root;// keyhash-> NodeId 'map'
+//extern Node** keyhash_root;
+void bad();
+void show(NodeSet& all);/extern
 
 //#pragma warnings_off
 
@@ -626,18 +640,4 @@ static int averageNameLength =20;
 static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
-#define _MAIN_
-int main(int argc, char *argv[]);
-static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize // against unused ahashSize ...
 
-extern "C" int test2();// extern "C" -> don't mangle!
-extern Context* contexts; //[maxContexts];
-extern Statement* statement_root;
-extern Context* context_root; // else: void value not ignored as it ought to be
-extern Node* abstract_root;
-extern Node* node_root;
-extern char* name_root;
-extern int* freebaseKey_root;// keyhash-> NodeId 'map'
-//extern Node** keyhash_root;
-void bad();
-void show(NodeSet& all);
