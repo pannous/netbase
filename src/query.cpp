@@ -1718,8 +1718,9 @@ map<int,bool> loadBlacklist(bool reload/*=false*/){
 	N blacklist=getAbstract("entity blacklist");
 	map<int,bool> forbidden; // int: wordhash
 	// todo
+
 	FILE *infile=open_file("blacklist.csv");
-	char line[1000];
+	char line[1000];// Relativ geschwind!
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		forbidden[wordhash(line)]=true;
 	}
@@ -1862,6 +1863,7 @@ NV sortTopics(NV topics,N entity){
 }
 
 N getTopic(N n){// n-Titty = entity
+	return Error;
 	if(isAbstract(n))
 		return Abstract;
 	//		n=getThe(n);// best!
