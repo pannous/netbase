@@ -3,6 +3,7 @@
 
 var div=document.getElementById("netbase_results");
 var editMode=false;
+var link_name=true;
 var server="/html/"; // "http://quasiris.big:3333/html/";
 var filterIds=[-10646,-50,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207];//   Amerigo Vespucci BnF-ID 12234845j 47674->-10268->36430981 etc
 var abstract=-102;// Summary nodes
@@ -124,8 +125,8 @@ function addImage(image,div){
 function makeEntity(entity)
 {
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
-	makeLink(entity.name.replace("_"," "),server+entity.name,div).style=nolink+bold+blue+big
-	
+	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
+
 	if(entity.kind==abstract)appendText("*");
 	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
 	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
@@ -182,6 +183,7 @@ function parseResults(results0){
 	var title=decodeURIComponent(url.replace(/.*\//,"")).replace(":"," : ").replace("."," . ").replace(/\+/g," ").replace(/limit.*/,"");
 	document.title=title;
 	appendText(title,append("h1",div))
+	if(results['results'].length>1)link_name=false;
 	for(key in results['results']) {
 		entity=results['results'][key]
 		makeEntity(entity);

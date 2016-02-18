@@ -334,7 +334,7 @@ int handle(cchar* q0,int conn){
 			}
 		}
 		if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-			Writeline(", \"image\":\""+replace_all(getImage(node,150,/*thumb*/true),"'","%27")+"\"");
+			Writeline(", \"image\":\""+replace_all(replace_all(getImage(node,150,/*thumb*/true),"'","%27"),"\"","%22")+"\"");
 //		if((use_json)&&getText(node)[0]!=0)
 //			Writeline(", \"description\":\""+string(getText(node))+"\"");
 		Statement* s = 0;
