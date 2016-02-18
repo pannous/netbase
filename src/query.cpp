@@ -1751,6 +1751,7 @@ NV findEntites(cchar* query0){
 	query=replaceChar(query,'!',' ');
 	query=replaceChar(query,'(',' ');
 	query=replaceChar(query,')',' ');
+	query=replaceChar(query,'%',' ');
 	NV all;
 	NV entities;// Merkel
 	NV classes; // Politiker
