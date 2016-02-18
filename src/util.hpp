@@ -3,7 +3,7 @@
 #include "netbase.hpp"
 
 //extern int MAX_CHARS_PER_LINE;
-#define MAX_CHARS_PER_LINE 0x1000
+#define MAX_CHARS_PER_LINE 0x10000
 
 using namespace std;
 
@@ -85,7 +85,7 @@ char** splitStringC(const char* line0, const char* separator);
 char* downcase(char* x);
 //char* tolower(char* x);//call of overloaded 'tolower(const char*&)' is ambiguous
 char* tolower(const char* x);
-void fixNewline(char* line);
+void fixNewline(char* line,bool limit=0/*0=none*/);
 NodeVector intersect(NodeVector a,NodeVector b);
 unsigned int wordhash(const char *str);
 //inline short normChar(char c);
@@ -132,3 +132,4 @@ void fixLabel(char* label);
 char* dropUrl(char* name);
 void sortNodes(NodeVector& all);
 bool empty(char* c);
+bool empty(cchar* c);

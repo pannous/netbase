@@ -478,9 +478,11 @@ vector<string>& splitString(string line0, const char* separator) {
 
 // AAAHH NEVER WORKS!!! use splitStringC !!!
 vector<string>& splitString(const char* line0, const char* separator) {
+
+	vector<string>& v=*new vector<string>;
+	if(empty(line0))return v;
 	char * token;
 //	vector<char*>& v=*new vector<char*>;
-	vector<string>& v=*new vector<string>;
 	if (line0 == 0) {
 		ps("empty splitString!");
 		return v;
@@ -544,16 +546,17 @@ int splitStringC(char* line, char** tokens, char separator) {// leeeeak!
 	int row=0;
 	int len=(int)strlen(line);
 	int i=0;
+	bool inQuote=false;
 	char* lastgood=line;
 	while (i < len) {
 		char c=line[i];
-		if (c == separator) {
+		if (c == '"')inQuote=!inQuote;
+		if (!inQuote && c == separator) {
 			line[i]=0;
 			token=lastgood;
 			lastgood=&line[i + 1];
 			if (tokens) tokens[row]=token;
 			//        token = strtok (NULL, separator);
-
 			row++;
 		}
 		i++;
@@ -799,10 +802,15 @@ bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
 		//				printf ("%s",gzip_out);
 	}while (strm.avail_out == 0);
 	if (feof (file)) {
-//		inflateEnd (& strm);
+		inflateEnd(&strm);
 		return false;
 	}
 	return true;// all OK
+}
+
+const char* current_file;
+void closeFile(const char* file){
+	readFile(file,0);
 }
 bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 	if(!gzipped)
@@ -834,13 +842,14 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 				line[0]=0;// skip that one!!
 			}
 		}else{
+			current_line=0;
+			next_line=0;
+			hangover[0]=0;
 			printf("readFile DONE!\n");// NEVER REACHED? -> CALL closeFile manually!
+			closeFile(current_file);
 		}
 		return ok;
 	}
-}
-void closeFile(const char* file){
-	readFile(file,0);
 }
 //bool readFile(char* file,char* line){
 bool readFile(const char* file,char* line){
@@ -852,9 +861,12 @@ bool readFile(const char* file,char* line){
 //		if(infile)fclose(infile); FUCK IT!
 		infile=0;
 		gzipped=false;
+		memset(&strm, 0, sizeof(z_stream));
+		current_file="";
 		return false;
 	}
-	if(!infile){
+	if(!infile||!eq(current_file,file)){
+		current_file=file;
 		infile=open_file(file);
 		gzipped=endsWith(file, ".gz");
 		if(gzipped)strm=init_gzip_stream(infile,line);
@@ -923,4 +935,7 @@ void sortNodes(NodeVector& all){
 
 bool empty(char* c){
 	return c==0||c[0]==0;
+}
+bool empty(cchar* c){
+	return c==0||strlen(c)==0;// c[0]==0;
 }

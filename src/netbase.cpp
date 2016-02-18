@@ -994,7 +994,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 	//        p("dissectWord");
 	//        p(subject->name);
 	const char *thing=str.data();
-	if (contains(thing, " ") || contains(thing, "_") || contains(thing, ".") || (endsWith(thing, "s")&&!germanLabels))
+	if (contains(thing, " ") || contains(thing, "_")|| contains(thing, "/") || contains(thing, ".") || (endsWith(thing, "s")&&!germanLabels))
 		dissectParent(subject); // <<
 
 	dissected[subject]=true;
@@ -1125,6 +1125,7 @@ Node* dissectWord(Node * subject,bool checkDuplicates) {
 		addStatement(subject, Number, nr, checkDuplicates);
 	}
 	type=(int)str.find(" ");
+	if (type < 0) type=(int)str.find("/");
 	if (type >= 0 && len - type > 2) {
 		const char* rest=str.substr(type + 1).data();
 		if(startsWith(rest, "of "))rest+=3;// ...
@@ -1194,7 +1195,9 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
     // }
 //        object=value(thing,atof(thing),Number);
     
-    //	if (dissect) dissectWord(insta); // dont remove! doch!
+    //	if (dissect) dissectWord(insta);
+	// ^^^^^^^^^^^^^^^^ dont remove! doch! do it elsewo. nee doch hier: einmal für alle! oder am Ende
+	
 	return insta;
 }
 

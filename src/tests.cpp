@@ -1757,6 +1757,7 @@ void testLabelInstances(){
 
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
+	p("Test Brand New Stuff");
 	quiet=false;
 	debug = true;
 	germanLabels=true;
@@ -1765,12 +1766,12 @@ void testBrandNewStuff() {
 	context->lastNode=1;// RADICAL: fill all empty slots!
 //	germanLabels=false;
 //	p("test -> SHELL");return;// for shell
-	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
-		importWikiData();
-	p("Test Brand New Stuff");
+//	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
+//		importWikiData();
 
+	importTest();
 
-	testLabelInstances();
+//	testLabelInstances();
 //	show(get(1));
 //	importTest();
 //	testEntities();
@@ -1793,10 +1794,10 @@ void testBrandNewStuff() {
 //	handle("/ee/The United States of America");
 	//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
 	int c=0;
-	while(c++<100){
+//	while(c++<100){
 		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
 		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
-	}
+//	}
 //	handle("/entities/verbose/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
 //	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
 //	importWordnet();

@@ -542,10 +542,10 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 	return nameRowNr;
 }
 
-void fixNewline(char* line) {
+void fixNewline(char* line,bool limit/*0=none*/) {
 	int len=(int) strlen(line)-1;
-	if(len>=1000)
-		line[999]=0;
+	if(limit&&len>=limit)
+		line[limit-1]=0;
 	else
 		while(len>=0){
 			if (line[len] == '\n') line[len--]=0;
@@ -738,10 +738,11 @@ void fixValues(char** values, int size) {
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,
 			   const char* nameRow) {
 	p("\nimport csv start");
-	char line[1000];
-	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?!
+	char line[MAX_CHARS_PER_LINE];
+	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
 	char** values=(char**) malloc(sizeof(char*) * 100);
 	char* lastValue=0;
+	char* line0;
 	memset(values, 0, 100);
 	//    vector<char*> values;
 	map<char*, Node*> valueCache;
@@ -750,7 +751,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	Node* object=0;
 	//	vector<char*>& fields = *new vector<char*>();
 	int linecount=0;
-	FILE *infile=open_file(file);
 	if(!type){
 		char* typeName=keep_to(editable(cut_to(cut_to(file,"/"),"/")),".");
 		type=getThe(typeName);
@@ -763,16 +763,24 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 	int fieldCount=0;
 	//	char* columnTitles;
-	while (fgets(line, sizeof(line), infile) != NULL) {
-		fixNewline(line);
+//	while (  fgets(line, sizeof(line), infile) != NULL) {
+	while (readFile(file,&line[0])) {
+		fixNewline(line,false);
+		line0=editable(line);
+		int size=splitStringC(line0, values, separator);
 		if (linecount == 0) {
+			pf("IMPORTING %s\n",file);
+			pf("FOUND %d columns:\n",size);
+//			p(line);
 			//			columnTitles=line;
-			if (!separator) separator=guessSeparator(editable(line)); // would kill fieldCount
-			fieldCount=splitStringC(line, values, separator);
+			line0=editable(line);
+			if (!separator) separator=guessSeparator(line0); // would kill fieldCount
+			fieldCount=size;
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
 			for (int i=0; i < fieldCount; i++) {
 				char* field=values[i];
+				p(field);
 				Node* fielt=getThe(field); // Firma		instance		Terror_Firma LOL
 				dissectWord(fielt);
 				predicates.push_back(fielt);
@@ -781,15 +789,17 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 		if (++linecount % 1000 == 0) {
-			pf("importXml %d    \r", linecount);
+			pf("importCsv %d bad: %d  in %s    \r", linecount,badCount,file);
 			fflush(stdout);
 		}
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
-		int size=splitStringC(editable(line), values, separator);
-		if (fieldCount != size) {
-			//            printf("_");
-			//            if(debug) printf("Warning: fieldCount!=columns in line %d   (%d!=%d)\n%s\n", linecount - 1, fieldCount, size, line);
+		if (size==1){bad();continue;}
+		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
+			bad();
+//			p(line);
+//			            printf("_");
+			if(debug) printf("Warning: fieldCount!=columns (%d!=%d) in line %d  %s \n", fieldCount, size,linecount - 1, file);
 			//            ps(columnTitles); // only 1st word:
 			continue;
 		}
@@ -797,12 +807,20 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		fixValues(values, size);
 		//        if(contains(line,"Xherdan Shaqiri"))
 		//            p(line);
-		if(getSingletons)subject=getSingleton(values[nameRowNr]);
-		else if (getBest)subject=getThe(values[nameRowNr], type);
-		else if (values[nameRowNr] != lastValue) subject=getNew(values[nameRowNr], type);
+		char* name=values[nameRowNr];
+		if(!name){
+			bad();
+			continue;
+		}
+		if(getSingletons)
+			subject=getSingleton(name);
+		else if (getBest)
+			subject=getThe(name, type);
+		else if (name != lastValue)
+			subject=getNew(name, type);
 		else if (subject == null) //keep subject
-			subject=getThe(values[nameRowNr]);
-		lastValue=values[nameRowNr];
+			subject=getThe(name);
+		lastValue=name;
 
 		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
 		// 2 objects, 4 relations, 1 name
@@ -822,8 +840,10 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				object=value(vali,atoi(vali),Integer);
 			else if(atof(vali)!=0&&isNumber(vali))// &&eq(itoa(atof(vali)),vali)
 				object=value(vali,atof(vali),Number);
-			else
+			else{
 				object=getThe(vali);
+//				dissectWord(object);// nee, einmal für alle!
+			}
 			if (!object || object->id > maxNodes) {
 				bad();
 				if (debug) printf("ERROR %s\n", line);
@@ -841,7 +861,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		}
 	}
 	free(values);
-	fclose(infile); /* Close the file */
 	p("import csv ok ... lines imported:");
 	p(linecount);
 }
@@ -2199,12 +2218,50 @@ void importGeoDB() {
 /*
  asins,parentASIN,sku,brand,author,artist,title,imagepathmedium,imagepathsmall,imagepathlarge,topcategory,ean,mpn,eanlist,mpnlist,productdescription,platforms,releasedate,eec,salerank,browsenode1,browsenode2,subcategorypath1,subcategorypath2,gender,color,size,stp,info1,info2,price1,availablity1,shipping1,salerestriction1,url1,merchantId1,PPU1,promo1,claimcode1,startdate1,enddate1,price2,availablity2,shipping2,salerestriction2,url2,merchantId2,PPU2,promo2,claimcode2,startdate2,enddate2,deltaflag
  B00ERMAYT4,,"","","","","Kurs auf Marcus 12",http://ecx.images-amazon.com/images/I/41gUL5lpi-L._SL160_.jpg,http://ecx.images-amazon.com/images/I/41gUL5lpi-L._SL75_.jpg,http://ecx.images-amazon.com/images/I/41gUL5lpi-L.jpg,"TV Series Episode Video on Demand",,"","","","Kurs auf Marcus 12","",2012-12-31,"",105111,3015916031,3356021031,"Amazon Video/Kategorien/Serien","Amazon Video/Specialty Stores/Custom Stores/Specialty Stores in Amazon Video/Kaufen und Leihen/Serien","unisex","","",,,,2.99,"Versandfertig in 1 - 2 Werktagen",3.00,"siehe Website",http://www.amazon.de/dp/B00ERMAYT4/ref=asc_df_B00ERMAYT430533458?smid=A3HBS5CIENBL3I&tag=ihre_partner_id&linkCode=df0&creative=22506&creativeASIN=B00ERMAYT4&childASIN=B00ERMAYT4,A3HBS5CIENBL3I,"","",,,,,"",siehe Website,"siehe Website",,,"","",,,
+ GOOD:
  */
 void importAmazon(){
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
-
-	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',"","",6,"title");
+const char* includedFields = "asins,brand,author,artist,title,imagepathmedium,topcategory,ean,productdescription,platforms,releasedate,salerank,browsenode1,subcategorypath1,subcategorypath2,gender,color,size,price1,availablity1,shipping1,url1";
+	const char* ignoredFields=0;// rest!
+	const char* in=includedFields;
+	const char* out=ignoredFields;
+	const char* t="title";
+//	,out,in,6,t
+//	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe("Amazon apparel product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_automotive_retail_delta_20151209.base.csv.gz",getThe("Amazon automotive product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_baby_retail_delta_20151210.base.csv.gz",getThe("Amazon baby product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_beauty_retail_delta_20151213.base.csv.gz",getThe("Amazon beauty product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_books_retail_delta_part1_20151212.base.csv.gz",getThe("Amazon books product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_ce_retail_delta_20151210.base.csv.gz",getThe("Amazon ce product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_digital_sw_retail_delta_20151208.base.csv.gz",getThe("Amazon digital_sw product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_digital_vg_retail_delta_20151208.base.csv.gz",getThe("Amazon digital_vg product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon digital_video product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_dvd_retail_delta_20151211.base.csv.gz",getThe("Amazon dvd product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_grocery_retail_delta_20151213.base.csv.gz",getThe("Amazon grocery product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_home_improvement_retail_delta_20151211.base.csv.gz",getThe("Amazon home_improvement product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_home_retail_delta_20151211.base.csv.gz",getThe("Amazon home product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_hpc_retail_delta_20151213.base.csv.gz",getThe("Amazon hpc product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_jewelry_retail_delta_20151211.base.csv.gz",getThe("Amazon jewelry product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_kitchen_retail_delta_20151211.base.csv.gz",getThe("Amazon kitchen product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_lawn_garden_retail_delta_20151211.base.csv.gz",getThe("Amazon lawn_garden product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_luggage_retail_delta_20151211.base.csv.gz",getThe("Amazon luggage product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_major_appliances_retail_delta_20151211.base.csv.gz",getThe("Amazon major_appliances product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_music_retail_delta_20151208.base.csv.gz",getThe("Amazon music product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_musical_instruments_retail_delta_20151208.base.csv.gz",getThe("Amazon musical_instruments product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_office_retail_delta_20151208.base.csv.gz",getThe("Amazon office product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_pc_retail_delta_20151208.base.csv.gz",getThe("Amazon pc product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_personal_care_appliances_retail_delta_20151208.base.csv.gz",getThe("Amazon personal_care_appliances product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_pet_retail_delta_20151208.base.csv.gz",getThe("Amazon pet product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_shoes_retail_delta_20151211.base.csv.gz",getThe("Amazon shoes product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_software_retail_delta_20151208.base.csv.gz",getThe("Amazon software product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_sports_retail_delta_20151211.base.csv.gz",getThe("Amazon sports product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_toys_retail_delta_20151208.base.csv.gz",getThe("Amazon toys product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_video_games_retail_delta_20151207.base.csv.gz",getThe("Amazon video_games product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_watches_retail_delta_20151211.base.csv.gz",getThe("Amazon watches product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_wine_retail_delta_20151210.base.csv.gz",getThe("Amazon wine product"),',',out,in,6,t);
 }
 
 void importDBPediaEN() {
@@ -2298,8 +2355,9 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
+	importAmazon();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
-	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
+//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 }
 void importWikiData() {
 	context=getContext(wikidata);
