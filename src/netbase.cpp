@@ -2675,11 +2675,13 @@ string getImage(Node* a, int size,bool thumb) {
 	if(!i)i=findProperty(a, "Bild",false,1000);
 	if(!i)i=findProperty(a, "Wappen",false,1000);
 	if(!i)i=findProperty(a, "Positionskarte",false,1000);
-	if (!i || !checkNode(i)){
-		N ab=getAbstract(a->name);
-		if(!ab||ab==Error||!(isAbstract(ab)))return "";
-		if(ab!=a)return getImage(ab,size,thumb);
-	}
+	if (!i)return "";
+//	if (!i || !checkNode(i)){
+//		N ab=getAbstract(a->name);
+//		if(!ab||ab==Error||!(isAbstract(ab)))return "";
+//		if(ab!a)==Error
+////		if(ab!=a)return getImage(ab,size,thumb); LOOP DANGER BUG
+//	}
     return formatImage(i,size,thumb);
 }
 
