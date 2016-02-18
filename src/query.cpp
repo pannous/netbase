@@ -1913,7 +1913,7 @@ Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
 }
 
 NodeVector findProperties(Node* n, const char* m,bool allowInverse/*=true*/){
-	if(!checkNode(n))return EMPTY;
+	if(!m)return EMPTY;// !checkNode(n)
 	if(isInteger(m)) m=getThe(m)->name;
 	NodeVector good;
 	Statement* s=0;
