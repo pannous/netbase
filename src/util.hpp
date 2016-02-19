@@ -4,7 +4,7 @@
 
 //extern int MAX_CHARS_PER_LINE;
 #define MAX_CHARS_PER_LINE 0x10000
-
+#define MAX_ROWS 100
 using namespace std;
 
 #define null 0
@@ -133,3 +133,5 @@ char* dropUrl(char* name);
 void sortNodes(NodeVector& all);
 bool empty(char* c);
 bool empty(cchar* c);
+int len(char* c);
+int len(cchar* c);

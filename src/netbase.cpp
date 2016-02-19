@@ -2467,7 +2467,6 @@ int main(int argc, char *argv[]) {
 		parse(data);
 		//	start_server();
 	}
-
 	// load environment variables or fall back to defaults
 	SERVER_PORT= getenv("SERVER_PORT")? atoi(getenv("SERVER_PORT")): SERVER_PORT;
 	resultLimit= getenv("resultLimit")? atoi(getenv("resultLimit")): resultLimit;
@@ -2519,9 +2518,7 @@ int main(int argc, char *argv[]) {
 	showContext(0);
 	loadBlacklist(true);
 
-	// HACK PEOFILE
-//			testBrandNewStuff(); 
-
+//	bool FORCE_DEBUG=true;// profile hack
 	if (checkParams(argc, argv, "load_files")) load(true);
 	else if (checkParams(argc, argv, "debug")) {
 		printf("debugging\n");
@@ -2545,6 +2542,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	if (checkParams(argc, argv, "exit")) exit(0);
+
 	//	testBrandNewStuff();
 	console();
 	//    } catch (std::exception const& ex) {

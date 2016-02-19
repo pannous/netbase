@@ -549,7 +549,7 @@ int splitStringC(char* line, char** tokens, char separator) {// leeeeak!
 	int i=0;
 	bool inQuote=false;
 	char* lastgood=line;
-	while (i < len) {
+	while (i < len && row<MAX_ROWS) {
 		char c=line[i];
 		if (c == '"')inQuote=!inQuote;
 		if (!inQuote && c == separator) {
@@ -864,7 +864,7 @@ bool readFile(const char* file,char* line){
 //		if(infile)fclose(infile); FUCK IT!
 		infile=0;
 		gzipped=false;
-		memset(&strm, 0, sizeof(z_stream));
+//		memset(&strm, 0, sizeof(z_stream));
 		current_file="";
 		return false;
 	}
@@ -942,3 +942,5 @@ bool empty(char* c){
 bool empty(cchar* c){
 	return c==0||strlen(c)==0;// c[0]==0;
 }
+int len(char* c){return (int)strlen(c);}// python style
+int len(cchar* c){return (int)strlen(c);}// python style

@@ -31,20 +31,20 @@ bool importing=false;
 
 // Not on abstract because abstract values are 'The' entity pointers
 void setText(Node *node, char* text) {
-	int len=(int) strlen(text);
+	int l=len(text);
 	long slot=context->currentNameSlot;
 	char* label=context->nodeNames + slot;
 	strcpy(label, text); // can be freed now!
 	node->value.text=label;
-	context->nodeNames[slot + len]=0;
-	context->currentNameSlot=slot + len + 1;
+	context->nodeNames[slot + l]=0;
+	context->currentNameSlot=slot + l + 1;
 	//		addStatement(n,Label,getAbstract(definition));
 }
 
 
 void normImageTitle(char* title) {// blue_fin => bluefin // what?
-	int len=(int) strlen(title);
-	for (int i=len; i >= 0; --i) {
+	int l=len(title);
+	for (int i=l; i >= 0; --i) {
 		if (title[i] == ' ' || title[i] == '_' || title[i] == '-') {
 			strcpy(&title[i], &title[i + 1]); //,len-i);
 		}
@@ -485,7 +485,7 @@ char guessSeparator(char* line) {
 	const char* separators=",\t;|";
 	char the_separator='\t';
 	int max=0;
-	int size=(int) strlen(separators);
+	int size=len(separators);
 	for (int i=0; i < size; i++) {
 		int nr=splitStringC(line, 0, (char) separators[i]);
 		if (nr > max) {
@@ -543,16 +543,16 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 }
 
 void fixNewline(char* line,bool limit/*0=none*/) {
-	int len=(int) strlen(line)-1;
-	if(limit&&len>=limit)
+	int l=len(line)-1;
+	if(limit&&l>=limit)
 		line[limit-1]=0;
 	else
-		while(len>=0){
-			if (line[len] == '\n') line[len--]=0;
-			else if (line[len] == '\r') line[len--]=0;
-			else if (line[len] == '\t') line[len--]=0;
-			else if (line[len] == '"') line[len--]=0;
-			else if (line[len] == ' ') line[len--]=0;
+		while(l>=0){
+			if (line[l] == '\n') line[l--]=0;
+			else if (line[l] == '\r') line[l--]=0;
+			else if (line[l] == '\t') line[l--]=0;
+			else if (line[l] == '"') line[l--]=0;
+			else if (line[l] == ' ') line[l--]=0;
 			else break;
 		}
 }
@@ -577,8 +577,8 @@ bool isNameField(char* field, char* nameField) {
 Node* namify(Node* node, char* name) {
 	node->name=name_root+context->currentNameSlot;
 	strcpy(node->name, name); // can be freed now!
-	int len=(int) strlen(name);
-	context->nodeNames[context->currentNameSlot + len]=0;
+	int l=len(name);
+	context->nodeNames[context->currentNameSlot + l]=0;
 	addStatement(getAbstract(name), Instance, node, !CHECK_DUPLICATES);
 	// replaceNode(subject,object);
 	return node;
@@ -730,7 +730,7 @@ void fixValues(char** values, int size) {
 	for (int i=0; i < size; i++) {
 		char* x=values[i];
 		if (x[0] == '"') x++;
-		int l=(int) strlen(x);
+		int l=len(x);
 		if (x[l - 1] == '"') x[l - 1]=0;
 		values[i]=x;
 	}
@@ -740,9 +740,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	p("\nimport csv start");
 	char line[MAX_CHARS_PER_LINE];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
-	char** values=(char**) malloc(sizeof(char*) * 100);
+	char** values=(char**) malloc(sizeof(char*) * MAX_ROWS);
 	char* lastValue=0;
-	char* line0;
+	char* line0 = nullptr;
 	char* line1;
 	//    vector<char*> values;
 	map<char*, Node*> valueCache;
@@ -767,6 +767,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //	while (  fgets(line, sizeof(line), infile) != NULL) {
 	while (readFile(file,&line[0])) {
 		fixNewline(line,false);
+		free(line0);
 		line0=editable(line);
 		int size=splitStringC(line0, values, separator);
 		if (linecount == 0) {
@@ -790,7 +791,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 		if (++linecount % 1000 == 0) {
-			pf("importCsv %d bad: %d  in %s    \r", linecount,badCount,file);
+			pf("importCsv %d good, %d bad in %s    \r", linecount,badCount,file);
 			fflush(stdout);
 		}
 		//        values.erase(values.begin(),values.end());
@@ -809,20 +810,21 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		//        if(contains(line,"Xherdan Shaqiri"))
 		//            p(line);
 		char* name=values[nameRowNr];
-		if(cut_amazon){
-			replaceChar(name, ',', 0);// cut!
-			if(hasWord(name))continue;//!
-		}
-		if(!name){
+		if(!name||len(name)==0){
 			bad();
 			continue;
 		}
 
-		if(getSingletons){
-			subject=getSingleton(name);
-			if(!subject)
-				subject=getSingleton(name);// DEBUG
-		}else if (getBest)
+		if(cut_amazon){
+			replaceChar(name, ',', 0);// cut!
+			if(hasWord(name))continue;//!
+			else subject=getSingleton(name,type);
+			continue;// test1: NO PROPERTIES!
+		}
+
+		if(getSingletons)
+			subject=getSingleton(name,type);
+		else if (getBest)
 			subject=getThe(name, type);
 		else if (name != lastValue)
 			subject=getNew(name, type);
@@ -862,7 +864,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			addStatement(subject, predicate, object, !CHECK_DUPLICATES);
 			//			showStatement(s);
 		}
-		free(line0);
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			exit(0);
@@ -902,7 +903,7 @@ void importList(const char* file, const char* type) {
 }
 
 char *cut_wordnet_id(char *key) {
-	for (int i=(int) strlen(key); i > 1; --i) {
+	for (int i=len(key); i > 1; --i) {
 		if (key[i] == '_') {
 			char* id=key + i + 1;
 			key[i]=0;
@@ -933,9 +934,9 @@ char* removeHead(char *key, cchar *bad) {
 
 char *fixYagoName(char *key) {
 	if (key[0] == '<') key++;
-	int len=(int) strlen(key);
-	if(len==0)return key;
-	if (key[len - 1] == '>') key[len - 1]=0;
+	int le=len(key);
+	if(le==0)return key;
+	if (key[le - 1] == '>') key[le - 1]=0;
 	key=removeHead(key, "wikicategory_");
 	key=removeHead(key, "geoclass_");
 	key=removeHead(key, "wordnetDomain_");
@@ -1024,9 +1025,9 @@ Node* getYagoConcept(char* key) {
 	return n;
 }
 int countRows(char* line) {
-	int len=(int) strlen(line);
+	int l=len(line);
 	int row=0;
-	for (int var=0; var < len; ++var)
+	for (int var=0; var < l; ++var)
 		if (line[var] == '\n') line[var]=' ';	// wtf!?
 		else if (line[var] == '\t') row++;
 	return row + 1;
@@ -1143,9 +1144,9 @@ const char *fixFreebaseName(char *key) {
 	if (endsWith(key, ".gif")) return key;
 	if (endsWith(key, ".bmp")) return key;
 
-	int len=(int) strlen(key);
-	if(len>5&&key[len-4]=='.')return key;// .svg ... file endings
-	for (int i=len - 1; i > 0; --i)
+	int l=len(key);
+	if(l>5&&key[l-4]=='.')return key;// .svg ... file endings
+	for (int i=l - 1; i > 0; --i)
 		if (key[i] == '.'&&key[i-1]>'9') {// no numbers!
 			key[i]=0;
 			if (!eq(&key[i + 1], "topic")) return &key[i + 1];
@@ -1409,10 +1410,10 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		if(eq(key,"Q22335"))continue;// bug why?
 
 
-		int len=(int) strlen(label);
-		if (len > 50) {
+		int l=len(label);
+		if (l > 50) {
 			int spaces=0;
-			for (int i=0; i < len; i++) {
+			for (int i=0; i < l; i++) {
 				if (label[i] == ' ') spaces++;
 				if (spaces == 6 || label[i] == '(' || label[i] == ':') {
 					label[i]=label[i + 1]=label[i + 2]='.';
