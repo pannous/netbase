@@ -889,7 +889,8 @@ Node * get(int nodeId) {
 	}
 	if (debug&&(nodeId > maxNodes-propertySlots)) { // remove when debugged
 		if (quiet)return Error;
-		printf("Error: nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
+		bad();
+//		printf("Error: nodeId %d > maxNodes %ld \n", nodeId, maxNodes);
 		return Error;
 	}
 	return &context->nodes[nodeId];
