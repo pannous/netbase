@@ -1761,6 +1761,9 @@ NV findEntites(cchar* query0){
 //	vector<cchar*> forbidden=loadBlacklist();
 //	N forbidden=loadBlacklist();
 	map<int,bool> forbidden=loadBlacklist();
+
+//	if(hasWord(query0)&&!forbidden[wordhash(query0)])
+//		all.push_back(getAbstract(query0));// quick
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
 	int min_chars=4;//
 	int len=(int)strlen(query);

@@ -311,11 +311,11 @@ int handle(cchar* q0,int conn){
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
 		char* text=getText(node);
-		if(use_json && get_topic){
-			if(empty(text))continue;//!
+//		if(use_json && get_topic){
+//			if(empty(text))continue;//! no description = no entity? BAD for amazon etc
 //			if(isAbstract(node))continue;
 //			N t=getTopic(node);
-		}
+//		}
 		good++;
 		if (use_json)if(good>1)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount,text);
