@@ -764,13 +764,15 @@ char hangover[MAX_CHARS_PER_LINE];
 
 FILE *open_file(const char* file) {
 	FILE *infile;
+	string full=(import_path + file);
 	if ((infile=fopen((file), "r")) != NULL) return infile;
 	if (import_path.length() == 0) import_path="import/";
 	if(startsWith(file, "~/"))
 		file=concat(getenv("HOME"), file+1);
 	if(startsWith(file, "./"))
 		file=concat(getcwd(NULL, 0), file+1);
-	if (!startsWith(file, "/")) file=(import_path + file).data();
+	if (!startsWith(file, "/"))
+		file=full.c_str();
 	p(file);
 	if ((infile=fopen((file), "r")) == NULL) {
 		perror("Error opening file");

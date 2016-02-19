@@ -818,9 +818,11 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 
-		if(getSingletons)
+		if(getSingletons){
 			subject=getSingleton(name);
-		else if (getBest)
+			if(!subject)
+				subject=getSingleton(name);// DEBUG
+		}else if (getBest)
 			subject=getThe(name, type);
 		else if (name != lastValue)
 			subject=getNew(name, type);

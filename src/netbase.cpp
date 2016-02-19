@@ -1153,9 +1153,14 @@ Node * getClass(const char* word,Node* hint) {
 	return getThe(word,hint);
 }
 
-Node * getSingleton(const char* thing) {
-    //    if(	getThe(thing) ...)
-    return getAbstract(thing);
+Node * getSingleton(const char* thing, Node* type) {
+	N there=hasWord(thing);
+	if(!there){
+		there=add(thing,_singleton);
+		insertAbstractHash(there);
+		if(type)addStatement(there, Type ,type);
+	}
+	return there;
 }
 
 Node * getThe(string thing, Node* type) {

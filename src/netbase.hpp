@@ -457,7 +457,7 @@ extern "C" Node* getThe(const char* word, Node* type = 0);//,bool dissect=false)
 Node* getThe(string thing, Node* type=0);//,bool dissect=false);
 extern "C" Node* getNew(const char* thing, Node* type=0);//, bool dissect=false);
 Node* getClass(const char* word, Node* hint=0);// ?  apple vs Apple ! same as getThe NOW
-Node* getSingleton(const char* thing) ;
+Node* getSingleton(const char* thing, Node* type=0) ;
 //Node* getClass(string word);
 //extern "C"
 void showStatement(Statement* s);
