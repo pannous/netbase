@@ -2367,6 +2367,7 @@ string formatImage(Node* image,int size,bool thumb){
     char* name=replaceChar(image->name,' ','_');
 	char* start=strstr(name, "File:");
 	if(start) name=start+5;
+	if(startsWith(name, "http"))return name;
 	string hash=md5(name);
 	string base="http://upload.wikimedia.org/wikipedia/commons/";
     if(!thumb)	return base + hash[0] + "/" + hash[0] + hash[1] + "/" +  name;
@@ -2381,7 +2382,8 @@ string getImage(cchar* a, int size,bool thumb) {
 string getImage(Node* a, int size,bool thumb) {
 	if(!a||!checkNode(a))return 0;
 	Node* i=0;
-//	if(!i)i=findProperty(a, "wiki_image",false,1000);
+	//	if(!i)i=findProperty(a, "wiki_image",false,1000);
+	if(!i)i=findProperty(a, "image",false,1000);// Amazon
 	if(!i)i=findProperty(a, "Bild",false,1000);
 	if(!i)i=findProperty(a, "Wappen",false,1000);
 	if(!i)i=findProperty(a, "Positionskarte",false,1000);
