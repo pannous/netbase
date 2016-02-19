@@ -782,7 +782,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			fixValues(values, fieldCount);
 			for (int i=0; i < fieldCount; i++) {
 				char* field=values[i];
-				p(field);
+//				p(field);
 				Node* fielt=getThe(field); // Firma		instance		Terror_Firma LOL
 //				dissectWord(fielt);
 				predicates.push_back(fielt);
@@ -820,7 +820,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			replaceChar(name, '(', 0);// cut!
 			if(name[0]==0||hasWord(name))continue;//!
 			else subject=getSingleton(name,type);
-//			continue;// test1: NO PROPERTIES!
+			continue;// test1: NO PROPERTIES!
 		}
 
 		if(getSingletons)
