@@ -870,7 +870,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			break;
 		}
 	}
-	free(values);
 	p("import csv ok ... lines imported:");
 	p(linecount);
 }
