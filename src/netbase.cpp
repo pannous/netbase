@@ -883,7 +883,8 @@ Node* get(char* node) {
 Node * get(int nodeId) {
 	if (debug&&(nodeId<-propertySlots)) { // remove when debugged
 		if (quiet)return Error;
-		printf("Error: nodeId < -propertySlots  %d < %d \n", nodeId, -propertySlots);
+		bad();
+//		printf("Error: nodeId < -propertySlots  %d < %d \n", nodeId, -propertySlots);
 		return Error;
 	}
 	if (debug&&(nodeId > maxNodes-propertySlots)) { // remove when debugged
