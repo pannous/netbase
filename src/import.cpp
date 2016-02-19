@@ -2243,6 +2243,7 @@ const char* includedFields = "asins,brand,author,artist,title,imagepathmedium,to
 //	,out,in,6,t
 //	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,6,t);
 	getSingletons=true;
+	autoIds=false;
 	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe("Amazon apparel product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_automotive_retail_delta_20151209.base.csv.gz",getThe("Amazon automotive product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_baby_retail_delta_20151210.base.csv.gz",getThe("Amazon baby product"),',',out,in,6,t);
