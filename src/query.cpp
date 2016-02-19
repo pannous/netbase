@@ -1188,6 +1188,7 @@ int countInstances(Node * node) {
 // edgeFilter:
 //childFilter == instanceFilter (+SubClass or not?)
 // todo:  deduplicate code: childFilter=filter<Instance,SubClass>
+bool INCLUDE_LABELS=false;
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
 	NodeVector all;	int i = 0;
 	Statement* s = 0;
@@ -1196,7 +1197,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 		bool predicateMatch = (s->Predicate() == Instance)|| (s->Predicate() == SubClass);
         
 		bool subjectMatchReverse = s->Object() == subject;
-		bool predicateMatchReverse = s->Predicate() == Type || s->Predicate() == SuperClass || s->Predicate() == Label ; // || inverse
+		bool predicateMatchReverse = s->Predicate() == Type || s->Predicate() == SuperClass || (INCLUDE_LABELS&&s->Predicate() == Label) ; // || inverse
         
 		if (queue) {
 			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object(), queue);
