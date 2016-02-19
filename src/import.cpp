@@ -742,7 +742,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
 	char** values=(char**) malloc(sizeof(char*) * MAX_ROWS);
 	char* lastValue=0;
-	char* line0 = nullptr;
+	char* line0 = 0;// nullptr;
 	char* line1;
 	//    vector<char*> values;
 	map<char*, Node*> valueCache;
