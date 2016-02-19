@@ -564,7 +564,7 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 //bool checkStatement(Statement *s);
 void checkRootContext();
 Node* number(int n);
-Node* getProperty(Node* n,const char* s,limit=0);
+Node* getProperty(Node* n,const char* s,int limit=0);
 Node* getProperty(Node* node, Node* key,int limit);
 Node* getPropertyDummy(const char* id);
 void dissectParent(Node* subject,bool checkDuplicates=false);
