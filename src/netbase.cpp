@@ -1297,14 +1297,6 @@ extern "C" int nextId(){
     return context->nodeCount++;
 }
 
-extern "C"
-Node* getType(Node* n){
-    Statement* s=findStatement(n,Type,Any);
-    if(!checkStatement(s))return 0;// n
-    return s->Object();
-}
-
-
 Node* dateValue(const char* val) {
 	Node* n=getAbstract(val);// getThe(val);
 	n->kind=Date->id;
@@ -1608,7 +1600,8 @@ Statement* findStatement(int subject, int predicate, int object, int recurse, bo
 }
 
 // DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
-Statement * findStatement(Node* subject, Node* predicate, Node* object, int recurse, bool semantic, bool symmetric, bool semanticPredicate,bool matchName) {
+Statement * findStatement(Node* subject, Node* predicate, Node* object,
+						  int recurse, bool semantic, bool symmetric, bool semanticPredicate,bool matchName, int limit) {
 	// DO    NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 	if (recurse > 0) recurse++;
 	else recurse=maxRecursions;
@@ -1616,8 +1609,14 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 
 	Statement * s=0;
 	map<Statement*, bool> visited;
+	int lookup=0;
 	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
-		if (visited[s]) return 0;
+		if(limit && lookup++>=limit)break;
+		if (visited[s]){// Remove in live mode if all bugs are fixed
+			p("GRAPH ERROR");
+			bad();
+			return 0;
+		}
 		visited[s]=1;
 //        if(s->id()==4334||subject->id==4904654) // debug id
 //        p(s);
@@ -1687,6 +1686,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object, int recu
 		bool predicateMatchReverse=predicate == Any; // || inverse
 		symmetric=symmetric || s->Predicate() == Synonym || predicate == Synonym || s->Predicate() == Antonym || predicate == Antonym;
 		symmetric=symmetric && !(s->Predicate() == Instance); // todo : ^^ + more
+		// todo: use inverse(predicate)
 		predicateMatchReverse=predicateMatchReverse || (predicate == Instance && s->Predicate() == Type);
 		predicateMatchReverse=predicateMatchReverse || (predicate == Type && s->Predicate() == Instance);
 		predicateMatchReverse=predicateMatchReverse || (predicate == SuperClass && s->Predicate() == SubClass);
@@ -2254,14 +2254,6 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	}
 	if(!best)best=add(abstract->name,type->id,0);
 	return best;
-}
-
-// see findProperty
-Node * getProperty(Node* node, cchar* key) {
-	S s=findStatement(node, getThe(key), Any);
-	//findStatement(node, getAbstract(key), Any); // todo? egal
-	if(!checkStatement(s))return 0;
-	return s->Object();
 }
 
 bool isA(Node* fro, Node * to) {

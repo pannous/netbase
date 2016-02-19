@@ -1863,7 +1863,29 @@ NV sortTopics(NV topics,N entity){
 	return topics;
 }
 
-N getTopic(N n){// n-Titty = entity
+
+extern "C"
+Node* getType(Node* n){
+	Statement* s=findStatement(n,Type,Any);
+	if(!checkStatement(s))return 0;// n
+	return s->Object();
+}
+
+N getClass(N n){
+	N p=getProperty(n,SuperClass,10);
+	if(!p)p=getProperty(n,Type,10);
+	if(!p){
+		pf("Unknown type: %s\n",n->name);
+		return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+	}
+	return p;
+}
+
+N getTopic(N n){
+	return getClass(n);
+}
+
+N getTopic2(N n){// n-Titty = entity
 	return Error;
 	if(isAbstract(n))
 		return Abstract;
@@ -1902,6 +1924,37 @@ NV getTopics(NV entities){
 	return topics;
 }
 
+// see getProperty
+Node* findProperty(Node* n , Node* m,bool allowInverse,int limit){
+	Statement* s=0;
+	int count=0;
+	while ((s=nextStatement(n,s))) {
+		if(limit && count++>limit)break;
+		if(s->Predicate()==m){
+			return s->Object();
+		}
+		if (allowInverse && s->Predicate()==invert(m)) {
+			return s->Subject();
+		}
+	}
+	return 0;
+}
+
+// see findProperty
+Node * getProperty(Node* node, Node* key,int limit) {
+	S s=findStatement(node, key, Any ,0,0,0,true,limit);
+	if(!checkStatement(s))return 0;
+	return s->Object()==node ? s->Subject() : s->Object();// inverse
+}
+
+// see findProperty
+Node * getProperty(Node* node, cchar* key,int limit) {
+	// int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false,int limit=lookupLimit
+	S s=findStatement(node, getThe(key), Any ,0,0,0,true,limit);
+	//findStatement(node, getAbstract(key), Any); // todo? egal
+	if(!checkStatement(s))return 0;
+	return s->Object();
+}
 
 // see getProperty
 Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
@@ -1910,8 +1963,10 @@ Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
 	while ((s=nextStatement(n,s))) {
 		if(limit && count++>limit)break;
 		if(eq(s->Predicate()->name,m,true))
-			if(allowInverse||eq(s->Subject(),n))
-				return s->Object();
+			if(allowInverse||eq(s->Subject(),n)){
+//				p("TODO!?!");
+				return s->Object();// whooot??? a.typ=b  b.typ!=a !?!?!?!?!
+			}
 	}
 	return 0;
 }

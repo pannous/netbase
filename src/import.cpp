@@ -771,8 +771,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		line0=editable(line);
 		int size=splitStringC(line0, values, separator);
 		if (linecount == 0) {
-			pf("IMPORTING %s\n",file);
-			pf("FOUND %d columns:\n",size);
+//			pf("IMPORTING %s\n",file);
+//			pf("FOUND %d columns:\n",size);
 //			p(line);
 			//			columnTitles=line;
 			line1=editable(line);
@@ -818,6 +818,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		if(cut_amazon){
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
+			replaceChar(name, '[', 0);// cut!
 			if(name[0]==0||hasWord(name))continue;//!
 			else subject=getSingleton(name,type);
 			continue;// test1: NO PROPERTIES!
@@ -2394,7 +2395,7 @@ void importWikiData() {
 		//		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
 	}
 	else{
-		importWikiLabels("wikidata/wikidata-properties.en.nt",true);
+		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
 		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
 	}
