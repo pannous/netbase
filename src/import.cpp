@@ -738,7 +738,7 @@ void fixValues(char** values, int size) {
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,
 			   const char* nameRow) {
 	p("\nimport csv start");
-	char line[MAX_CHARS_PER_LINE];
+	char line[MAX_CHARS_PER_LINE*2];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
 	char** values=(char**) malloc(sizeof(char*) * MAX_ROWS);
 	char* lastValue=0;
@@ -817,9 +817,10 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 		if(cut_amazon){
 			replaceChar(name, ',', 0);// cut!
+			replaceChar(name, '(', 0);// cut!
 			if(hasWord(name))continue;//!
-			else subject=getSingleton(name,type);
-			continue;// test1: NO PROPERTIES!
+//			else subject=getSingleton(name,type);
+//			continue;// test1: NO PROPERTIES!
 		}
 
 		if(getSingletons)

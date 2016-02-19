@@ -3,7 +3,7 @@
 #include "netbase.hpp"
 
 //extern int MAX_CHARS_PER_LINE;
-#define MAX_CHARS_PER_LINE 0x10000
+#define MAX_CHARS_PER_LINE 0x100000 // amazon wtf!
 #define MAX_ROWS 100
 using namespace std;
 

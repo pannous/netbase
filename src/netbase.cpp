@@ -1158,7 +1158,7 @@ Node * getSingleton(const char* thing, Node* type) {
 	if(!there){
 		there=add(thing,_singleton);
 		insertAbstractHash(there);
-		if(type)addStatement(there, Type ,type);
+		if(type)addStatement(there, get(_Type) ,type);
 	}
 	return there;
 }

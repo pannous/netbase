@@ -811,7 +811,7 @@ bool inflate_gzip(FILE* file, z_stream strm,size_t bytes_read){//,char* out){
 	return true;// all OK
 }
 
-const char* current_file;
+const char* current_file=0;
 void closeFile(const char* file){
 	readFile(file,0);
 }
@@ -839,9 +839,10 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 				//				if(LEN) { *dst = '\0'; strncat(dst, src, LEN-1); }
 				hangover[0]=0;
 			}else{
-				memset(hangover,0,MAX_CHARS_PER_LINE);
-				strcpy(hangover,current_line);
-				memset(line, 0, MAX_CHARS_PER_LINE);
+				memset(hangover,0,MAX_CHARS_PER_LINE);// be save
+				if(strlen(current_line)<MAX_CHARS_PER_LINE/2)//wtf
+					strcpy(hangover,current_line);
+				memset(line, 0, MAX_CHARS_PER_LINE);// be save
 				line[0]=0;// skip that one!!
 			}
 		}else{
@@ -868,7 +869,7 @@ bool readFile(const char* file,char* line){
 		current_file="";
 		return false;
 	}
-	if(!infile||!eq(current_file,file)){
+	if(!infile){//||!eq(current_file,file) EXC!
 		current_file=file;
 		infile=open_file(file);
 		gzipped=endsWith(file, ".gz");
