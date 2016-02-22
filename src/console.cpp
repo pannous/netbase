@@ -523,8 +523,9 @@ NodeVector parse(const char* data0) {
 	if (startsWith(data, "update")||startsWith(data, ":update")){
         update(data);
     }
-    
-	if (eq(data, "server") ||eq(data, ":server") || 
+
+	// eq(data, "server") || only in main() !
+	if (eq(data, ":server") ||
 		eq(data, ":daemon") || eq(data, ":demon")|| 
 		eq(data, "daemon") || eq(data, "demon")) {
 		printf("starting server\n");

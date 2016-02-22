@@ -849,7 +849,7 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 			current_line=0;
 			next_line=0;
 			hangover[0]=0;
-			printf("readFile DONE!\n");// NEVER REACHED? -> CALL closeFile manually!
+			printf("\nreadFile DONE!\n");
 			closeFile(current_file);
 		}
 		return ok;

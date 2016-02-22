@@ -821,7 +821,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			replaceChar(name, '[', 0);// cut!
 			if(name[0]==0||hasWord(name))continue;//!
 			else subject=getSingleton(name,type);
-			continue;// test1: NO PROPERTIES!
+//			continue;// test1: NO PROPERTIES!
 		}
 
 		if(getSingletons)
@@ -2245,10 +2245,10 @@ const char* includedFields = "asins,brand,author,artist,title,imagepathmedium,to
 //	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,6,t);
 	getSingletons=true;
 	autoIds=false;
+	importCsv("amazon/de_v3_csv_beauty_retail_delta_20151213.base.csv.gz",getThe("Amazon beauty product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe("Amazon apparel product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_automotive_retail_delta_20151209.base.csv.gz",getThe("Amazon automotive product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_baby_retail_delta_20151210.base.csv.gz",getThe("Amazon baby product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_beauty_retail_delta_20151213.base.csv.gz",getThe("Amazon beauty product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_books_retail_delta_part1_20151212.base.csv.gz",getThe("Amazon books product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_ce_retail_delta_20151210.base.csv.gz",getThe("Amazon ce product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_digital_sw_retail_delta_20151208.base.csv.gz",getThe("Amazon digital_sw product"),',',out,in,6,t);
