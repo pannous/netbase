@@ -230,7 +230,7 @@ int handle(cchar* q0,int conn){
 		get_topic=true;
 //		verbosity=longer;
 	}
-    loadView(q);
+	if(hasWord(q)) loadView(q);
     
     if(contains(q,"exclude")||contains(q,"include")){
         verbosity=normal;

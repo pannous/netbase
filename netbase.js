@@ -124,11 +124,14 @@ function addImage(image,div){
 
 function makeEntity(entity)
 {
+	if(entity.topic && entity.topic.startsWith("Wiki"))return;
 	makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
 
 	if(entity.kind==abstract)appendText("*");
 	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
+	if(!entity.description && entity.topic) appendText(" "+entity.topic+" ");
+
 	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
 	link.style=nolink+bold+blue+big
 	link.target="_blank"
