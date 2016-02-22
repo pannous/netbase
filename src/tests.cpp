@@ -1724,30 +1724,14 @@ void recursiveTaxonomy(){
 }
 void testEntities(){
 //	cchar* query="president of the United States of America";
-	cchar* query="ladon";
+	//	cchar* query="ladon";
+//	cchar* query="AWS Server";
+	cchar* query="Amazon Web Services Server";// vs Amazon Web Services ??
+//	cchar* query="Server";
 	NV all=findEntites(query);
-//	show(all);
-	//	NV topics=getTopics(all);
-	bool splitAbstract=false;
-	for(int i=0;i<(int)all.size();i++){
-		N entity=all[i];
-		printf("====================================\n");
-		if(isAbstract(entity)){
-			if(!splitAbstract)continue;
-			NV instances=allInstances(entity);
-//			all_instances3(Node* type, int recurse, int max, bool includeClasses)
-			for(int j=0;j<(int)instances.size();j++){
-				entity=instances[j];
-				NV topics=getTopics(entity);
-				if(topics.size()<=2)continue;// self + abstract
-				printf("------------------------------------\n");
-				show(topics);
-			}
-		}else{
-		NV topics=getTopics(entity);
-//		show(topics);
-		}
-	}
+	show(all);
+//	NV topics=getTopics(all);
+
 }
 
 void testLabelInstances(){
@@ -1769,12 +1753,13 @@ void testBrandNewStuff() {
 //	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
 //		importWikiData();
 
-	importTest();
+//	importTest();
+
 
 //	testLabelInstances();
 //	show(get(1));
 //	importTest();
-//	testEntities();
+	testEntities();
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
 
@@ -1795,8 +1780,8 @@ void testBrandNewStuff() {
 	//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
 	int c=0;
 //	while(c++<100){
-		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
-		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
+//		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
+//		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
 //	}
 //	handle("/entities/verbose/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
 //	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");

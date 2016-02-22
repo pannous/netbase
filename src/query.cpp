@@ -1695,8 +1695,10 @@ NV filterCandidates(NV all){
 //	all.shrink_to_fit();
 	for(int i=0;i<size;i++){
 		N entity=all[i];
-		NV more=allInstances(entity);
-		mergeVectors(&all, more);
+		if(isAbstract(entity)){
+			NV more=allInstances(entity);
+			mergeVectors(&all, more);
+		}
 	}
 	return all;
 }
@@ -1752,8 +1754,8 @@ NV findEntites(cchar* query0){
 //	N forbidden=loadBlacklist();
 	map<int,bool> forbidden=loadBlacklist();
 
-	if(hasWord(query0)&&!forbidden[wordhash(query0)])
-		all.push_back(getAbstract(query0));// quick
+//	if(hasWord(query0)&&!forbidden[wordhash(query0)])
+//		all.push_back(getAbstract(query0));// quick
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
 	int min_chars=4;//
 	int len=(int)strlen(query);
@@ -1797,7 +1799,7 @@ NV findEntites(cchar* query0){
 		start++; // skip ' '
 		if(start>=end)break;
 		mid=strstr(start," ");// first sub-word
-		if(!mid)break;
+		if(!mid)mid=end;
 	}
 	free(query);
 	return filterCandidates(all);
@@ -1916,6 +1918,32 @@ NV getTopics(NV entities){
 		}
 	return topics;
 }
+
+NV showTopics(NV entities){
+	NV all= getTopics(entities);
+	bool splitAbstract=false;
+	for(int i=0;i<(int)all.size();i++){
+	N entity=all[i];
+	printf("====================================\n");
+	if(isAbstract(entity)){
+		if(!splitAbstract)continue;
+		NV instances=allInstances(entity);
+		//			all_instances3(Node* type, int recurse, int max, bool includeClasses)
+		for(int j=0;j<(int)instances.size();j++){
+			entity=instances[j];
+			NV topics=getTopics(entity);
+			if(topics.size()<=2)continue;// self + abstract
+			printf("------------------------------------\n");
+			show(topics);
+		}
+	}else{
+		NV topics=getTopics(entity);
+		//		show(topics);
+	}
+	}
+	return all;
+}
+
 
 // see getProperty
 Node* findProperty(Node* n , Node* m,bool allowInverse,int limit){
