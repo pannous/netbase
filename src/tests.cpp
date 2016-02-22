@@ -1726,7 +1726,7 @@ void testEntities(){
 //	cchar* query="president of the United States of America";
 	//	cchar* query="ladon";
 //	cchar* query="AWS Server";
-	cchar* query="Amazon Web Services Server";// vs Amazon Web Services ??
+	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
 //	cchar* query="Server";
 	NV all=findEntites(query);
 	show(all);

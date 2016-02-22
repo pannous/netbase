@@ -591,6 +591,7 @@ char* replaceChar(char* thing,char what,char with){
 bool ignoreNonLatin=false;// true; against insertAbstractHash FULL!
 short normChar(char c) {// 0..36 damn ;)
 //	if(c=='ä')c='a'; etc
+	if (c == '\n')return 0;
 	if (c >= '0' && c <= '9') return c-'0'+26;
 	if (c >= 'a' && c <= 'z') return c-'a'+1;// NOT 0!!!
 	if (c >= 'A' && c <= 'Z') return c-'A'+1;

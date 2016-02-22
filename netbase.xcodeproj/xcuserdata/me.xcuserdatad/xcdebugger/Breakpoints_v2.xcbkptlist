@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/util.cpp"
-            timestampString = "477573720.220584"
+            timestampString = "477828887.259248"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "880"
-            endingLineNumber = "880"
+            startingLineNumber = "881"
+            endingLineNumber = "881"
             landmarkName = "readFile(const char* file,char* line)"
             landmarkType = "7">
          </BreakpointContent>
@@ -528,22 +528,6 @@
             startingLineNumber = "2250"
             endingLineNumber = "2250"
             landmarkName = "importAmazon()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/query.cpp"
-            timestampString = "477828046.765123"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1766"
-            endingLineNumber = "1766"
-            landmarkName = "findEntites(cchar* query0)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

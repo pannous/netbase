@@ -1767,6 +1767,7 @@ NV findEntites(cchar* query0){
 		int words=1;
 		while(mid<=end && words<max_words && mid-start>=min_chars){
 			mid[0]=0;// Artificial cut
+//			if(!forbidden[ wordhash(start)]){
 //			p(start);
 			N entity=hasWord(start);
 			if(!entity && endsWith(start, "s")){ //!germanLabels &&
@@ -1790,6 +1791,7 @@ NV findEntites(cchar* query0){
 				if(!forbidden[ wordhash(entity->name)])
 					all.push_back(entity);
 			}
+//		}
 			if(mid==end)break;
 			mid=strstr(mid+1," ");// expand
 			if(!mid)mid=end;
