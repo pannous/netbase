@@ -877,19 +877,6 @@ NodeVector & nodesOfDirectType(int kind) {
 //}
 
 
-//NodeVector & allInstances(Node * type) {
-NodeVector allInstances(Node * type, int recurse, int max, bool includeClasses) {
-	clearAlgorithmHash();
-	NodeVector all; 	// COMPARE: !!
-	if(!recurse)
-		all = instanceFilter(type);
-//	all = all_instances(getQuery(type));
-	else
-		all = all_instances(type, recurse, max, includeClasses);
-//	all = recurseFilter(type,true,resultLimit,instanceFilter);
-	return all;
-}
-
 // todo?: EXCLUDING classes and direct instances on demand!
 // WDYM direct instances ???
 NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
@@ -1189,15 +1176,18 @@ int countInstances(Node * node) {
 //childFilter == instanceFilter (+SubClass or not?)
 // todo:  deduplicate code: childFilter=filter<Instance,SubClass>
 bool INCLUDE_LABELS=false;
+bool INCLUDE_CLASSES=false;
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
 	NodeVector all;	int i = 0;
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
-		bool predicateMatch = (s->Predicate() == Instance)|| (s->Predicate() == SubClass);
+		bool predicateMatch = (s->Predicate() == Instance)|| (INCLUDE_CLASSES&&s->Predicate() == SubClass);
         
 		bool subjectMatchReverse = s->Object() == subject;
-		bool predicateMatchReverse = s->Predicate() == Type || s->Predicate() == SuperClass || (INCLUDE_LABELS&&s->Predicate() == Label) ; // || inverse
+		bool predicateMatchReverse = s->Predicate() == Type;
+		predicateMatchReverse = predicateMatchReverse || (INCLUDE_CLASSES && s->Predicate() == SuperClass);
+		predicateMatchReverse = predicateMatchReverse || (INCLUDE_LABELS  && s->Predicate() == Label) ; // || inverse
         
 		if (queue) {
 			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object(), queue);
@@ -2256,4 +2246,19 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 		if (isA4(s->Subject(), match, recurse, semantic)) return s->Subject();
 	}
 	return null;
+}
+
+
+//NodeVector & allInstances(Node * type) {
+NodeVector allInstances(Node * type, int recurse, int max, bool includeClasses) {
+	clearAlgorithmHash();
+	NodeVector all; 	// COMPARE: !!
+	INCLUDE_CLASSES=includeClasses;// todo: param!
+	if(!recurse)
+		all = instanceFilter(type);
+	//	all = all_instances(getQuery(type));
+	else
+		all = all_instances(type, recurse, max, includeClasses);
+	//	all = recurseFilter(type,true,resultLimit,instanceFilter);
+	return all;
 }
