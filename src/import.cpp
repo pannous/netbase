@@ -2399,6 +2399,7 @@ void importWikiData() {
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
 		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
 	}
+//	doDissectAbstracts=true;// already? why not
 	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	importN3("wikidata/wikidata-instances.nt.gz");
@@ -2493,19 +2494,17 @@ void importAllDE() {
 	germanLabels=true;
 	autoIds=false;
 	p("importAll GERMAN");
-	importLabels("labels.csv");
-	importWordnet();
-	//	return;
-	//	exit(0);
-	//	importCsv("adressen.txt");
-	importNames();
+//	importLabels("labels.csv");
+//	importWordnet();
 	//	doDissectAbstracts=true;// already? why not
 	doDissectAbstracts=false;//MESSES TOO MUCH!
-	importGeoDB();
 	//	importDBPediaDE();
 	importWikiData();
+	importNames();
+	importGeoDB();
+	importAmazon();
 	//    importEntities();
-	importImagesDE();
+//	importImagesDE();
 	importLabels("labels.csv");// todo: why again?
 	importing=false;
 	//	importFacts()
@@ -2517,13 +2516,13 @@ void importAll() {
 	if(germanLabels)
 		return importAllDE();
 	p("importAll ENGLISH");
-	importWordnet();
+//	importWordnet();
 	//	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
-	importNames();
 	doDissectAbstracts=true;// already? why not
-	importGeoDB();
+//	importGeoDB();
 	importWikiData();
+	importNames();
 	importAmazon();
 	//	if(germanLabels)
 	//		importDBPediaDE();

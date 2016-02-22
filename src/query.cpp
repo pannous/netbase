@@ -1182,7 +1182,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
-		bool predicateMatch = (s->Predicate() == Instance)|| (INCLUDE_CLASSES&&s->Predicate() == SubClass);
+		bool predicateMatch = (s->Predicate() == Instance)|| (INCLUDE_CLASSES && s->Predicate() == SubClass);
         
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Type;
