@@ -269,8 +269,8 @@ bool addStatementToNode(Node* node, int statementId,bool insert_at_start=false) 
 			appendLinkedListOfStatements(add_here, node, statementId); // append new to old
 			node->lastStatement=statementId;
 		} else { // invert sort -> sort again in webserver
-			if(eq(to_insert,node->firstStatement))
-				return true;//false;// already there
+//			if(eq(to_insert->id(),node->firstStatement)) // wow, ghet auch ohne ->id()
+//				return true;//false;// already there
 			prependLinkedListOfStatements(to_insert, node, node->firstStatement); // append old to new
 			node->firstStatement=statementId;
 		}
