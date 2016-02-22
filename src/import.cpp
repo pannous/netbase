@@ -2370,7 +2370,8 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-	importAmazon();
+//	importAmazon();
+	importAllDE();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
 //	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 }

@@ -346,11 +346,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "477244876.547007"
+            timestampString = "477826638.476585"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1028"
-            endingLineNumber = "1028"
+            startingLineNumber = "1015"
+            endingLineNumber = "1015"
             landmarkName = "all_instances2(Node* type, int recurse, int max, bool includeClasses)"
             landmarkType = "7">
          </BreakpointContent>
@@ -362,11 +362,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "477244876.547007"
+            timestampString = "477826638.476585"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "905"
-            endingLineNumber = "905"
+            startingLineNumber = "892"
+            endingLineNumber = "892"
             landmarkName = "all_instances3(Node* type, int recurse, int max, bool includeClasses)"
             landmarkType = "7">
          </BreakpointContent>
@@ -378,11 +378,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "477244876.547007"
+            timestampString = "477826638.476585"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "938"
-            endingLineNumber = "938"
+            startingLineNumber = "925"
+            endingLineNumber = "925"
             landmarkName = "all_instances3(Node* type, int recurse, int max, bool includeClasses)"
             landmarkType = "7">
          </BreakpointContent>
@@ -394,11 +394,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "477571657.373953"
+            timestampString = "477826638.476585"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1474"
-            endingLineNumber = "1474"
+            startingLineNumber = "1464"
+            endingLineNumber = "1464"
             landmarkName = "findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*))"
             landmarkType = "7">
          </BreakpointContent>
