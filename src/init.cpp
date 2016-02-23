@@ -202,14 +202,14 @@ extern "C" void initSharedMemory(bool relations) {
 	long name_size=maxChars;
 	long statement_size=maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
-	p("abstract_root:");
+//	p("abstract_root:");
 	abstract_root=(Node*) share_memory(key , abstract_size * 2, abstract_root,root);//  ((char*) context_root) + context_size
-	p("name_root:");
+//	p("name_root:");
 	int mega_debug=getenv("MEGA_DEBUG")?0x40000:0; // objective xcode zombie diagnostics etc
 	name_root=(char*) share_memory(key + 1, name_size, name_root, ((char*) abstract_root) + abstract_size * 2 + mega_debug);
-	p("node_root:");
+//	p("node_root:");
 	node_root=(Node*) share_memory(key + 2, node_size, node_root, name_root + name_size);
-	p("statement_root:");
+//	p("statement_root:");
 	statement_root=(Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
 //	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
