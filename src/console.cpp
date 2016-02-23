@@ -538,7 +538,7 @@ NodeVector parse(const char* data0) {
 //	if (args.size() >= 3 && eq(args[1], "is"))
 //		return nodeVectorWrap(learn(data)->Subject());
 //	startsWith(data, "update")||
-	eq(data, "daemon") || eq(data, "demon")
+//	eq(data, "daemon") || eq(data, "demon")
 
 // QUESTIONS
 	if(endsWith(data, "?")){
