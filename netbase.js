@@ -58,7 +58,7 @@ function makeLink(name,url,elem)
 
 function makeStatement(statement,elem)
 {  // if Wikimedia-Kategorie  BREAK!
-    if(filterIds.indexOf(statement.pid)>=0)return;
+    // if(filterIds.indexOf(statement.pid)>=0)return;
     if(statement.sid==-666)return;// Error/Missing
 	if(statement.predicate=="nr in context")return; 
 	if(statement.predicate.match(/ID/))return;
@@ -69,7 +69,7 @@ function makeStatement(statement,elem)
 	if(statement.subject.startsWith("http"))return;
 	if(statement.object.match(/rdf/))return;
 	if(statement.object.match(/ObjectProperty/))return;
-	if(statement.object.match(/wikimedia/i))return;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
+  // if(statement.object.match(/wikimedia/i))return;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
 	if(1+statement.subject>1)return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	var top = document.createElement("tr");

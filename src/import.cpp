@@ -1269,6 +1269,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 			if(startsWith(label,"Wikimedia")){
 				N a=getEntity(key,false,false);
 				wiki_abstracts[id]=true;
+				insertAbstractHash(a,true);
 				a->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
 				continue;
 			}
