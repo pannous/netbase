@@ -103,7 +103,7 @@ function addImage(image,div){
 	// image=image.replace(/.150px.*/,"");
 	// image=image.replace("/thumb/","/")
 	var link=document.createElement("a");
-	link.href=image.replace("/thumb/","/").replace(/\.jpg.*/,".jpg")
+	link.href=image.replace("/thumb/","/").replace(/.150px.*/,"").replace(/\.jpg.*/,".jpg")
 	link.target="_blank"
 	link.style="float:right;width:200px";
 	img=document.createElement("img");

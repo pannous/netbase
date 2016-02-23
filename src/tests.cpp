@@ -1726,8 +1726,8 @@ void testEntities(){
 //	cchar* query="president of the United States of America";
 	//	cchar* query="ladon";
 //	cchar* query="AWS Server";
-	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
-//	cchar* query="Server";
+//	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
+	cchar* query="Frankfurt Am Main";
 	NV all=findEntites(query);
 	show(all);
 //	NV topics=getTopics(all);
@@ -1755,7 +1755,7 @@ void testBrandNewStuff() {
 
 //	importTest();
 
-	handle("dfsfddasfadfss asdfasdfsadfdfsa");
+//	handle("dfsfddasfadfss asdfasdfsadfdfsa");
 
 //	testLabelInstances();
 //	show(get(1));
