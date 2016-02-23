@@ -1797,6 +1797,7 @@ NV findEntites(cchar* query0){
 					if(!isAbstract(entity)){
 						entity->kind=abstractId;
 						insertAbstractHash(entity,true);// fix bug!
+					}
 				}
 			}
 //		}
