@@ -322,8 +322,6 @@ int handle(cchar* q0,int conn){
 		Writeline(conn, buff);
         if(verbosity != alle)
 			loadView(node);
-		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
-			Writeline(conn, ", \"kind\":"+itoa(node->kind));
 		if(use_json && get_topic){
 			N t=getTopic(node);
 			if(t!=Entity && checkNode(t)){
@@ -333,6 +331,8 @@ int handle(cchar* q0,int conn){
 //				Writeline(conn, ", \"type\":\""+string(t->name)+"\"");
 			}
 		}
+		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
+			Writeline(conn, ", \"kind\":"+itoa(node->kind));
 		if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
 			Writeline(", \"image\":\""+replace_all(replace_all(getImage(node,150,/*thumb*/true),"'","%27"),"\"","%22")+"\"");
 //		if((use_json)&&getText(node)[0]!=0)

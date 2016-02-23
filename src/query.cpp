@@ -1183,12 +1183,14 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool predicateMatch = (s->Predicate() == Instance)|| (INCLUDE_CLASSES && s->Predicate() == SubClass);
-        
+		predicateMatch = predicateMatch || s->predicate==-10301;// Hauptartikel in der Kategorie
+
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse || (INCLUDE_CLASSES && s->Predicate() == SuperClass);
 		predicateMatchReverse = predicateMatchReverse || (INCLUDE_LABELS  && s->Predicate() == Label) ; // || inverse
-        
+		predicateMatchReverse = predicateMatchReverse || (s->Predicate() == Label && contains(s->Subject()->name, subject->name));// Frankfurt (Oder)
+
 		if (queue) {
 			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object(), queue);
 			if (subjectMatchReverse&& predicateMatchReverse)enqueue(subject, s->Subject(), queue);
