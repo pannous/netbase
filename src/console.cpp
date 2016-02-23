@@ -259,8 +259,8 @@ NodeVector parse(const char* data0) {
 	}
 	autoIds=true;
 
-	if (startsWith(data, ":select") || startsWith(data, "select")||startsWith(data, ":query") || startsWith(data, "query")) {
-		data=next_word(data);
+	if (startsWith(data, "select ")||startsWith(data, "query ")) {
+		data=next_word(data);// whoot?
 	}
 	if (contains(data, "lookup")||contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
@@ -334,7 +334,7 @@ NodeVector parse(const char* data0) {
     if(contains(data,":german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
 	if(args.size()==0)
 		return OK;
-    if (eq(args[0], "show")) {// not ":show" here!!
+    if (eq(args[0], ":show")) {// not ":show" here!!
 		N da=getAbstract(data + 5);
         show(da,true);
 		return nodeVectorWrap(da);
@@ -367,34 +367,34 @@ NodeVector parse(const char* data0) {
 	}
 
 
-	if (args.size() > 1 && (startsWith(data, ":has ")||startsWith(data, "has "))) {
+	if (args.size() > 1 && (startsWith(data, ":has "))) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return memberPath(from, to);
 	}
-	if (args.size() > 1 && (startsWith(data, ":is ")||startsWith(data, "is "))) {
+	if (args.size() > 1 && (startsWith(data, ":is "))) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return parentPath(from, to);
 	}
     
-    if (args.size() ==3 && contains(data,"exclude ")){// no ":" here!
+    if (args.size() ==3 && contains(data,":exclude ")){// no ":" here!
         autoIds=true;
         Node *node=getAbstract(args[0]);
         if(eq(args[0], "exclude"))node=getAbstract(args[1]);
         addStatement(node,getAbstract("exclude"),getAbstract(args[2]));
         return nodeVectorWrap(getAbstract(args[0]));
     }
-    if (startsWith(data, "exclude ")){// no ":" here!
+    if (startsWith(data, ":exclude ")){// no ":" here!
         autoIds=true;
-        addStatement(get("excluded"), get("exclude"),getAbstract(data+8));
+        addStatement(get("excluded"), get("exclude"),getAbstract(data+9));
         return nodeVectorWrap(get("excluded"));
     }
-        if (args.size() >=3 && contains(data,"include ")){// no ":" here!
+        if (args.size() >=3 && contains(data,":include ")){// no ":" here!
             autoIds=true;
             Node *node=getAbstract(args[0]);
             Node *to_include=getAbstract(args[2]);// next //join(sublist(args,2)," "));
-            if(eq(args[0], "include"))node=getAbstract(args[1]);
+            if(eq(args[0], ":include"))node=getAbstract(args[1]);
             else to_include=getAbstract(cut_to(data, "include "));
             addStatement(node,getAbstract("include"),to_include);
             N type=getType(node);// auto add to type!!!
@@ -407,13 +407,13 @@ NodeVector parse(const char* data0) {
 //        return nodeVectorWrap(get("included"));
 //    }
 
-	if (args.size() >= 2 && (eq(args[0], "handle")||eq(args[0], ":handle"))){
+	if (args.size() >= 2 && (eq(args[0], ":handle"))){
 		string what=next_word(data);
 		handle(what.c_str());
 		return OK;
 	}
 
-	if (startsWith(data, "select ")) return query(data);
+	if (startsWith(data, ":select ")) return query(data);
 
 
 	//    Ch��teau
@@ -426,7 +426,7 @@ NodeVector parse(const char* data0) {
 
 	//		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
 	//Big the Cat 	x Species ^ - + -- -!
-	if (startsWith(data, "show ")||startsWith(data, ":show ")||// show?? really?
+	if (startsWith(data, ":show ")||// show?? really?
 		startsWith(data, ":tree")||startsWith(data, ":subclasses")||startsWith(data, "subclasses")){
 		data=next_word(data);
 		if(startsWith(data,"of"))data=next_word(data);
@@ -447,7 +447,7 @@ NodeVector parse(const char* data0) {
 		data=next_word(data);
 		return show(findEntites(data));
 	}
-	if (startsWith(data, ":all ")||startsWith(data, "all ")||startsWith(data, ":children")||startsWith(data, "instances")||startsWith(data, ":instances")){//||startsWith(data, "children ")
+	if (startsWith(data, ":all ")||startsWith(data, ":children")||startsWith(data, ":instances")){//||startsWith(data, "children ")
 		N da=getAbstract(next_word(data));
 		NS all=findAll(da,instanceFilter);// childFilter
 //		show(all);// ok, show!
@@ -510,40 +510,48 @@ NodeVector parse(const char* data0) {
 	//	}
     
     //	if (startsWith(q, "m/")) {
-	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
-		p("<m.0c21rgr> needs shared memory or boost ");
-		Node* n=getEntity((char*) data,true);
-		show(n);    //<g.11vjx36lj>
-		return OK;
-	}
-    
+//	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
+//		p("<m.0c21rgr> needs shared memory or boost ");
+//		Node* n=getEntity((char*) data,true);
+//		show(n);    //<g.11vjx36lj>
+//		return OK;
+//	}
+
 	
 
 //   update Stadt.Gemeindeart set type=244797 limit 100000
-	if (startsWith(data, "update")||startsWith(data, ":update")){
+	if (startsWith(data, ":update")){
         update(data);
     }
 
 	// eq(data, "server") || only in main() !
 	if (eq(data, ":server") ||
-		eq(data, ":daemon") || eq(data, ":demon")|| 
-		eq(data, "daemon") || eq(data, "demon")) {
+		eq(data, ":daemon") || eq(data, ":demon")) {
 		printf("starting server\n");
 		start_server();
 		return OK;
 	}
     if(eq(data,"testing")){testing=true;autoIds=false;clearMemory();return OK;}
-	if (contains(data, " with ")) return query(data);
-	if (contains(data, " where ")) return query(data);
-	if (contains(data, " from ")) return query(data);
-	if (contains(data, " whose ")) return query(data);
-	if (contains(data, " which ")) return query(data);
-	if (contains(data, " without ")) return query(data);
-	if (contains(data, "ing ")) return query(data);
-    
-	if (contains(data, " that ")) return query(data);
-	if (contains(data, "who ")) return query(data);
-    
+
+
+// LEARN
+//	if (args.size() >= 3 && eq(args[1], "is"))
+//		return nodeVectorWrap(learn(data)->Subject());
+//	startsWith(data, "update")||
+	eq(data, "daemon") || eq(data, "demon")
+
+// QUESTIONS
+	if(endsWith(data, "?")){
+		if (contains(data, " with ")) return query(data);
+		if (contains(data, " where ")) return query(data);
+		if (contains(data, " from ")) return query(data);
+		if (contains(data, " whose ")) return query(data);
+		if (contains(data, " which ")) return query(data);
+		if (contains(data, " without ")) return query(data);
+		if (contains(data, "ing ")) return query(data);
+
+		if (contains(data, " that ")) return query(data);
+		if (contains(data, "who ")) return query(data);
 
 	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
 		// || (contains(data, ":")) && !contains(data, " "))) {
@@ -560,9 +568,9 @@ NodeVector parse(const char* data0) {
 		//		if(all==EMPTY)parentPath(from,to);
 		//		if(all==EMPTY)shortestPath(from,to);
 	}
-    
+	}
 	
-	if (args.size() >= 4 && (eq(args[0], "learn")||eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){
+	if (args.size() >= 4 && (eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")||
 		string what=next_word(data);
 		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
@@ -571,8 +579,6 @@ NodeVector parse(const char* data0) {
 		fclose(fp);
 		return nv;
 	}
-	if (args.size() >= 3 && eq(args[1], "is"))
-        return nodeVectorWrap(learn(data)->Subject());
     
 	data=replace((char*) data, ' ', '_');
     
