@@ -1184,6 +1184,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool predicateMatch = (s->Predicate() == Instance)|| (INCLUDE_CLASSES && s->Predicate() == SubClass);
 		predicateMatch = predicateMatch || s->predicate==-10301;// Hauptartikel in der Kategorie
+		predicateMatch = predicateMatch || s->predicate==-10373;//  	Commons-Kategorie
 
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Type;
