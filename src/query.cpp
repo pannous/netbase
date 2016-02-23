@@ -1792,8 +1792,12 @@ NV findEntites(cchar* query0){
 
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
-				if(!forbidden[ wordhash(entity->name)])
+				if(!forbidden[ wordhash(entity->name)]){
 					all.push_back(entity);
+					if(!isAbstract(entity)){
+						entity->kind=abstractId;
+						insertAbstractHash(entity,true);// fix bug!
+				}
 			}
 //		}
 			if(mid==end)break;
