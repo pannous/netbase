@@ -591,6 +591,8 @@ NodeVector parse(const char* data0) {
 	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
 
 	Node* a=get(data);
+	if(i == 0 && !isAbstract(a))
+		insertAbstractHash(a,true);// fix bug!
 	dissectWord(a, true);
 	show(a);
     //	if (i == 0) showNodes(instanceFilter(a), true);
