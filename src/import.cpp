@@ -821,7 +821,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			replaceChar(name, '[', 0);// cut!
 			if(name[0]==0||hasWord(name))continue;//!
 			else subject=getSingleton(name,type);
-//			continue;// test1: NO PROPERTIES!
+			continue;// test1: NO PROPERTIES!
 		}
 
 		if(getSingletons)

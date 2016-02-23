@@ -350,7 +350,6 @@ int handle(cchar* q0,int conn){
 				if(get_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
 					continue;// only important stuff here!
 				// filter statements
-				if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
 				if(s->object==0)continue;
 //				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
 //					continue;
@@ -427,6 +426,7 @@ void fixLabel(Node* n){
 
 bool checkHideStatement(Statement* s){
 	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
+//	if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
 	if(s->subject==0||s->predicate==0||s->object==0){warnings++;return true;}
 	char* predicateName=s->Predicate()->name;
 	char* objectName=s->Object()->name;

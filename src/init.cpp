@@ -168,8 +168,7 @@ void checkRootContext() {
 //        clearMemory();
 		return;
 	}
-
-	p("USING SHARED MEMORY");
+//	p("USING SHARED MEMORY");
 ////	if (rootContext->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
 //	if (context->nodes != (Node*) node_root) {	//  &context_root[contextOffset]) {
 //		p("rootContext->nodes != (Node*) node_root");
@@ -216,7 +215,7 @@ extern "C" void initSharedMemory(bool relations) {
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 	//	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
 
-   	p("context_root:");
+//   	p("context_root:");
 	context_root=(Context*) share_memory(key+4, context_size, context_root,  ((char*) statement_root) + statement_size);
 
 	abstracts=(Ahash*) (abstract_root); // reuse or reinit
