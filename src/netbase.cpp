@@ -639,7 +639,8 @@ Node * add_force(int contextId, int id, const char* nodeName, int kind) {
 #endif
         Node* node=context->nodes + id;
 	initNode(node, id, nodeName, kind, contextId);
-	context->nodeCount++; // really?  add one , otherwise : overwrite
+	if(id>1000)
+		context->nodeCount++; // really?  add one , otherwise : overwrite
 	return node;
 }
 
@@ -1781,7 +1782,8 @@ void deleteWord(const char* data, bool completely) {
     }
 	int id=atoi(data);
 	if (id <= 0) {
-		deleteNode(getThe(data));
+//		deleteNode(getThe(data));
+		deleteNode(get(data));
 		if (completely) {
 			NodeVector* words=findWordsByName(current_context, data, true,false); //getAbstract(data);
 			for(int i=0;i<words->size();i++){
@@ -1809,7 +1811,8 @@ void deleteNode(Node * n) {
         NodeVector nv=instanceFilter(n);
         for (int i=0; i < nv.size(); i++) {
             Node* n=nv[i];
-            deleteNode(n);
+			if(!isAbstract(n))
+				deleteNode(n);
         }
 		deleteStatements(n);
 	}else{ //!!

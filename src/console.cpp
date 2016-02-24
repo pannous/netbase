@@ -168,7 +168,7 @@ NodeVector parse(const char* data0) {
 	if (eq(data0, "")) {
 		return OK;
 	}
-
+	context=getContext(current_context);
 	char* data=fixQuotesAndTrim(editable(data0));
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
@@ -560,7 +560,7 @@ NodeVector parse(const char* data0) {
 		else return nodeVectorWrap(learn(data));
 	}
 
-	if (args.size() >= 3 && eq(args[1], "to")) {
+	if (args.size() >= 3 && eq(args[1], ":to")) {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
@@ -569,7 +569,11 @@ NodeVector parse(const char* data0) {
 		//		if(all==EMPTY)shortestPath(from,to);
 	}
 	}
-	
+
+	if (eq(args[0], ":last")){
+		p(context->lastNode);
+		return nodeVectorWrap(get(context->lastNode));
+	}
 	if (args.size() >= 4 && (eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")||
 		string what=next_word(data);
 		NodeVector nv=nodeVectorWrap(learn(what)->Subject());

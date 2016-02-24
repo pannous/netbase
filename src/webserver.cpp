@@ -236,6 +236,7 @@ int handle(cchar* q0,int conn){
         verbosity=normal;
         showExcludes=true;
     }
+	p(q);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
     NodeVector all = parse(q); // <<<<<<<< HANDLE QUERY WITH NETBASE!
@@ -320,7 +321,7 @@ int handle(cchar* q0,int conn){
 		if (use_json)if(good>1)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount,text);
 		Writeline(conn, buff);
-        if(verbosity != alle)
+        if(verbosity != alle && !get_topic)
 			loadView(node);
 		if(use_json && get_topic){
 			N t=getTopic(node);

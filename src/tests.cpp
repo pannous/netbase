@@ -1747,15 +1747,15 @@ void testBrandNewStuff() {
 	germanLabels=true;
 
 	context=getContext(current_context);
-	context->lastNode=1;// RADICAL: fill all empty slots!
+	context->nodeCount=maxNodes/2;
+//	context->lastNode=1;// RADICAL: fill all empty slots!
 //	germanLabels=false;
 //	p("test -> SHELL");return;// for shell
 //	if(!(eq(get(1)->name,"Universe")||eq(get(1)->name,"Universum")))
 //		importWikiData();
 
 //	importTest();
-
-//	handle("dfsfddasfadfss asdfasdfsadfdfsa");
+//	handle(":last dfsfddasfadfss asdfasdfsadfdfsa");
 
 //	testLabelInstances();
 //	show(get(1));
@@ -1779,11 +1779,13 @@ void testBrandNewStuff() {
 //		handle("/ee/Mensch are bool and ignoreCase");
 //	handle("/ee/The United States of America");
 	//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
+	showContext(context);
 	int c=0;
-//	while(c++<100){
-//		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
-//		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
-//	}
+	while(c++<10){
+		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
+		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
+	}
+	showContext(context);
 //	handle("/entities/verbose/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
 //	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
 //	importWordnet();
