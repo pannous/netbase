@@ -2499,6 +2499,7 @@ int main(int argc, char *argv[]) {
 
 	if (checkParams(argc, argv, "quit")) exit(0);
 
+	germanLabels=true;
 	//    import();
 	initSharedMemory(); // <<<
 

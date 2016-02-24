@@ -1734,6 +1734,13 @@ void testEntities(){
 
 }
 
+void replay(){
+	char* line=(char*)malloc(MAX_CHARS_PER_LINE);
+	while(readFile("query.log", line)){
+		handle(line);
+	}
+}
+
 void testLabelInstances(){
 	NV all=allInstances(getAbstract("amazon"));
 	check(contains(all, get(3884)));
@@ -1745,9 +1752,9 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 	germanLabels=true;
-
+	replay();
 	context=getContext(current_context);
-	context->nodeCount=maxNodes/2;
+//	context->nodeCount=maxNodes/2;
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 //	germanLabels=false;
 //	p("test -> SHELL");return;// for shell

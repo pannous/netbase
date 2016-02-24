@@ -204,8 +204,8 @@ void initRelationsDE() {
 	_Node = addRelation(_node, "Knoten");
 	Abstract = addRelation(_abstract, "Abstract");
 	Class = addRelation(_clazz, "Klasse");
-	Object = addRelation(_object, "Object");
-	Entity = addRelation(_entity, "Entität");
+//	Object = addRelation(_object, "Object");
+	Object = Entity = addRelation(_entity, "Entität");
 	Relation = addRelation(_relation, "Relation");
 	Pattern = addRelation(_pattern, "Muster");
 	Reification = addRelation(_reification, "Reifikation");
@@ -264,7 +264,7 @@ void initRelations() {
 //    p("initRelations");
 	context=getContext(current_context);
 	if(context->currentNameSlot==0)
-    context->currentNameSlot++;// not 0!
+		context->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_unknown, "unknown");
 	See = addRelation(_see_also, "see also");

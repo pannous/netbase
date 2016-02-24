@@ -200,7 +200,7 @@ static const int _see= -50,//50 also, -40 similar
 	_SubClass= -2,//SubClass	animals=>i.e.=>bugs  (turn around!)
 	_Type= -3,
 	_instance= -4,
-	_ENTAILMENT= -21,// implies
+	_ENTAILMENT= -21,// implies VS SYNONYM !!
 	_Part= -11,
 	_PartOf= -12,
 	_Member= -13,
@@ -214,7 +214,7 @@ static const int _see= -50,//50 also, -40 similar
 	_cause= -23,
 	_derived= -81,
 	_derived_from_noun=81,//?
-	_synonym= -21, // 32
+	_synonym= -32, // -21 _ENTAILMENT
 	_DOMAIN_CATEGORY= -91,
 	_DOMAIN_REGION= -93,
 	_DOMAIN_USAGE= -95,

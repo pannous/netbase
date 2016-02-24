@@ -321,8 +321,8 @@ int handle(cchar* q0,int conn){
 		if (use_json)if(good>1)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, node->name, node->id,node->statementCount,text);
 		Writeline(conn, buff);
-        if(verbosity != alle && !get_topic)
-			loadView(node);
+//        if(verbosity != alle && !get_topic)
+//			loadView(node);
 		if(use_json && get_topic){
 			N t=getTopic(node);
 			if(t!=Entity && checkNode(t)){
