@@ -262,7 +262,7 @@ NodeVector parse(const char* data0) {
 	if (startsWith(data, "select ")||startsWith(data, "query ")) {
 		data=next_word(data);// whoot?
 	}
-	if (contains(data, "lookup")||contains(data, ":lookup")) {
+	if (contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
 		sscanf(limit, "lookup %d", &lookupLimit);
 		pf("LOOKUP LIMIT SET TO %d\n",lookupLimit);
@@ -409,7 +409,7 @@ NodeVector parse(const char* data0) {
 
 	if (args.size() >= 2 && (eq(args[0], ":handle"))){
 		string what=next_word(data);
-		handle(what.c_str());
+		handle(what.c_str());// like server (debug)
 		return OK;
 	}
 
@@ -452,30 +452,6 @@ NodeVector parse(const char* data0) {
 		NS all=findAll(da,instanceFilter);// childFilter
 //		show(all);// ok, show!
 		return setToVector(all);
-	}
-
-	if (startsWith(data, "an ")) return query(data);
-	if (startsWith(data, "a ")) return query(data);
-	if (startsWith(data, "any ")) return query(data);
-
-	//        if(startsWith(data,"is ")){  check_statement(data);return OK;}
-	//        if(startsWith(data,"does ")){  check_statement(data);return OK;}
-	if (contains(data, " in ")) return query(data);
-
-	if (startsWith(data, "these ")) return query(data);
-	if (contains(data, "that ")) return query(data);
-	if (contains(data, "who ")) // who loves jule
-		return query(data);
-    
-	if (eq(args[0], "the") || eq(args[0], "my")) {
-		N da=getThe(next_word(data), More);
-		show(da);
-		return nodeVectorWrap(da);
-	}
-	if (eq(args[0], "a") || eq(args[0], "abstract")) {
-		N da=getAbstract(next_word(data));
-		show(da);
-		return nodeVectorWrap(da);
 	}
 
 	if (startsWith(data, ":printlabels")){
@@ -531,7 +507,7 @@ NodeVector parse(const char* data0) {
 		start_server();
 		return OK;
 	}
-    if(eq(data,"testing")){testing=true;autoIds=false;clearMemory();return OK;}
+    if(eq(data,":testing")){testing=true;autoIds=false;clearMemory();return OK;}
 
 
 // LEARN
@@ -542,6 +518,31 @@ NodeVector parse(const char* data0) {
 
 // QUESTIONS
 	if(endsWith(data, "?")){
+
+		if (startsWith(data, "an ")) return query(data);
+		if (startsWith(data, "a ")) return query(data);
+		if (startsWith(data, "any ")) return query(data);
+
+		//        if(startsWith(data,"is ")){  check_statement(data);return OK;}
+		//        if(startsWith(data,"does ")){  check_statement(data);return OK;}
+		if (contains(data, " in ")) return query(data);
+
+		if (startsWith(data, "these ")) return query(data);
+		if (contains(data, "that ")) return query(data);
+		if (contains(data, "who ")) // who loves jule
+			return query(data);
+
+		if (eq(args[0], "the") || eq(args[0], "my")) {
+			N da=getThe(next_word(data), More);
+			show(da);
+			return nodeVectorWrap(da);
+		}
+		if (eq(args[0], "a") || eq(args[0], "abstract")) {
+			N da=getAbstract(next_word(data));
+			show(da);
+			return nodeVectorWrap(da);
+		}
+
 		if (contains(data, " with ")) return query(data);
 		if (contains(data, " where ")) return query(data);
 		if (contains(data, " from ")) return query(data);
