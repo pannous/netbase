@@ -190,7 +190,7 @@ void checkRootContext() {
 
 extern "C" void initSharedMemory(bool relations) {
 	signal(SIGSEGV, signal_handler);
-
+	signal(SIGCHLD, SIG_IGN);
     if(!relations)testing=true;
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key=0x69190;
