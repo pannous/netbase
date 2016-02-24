@@ -263,6 +263,7 @@ void initRelations() {
 //    if(testing){p("testing");return;}
 //    p("initRelations");
 	context=getContext(current_context);
+	if(context->currentNameSlot==0)
     context->currentNameSlot++;// not 0!
     if(germanLabels){initRelationsDE();return;}
 	Unknown = addRelation(_unknown, "unknown");
