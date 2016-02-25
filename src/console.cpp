@@ -588,7 +588,8 @@ NodeVector parse(const char* data0) {
 	data=replace((char*) data, ' ', '_');
     
 	int i=atoi(data);
-	if(data[0]=='P' && data[1]<='9')return nodeVectorWrap(get(-atoi(++data)-10000));// P106 -> -10106
+	if(data[0]=='P' && data[1]<='9')
+		return nodeVectorWrap(get(-atoi(++data)-10000));// P106 -> -10106
 
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
@@ -596,9 +597,11 @@ NodeVector parse(const char* data0) {
 	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
 
 	Node* a=get(data);
-	if(i == 0 && !isAbstract(a)){
+	if(!isAbstract(a)){
+		if(i == 0 || !hasWord(a->name)){
 		a->kind=abstractId;
 		insertAbstractHash(a,true);// fix bug!
+		}
 	}
 	dissectWord(a, true);
 	show(a);

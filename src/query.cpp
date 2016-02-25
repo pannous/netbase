@@ -1800,7 +1800,7 @@ NV findEntites(cchar* query0){
 						insertAbstractHash(entity,true);// fix bug!
 					}
 				}else{
-					pf("blacklisted:	%s",entity->name);
+					pf("blacklisted: %s\n",entity->name);
 				}
 			}
 //		}
