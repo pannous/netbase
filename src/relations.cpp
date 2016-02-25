@@ -574,6 +574,7 @@ Node * getRelation(const char* thing) {
 //	1366> <altLabel> "ersetztes"@de . predecessor succeeded by
 	if (eq(thing, "P279")) return SuperClass;// ist Unterklasse von
 	if (eq(thing, "P523")) return Part;// 	Has part
+	if (eq(thing, "P460")) return Synonym;
 //	if (eq(thing, "P131")) return PartOf;//located in the administrative
 //	if (eq(thing, "P706")) return PartOf;// located on terrain
 
@@ -593,7 +594,7 @@ void initWikiRelations(){
 	addStatement4(current_context,-10150, _SuperClass, _Part);//  Untereinheit (administrative Einheit)
 	addStatement4(current_context,-10706, _SuperClass, _PartOf);// located on terrain
 	addStatement4(current_context,-10279,_SuperClass,_SubClass);//Unterklasse von
-
+//	addStatement4(current_context,-10460 Als gleichwertig bezeichnet
 	addStatement4(current_context,-10035, _synonym, getThe("Präsident")->id);
 
 	addStatement4(current_context,-10527, _SuperClass, _Part);// 	Has part
