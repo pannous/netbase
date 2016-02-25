@@ -373,10 +373,13 @@ void fixPointers(Context* context) {
 	fixNodeNames(context, oldNames);
 }
 
-int collectAbstracts() {
+int collectAbstracts(bool clear/*=false*/) {
 	ps("collecting abstracts = buildAbstractHashes");// int now
 	initRelations();
-	memset(abstracts, 0, maxNodes*ahashSize * 2);
+	if(clear){
+		p("WIPING OLD abstracts!");
+		memset(abstracts, 0, maxNodes*ahashSize * 2);
+	}
 	Context* c=context;
 	int max=c->nodeCount; // maxNodes;
 	int count=0;
@@ -385,8 +388,8 @@ int collectAbstracts() {
 		Node* n=&c->nodes[i];
 		if (i > 1000 && !checkNode(n)) break;
 		if (n == null || n->name == null || n->id == 0) continue;
-		if (n->kind == Abstract->id) {
-			insertAbstractHash(n);
+		if (n->kind == Abstract->id || (!clear&&!hasWord(n->name))) {
+			insertAbstractHash(n);// don't force
 			count++;
 		}
 	}

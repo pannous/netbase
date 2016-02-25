@@ -446,7 +446,7 @@ static Context* context;
 #endif
 extern "C" Node* getAbstract(const char* word);
 Node* getAbstract(string thing);
-int collectAbstracts();
+int collectAbstracts(bool clear=false);
 int collectInstances();
 unsigned int hash(const char *str); //unsigned
 //unsigned long hash(const char *str); //unsigned

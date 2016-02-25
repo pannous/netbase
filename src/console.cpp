@@ -295,6 +295,7 @@ NodeVector parse(const char* data0) {
 		return OK;
 	}
 	if (eq(data, ":hack")) {
+		collectAbstracts();
 //		Context* c=context;
 //		c->nodeCount-=1000; //hack!
 		//		maxNodes += 1000;
