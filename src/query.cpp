@@ -1799,6 +1799,8 @@ NV findEntites(cchar* query0){
 						entity->kind=abstractId;
 						insertAbstractHash(entity,true);// fix bug!
 					}
+				}else{
+					pf("blacklisted:	%s",entity->name);
 				}
 			}
 //		}
