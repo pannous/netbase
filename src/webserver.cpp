@@ -354,7 +354,7 @@ int handle(cchar* q0,int conn){
 					continue;// only important stuff here!
 				// filter statements
 				if(!got_topic &&( s->predicate==_Type|| s->predicate==_SuperClass)){
-					addStatementToNode(node, s->id(), true);
+					addStatementToNode(node, s->id(), true);// next time
 				}
 				if(s->object==0)continue;
 //				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
