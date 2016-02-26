@@ -1892,6 +1892,7 @@ N getClass(N n){
 //		if(p)addStatement(n, Type, p,false);
 //		else
 		{
+			if(n->statementCount>3)
 			pf("Unknown type: %s %d\n",n->name,n->id);
 			return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 		}
