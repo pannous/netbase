@@ -1881,10 +1881,10 @@ Node* getType(Node* n){
 }
 
 N getClass(N n){
-	N p=getProperty(n,SuperClass,10);
-	if(!p)p=getProperty(n,Type,10);
+	N p=getProperty(n,SuperClass,20);
+	if(!p)p=getProperty(n,Type,20);
 	if(!p){
-		pf("Unknown type: %s\n",n->name);
+		pf("Unknown type: %s %d\n",n->name,n->id);
 		return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 	}
 	return p;
