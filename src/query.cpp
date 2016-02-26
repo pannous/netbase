@@ -1883,11 +1883,8 @@ Node* getType(Node* n){
 N getClass(N n){
 	if(isAbstract(n))return Abstract;
 	N p=getProperty(n,SuperClass,1000);
-//	if(!p){
-//		p=getProperty(n,SuperClass,1500);// fix import!!
-//		if(p)addStatement(n, SuperClass, p,false);
-//	}
 	if(!p)p=getProperty(n,Type,1000);
+	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p){
 //		if(!p)p=getProperty(n,Type,1500);
 //		if(p)addStatement(n, Type, p,false);
