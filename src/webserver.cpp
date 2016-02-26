@@ -350,12 +350,13 @@ int handle(cchar* q0,int conn){
 			deque<Statement*> statements;// sort
 			while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
 				if (!checkStatement(s))break;
-				if(get_topic &&!got_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
-					continue;// only important stuff here!
-				// filter statements
 				if(!got_topic &&( s->predicate==_Type|| s->predicate==_SuperClass)){
 					addStatementToNode(node, s->id(), true);// next time
 				}
+				if(get_topic &&!got_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
+					continue;// only important stuff here!
+				// filter statements
+
 				if(s->object==0)continue;
 //				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
 //					continue;
