@@ -323,41 +323,46 @@ int handle(cchar* q0,int conn){
 		Writeline(conn, buff);
 //        if(verbosity != alle && !get_topic)
 //			loadView(node);
+
+
+
 		if(use_json && get_topic){
 			N t=getTopic(node);
 			if(t!=Entity && checkNode(t)){
 				Writeline(conn, ", \"topicid\":"+itoa(t->id));
 				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
-//				Writeline(conn, ", \"typeid\":"+itoa(t->id));
-//				Writeline(conn, ", \"type\":\""+string(t->name)+"\"");
 			}
+			get_topic=false;
 		}
+
+		//			sortStatements(
+		Statement* s = 0;
+		deque<Statement*> statements;// sort
+		while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
+			if (!checkStatement(s))break;
+			if(get_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
+				continue;// only important stuff here!
+			// filter statements
+			if(s->object==0)continue;
+			//				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
+			//					continue;
+			if (s->subject==node->id and s->predicate!=4)//_instance
+				statements.push_front(s);
+			else statements.push_back(s);
+		}
+
 		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
 		if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
 			Writeline(", \"image\":\""+replace_all(replace_all(getImage(node,150,/*thumb*/true),"'","%27"),"\"","%22")+"\"");
 //		if((use_json)&&getText(node)[0]!=0)
 //			Writeline(", \"description\":\""+string(getText(node))+"\"");
-		Statement* s = 0;
+
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle || showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
             //            Writeline(",image:\""+getImage(node->name)+"\"");
 			if (use_json)Writeline(conn, ", \"statements\":[\n");
 
-//			sortStatements(
-			deque<Statement*> statements;// sort
-			while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
-				if (!checkStatement(s))break;
-				if(get_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
-					continue;// only important stuff here!
-				// filter statements
-				if(s->object==0)continue;
-//				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
-//					continue;
-				if (s->subject==node->id and s->predicate!=4)//_instance
-					statements.push_front(s);
-				else statements.push_back(s);
-			}
 			int good=0;
 			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
 				s=statements.at(j);
