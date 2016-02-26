@@ -1881,11 +1881,19 @@ Node* getType(Node* n){
 }
 
 N getClass(N n){
-	N p=getProperty(n,SuperClass,50);
-	if(!p)p=getProperty(n,Type,50);
+	N p=getProperty(n,SuperClass,5);
 	if(!p){
-		pf("Unknown type: %s %d\n",n->name,n->id);
-		return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+		p=getProperty(n,SuperClass,500);// fix import!!
+		if(p)addStatement(n, SuperClass, p);
+	}
+	if(!p)p=getProperty(n,Type,5);
+	if(!p){
+		if(!p)p=getProperty(n,Type,500);
+		if(p)addStatement(n, Type, p);
+		else {
+			pf("Unknown type: %s %d\n",n->name,n->id);
+			return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+		}
 	}
 	return p;
 }
