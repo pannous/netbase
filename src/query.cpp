@@ -1883,12 +1883,12 @@ Node* getType(Node* n){
 N getClass(N n){
 	N p=getProperty(n,SuperClass,10);
 	if(!p){
-		p=getProperty(n,SuperClass,15000);// fix import!!
+		p=getProperty(n,SuperClass,150000);// fix import!!
 		if(p)addStatement(n, SuperClass, p,false);
 	}
 	if(!p)p=getProperty(n,Type,10);
 	if(!p){
-		if(!p)p=getProperty(n,Type,15000);
+		if(!p)p=getProperty(n,Type,150000);
 		if(p)addStatement(n, Type, p,false);
 		else {
 			pf("Unknown type: %s %d\n",n->name,n->id);
