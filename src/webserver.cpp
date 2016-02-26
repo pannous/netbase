@@ -346,17 +346,6 @@ int handle(cchar* q0,int conn){
 			if(s->object==0)continue;
 			//				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
 			//					continue;
-
-
-			if(get_topic && s->predicate==_Type){
-				N t=s->Object();
-				if(t!=Entity && checkNode(t)){
-					Writeline(conn, ", \"topicid\":"+itoa(t->id));
-					Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
-				}
-				get_topic=false;
-			}
-			
 			if (s->subject==node->id and s->predicate!=4)//_instance
 				statements.push_front(s);
 			else statements.push_back(s);
