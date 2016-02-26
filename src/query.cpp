@@ -1882,15 +1882,16 @@ Node* getType(Node* n){
 
 N getClass(N n){
 	N p=getProperty(n,SuperClass,1000);
-	if(!p){
-		p=getProperty(n,SuperClass,1500);// fix import!!
-		if(p)addStatement(n, SuperClass, p,false);
-	}
+//	if(!p){
+//		p=getProperty(n,SuperClass,1500);// fix import!!
+//		if(p)addStatement(n, SuperClass, p,false);
+//	}
 	if(!p)p=getProperty(n,Type,1000);
 	if(!p){
-		if(!p)p=getProperty(n,Type,1500);
-		if(p)addStatement(n, Type, p,false);
-		else {
+//		if(!p)p=getProperty(n,Type,1500);
+//		if(p)addStatement(n, Type, p,false);
+//		else
+		{
 			pf("Unknown type: %s %d\n",n->name,n->id);
 			return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 		}
