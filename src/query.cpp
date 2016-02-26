@@ -1881,6 +1881,7 @@ Node* getType(Node* n){
 }
 
 N getClass(N n){
+	if(isAbstract(n))return Abstract;
 	N p=getProperty(n,SuperClass,1000);
 //	if(!p){
 //		p=getProperty(n,SuperClass,1500);// fix import!!
