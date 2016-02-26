@@ -155,7 +155,8 @@ void initRelationsDE() {
 	//    DOMAIN_OF_SYNSET_USAGE =
 	Domain=addRelation(_DOMAIN_USAGE, "Bereich"); // #bitch @ colloquialism  || fin de siecle @ French   # fuck(vulgar)
 	//    ENTAILMENT =
-	addRelation(_ENTAILMENT, "Impliziert",is_transitive); //ENTAILMENT  jump implies come down
+//	Synonym !?!
+//	addRelation(_ENTAILMENT, "Impliziert",is_transitive); //ENTAILMENT  jump implies come down
 	SuperClass = addRelation(_Hypernym, "Klasse",is_transitive); //Parent ,"Hypernym"
 	Parent = SuperClass;
 	//	IsA = SuperClass;

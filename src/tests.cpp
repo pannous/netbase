@@ -1752,7 +1752,7 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 	germanLabels=true;
-	replay();
+//	replay();
 	context=getContext(current_context);
 //	context->nodeCount=maxNodes/2;
 //	context->lastNode=1;// RADICAL: fill all empty slots!
@@ -1767,7 +1767,9 @@ void testBrandNewStuff() {
 //	testLabelInstances();
 //	show(get(1));
 //	importTest();
-	testEntities();
+//	testEntities();
+	N t=getTopic(get(1744));
+	p(t);
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
 
@@ -1788,11 +1790,11 @@ void testBrandNewStuff() {
 	//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
 	showContext(context);
 	int c=0;
-	while(c++<10){
-		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
-		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
-	}
-	showContext(context);
+//	while(c++<10){
+//		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
+//		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
+//	}
+//Is	showContext(context);
 //	handle("/entities/verbose/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
 //	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
 //	importWordnet();

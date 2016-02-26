@@ -221,7 +221,7 @@ int handle(cchar* q0,int conn){
 	}
 	bool get_topic=false;
 	bool sort=false;
-	if (startsWith(q, "ee/")) {
+	if (startsWith(q, "ee/")||startsWith(q, "ee ")) {
 		q[2]=' ';
 		get_topic=true;
 	}
