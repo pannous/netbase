@@ -219,7 +219,8 @@ int handle(cchar* q0,int conn){
 		showExcludes=false;
 		verbosity = alle;
 	}
-	bool get_topic=false;
+//	bool get_topic=false;
+	bool get_topic=true;
 	bool sort=false;
 	if (startsWith(q, "ee/")||startsWith(q, "ee ")) {
 		q[2]=' ';
@@ -326,16 +327,22 @@ int handle(cchar* q0,int conn){
 		bool got_topic=false;
 		if(use_json && get_topic){
 			N c=getClass(node);
-//				NV topics=getTopics(node);
 			N t=getTopic(node);
-			if(!c)c=t;
-			if(!t)t=c;
+			N ty=getType(node);
+//			if(!c)c=t;
+			if(!t)t=ty;
 			if(t!=Entity && checkNode(t)){
 				got_topic=true;
-				Writeline(conn, ", \"topicid\":"+itoa(t->id));
+				Writeline(conn, ",\n\t \"topicid\":"+itoa(t->id));
 				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
-				Writeline(conn, ", \"typeid\":"+itoa(t->id));
-				Writeline(conn, ", \"type\":\""+string(t->name)+"\"");
+			}
+			if(c){
+				Writeline(conn, ",\n\t \"classid\":"+itoa(c->id));
+				Writeline(conn, ", \"class\":\""+string(c->name)+"\"");
+			}
+			if(ty){
+				Writeline(conn, ",\n\t \"typeid\":"+itoa(ty->id));
+				Writeline(conn, ", \"type\":\""+string(ty->name)+"\"");
 			}
 		}
 		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
@@ -348,7 +355,7 @@ int handle(cchar* q0,int conn){
 		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle || showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
             //            Writeline(",image:\""+getImage(node->name)+"\"");
-			if (use_json)Writeline(conn, ", \"statements\":[\n");
+			if (use_json)Writeline(conn, ",\n\t \"statements\":[\n");
 
 //			sortStatements(
 			deque<Statement*> statements;// sort

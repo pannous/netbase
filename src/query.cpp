@@ -1449,6 +1449,58 @@ bool enqueue(Node* current, Node* d, NodeQueue * q) {
 	return true;
 }
 #define min(x,y) x<y?x:y
+
+Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
+	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	int* depths	 = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	if (enqueued == 0) throw "out of memory for findPath";
+	//	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
+	NodeQueue q;
+	q.push(fro);
+	depths[fro->id]=0;
+	N furthest=fro;
+	int deepest=0;
+	// NOT neccessary for anyPath , ...
+	NodeVector instances;
+	if (isAbstract(fro) && edgeFilter != anyFilterNoKinds && edgeFilter != instanceFilter && edgeFilter != anyFilterRandom) // && edgeFilter!=
+		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
+	for (int i = 0; i < instances.size(); i++) {
+		Node* d = instances[i];
+		enqueued[d->id] = fro->id;
+		depths[d->id]=1;
+		q.push(d);
+		pf("instance %d %s\n", d->id, d->name);
+	}
+	Node* current;
+	NodeSet all;
+	while ((current = q.front())) {
+		//		if(enqueued[current->id+propertySlots])continue;
+		//		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
+		all.insert(current);
+		if(all.size()>resultLimit)break;
+		if (q.empty())break;
+		q.pop();
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/)||(current->name[0]<'A'))
+			continue;
+		if(startsWith(current->name,"http"))
+			continue;
+		N pa=get(enqueued[current->id+propertySlots]);
+		int depth=depths[current->id+propertySlots]+1;
+		if(depth>deepest)furthest=current;
+		if(!pa)pa=Unknown;// Error;// Nil;
+		//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
+		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
+		if(q.size()<lookupLimit)// bad (?) : refill after pop()
+			NodeVector more = edgeFilter(current, &q);// enqued => empty!
+		//		show(more);
+		//		mergeVectors(&all, more);
+	}
+	free(enqueued);
+	free(depths);
+	return furthest;
+}
+
+
 // i.e. findAll(a(Person),subclassFilter)
 NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 //	bool* enqueued = (bool*) malloc(maxNodes * sizeof (bool)); //context->nodeCount * 2
@@ -1855,17 +1907,24 @@ NV findEntites(cchar* query0){
 //	free(query);
 //	return filterCandidates(all);
 //}
-
+bool stopTopic(N t){
+	if(t->id==5)return true;
+	return false;
+}
 NV sortTopics(NV topics,N entity){
 	deque<Node*> sorted;
 	for(int i=0;i<(int)topics.size();i++){
 		N topic=topics[i];
 		if(eq(topic->name,"◊"))continue;
-		if(contains(entity->name, getText(topic))) // a great politician , politician
-			sorted.push_front( topic);
-		else
-			sorted.push_back(topic);
+		if(eq(topic->name,entity->name))continue;
+//		if(contains(entity->name, getText(topic))) // a great politician , politician
+//		sorted.push_back(topic);
+//		else
+		sorted.push_front( topic);
+		if(stopTopic(topic))
+			break;
 	}
+//	topics.clear();
 	for (int i=0; i<sorted.size(); i++) {
 		topics[i]=sorted[i];
 	}
@@ -1875,9 +1934,10 @@ NV sortTopics(NV topics,N entity){
 
 extern "C"
 Node* getType(Node* n){
-	Statement* s=findStatement(n,Type,Any);
-	if(!checkStatement(s))return 0;// n
-	return s->Object();
+	return getProperty(n,Type,1000);
+//	Statement* s=findStatement(n,Type,Any);
+//	if(!checkStatement(s))return 0;// n
+//	return s->Object();
 }
 
 N getClass(N n){
@@ -1899,9 +1959,11 @@ N getClass(N n){
 }
 
 N getTopic(N node){
-	NV all=getTopics(node);
-	if(all.size()==0)return Entity;
-	return all[0];// best?
+//	NV all=getTopics(node);
+	return getFurthest(node,parentFilter);
+//	if(all.size()==0)return Entity;
+//	return all[all.size()-1];// best?
+//	return all[0];// best?
 //	return getClass(n);
 }
 

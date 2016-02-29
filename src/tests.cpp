@@ -1768,8 +1768,15 @@ void testBrandNewStuff() {
 //	show(get(1));
 //	importTest();
 //	testEntities();
-	N t=getTopic(get(1744));
-	p(t);
+	//	N t=getTopic(get(1744));
+	N t=getTopic(get(2765216));
+//	t=getTopic(get(2765216));
+//	t=getTopic(get(2765216));
+//	t=getTopic(get(2765216));
+//	t=getTopic(get(2765216));
+//	t=getTopic(get(2765216));
+//	t=getTopic(get(2765216));
+	p(t->name);
 	//    testing=false;// NO RELATIONS!
 	//	fixRelations();
 
