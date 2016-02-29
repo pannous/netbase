@@ -1882,8 +1882,8 @@ Node* getType(Node* n){
 
 N getClass(N n){
 	N p=0;
-	if(!p)p=getProperty(n,Type,1000);
-	if(!p)p=getProperty(n,SuperClass,1000);
+	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
+	if(!p)p=getProperty(n,SuperClass,1000);// more specific: Transportflugzeug
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p){
 //		if(!p)p=getProperty(n,Type,1500);
@@ -1898,8 +1898,11 @@ N getClass(N n){
 	return p;
 }
 
-N getTopic(N n){
-	return getClass(n);
+N getTopic(N node){
+	NV all=getTopics(node);
+	if(all.size()==0)return Entity;
+	return all[0];// best?
+//	return getClass(n);
 }
 
 N getTopic2(N n){// n-Titty = entity

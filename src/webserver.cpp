@@ -325,13 +325,17 @@ int handle(cchar* q0,int conn){
 //			loadView(node);
 		bool got_topic=false;
 		if(use_json && get_topic){
+			N c=getClass(node);
+//				NV topics=getTopics(node);
 			N t=getTopic(node);
+			if(!c)c=t;
+			if(!t)t=c;
 			if(t!=Entity && checkNode(t)){
 				got_topic=true;
 				Writeline(conn, ", \"topicid\":"+itoa(t->id));
 				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
-//				Writeline(conn, ", \"typeid\":"+itoa(t->id));
-//				Writeline(conn, ", \"type\":\""+string(t->name)+"\"");
+				Writeline(conn, ", \"typeid\":"+itoa(t->id));
+				Writeline(conn, ", \"type\":\""+string(t->name)+"\"");
 			}
 		}
 		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
@@ -364,6 +368,19 @@ int handle(cchar* q0,int conn){
 					statements.push_front(s);
 				else statements.push_back(s);
 			}
+//			if(get_topic && verbosity!=shorter){
+//				NV topics=getTopics(node);
+//				N s=topics[0];
+//				for (int j = 0; j < topics.size() && j<=resultLimit; j++) {
+//					N s=topics[j];
+//					Temporary statement (node,topic,s)
+//					statements.push_front(s);
+//				}
+//			}
+
+
+
+
 			int good=0;
 			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
 				s=statements.at(j);
@@ -380,7 +397,7 @@ int handle(cchar* q0,int conn){
 					N type=findProperty(s->Object(),Type->name,0,50);
 					if(  checkNode(type))
 						objectName=(char*)(concat(concat(objectName, ": "),type->name));
-			}
+				}
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, objectName, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
 				good++;
