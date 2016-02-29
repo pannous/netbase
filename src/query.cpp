@@ -1881,8 +1881,9 @@ Node* getType(Node* n){
 }
 
 N getClass(N n){
-	N p=getProperty(n,SuperClass,1000);
+	N p=0;
 	if(!p)p=getProperty(n,Type,1000);
+	if(!p)p=getProperty(n,SuperClass,1000);
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p){
 //		if(!p)p=getProperty(n,Type,1500);
