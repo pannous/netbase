@@ -1881,7 +1881,6 @@ Node* getType(Node* n){
 }
 
 N getClass(N n){
-	if(isAbstract(n))return Abstract;
 	N p=getProperty(n,SuperClass,1000);
 	if(!p)p=getProperty(n,Type,1000);
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
