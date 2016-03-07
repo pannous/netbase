@@ -1568,7 +1568,7 @@ NodeVector* findWordsByName(int context, const char* word, bool first,bool conta
 		Node* n=&c->nodes[i];
 		if (n->id==0||!checkNode(n, i, true, false)) continue;
 		bool good=eq(n->name, word, true);
-		if(containsWord)good=good||contains(n->name, word,true);
+		if(containsWord)good=good||contains(n->name, word,true);// 1000000000*100 comparisons!?!
 		if (good) {
 			all->push_back(n);
 			show(n);
@@ -1577,12 +1577,14 @@ NodeVector* findWordsByName(int context, const char* word, bool first,bool conta
 	}
 	if (all->size() == 0)
 		if (!quiet) printf("cant find node %s in context %d\n", word, context);
-	N a=getAbstract(word);
-	NV is=instanceFilter(a);// expensive!!!
-	for (int i=0; i < all->size(); i++){
-		Node *n=all->at(i);
-		if(!contains(is,n))addStatement(a,Instance,n);
-	}
+//	if(associate){
+//	N a=getAbstract(word);
+//	NV insts=instanceFilter(a);// expensive!!!
+//	for (int i=0; i < all->size(); i++){
+//		Node *n=all->at(i);
+//		if(!contains(insts,n))addStatement(a,Instance,n);
+//	}
+//}
 	return all;
 }
 

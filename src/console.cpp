@@ -508,7 +508,11 @@ NodeVector parse(const char* data0) {
 		start_server();
 		return OK;
 	}
-    if(eq(data,":testing")){testing=true;autoIds=false;clearMemory();return OK;}
+	if(eq(data,":testing")){testing=true;autoIds=false;clearMemory();return OK;}
+	if(startsWith(data,":complete")){
+		char* word=next_word(data);
+		return *findWordsByName(current_context,word,/*first*/false,/*containsWord*/true);
+	}
 
 
 // LEARN
@@ -517,8 +521,8 @@ NodeVector parse(const char* data0) {
 //	startsWith(data, "update")||
 //	eq(data, "daemon") || eq(data, "demon")
 
-// QUESTIONS
-	if(endsWith(data, "?")){
+	bool QUESTIONS=false;
+	if(QUESTIONS&&endsWith(data, "?")){
 
 		if (startsWith(data, "an ")) return query(data);
 		if (startsWith(data, "a ")) return query(data);

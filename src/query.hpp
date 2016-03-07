@@ -99,6 +99,6 @@ void setValue(Node* node, Node* property, Node* value);
 bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
 bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool matchName=false);
 bool isA(Node* fro, Node* to);
-
+bool filterWikiType(int object);
 Statement * findRelations(Node* from, Node * to);
 #endif	/* QUERY_H */

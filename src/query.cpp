@@ -1315,25 +1315,10 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 	else
 		return all;
 }
-#define DROP true
-#define KEEP false
-bool filterWikiType(int object){
-	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
-	if(object==4167836)return DROP; // Wikimedia-Kategorie
-	if(object==35120)return DROP; // Entität
-	if(object==5127848)return DROP; // Gruppe
-	if(object==27948)return DROP; // Liste
-	if(object==827335)return DROP; // Abstrakter Datentyp
-	if(object==1979154)return DROP; // 	Modell
-	if(object==386724)return DROP; //	Werk	Q386724	=> Produkt	Q2424752
-	if(object==28877)return DROP; //	Gut	Q28877	=> Produkt	Q2424752
-	if(object==7184903)return DROP; //	Abstraktes Objekt
-	if(object==853614)return DROP; //	 Identifikator
-	if(object==2221906)return DROP; //		Standort
-	if(object==9158768)return DROP; //			Speicher
-	return KEEP;
-}
-// put as callback into findPath for recursion
+
+
+// put as callback into findPath for recursion.
+// Currently same concept as topicFilter, with filterWikiType in findPath
 NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 	NodeVector all;
 	int i = 0;
@@ -1564,6 +1549,25 @@ NodeVector findAllSubclasses(Node *fro){
 	return setToVector(all);
 }
 
+#define DROP true
+#define KEEP false
+bool filterWikiType(int object){
+	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
+	if(object==4167836)return DROP; // Wikimedia-Kategorie
+	if(object==35120)return DROP; // Entität
+	if(object==5127848)return DROP; // Gruppe
+	if(object==27948)return DROP; // Liste
+	if(object==827335)return DROP; // Abstrakter Datentyp
+	if(object==1979154)return DROP; // 	Modell
+	if(object==386724)return DROP; //	Werk	Q386724	=> Produkt	Q2424752
+	if(object==28877)return DROP; //	Gut	Q28877	=> Produkt	Q2424752
+	if(object==7184903)return DROP; //	Abstraktes Objekt
+	if(object==853614)return DROP; //	 Identifikator
+	if(object==2221906)return DROP; //		Standort
+	if(object==9158768)return DROP; //		Speicher
+	return KEEP;
+}
+
 // ONE path! See findAll for all leaves
 NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
@@ -1591,6 +1595,7 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	Node* current;
 	NodeVector path=EMPTY;
 	while ((current = q.front())) {
+		if(filterWikiType(current->id))continue;
 		if (q.empty())break;
 		q.pop();
 		//		if(current->id==230608)
