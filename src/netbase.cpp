@@ -187,8 +187,8 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
             return ah; //schon da
 		if(ab && eq(ab->name, a->name, true)){
 			if(overwrite){
-				if(checkNode(ah->abstract))
-					get(ah->abstract)->kind=_entity;
+				if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
+					get(ah->abstract)->kind=_entity;// 'free' old abstract
 				ah->abstract=a->id;
 			}
             return ah; // NAME schon da!!
@@ -588,6 +588,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 #endif
 	return true;
 }
+
 // return false if node not ok
 // remove when optimized!!!!!!!!!!
 bool checkNode(int nodeId, bool checkStatements, bool checkNames,bool report) {
