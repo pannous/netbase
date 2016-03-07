@@ -1271,8 +1271,8 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 //				bool hadAbstract=isAbstract(a);
 //				if(!hadAbstract){
 					wiki_abstracts[id]=true;
-					insertAbstractHash(a,true);// remove old abstract
-//					insertAbstractHash(a,false);// keep old abstract
+//					insertAbstractHash(a,true);// remove old abstract
+					insertAbstractHash(a,false);// keep old abstract
 				a->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
 //				}
 				continue;
