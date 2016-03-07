@@ -202,8 +202,8 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
 			return ah; //schon da
 		if(ab && eq(ab->name, a->name, true)){
 			if(overwrite){
-								if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
-									get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
+//								if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
+//									get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
 			ah->abstract=a->id;
 			}
 			return ah; // NAME schon da!!
