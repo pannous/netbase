@@ -1229,7 +1229,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 			printf("%d labels, %d bad\r", linecount, badCount);
 			fflush(stdout);
 		}
-		if(line[0]==0)
+		if(line[0]==0||linecount==1234144)
 			continue;
 		//		if(debug)if(linecount>100)break;
 		u8_unescape(line,MAX_CHARS_PER_LINE,line);
