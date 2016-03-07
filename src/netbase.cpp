@@ -187,8 +187,8 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
             return ah; //schon da
 		if(ab && eq(ab->name, a->name, true)){
 			if(overwrite){
-				if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
-					get(ah->abstract)->kind=_entity;// 'free' old abstract
+//				if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
+//					get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
 				ah->abstract=a->id;
 			}
             return ah; // NAME schon da!!
@@ -201,7 +201,11 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
 		if (ab == a)
 			return ah; //schon da
 		if(ab && eq(ab->name, a->name, true)){
-			if(overwrite)ah->abstract=a->id;
+			if(overwrite){
+								if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
+									get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
+			ah->abstract=a->id;
+			}
 			return ah; // NAME schon da!!
 		}
         ah->next=context->extrahashNr++;
