@@ -1262,7 +1262,8 @@ Node * hasWord(const char* thingy) {
 	// ./clear-shared-memory.sh After changing anything here!!
 	while (found >= abstracts && found < &extrahash[maxNodes]) {
 		if(tries++>1000){
-			p("cycle bug");
+//			p("cycle bug");
+			bad();
 			break;
 		}
 //#ifdef DEBUG

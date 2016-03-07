@@ -1317,9 +1317,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 }
 
 
-// put as callback into findPath for recursion.
-// Currently same concept as topicFilter, with filterWikiType in findPath
-NodeVector parentFilter(Node* subject, NodeQueue * queue) {
+NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 	NodeVector all;
 	int i = 0;
 	Statement* s = 0;
@@ -1365,6 +1363,16 @@ NodeVector parentFilter(Node* subject, NodeQueue * queue) {
 		return all;
 }
 
+
+// put as callback into findPath for recursion.
+// Currently same concept as topicFilter, with filterWikiType in findPath
+NodeVector parentFilter(Node* subject, NodeQueue * queue) {
+	return parentFilter2(subject,queue,true);
+}
+
+NodeVector topicFilter(Node* subject, NodeQueue * queue) {
+	return parentFilter2(subject,queue,false);
+}
 
 // todo : memory LEAK NodeVector ?
 // todo : enqueue instances?
@@ -1965,7 +1973,8 @@ N getClass(N n){
 
 N getTopic(N node){
 //	NV all=getTopics(node);
-	return getFurthest(node,parentFilter);
+//	return getFurthest(node,parentFilter);
+	return getFurthest(node,topicFilter);
 //	if(all.size()==0)return Entity;
 //	return all[all.size()-1];// best?
 //	return all[0];// best?
