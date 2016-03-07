@@ -1252,7 +1252,7 @@ Node * hasWord(const char* thingy) {
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
     }
-    //	int tries=0; // cycle bugs
+    	int tries=0; // cycle bugs
 
     //    	map<Node*, bool> visited;
 //#ifdef DEBUG
@@ -1261,6 +1261,10 @@ Node * hasWord(const char* thingy) {
     //	map<Ahash*, bool> visited;
 	// ./clear-shared-memory.sh After changing anything here!!
 	while (found >= abstracts && found < &extrahash[maxNodes]) {
+		if(tries++>1000){
+			p("cycle bug");
+			break;
+		}
 //#ifdef DEBUG
 //		if (visited[found->abstract] == 1) {// Only happens after messing with full memory
 //			debugAhash(h);
