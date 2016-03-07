@@ -186,7 +186,11 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
 		if (ab == a)
             return ah; //schon da
 		if(ab && eq(ab->name, a->name, true)){
-			if(overwrite)ah->abstract=a->id;
+			if(overwrite){
+				if(checkNode(ah->abstract))
+					get(ah->abstract)->kind=_entity;
+				ah->abstract=a->id;
+			}
             return ah; // NAME schon da!!
 		}
 		ah=getAhash(ah->next);

@@ -1268,9 +1268,13 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		if(startsWith(test, "description")){
 			if(startsWith(label,"Wikimedia")){
 				N a=getEntity(key,false,false);
-				wiki_abstracts[id]=true;
-				insertAbstractHash(a,true);
+//				bool hadAbstract=isAbstract(a);
+//				if(!hadAbstract){
+					wiki_abstracts[id]=true;
+					insertAbstractHash(a,true);// remove old abstract
+//					insertAbstractHash(a,false);// keep old abstract
 				a->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
+//				}
 				continue;
 			}
 			if(!altLabels)continue;
@@ -1289,8 +1293,8 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		if(altLabels)continue;//  important in second run only!
 
 		//		if(properties)id=(int)maxNodes-id;
-		if(id==2)
-			p("ERde");
+//		if(id==2)
+//			p("ERde");
 
 		if(id<maxNodes/2-propertySlots){
 			Node* node=&context->nodes[id];

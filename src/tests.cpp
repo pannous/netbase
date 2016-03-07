@@ -1769,7 +1769,10 @@ void testBrandNewStuff() {
 //	importTest();
 //	testEntities();
 	//	N t=getTopic(get(1744));
-	N t=getTopic(get(2765216));
+//	N t=getTopic(get(2765216));
+	N e=the(Angela Merkel);
+	show(e);
+	N t=getTopic(e);
 //	t=getTopic(get(2765216));
 //	t=getTopic(get(2765216));
 //	t=getTopic(get(2765216));

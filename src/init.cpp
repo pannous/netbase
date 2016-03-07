@@ -235,14 +235,13 @@ extern "C" void init(bool relations) {
 }
 
 
-void fixNodes(Context* context, Node* oldNodes) {
+void fixStatementNodeIds(Context* context, Node* oldNodes) {
 #ifndef explicitNodes
 	return;
 #else
 	int max=context->statementCount; // maxStatements;
 	for (int i=0; i < max; i++) {
 		Statement* n=&context->statements[i];
-
 		if (!checkStatement(n)) {
 			showStatement(n);
 			continue;
@@ -253,6 +252,7 @@ void fixNodes(Context* context, Node* oldNodes) {
 	}
 #endif
 }
+
 FILE* open_binary(cchar* c){
 	printf("Opening File %s\n", (data_path + c).data());
      FILE* fp= fopen((data_path + c).data(), "rb");
@@ -331,7 +331,7 @@ void load(bool force) {
 
 	if (oldNodes != c->nodes) {
 		p("Fixing nodes");
-		fixNodes(c, oldNodes);
+		fixStatementNodeIds(c, oldNodes);
 	}
 
 	collectAbstracts(); //or load abstracts->bin
@@ -369,7 +369,7 @@ void fixPointers(Context* context) {
 	initContext(context);
 //	check((char*) context->nodes == context_root + contextOffset);
 	//	context->nodes=root_memory
-	fixNodes(context, oldNodes);
+	fixStatementNodeIds(context, oldNodes);
 	fixNodeNames(context, oldNames);
 }
 
