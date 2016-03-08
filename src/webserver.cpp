@@ -337,11 +337,11 @@ int handle(cchar* q0,int conn){
 				Writeline(conn, ",\n\t \"topicid\":"+itoa(t->id));
 				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
 			}
-			if(c){
+			if(c && c!=t){
 				Writeline(conn, ",\n\t \"classid\":"+itoa(c->id));
 				Writeline(conn, ", \"class\":\""+string(c->name)+"\"");
 			}
-			if(ty){
+			if(ty&& c!=ty && ty!=t){
 				Writeline(conn, ",\n\t \"typeid\":"+itoa(ty->id));
 				Writeline(conn, ", \"type\":\""+string(ty->name)+"\"");
 			}
