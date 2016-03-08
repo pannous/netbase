@@ -1741,6 +1741,41 @@ void testEntities(){
 
 }
 
+void testTopics(){
+
+	//	N t=getTopic(get(1744));
+	//	N t=getTopic(get(2765216));
+	N sackgassendorf=get(177966);
+	N e=getTopic(sackgassendorf);// Sackgassendorf -> Reihendorf -> Dorf OK
+	check(eq(e->name,"Dorf"));
+	N t=getType(sackgassendorf);
+	check(eq(t->name,"Siedlung"));
+	N c=getClass(sackgassendorf);
+	check(eq(c->name,"Reihendorf"));
+	//	N e=getTopic(get(177966));// Sackgassendorf -> Reihendorf -> Dorf OK
+	//	N e=the(Sackgassendorf);
+	//	N e=the(Angela Merkel);
+	//	show(e);
+	//	t=getTopic(get(2765216));
+	//	t=getTopic(get(2765216));
+	//	t=getTopic(get(2765216));
+	//	t=getTopic(get(2765216));
+	//	t=getTopic(get(2765216));
+	//	t=getTopic(get(2765216));
+	p(t->name);
+	//    testing=false;// NO RELATIONS!
+	//	fixRelations();
+
+}
+
+void testWikidata(){
+	testTopics();
+//	testEntities();
+	//	testLabelInstances();
+	//	importTest();
+
+}
+
 void replay(){
 	char* line=(char*)malloc(MAX_CHARS_PER_LINE);
 	while(readFile("query.log", line)){
@@ -1760,7 +1795,7 @@ void testBrandNewStuff() {
 	debug = true;
 	germanLabels=true;
 //	replay();
-	testQuery();
+//	testQuery();
 	context=getContext(current_context);
 //	context->nodeCount=maxNodes/2;
 //	context->lastNode=1;// RADICAL: fill all empty slots!
@@ -1772,30 +1807,8 @@ void testBrandNewStuff() {
 //	importTest();
 //	handle(":last dfsfddasfadfss asdfasdfsadfdfsa");
 
-
-//	testLabelInstances();
-//	show(get(1));
-//	importTest();
-//	testEntities();
-	//	N t=getTopic(get(1744));
-	//	N t=getTopic(get(2765216));
-	N e=getTopic(get(177966));// Sackgassendorf -> Reihendorf -> Dorf OK
-//	N e=getTopic(get(177966));// Sackgassendorf -> Reihendorf -> Dorf OK
-//	N e=the(Sackgassendorf);
-//	N e=the(Angela Merkel);
-	show(e);
-	N t=getTopic(e);
-//	t=getTopic(get(2765216));
-//	t=getTopic(get(2765216));
-//	t=getTopic(get(2765216));
-//	t=getTopic(get(2765216));
-//	t=getTopic(get(2765216));
-//	t=getTopic(get(2765216));
-	p(t->name);
-	//    testing=false;// NO RELATIONS!
-	//	fixRelations();
-
-//	recursiveTaxonomy();
+	testWikidata();
+//	testTopics();
 
 	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	//	getClasses();
@@ -1811,7 +1824,7 @@ void testBrandNewStuff() {
 //	handle("/ee/The United States of America");
 	//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
 	showContext(context);
-	int c=0;
+//	int c=0;
 //	while(c++<10){
 //		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
 //		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");

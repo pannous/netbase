@@ -1636,12 +1636,12 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object,
 		}
 		visited[s]=1;
 //        if(s->id()==4334||subject->id==4904654) // debug id
-//        p(s);
+        p(s);
 		if (!checkStatement(s)) continue;
         //#ifdef useContext
 		if (s->context == _pattern) continue;
-        if(predicate==Type&&s->predicate!=_Type&& visited.size()>100)
-			return 0;// expect types on top HAS TO BE ORDERED!!
+//        if(predicate==Type&&s->predicate!=_Type&& visited.size()>100)
+//			return 0;// expect types on top HAS TO BE ORDERED!!
         //#endif
 
 		//		if(s->Predicate!=Any){

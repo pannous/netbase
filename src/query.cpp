@@ -1955,15 +1955,15 @@ Node* getType(Node* n){
 
 N getClass(N n){
 	N p=0;
-	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
 	if(!p)p=getProperty(n,SuperClass,1000);// more specific: Transportflugzeug
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
+	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
 	if(!p){
 //		if(!p)p=getProperty(n,Type,1500);
 //		if(p)addStatement(n, Type, p,false);
 //		else
 		{
-			if(n->statementCount>3)
+			if(n->statementCount>3 && !atoi(n->name))
 			pf("Unknown type: %s %d\n",n->name,n->id);
 			return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 		}
