@@ -518,7 +518,7 @@ NodeVector parse(const char* data0) {
 //	startsWith(data, "update")||
 //	eq(data, "daemon") || eq(data, "demon")
 
-	bool QUESTIONS=false;
+	bool QUESTIONS=true;//false; OK, not EE
 	if (startsWith(data, ":select ")||startsWith(data, ":query ")) {// ||&&endsWith(data, "?")
 		data=next_word(data);// whoot?
 		QUESTIONS=true;
