@@ -1563,6 +1563,7 @@ bool filterWikiType(int object){
 	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==35120)return DROP; // Entität
+	if(object==223557)return DROP; // 	"topicid":223557, "topic":"Körper",
 	if(object==5127848)return DROP; // Gruppe
 	if(object==27948)return DROP; // Liste
 	if(object==827335)return DROP; // Abstrakter Datentyp
