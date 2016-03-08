@@ -1161,8 +1161,15 @@ void testSelectQuery() {
 void testFacets() {
 	query2("select population from city limit 1000");
 }
+void testQueryInHandler(){
+	handle(":learn a.b=c");
+	NV cs=parse(":query a.b");
+	show(cs);
+	check(cs[0])
+}
 
 void testQuery() {
+	testQueryInHandler();
 	testComparisonQuery();
 	testQueryAnd();
 	testComparisonQueryString2();
@@ -1753,6 +1760,7 @@ void testBrandNewStuff() {
 	debug = true;
 	germanLabels=true;
 //	replay();
+	testQuery();
 	context=getContext(current_context);
 //	context->nodeCount=maxNodes/2;
 //	context->lastNode=1;// RADICAL: fill all empty slots!
@@ -1764,13 +1772,17 @@ void testBrandNewStuff() {
 //	importTest();
 //	handle(":last dfsfddasfadfss asdfasdfsadfdfsa");
 
+
 //	testLabelInstances();
 //	show(get(1));
 //	importTest();
 //	testEntities();
 	//	N t=getTopic(get(1744));
-//	N t=getTopic(get(2765216));
-	N e=the(Angela Merkel);
+	//	N t=getTopic(get(2765216));
+	N e=getTopic(get(177966));// Sackgassendorf -> Reihendorf -> Dorf OK
+//	N e=getTopic(get(177966));// Sackgassendorf -> Reihendorf -> Dorf OK
+//	N e=the(Sackgassendorf);
+//	N e=the(Angela Merkel);
 	show(e);
 	N t=getTopic(e);
 //	t=getTopic(get(2765216));

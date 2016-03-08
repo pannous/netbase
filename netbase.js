@@ -5,7 +5,7 @@ var div=document.getElementById("netbase_results");
 var editMode=false;
 var link_name=true;
 var server="/html/"; // "http://quasiris.big:3333/html/";
-var filterIds=[-10646,-50,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207];//   Amerigo Vespucci BnF-ID 12234845j 47674->-10268->36430981 etc
+var filterIds=[-11343,-10646,-50,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//   Amerigo Vespucci BnF-ID 12234845j 47674->-10268->36430981 etc
 var abstract=-102;// Summary nodes
 function br(){
 	div.appendChild( document.createElement("br"));
@@ -43,6 +43,7 @@ function makeLink(name,url,elem)
 	var a = document.createElement("a");
 	x=document.createTextNode(name.replace(/\$(....)/,"&#x$1;"));
 	a.href=url;
+	a.target="_blank"
 	a.style=nolink+black
 	if(name=="x") a.setAttribute("onclick","return confirm('really delete?')");
 	a.setAttribute("rel","nofollow")
@@ -56,21 +57,28 @@ function makeLink(name,url,elem)
 //     return x.replace(/ u([0-9A-Fa-f]{4})/g, function() { return String.fromCharCode(parseInt(arguments[1], 16)); })
 // };
 
+
+function filterStatement(statement){
+    if(filterIds.indexOf(statement.pid)>=0)return true;
+    if(statement.sid==-666)return true;// Error/Missing
+	if(statement.predicate=="nr in context")return true; 
+	if(statement.predicate.match(/ID/))return true;
+	if(statement.predicate.match(/GND/))return true;
+	if(statement.predicate=="DDC")return true;
+	if(statement.predicate=="VIAF")return true;	
+	if(statement.subject=="◊")return true;
+	if(statement.predicate=="◊")return true;
+	if(statement.object=="◊")return true;
+	if(statement.subject.startsWith("http"))return true;
+	if(statement.object.match(/rdf/))return true;
+	if(statement.object.match(/ObjectProperty/))return true;
+  // if(statement.object.match(/wikimedia/i))return true;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
+	if(1+statement.subject>1)return true;
+}
+
 function makeStatement(statement,elem)
 {  // if Wikimedia-Kategorie  BREAK!
-    // if(filterIds.indexOf(statement.pid)>=0)return;
-    if(statement.sid==-666)return;// Error/Missing
-	if(statement.predicate=="nr in context")return; 
-	if(statement.predicate.match(/ID/))return;
-	if(statement.predicate.match(/GND/))return;
-	if(statement.predicate=="DDC")return;
-	if(statement.predicate=="VIAF")return;	
-	if(statement.subject=="◊")return;
-	if(statement.subject.startsWith("http"))return;
-	if(statement.object.match(/rdf/))return;
-	if(statement.object.match(/ObjectProperty/))return;
-  // if(statement.object.match(/wikimedia/i))return;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
-	if(1+statement.subject>1)return;
+  if(filterStatement(statement))return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	var top = document.createElement("tr");
 	makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));

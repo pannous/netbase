@@ -259,9 +259,6 @@ NodeVector parse(const char* data0) {
 	}
 	autoIds=true;
 
-	if (startsWith(data, "select ")||startsWith(data, "query ")) {
-		data=next_word(data);// whoot?
-	}
 	if (contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
 		sscanf(limit, "lookup %d", &lookupLimit);
@@ -522,8 +519,11 @@ NodeVector parse(const char* data0) {
 //	eq(data, "daemon") || eq(data, "demon")
 
 	bool QUESTIONS=false;
-	if(QUESTIONS&&endsWith(data, "?")){
-
+	if (startsWith(data, ":select ")||startsWith(data, ":query ")) {// ||&&endsWith(data, "?")
+		data=next_word(data);// whoot?
+		QUESTIONS=true;
+	}
+	if(QUESTIONS){
 		if (startsWith(data, "an ")) return query(data);
 		if (startsWith(data, "a ")) return query(data);
 		if (startsWith(data, "any ")) return query(data);
@@ -580,7 +580,7 @@ NodeVector parse(const char* data0) {
 		p(context->lastNode);
 		return nodeVectorWrap(get(context->lastNode));
 	}
-	if (args.size() >= 4 && (eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")||
+	if ((eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")|| args.size() >= 4 && (
 		string what=next_word(data);
 		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
