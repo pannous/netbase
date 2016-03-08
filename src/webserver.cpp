@@ -331,6 +331,7 @@ int handle(cchar* q0,int conn){
 			N ty=getType(node);
 //			if(!c)c=t;
 			if(!t)t=ty;
+			if(t==node)t=ty;
 			if(t!=Entity && checkNode(t)){
 				got_topic=true;
 				Writeline(conn, ",\n\t \"topicid\":"+itoa(t->id));
