@@ -1693,6 +1693,8 @@ NodeVector parseProperties(const char *data) {
 	char *property;//=(char *) malloc(1000);
 	thing=strstr(data, " of ");
 	if(!thing)thing=strstr(data, " by ");
+	if(!thing)thing=strstr(data, " in ");
+	if(!thing)thing=strstr(data, " von ");
 	if(thing){
 		property=(char *)data;
 		thing[0]=0;
