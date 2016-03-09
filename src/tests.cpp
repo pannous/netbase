@@ -1809,7 +1809,8 @@ void testBrandNewStuff() {
 
 //	importTest();
 //	handle(":last dfsfddasfadfss asdfasdfsadfdfsa");
-	handle("hi?");// pakistan.capital
+//	handle("hi?");// pakistan.capital
+		handle("Highest point of Brazil?");
 //	testWikidata();
 //	testTopics();
 

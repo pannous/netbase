@@ -1691,7 +1691,16 @@ NodeVector parseProperties(const char *data) {
 	lookupLimit=10000;
 	char *thing=0;//=(char *) malloc(1000);
 	char *property;//=(char *) malloc(1000);
-	if (contains(data, ":")) {
+	thing=strstr(data, " of ");
+	if(!thing)thing=strstr(data, " by ");
+	if(thing){
+		property=(char *)data;
+		thing[0]=0;
+		thing=thing+4;
+		//		sscanf(data, "%s of %[^\n]", property, thing);
+		//		sscanf(data, "%s of %s", property, thing);
+	}
+	else if (contains(data, ":")) {
 		//			sscanf(data,"%s:%s",property,thing);
 		char** splat=splitStringC(data, ':');
 		thing=splat[1];// can't free no more
@@ -1703,16 +1712,7 @@ NodeVector parseProperties(const char *data) {
 		thing=splat[0];
 		property=splat[1];
 	}
-	else if (contains(data, " of ")){
-		thing=(char *) malloc(1000);
-		property=(char *) malloc(1000);
-		sscanf(data, "%s of %[^\n]", property, thing);
-	}
-	else if (contains(data, " by ")){
-		thing=(char *) malloc(1000);
-		property=(char *) malloc(1000);
-		sscanf(data, "%s by %[^\n]", property, thing);
-	}
+
 	// OK: opponent+of+barack_obama
     // todo : birth_place of james -> %[a-zA-Z _] or splitStringC
 	// sscanf is EVIL PERIOD!
