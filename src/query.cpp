@@ -1687,7 +1687,8 @@ NodeVector update(cchar* query){
 }
 
 
-NodeVector parseProperties(const char *data) {
+
+NodeVector parseProperties(char *data) {
 	lookupLimit=10000;
 	char *thing=0;//=(char *) malloc(1000);
 	char *property;//=(char *) malloc(1000);
@@ -1696,7 +1697,7 @@ NodeVector parseProperties(const char *data) {
 	if(!thing)thing=strstr(data, " in ");
 	if(!thing)thing=strstr(data, " von ");
 	if(thing){
-		property=(char *)data;
+		property=data;
 		thing[0]=0;
 		thing=thing+4;
 		//		sscanf(data, "%s of %[^\n]", property, thing);
@@ -1738,7 +1739,7 @@ NodeVector parseProperties(const char *data) {
 	showNodes(all);
 	return all;
 }
-
+NodeVector parseProperties(const char *data) {return parseProperties(editable(data));}
 bool containsSubstring(vector<char*>& words, char* sub) {
 	for (int j=0; j < words.size(); j++) {
 		char* word=words[j];
