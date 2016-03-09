@@ -386,9 +386,6 @@ int handle(cchar* q0,int conn){
 //				}
 //			}
 
-
-
-
 			int good=0;
 			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
 				s=statements.at(j);
@@ -416,6 +413,7 @@ int handle(cchar* q0,int conn){
 		//		string img=getImage(node->name);
 		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
+//	if(good==0&&q[0]=='\'')Writeline(conn,"omit_quotes?");
 
 	if (use_json || format == html || format == js)Writeline(conn,good>0?"}\n]}":"]}");
 	if (format == xml)Writeline(conn, "</results>\n");

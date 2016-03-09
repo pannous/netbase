@@ -172,6 +172,7 @@ NodeVector parse(const char* data0) {
 	char* data=fixQuotesAndTrim(editable(data0));
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
+	if(data[0]=='\'')data++;
 	if(data[0]==':')appendFile("commands.log",data);
 	else appendFile("query.log", data);
 
