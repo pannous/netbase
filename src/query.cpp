@@ -1562,6 +1562,8 @@ NodeVector findAllSubclasses(Node *fro){
 bool filterWikiType(int object){
 	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
+	if(object==6671777)return DROP;//Struktur	Q6671777
+	if(object==58778)return DROP;//=> System	Q58778
 	if(object==35120)return DROP; // Entität
 	if(object==223557)return DROP; // 	"topicid":223557, "topic":"Körper",
 	if(object==5127848)return DROP; // Gruppe

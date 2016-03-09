@@ -523,6 +523,10 @@ NodeVector parse(const char* data0) {
 		data=next_word(data);// whoot?
 		QUESTIONS=true;
 	}
+	if(endsWith(data, "?")){
+		data[len(data)-1]=0;
+		QUESTIONS=true;
+	}
 	if(QUESTIONS){
 		if (startsWith(data, "an ")) return query(data);
 		if (startsWith(data, "a ")) return query(data);
@@ -559,7 +563,7 @@ NodeVector parse(const char* data0) {
 		if (contains(data, " that ")) return query(data);
 		if (contains(data, "who ")) return query(data);
 
-	if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
+		if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
 		// || (contains(data, ":")) && !contains(data, " "))) {
 		if(!contains(data, "="))
 			return parseProperties(data);

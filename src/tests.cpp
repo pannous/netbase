@@ -1745,6 +1745,9 @@ void testTopics(){
 
 	//	N t=getTopic(get(1744));
 	//	N t=getTopic(get(2765216));
+	filterWikiType(3423);
+	N to=getTopic(get(550866));
+	check(eq(to->name,"Dorf"));
 	N sackgassendorf=get(177966);
 	N e=getTopic(sackgassendorf);// Sackgassendorf -> Reihendorf -> Dorf OK
 	check(eq(e->name,"Dorf"));
@@ -1806,8 +1809,8 @@ void testBrandNewStuff() {
 
 //	importTest();
 //	handle(":last dfsfddasfadfss asdfasdfsadfdfsa");
-
-	testWikidata();
+	handle("hi?");// pakistan.capital
+//	testWikidata();
 //	testTopics();
 
 	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
