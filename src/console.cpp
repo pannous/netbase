@@ -170,6 +170,8 @@ NodeVector parse(const char* data0) {
 	}
 	context=getContext(current_context);
 	char* data=fixQuotesAndTrim(editable(data0));
+	int len=(int)strlen(data);
+	if(data[len-1]=='\'')data[len-1]=0;
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
 	if(data[0]=='\'')data++;
@@ -267,7 +269,7 @@ NodeVector parse(const char* data0) {
 		defaultLookupLimit=lookupLimit;
 		if(limit>data) *(limit-1)=0;
 		*limit=0;
-		if(strlen(data)<2)return OK;
+		if(len<2)return OK;
 	}
 	if (contains(data, "limit")||contains(data, ":limit")) {
 		char* limit=(char*)strstr(data,"limit");
@@ -276,7 +278,7 @@ NodeVector parse(const char* data0) {
 		lookupLimit=resultLimit*10;//todo
 		if(limit>data) *(limit-1)=0;
 		*limit=0;
-//		if(strlen(data)<2)return OK;
+//		if(len<2)return OK;
 	}
 	if (eq(data, ":load")) { // || eq(data, ":l") learn?
 		load(false);
