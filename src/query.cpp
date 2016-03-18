@@ -1450,7 +1450,7 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	//	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
 	q.push(fro);
-	depths[fro->id]=0;
+	depths[fro->id+propertySlots]=0;
 	N furthest=fro;
 	int deepest=0;
 	// NOT neccessary for anyPath , ...
@@ -1459,8 +1459,8 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
 	for (int i = 0; i < instances.size(); i++) {
 		Node* d = instances[i];
-		enqueued[d->id] = fro->id;
-		depths[d->id]=1;
+		enqueued[d->id+propertySlots] = fro->id;
+		depths[d->id+propertySlots]=1;
 		q.push(d);
 		pf("instance %d %s\n", d->id, d->name);
 	}
