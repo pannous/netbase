@@ -1934,6 +1934,7 @@ NV sortTopics(NV topics,N entity){
 	deque<Node*> sorted;
 	for(int i=0;i<(int)topics.size();i++){
 		N topic=topics[i];
+		if(!checkNode(topic))continue;
 		if(eq(topic->name,"◊"))continue;
 		if(eq(topic->name,entity->name))continue;
 //		if(contains(entity->name, getText(topic))) // a great politician , politician
