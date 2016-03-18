@@ -527,7 +527,7 @@ NodeVector parse(const char* data0) {
 		QUESTIONS=true;
 	}
 	if(endsWith(data, "?")){
-		data[len(data)-1]=0;
+		data[len-1]=0;
 		QUESTIONS=true;
 	}
 	if(QUESTIONS){

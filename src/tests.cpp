@@ -1791,12 +1791,18 @@ void testLabelInstances(){
 	check(contains(all, get(3884)));
 }
 
+void testBug(){
+	handle("ee/Kaffee");
+	exit(0);
+}
+
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
 	quiet=false;
 	debug = true;
 	germanLabels=true;
+	testBug();
 //	replay();
 //	testQuery();
 	context=getContext(current_context);
