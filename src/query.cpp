@@ -1508,7 +1508,7 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
 	for (int i = 0; i < instances.size(); i++) {
 		Node* d = instances[i];
-		enqueued[d->id] = fro->id;
+		enqueued[d->id+propertySlots] = fro->id;
 		q.push(d);
 		pf("instance %d %s\n", d->id, d->name);
 	}
