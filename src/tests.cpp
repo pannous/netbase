@@ -1792,9 +1792,7 @@ void testLabelInstances(){
 }
 
 void testBug(){
-//	handle("ee/Kaffee");
-	handle("ee/tchibo Kaffee");
-
+	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 	exit(0);
 }
 

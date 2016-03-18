@@ -444,6 +444,12 @@ NodeVector parse(const char* data0) {
 //		}
 //		return showNodes(all,true);
 	}
+
+	if(startsWith(data, ":topic")){
+		data=next_word(data);
+		autoIds=true;
+		return show(getTopics(get(data)));
+	}
 	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
 		data=next_word(data);
 		return show(findEntites(data));
