@@ -1854,7 +1854,7 @@ NV findEntites(cchar* query0){
 			if(!entity && germanLabels && endsWith(start, "e")){ // Berge -> Berg
 				mid[-1]=0; // ^^ Minimum stemming
 				entity=hasWord(start);// abstract OK
-				mid[-1]='s';// HAHA HAxk! ;)
+				mid[-1]='e';// HAHA HAxk! ;)
 			}
 			mid[0]=' ';// fix
 			// the United https://www.wikidata.org/wiki/Q7771566

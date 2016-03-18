@@ -1792,7 +1792,9 @@ void testLabelInstances(){
 }
 
 void testBug(){
-	handle("ee/Kaffee");
+//	handle("ee/Kaffee");
+	handle("ee/tchibo Kaffee");
+
 	exit(0);
 }
 
