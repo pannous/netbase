@@ -590,7 +590,8 @@ char* replaceChar(char* thing,char what,char with){
 //inline
 bool ignoreNonLatin=false;// true; against insertAbstractHash FULL!
 short normChar(char c) {// 0..36 damn ;)
-//	if(c=='ä')c='a'; etc
+//	if(c=='\xc3')// ö -> short<0 !!!
+//		c=c;//'o'; //etc really?
 	if (c == '\n')return 0;
 	if (c >= '0' && c <= '9') return c-'0'+26;
 	if (c >= 'a' && c <= 'z') return c-'a'+1;// NOT 0!!!
@@ -623,7 +624,7 @@ unsigned int wordhash(const char *str) { // unsigned
 	while ((c=*str++)) {
 		hash2 = hash2*31 + (short)(c);
 		int next=normChar(c);//a_b-c==AbC
-		if (next <= 0)continue;
+		if (next == 0)continue;
 		hash=hash*33 + next;// ((hash << 5) + hash
 		hash=hash % maxNodes;
 	}

@@ -1803,6 +1803,12 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 	germanLabels=true;
+	if(!hasWord("bug")){
+//		importWordnet();
+				importWikiData();
+	}
+	
+
 	testBug();
 //	replay();
 //	testQuery();
@@ -1828,8 +1834,6 @@ void testBrandNewStuff() {
 
 	germanLabels=true;
 	//    import("test.csv");
-	//	if(!hasWord("bug"))importWordnet();
-	//		importWikiData();
 	//	handle("/verbose/Mensch");
 //		handle("/ee/Mensch are bool and ignoreCase");
 //	handle("/ee/The United States of America");

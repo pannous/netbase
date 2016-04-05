@@ -1793,6 +1793,10 @@ map<int,bool> loadBlacklist(bool reload/*=false*/){
 	char line[1000];// Relativ geschwind!
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		forbidden[wordhash(line)]=true;
+		if(contains(blacklist,"gehr",true/*ignoreCase*/)||wordhash(line)==wordhash("Gehren")){
+			wordhash(line);
+			p("contains(blacklist,line,true/*ignoreCase*/))");
+		}
 	}
 	if(!reload && blacklist->statementCount>1000)return forbidden;
 //	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
