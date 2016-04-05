@@ -1564,7 +1564,8 @@ bool filterWikiType(int object){
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==6671777)return DROP;//Struktur	Q6671777
 	if(object==58778)return DROP;//=> System	Q58778
-	if(object==19361238)return DROP;//=x Metaklasse 
+	if(object==80071)return DROP;// Symbol
+	if(object==19361238)return DROP;//=x Metaklasse
 	if(object==35120)return DROP; // Entität
 	if(object==223557)return DROP; // 	"topicid":223557, "topic":"Körper",
 	if(object==5127848)return DROP; // Gruppe

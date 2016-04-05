@@ -1792,8 +1792,8 @@ void testLabelInstances(){
 }
 
 void testBug(){
-	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
-//	handle("ee/Geld");
+//	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
+	handle("ee/gehren");
 	exit(0);
 }
 
