@@ -1563,6 +1563,7 @@ bool filterWikiType(int object){
 	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==6671777)return DROP;//Struktur	Q6671777
+	if(object==5962346)return DROP;//, "topic":"Klassifikation",
 	if(object==58778)return DROP;//=> System	Q58778
 	if(object==80071)return DROP;// Symbol
 	if(object==19361238)return DROP;//=x Metaklasse
@@ -1793,10 +1794,6 @@ map<int,bool> loadBlacklist(bool reload/*=false*/){
 	char line[1000];// Relativ geschwind!
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		forbidden[wordhash(line)]=true;
-		if(contains(blacklist,"gehr",true/*ignoreCase*/)||wordhash(line)==wordhash("Gehren")){
-			wordhash(line);
-			p("contains(blacklist,line,true/*ignoreCase*/))");
-		}
 	}
 	if(!reload && blacklist->statementCount>1000)return forbidden;
 //	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
