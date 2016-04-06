@@ -1835,10 +1835,11 @@ NV findEntites(cchar* query0){
 //	if(hasWord(query0)&&!forbidden[wordhash(query0)])
 //		all.push_back(getAbstract(query0));// quick
 	int max_words=6;// max words per entity: 'president of the United States of America' == 7
-//	int min_chars=4;//
+	//	int min_chars=4;//
 	int min_chars=2;// VW ? :(
 	int len=(int)strlen(query);
 	char* start=query;
+	char* last=query;
 	char* end=&query[len];
 	char* mid=strstr(start," ");
 	if(!mid)mid=end;// 1 word queries
@@ -1859,12 +1860,10 @@ NV findEntites(cchar* query0){
 				entity=hasWord(start);// abstract OK
 				mid[-1]='e';// HAHA HAxk! ;)
 			}
-			mid[0]=' ';// fix
 			// the United https://www.wikidata.org/wiki/Q7771566
 			// 239790	United				9 statements
 			if(atoi(start))entity=0;// no numbers hack
 			if(entity){
-
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
 				if(!forbidden[ wordhash(entity->name)]){
@@ -1873,17 +1872,26 @@ NV findEntites(cchar* query0){
 						entity->kind=abstractId;
 						insertAbstractHash(entity,true);// fix bug!
 					}
+					string ename=string(start)+" "+last;
+					if(!forbidden[ wordhash(ename.data())]){
+						entity=hasWord(ename.data());
+						if(entity)all.push_back(entity);
+					}
+
 				}else{
 					pf("blacklisted: %s\n",entity->name);
 				}
 			}
+			mid[0]=' ';// fix
 //		}
 			if(mid==end)break;
 			mid=strstr(mid+1," ");// expand
 			if(!mid)mid=end;
 			words++;
 		}
+		last=start;
 		while(start[0]!=' ' && start!=end) start++;
+		start[0]=0;// cut last word!
 		start++; // skip ' '
 		if(start>=end)break;
 		mid=strstr(start," ");// first sub-word

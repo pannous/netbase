@@ -1729,16 +1729,17 @@ void recursiveTaxonomy(){
 	printf("------------------------------------\n");
 //	show(all); //already done
 }
-void testEntities(){
+
 //	cchar* query="president of the United States of America";
-	//	cchar* query="ladon";
 //	cchar* query="AWS Server";
 //	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
-	cchar* query="Frankfurt Am Main";
+void testEntities(){
+	cchar* query="bbb ccc aaa";
+	the("bbb ccc");
+	a("aaa bbb ccc");
 	NV all=findEntites(query);
+	check(all.size()>0);
 	show(all);
-//	NV topics=getTopics(all);
-
 }
 
 void testTopics(){
@@ -1809,7 +1810,8 @@ void testBrandNewStuff() {
 	}
 	
 
-	testBug();
+//	testBug();
+	testEntities();
 //	replay();
 //	testQuery();
 	context=getContext(current_context);

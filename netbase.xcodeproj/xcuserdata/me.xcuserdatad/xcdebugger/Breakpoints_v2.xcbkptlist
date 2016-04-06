@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "481630170.002914"
+            timestampString = "481634103.73574"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1943"
-            endingLineNumber = "1943"
+            startingLineNumber = "1951"
+            endingLineNumber = "1951"
             landmarkName = "sortTopics(NV topics,N entity)"
             landmarkType = "7">
          </BreakpointContent>
@@ -90,12 +90,42 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/util.cpp"
-            timestampString = "481539481.60287"
+            timestampString = "481634103.73574"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "594"
-            endingLineNumber = "594"
+            startingLineNumber = "596"
+            endingLineNumber = "596"
             landmarkName = "normChar(char c)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/tests.cpp"
+            timestampString = "481632862.63041"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1"
+            endingLineNumber = "1">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/query.cpp"
+            timestampString = "481634155.155658"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1878"
+            endingLineNumber = "1878"
+            landmarkName = "findEntites(cchar* query0)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

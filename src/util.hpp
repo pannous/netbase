@@ -101,6 +101,7 @@ char* clone(const char* line);
 char* editable(const char* line);
 char* modifyConstChar(const char* line);
 const char* concat(const char* a,const  char* b);
+//const char* concat(char* a,char* b);
 char* fixQuotesAndTrim(char* tmp);
 char* replaceChar(char* thing,char what,char with);
 char* replace(char* data,char what,char with);

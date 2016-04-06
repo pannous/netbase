@@ -296,7 +296,9 @@ bool startsWith(string* x, string* y) {
 	return (int)x->find(y->c_str()) >= 0;
 }
 
+//string(x)+y
 const char* concat(const char* a,const  char* b){
+//const char* concat(char* a,char* b){// free manually!
 	int la=(int)strlen(a);
 	int lb=(int)strlen(b);
 //	char c[la+lb];
