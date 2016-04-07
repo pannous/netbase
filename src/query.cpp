@@ -1873,7 +1873,7 @@ NV findEntites(cchar* query0){
 						insertAbstractHash(entity,true);// fix bug!
 					}
 					string ename=string(start)+" "+last;
-					if(!forbidden[ wordhash(ename.data())]){
+					if(start!=last&& !forbidden[ wordhash(ename.data())]){
 						entity=hasWord(ename.data());
 						if(entity)all.push_back(entity);
 					}
@@ -1976,6 +1976,8 @@ N getClass(N n){
 	if(!p)p=getProperty(n,SuperClass,1000);// more specific: Transportflugzeug
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
+	if(!p && n->kind>0)
+		return get(n->kind);
 	if(!p){
 //		if(!p)p=getProperty(n,Type,1500);
 //		if(p)addStatement(n, Type, p,false);

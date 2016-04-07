@@ -1734,10 +1734,16 @@ void recursiveTaxonomy(){
 //	cchar* query="AWS Server";
 //	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
 void testEntities(){
-	cchar* query="kopfsalat";
+//	cchar* query="kopfsalat";
+	cchar* query="Kaufmann";
+	N n=getClass(get(query));
+//	N n=getType(get(query));
+//	show(n);
+
 	NV all=findEntites(query);
 	check(all.size()>0);
 	show(all);
+//	getTopics(all);
 }
 
 void testTopics(){
@@ -1802,7 +1808,7 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 	germanLabels=true;
-	importTest();
+//	importTest();
 
 //	if(!hasWord("bug")){
 ////		importWordnet();
@@ -1810,7 +1816,7 @@ void testBrandNewStuff() {
 //	}
 
 //	testBug();
-//	testEntities();
+	testEntities();
 //	replay();
 //	testQuery();
 	context=getContext(current_context);
