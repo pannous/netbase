@@ -1165,12 +1165,17 @@ Node * getClass(const char* word,Node* hint) {
 	return getThe(word,hint);
 }
 
-Node * getSingleton(const char* thing, Node* type) {
+Node * getSingleton(const char* thing, Node* type,bool addType/*true*/) {
 	N there=hasWord(thing);
 	if(!there){
 		there=add(thing,_singleton);
 		insertAbstractHash(there);
-		if(type)addStatement(there, get(_Type) ,type);
+		if(type){
+			if(addType)addStatement(there, get(_Type) ,type);
+			else there->kind=type->id;// danger, fucks up abstract mechanism!
+//			check(hasWord(thing)); // ^^^^^^
+		}
+		
 	}
 	return there;
 }
