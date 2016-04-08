@@ -744,7 +744,8 @@ N addSubword(char* name,int words,N kind){
 			words--;
 			if(words==0){
 				name[i]=0;// cut
-				if(!hasWord(name)){
+				N old=hasWord(name);
+				if(!old || old->statementCount==0){
 					N n=getSingleton(name,kind,false);
 					n->kind=kind->id;// DANGER!
 					name[i]=' ';// restore
@@ -839,8 +840,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
 			replaceChar(name, '[', 0);// cut!
-			if(name[0]==0||hasWord(name))continue;//!
-			else subject=getSingleton(name,type);
+			if(name[0]==0)continue;//!
+//			else subject=getSingleton(name,type);
 			addSubword(name,1,type);
 			addSubword(name,2,type);
 			addSubword(name,3,type);
