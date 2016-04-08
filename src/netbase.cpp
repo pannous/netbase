@@ -564,11 +564,11 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 		return false;
 	}
 
-	if (node->id == 0) {
-		bad();
-		if(report)pf("node->id==0 !! \n", node->id, nodeId);
-		return false;
-	}
+//	if (node->id == 0) { 0 == "SEE ALSO"
+//		bad();
+//		if(report)pf("node->id==0 !! \n", node->id, nodeId);
+//		return false;
+//	}
 
 	if (checkNames && node->name == 0) {// WHY AGAIN??
 		bad();
