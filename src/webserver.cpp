@@ -80,6 +80,7 @@ char* fixName(char* name){
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
+
 //	if(len>MAX_QUERY_LENGTH){
 //		p("checkSanity len>10000");
 //		return 0;// SAFETY!
@@ -438,7 +439,10 @@ int handle(cchar* q0,int conn){
 
 bool checkSanity(char* q,int len){
 	bool bad=false;
-	if(len>MAX_QUERY_LENGTH)bad=true;
+	if(len>MAX_QUERY_LENGTH){
+		q[1000]=0;
+		bad=true;
+	}
 	if(q[0]==':'||q[0]=='!')bad=true;
 	for (int i=0; i<len; i++) {
 		if(q[i]>127)bad=true;// no illegal chars!
