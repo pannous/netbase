@@ -68,6 +68,14 @@ void fixLabel(Node* n);
 void checkSanity(char* q,int len);
 bool checkHideStatement(Statement* s);
 
+char* fixName(char* name){
+	int len=(int)strlen(name);
+	while(--len>0){
+		if(name[len]=='"')name[len]='`';// json-save!
+	}
+	return name;
+}
+
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
@@ -320,7 +328,7 @@ int handle(cchar* q0,int conn){
 //		}
 		good++;
 		if (use_json)if(good>1)Writeline(conn, "},\n");
-		sprintf(buff, entity_format, node->name, node->id,node->statementCount,text);
+		sprintf(buff, entity_format, fixName(node->name), node->id,node->statementCount,text);
 		Writeline(conn, buff);
 //        if(verbosity != alle && !get_topic)
 //			loadView(node);
