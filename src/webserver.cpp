@@ -80,10 +80,10 @@ char* fixName(char* name){
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-	if(len>MAX_QUERY_LENGTH){
-		p("checkSanity len>10000");
-		return 0;// SAFETY!
-	}
+//	if(len>MAX_QUERY_LENGTH){
+//		p("checkSanity len>10000");
+//		return 0;// SAFETY!
+//	}
     char* q=editable(q0);
 	checkSanity(q,len);
     while(q[0]=='/')q++;
