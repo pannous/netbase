@@ -1337,6 +1337,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		//		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool predicateMatch = (s->Predicate() == Type);
+		predicateMatch = predicateMatch || s->predicate == -10031;// ist ein :(
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
 		predicateMatch = predicateMatch || s->Predicate() == Translation;
