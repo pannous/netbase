@@ -75,7 +75,7 @@ bool file_read_done=false;
 
 void getline(char *buf) {
 	if (buf == 0) return; // end
-	int MAXLENGTH=1000;
+	int MAXLENGTH=10000;
 	const char* PROMPT="netbase> ";
 #ifdef RL_READLINE_VERSION // USE_READLINE
 	if (!file_read_done) file_read_done=1 + read_history(0);
@@ -134,7 +134,7 @@ void console() {
 	if(germanLabels)printf("\nDeutsch");
 	printf("\nNetbase C++ Version z.a\n");
 
-	char* data=(char*) malloc(1000);
+	char* data=(char*) malloc(10000);
 #ifdef signal
 	setjmp(try_context); //recovery point
 #endif
