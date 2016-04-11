@@ -31,6 +31,7 @@
 
 //#define SERVER_PORT  (81)
 int SERVER_PORT=81; //todo
+int MAX_QUERY_LENGTH=10000;
 static char server_root[1000] = "/Users/me/";
 
 int resultLimit = 200; // != lookuplimit reset with every fork !!
@@ -65,7 +66,7 @@ void getIncludes(Node* n);
 void loadView(Node* n);
 void loadView(char* q);
 void fixLabel(Node* n);
-void checkSanity(char* q,int len);
+bool checkSanity(char* q,int len);
 bool checkHideStatement(Statement* s);
 
 char* fixName(char* name){
@@ -79,7 +80,7 @@ char* fixName(char* name){
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-	if(len>10000){
+	if(len>MAX_QUERY_LENGTH){
 		p("checkSanity len>10000");
 		return 0;// SAFETY!
 	}
@@ -435,14 +436,16 @@ int handle(cchar* q0,int conn){
     return 0;// 0K
 }
 
-void checkSanity(char* q,int len){
+bool checkSanity(char* q,int len){
 	bool bad=false;
+	if(len>MAX_QUERY_LENGTH)bad=true;
 	if(q[0]==':'||q[0]=='!')bad=true;
 	for (int i=0; i<len; i++) {
-		if(q[i]>127)bad=true;
+		if(q[i]>127)bad=true;// no illegal chars!
 	}
 	if(bad)
 		appendFile("netbase.warnings", q);
+	return bad;
 }
 
 void fixLabel(Node* n){
