@@ -1456,7 +1456,8 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	int deepest=0;
 	// NOT neccessary for anyPath , ...
 	NodeVector instances;
-	if (isAbstract(fro) && edgeFilter != anyFilterNoKinds && edgeFilter != instanceFilter && edgeFilter != anyFilterRandom) // && edgeFilter!=
+	if (isAbstract(fro) && edgeFilter != anyFilterNoKinds && edgeFilter != instanceFilter && edgeFilter != anyFilterRandom && edgeFilter != topicFilter)
+		// && edgeFilter!=
 		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
 	for (int i = 0; i < instances.size(); i++) {
 		Node* d = instances[i];
