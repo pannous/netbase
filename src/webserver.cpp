@@ -80,13 +80,13 @@ char* fixName(char* name){
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-
 //	if(len>MAX_QUERY_LENGTH){
-//		p("checkSanity len>10000");
-//		return 0;// SAFETY!
 //	}
     char* q=editable(q0);
-	checkSanity(q,len);
+	if(!checkSanity(q,len)){
+		p("checkSanity len>10000");
+		return 0;// SAFETY!
+	}
     while(q[0]=='/')q++;
 	enum result_format format = html;//txt; html DANGER WITH ROBOTS
 	enum result_verbosity verbosity = normal;
@@ -441,7 +441,7 @@ bool checkSanity(char* q,int len){
 	bool bad=false;
 	if(len>MAX_QUERY_LENGTH){
 		q[1000]=0;
-		bad=true;
+//		bad=true;
 	}
 	if(q[0]==':'||q[0]=='!')bad=true;
 	for (int i=0; i<len; i++) {
@@ -449,7 +449,7 @@ bool checkSanity(char* q,int len){
 	}
 	if(bad)
 		appendFile("netbase.warnings", q);
-	return bad;
+	return !bad;
 }
 
 void fixLabel(Node* n){
