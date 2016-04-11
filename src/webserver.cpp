@@ -79,8 +79,8 @@ char* fixName(char* name){
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-	if(len>1000){
-		p("checkSanity len>1000");
+	if(len>10000){
+		p("checkSanity len>10000");
 		return 0;// SAFETY!
 	}
     char* q=editable(q0);
