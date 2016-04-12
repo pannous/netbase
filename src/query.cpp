@@ -1338,6 +1338,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool predicateMatch = (s->Predicate() == Type);
 		predicateMatch = predicateMatch || s->predicate == -10031;// ist ein :(
+		predicateMatch = predicateMatch || s->predicate == -10027;// Unterklasse von
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
 		predicateMatch = predicateMatch || s->Predicate() == Translation;

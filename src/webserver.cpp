@@ -451,6 +451,22 @@ bool checkSanity(char* q,int len){
 		appendFile("netbase.warnings", q);
 	return !bad;
 }
+void removeSpecialChars(char* line){
+	int j;
+	char last=0;
+	for(int i=0; line[i]!='\0'; ++i)
+	{
+		char c=line[i];
+		while (!( ( c>='a' && c<='z' ) || (c==' ' && last !=' ') || ( c>='A' && c<='Z') || c=='\0'))
+		{
+			for(j=i;line[j]!='\0';++j)
+				line[j]=line[j+1];
+			line[j]='\0';
+			c=line[i];
+		}
+		last=c;
+	}
+}
 
 void fixLabel(Node* n){
 	if(!checkNode(n))return;
