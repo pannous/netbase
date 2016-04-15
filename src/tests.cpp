@@ -1798,7 +1798,10 @@ void testLabelInstances(){
 
 void testBug(){
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
-	handle("ee/gehren");
+	N t=getTopic(getAbstract("Fernseher"));
+	check(t!=Entity);
+	show(t);
+//	handle("ee/gehren");
 	exit(0);
 }
 
@@ -1809,14 +1812,12 @@ void testBrandNewStuff() {
 	debug = true;
 	germanLabels=true;
 //	importTest();
-
-//	if(!hasWord("bug")){
+	if(!hasWord("bug")){
 ////		importWordnet();
-//				importWikiData();
-//	}
-
-//	testBug();
-	testEntities();
+				importWikiData();
+	}
+	testBug();
+//	testEntities();
 //	replay();
 //	testQuery();
 	context=getContext(current_context);

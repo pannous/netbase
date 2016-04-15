@@ -1347,6 +1347,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Instance && backInstances; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Plural;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Label;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Synonym;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Translation;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
@@ -1566,6 +1567,10 @@ bool filterWikiType(int object){
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==6671777)return DROP;//Struktur	Q6671777
+	if(object==1183543)return DROP;//Gerät	Q1183543
+//	if(object==1190554)return DROP;
+	if(object==1914636)return DROP;//Tätigkeit	Q1914636  <= Technik	Q2695280 BAD
+	if(object==373065)return DROP;//Angewandte Physik	Q373065
 	if(object==5962346)return DROP;//, "topic":"Klassifikation",
 	if(object==58778)return DROP;//=> System	Q58778
 	if(object==80071)return DROP;// Symbol

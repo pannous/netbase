@@ -745,7 +745,7 @@ N addSubword(char* name,int words,N kind){
 			if(words==0){
 				name[i]=0;// cut
 				N old=hasWord(name);
-				if(old&&old->statementCount==0){
+				if(old&&old->statementCount<3){
 					addStatement(old, Type, kind);
 					return old;
 				}
