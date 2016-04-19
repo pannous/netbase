@@ -1343,6 +1343,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
 		predicateMatch = predicateMatch || s->Predicate() == Translation;
 		predicateMatch = predicateMatch || s->Predicate() == Plural;
+		predicateMatch = predicateMatch || s->Predicate() == Label;
         
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Instance && backInstances; // || inverse
