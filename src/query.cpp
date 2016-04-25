@@ -1175,7 +1175,8 @@ int countInstances(Node * node) {
 // edgeFilter:
 //childFilter == instanceFilter (+SubClass or not?)
 // todo:  deduplicate code: childFilter=filter<Instance,SubClass>
-bool INCLUDE_LABELS=false;
+//bool INCLUDE_LABELS=false;// why not?
+bool INCLUDE_LABELS=true;// reverse ok!
 bool INCLUDE_CLASSES=false;
 NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
 	NodeVector all;	int i = 0;
@@ -1462,6 +1463,7 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	if (isAbstract(fro) && edgeFilter != anyFilterNoKinds && edgeFilter != instanceFilter && edgeFilter != anyFilterRandom && edgeFilter != topicFilter)
 		// && edgeFilter!=
 		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
+
 	for (int i = 0; i < instances.size(); i++) {
 		Node* d = instances[i];
 		enqueued[d->id+propertySlots] = fro->id;
