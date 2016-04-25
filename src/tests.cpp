@@ -1799,9 +1799,14 @@ void testLabelInstances(){
 void testBug(){
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 //	N t=getTopic(getAbstract("Fernseher"));
-	N t=getTopic(getThe("Geburt"));
-//	topic
+	//	N t=getTopic(getThe("Geburt"));
+	N n=getThe("Erster Weltkrieg");
+//	N n=getThe("Geburt");
+	N t=getTopic(n);
+
+	//	topic
 	check(t!=Entity);
+	check(t!=n);
 	show(t);
 //	handle("ee/gehren");
 	exit(0);
