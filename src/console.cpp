@@ -445,10 +445,15 @@ NodeVector parse(const char* data0) {
 //		return showNodes(all,true);
 	}
 
-	if(startsWith(data, ":topic")){
+	if(startsWith(data, ":topics")){
 		data=next_word(data);
 		autoIds=true;
 		return show(getTopics(get(data)));
+	}
+	if(startsWith(data, ":topic")){
+		data=next_word(data);
+		autoIds=true;
+		return show(nodeVectorWrap(getTopic(get(data))));
 	}
 	if(startsWith(data, ":type")||startsWith(data, ":kind")){
 		data=next_word(data);

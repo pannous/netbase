@@ -217,6 +217,7 @@ function parseResults(results0){
 	makeLink(" xml |",url.replace("/html","/xml"));
 	makeLink(" txt ",url.replace("/html","/txt"));
 	br();
+	makeLink(" Entity (Json)  |",clean(url).replace("/html","/json/entity"));// :filtered
 	makeLink(" Normal |",clean(url).replace("/html","/html/verbose"));// :filtered
 	makeLink(" Summary |",clean(url).replace("/html","/html/short"));// entity name + id
 	makeLink(" ALL |",clean(url).replace("/html","/html/all"));
