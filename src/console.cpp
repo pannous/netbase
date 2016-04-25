@@ -451,8 +451,10 @@ NodeVector parse(const char* data0) {
 		return show(getTopics(get(data)));
 	}
 	if(startsWith(data, ":type")||startsWith(data, ":kind")){
+		data=next_word(data);
+		autoIds=true;
 		N n=getType(get(data));
-		p(n->id);
+		if(checkNode(n))p(n->id);
 		return show(nodeVectorWrap(n));
 	}
 	if(startsWith(data, ":class")){
