@@ -1322,7 +1322,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 	NodeVector all;
 	int i = 0;
 	Statement* s = 0;
-	int type_lookup_limit=10;// type statements should be at the very beginning
+	int type_lookup_limit=100;// type statements should be at the very beginning
 	while (i++ < type_lookup_limit && (s = nextStatement(subject, s, false))) {// true !!!!
 //		p(s);
         //#ifdef useContext
