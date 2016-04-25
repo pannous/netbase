@@ -211,6 +211,7 @@ function parseResults(results0){
 	else
 		makeLink(" LESS ",clean(url).replace("/html","/html/short"));
 	br();
+	if(!url.match("/html"))url=url.replace("81/","81/html/");
 	makeLink(" tsv |",url.replace("/html","/csv"));
 	makeLink(" json |",url.replace("/html","/json"));
 	makeLink(" xml |",url.replace("/html","/xml"));

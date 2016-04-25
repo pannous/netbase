@@ -450,6 +450,14 @@ NodeVector parse(const char* data0) {
 		autoIds=true;
 		return show(getTopics(get(data)));
 	}
+	if(startsWith(data, ":type")||startsWith(data, ":kind")){
+		return show(nodeVectorWrap(getType(get(data))));
+	}
+	if(startsWith(data, ":class")){
+		data=next_word(data);
+		autoIds=true;
+		return show(nodeVectorWrap(getClass(get(data))));
+	}
 	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
 		data=next_word(data);
 		return show(findEntites(data));
