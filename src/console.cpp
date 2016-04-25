@@ -448,17 +448,17 @@ NodeVector parse(const char* data0) {
 	if(startsWith(data, ":topics")){
 		data=next_word(data);
 		autoIds=true;
-		return show(getTopics(get(data)));
+		return show(getTopics(getThe(data)));
 	}
 	if(startsWith(data, ":topic")){
 		data=next_word(data);
 		autoIds=true;
-		return show(nodeVectorWrap(getTopic(get(data))));
+		return show(nodeVectorWrap(getTopic(getThe(data))));
 	}
 	if(startsWith(data, ":type")||startsWith(data, ":kind")){
 		data=next_word(data);
 		autoIds=true;
-		N n=getType(get(data));
+		N n=getType(getThe(data));
 		if(checkNode(n))p(n->id);
 		return show(nodeVectorWrap(n));
 	}
