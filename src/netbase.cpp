@@ -1545,7 +1545,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	//    printf("%s  (#%d)\n", n->name, n->id);
 	string img="";
 	cchar* text="";//getText(n);
-	bool showLabel=true;//false;//!debug; getLabel(n);
+//	bool showLabel=true;//false;//!debug; getLabel(n);
 	//	if (showLabel && n->name) img=getImage(n->name); EVIL!!!
 	//    if(n->value.number)
 	//    printf("%d\t%g %s\t%s\n", n->id,n->value.number, n->name, img.data());
