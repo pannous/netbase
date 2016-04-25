@@ -3,9 +3,11 @@
 #include <sys/stat.h> // mkdir
 
 bool save() {
-    Context* c = context;
+    Context* c = getContext(current_context);
 	mkdir((path+"data").c_str(),0777);
 	string data_path=path+"data/";
+
+	ps("saving context blob to "+data_path);
     FILE *fp;
     fp = fopen((data_path+"statements.bin").data(), "wb");
     fwrite(c->statements, (unsigned long int) sizeof (Statement),(unsigned long int) (c->statementCount), fp);

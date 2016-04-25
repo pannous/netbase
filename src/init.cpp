@@ -266,7 +266,7 @@ void load(bool force) {
 //	double diff;
 	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 
-	Context* c=context;
+	Context* c=getContext(current_context);
 	//    showContext(c->id);
 	Node* oldNodes=c->nodes;
 	char* oldnodeNames;//=c->nodeNames;
@@ -334,6 +334,7 @@ void load(bool force) {
 		fixStatementNodeIds(c, oldNodes);
 	}
 
+	ps("collecting abstracts!");
 	collectAbstracts(); //or load abstracts->bin
 	showContext(context);
 
