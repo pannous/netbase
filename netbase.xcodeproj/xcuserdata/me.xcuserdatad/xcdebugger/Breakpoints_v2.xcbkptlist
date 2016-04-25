@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "482411111.897652"
+            timestampString = "483278653.112322"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1959"
-            endingLineNumber = "1959"
+            startingLineNumber = "1966"
+            endingLineNumber = "1966"
             landmarkName = "sortTopics(NV topics,N entity)"
             landmarkType = "7">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "482411111.897652"
+            timestampString = "483278653.112322"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1731"
-            endingLineNumber = "1731"
+            startingLineNumber = "1738"
+            endingLineNumber = "1738"
             landmarkName = "parseProperties(char *data)"
             landmarkType = "7">
          </BreakpointContent>
@@ -120,11 +120,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "482411111.897652"
+            timestampString = "483278653.112322"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1886"
-            endingLineNumber = "1886"
+            startingLineNumber = "1893"
+            endingLineNumber = "1893"
             landmarkName = "findEntites(cchar* query0)"
             landmarkType = "7">
          </BreakpointContent>
@@ -166,11 +166,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "482411111.897652"
+            timestampString = "483278653.112322"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1988"
-            endingLineNumber = "1988"
+            startingLineNumber = "1995"
+            endingLineNumber = "1995"
             landmarkName = "getClass(N n)"
             landmarkType = "7">
          </BreakpointContent>
@@ -182,11 +182,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "482411111.897652"
+            timestampString = "483278653.112322"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1984"
-            endingLineNumber = "1984"
+            startingLineNumber = "1991"
+            endingLineNumber = "1991"
             landmarkName = "getClass(N n)"
             landmarkType = "7">
          </BreakpointContent>

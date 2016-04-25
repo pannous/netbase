@@ -1798,7 +1798,9 @@ void testLabelInstances(){
 
 void testBug(){
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
-	N t=getTopic(getAbstract("Fernseher"));
+//	N t=getTopic(getAbstract("Fernseher"));
+	N t=getTopic(getThe("Geburt"));
+//	topic
 	check(t!=Entity);
 	show(t);
 //	handle("ee/gehren");

@@ -1324,6 +1324,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 	Statement* s = 0;
 	int type_lookup_limit=10;// type statements should be at the very beginning
 	while (i++ < type_lookup_limit && (s = nextStatement(subject, s, false))) {// true !!!!
+//		p(s);
         //#ifdef useContext
 		if (s->context == _pattern)continue;// important!!//        else it always matches!!!
         //#endif
@@ -1340,6 +1341,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		bool predicateMatch = (s->Predicate() == Type);
 		predicateMatch = predicateMatch || s->predicate == -10031;// ist ein :(
 		predicateMatch = predicateMatch || s->predicate == -10027;// Unterklasse von
+		predicateMatch = predicateMatch || s->predicate == -10279;// Unterklasse von
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
 		predicateMatch = predicateMatch || s->Predicate() == Translation;
