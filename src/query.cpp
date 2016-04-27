@@ -1506,7 +1506,7 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 // i.e. findAll(a(Person),subclassFilter)
 NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 //	bool* enqueued = (bool*) malloc(maxNodes * sizeof (bool)); //context->nodeCount * 2
-	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 //	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
@@ -1574,6 +1574,7 @@ bool filterWikiType(int object){
 	if(object==15617994)return DROP; // Verwaltungseinheit
 	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
 	if(object==6671777)return DROP;//Struktur	Q6671777
+	if(object==1656682)return DROP;//Veranstaltung	Q1656682
 	if(object==11618417)return DROP;//LAU	Q11618417
 //	if(object==262166)return DROP;//Gemeinde in Deutschland	262166
 	if(object==1048835)return DROP;//territoriale
