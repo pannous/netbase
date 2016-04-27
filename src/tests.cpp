@@ -1826,10 +1826,12 @@ void testBrandNewStuff() {
 	if(!hasWord("bug")){
 ////		importWordnet();
 //		load(true);//force
-		importWikiData();
+//		importWikiData();
 	}
 //	save();
-	testBug();
+	importTest();
+//	import("billiger.de/TOI_Suggest_Export_Products.csv");
+//	testBug();
 //	testEntities();
 //	replay();
 //	testQuery();

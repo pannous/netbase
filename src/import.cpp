@@ -760,9 +760,9 @@ N addSubword(char* name,int words,N kind){
 	}
 	return 0;
 }
-void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,
-			   const char* nameRow) {
+void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("\nimport csv start");
+	context=getContext(current_context);
 	char line[MAX_CHARS_PER_LINE*2];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
 	char** values=(char**) malloc(sizeof(char*) * MAX_ROWS);
@@ -787,22 +787,28 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	vector<string>& includeFields=splitString(includedFields, ",");
 
 	bool cut_amazon=contains(file, "amazon");
+	bool cut_billiger=contains(file, "billiger");
 	int fieldCount=0;
+	int size=0;// per row ~ Hopefully equal to fieldCount
+
 	//	char* columnTitles;
 //	while (  fgets(line, sizeof(line), infile) != NULL) {
 	while (readFile(file,&line[0])) {
 		fixNewline(line,false);
 		free(line0);
 		line0=editable(line);
-		int size=splitStringC(line0, values, separator);
+		if (!separator){
+			separator=guessSeparator(editable(line)); // would kill fieldCount
+		}
+		size=splitStringC(line0, values, separator);
 		if (linecount == 0) {
+			fieldCount=size;
 //			pf("IMPORTING %s\n",file);
 //			pf("FOUND %d columns:\n",size);
 //			p(line);
 			//			columnTitles=line;
-			line1=editable(line);
-			if (!separator) separator=guessSeparator(line1); // would kill fieldCount
-			fieldCount=size;
+
+//			fieldCount=size;
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
 			for (int i=0; i < fieldCount; i++) {
@@ -840,7 +846,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 
-		if(cut_amazon){
+		if(cut_amazon||cut_billiger){
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
 			replaceChar(name, '[', 0);// cut!
@@ -851,6 +857,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			addSubword(name,3,type);
 			addSubword(name,4,type);
 			addSubword(name,5,type);
+			if(cut_amazon)
 			continue;
 			// test1: NO PROPERTIES!
 			// ESPECIALLY NO productdescription!!!
@@ -2274,6 +2281,11 @@ void importGeoDB() {
  B00ERMAYT4,,"","","","","Kurs auf Marcus 12",http://ecx.images-amazon.com/images/I/41gUL5lpi-L._SL160_.jpg,http://ecx.images-amazon.com/images/I/41gUL5lpi-L._SL75_.jpg,http://ecx.images-amazon.com/images/I/41gUL5lpi-L.jpg,"TV Series Episode Video on Demand",,"","","","Kurs auf Marcus 12","",2012-12-31,"",105111,3015916031,3356021031,"Amazon Video/Kategorien/Serien","Amazon Video/Specialty Stores/Custom Stores/Specialty Stores in Amazon Video/Kaufen und Leihen/Serien","unisex","","",,,,2.99,"Versandfertig in 1 - 2 Werktagen",3.00,"siehe Website",http://www.amazon.de/dp/B00ERMAYT4/ref=asc_df_B00ERMAYT430533458?smid=A3HBS5CIENBL3I&tag=ihre_partner_id&linkCode=df0&creative=22506&creativeASIN=B00ERMAYT4&childASIN=B00ERMAYT4,A3HBS5CIENBL3I,"","",,,,,"",siehe Website,"siehe Website",,,"","",,,
  GOOD:
  */
+void importBilliger(){
+	importCsv("billiger.de/TOI_Suggest_Export_Categories.csv",getThe("billiger.de category"));
+	importCsv("billiger.de/TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
+}
+
 void importAmazon(){
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
@@ -2415,7 +2427,8 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-	importAmazon();
+//	importAmazon();
+	importBilliger();
 //	importAllDE();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
 //	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
@@ -2472,6 +2485,8 @@ void import(const char* type, const char* filename) {
 		importAllDE();
 	}else if (eq(type, "all")) {
 		importAll();
+	}else if (eq(type, "test")) {
+		importTest();
 	}else if (eq(type, "labels")) {
 		importLabels("labels.csv",false,true,true);
 	}else if (endsWith(type, "csv")) {
@@ -2549,6 +2564,7 @@ void importAllDE() {
 //	importNames();
 	importGeoDB();
 	importAmazon();
+	importBilliger();
 	//    importEntities();
 //	importImagesDE();
 	importLabels("labels.csv");// todo: why again?
@@ -2570,6 +2586,7 @@ void importAll() {
 	importWikiData();
 	importNames();
 	importAmazon();
+//	importBilliger();
 	//	if(germanLabels)
 	//		importDBPediaDE();
 	//	else
