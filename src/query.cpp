@@ -1574,7 +1574,7 @@ bool filterWikiType(int object){
 	if(object==15617994)return DROP; // Verwaltungseinheit
 	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
 	if(object==6671777)return DROP;//Struktur	Q6671777
-	if(object==1656682)return DROP;//Veranstaltung	Q1656682
+	if(object==602884)return DROP;//Sozialphänomen	Q602884
 	if(object==11618417)return DROP;//LAU	Q11618417
 //	if(object==262166)return DROP;//Gemeinde in Deutschland	262166
 	if(object==1048835)return DROP;//territoriale
