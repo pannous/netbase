@@ -484,7 +484,7 @@ NodeVector parse(const char* data0) {
 	}
 
 
-	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename ")) {
+	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename")|| startsWith(data, ":name")) {
 		const char* what=next_word(data);
 		appendFile("import/labels.csv",what);
 		cchar* wordOrId=args[1].c_str();

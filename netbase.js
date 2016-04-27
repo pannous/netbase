@@ -80,6 +80,7 @@ function makeStatement(statement,elem)
 {  // if Wikimedia-Kategorie  BREAK!
   if(filterStatement(statement))return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
+	if(statement.predicate=="product_image_url")addImage(statement.object,div);
 	var top = document.createElement("tr");
 	makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
 	predicate=	makeRow(top)
