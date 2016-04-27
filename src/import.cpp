@@ -2539,7 +2539,7 @@ void import(const char* type, const char* filename) {
 		importN3(filename);
 	} else {
 		//if (!importFacts(filename, filename))
-		printf("Unsupported file type %s %s", type, filename);
+		printf("Unsupported file type %s %s\n", type, filename);
 		//		importAll();
 	}
 	importing=false;
