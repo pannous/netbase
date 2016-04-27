@@ -1506,7 +1506,7 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 // i.e. findAll(a(Person),subclassFilter)
 NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 //	bool* enqueued = (bool*) malloc(maxNodes * sizeof (bool)); //context->nodeCount * 2
-	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 //	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
