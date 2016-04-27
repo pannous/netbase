@@ -2414,6 +2414,7 @@ string getImage(Node* a, int size,bool thumb) {
 	Node* i=0;
 	//	if(!i)i=findProperty(a, "wiki_image",false,1000);
 	if(!i)i=findProperty(a, "image",false,1000);// Amazon
+	if(!i)i=findProperty(a, "product_image_url",false,20);
 	if(!i)i=findProperty(a, "Bild",false,1000);
 	if(!i)i=findProperty(a, "Wappen",false,1000);
 	if(!i)i=findProperty(a, "Positionskarte",false,1000);
