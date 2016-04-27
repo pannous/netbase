@@ -1575,6 +1575,11 @@ bool filterWikiType(int object){
 	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
 	if(object==6671777)return DROP;//Struktur	Q6671777
 	if(object==602884)return DROP;//Sozialphänomen	Q602884
+	if(object==2088357)return DROP;//Ensemble	Q2088357
+	if(object==14204246)return DROP;//Seite im Projektnamensraum	Q14204246
+//	if(object==82799)return DROP;//Name	Q82799
+	if(object==82042)return DROP;//Wortart	Q82042
+	if(object==10856962)return DROP;//Anthroponymie	Q10856962
 	if(object==11618417)return DROP;//LAU	Q11618417
 //	if(object==262166)return DROP;//Gemeinde in Deutschland	262166
 	if(object==1048835)return DROP;//territoriale
