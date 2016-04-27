@@ -1801,7 +1801,8 @@ void testBug(){
 //	N t=getTopic(getAbstract("Fernseher"));
 	//	N t=getTopic(getThe("Geburt"));
 //	N n=getThe("Erster Weltkrieg");
-	N n=get(2079);
+//	N n=get(2079);
+	N n=get(53268);
 //	N n=getThe("Geburt");
 	N t=getTopic(n);
 

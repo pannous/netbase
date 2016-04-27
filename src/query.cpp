@@ -1586,8 +1586,10 @@ bool filterWikiType(int object){
 	if(object==1183543)return DROP;//Gerät	Q1183543
 	if(object==11023058)return DROP;// Kommunikation
 	if(object==186408)return DROP;// Zeitpunkt
+	if(object==1269299)return DROP;// Rechtsform	Q1269299
+	if(object==1796670)return DROP;// rperschaft	Q1796670
 //	if(object==2996394)return DROP;//	Biologischer Prozess
-//	if(object==1190554)return DROP;
+//	if(object==1190554)return DROP;// Ereignis
 	if(object==1914636)return DROP;//Tätigkeit	Q1914636  <=un Technik	Q2695280 BAD
 	if(object==373065)return DROP;//Angewandte Physik	Q373065
 	if(object==5962346)return DROP;//, "topic":"Klassifikation",
