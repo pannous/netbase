@@ -1577,6 +1577,7 @@ bool filterWikiType(int object){
 	if(object==1048835)return DROP;//territoriale
 	if(object==56061)return DROP;//territoriale
 	if(object==486972)return DROP;//territoriale
+	if(object==14757767)return DROP;//Verwaltungseinheit 4. Ebene	Q14757767
 	if(object==387917)return DROP;//Verwaltungsgliederung Q387917
 	if(object==2097994)return DROP;//Gemeindebehörde	Q2097994
 	if(object==1418640)return DROP;//Gebietskörperschaft	Q1418640
