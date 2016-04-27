@@ -1579,7 +1579,7 @@ bool filterWikiType(int object){
 	if(object==486972)return DROP;//territoriale
 	if(object==387917)return DROP;//Verwaltungsgliederung Q387917
 	if(object==2097994)return DROP;//Gemeindebehörde	Q2097994
-	if(object==1418640)return DROP//Gebietskörperschaft	Q1418640
+	if(object==1418640)return DROP;//Gebietskörperschaft	Q1418640
 	if(object==1183543)return DROP;//Gerät	Q1183543
 	if(object==11023058)return DROP;// Kommunikation
 	if(object==186408)return DROP;// Zeitpunkt
