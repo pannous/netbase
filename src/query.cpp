@@ -1574,6 +1574,10 @@ bool filterWikiType(int object){
 	if(object==15617994)return DROP; // Verwaltungseinheit
 	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
 	if(object==6671777)return DROP;//Struktur	Q6671777
+	if(object==1048835)return DROP;//territoriale
+	if(object==56061)return DROP;//territoriale
+	if(object==486972)return DROP;//territoriale
+
 	if(object==1183543)return DROP;//Gerät	Q1183543
 	if(object==11023058)return DROP;// Kommunikation
 	if(object==186408)return DROP;// Zeitpunkt
