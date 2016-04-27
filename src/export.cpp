@@ -14,7 +14,7 @@ bool save() {
     fclose(fp);
 
     fp = fopen((data_path+"nodes.bin").data(), "wb");
-    fwrite(c->nodes, sizeof (Node), c->nodeCount, fp);
+    fwrite(c->nodes-propertySlots, sizeof (Node), c->nodeCount, fp);
     fclose(fp);
 
     fp = fopen((data_path+"names.bin").data(), "wb");
@@ -29,9 +29,9 @@ bool save() {
 //    fwrite(c, sizeof (Context), 1, fp);
 //    fclose(fp);
 //
-//    fp = fopen((path+"abstracts.bin").data(), "wb");
-//    fread(abstracts, sizeof (Node), c->nodeCount, fp);// todo
-//    fclose(fp);
+    fp = fopen((data_path+"abstracts.bin").data(), "wb");
+    fread(abstracts, sizeof (Node), c->nodeCount, fp);// todo
+    fclose(fp);
 
     ps("context blob saved!");
 	printf("%d nodes dumped to ./data/ folder ",c->nodeCount);

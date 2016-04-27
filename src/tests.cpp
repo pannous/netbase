@@ -1819,11 +1819,11 @@ void testBrandNewStuff() {
 	debug = true;
 	germanLabels=true;
 //	importTest();
-	load(true);//force
+//	load(true);//force
 	if(!hasWord("bug")){
 ////		importWordnet();
-		load(true);//force
-//		importWikiData();
+//		load(true);//force
+		importWikiData();
 	}
 //	save();
 	testBug();

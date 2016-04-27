@@ -1358,7 +1358,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 					addStatement(ab, Instance, old);
 					old->kind=_entity;// LOST _singleton status
 				}
-				addStatement(ab, Instance, node);
+				addStatement(ab, Instance, node,false);
 			}
 		}
 		else bad();// Not enough memory :(

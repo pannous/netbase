@@ -312,7 +312,7 @@ void load(bool force) {
 	fclose(fp);
 
     fp=open_binary( "nodes.bin");
-	fread(c->nodes, sizeof(Node), c->nodeCount, fp);
+	fread(c->nodes-propertySlots, sizeof(Node), c->nodeCount, fp);
    	fclose(fp);
 
 	//

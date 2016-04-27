@@ -1571,6 +1571,7 @@ NodeVector findAllSubclasses(Node *fro){
 bool filterWikiType(int object){
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
+	if(object==15617994)return DROP; // Verwaltungseinheit
 	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
 	if(object==6671777)return DROP;//Struktur	Q6671777
 	if(object==1183543)return DROP;//Gerät	Q1183543
