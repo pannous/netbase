@@ -7,7 +7,8 @@ bool save() {
 	mkdir((path+"data").c_str(),0777);
 	string data_path=path+"data/";
 
-	ps("saving context blob to "+data_path);
+	p("saving context blob to "+data_path);
+	p("This can take a few minutes "+data_path);
     FILE *fp;
     fp = fopen((data_path+"statements.bin").data(), "wb");
     fwrite(c->statements, (unsigned long int) sizeof (Statement),(unsigned long int) (c->statementCount), fp);
@@ -34,7 +35,7 @@ bool save() {
     fclose(fp);
 
     ps("context blob saved!");
-	printf("%d nodes dumped to ./data/ folder ",c->nodeCount);
+	printf("%d nodes dumped to ./data/ folder \n",c->nodeCount);
 
     //    fp=fopen("test.bin", "wb");
     //    fwrite(test, sizeof(char), 100, fp);

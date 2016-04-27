@@ -595,6 +595,8 @@ void initWikiRelations(){
 	addStatement4(current_context,-10150, _SuperClass, _Part);//  Untereinheit (administrative Einheit)
 	addStatement4(current_context,-10706, _SuperClass, _PartOf);// located on terrain
 	addStatement4(current_context,-10279,_SuperClass,_SubClass);//Unterklasse von
+	addStatement4(current_context,-10027,_SuperClass,_SubClass);//Unterklasse von
+	addStatement4(current_context,-10031,_SuperClass,_SubClass);//ist ein :(
 //	addStatement4(current_context,-10460 Als gleichwertig bezeichnet
 	addStatement4(current_context,-10035, _synonym, getThe("Präsident")->id);
 

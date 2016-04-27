@@ -281,7 +281,8 @@ NodeVector parse(const char* data0) {
 //		if(len<2)return OK;
 	}
 	if (eq(data, ":load")) { // || eq(data, ":l") learn?
-		load(false);
+//		load(false);
+		load(true);
 		return OK;
 	}
 	if (eq(data, ":ca")) collectAbstracts();
