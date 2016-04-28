@@ -1797,6 +1797,7 @@ void testLabelInstances(){
 }
 
 void testBug(){
+	parse("\"billiger.de_category\"");
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 //	N t=getTopic(getAbstract("Fernseher"));
 	//	N t=getTopic(getThe("Geburt"));
@@ -1829,9 +1830,9 @@ void testBrandNewStuff() {
 //		importWikiData();
 	}
 //	save();
-	importTest();
+//	importTest();
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
-//	testBug();
+	testBug();
 //	testEntities();
 //	replay();
 //	testQuery();
