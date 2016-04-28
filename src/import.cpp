@@ -857,7 +857,13 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			addSubword(name,3,type);
 			addSubword(name,4,type);
 			addSubword(name,5,type);
-			if(cut_amazon)
+			if(cut_billiger){
+				N m=getThe(values[1],getThe("Marke"));
+				N k=getThe(values[3],getThe("billiger.de Kategorie"));
+			}
+
+
+//			if(cut_amazon)
 			continue;
 			// test1: NO PROPERTIES!
 			// ESPECIALLY NO productdescription!!!
@@ -2282,7 +2288,7 @@ void importGeoDB() {
  GOOD:
  */
 void importBilliger(){
-	importCsv("billiger.de/TOI_Suggest_Export_Categories.csv",getThe("billiger.de category"));
+//	importCsv("billiger.de/TOI_Suggest_Export_Categories.csv",getThe("billiger.de category")); besser da:
 	importCsv("billiger.de/TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 }
 

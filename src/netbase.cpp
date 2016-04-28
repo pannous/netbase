@@ -1567,7 +1567,7 @@ bool show(Node* n, bool showStatements) {		//=true
 		while ((s=nextStatement(n, s))) {
 			if (i++ >= resultLimit) break;
 			if (checkStatement(s)) showStatement(s);
-            else pf("BROKEN STATEMENT: %p",s);// break?
+            else pf("BROKEN STATEMENT: %p\n",s);// break?
 		}
         printf("-----------------------^ %s #%d (kind: %s #%d), %d statements --- %s ^---------------\n", n->name, n->id,get(n->kind)->name, n->kind,n->statementCount,text);
         flush();
@@ -2282,7 +2282,10 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 			best = s->Subject();
 		}
 	}
-	if(!best)best=add(abstract->name,type->id,0);
+	if(!best){
+		best=add(abstract->name,type->id,0);
+		if(type->id>0) addStatement(best, Type, type);
+	}
 	return best;
 }
 

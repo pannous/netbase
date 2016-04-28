@@ -198,12 +198,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/console.cpp"
-            timestampString = "483520455.316466"
+            timestampString = "483521060.135258"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "165"
-            endingLineNumber = "165"
-            landmarkName = "parse(const char* data0)"
+            startingLineNumber = "535"
+            endingLineNumber = "535"
+            landmarkName = "parse(const char* data0,bool safeMode"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

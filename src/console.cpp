@@ -141,7 +141,7 @@ void console() {
 	while (true) {
 		//		clearAlgorithmHash();
 		getline(data);
-		parse(data);
+		parse(data,/*safeMode=*/false);// safeMode only for web access
 	}
 }
 
@@ -161,7 +161,7 @@ NodeVector runScript(const char* file){
 }
 
 
-NodeVector parse(const char* data0) {
+NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if (eq(data0, null)) return OK;
 	if (!isprint(data0[0])) // ??
 		return OK;
@@ -555,7 +555,7 @@ NodeVector parse(const char* data0) {
 		QUESTIONS=true;
 	}
 
-	if(QUESTIONS && !startsWith(data0,"'") && data0[0]!='"'){
+	if(QUESTIONS && !safeMode && !startsWith(data0,"'") && data0[0]!='"'){
 		if (startsWith(data, "an ")) return query(data);
 		if (startsWith(data, "a ")) return query(data);
 		if (startsWith(data, "any ")) return query(data);
