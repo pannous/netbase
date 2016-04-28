@@ -1798,6 +1798,7 @@ void testLabelInstances(){
 
 void testBug(){
 	parse("\"billiger.de_category\"");
+	console();
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 //	N t=getTopic(getAbstract("Fernseher"));
 	//	N t=getTopic(getThe("Geburt"));

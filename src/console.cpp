@@ -83,7 +83,7 @@ void getline(char *buf) {
 	if (tmp == 0 || strlen(tmp) == 0) {
 		return;
 	}
-	tmp=fixQuotesAndTrim(tmp);
+//	tmp=fixQuotesAndTrim(tmp);// LATER!
 	if (strncmp(tmp, buf, MAXLENGTH) && strlen(tmp) > 0) add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
 	buf[MAXLENGTH - 1]='\0';
@@ -172,9 +172,9 @@ NodeVector parse(const char* data0) {
 	char* data=fixQuotesAndTrim(editable(data0));
 	int len=(int)strlen(data);
 	if(data[len-1]=='\'')data[len-1]=0;
+	if(data[0]=='\'')data++;
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
-	if(data[0]=='\'')data++;
 	if(data[0]==':')appendFile("commands.log",data);
 	else appendFile("query.log", data);
 
@@ -555,7 +555,7 @@ NodeVector parse(const char* data0) {
 		QUESTIONS=true;
 	}
 
-	if(QUESTIONS && !startsWith(data0,"\"") ){
+	if(QUESTIONS && !startsWith(data0,"'") && data0[0]!='"'){
 		if (startsWith(data, "an ")) return query(data);
 		if (startsWith(data, "a ")) return query(data);
 		if (startsWith(data, "any ")) return query(data);
