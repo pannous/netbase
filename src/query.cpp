@@ -2025,7 +2025,7 @@ N getInferredClass(N n,int limit=1000){
 	while ((s=nextStatement(n,s))) { // kf predicate!=Any 24.1. REALLY??
 		if(limit && lookup++>=limit)break;
 		if(s->Object()==n){
-			if(s->Predicate()!=Instance)return s->Predicate();
+			if(s->predicate>0)return s->Predicate();
 		}
 	}
 	return 0;
