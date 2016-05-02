@@ -1848,7 +1848,7 @@ void deleteNode(Node * n) {
         }
 	}else{ //!!
 		N a=getAbstract(n->name);
-		if(a->value.node==n)
+		if(a&&a->value.node==n)
 			a->value.node=0;
 	}
 	deleteStatements(n);
