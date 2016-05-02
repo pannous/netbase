@@ -1581,6 +1581,7 @@ bool filterWikiType(int object){
 	if(object==4373292)return DROP;//4373292, "topic":"Eigenschaft
 	if(object==309314)return DROP;//"topicid":309314, "topic":"Quantität",
 	if(object==2091629)return DROP;//"topicid":2091629, "topic":"Magnitude",
+	if(object==11471)return DROP;//Zeit	Q11471
 	if(object==14204246)return DROP;//Seite im Projektnamensraum	Q14204246
 //	if(object==82799)return DROP;//Name	Q82799
 	if(object==82042)return DROP;//Wortart	Q82042
