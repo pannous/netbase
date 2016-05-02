@@ -1807,9 +1807,11 @@ void testLabelInstances(){
 }
 
 void testBug(){
-	parse("\"billiger.de_category\"");
+//	parse("\"billiger.de_category\"");
 //	console();
-	handle("ee/Ferien");
+//	handle("ee/Ferien");
+	handle("ee/Tag der Deutschen Einheit");
+
 
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 //	N t=getTopic(getAbstract("Fernseher"));
@@ -1824,7 +1826,7 @@ void testBug(){
 	//	topic
 	check(t!=Entity);
 	check(t!=n);
-	show(t,false);
+//	show(t,false);
 //	handle("ee/gehren");
 	exit(0);
 }

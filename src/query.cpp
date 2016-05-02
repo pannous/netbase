@@ -1812,13 +1812,11 @@ NV filterCandidates(NV all){
 
 	for(int i=size-1;i>=0;i--){
 		N entity=all[i];
-		if(containsSubstring(words, entity->name)){
+		if(containsSubstring(words, entity->name))
 			all.erase(all.begin() +i);
-//			all.erase(&all[i]);
-//			all[i]=0;
-		}
 	}
-//	all.shrink_to_fit();
+	//	all.shrink_to_fit();
+	size=(int)all.size();
 	for(int i=0;i<size;i++){
 		N entity=all[i];
 		if(isAbstract(entity)){
@@ -1826,6 +1824,12 @@ NV filterCandidates(NV all){
 			mergeVectors(&all, more);
 		}
 	}
+//	size=(int)all.size();
+//	for(int i=size-1;i>=0;i--){
+//		N entity=all[i];
+//		if(containsSubstring(words, entity->name))
+//			all.erase(all.begin()+i);
+//	}
 	return all;
 }
 
