@@ -175,7 +175,7 @@ function addStyle(file){
 }
 
 function clean(url){
-	url=url.replace("/short/","/");
+  url=url.replace("/short/","/");
 	url=url.replace("/long/","/");
 	url=url.replace("/verbose/","/");
 	url=url.replace("/all/","/");
@@ -218,7 +218,7 @@ function parseResults(results0){
 	makeLink(" xml |",url.replace("/html","/xml"));
 	makeLink(" txt ",url.replace("/html","/txt"));
 	br();
-	makeLink(" Entity (Json)  |",clean(url).replace("/html","/json/entity"));// :filtered
+	makeLink(" Entity (Json)  |",clean(url).replace("/html","/json/entities").replace("/ee","/"));// :filtered
 	makeLink(" Normal |",clean(url).replace("/html","/html/verbose"));// :filtered
 	makeLink(" Summary |",clean(url).replace("/html","/html/short"));// entity name + id
 	makeLink(" ALL |",clean(url).replace("/html","/html/all"));

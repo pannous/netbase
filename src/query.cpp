@@ -2015,12 +2015,24 @@ Node* getType(Node* n){
 //	if(!checkStatement(s))return 0;// n
 //	return s->Object();
 }
-
+N getInferredClass(N n,int limit=1000){
+	Statement * s=0;
+	map<Statement*, bool> visited;
+	int lookup=0;
+	while ((s=nextStatement(n,s))) { // kf predicate!=Any 24.1. REALLY??
+		if(limit && lookup++>=limit)break;
+		if(s->Object()==n){
+			if(s->Predicate()!=Instance)return s->Predicate();
+		}
+	}
+	return 0;
+}
 N getClass(N n){
 	N p=0;
 	if(!p)p=getProperty(n,SuperClass,1000);// more specific: Transportflugzeug
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
+	if(!p)p=getInferredClass(n,1000);
 	if(!p && n->kind>0)
 		return get(n->kind);
 	if(!p){
