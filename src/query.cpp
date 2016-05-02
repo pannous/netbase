@@ -1574,6 +1574,8 @@ bool filterWikiType(int object){
 	if(object==13406463)return DROP; // Wikimedia-Liste	Q13406463
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==15617994)return DROP; // Verwaltungseinheit
+	if(object==14946396)return DROP;//Einheit", "id":14946396
+	if(object==11028)return DROP;//Information	Q11028
 	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
 	if(object==6671777)return DROP;//Struktur	Q6671777
 	if(object==602884)return DROP;//Sozialphänomen	Q602884
