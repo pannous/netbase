@@ -255,7 +255,7 @@ bool addStatementToNode(Node* node, int statementId,bool insert_at_start=false) 
 	int n=node->statementCount;
 	if (n == 0) { // && ==0
 		if (node->firstStatement != 0)
-            pf("BUG node->firstStatement!=0 %d %s :%d", node->id, node->name, node->firstStatement);
+            pf("BUG node->firstStatement!=0 %d %s :%d\n", node->id, node->name, node->firstStatement);
 		node->firstStatement=statementId;
 		node->lastStatement=statementId;
 	} else {
@@ -1788,15 +1788,20 @@ void removeStatement(Node* n, Statement * s) {
 void deleteStatement(int id){
     deleteStatement(getStatement(id));
 }
+
+// Does NOT delete tautological duplicates!
 void deleteStatement(Statement * s) {
 	if (!checkStatement(s, true, false)) return;
 	removeStatement(s->Subject(), s);
-//	removeStatement(s->Predicate(), s);// can be very expensive a->is->b 10000000 is Statements!
+//	can be very expensive a->is->b 10000000 is Statements :
+//	removeStatement(s->Predicate(), s);// Keep '//' in mind: not real 'bug' if Statement is broken
 	removeStatement(s->Object(), s);
 	s->Subject()->statementCount--;
 	s->Predicate()->statementCount--;
 	s->Object()->statementCount--;
 	//	context->statements[s->id]=0;
+	p("DELETING:");
+	p(s);
 	memset(s, 0, sizeof(Statement));
 }
 
@@ -1841,13 +1846,13 @@ void deleteNode(Node * n) {
 			if(!isAbstract(n))
 				deleteNode(n);
         }
-		deleteStatements(n);
 	}else{ //!!
-//		N a=getAbstract(n->name);
-		deleteStatements(n);
-        memset(n, 0, sizeof(Node)); // hole in context!
+		N a=getAbstract(n->name);
+		if(a->value.node==n)
+			a->value.node=0;
 	}
-
+	deleteStatements(n);
+	memset(n, 0, sizeof(Node)); // hole in context!
 }
 
 void deleteStatements(Node * n) {
@@ -1862,6 +1867,7 @@ void deleteStatements(Node * n) {
     //		Statement* s=getStatementNr(n, i);
     //		deleteStatement(s);
     //	}
+	p(n);
 	n->statementCount=0;
 	n->firstStatement=0;
 	n->lastStatement=0;

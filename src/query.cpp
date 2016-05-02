@@ -303,7 +303,7 @@ NodeVector query(Query& q) {
 			mergeVectors(&all, allInstances(q.keywords[i]));
 	q.instances = all;
 	for (int i = 0; i < q.filters.size(); i++) {
-		pf("candidates so far %lu",all.size());
+		pf("candidates so far %lu\n",all.size());
 		Statement* _filter = q.filters[i];
 		clearAlgorithmHash();
 		q.instances = filter(q, _filter);
@@ -564,13 +564,14 @@ Statement* evaluate(string data) {
 	Statement* pattern = parseFilter(data); //Hypothesis Aim Objective supposition assumption
 	// TODO MARK + CLEAR PATTERNS!!!
 	Statement* result = findStatement(pattern->Subject(), pattern->Predicate(), pattern->Object());
-	if (result){
-        deleteStatement(pattern);
+	show(pattern->Subject());
+	if (result && result!=pattern){
+        deleteStatement(pattern);// How come it doesn't find itself?
         return result;
     }
 	else {
         //		return addStatement(s->Subject(), s->Predicate(), s->Object(), true);
-        pattern->context=0;// NO LONGER PaTTERN!
+        pattern->context=0;// NO LONGER PaTTERN! PROBLEM: abstract vs 'the'
         return pattern;
     }
 }
@@ -592,8 +593,7 @@ NodeVector exclude(NodeVector some, NodeVector less) {// bool keep destination u
 
 int queryContext = _pattern; // hypothesis
 
-// TODO MARK + CLEAR PATTERNS!!!
-
+// TODO MARK + CLEAR PATTERNS!!!  [clear OK]
 Statement* pattern(Node* subject, Node* predicate, Node* object) {
 	Statement *s = addStatement(subject, predicate, object, false); //todo mark (+reuse?) !
     //#ifdef useContext
@@ -1576,6 +1576,8 @@ bool filterWikiType(int object){
 	if(object==6671777)return DROP;//Struktur	Q6671777
 	if(object==602884)return DROP;//Sozialphänomen	Q602884
 	if(object==2088357)return DROP;//Ensemble	Q2088357
+	if(object==9332)return DROP;//Verhalten	Q9332
+	if(object==937228)return DROP;//937228, "topic":"Eigenschaft
 	if(object==14204246)return DROP;//Seite im Projektnamensraum	Q14204246
 //	if(object==82799)return DROP;//Name	Q82799
 	if(object==82042)return DROP;//Wortart	Q82042

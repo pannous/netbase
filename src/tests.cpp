@@ -1193,22 +1193,32 @@ void testReification() {
 }
 
 void testDelete(){
-	Statement* s=learn("Peter loves Jule");
 	N P=the(Peter);
 	N aP=a(Peter);
-	show(P);
 	int statementCount=aP->statementCount;
+//	show(P);
+	show(aP);
+	Statement* s=learn("Peter loves Jule21");
+	check(aP==a(Peter));
+	check(aP!=P);
+	check(aP!=s->Subject());
+	check(P==s->Subject());
+	check(aP->statementCount==statementCount);// the instance was there before
+	show(P);
 	deleteNode(the(Peter));
 	check(aP==a(Peter));
-	check(aP->statementCount==statementCount-1);
+	check(aP->statementCount==statementCount-1);// instance
 	check(P->firstStatement==0);
 	check(P->name==0);
 	//	check(P->id!=0); HOLE!
-	Statement* s2=learn("Peter loves Jule");
+	learn("dummy loves Jule");
+//	Statement* s2=learn("Peter loves dummy");
+	Statement* s2=learn("Peter loves Jule21");// knows from abstract!
 	N P2=the(Peter);
 	check(s != s2);
 	check(P != P2);
 	p(P2);
+	show(the(Jule));
 }
 
 void testFactLearning() {
@@ -1798,21 +1808,23 @@ void testLabelInstances(){
 
 void testBug(){
 	parse("\"billiger.de_category\"");
-	console();
+//	console();
+	handle("ee/Ferien");
+
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 //	N t=getTopic(getAbstract("Fernseher"));
-	//	N t=getTopic(getThe("Geburt"));
+	N t=getTopic(getThe("Geburt"));
 //	N n=getThe("Erster Weltkrieg");
 //	N n=get(2079);
-//	N n=get(53268);
-	N n=get(225774);
+	N n=get(53268);
+//	N n=get(225774);
 //	N n=getThe("Geburt");
-	N t=getTopic(n);
+//	N t=getTopic(n);
 
 	//	topic
 	check(t!=Entity);
 	check(t!=n);
-	show(t);
+	show(t,false);
 //	handle("ee/gehren");
 	exit(0);
 }
@@ -1832,8 +1844,9 @@ void testBrandNewStuff() {
 	}
 //	save();
 //	importTest();
-	import("billiger.de/TOI_Suggest_Export_Products.csv");
-//	testBug();
+//	import("billiger.de/TOI_Suggest_Export_Products.csv");
+	testBug();
+//	testDelete();
 //	testEntities();
 //	replay();
 //	testQuery();
