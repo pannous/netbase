@@ -744,6 +744,7 @@ N addSubword(char* name,N kind){
 	}
 	if(!old){
 		N n=getSingleton(name,kind,false);
+		addStatement(n, Type, kind);
 		n->kind=kind->id;// DANGER!
 		return n;
 	}
@@ -854,10 +855,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		}
 
 		if(cut_amazon||cut_billiger){
-			if(contains(line, "ue55h6600"))
-				p("DD");
-			if(contains(line, "UE55H6600"))
-				p("DD");
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
 			replaceChar(name, '[', 0);// cut!

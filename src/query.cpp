@@ -2040,7 +2040,7 @@ N getClass(N n){
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
 	if(!p)p=getInferredClass(n,1000);
-	if(!p && n->kind>0)
+	if(!p && (n->kind>0||n->kind<-1000))
 		return get(n->kind);
 	if(!p){
 //		if(!p)p=getProperty(n,Type,1500);
