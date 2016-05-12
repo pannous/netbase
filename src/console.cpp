@@ -23,7 +23,7 @@
 // compile with -lreadline !
 #ifdef USE_READLINE
 //ai libreadline-dev
-#include <readline/history.h>
+#include <readline/history.h> // libreadline-dev
 #include <readline/readline.h>
 //#include <readline.h>
 //#include <history.h>
@@ -132,7 +132,7 @@ Node *parseProperty(const char *data) {
 void console() {
 	quiet=false;
 	if(germanLabels)printf("\nDeutsch");
-	printf("\nNetbase C++ Version z.a\n");
+	printf("\nNetbase C++ Version 1.1.0\n");
 
 	char* data=(char*) malloc(10000);
 #ifdef signal

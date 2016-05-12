@@ -14,8 +14,9 @@ bool save() {
     fwrite(c->statements, (unsigned long int) sizeof (Statement),(unsigned long int) (c->statementCount), fp);
     fclose(fp);
 
-    fp = fopen((data_path+"nodes.bin").data(), "wb");
-    fwrite(c->nodes-propertySlots, sizeof (Node), c->nodeCount, fp);
+	fp = fopen((data_path+"nodes.bin").data(), "wb");
+	fwrite(c->nodes-propertySlots, sizeof (Node), c->lastNode, fp);
+//	fwrite(c->nodes-propertySlots, sizeof (Node), c->nodeCount, fp);
     fclose(fp);
 
     fp = fopen((data_path+"names.bin").data(), "wb");

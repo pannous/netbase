@@ -748,7 +748,7 @@ void printlabels(){
 	}
 }
 #include <cstdlib>
-#include <zlib.h>
+#include <zlib.h> // zlib1g-dev
 #include <unistd.h> //getcwd
 #include <stdio.h> //getcwd
 #include <string.h>

@@ -768,6 +768,9 @@ N addSubword(char* name,int words,N kind){
 	}
 	return 0;
 }
+string str(char* c){
+	return string(c);
+}
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("\nimport csv start");
 	context=getContext(current_context);
@@ -868,9 +871,14 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			addSubword(name,4,type);
 			addSubword(name,5,type);
 			}
+
 			if(cut_billiger){
 				N m=getThe(values[1],getThe("Marke"));
 				N k=getThe(values[3],getThe("billiger.de Kategorie"));
+//				if(checkNode(m)){// && !contains(name, " ")
+//					string full=string(m->name)+" "+name;
+//					N f=getThe(full.data(),getThe("billiger.de Produkt"));
+//				}
 			}
 
 
