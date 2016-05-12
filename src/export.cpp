@@ -15,7 +15,8 @@ bool save() {
     fclose(fp);
 
 	fp = fopen((data_path+"nodes.bin").data(), "wb");
-	fwrite(c->nodes-propertySlots, sizeof (Node), c->lastNode, fp);
+	fwrite(c->nodes-propertySlots, sizeof (Node), maxNodes, fp);
+//	fwrite(c->nodes-propertySlots, sizeof (Node), c->lastNode, fp);
 //	fwrite(c->nodes-propertySlots, sizeof (Node), c->nodeCount, fp);
     fclose(fp);
 
