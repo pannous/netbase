@@ -1437,14 +1437,29 @@ void testFreebase(){
 	showNodes(all);
 }
 
+void fixNullNames(){
+	for(int i=1;i<context->statementCount;i++){
+		S s=&context->statements[i];
+		if(s->predicate==Instance->id){
+			N su=s->Subject();
+			N o=s->Object();
+			if(su->name==null)
+				su->name=o->name;
+		}
+	}
+}
+
 void fixNames(){
+	fixNullNames();
 	char* x=name_root;
 	while(x<name_root+maxNodes*averageNameLength-10000){
 		int l=(int)strlen(x);
 		if(contains(x,"\"@")){
+			p(x);
 			strstr(x,"\"@")[0]=0;
 		}
 		if(contains(x,"\" .")){
+			p(x);
 			strstr(x,"\" .")[0]=0;
 		}
 		x=x+l+1;
@@ -1648,8 +1663,7 @@ void flattenGeographischeKoordinaten(){
 	}
 }
 void fixAllNames(){
-	for(int i=1000;i<54714717;i++){
-		if(i>maxNodes)break;
+	for(int i=1000;i<maxNodes;i++){
 		N n= getNode(i);
 		if(!n->name)continue;
 		if(n==Error){
@@ -1674,7 +1688,6 @@ void fixRelations(){
 		if(s->predicate==-10527)s->predicate=_Part;// Besteht aus
 		if(s->predicate==-10150)s->predicate=_Part;// x Untereinheit (administrative Einheit)  // HAS
 		if(s->predicate==-10171)s->predicate=_SuperClass;// übergeordnetes Taxon
-
 	}
 }
 
@@ -1848,7 +1861,8 @@ void testBrandNewStuff() {
 //		importWikiData();
 	}
 //	save();
-	importTest();
+	fixNames();
+//	importTest();
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 	testBug();
 //	testDelete();
