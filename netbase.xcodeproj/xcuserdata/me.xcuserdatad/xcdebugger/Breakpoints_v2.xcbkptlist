@@ -88,11 +88,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "482410887.739248"
+            timestampString = "484752826.386955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "755"
-            endingLineNumber = "755"
+            startingLineNumber = "763"
+            endingLineNumber = "763"
             landmarkName = "addSubword(char* name,int words,N kind)"
             landmarkType = "7">
          </BreakpointContent>
@@ -229,13 +229,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/query.cpp"
-            timestampString = "483875823.668137"
+            filePath = "src/import.cpp"
+            timestampString = "484752826.386955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1833"
-            endingLineNumber = "1833"
-            landmarkName = "filterCandidates(NV all)"
+            startingLineNumber = "858"
+            endingLineNumber = "858"
+            landmarkName = "importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -245,13 +245,13 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/query.cpp"
-            timestampString = "483875740.885564"
+            filePath = "src/import.cpp"
+            timestampString = "484752826.386955"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1816"
-            endingLineNumber = "1816"
-            landmarkName = "filterCandidates(NV all)"
+            startingLineNumber = "860"
+            endingLineNumber = "860"
+            landmarkName = "importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

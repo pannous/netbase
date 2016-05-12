@@ -105,7 +105,7 @@ var imageAdded=false;
 var onerror_handled=0;
 function addImage(image,div){
 	if(imageAdded)return;
-	if(image.contains("/Q"))return;
+	if(image.match("/Q"))return;
 	image=image.replace(/ /,"_")
 	var url="https://commons.wikimedia.org/wiki/"
 	if(image.match(/http/))url="" // Already there
@@ -181,6 +181,7 @@ function clean(url){
 	url=url.replace("/all/","/");
 	url=url.replace("/showview/","/");
 	url=url.replace(/.limit.\d+/,"");	
+	url=url.replace("//","/");
 	return url;
 }
 

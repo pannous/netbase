@@ -28,3 +28,5 @@ else
   # echo "kernel.shmmax              = $shmmax" | sudo tee --append /etc/sysctl.conf
   # echo "kernel.shmall              = $shmmax" | sudo tee --append /etc/sysctl.conf
 fi
+
+./clear-shared-memory.sh

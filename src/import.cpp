@@ -735,6 +735,21 @@ void fixValues(char** values, int size) {
 		values[i]=x;
 	}
 }
+
+N addSubword(char* name,N kind){
+	N old=hasWord(name);
+	if(old&&old->statementCount<3){
+		addStatement(old, Type, kind);
+		return old;
+	}
+	if(!old){
+		N n=getSingleton(name,kind,false);
+		n->kind=kind->id;// DANGER!
+		return n;
+	}
+	return 0;
+}
+
 N addSubword(char* name,int words,N kind){
 	int l=len(name);
 	int i=0;
@@ -744,17 +759,9 @@ N addSubword(char* name,int words,N kind){
 			words--;
 			if(words==0){
 				name[i]=0;// cut
-				N old=hasWord(name);
-				if(old&&old->statementCount<3){
-					addStatement(old, Type, kind);
-					return old;
-				}
-				if(!old){
-					N n=getSingleton(name,kind,false);
-					n->kind=kind->id;// DANGER!
-					name[i]=' ';// restore
-					return n;
-				}
+				N found=addSubword(name,kind);
+				name[i]=' ';// restore
+				return found;
 			}
 		}
 	}
@@ -847,16 +854,23 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		}
 
 		if(cut_amazon||cut_billiger){
+			if(contains(line, "ue55h6600"))
+				p("DD");
+			if(contains(line, "UE55H6600"))
+				p("DD");
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
 			replaceChar(name, '[', 0);// cut!
 			if(name[0]==0)continue;//!
 //			else subject=getSingleton(name,type);
+			if(!contains(name, " ")) addSubword(name,type);
+			else{
 			addSubword(name,1,type);
 			addSubword(name,2,type);
 			addSubword(name,3,type);
 			addSubword(name,4,type);
 			addSubword(name,5,type);
+			}
 			if(cut_billiger){
 				N m=getThe(values[1],getThe("Marke"));
 				N k=getThe(values[3],getThe("billiger.de Kategorie"));
@@ -2435,6 +2449,7 @@ void importTest(){
 	context=getContext(wikidata);
 //	importAmazon();
 	importBilliger();
+	check(hasNode("ue55h6600"));
 //	importAllDE();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
 //	importWikiLabels("wikidata/wikidata-terms.en.nt",false);

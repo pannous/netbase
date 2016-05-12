@@ -1809,23 +1809,26 @@ void testLabelInstances(){
 void testBug(){
 //	parse("\"billiger.de_category\"");
 //	console();
-//	handle("ee/Ferien");
-	handle("ee/Tag der Deutschen Einheit");
+	//	handle("ee/Ferien");
+	handle("ee/UE55H6600");
+//	handle("ee/Tag der Deutschen Einheit");
 
 
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
-//	N t=getTopic(getAbstract("Fernseher"));
-	N t=getTopic(getThe("Geburt"));
+//	N w=getAbstract("Fernseher");
+//	N w=getThe("Geburt");
+	N w=getThe("UE55H6600");
+	N t=getTopic(w);
 //	N n=getThe("Erster Weltkrieg");
 //	N n=get(2079);
-	N n=get(53268);
+//	N n=get(53268);
 //	N n=get(225774);
 //	N n=getThe("Geburt");
 //	N t=getTopic(n);
 
 	//	topic
 	check(t!=Entity);
-	check(t!=n);
+//	check(t!=n);
 //	show(t,false);
 //	handle("ee/gehren");
 	exit(0);
