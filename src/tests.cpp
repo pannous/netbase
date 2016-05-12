@@ -1439,6 +1439,7 @@ void testFreebase(){
 
 void fixNullNames(){
 	p("fixNullNames");
+	context=getContext(current_context);
 	for(int i=1;i<context->statementCount;i++){
 		S s=&context->statements[i];
 		if(s->predicate==Instance->id){
