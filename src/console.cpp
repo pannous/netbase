@@ -239,6 +239,10 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		import("labels");// import/labels.csv
 		return OK;
 	}
+	if (eq(data, ":it")){
+		importTest();
+		return OK;
+	}
 	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
 		if (endsWith(data, "!")) deleteWord("acceptant");
 		if (!hasWord("acceptant")) importWordnet();
