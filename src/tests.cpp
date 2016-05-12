@@ -1438,6 +1438,7 @@ void testFreebase(){
 }
 
 void fixNullNames(){
+	p("fixNullNames");
 	for(int i=1;i<context->statementCount;i++){
 		S s=&context->statements[i];
 		if(s->predicate==Instance->id){
@@ -1451,6 +1452,7 @@ void fixNullNames(){
 
 void fixNames(){
 	fixNullNames();
+	p("fixNames like \"@ \" .");
 	char* x=name_root;
 	while(x<name_root+maxNodes*averageNameLength-10000){
 		int l=(int)strlen(x);
