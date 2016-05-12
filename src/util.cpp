@@ -766,7 +766,7 @@ char hangover[MAX_CHARS_PER_LINE];
 #define ENABLE_ZLIB_GZIP 32
 
 
-FILE *open_file(const char* file) {
+FILE *open_file(const char* file,bool exitOnFailure/*=true*/) {
 	FILE *infile;
 	string full=(import_path + file);
 	if ((infile=fopen((file), "r")) != NULL) return infile;
@@ -781,7 +781,8 @@ FILE *open_file(const char* file) {
 	if ((infile=fopen((file), "r")) == NULL) {
 		perror("Error opening file");
 		printf(" %s\n", (file));
-		exit(1);
+		if(exitOnFailure)
+			exit(1);
 	}
 	return infile;
 }

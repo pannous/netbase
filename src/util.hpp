@@ -124,7 +124,7 @@ void appendFile(const char* fileName,const char* data);
 #define minimum(a,b) (a<b?a:b)
 void printlabels();
 
-FILE *open_file(const char* file);
+FILE *open_file(const char* file,bool exitOnFailure=true);
 //bool readFile(char* file,char* line);
 bool readFile(const char* file,char* line);
 void closeFile(const char* file);

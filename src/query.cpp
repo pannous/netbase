@@ -1842,7 +1842,8 @@ map<int,bool> loadBlacklist(bool reload/*=false*/){
 	map<int,bool> forbidden; // int: wordhash
 	// todo
 
-	FILE *infile=open_file("blacklist.csv");
+	FILE *infile=open_file("blacklist.csv",false);
+	if(!infile)return forbidden;
 	char line[1000];// Relativ geschwind!
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		forbidden[wordhash(line)]=true;
