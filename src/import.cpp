@@ -2467,8 +2467,8 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-	importAmazon();
-//	importBilliger();
+//	importAmazon();
+	importBilliger();
 //	check(hasNode("ue55h6600"));
 //	importAllDE();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
