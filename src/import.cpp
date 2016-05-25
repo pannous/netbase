@@ -880,7 +880,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //			else subject=getSingleton(name,type);
 			if(!contains(name, " ")) addSubword(name,type);
 			else{
-//			addSubword(name,1,type);
+				if(cut_billiger)
+			addSubword(name,1,type);
 			addSubword(name,2,type);
 			addSubword(name,3,type);
 			addSubword(name,4,type);
