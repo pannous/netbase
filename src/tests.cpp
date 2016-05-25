@@ -1856,7 +1856,7 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 	germanLabels=true;
-//	importTest();
+	importTest();
 //	load(true);//force
 	if(!hasWord("bug")){
 ////		importWordnet();
@@ -1864,7 +1864,7 @@ void testBrandNewStuff() {
 //		importWikiData();
 	}
 //	save();
-	fixNames();
+//	fixNames();
 //	importTest();
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 	testBug();

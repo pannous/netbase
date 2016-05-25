@@ -88,11 +88,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/import.cpp"
-            timestampString = "484753822.133652"
+            timestampString = "485866965.033114"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "764"
-            endingLineNumber = "764"
+            startingLineNumber = "768"
+            endingLineNumber = "768"
             landmarkName = "addSubword(char* name,int words,N kind)"
             landmarkType = "7">
          </BreakpointContent>
@@ -220,6 +220,22 @@
             startingLineNumber = "454"
             endingLineNumber = "454"
             landmarkName = "parseFilter(string s)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/import.cpp"
+            timestampString = "485866965.033114"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "760"
+            endingLineNumber = "760"
+            landmarkName = "addSubword(char* name,int words,N kind)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

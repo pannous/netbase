@@ -738,30 +738,35 @@ void fixValues(char** values, int size) {
 
 N addSubword(char* name,N kind){
 	N old=hasWord(name);
-	if(old&&old->statementCount<3){
-		addStatement(old, Type, kind);
+	if(old){
+		if(old->statementCount<3)
+			addStatement(old, Type, kind);
 		return old;
 	}
-	if(!old){
+//	if(!old){
 		N n=getSingleton(name,kind,false);
 		addStatement(n, Type, kind);
 		n->kind=kind->id;// DANGER!
 		return n;
-	}
-	return 0;
+//	}
+//	return 0;
 }
 
 N addSubword(char* name,int words,N kind){
 	int l=len(name);
 	int i=0;
+	N found=addSubword(name,kind);
+	if(!found)
+		found=addSubword(name,kind);
 	while (i<l&&words>0) {
 		i++;
 		if (name[i]==' ') {
 			words--;
 			if(words==0){
 				name[i]=0;// cut
-				N found=addSubword(name,kind);
+				N label=addSubword(name,Internal);
 				name[i]=' ';// restore
+				addStatement(found, Label, label);
 				return found;
 			}
 		}
@@ -2327,8 +2332,8 @@ const char* includedFields =
 //	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,6,t);
 	getSingletons=true;
 	autoIds=false;
-	importCsv("amazon/de_v3_csv_beauty_retail_delta.base.csv.gz",getThe("Amazon beauty product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe("Amazon apparel product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_beauty_retail_delta.base.csv.gz",getThe("Amazon beauty product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_automotive_retail_delta.base.csv.gz",getThe("Amazon automotive product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_baby_retail_delta.base.csv.gz",getThe("Amazon baby product"),',',out,in,6,t);
 	importCsv("amazon/de_v3_csv_books_retail_delta_part1.base.csv.gz",getThe("Amazon books product"),',',out,in,6,t);
@@ -2452,9 +2457,9 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-//	importAmazon();
-	importBilliger();
-	check(hasNode("ue55h6600"));
+	importAmazon();
+//	importBilliger();
+//	check(hasNode("ue55h6600"));
 //	importAllDE();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
 //	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
