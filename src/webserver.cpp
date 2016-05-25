@@ -340,6 +340,7 @@ int handle(cchar* q0,int conn){
 			N c=getClass(node);
 			N t=getTopic(node);
 			N ty=getType(node);
+			if(ty==Internal)continue;
 //			if(!c)c=t;
 			if(!t)t=ty;
 			if(t==node)t=ty;
