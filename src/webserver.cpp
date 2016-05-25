@@ -318,6 +318,7 @@ int handle(cchar* q0,int conn){
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
 		if(node->id==0)continue;
+		if(node->kind==_internal)continue;
 		if(last==node)continue;
 		if(eq(node->name,"◊"))continue;
 		last=node;
