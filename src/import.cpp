@@ -755,6 +755,16 @@ N addSubword(char* name,N kind){
 N addSubword(char* name,int words,N kind){
 	int l=len(name);
 	int i=0;
+	int w=0;
+	while (i++<l) {// cut after 4th word
+		if (name[i]==' ') {
+			w++;
+			if(w==4){
+				name[i]=0;
+				break;
+			}
+		}
+	}
 	N found=addSubword(name,kind);
 	if(!found)
 		found=addSubword(name,kind);
@@ -870,7 +880,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //			else subject=getSingleton(name,type);
 			if(!contains(name, " ")) addSubword(name,type);
 			else{
-			addSubword(name,1,type);
+//			addSubword(name,1,type);
 			addSubword(name,2,type);
 			addSubword(name,3,type);
 			addSubword(name,4,type);
