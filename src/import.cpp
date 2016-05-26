@@ -754,11 +754,12 @@ N addSubword(char* name,N kind){
 
 N addSubword(char* name,int words,N kind){
 	int l=len(name);
-	int i,w=0;
+	int i=0;
+	int w=0;
 	N found=addSubword(name,kind);
 	if(!found)
 		found=addSubword(name,kind);
-	while (i<l&&words>0) {
+	while (l>0&&i<l&&words>0&&i>0) {
 		i++;
 		if (name[i]==' ') {
 			words--;
