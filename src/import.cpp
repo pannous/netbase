@@ -755,9 +755,6 @@ N addSubword(char* name,N kind){
 N addSubword(char* name,int words,N kind){
 	int l=len(name);
 	int i,w=0;
-//	while (i++<l)// cut after 4th word
-//		if (name[i]==' ')
-//			if(++w==4){name[i]=0;break;}
 	N found=addSubword(name,kind);
 	if(!found)
 		found=addSubword(name,kind);
@@ -767,9 +764,10 @@ N addSubword(char* name,int words,N kind){
 			words--;
 			if(words==0){
 				name[i]=0;// cut
-				N label=addSubword(name,Internal);
+				N label=addSubword(name,kind);
+//				N label=addSubword(name,Internal);
 				name[i]=' ';// restore
-				addStatement(found, Label, label);
+//				addStatement(found, Label, label);
 				return found;
 			}
 		}
@@ -827,8 +825,13 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 	bool cut_amazon=contains(file, "amazon");
 	bool cut_billiger=contains(file, "billiger");
-	if(cut_amazon && contains(nameRow, "subcat"))
-		type=getThe(str(type->name)+" Kategorie");
+	N Marke=getThe("amazon Marke");
+	N Author=getThe("amazon Author");
+	N Kunstler=getThe("amazon Künstler");
+	N TopKategorie=getThe("amazon TopKategorie");
+	N AKategorie=getThe("amazon Kategorie");
+//	if(cut_amazon && contains(nameRow, "subcat"))
+//		type=getThe(str(type->name)+" Kategorie");
 	int fieldCount=0;
 	int size=0;// per row ~ Hopefully equal to fieldCount
 
@@ -895,27 +898,39 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //			else subject=getSingleton(name,type);
 			if(!contains(name, " ")) addSubword(name,type);
 			else{
+				int l=len(name);int i,w=0;
+				while (i++<l)
+					if (name[i]==' ')// cut after 4th word
+						if(++w==5){name[i]=0;break;}
 				if(cut_amazon){
 					addSubCategories(name, type);
 				}
 				if(cut_billiger){
-			addSubword(name,1,type);
-			addSubword(name,2,type);
-			addSubword(name,3,type);
-			addSubword(name,4,type);
-			addSubword(name,5,type);
-				}
+					addSubword(name,1,type);
+					addSubword(name,2,type);
+					}
+					addSubword(name,3,type);
+					addSubword(name,4,type);
+					addSubword(name,5,type);
+			}
 
+			if(cut_amazon){
+				N m=addSubword(values[3],Marke);// brand
+				N a=addSubword(values[4],Author);// Author
+				N ar=addSubword(values[5],Kunstler );// artist
+				N k=addSubword(values[10],TopKategorie );// topcategory
+				addSubCategories(values[22], AKategorie);
 			}
 			if(cut_billiger){
-				N m=getThe(values[1],getThe("Marke"));
+				N m=getThe(values[1],getThe("billiger.de Marke"));
 				N k=getThe(values[3],getThe("billiger.de Kategorie"));
 //				if(checkNode(m)){// && !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
 //				}
 			}
-//			if(cut_amazon)
+			//			if(cut_amazon)
+//						if(cut_billiger)
 			continue;
 			// test1: NO PROPERTIES!
 			// ESPECIALLY NO productdescription!!!
@@ -2344,19 +2359,20 @@ void importBilliger(){
 	importCsv("billiger.de/TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 }
 
-	void importAmazon2(const char* typ){
+	void importAmazon(){
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
-		const char* includedFields = typ;
+		const char* includedFields =// typ;
+		"title";//,brand,author,artist,subcategorypath1";
 //						"subcategorypath1";
 //	"title,productdescription,asins,brand,author,artist,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1";
 //	"asins,brand,author,artist,title,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,browsenode1,subcategorypath1,subcategorypath2,gender,color,size,price1,availablity1,shipping1url1";
 	const char* ignoredFields=0;// rest! productdescription :(
 	const char* in=includedFields;
 	const char* out=ignoredFields;
-		const char* t=typ;//"title";
-		int col=22;//subcategorypath1
-//		int col=6;//title
+		const char* t="title";
+//		int col=22;//subcategorypath1
+		int col=6;//title
 //	,out,in,col,t
 //	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,col,t);
 	getSingletons=true;
@@ -2394,10 +2410,10 @@ void importBilliger(){
 	importCsv("amazon/de_v3_csv_watches_retail_delta.base.csv.gz",getThe("Amazon watches product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_wine_retail_delta.base.csv.gz",getThe("Amazon wine product"),',',out,in,col,t);
 }
-
-void importAmazon(){
-	importAmazon2("subcategorypath1");
-}
+//
+//void importAmazon(){
+//	importAmazon2("subcategorypath1");
+//}
 
 void importDBPediaEN() {
 	useHash=false;
