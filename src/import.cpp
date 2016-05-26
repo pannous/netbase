@@ -747,24 +747,17 @@ N addSubword(char* name,N kind){
 		N n=getSingleton(name,kind,false);
 		addStatement(n, Type, kind);
 		n->kind=kind->id;// DANGER!
-		return n;
+//		return n;
 //	}
-//	return 0;
+	return 0;
 }
 
 N addSubword(char* name,int words,N kind){
 	int l=len(name);
-	int i=0;
-	int w=0;
-	while (i++<l) {// cut after 4th word
-		if (name[i]==' ') {
-			w++;
-			if(w==4){
-				name[i]=0;
-				break;
-			}
-		}
-	}
+	int i,w=0;
+//	while (i++<l)// cut after 4th word
+//		if (name[i]==' ')
+//			if(++w==4){name[i]=0;break;}
 	N found=addSubword(name,kind);
 	if(!found)
 		found=addSubword(name,kind);
@@ -783,6 +776,26 @@ N addSubword(char* name,int words,N kind){
 	}
 	return 0;
 }
+int toll=0;
+N addSubCategories(char* name,N kind){
+	char* d=editable(name);
+	int i=len(name);
+	while (i>=0) {
+		i--;
+		if (name[i]=='/') {
+			name[i]=0;// cut
+			char *kat=name+i+1;
+			N label=addSubword(name,kind);
+//			if(label)break;// known
+			if(!label){toll++;
+				if(toll%1000==0)printf("\ntoll :%d\n",toll);
+			   }
+		}
+	}
+	addSubword(name,kind);
+	return 0;
+}
+
 string str(char* c){
 	return string(c);
 }
@@ -814,6 +827,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 	bool cut_amazon=contains(file, "amazon");
 	bool cut_billiger=contains(file, "billiger");
+	if(cut_amazon && contains(nameRow, "subcat"))
+		type=getThe(str(type->name)+" Kategorie");
 	int fieldCount=0;
 	int size=0;// per row ~ Hopefully equal to fieldCount
 
@@ -880,14 +895,18 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //			else subject=getSingleton(name,type);
 			if(!contains(name, " ")) addSubword(name,type);
 			else{
-				if(cut_billiger)
+				if(cut_amazon){
+					addSubCategories(name, type);
+				}
+				if(cut_billiger){
 			addSubword(name,1,type);
 			addSubword(name,2,type);
 			addSubword(name,3,type);
 			addSubword(name,4,type);
 			addSubword(name,5,type);
-			}
+				}
 
+			}
 			if(cut_billiger){
 				N m=getThe(values[1],getThe("Marke"));
 				N k=getThe(values[3],getThe("billiger.de Kategorie"));
@@ -896,8 +915,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
 //				}
 			}
-
-
 //			if(cut_amazon)
 			continue;
 			// test1: NO PROPERTIES!
@@ -2327,54 +2344,59 @@ void importBilliger(){
 	importCsv("billiger.de/TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 }
 
-void importAmazon(){
+	void importAmazon2(const char* typ){
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
-
-const char* includedFields =
-	"title";
+		const char* includedFields = typ;
+//						"subcategorypath1";
 //	"title,productdescription,asins,brand,author,artist,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1";
 //	"asins,brand,author,artist,title,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,browsenode1,subcategorypath1,subcategorypath2,gender,color,size,price1,availablity1,shipping1url1";
 	const char* ignoredFields=0;// rest! productdescription :(
 	const char* in=includedFields;
 	const char* out=ignoredFields;
-	const char* t="title";
-//	,out,in,6,t
-//	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,6,t);
+		const char* t=typ;//"title";
+		int col=22;//subcategorypath1
+//		int col=6;//title
+//	,out,in,col,t
+//	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,col,t);
 	getSingletons=true;
 	autoIds=false;
-	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe("Amazon apparel product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_beauty_retail_delta.base.csv.gz",getThe("Amazon beauty product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_automotive_retail_delta.base.csv.gz",getThe("Amazon automotive product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_baby_retail_delta.base.csv.gz",getThe("Amazon baby product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_books_retail_delta_part1.base.csv.gz",getThe("Amazon books product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_ce_retail_delta.base.csv.gz",getThe("Amazon ce product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_digital_sw_retail_delta.base.csv.gz",getThe("Amazon digital_sw product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_digital_vg_retail_delta.base.csv.gz",getThe("Amazon digital_vg product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz",getThe("Amazon digital_video product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_dvd_retail_delta.base.csv.gz",getThe("Amazon dvd product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_grocery_retail_delta.base.csv.gz",getThe("Amazon grocery product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_home_improvement_retail_delta.base.csv.gz",getThe("Amazon home_improvement product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_home_retail_delta.base.csv.gz",getThe("Amazon home product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_hpc_retail_delta.base.csv.gz",getThe("Amazon hpc product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_jewelry_retail_delta.base.csv.gz",getThe("Amazon jewelry product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_kitchen_retail_delta.base.csv.gz",getThe("Amazon kitchen product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_lawn_garden_retail_delta.base.csv.gz",getThe("Amazon lawn_garden product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_luggage_retail_delta.base.csv.gz",getThe("Amazon luggage product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_major_appliances_retail_delta.base.csv.gz",getThe("Amazon major_appliances product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_music_retail_delta.base.csv.gz",getThe("Amazon music product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_musical_instruments_retail_delta.base.csv.gz",getThe("Amazon musical_instruments product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_office_retail_delta.base.csv.gz",getThe("Amazon office product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_pc_retail_delta.base.csv.gz",getThe("Amazon pc product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_personal_care_appliances_retail_delta.base.csv.gz",getThe("Amazon personal_care_appliances product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_pet_retail_delta.base.csv.gz",getThe("Amazon pet product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_shoes_retail_delta.base.csv.gz",getThe("Amazon shoes product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_software_retail_delta.base.csv.gz",getThe("Amazon software product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_sports_retail_delta.base.csv.gz",getThe("Amazon sports product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_toys_retail_delta.base.csv.gz",getThe("Amazon toys product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_video_games_retail_delta.base.csv.gz",getThe("Amazon video_games product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_watches_retail_delta.base.csv.gz",getThe("Amazon watches product"),',',out,in,6,t);
-	importCsv("amazon/de_v3_csv_wine_retail_delta.base.csv.gz",getThe("Amazon wine product"),',',out,in,6,t);
+	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe("Amazon apparel product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_beauty_retail_delta.base.csv.gz",getThe("Amazon beauty product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_automotive_retail_delta.base.csv.gz",getThe("Amazon automotive product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_baby_retail_delta.base.csv.gz",getThe("Amazon baby product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_books_retail_delta_part1.base.csv.gz",getThe("Amazon books product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_ce_retail_delta.base.csv.gz",getThe("Amazon ce product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_digital_sw_retail_delta.base.csv.gz",getThe("Amazon digital_sw product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_digital_vg_retail_delta.base.csv.gz",getThe("Amazon digital_vg product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz",getThe("Amazon digital_video product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_dvd_retail_delta.base.csv.gz",getThe("Amazon dvd product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_grocery_retail_delta.base.csv.gz",getThe("Amazon grocery product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_home_improvement_retail_delta.base.csv.gz",getThe("Amazon home_improvement product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_home_retail_delta.base.csv.gz",getThe("Amazon home product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_hpc_retail_delta.base.csv.gz",getThe("Amazon hpc product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_jewelry_retail_delta.base.csv.gz",getThe("Amazon jewelry product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_kitchen_retail_delta.base.csv.gz",getThe("Amazon kitchen product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_lawn_garden_retail_delta.base.csv.gz",getThe("Amazon lawn_garden product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_luggage_retail_delta.base.csv.gz",getThe("Amazon luggage product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_major_appliances_retail_delta.base.csv.gz",getThe("Amazon major_appliances product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_music_retail_delta.base.csv.gz",getThe("Amazon music product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_musical_instruments_retail_delta.base.csv.gz",getThe("Amazon musical_instruments product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_office_retail_delta.base.csv.gz",getThe("Amazon office product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_pc_retail_delta.base.csv.gz",getThe("Amazon pc product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_personal_care_appliances_retail_delta.base.csv.gz",getThe("Amazon personal_care_appliances product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_pet_retail_delta.base.csv.gz",getThe("Amazon pet product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_shoes_retail_delta.base.csv.gz",getThe("Amazon shoes product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_software_retail_delta.base.csv.gz",getThe("Amazon software product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_sports_retail_delta.base.csv.gz",getThe("Amazon sports product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_toys_retail_delta.base.csv.gz",getThe("Amazon toys product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_video_games_retail_delta.base.csv.gz",getThe("Amazon video_games product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_watches_retail_delta.base.csv.gz",getThe("Amazon watches product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_wine_retail_delta.base.csv.gz",getThe("Amazon wine product"),',',out,in,col,t);
+}
+
+void importAmazon(){
+	importAmazon2("subcategorypath1");
 }
 
 void importDBPediaEN() {
@@ -2468,13 +2490,14 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-//	importAmazon();
-	importBilliger();
+	importAmazon();
+//	importBilliger();
 //	check(hasNode("ue55h6600"));
 //	importAllDE();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
 //	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 }
+
 void importWikiData() {
 	context=getContext(wikidata);
 	useHash=false;
