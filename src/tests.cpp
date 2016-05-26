@@ -1764,7 +1764,7 @@ void testEntities(){
 	cchar* query="Kaufmann";
 	N n=getClass(get(query));
 //	N n=getType(get(query));
-//	show(n);
+	show(n);
 
 	NV all=findEntites(query);
 	check(all.size()>0);

@@ -777,7 +777,7 @@ N addSubword(char* name,int words,N kind){
 }
 int toll=0;
 N addSubCategories(char* name,N kind){
-	char* d=editable(name);
+//	char* d=editable(name);
 	int i=len(name);
 	while (i>=0) {
 		i--;
@@ -916,15 +916,15 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			}
 
 			if(cut_amazon){
-				N m=addSubword(values[3],Marke);// brand
-				N a=addSubword(values[4],Author);// Author
-				N ar=addSubword(values[5],Kunstler );// artist
-				N k=addSubword(values[10],TopKategorie );// topcategory
+				addSubword(values[3],Marke);// brand
+				addSubword(values[4],Author);// Author
+				addSubword(values[5],Kunstler );// artist
+				addSubword(values[10],TopKategorie );// topcategory
 				addSubCategories(values[22], AKategorie);
 			}
 			if(cut_billiger){
-				N m=getThe(values[1],getThe("billiger.de Marke"));
-				N k=getThe(values[3],getThe("billiger.de Kategorie"));
+				getThe(values[1],getThe("billiger.de Marke"));
+				getThe(values[3],getThe("billiger.de Kategorie"));
 //				if(checkNode(m)){// && !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));

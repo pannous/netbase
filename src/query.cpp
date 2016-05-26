@@ -1742,7 +1742,7 @@ NodeVector update(cchar* query){
 NodeVector parseProperties(char *data) {
 	lookupLimit=10000;
 	char *thing=0;//=(char *) malloc(1000);
-	char *property;//=(char *) malloc(1000);
+	char *property=0;//=(char *) malloc(1000);
 	thing=strstr(data, " of ");
 	if(!thing)thing=strstr(data, " by ");
 	if(!thing)thing=strstr(data, " in ");
