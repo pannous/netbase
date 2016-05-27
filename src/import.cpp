@@ -897,15 +897,14 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			replaceChar(name, '[', 0);// cut!
 			if(name[0]==0)continue;//!
 //			else subject=getSingleton(name,type);
-			if(!contains(name, " ")) addSubword(name,type);
+
+			// Tennis", "id":31409028,"topic":"Amazon music product BAD
+			if(cut_billiger && !contains(name, " ")) addSubword(name,type);
 			else{
 				int l=len(name);int i,w=0;
 				while (i++<l)
 					if (name[i]==' ')// cut after 4th word
 						if(++w==5){name[i]=0;break;}
-				if(cut_amazon){
-					addSubCategories(name, type);
-				}
 				if(cut_billiger){
 					addSubword(name,1,type);
 					addSubword(name,2,type);

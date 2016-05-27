@@ -1574,7 +1574,40 @@ bool filterWikiType(int object){
 	if(object<0)return DROP;
 	if(object==13406463)return DROP; // Wikimedia-Liste	Q13406463
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
+// AUTO:
+	if(object==488383)return DROP; // Objekt
+	if(object==4167836)return DROP; // Wikimedia-Kategorie
+	if(object==16889133)return DROP; // Klasse
+	if(object==13406463)return DROP; // Wikimedia-Liste
+	if(object==188524)return DROP; // Tensor
+	if(object==16686022)return DROP; // Natürliches physisches Objekt
+	if(object==24905)return DROP; // Verb
+	if(object==286583)return DROP; // Manifestation
+	if(object==2944660)return DROP; // Lexikalischer Begriff
+	if(object==15916867)return DROP; // Territoriale Verwaltungseinheit eines Landes
+	if(object==211364)return DROP; // Prinzip
+	if(object==147276)return DROP; // Eigenname
+	if(object==36774)return DROP; // Webseite
+	if(object==15621286)return DROP; // Geistiges Werk
+	if(object==14204246)return DROP; // Seite im Projektnamensraum
+	if(object==830077)return DROP; // Subjekt
+	if(object==837766)return DROP; // Gebietskörperschaft
+	if(object==16686448)return DROP; // Künstliche Entität
+	if(object==1639378)return DROP; // Soziales System
+	if(object==2145290)return DROP; // Repräsentation
+	if(object==53361976)return DROP; // ObjectProperty
+	if(object==874405)return DROP; // Soziale Gruppe
+	if(object==4663903)return DROP; // Wikimedia-Portal
+	if(object==1799794)return DROP; // Politische Ebene
+	//
+
+
 	if(object==15617994)return DROP; // Verwaltungseinheit
+	if(object==488383)return DROP; // Objekt
+	if(object==16686022)return DROP; // Natürliches physisches Objekt
+	if(object==830077)return DROP; //Subjekt
+	if(object==874405)return DROP; //Soziale Gruppe
+	if(object==0)return DROP; //
 	if(object==14946396)return DROP;//Einheit", "id":14946396
 	if(object==11028)return DROP;//Information	Q11028
 	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
