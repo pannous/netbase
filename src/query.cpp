@@ -1329,7 +1329,7 @@ bool stopAtGoodWiki(N n){
 	if(object==15324)return true;//Gewässer	Q15324
 	if(object==215627)return true;//Person	Q215627
 	if(object==5)return true;//=> Mensch	Q5
-	if(object==5)return true;//
+	if(object==6511271)return true;//Gemeinde	Q6511271
 	if(object==5)return true;//
 	if(object==5)return true;//
 	if(object==5)return true;//
@@ -1368,9 +1368,9 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		predicateMatch = predicateMatch || s->predicate == -10031;// ist ein :(
 		predicateMatch = predicateMatch || s->predicate == -10027;// Unterklasse von
 		predicateMatch = predicateMatch || s->predicate == -10279;// Unterklasse von
-		predicateMatch = predicateMatch || s->predicate==-10301;// Hauptartikel in der Kategorie
-		predicateMatch = predicateMatch || s->predicate==-10910;// Hauptkategorie zum Artikel
-		predicateMatch = predicateMatch || s->predicate==-10373;// Commons-Kategorie
+//		predicateMatch = predicateMatch || s->predicate==-10301;// Hauptartikel in der Kategorie
+//		predicateMatch = predicateMatch || s->predicate==-10910;// Hauptkategorie zum Artikel
+//		predicateMatch = predicateMatch || s->predicate==-10373;// Commons-Kategorie
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
 		predicateMatch = predicateMatch || s->Predicate() == Translation;
