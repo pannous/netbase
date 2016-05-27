@@ -1317,9 +1317,27 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		return all;
 }
 
+bool stopAtGoodWiki(N n){
+	int object=n->id;
+//	if(object>0 && object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
+	if(object==6256)return true;// Land	Q6256
+	if(object==571)return true;//Buch
+	if(object==7275)return true;//Staat
+	if(object==43229)return true;//Organisation	Q43229
+	if(object==15324)return true;//Gewässer	Q15324
+	if(object==15324)return true;//
+	if(object==15324)return true;//
+	if(object==15324)return true;//
+	if(object==15324)return true;//
+	if(object==15324)return true;//
+
+
+	return false;
+}
 
 NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 	NodeVector all;
+	if(stopAtGoodWiki(subject)||filterWikiType(subject->id))return all;// none
 	int i = 0;
 	Statement* s = 0;
 	int type_lookup_limit=100;// type statements should be at the very beginning
@@ -1600,8 +1618,6 @@ bool filterWikiType(int object){
 	if(object==4663903)return DROP; // Wikimedia-Portal
 	if(object==1799794)return DROP; // Politische Ebene
 	//
-
-
 	if(object==15617994)return DROP; // Verwaltungseinheit
 	if(object==488383)return DROP; // Objekt
 	if(object==16686022)return DROP; // Natürliches physisches Objekt
