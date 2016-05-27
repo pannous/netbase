@@ -1193,6 +1193,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 		predicateMatchReverse = predicateMatchReverse || (INCLUDE_CLASSES && s->Predicate() == SuperClass);
 		predicateMatchReverse = predicateMatchReverse || (INCLUDE_LABELS  && s->Predicate() == Label) ; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->predicate==-10373;
+		predicateMatchReverse = predicateMatchReverse || s->predicate==-10910;// Hauptkategorie zum Artikel
 		predicateMatchReverse = predicateMatchReverse || (s->Predicate() == Label && contains(s->Subject()->name, subject->name));// Frankfurt (Oder)
 
 		if (queue) {
