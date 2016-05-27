@@ -1325,13 +1325,19 @@ bool stopAtGoodWiki(N n){
 	if(object==7275)return true;//Staat
 	if(object==43229)return true;//Organisation	Q43229
 	if(object==15324)return true;//Gewässer	Q15324
-	if(object==15324)return true;//
-	if(object==15324)return true;//
-	if(object==15324)return true;//
-	if(object==15324)return true;//
-	if(object==15324)return true;//
-
-
+	if(object==215627)return true;//Person	Q215627
+	if(object==5)return true;//=> Mensch	Q5
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
 	return false;
 }
 
@@ -1617,6 +1623,7 @@ bool filterWikiType(int object){
 	if(object==874405)return DROP; // Soziale Gruppe
 	if(object==4663903)return DROP; // Wikimedia-Portal
 	if(object==1799794)return DROP; // Politische Ebene
+	if(object==15222213)return DROP; // Künstliches physikalisches Objekt
 	//
 	if(object==15617994)return DROP; // Verwaltungseinheit
 	if(object==488383)return DROP; // Objekt

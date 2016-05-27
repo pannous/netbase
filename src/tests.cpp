@@ -1826,24 +1826,26 @@ void testBug(){
 //	parse("\"billiger.de_category\"");
 //	console();
 	//	handle("ee/Ferien");
-	handle("ee/UE55H6600");
+//	handle("ee/UE55H6600");
 //	handle("ee/Tag der Deutschen Einheit");
 
 
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 //	N w=getAbstract("Fernseher");
 //	N w=getThe("Geburt");
-	N w=getThe("UE55H6600");
-	N t=getTopic(w);
+//	N w=getThe("UE55H6600");
+//	N t=getTopic(w);
 //	N n=getThe("Erster Weltkrieg");
 //	N n=get(2079);
-//	N n=get(53268);
+	N n=get(5809);
 //	N n=get(225774);
+
 //	N n=getThe("Geburt");
-//	N t=getTopic(n);
+	N t=getTopic(n);
 
 	//	topic
 	check(t!=Entity);
+	check(t!=get(7239));//Lebewesen
 //	check(t!=n);
 //	show(t,false);
 //	handle("ee/gehren");
@@ -1856,7 +1858,7 @@ void testBrandNewStuff() {
 	quiet=false;
 	debug = true;
 	germanLabels=true;
-	importTest();
+//	importTest();
 //	load(true);//force
 	if(!hasWord("bug")){
 ////		importWordnet();
