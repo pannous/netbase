@@ -1186,13 +1186,13 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 		bool predicateMatch = (s->Predicate() == Instance)|| (INCLUDE_CLASSES && s->Predicate() == SubClass);
 		predicateMatch = predicateMatch || s->predicate==-10301;// Hauptartikel in der Kategorie
 		predicateMatch = predicateMatch || s->predicate==-10910;// Hauptkategorie zum Artikel
-		predicateMatch = predicateMatch || s->predicate==-10373;//  	Commons-Kategorie
+		predicateMatch = predicateMatch || s->predicate==-10373;// Commons-Kategorie
 
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse || (INCLUDE_CLASSES && s->Predicate() == SuperClass);
 		predicateMatchReverse = predicateMatchReverse || (INCLUDE_LABELS  && s->Predicate() == Label) ; // || inverse
-		predicateMatchReverse = predicateMatchReverse || s->predicate==-10373;
+		predicateMatchReverse = predicateMatchReverse || s->predicate==-10373;// Commons-Kategorie
 		predicateMatchReverse = predicateMatchReverse || s->predicate==-10910;// Hauptkategorie zum Artikel
 		predicateMatchReverse = predicateMatchReverse || (s->Predicate() == Label && contains(s->Subject()->name, subject->name));// Frankfurt (Oder)
 
@@ -1368,6 +1368,9 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		predicateMatch = predicateMatch || s->predicate == -10031;// ist ein :(
 		predicateMatch = predicateMatch || s->predicate == -10027;// Unterklasse von
 		predicateMatch = predicateMatch || s->predicate == -10279;// Unterklasse von
+		predicateMatch = predicateMatch || s->predicate==-10301;// Hauptartikel in der Kategorie
+		predicateMatch = predicateMatch || s->predicate==-10910;// Hauptkategorie zum Artikel
+		predicateMatch = predicateMatch || s->predicate==-10373;// Commons-Kategorie
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
 		predicateMatch = predicateMatch || s->Predicate() == Translation;
