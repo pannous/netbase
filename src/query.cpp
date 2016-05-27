@@ -1330,7 +1330,7 @@ bool stopAtGoodWiki(N n){
 	if(object==215627)return true;//Person	Q215627
 	if(object==5)return true;//=> Mensch	Q5
 	if(object==6511271)return true;//Gemeinde	Q6511271
-	if(object==5)return true;//
+	if(object==107425)return true;// Landschaft	Q107425
 	if(object==5)return true;//
 	if(object==5)return true;//
 	if(object==5)return true;//
@@ -1635,6 +1635,16 @@ bool filterWikiType(int object){
 	if(object==16686022)return DROP; // Natürliches physisches Objekt
 	if(object==830077)return DROP; //Subjekt
 	if(object==874405)return DROP; //Soziale Gruppe
+	if(object==20719696)return DROP; //Physisch-geographisches Objekt
+	if(object==618123)return DROP; // Geographisches Objekt
+	if(object==0)return DROP; //
+	if(object==0)return DROP; //
+	if(object==0)return DROP; //
+	if(object==0)return DROP; //
+	if(object==0)return DROP; //
+	if(object==0)return DROP; //
+	if(object==0)return DROP; //
+	if(object==0)return DROP; //
 	if(object==0)return DROP; //
 	if(object==14946396)return DROP;//Einheit", "id":14946396
 	if(object==11028)return DROP;//Information	Q11028
