@@ -1327,6 +1327,7 @@ bool stopAtGoodWiki(N n){
 	if(object==7275)return true;//Staat
 	if(object==43229)return true;//Organisation	Q43229
 //	if(object==15324)return true;//Gewässer	Q15324
+	if(object==121359)return true;//Infrastruktur	Q121359
 	if(object==618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
 	if(object==215627)return true;//Person	Q215627
 	if(object==5)return true;//=> Mensch	Q5
@@ -1334,9 +1335,9 @@ bool stopAtGoodWiki(N n){
 	if(object==107425)return true;// Landschaft	Q107425
 	if(object==3266850)return true;//Kommune	Q3266850
 	if(object==515)return true;//Stadt	Q
-	if(object==5)return true;//
-	if(object==5)return true;//
-	if(object==5)return true;//
+//	if(object==482994)return true;//Musikalbum	Q482994
+	if(object==838948)return true;//Kunstwerk	Q838948
+	if(object==2188189)return true;//Musikalisches Werk	Q2188189
 	if(object==5)return true;//
 	if(object==5)return true;//
 	if(object==5)return true;//
@@ -1646,7 +1647,7 @@ bool filterWikiType(int object){
 //	if(object==618123)return DROP; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
 	if(object==17633526)return DROP; // "class":"Artikel bei Wikinews
 	if(object==770948)return DROP; //Okres
-	if(object==0)return DROP; //
+//	if(object==2424752)return DROP; //Produkt	Q2424752 ???
 	if(object==0)return DROP; //
 	if(object==0)return DROP; //
 	if(object==0)return DROP; //
