@@ -1636,7 +1636,7 @@ bool filterWikiType(int object){
 	if(object==1799794)return DROP; // Politische Ebene
 	if(object==15222213)return DROP; // Künstliches physikalisches Objekt
 	//
-	if(object==15617994)return DROP; // Verwaltungseinheit
+//	if(object==15617994)return DROP; // Verwaltungseinheit besser als http://87.118.71.26:81/html/770948
 	if(object==488383)return DROP; // Objekt
 	if(object==16686022)return DROP; // Natürliches physisches Objekt
 	if(object==830077)return DROP; //Subjekt
@@ -1644,7 +1644,7 @@ bool filterWikiType(int object){
 	if(object==20719696)return DROP; //Physisch-geographisches Objekt
 	if(object==618123)return DROP; // Geographisches Objekt
 	if(object==17633526)return DROP; // "class":"Artikel bei Wikinews
-	if(object==0)return DROP; //
+	if(object==770948)return DROP; //Okres
 	if(object==0)return DROP; //
 	if(object==0)return DROP; //
 	if(object==0)return DROP; //
