@@ -756,9 +756,9 @@ N addSubword(char* name,int words,N kind){
 	int l=len(name);
 	int i=0;
 	int w=0;
-	N found=addSubword(name,kind);
-	if(!found)
-		found=addSubword(name,kind);
+//	N found=addSubword(name,kind);
+//	if(!found)
+//		found=addSubword(name,kind);
 	while (l>0&&i<l&&words>0&&i>0) {
 		i++;
 		if (name[i]==' ') {
@@ -769,7 +769,8 @@ N addSubword(char* name,int words,N kind){
 //				N label=addSubword(name,Internal);
 				name[i]=' ';// restore
 //				addStatement(found, Label, label);
-				return found;
+//				return found;
+				return label;
 			}
 		}
 	}

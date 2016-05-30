@@ -1806,12 +1806,13 @@ void deleteStatement(Statement * s) {
 }
 
 void deleteWord(const char* data, bool completely) {
-	pf("deleteWord %s \n", data);
 	Context* context=&contexts[current_context];
     if(data[0]=='$'){
+		pf("deleteStatement %s \n", data);
         deleteStatement(&context->statements[atoi(data+1)]);
         return;
     }
+	pf("deleteWord %s \n", data);
 	int id=atoi(data);
 	if (id <= 0) {
 //		deleteNode(getThe(data));
