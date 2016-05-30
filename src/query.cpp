@@ -1642,7 +1642,7 @@ bool filterWikiType(int object){
 	if(object==830077)return DROP; //Subjekt
 	if(object==874405)return DROP; //Soziale Gruppe
 	if(object==20719696)return DROP; //Physisch-geographisches Objekt
-	if(object==618123)return DROP; // Geographisches Objekt
+//	if(object==618123)return DROP; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
 	if(object==17633526)return DROP; // "class":"Artikel bei Wikinews
 	if(object==770948)return DROP; //Okres
 	if(object==0)return DROP; //
