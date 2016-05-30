@@ -2467,6 +2467,15 @@ int test2() {
 	return 12345;
 }		// RUBY/ JNA !!
 
+void fixCurrent(){
+	N a=getThe("Amazon dvd product");
+	Statement* s;
+	while ((s=nextStatement(a, s))){
+		if(wordCount(s->Subject()->name)==1)
+			deleteNode(s->Subject());
+	}
+
+}
 Node* mergeNode(Node* target,Node* node){
     Statement* s=getStatement( node->firstStatement);
     addStatementToNodeDirect(target,node->firstStatement);

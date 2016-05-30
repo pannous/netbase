@@ -941,6 +941,13 @@ void sortNodes(NodeVector& all){
 	//	std::sort(all.begin(),all.end(),);
 	
 }
+int wordCount(char* c){
+	size_t len=strlen(c);
+	int count=0;
+	for (size_t i=len-1; i>0; --i)
+		if(c[i]==' ')count++;
+	return count;
+}
 
 bool empty(char* c){
 	return c==0||c[0]==0;

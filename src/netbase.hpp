@@ -572,6 +572,7 @@ Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
 NodeVector parse(const char* data,bool safeMode=true);// and act
+void fixCurrent();
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);
 extern "C" Node* getType(Node* n);// != kind!

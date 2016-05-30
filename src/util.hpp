@@ -136,3 +136,4 @@ bool empty(char* c);
 bool empty(cchar* c);
 int len(char* c);
 int len(cchar* c);
+int wordCount(char* c);
