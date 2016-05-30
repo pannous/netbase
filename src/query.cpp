@@ -1326,7 +1326,8 @@ bool stopAtGoodWiki(N n){
 	if(object==571)return true;//Buch
 	if(object==7275)return true;//Staat
 	if(object==43229)return true;//Organisation	Q43229
-	if(object==15324)return true;//Gewässer	Q15324
+//	if(object==15324)return true;//Gewässer	Q15324
+	if(object==618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
 	if(object==215627)return true;//Person	Q215627
 	if(object==5)return true;//=> Mensch	Q5
 	if(object==6511271)return true;//Gemeinde	Q6511271
