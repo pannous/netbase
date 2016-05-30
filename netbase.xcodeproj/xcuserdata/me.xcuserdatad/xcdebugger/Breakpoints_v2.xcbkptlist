@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486046857.0533"
+            timestampString = "486289283.17935"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2057"
-            endingLineNumber = "2057"
+            startingLineNumber = "2077"
+            endingLineNumber = "2077"
             landmarkName = "sortTopics(NV topics,N entity)"
             landmarkType = "7">
          </BreakpointContent>
@@ -134,11 +134,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486046857.0533"
+            timestampString = "486289283.17935"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1836"
-            endingLineNumber = "1836"
+            startingLineNumber = "1856"
+            endingLineNumber = "1856"
             landmarkName = "parseProperties(char *data)"
             landmarkType = "7">
          </BreakpointContent>
@@ -246,12 +246,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486047073.4453"
+            timestampString = "486289169.125535"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1470"
-            endingLineNumber = "1470"
-            landmarkName = "enqueue(Node* current, Node* d, NodeQueue * q)"
+            startingLineNumber = "1350"
+            endingLineNumber = "1350"
+            landmarkName = "parentFilter2(Node* subject, NodeQueue * queue, bool backInstances)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

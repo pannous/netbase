@@ -1331,7 +1331,7 @@ bool stopAtGoodWiki(N n){
 	if(object==5)return true;//=> Mensch	Q5
 	if(object==6511271)return true;//Gemeinde	Q6511271
 	if(object==107425)return true;// Landschaft	Q107425
-	if(object==5)return true;//
+	if(object==3266850)return true;//Kommune	Q3266850
 	if(object==5)return true;//
 	if(object==5)return true;//
 	if(object==5)return true;//
@@ -1345,7 +1345,10 @@ bool stopAtGoodWiki(N n){
 
 NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 	NodeVector all;
-	if(stopAtGoodWiki(subject)||filterWikiType(subject->id))return all;// none
+	if(stopAtGoodWiki(subject)||filterWikiType(subject->id)){
+		all.push_back(subject);
+		return all;// none
+	}
 	int i = 0;
 	Statement* s = 0;
 	int type_lookup_limit=100;// type statements should be at the very beginning
@@ -1470,7 +1473,7 @@ NodeVector reconstructPath(Node* from, Node * to) {
 
 bool enqueue(Node* current, Node* d, NodeQueue * q) {
 	if (!d || enqueued[d->id+propertySlots])return false; // already done -> continue;
-	printf("? %d %s\n",d->id, d->name);
+//	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
 	enqueued[d->id+propertySlots] = current->id;
 	q->push(d);
@@ -1505,6 +1508,8 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	Node* current;
 	NodeSet all;
 	while ((current = q.front())) {
+		if(stopAtGoodWiki(current))
+			return current;
 		//		if(enqueued[current->id+propertySlots])continue;
 		//		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
 		all.insert(current);
@@ -1637,7 +1642,7 @@ bool filterWikiType(int object){
 	if(object==874405)return DROP; //Soziale Gruppe
 	if(object==20719696)return DROP; //Physisch-geographisches Objekt
 	if(object==618123)return DROP; // Geographisches Objekt
-	if(object==0)return DROP; //
+	if(object==17633526)return DROP; // "class":"Artikel bei Wikinews
 	if(object==0)return DROP; //
 	if(object==0)return DROP; //
 	if(object==0)return DROP; //
@@ -2101,7 +2106,9 @@ N getInferredClass(N n,int limit=1000){
 	while ((s=nextStatement(n,s))) { // kf predicate!=Any 24.1. REALLY??
 		if(limit && lookup++>=limit)break;
 		if(s->Object()==n){
-			if(s->predicate>0||s->predicate<-1000)return s->Predicate();
+			if(s->predicate>0||s->predicate<-1000)
+				if(s->predicate!=-10031)
+				return s->Predicate();
 		}
 	}
 	return 0;

@@ -1836,7 +1836,7 @@ void testBug(){
 //	N w=getThe("UE55H6600");
 //	N t=getTopic(w);
 //	N n=getThe("Erster Weltkrieg");
-	N n=get(414);
+	N n=get(948);
 //	N n=get(5809);
 //	N n=get(225774);
 
@@ -1846,6 +1846,8 @@ void testBug(){
 	//	topic
 	check(t!=Entity);
 	check(t!=get(7239));//Lebewesen
+//	check(t==get(7275));//Staat
+	check(t==get(6256));//Staat
 //	check(t!=n);
 //	show(t,false);
 //	handle("ee/gehren");
