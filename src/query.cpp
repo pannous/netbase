@@ -1332,7 +1332,7 @@ bool stopAtGoodWiki(N n){
 	if(object==6511271)return true;//Gemeinde	Q6511271
 	if(object==107425)return true;// Landschaft	Q107425
 	if(object==3266850)return true;//Kommune	Q3266850
-	if(object==5)return true;//
+	if(object==515)return true;//Stadt	Q
 	if(object==5)return true;//
 	if(object==5)return true;//
 	if(object==5)return true;//
@@ -1508,18 +1508,19 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 	Node* current;
 	NodeSet all;
 	while ((current = q.front())) {
-		if(stopAtGoodWiki(current))
-			return current;
 		//		if(enqueued[current->id+propertySlots])continue;
 		//		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
-		all.insert(current);
 		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
 		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/)||(current->name[0]<'A'))
 			continue;
+		if(filterWikiType(current->id))break;
+		if(stopAtGoodWiki(current))
+			return current;
 		if(startsWith(current->name,"http"))
 			continue;
+		all.insert(current);
 		N pa=get(enqueued[current->id+propertySlots]);
 		int depth=depths[current->id+propertySlots]+1;
 		if(depth>deepest)furthest=current;

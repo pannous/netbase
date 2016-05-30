@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486289283.17935"
+            timestampString = "486289516.74497"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2077"
-            endingLineNumber = "2077"
+            startingLineNumber = "2078"
+            endingLineNumber = "2078"
             landmarkName = "sortTopics(NV topics,N entity)"
             landmarkType = "7">
          </BreakpointContent>
@@ -134,11 +134,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486289283.17935"
+            timestampString = "486289516.74497"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1856"
-            endingLineNumber = "1856"
+            startingLineNumber = "1857"
+            endingLineNumber = "1857"
             landmarkName = "parseProperties(char *data)"
             landmarkType = "7">
          </BreakpointContent>
@@ -252,6 +252,38 @@
             startingLineNumber = "1350"
             endingLineNumber = "1350"
             landmarkName = "parentFilter2(Node* subject, NodeQueue * queue, bool backInstances)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/query.cpp"
+            timestampString = "486289995.028946"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1520"
+            endingLineNumber = "1520"
+            landmarkName = "getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*))"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/query.cpp"
+            timestampString = "486290007.093659"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1327"
+            endingLineNumber = "1327"
+            landmarkName = "stopAtGoodWiki(N n)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

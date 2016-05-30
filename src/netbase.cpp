@@ -2484,6 +2484,12 @@ Node* mergeNode(Node* target,Node* node){
 		}
         s=next;
     }
+	for (int i=0; i<context->statementCount; i++) {
+		s=&context->statements[i];
+		if(s->Subject()==node)s->subject=target->id;
+		if(s->Predicate()==node)s->predicate=target->id;
+		if(s->Object()==node)s->object=target->id;
+	}
     deleteNode(node);
     return target;
 }
