@@ -1338,6 +1338,11 @@ bool stopAtGoodWiki(N n){
 //	if(object==482994)return true;//Musikalbum	Q482994
 	if(object==838948)return true;//Kunstwerk	Q838948
 	if(object==2188189)return true;//Musikalisches Werk	Q2188189
+	if(object==234460)return true;//Text	Q234460
+//	if(object==7725634)return true;//Literarisches Werk	Q7725634
+	if(object==5)return true;//
+	if(object==5)return true;//
+	if(object==5)return true;//
 	if(object==5)return true;//
 	if(object==5)return true;//
 	if(object==5)return true;//
@@ -2121,6 +2126,7 @@ N getClass(N n){
 	if(!p)p=getProperty(n,SuperClass,1000);// more specific: Transportflugzeug
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
+	if(!p)p=getProperty(n,Type,-10106);// Tätigkeit
 	if(!p)p=getInferredClass(n,1000);
 	if(!p && (n->kind>0||n->kind<-1000))
 		return get(n->kind);
