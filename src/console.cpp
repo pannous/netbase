@@ -262,6 +262,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		string arg=next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
 		else importAll();
+		start_server();
 		return OK;
 	}
 	autoIds=true;

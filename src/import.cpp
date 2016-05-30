@@ -2649,8 +2649,9 @@ void importAllDE() {
 	importBilliger();
 	//    importEntities();
 //	importImagesDE();
-	importLabels("labels.csv");// todo: why again?
+//	importLabels("labels.csv");// todo: why again?
 	importing=false;
+//	server();
 	//	importFacts()
 }
 
