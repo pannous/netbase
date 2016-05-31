@@ -2653,6 +2653,7 @@ void importAllDE() {
 	importGeoDB();
 	importAmazon();
 	importBilliger();
+	replay();
 	//    importEntities();
 //	importImagesDE();
 //	importLabels("labels.csv");// todo: why again?

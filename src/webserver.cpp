@@ -415,6 +415,7 @@ int handle(cchar* q0,int conn){
 					if(  checkNode(type))
 						objectName=(char*)(concat(concat(objectName, ": "),type->name));
 				}
+				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
 				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, objectName, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 				Writeline(conn, buff);
 				good++;

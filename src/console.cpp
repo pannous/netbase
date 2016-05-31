@@ -172,6 +172,8 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	char* data=fixQuotesAndTrim(editable(data0));
 	int len=(int)strlen(data);
 	if(data[len-1]=='\'')data[len-1]=0;
+	if(data[len-1]=='\n')data[len-1]=0;
+	if(data[len-1]=='\r')data[len-1]=0;
 	if(data[0]=='\'')data++;
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
