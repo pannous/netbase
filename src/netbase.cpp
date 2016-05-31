@@ -2403,7 +2403,7 @@ char* getText(Node* n){
 }
 
 string formatImage(Node* image,int size,bool thumb){
-	if (!image || !checkNode(image)) return "";
+	if (!image || !checkNode(image)|| !image->name) return "";
     char* name=replaceChar(image->name,' ','_');
 	char* start=strstr(name, "File:");
 	if(start) name=start+5;

@@ -745,7 +745,7 @@ N addSubword(char* name,N kind){
 	}
 //	if(!old){
 		N n=getSingleton(name,kind,false);
-		addStatement(n, Type, kind);
+//		addStatement(n, Type, kind);
 		n->kind=kind->id;// DANGER!
 //		return n;
 //	}
