@@ -753,13 +753,15 @@ N addSubword(char* name,N kind){
 }
 
 N addSubword(char* name,int words,N kind){
+	if(wordCount(name)<words)
+		return 0;
 	int l=len(name);
 	int i=0;
 	int w=0;
-//	N found=addSubword(name,kind);
-//	if(!found)
-//		found=addSubword(name,kind);
-	while (l>0&&i<l&&words>0&&i>0) {
+	N found=addSubword(name,kind);
+	if(wordCount(name)==words)
+		return found;
+	while (l>0&&i<l&&i>=0) {
 		i++;
 		if (name[i]==' ') {
 			words--;
@@ -2371,13 +2373,17 @@ void importBilliger(){
 	const char* ignoredFields=0;// rest! productdescription :(
 	const char* in=includedFields;
 	const char* out=ignoredFields;
-		const char* t="title";
+	const char* t="title";
 //		int col=22;//subcategorypath1
 		int col=6;//title
 //	,out,in,col,t
 //	importCsv("amazon/de_v3_csv_digital_video_retail_delta_20151207.base.csv.gz",getThe("Amazon Video"),',',out,in,col,t);
 	getSingletons=true;
 	autoIds=false;
+
+	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz",getThe("Amazon digital_video product"),',',out,in,col,t);
+	importCsv("amazon/de_v3_csv_dvd_retail_delta.base.csv.gz",getThe("Amazon dvd product"),',',out,in,col,t);
+	if(testing)exit(0);
 	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe("Amazon apparel product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_beauty_retail_delta.base.csv.gz",getThe("Amazon beauty product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_automotive_retail_delta.base.csv.gz",getThe("Amazon automotive product"),',',out,in,col,t);
@@ -2386,8 +2392,6 @@ void importBilliger(){
 	importCsv("amazon/de_v3_csv_ce_retail_delta.base.csv.gz",getThe("Amazon ce product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_digital_sw_retail_delta.base.csv.gz",getThe("Amazon digital_sw product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_digital_vg_retail_delta.base.csv.gz",getThe("Amazon digital_vg product"),',',out,in,col,t);
-	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz",getThe("Amazon digital_video product"),',',out,in,col,t);
-	importCsv("amazon/de_v3_csv_dvd_retail_delta.base.csv.gz",getThe("Amazon dvd product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_grocery_retail_delta.base.csv.gz",getThe("Amazon grocery product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_home_improvement_retail_delta.base.csv.gz",getThe("Amazon home_improvement product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_home_retail_delta.base.csv.gz",getThe("Amazon home product"),',',out,in,col,t);

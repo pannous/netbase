@@ -2471,14 +2471,16 @@ int test2() {
 void replay(){
 	char* line=(char*)malloc(MAX_CHARS_PER_LINE);
 //	while(readFile("query.log", line)){
-	while(readFile("commands.log", line)){
+//	while(readFile("commands.log", line)){
+while(readFile("replay.log", line)){
 		if(contains(line, ":del"))handle(line);
 		if(contains(line, ":learn"))handle(line);
 		if(contains(line, ":label"))handle(line);
 	}
 }
 void fixCurrent(){
-	replay();
+	importTest();
+//	replay();
 //	N a=getThe("Amazon dvd product");
 //	Statement* s;
 //	while ((s=nextStatement(a, s))){

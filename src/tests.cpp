@@ -1862,7 +1862,7 @@ void testBrandNewStuff() {
 	}
 //	save();
 //	fixNames();
-//	importTest();
+	importTest();
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 	testBug();
 //	testDelete();

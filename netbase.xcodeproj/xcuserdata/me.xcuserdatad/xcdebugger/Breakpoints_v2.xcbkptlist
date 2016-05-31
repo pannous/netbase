@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486289516.74497"
+            timestampString = "486378710.987125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "2078"
-            endingLineNumber = "2078"
+            startingLineNumber = "2085"
+            endingLineNumber = "2085"
             landmarkName = "sortTopics(NV topics,N entity)"
             landmarkType = "7">
          </BreakpointContent>
@@ -87,22 +87,6 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/import.cpp"
-            timestampString = "486046857.0533"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "770"
-            endingLineNumber = "770"
-            landmarkName = "addSubword(char* name,int words,N kind)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
             timestampString = "481712165.927366"
             startingColumnNumber = "9223372036854775807"
@@ -134,11 +118,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486289516.74497"
+            timestampString = "486378710.987125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1857"
-            endingLineNumber = "1857"
+            startingLineNumber = "1864"
+            endingLineNumber = "1864"
             landmarkName = "parseProperties(char *data)"
             landmarkType = "7">
          </BreakpointContent>
@@ -150,11 +134,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "483867917.484439"
+            timestampString = "486378710.987125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1873"
-            endingLineNumber = "1873"
+            startingLineNumber = "1874"
+            endingLineNumber = "1874"
             landmarkName = "deleteStatements(Node * n)"
             landmarkType = "7">
          </BreakpointContent>
@@ -166,11 +150,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
-            timestampString = "483867917.484439"
+            timestampString = "486378710.987125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1854"
-            endingLineNumber = "1854"
+            startingLineNumber = "1855"
+            endingLineNumber = "1855"
             landmarkName = "deleteNode(Node * n)"
             landmarkType = "7">
          </BreakpointContent>
@@ -229,28 +213,12 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/import.cpp"
-            timestampString = "486046857.0533"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "761"
-            endingLineNumber = "761"
-            landmarkName = "addSubword(char* name,int words,N kind)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486289169.125535"
+            timestampString = "486378710.987125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1350"
-            endingLineNumber = "1350"
+            startingLineNumber = "1357"
+            endingLineNumber = "1357"
             landmarkName = "parentFilter2(Node* subject, NodeQueue * queue, bool backInstances)"
             landmarkType = "7">
          </BreakpointContent>
@@ -262,28 +230,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486289995.028946"
+            timestampString = "486378710.987125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1520"
-            endingLineNumber = "1520"
+            startingLineNumber = "1527"
+            endingLineNumber = "1527"
             landmarkName = "getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*))"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "src/query.cpp"
-            timestampString = "486290007.093659"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1327"
-            endingLineNumber = "1327"
-            landmarkName = "stopAtGoodWiki(N n)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -294,11 +246,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "src/query.cpp"
-            timestampString = "486291320.746018"
+            timestampString = "486378710.987125"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1631"
-            endingLineNumber = "1631"
+            startingLineNumber = "1638"
+            endingLineNumber = "1638"
             landmarkName = "filterWikiType(int object)"
             landmarkType = "7">
          </BreakpointContent>
