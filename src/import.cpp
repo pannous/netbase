@@ -2651,7 +2651,7 @@ void importAllDE() {
 //	importImagesDE();
 //	importLabels("labels.csv");// todo: why again?
 	importing=false;
-//	server();
+//	server(); NO! NEEDS ROOT
 	//	importFacts()
 }
 

@@ -451,9 +451,17 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 
 	if(startsWith(data, ":fix")){
-		fixCurrent();
+		replay();
+//		fixCurrent();
 		return OK;
 	}
+
+	if(startsWith(data, ":replay")){
+		replay();
+		//		fixCurrent();
+		return OK;
+	}
+
 	if(startsWith(data, ":topics")){
 		data=next_word(data);
 		autoIds=true;

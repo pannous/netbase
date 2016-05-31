@@ -1810,13 +1810,6 @@ void testWikidata(){
 
 }
 
-void replay(){
-	char* line=(char*)malloc(MAX_CHARS_PER_LINE);
-	while(readFile("query.log", line)){
-		handle(line);
-	}
-}
-
 void testLabelInstances(){
 	NV all=allInstances(getAbstract("amazon"));
 	check(contains(all, get(3884)));
