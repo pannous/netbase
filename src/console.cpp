@@ -160,7 +160,7 @@ NodeVector runScript(const char* file){
 	return last;
 }
 
-
+// CENTRAL CONSOLE INSTRUCTION PARSING
 NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if (eq(data0, null)) return OK;
 	if (!isprint(data0[0])) // ??

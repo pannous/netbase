@@ -943,7 +943,7 @@ void sortNodes(NodeVector& all){
 }
 int wordCount(char* c){
 	size_t len=strlen(c);
-	int count=0;
+	int count=1;
 	for (size_t i=len-1; i>0; --i)
 		if(c[i]==' ')count++;
 	return count;

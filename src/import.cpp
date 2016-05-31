@@ -875,7 +875,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		}
 		//        values.erase(values.begin(),values.end());
 		//        ps(line);
-		if (size==1){continue;}
+		if(contains(line, "Coca-Cola Case"))
+			printf("Coca-Cola");
+		if (size==1){bad();continue;}
 		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
 			bad();
 //			p(line);
@@ -2381,7 +2383,7 @@ void importBilliger(){
 	getSingletons=true;
 	autoIds=false;
 
-	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz",getThe("Amazon digital_video product"),',',out,in,col,t);
+//	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz",getThe("Amazon digital_video product"),',',out,in,col,t);
 	importCsv("amazon/de_v3_csv_dvd_retail_delta.base.csv.gz",getThe("Amazon dvd product"),',',out,in,col,t);
 	if(testing)exit(0);
 	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe("Amazon apparel product"),',',out,in,col,t);

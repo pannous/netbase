@@ -2473,9 +2473,9 @@ void replay(){
 //	while(readFile("query.log", line)){
 //	while(readFile("commands.log", line)){
 while(readFile("replay.log", line)){
-		if(contains(line, ":del"))handle(line);
-		if(contains(line, ":learn"))handle(line);
-		if(contains(line, ":label"))handle(line);
+		if(contains(line, ":del"))parse(line);
+		if(contains(line, ":learn"))parse(line);
+		if(contains(line, ":label"))parse(line);
 	}
 }
 void fixCurrent(){
