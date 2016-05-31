@@ -2162,7 +2162,7 @@ void initUnits() {
 // SAME as evaluate!!
 Statement * learn(string sentence) {
 	ps("learning " + sentence);
-	Statement* s=evaluate(sentence);
+	Statement* s=evaluate(sentence,true);
 	if (checkStatement(s)) {
 		showStatement(s);
 		return s;

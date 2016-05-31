@@ -387,7 +387,7 @@ Statement* parseSentence(string sentence, bool learn = false) {
 
 
 
-Statement *parseFilter(string s) {
+Statement *parseFilter(string s,bool learn=false) {
     //    if (!contains(s, " "))return addStatement(Any,Any,getAbstract(s.data()));
 	if (!contains(s, ".")&&!contains(s, "=")&&!contains(s, "<")&&!contains(s, ">")){
         if (!contains(s, " ")){
@@ -451,7 +451,8 @@ Statement *parseFilter(string s) {
 		s = s.substr(s.find("<") + 1);
 	}
 	object = getThe(fixQuotesAndTrim(editable(s.data())));
-	return pattern(subject, predicate, object);
+	if(learn)return addStatement(subject, predicate, object);
+	else return pattern(subject, predicate, object);
 }
 
 Query parseQuery(string s, int limit) {
@@ -560,8 +561,8 @@ good:
 
 // maria.freund=sven
 // maria.freund => sven
-Statement* evaluate(string data) {
-	Statement* pattern = parseFilter(data); //Hypothesis Aim Objective supposition assumption
+Statement* evaluate(string data,bool learn/*false*/) {
+	Statement* pattern = parseFilter(data,learn); //Hypothesis Aim Objective supposition assumption
 	// TODO MARK + CLEAR PATTERNS!!!
 	Statement* result = findStatement(pattern->Subject(), pattern->Predicate(), pattern->Object());
 	show(pattern->Subject());
@@ -599,6 +600,8 @@ Statement* pattern(Node* subject, Node* predicate, Node* object) {
     //#ifdef useContext
 	if (checkStatement(s))
 		s->context = _pattern;
+	else{printf("Error: no valid Statement");return 0;}
+//		return Error;
     //#endif
 	Node* pattern = reify(s); // why here?
 	pattern->kind = _pattern;
