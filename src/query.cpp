@@ -563,6 +563,7 @@ good:
 // maria.freund => sven
 Statement* evaluate(string data,bool learn/*false*/) {
 	Statement* pattern = parseFilter(data,learn); //Hypothesis Aim Objective supposition assumption
+	if(learn)return pattern;
 	// TODO MARK + CLEAR PATTERNS!!!
 	Statement* result = findStatement(pattern->Subject(), pattern->Predicate(), pattern->Object());
 	show(pattern->Subject());
