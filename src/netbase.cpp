@@ -2473,6 +2473,9 @@ void replay(){
 //	while(readFile("query.log", line)){
 //	while(readFile("commands.log", line)){
 while(readFile("replay.log", line)){
+	char* data=line;
+	if(data[strlen(data)-1]=='\n')data[strlen(data)-1]=0;
+	if(data[strlen(data)-1]=='\r')data[strlen(data)-1]=0;
 		if(contains(line, ":del"))parse(line);
 		if(contains(line, ":learn"))parse(line);
 		if(contains(line, ":label"))parse(line);

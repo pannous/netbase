@@ -163,7 +163,7 @@ NodeVector runScript(const char* file){
 // CENTRAL CONSOLE INSTRUCTION PARSING
 NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if (eq(data0, null)) return OK;
-	if (!isprint(data0[0])) // ??
+	if (!isprint(data0[0])) // chinese \0a etc
 		return OK;
 	if (eq(data0, "")) {
 		return OK;
@@ -171,9 +171,9 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	context=getContext(current_context);
 	char* data=fixQuotesAndTrim(editable(data0));
 	int len=(int)strlen(data);
-	if(data[len-1]=='\'')data[len-1]=0;
-	if(data[len-1]=='\n')data[len-1]=0;
-	if(data[len-1]=='\r')data[len-1]=0;
+	if(data[len-1]=='\n'){data[len-1]=0;len--;}
+	if(data[len-1]=='\r'){data[len-1]=0;len--;}
+	if(data[len-1]=='\''){data[len-1]=0;len--;}
 	if(data[0]=='\'')data++;
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
