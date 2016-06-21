@@ -32,14 +32,15 @@ mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 g++ $options  -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline -lz && ./netbase :exit $@
 
 if [[ $platform == 'Darwin' ]]; then
-cp netbase blueprints-netbase/lib/mac/libNetbase.dylib
-cp netbase blueprints-netbase/bin/netbase-mac
+	# g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
+	cp netbase blueprints-netbase/lib/mac/libNetbase.dylib
+	cp netbase blueprints-netbase/bin/netbase-mac
 else
-g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
-cp netbase blueprints-netbase/bin
-cp netbase blueprints-netbase/lib/linux/libNetbase.a
-cp bin/libNetbase.so blueprints-netbase/lib/linux-x86-64/
-cp bin/libNetbase.so blueprints-netbase/lib/linux/
+	g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
+	cp netbase blueprints-netbase/bin
+	cp netbase blueprints-netbase/lib/linux/libNetbase.a
+	cp bin/libNetbase.so blueprints-netbase/lib/linux-x86-64/
+	cp bin/libNetbase.so blueprints-netbase/lib/linux/
 fi
 # cd blueprints-netbase; git pull --all; git commit -a -m "Updated library" && git push --all && git status
 cd -
