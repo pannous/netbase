@@ -454,8 +454,13 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if(startsWith(data, ":fix")){
 		replay();
-//		fixCurrent();
+		//		fixCurrent();
 		return OK;
+	}
+
+	if(startsWith(data, ":new")){
+		data=next_word(data);
+		return nodeVectorWrap(add(data));
 	}
 
 	if(startsWith(data, ":replay")){
