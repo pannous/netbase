@@ -1825,24 +1825,25 @@ void testBug(){
 
 //	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
 //	N w=getAbstract("Fernseher");
-//	N w=getThe("Geburt");
+//	N w=getThe("Lübeck");
+	N w=getAbstract("Lecka");
 //	N w=getThe("UE55H6600");
-//	N t=getTopic(w);
+	N t=getTopic(w);
 //	N n=getThe("Erster Weltkrieg");
-	N n=get(155);
+//	N n=get(155);
 //	N n=get(5809);
 //	N n=get(225774);
 
 //	N n=getThe("Geburt");
-	N t=getTopic(n);
-
+//	N t=getTopic(n);
+	show(t,false);
 	//	topic
 	check(t!=Entity);
 	check(t!=get(7239));//Lebewesen
 //	check(t==get(7275));//Staat
 	check(t==get(6256));//Staat
 //	check(t!=n);
-//	show(t,false);
+
 //	handle("ee/gehren");
 	exit(0);
 }
@@ -1862,9 +1863,10 @@ void testBrandNewStuff() {
 	}
 //	save();
 //	fixNames();
-	importTest();
-//	import("billiger.de/TOI_Suggest_Export_Products.csv");
 	testBug();
+//	importTest();
+//	import("billiger.de/TOI_Suggest_Export_Products.csv");
+
 //	testDelete();
 //	testEntities();
 //	replay();

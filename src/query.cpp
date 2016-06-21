@@ -563,7 +563,7 @@ good:
 // maria.freund => sven
 Statement* evaluate(string data,bool learn/*false*/) {
 	Statement* pattern = parseFilter(data,learn); //Hypothesis Aim Objective supposition assumption
-	if(learn)return pattern;
+	if(learn){pattern->context=wordnet;return pattern;}
 	// TODO MARK + CLEAR PATTERNS!!!
 	Statement* result = findStatement(pattern->Subject(), pattern->Predicate(), pattern->Object());
 	show(pattern->Subject());
@@ -1526,9 +1526,9 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		q.pop();
 		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/)||(current->name[0]<'A'))
 			continue;
-		if(filterWikiType(current->id))break;
 		if(stopAtGoodWiki(current))
 			return current;
+		if(filterWikiType(current->id))break;
 		if(startsWith(current->name,"http"))
 			continue;
 		all.insert(current);
@@ -1538,10 +1538,10 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		if(!pa)pa=Unknown;// Error;// Nil;
 		//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
 		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
-		if(q.size()<lookupLimit)// bad (?) : refill after pop()
-			NodeVector more = edgeFilter(current, &q);// enqued => empty!
+		if(q.size()<lookupLimit){// bad (?) : refill after pop()
+			edgeFilter(current, &q);
 		//		show(more);
-		//		mergeVectors(&all, more);
+		}
 	}
 	free(enqueued);
 	free(depths);
