@@ -1863,9 +1863,9 @@ void testBrandNewStuff() {
 	}
 //	save();
 //	fixNames();
-	testBug();
+//	testBug();
 //	importTest();
-//	import("billiger.de/TOI_Suggest_Export_Products.csv");
+	import("billiger.de/TOI_Suggest_Export_Products.csv");
 
 //	testDelete();
 //	testEntities();

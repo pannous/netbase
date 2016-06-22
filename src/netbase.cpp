@@ -2482,7 +2482,8 @@ while(readFile("replay.log", line)){
 	}
 }
 void fixCurrent(){
-	importTest();
+//	importTest();
+	import("billiger.de/TOI_Suggest_Export_Products.csv");
 //	replay();
 //	N a=getThe("Amazon dvd product");
 //	Statement* s;

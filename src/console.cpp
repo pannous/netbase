@@ -453,20 +453,17 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 
 	if(startsWith(data, ":fix")){
+		fixCurrent();
+		return OK;
+	}
+	if(startsWith(data, ":replay")){
 		replay();
-		//		fixCurrent();
 		return OK;
 	}
 
 	if(startsWith(data, ":new")){
 		data=next_word(data);
 		return nodeVectorWrap(add(data));
-	}
-
-	if(startsWith(data, ":replay")){
-		replay();
-		//		fixCurrent();
-		return OK;
 	}
 
 	if(startsWith(data, ":topics")){

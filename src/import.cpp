@@ -776,7 +776,7 @@ N addSubword(char* name,int words,N kind){
 			}
 		}
 	}
-	return 0;
+	return found;
 }
 int toll=0;
 N addSubCategories(char* name,N kind){
@@ -810,19 +810,15 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	char* lastValue=0;
 	char* line0 = 0;// nullptr;
 	char* line1;
-	//    vector<char*> values;
 	map<char*, Node*> valueCache;
 	Node* subject=0;
 	Node* predicate=0;
 	Node* object=0;
-	//	vector<char*>& fields = *new vector<char*>();
 	int linecount=0;
 	if(!type){
 		char* typeName=keep_to(editable(cut_to(cut_to(file,"/"),"/")),".");
 		type=getThe(typeName);
 	}
-
-	//	char* objectName=(char*) malloc(100);
 	vector<Node*> predicates=*new vector<Node*>();
 	vector<string>& ignoreFields=splitString(ignoredFields, ",");
 	vector<string>& includeFields=splitString(includedFields, ",");
@@ -834,13 +830,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	N Kunstler=getThe("amazon Künstler");
 	N TopKategorie=getThe("amazon TopKategorie");
 	N AKategorie=getThe("amazon Kategorie");
-//	if(cut_amazon && contains(nameRow, "subcat"))
-//		type=getThe(str(type->name)+" Kategorie");
+	if(cut_billiger)Marke=getThe("billiger.de Marke");
 	int fieldCount=0;
 	int size=0;// per row ~ Hopefully equal to fieldCount
-
-	//	char* columnTitles;
-//	while (  fgets(line, sizeof(line), infile) != NULL) {
 	while (readFile(file,&line[0])) {
 		fixNewline(line,false);
 		free(line0);
@@ -851,12 +843,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		size=splitStringC(line0, values, separator);
 		if (linecount == 0) {
 			fieldCount=size;
-//			pf("IMPORTING %s\n",file);
-//			pf("FOUND %d columns:\n",size);
-//			p(line);
-			//			columnTitles=line;
-
-//			fieldCount=size;
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
 			for (int i=0; i < fieldCount; i++) {
@@ -873,38 +859,27 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			pf("importCsv %d good, %d bad in %s    \r", linecount,badCount,file);
 			fflush(stdout);
 		}
-		//        values.erase(values.begin(),values.end());
 		//        ps(line);
-		if(contains(line, "Coca-Cola Case"))
-			printf("Coca-Cola");
 		if (size==1){bad();continue;}
 		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
 			bad();
 //			p(line);
-//			            printf("_");
 //			if(debug) printf("Warning: fieldCount!=columns (%d!=%d) in line %d  %s \n", fieldCount, size,linecount - 1, file);
-			//            ps(columnTitles); // only 1st word:
 			continue;
 		}
-		//        else printf("OK");
 		fixValues(values, size);
-		//        if(contains(line,"Xherdan Shaqiri"))
-		//            p(line);
 		char* name=values[nameRowNr];
 		if(!name||len(name)==0){
 			bad();
 			continue;
 		}
-
 		if(cut_amazon||cut_billiger){
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
 			replaceChar(name, '[', 0);// cut!
 			if(name[0]==0)continue;//!
-//			else subject=getSingleton(name,type);
-
 			// Tennis", "id":31409028,"topic":"Amazon music product BAD
-			if(cut_billiger && !contains(name, " ")) addSubword(name,type);
+			if(cut_billiger && !contains(name, " "))subject= addSubword(name,type);
 			else{
 				int l=len(name);int i,w=0;
 				while (i++<l)
@@ -927,8 +902,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				addSubCategories(values[22], AKategorie);
 			}
 			if(cut_billiger){
-				getThe(values[1],getThe("billiger.de Marke"));
+				N marke=getThe(values[1],Marke);
 				getThe(values[3],getThe("billiger.de Kategorie"));
+				if(subject)addStatement(subject, Marke, marke);
 //				if(checkNode(m)){// && !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
