@@ -2608,8 +2608,9 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "export")) export_csv();
 	if (checkParams(argc, argv, "test")) testAll();
 	if (checkParams(argc, argv, "server") || checkParams(argc, argv, "daemon") || checkParams(argc, argv, "demon")) {
-		printf("starting server\n");
-		for (int i=1; i <= argc; i++) if(atoi(argv[i])>0) SERVER_PORT=atoi(argv[i]);
+		printf("Starting server\n");
+		for (int i=1; i < argc; i++)
+			if(atoi(argv[i])>0) SERVER_PORT=atoi(argv[i]);
 		start_server(SERVER_PORT);
 		return 0;
 	}
