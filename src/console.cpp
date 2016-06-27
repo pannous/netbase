@@ -460,6 +460,12 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return OK;
 	}
 
+	if(startsWith(data, ":image")){
+		data=next_word(data);
+		return nodeVectorWrap(getThe(getImage(data)));
+	}
+
+
 	if(startsWith(data, ":new")){
 		data=next_word(data);
 		return nodeVectorWrap(add(data));
