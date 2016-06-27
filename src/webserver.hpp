@@ -5,7 +5,7 @@ extern int SERVER_PORT;
 #include <string>
 #include <vector>
 
-void start_server();
+void start_server(int port);
 
 #include <unistd.h>          /*  for ssize_t data type  */
 

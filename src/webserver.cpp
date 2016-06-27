@@ -988,9 +988,9 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 	FreeReqInfo(&reqinfo);
 }
 
-void start_server() {
-	printf("STARTING SERVER!\n localhost:%d\n", SERVER_PORT);
-	if(SERVER_PORT<1024)p("sudo netbase if port < 1024 !!!");
+void start_server(int port=SERVER_PORT) {
+	printf("STARTING SERVER!\n localhost:%d\n", port);
+	if(port<1024)p("sudo netbase if port < 1024!");
 	flush();
 	/*  Create socket  */
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
@@ -1004,7 +1004,7 @@ void start_server() {
 	memset(&servaddr, 0, sizeof (servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	servaddr.sin_port = htons(SERVER_PORT);
+	servaddr.sin_port = htons(port);
     
 	/*  Assign socket address to socket  */
     //	__bind<int&,sockaddr *,unsigned long> x=
@@ -1017,7 +1017,7 @@ void start_server() {
 	if (listen(listener, LISTENQ) < 0)
 		Error_Quit("Call to listen failed.");
     
-	printf("listening on %d port %d\n", INADDR_ANY, SERVER_PORT);
+	printf("listening on %d port %d\n", INADDR_ANY, port);
     p(" [debugging server doesn't work with xcode, use ./compile.sh ]");
     
 	/*  Loop infinitely to accept and service connections  */

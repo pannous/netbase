@@ -1864,7 +1864,9 @@ void testBrandNewStuff() {
 //	save();
 //	fixNames();
 //	testBug();
-//	importTest();
+	//	importTest();
+//	parse(":server --port 2000");
+	parse(":server");
 	import("billiger.de/TOI_Suggest_Export_Products.csv");
 
 //	testDelete();

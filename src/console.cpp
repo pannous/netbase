@@ -264,7 +264,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		string arg=next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
 		else importAll();
-		start_server();
 		return OK;
 	}
 	autoIds=true;
@@ -546,10 +545,12 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
     }
 
 	// eq(data, "server") || only in main() !
-	if (eq(data, ":server") ||
-		eq(data, ":daemon") || eq(data, ":demon")) {
+	if (startsWith(data, ":server") || startsWith(data, ":daemon") || startsWith(data, ":demon")) {
 		printf("starting server\n");
-		start_server();
+		if(getenv("SERVER_PORT"))SERVER_PORT=atoi(getenv("SERVER_PORT"));
+		while((data=next_word(data))&&strlen(data)>0)
+			if(atoi(data)>0)SERVER_PORT=atoi(data);
+		start_server(SERVER_PORT);
 		return OK;
 	}
 	if(eq(data,":testing")){testing=true;autoIds=false;clearMemory();return OK;}

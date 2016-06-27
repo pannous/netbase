@@ -8,7 +8,7 @@ bool save() {
 	string data_path=path+"data/";
 
 	p("saving context blob to "+data_path);
-	p("This can take a few minutes "+data_path);
+	p("This can take a few minutes");
     FILE *fp;
     fp = fopen((data_path+"statements.bin").data(), "wb");
     fwrite(c->statements, (unsigned long int) sizeof (Statement),(unsigned long int) (c->statementCount), fp);

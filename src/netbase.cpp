@@ -1641,7 +1641,8 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object,
 	while ((s=nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
 		if(limit && lookup++>=limit)break;
 		if (visited[s]){// Remove in live mode if all bugs are fixed
-			p("GRAPH ERROR");
+			p("GRAPH ERROR: cyclic statement");
+			p(s);
 			bad();
 			return 0;
 		}
@@ -2386,6 +2387,7 @@ bool checkParams(int argc, char *argv[], const char* p) {
 		if (eq(argv[i], p)) return true;
 //		if (startsWith(argv[i], (slash+p).c_str()))return true;
 		if (eq(argv[i], (colon + p[0]).c_str()))return true; // import
+		if (eq(argv[i], (colon + p).c_str())) return true; // :server
 		if (eq(argv[i], (minus + p).c_str())) return true;
 		if (eq(argv[i], (minus + minus + p).c_str()))return true;
 	}
@@ -2536,9 +2538,9 @@ int main(int argc, char *argv[]) {
 		//	start_server();
 	}
 	// load environment variables or fall back to defaults
-	SERVER_PORT= getenv("SERVER_PORT")? atoi(getenv("SERVER_PORT")): SERVER_PORT;
-	resultLimit= getenv("resultLimit")? atoi(getenv("resultLimit")): resultLimit;
-	lookupLimit= getenv("lookupLimit")? atoi(getenv("lookupLimit")): lookupLimit;
+	if(getenv("SERVER_PORT"))SERVER_PORT=atoi(getenv("SERVER_PORT"));
+	if(getenv("resultLimit"))resultLimit=atoi(getenv("resultLimit"));
+	if(getenv("lookupLimit"))lookupLimit=atoi(getenv("lookupLimit"));
 	defaultLookupLimit=lookupLimit;
 
 	//    signal(SIGSEGV, handler); // only when fully debugged!
@@ -2607,7 +2609,8 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "test")) testAll();
 	if (checkParams(argc, argv, "server") || checkParams(argc, argv, "daemon") || checkParams(argc, argv, "demon")) {
 		printf("starting server\n");
-		start_server();
+		for (int i=1; i <= argc; i++) if(atoi(argv[i])>0) SERVER_PORT=atoi(argv[i]);
+		start_server(SERVER_PORT);
 		return 0;
 	}
 	if (checkParams(argc, argv, "exit")) exit(0);
