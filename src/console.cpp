@@ -259,7 +259,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		importAllYago();
 		return OK;
 	}
-	if (startsWith(data, ":i") || startsWith(data, ":import")) {
+	if (startsWith(data, ":i ") || eq(data, ":i") || startsWith(data, ":import")) {
 		autoIds=false;
 		string arg=next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
@@ -267,6 +267,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return OK;
 	}
 	autoIds=true;
+
+	if(startsWith(data, ":image")){
+		data=next_word(data);
+		return nodeVectorWrap(getThe(getImage(data)));
+	}
 
 	if (contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
@@ -458,11 +463,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(startsWith(data, ":replay")){
 		replay();
 		return OK;
-	}
-
-	if(startsWith(data, ":image")){
-		data=next_word(data);
-		return nodeVectorWrap(getThe(getImage(data)));
 	}
 
 
