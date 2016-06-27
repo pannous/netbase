@@ -24,13 +24,13 @@ void clearAlgorithmHash(bool all=false);
 NodeVector exclude(NodeVector some, NodeVector less);
 NodeVector evaluate_sql(string s, int limit) ;
 NodeVector find_all(cchar* name, int context=1, int recurse=0, int limit=resultLimit);// all city
-NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*));// all subclassFilter etc
+NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*));// all subclassFilter etc
 NodeVector& all_instances(Node* type, int recurse, int max= resultLimit,bool includeClasses=true);
 //NodeVector& allInstances(Node* type);
 NodeVector allInstances(Node* type, int recurse=false, int max=100, bool includeClasses=false);
 NodeVector& all_instances(Query& q);
 
-NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*));
+NodeVector& recurseFilter(Node* type, int recurse, int max,NodeVector(*edgeFilter)(Node*, NodeQueue*,int*));
 
 NodeVector filter(Query& q, Node* _filter,int limit=0);
 NodeVector filter(Query& q, Statement* filterTree,int limit=0);
@@ -38,19 +38,18 @@ NodeVector filter(NodeVector all, cchar* matches);
 NodeVector filter(NodeVector all, Node* filterTree);
 //NodeVector filter(NodeVector all, Statement* filterTree);
 
-bool enqueue(Node* current, Node* d, NodeQueue* q);
+bool enqueue(Node* current, Node* d, NodeQueue* q,int* enqueued);
 //typedef (NodeVector (*edgeFilter)(Node*)) NodeFilter;
-NodeVector findPath(Node* fro, Node* to,NodeVector (*edgeFilter)(Node*,NodeQueue*) );
-
-NodeVector parentFilter(Node* subject,NodeQueue* queue=null);
-NodeVector subclassFilter(Node* subject, NodeQueue * queue);
-NodeVector memberFilter(Node* subject,NodeQueue* queue=null);
-NodeVector hasFilter(Node* subject,NodeQueue* queue=null);
-NodeVector childFilter(Node* subject,NodeQueue* queue=null);
-NodeVector ownerFilter(Node* subject,NodeQueue* queue=null);
-NodeVector anyFilter(Node* subject,NodeQueue* queue=null,bool includeRelations=true);
-NodeVector instanceFilter(Node* subject,NodeQueue* queue=null);// chage all + edgeFilter!! for , int max= lookupLimit);// resultLimit
-NodeVector relationsFilter(Node* subject, NodeQueue * queue=null);
+NodeVector findPath(Node* fro, Node* to,NodeVector (*edgeFilter)(Node*,NodeQueue*,int*) );
+NodeVector parentFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
+NodeVector subclassFilter(Node* subject, NodeQueue * queue,int* enqueued=null);
+NodeVector memberFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
+NodeVector hasFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
+NodeVector childFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
+NodeVector ownerFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
+NodeVector anyFilter(Node* subject,NodeQueue* queue=null,bool includeRelations=true,int* enqueued=null);
+NodeVector instanceFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);// chage all + edgeFilter!! for , int max= lookupLimit);// resultLimit
+NodeVector relationsFilter(Node* subject, NodeQueue * queue=null,int* enqueued=null);
 
 NodeVector parseProperties(const char *data);
 NodeVector update(cchar* query);

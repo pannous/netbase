@@ -251,7 +251,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1524"
             endingLineNumber = "1524"
-            landmarkName = "getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*))"
+            landmarkName = "getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*))"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

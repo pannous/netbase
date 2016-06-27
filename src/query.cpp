@@ -9,7 +9,7 @@
 //#include <multimap> // to sort map
 
 
-int* enqueued; // 'parents'
+//int* enqueued; // 'parents'
 NodeVector EMPTY;
 
 string select(string s) {
@@ -1033,7 +1033,7 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 	return all;
 }
 
-NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
+NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 	static NodeVector& all = *new NodeVector; // empty before!
 	if (type == 0) {
 		all.clear(); // hack!!!
@@ -1047,7 +1047,7 @@ NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFil
 	runs++;
 	if (runs > maxNodes)return all; // no infinite loops!
     
-	NodeVector more = edgeFilter(type, null);
+	NodeVector more = edgeFilter(type, null,null);
 	mergeVectors(&all, more);
     
 	for (int i = 0; i < more.size(); i++) {// subtypes
@@ -1175,14 +1175,14 @@ int countInstances(Node * node) {
 }
 
 // put as callback into findPath for recursion
-// NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*))
+// NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*))
 // edgeFilter:
 //childFilter == instanceFilter (+SubClass or not?)
 // todo:  deduplicate code: childFilter=filter<Instance,SubClass>
 //bool INCLUDE_LABELS=false;// why not?
 bool INCLUDE_LABELS=true;// reverse ok!
 bool INCLUDE_CLASSES=false;
-NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeFilter!! for , int max) {
+NodeVector instanceFilter(Node* subject, NodeQueue * queue,int* enqueued){// chage all + edgeFilter!! for , int max) {
 	NodeVector all;	int i = 0;
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
@@ -1201,8 +1201,8 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 		predicateMatchReverse = predicateMatchReverse || (s->Predicate() == Label && contains(s->Subject()->name, subject->name));// Frankfurt (Oder)
 
 		if (queue) {
-			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object(), queue);
-			if (subjectMatchReverse&& predicateMatchReverse)enqueue(subject, s->Subject(), queue);
+			if (subjectMatch&& predicateMatch)enqueue(subject, s->Object(), queue,enqueued);
+			if (subjectMatchReverse&& predicateMatchReverse)enqueue(subject, s->Subject(), queue,enqueued);
 		} else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
@@ -1213,7 +1213,7 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue){// chage all + edgeF
 
 
 // put as callback into findPath for recursion
-NodeVector subclassFilter(Node* subject, NodeQueue * queue){
+NodeVector subclassFilter(Node* subject, NodeQueue * queue,int *enqueued){
 	NodeVector all;	int i = 0;
 	Statement* s = 0;
 	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
@@ -1226,9 +1226,9 @@ NodeVector subclassFilter(Node* subject, NodeQueue * queue){
 			printf("");
 		if (queue) {
 			if (subjectMatch&&predicateMatch)
-				enqueue(subject, s->Object(), queue);
+				enqueue(subject, s->Object(), queue,enqueued);
 			if (subjectMatchReverse&& predicateMatchReverse)
-				enqueue(subject, s->Subject(), queue);
+				enqueue(subject, s->Subject(), queue,enqueued);
 		} else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
@@ -1253,7 +1253,7 @@ NodeVector relationsFilter(Node* subject, NodeQueue * queue){//, int max) {
 
 // how to find paths with property predicates??
 // put as callback into findPath for recursion
-NodeVector memberFilter(Node* subject, NodeQueue * queue) {
+NodeVector memberFilter(Node* subject, NodeQueue * queue,int* enqueued) {
 	NodeVector all;
 	int i = 0;
 	Statement* s = 0;
@@ -1309,8 +1309,8 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Instance;
 		//		predicateMatchReverse = predicateMatchReverse || isA4(s->Predicate)
 		if (queue) {
-			if (subjectMatch && predicateMatch)enqueue(subject, s->Object(), queue);
-			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject(), queue);
+			if (subjectMatch && predicateMatch)enqueue(subject, s->Object(), queue,enqueued);
+			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject(), queue,enqueued);
 		} else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
@@ -1354,7 +1354,7 @@ bool stopAtGoodWiki(N n){
 	return false;
 }
 
-NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
+NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances,int *enqueued) {
 	NodeVector all;
 	if(stopAtGoodWiki(subject)||filterWikiType(subject->id)){
 		all.push_back(subject);
@@ -1364,6 +1364,7 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 	Statement* s = 0;
 	int type_lookup_limit=100;// type statements should be at the very beginning
 	while (i++ < type_lookup_limit && (s = nextStatement(subject, s, false))) {// true !!!!
+		if(!checkStatement(s))break;
 //		p(s);
         //#ifdef useContext
 		if (s->context == _pattern)continue;// important!!//        else it always matches!!!
@@ -1400,8 +1401,8 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
         
 		if (queue) {
-			if (subjectMatch && predicateMatch)enqueue(subject, s->Object(), queue);
-			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject(), queue);
+			if (subjectMatch && predicateMatch)enqueue(subject, s->Object(), queue, enqueued);
+			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
@@ -1416,18 +1417,18 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances) {
 
 // put as callback into findPath for recursion.
 // Currently same concept as topicFilter, with filterWikiType in findPath
-NodeVector parentFilter(Node* subject, NodeQueue * queue) {
-	return parentFilter2(subject,queue,true);
+NodeVector parentFilter(Node* subject, NodeQueue * queue,int* enqueued) {
+	return parentFilter2(subject,queue,true,enqueued);
 }
 
-NodeVector topicFilter(Node* subject, NodeQueue * queue) {
-	return parentFilter2(subject,queue,false);
+NodeVector topicFilter(Node* subject, NodeQueue * queue,int* enqueued) {
+	return parentFilter2(subject,queue,false,enqueued);
 }
 
 // todo : memory LEAK NodeVector ?
 // todo : enqueue instances?
 // put as callback into findPath for recursion
-NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
+NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations,int* enqueued) {
 	if (!includeRelations && subject->id < 1000)return EMPTY;
 	NodeVector all;
 	int i = 0;
@@ -1440,8 +1441,8 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool subjectMatchReverse = s->Object() == subject;
 		if (queue) {
-			if (subjectMatch)enqueue(subject, s->Object(), queue);
-			if (subjectMatchReverse)enqueue(subject, s->Subject(), queue);
+			if (subjectMatch)enqueue(subject, s->Object(), queue,enqueued);
+			if (subjectMatchReverse)enqueue(subject, s->Subject(), queue,enqueued);
 		} else {
 			if (subjectMatch)all.push_back(s->Object());
 			if (subjectMatchReverse)all.push_back(s->Subject());
@@ -1453,15 +1454,15 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations) {
 		return all;
 }
 
-NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue) {
-	return anyFilter(subject, queue, false);
+NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue,int *enqueued) {
+	return anyFilter(subject, queue, false,enqueued);
 }
 
-NodeVector anyFilterRandom(Node* subject, NodeQueue * queue) {
-	return anyFilter(subject, queue, true);
+NodeVector anyFilterRandom(Node* subject, NodeQueue * queue,int *enqueued) {
+	return anyFilter(subject, queue, true,enqueued);
 }
 
-NodeVector reconstructPath(Node* from, Node * to) {
+NodeVector reconstructPath(Node* from, Node * to,int *enqueued) {
 	Node* current = to;
 	NodeVector all;
 //	bool ok = true;
@@ -1482,19 +1483,21 @@ NodeVector reconstructPath(Node* from, Node * to) {
 	return all;
 }
 
-bool enqueue(Node* current, Node* d, NodeQueue * q) {
-	if (!d || enqueued[d->id+propertySlots])return false; // already done -> continue;
+bool enqueue(Node* current, Node* d, NodeQueue * q,int* enqueued) {
+	if(!checkNode(d))return false;
+	if (!d || (enqueued&&enqueued[d->id+propertySlots]))return false; // already done -> continue;
 //	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
+	if(enqueued)
 	enqueued[d->id+propertySlots] = current->id;
-	q->push(d);
+	if(q)q->push(d);
 	runs++;
 	return true;
 }
 #define min(x,y) x<y?x:y
 
-Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
-	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
+	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	int* depths	 = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 	//	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
@@ -1517,11 +1520,11 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		pf("instance %d %s\n", d->id, d->name);
 	}
 	Node* current;
-	NodeSet all;
+//	NodeSet all;
 	while ((current = q.front())) {
 		//		if(enqueued[current->id+propertySlots])continue;
 		//		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
-		if(all.size()>resultLimit)break;
+//		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
 		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/)||(current->name[0]<'A'))
@@ -1531,7 +1534,7 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		if(filterWikiType(current->id))break;
 		if(startsWith(current->name,"http"))
 			continue;
-		all.insert(current);
+//		all.insert(current);
 		N pa=get(enqueued[current->id+propertySlots]);
 		int depth=depths[current->id+propertySlots]+1;
 		if(depth>deepest)furthest=current;
@@ -1539,7 +1542,7 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 		//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
 		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
 		if(q.size()<lookupLimit){// bad (?) : refill after pop()
-			edgeFilter(current, &q);
+			edgeFilter(current, &q,enqueued);
 		//		show(more);
 		}
 	}
@@ -1550,9 +1553,9 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 
 
 // i.e. findAll(a(Person),subclassFilter)
-NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
+NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 //	bool* enqueued = (bool*) malloc(maxNodes * sizeof (bool)); //context->nodeCount * 2
-	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 //	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
@@ -1585,7 +1588,7 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
 //		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
 		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
 		if(q.size()<lookupLimit)// bad (?) : refill after pop()
-			NodeVector more = edgeFilter(current, &q);// enqued => empty!
+			NodeVector more = edgeFilter(current, &q,enqueued);// enqued => empty!
 //		show(more);
 //		mergeVectors(&all, more);
 	}
@@ -1719,8 +1722,8 @@ bool filterWikiType(int object){
 }
 
 // ONE path! See findAll for all leaves
-NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*)) {
-	enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
+	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	if (enqueued == 0)throw "out of memory for findPath";
 	memset(enqueued, 0, context->nodeCount * sizeof (int));// Necessary?
 	ps("LOAD!");
@@ -1751,20 +1754,20 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 		//		if(current->id==230608)
 		//			pf("?? %d %s\n",current->id,current->name);
 		if (to == current){// GOT ONE!
-			path=reconstructPath(fro, to); // shortcut
+			path=reconstructPath(fro, to,enqueued); // shortcut
 			break;
 		}
 		if (!checkNode(current, 0, true))
 			continue;
-		NodeVector all = edgeFilter(current, &q);
+		NodeVector all = edgeFilter(current, &q,enqueued);
 		if (all != EMPTY)// no queue
 			for (int i = 0; i < all.size(); i++) {
 				Node* d = (Node*) all[i];
 				if (to == current){// GOT ONE!
-					path=reconstructPath(fro, to); // shortcut
+					path=reconstructPath(fro, to,enqueued); // shortcut
 					break;
 				}
-				enqueue(current, d, &q);
+				enqueue(current, d, &q,enqueued);
 			}
 	}
 	free(enqueued);
