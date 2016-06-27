@@ -29,8 +29,7 @@
 
 /*  Service an HTTP request  */
 
-//#define SERVER_PORT  (81)
-int SERVER_PORT=81; //todo
+int SERVER_PORT=8181;
 int MAX_QUERY_LENGTH=10000;
 static char server_root[1000] = "/Users/me/";
 
