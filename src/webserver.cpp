@@ -359,8 +359,14 @@ int handle(cchar* q0,int conn){
 		}
 		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
-		if((use_json)&&!showExcludes&&node->statementCount>1 && getImage(node)!="")
-			Writeline(", \"image\":\""+replace_all(replace_all(getImage(node,150,/*thumb*/true),"'","%27"),"\"","%22")+"\"");
+		bool show_images=SERVER_PORT<1000;// HACK!
+		if((use_json&&show_images)&&!showExcludes&&node->statementCount>1){
+			string img=getImage(node,150,/*thumb*/true);
+			if(img!=""){
+				img=replace_all(replace_all(img,"'","%27"),"\"","%22");
+				Writeline(", \"image\":\""+img+"\"");
+			}
+		}
 //		if((use_json)&&getText(node)[0]!=0)
 //			Writeline(", \"description\":\""+string(getText(node))+"\"");
 		Statement* s = 0;
