@@ -273,6 +273,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return nodeVectorWrap(getThe(getImage(data)));
 	}
 
+	if(startsWith(data, ":the")){
+		data=next_word(data);
+		return nodeVectorWrap(getThe(data));
+	}
+
 	if (contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
 		sscanf(limit, "lookup %d", &lookupLimit);
