@@ -2498,6 +2498,7 @@ void fixCurrent(){
 			N o=hasWord(n->name);
 			if(o){
 				if(!checkNode(o))continue;
+				if(o!=n)p(o->name);
 				int l=(int)strlen(o->name);
 				if(l>1&&n->name&&o->name[l-1]!=' '){
 					p(o->name);
