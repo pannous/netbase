@@ -2494,9 +2494,16 @@ void fixCurrent(){
 		if(!checkNode(n)||!n->name)continue;
 		int l=(int)strlen(n->name);
 		if(l>1&&n->name&&n->name[l-1]==' '){
-			n->name[l-1]=0;
-			if(hasWord(n->name))
-				p(n->name);
+
+			N o=hasWord(n->name);
+			if(o){
+				if(!checkNode(o))continue;
+				int l=(int)strlen(o->name);
+				if(l>1&&n->name&&o->name[l-1]!=' '){
+					p(o->name);
+//					n->name[l-1]=0;
+				}
+			}
 //				show(hasWord(n->name));
 //			deleteNode(n);
 		}
