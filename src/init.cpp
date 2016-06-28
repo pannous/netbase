@@ -317,12 +317,6 @@ void load(bool force) {
 	fread(c->nodes-propertySlots, sizeof(Node), c->nodeCount, fp);
    	fclose(fp);
 
-	//
-	//    fp = fopen((path+"abstracts->bin").data(), "rb");
-	//    fread(abstracts, sizeof (Node), c->nodeCount, fp);
-
-	//    showContext(c);
-
 #ifndef inlineName
 	if (oldnodeNames != c->nodeNames) {
 		p("Fixing nodeNames");
@@ -336,8 +330,19 @@ void load(bool force) {
 		fixStatementNodeIds(c, oldNodes);
 	}
 
-	ps("collecting abstracts!");
-	collectAbstracts(); //or load abstracts->bin
+
+	if(true){
+	fp = open_binary("abstracts.bin");
+	fread(abstracts, sizeof (Ahash), maxNodes*2, fp);
+	fclose(fp);
+	}
+	else{
+			ps("collecting abstracts!");
+			collectAbstracts(); //or load abstracts->bin
+	}
+	//    showContext(c);
+
+
 	showContext(context);
 
 	//    initContext(c);//

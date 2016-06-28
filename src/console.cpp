@@ -650,7 +650,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
 		if(!fp){p("NO such file facts.ssv!"); return OK;}
-		fprintf(fp,"%s\n",what.data());
+		fprintf(fp,"%s\n",data);
 		fclose(fp);
 		return nv;
 	}
