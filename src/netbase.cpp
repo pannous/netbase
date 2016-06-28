@@ -2491,7 +2491,7 @@ void fixCurrent(){
 	context=currentContext();
 	for (int i=1; i<maxNodes; i++) {
 		Node* n= get(i);
-		if(!checkNode(n))continue;
+		if(!checkNode(n)||!n->name)continue;
 		int l=(int)strlen(n->name);
 		if(l>1&&n->name&&n->name[l-1]==' ')
 			deleteNode(n);
