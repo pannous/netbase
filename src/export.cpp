@@ -34,7 +34,7 @@ bool save() {
 //    fclose(fp);
 //
     fp = fopen((data_path+"abstracts.bin").data(), "wb");
-    fread(abstracts, sizeof (Ahash), maxNodes*2, fp);// todo
+	fwrite(abstracts, sizeof (Ahash), maxNodes*2, fp);// todo
     fclose(fp);
 
     ps("context blob saved!");
