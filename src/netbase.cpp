@@ -2488,13 +2488,13 @@ Context* currentContext(){
 }
 void fixCurrent(){
 //	importTest();
-	Context c=*currentContext();
+	context=currentContext();
 	for (int i=1; i<maxNodes; i++) {
-		if(!checkNode(i))continue;
-		Node n= c.nodes[i];
-		int l=(int)strlen(n.name);
-		if(l>1&&n.name[l-1]==' ')
-			deleteNode(&n);
+		Node* n= get(i);
+		if(!checkNode(n))continue;
+		int l=(int)strlen(n->name);
+		if(l>1&&n->name&&n->name[l-1]==' ')
+			deleteNode(n);
 	}
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 //	replay();
