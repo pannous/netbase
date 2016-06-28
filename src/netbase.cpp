@@ -2493,8 +2493,13 @@ void fixCurrent(){
 		Node* n= get(i);
 		if(!checkNode(n)||!n->name)continue;
 		int l=(int)strlen(n->name);
-		if(l>1&&n->name&&n->name[l-1]==' ')
-			deleteNode(n);
+		if(l>1&&n->name&&n->name[l-1]==' '){
+			n->name[l-1]=0;
+			if(hasWord(n->name))
+				p(n->name);
+//				show(hasWord(n->name));
+//			deleteNode(n);
+		}
 	}
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 //	replay();
