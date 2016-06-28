@@ -2494,17 +2494,19 @@ void fixCurrent(){
 		if(!checkNode(n)||!n->name)continue;
 		int l=(int)strlen(n->name);
 		if(l>1&&n->name&&n->name[l-1]==' '){
-
+			p(n->name);
+			continue;
 			N o=hasWord(n->name);
 			if(o){
-				if(!checkNode(o))continue;
 				if(o!=n)p(o->name);
+				if(!checkNode(o))continue;
 				int l=(int)strlen(o->name);
 				if(l>1&&n->name&&o->name[l-1]!=' '){
 					p(o->name);
 //					n->name[l-1]=0;
 				}
 			}
+//			2/2-Wege Direktgesteuertes Ventil 184684 230 V/AC G 1/2 Muffe Nennweite 8 mm Gehäusematerial Messing Dichtungsma  HOW??
 //				show(hasWord(n->name));
 //			deleteNode(n);
 		}
