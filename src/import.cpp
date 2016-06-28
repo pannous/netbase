@@ -760,7 +760,7 @@ N addSubword(char* name,int words,N kind){
 	int l=len(name);
 	int i=0;
 	int w=0;
-	N found=addSubword(name,kind);
+	N found=addSubword(name,kind);// ok, only if new
 	if(wordCount(name)==words)
 		return found;
 	while (l>0&&i<l&&i>=0) {
@@ -879,6 +879,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
 			replaceChar(name, '[', 0);// cut!
+			fixNewline(name);
 			if(name[0]==0)continue;//!
 			// Tennis", "id":31409028,"topic":"Amazon music product BAD
 			if(cut_billiger && !contains(name, " "))subject= addSubword(name,type);

@@ -1760,8 +1760,10 @@ void recursiveTaxonomy(){
 //	cchar* query="AWS Server";
 //	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
 void testEntities(){
-//	cchar* query="kopfsalat";
-	cchar* query="Kaufmann";
+	parse(":ee Kiel e");
+	//	cchar* query="kopfsalat";
+	cchar* query="Kiel e.V";
+//	cchar* query="Kaufmann";
 	N n=getClass(get(query));
 //	N n=getType(get(query));
 	show(n);
@@ -1866,11 +1868,11 @@ void testBrandNewStuff() {
 //	testBug();
 	//	importTest();
 //	parse(":server --port 2000");
-	parse(":server");
-	import("billiger.de/TOI_Suggest_Export_Products.csv");
+//	parse(":server");
+//	import("billiger.de/TOI_Suggest_Export_Products.csv");
 
 //	testDelete();
-//	testEntities();
+	testEntities();
 //	replay();
 //	testQuery();
 	context=getContext(current_context);
@@ -1884,7 +1886,7 @@ void testBrandNewStuff() {
 //	importTest();
 //	handle(":last dfsfddasfadfss asdfasdfsadfdfsa");
 //	handle("hi?");// pakistan.capital
-		handle("Highest point of Brazil?");
+//		handle("Highest point of Brazil?");
 //	testWikidata();
 //	testTopics();
 

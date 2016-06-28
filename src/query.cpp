@@ -1899,7 +1899,10 @@ NV filterCandidates(NV all){
 	VC words;
 	int size=(int)all.size();
 	for(int i=size-1;i>=0;i--)
-		words.push_back(all[i]->name);
+		if(endsWith(all[i]->name," "))
+		   printf("bug name %s",all[i]->name);
+		else
+		   words.push_back(all[i]->name);
 
 	for(int i=size-1;i>=0;i--){
 		N entity=all[i];
