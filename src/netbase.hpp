@@ -603,8 +603,11 @@ static int MB=1048576;
 static int GB=1024*MB;
 static int million=MB;
 static int billion=GB;
+#if defined(__APPLE__)
+static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet!
+#else
 static int propertySlots=20000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata
-//static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet!
+#endif
 // 200000-317658 for wordnet + other !
 
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!

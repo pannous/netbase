@@ -2027,7 +2027,7 @@ void importAbstracts() {
 		name=name0;
 		//		if (hasWord(name)) continue; check earlier
 		//		id=id + 10000; // OVERWRITE EVERYTHING!!!
-		id=-id - 100000; // OVERWRITE EVERYTHING below!!!
+		id=-id - 10000; // OVERWRITE EVERYTHING below!!!
 		N a=add_force(current_context, id, name, _abstract);
 		insertAbstractHash(a);
 		//		c->nodeCount=id; // hardcoded hack to sync ids!!!

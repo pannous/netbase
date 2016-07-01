@@ -2522,29 +2522,32 @@ void fixCurrent(){
 }
 
 Node* mergeNode(Node* target,Node* node){
+	addStatementToNodeDirect(target,node->firstStatement);
     Statement* s=getStatement( node->firstStatement);
-    addStatementToNodeDirect(target,node->firstStatement);
-	
     Statement* next;
-    while (s) {
-        next=nextStatement(target, s);
-        if(s->Predicate()==Instance&&s->Subject()==target)
+	while (s) {
+		next=nextStatement(node, s);
+		if(s->Predicate()==Instance&&s->Subject()==target)
             deleteStatement(s);
         else{
             if(s->Subject()==node)s->subject=target->id;
             if(s->Predicate()==node)s->predicate=target->id;
             if(s->Object()==node)s->object=target->id;
-			addStatementToNodeDirect(target,s->id());
+//			addStatementToNodeDirect(target,s->id());// no: already linked
 		}
         s=next;
     }
-	for (int i=0; i<context->statementCount; i++) {
-		s=&context->statements[i];
-		if(s->Subject()==node)s->subject=target->id;
-		if(s->Predicate()==node)s->predicate=target->id;
-		if(s->Object()==node)s->object=target->id;
-	}
-    deleteNode(node);
+	addStatementToNodeDirect(target,node->firstStatement);
+	target->statementCount+=node->statementCount;
+	node->lastStatement=node->lastStatement;
+	node->statementCount=0;// keep rest
+//	for (int i=0; i<context->statementCount; i++) {
+//		s=&context->statements[i];
+//		if(s->Subject()==node)s->subject=target->id;
+//		if(s->Predicate()==node)s->predicate=target->id;
+//		if(s->Object()==node)s->object=target->id;
+//	}
+//    deleteNode(node);
     return target;
 }
 

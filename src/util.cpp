@@ -1,8 +1,8 @@
 
+#include <algorithm> // sort
 #include <string>
 #include <vector>
 using namespace std;
-#include <algorithm> // sort
 // malloc, exit:
 #include <cstdlib>
 // strcmp
@@ -957,3 +957,92 @@ bool empty(cchar* c){
 }
 int len(char* c){return (int)strlen(c);}// python style
 int len(cchar* c){return (int)strlen(c);}// python style
+
+
+//
+//
+//#include <algorithm>
+//#include <string>
+bool replaceAll(std::string& str, const std::string& from, const std::string& to) {
+	size_t start_pos = str.find(from);
+	if(start_pos == std::string::npos)
+		return false;
+	str.replace(start_pos, from.length(), to);
+	return replaceAll(str, from, to);
+}
+
+string generateSEOUrl(string input) {
+	if (input==("")) {
+		return input;
+	}
+	string s = input;
+//	std::transform(data.begin(), data.end(), std::back_inserter(s), ::tolower);
+//	std::transform(s.begin(), s.end(),s.begin(), ::tolower);
+	std::transform(s.begin(), s.end(),s.begin(),(int (*)(int))std::tolower);
+//
+//	string ret = input.toLowerCase();
+
+	//	std::replace( s.begin(), s.end(),'ä', 'a');replaceAll( s,"ä", "ae");
+	replaceAll( s,"ä", "ae");
+	replaceAll( s,"ü", "ue");
+	replaceAll( s,"ö", "oe");
+	replaceAll( s,"ß", "ss");
+	replaceAll( s,"é", "e");
+
+	replaceAll( s,"€", "E");
+	replaceAll( s,"_", "-");
+	replaceAll( s,"&", "-");
+	replaceAll( s,"*", "-");
+	replaceAll( s,"!", "-");
+	replaceAll( s,"\"", "-");
+	replaceAll( s,"§", "-");
+	replaceAll( s,"$", "-");
+	replaceAll( s,"%", "-");
+	replaceAll( s,"/", "-");
+	replaceAll( s,"(", "-");
+	replaceAll( s,")", "-");
+	replaceAll( s,"=", "-");
+	replaceAll( s,"?", "-");
+	replaceAll( s,"+", "-");
+	replaceAll( s,"#", "-");
+	replaceAll( s,"~", "-");
+	replaceAll( s,"@", "-");
+	replaceAll( s,"{", "-");
+	replaceAll( s,"}", "-");
+	replaceAll( s,"<", "-");
+	replaceAll( s,">", "-");
+	replaceAll( s,",", "-");
+	replaceAll( s,";", "-");
+	replaceAll( s,".", "-");
+	replaceAll( s,":", "-");
+	replaceAll( s,",", "-");
+	replaceAll( s,"'", "-");
+	replaceAll( s,"[", "-");
+	replaceAll( s,"]", "-");
+	replaceAll( s,"°", "-");
+	replaceAll( s,"‘", "");
+	replaceAll( s,"’", "");
+	replaceAll( s,"´", "");
+	replaceAll( s,"`", "");
+	replaceAll( s,"^", "");
+	replaceAll( s," ", "-");
+
+	while (s.find("--")!=std::string::npos) {
+		replaceAll( s,"--", "-");
+	}
+
+	while(!s.compare(0, 1, "-"))
+		s=s.substr(1);
+
+	while(!s.compare(s.length() - 1, s.length() - 2, "-")) {
+		s = s.substr(0, s.length() - 1);
+	}
+
+	if(s=="-")s="";
+
+//	if (!ret.matches("[a-z0-9-]+")) {
+//		ret = ret.replaceAll("[^a-z0-9-]+", "");
+//	}
+
+	return s;
+}

@@ -245,22 +245,6 @@
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "src/query.cpp"
-            timestampString = "488235286.265486"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1524"
-            endingLineNumber = "1524"
-            landmarkName = "getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*))"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
             filePath = "src/netbase.cpp"
             timestampString = "488801253.860603"
             startingColumnNumber = "9223372036854775807"
@@ -300,6 +284,38 @@
             startingLineNumber = "39"
             endingLineNumber = "39"
             landmarkName = "save()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/netbase.cpp"
+            timestampString = "489051695.166711"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "523"
+            endingLineNumber = "523"
+            landmarkName = "checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "src/netbase.cpp"
+            timestampString = "489051696.46902"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "531"
+            endingLineNumber = "531"
+            landmarkName = "checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,bool report)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

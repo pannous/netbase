@@ -70,7 +70,7 @@ bool checkHideStatement(Statement* s);
 
 char* fixName(char* name){
 	int len=(int)strlen(name);
-	while(--len>0){
+	while(--len>=0){
 		if(name[len]=='"')name[len]='`';// json-save!
 	}
 	return name;
@@ -317,12 +317,12 @@ int handle(cchar* q0,int conn){
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
 		if(node->id==0)continue;
-		if(node->kind==_internal)continue;
+//		if(node->kind==_internal)continue;
 		if(last==node)continue;
 		if(eq(node->name,"◊"))continue;
 		last=node;
         if(verbosity ==normal && entity&& eq(entity,node->name))continue;
-		char* text=getText(node);
+		char* text=fixName(getText(node));
 //		if(use_json && get_topic){
 //			if(empty(text))continue;//! no description = no entity? BAD for amazon etc
 //			if(isAbstract(node))continue;

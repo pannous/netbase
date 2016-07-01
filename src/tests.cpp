@@ -1855,14 +1855,20 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 	quiet=false;
 	debug = true;
-	germanLabels=true;
+//	germanLabels=true;
+	germanLabels=false;
+	context=getContext(current_context);
+//	string x=generateSEOUrl("Entität #-104 (kind: intern #-100)");
+//	p(x);
 //	importTest();
 //	load(true);//force
 	if(!hasWord("bug")){
-////		importWordnet();
+		importWordnet();
 //		load(true);//force
 //		importWikiData();
 	}
+	mergeNode(get(-81), get(81));
+	handle("html/all/play");
 //	save();
 //	fixNames();
 //	testBug();
@@ -1872,10 +1878,9 @@ void testBrandNewStuff() {
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 
 //	testDelete();
-	testEntities();
+//	testEntities();
 //	replay();
 //	testQuery();
-	context=getContext(current_context);
 //	context->nodeCount=maxNodes/2;
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 //	germanLabels=false;
