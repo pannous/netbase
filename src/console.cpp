@@ -296,8 +296,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		*limit=0;
 //		if(len<2)return OK;
 	}
-	if (eq(data, ":load")) { // || eq(data, ":l") learn?
-//		load(false);
+	if (eq(data, ":load")) {
 		load(true);
 		return OK;
 	}
@@ -650,7 +649,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
 		if(!fp){p("NO such file facts.ssv!"); return OK;}
-		fprintf(fp,"%s\n",data);
+		fprintf(fp,"%s\n",what.data());
 		fclose(fp);
 		return nv;
 	}

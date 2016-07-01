@@ -56,7 +56,7 @@ enum result_format {
 };
 
 enum result_verbosity {
-	shorter, normal, longer,verbose,alle
+	abstract,shorter, normal, longer,verbose,alle
 }verbosity;
 
 
@@ -69,13 +69,21 @@ bool checkSanity(char* q,int len);
 bool checkHideStatement(Statement* s);
 
 char* fixName(char* name){
+	if(!name)return (char *)"";
 	int len=(int)strlen(name);
 	while(--len>=0){
+		if(name[len]==9)name[len]=' ';// json-save!
 		if(name[len]=='"')name[len]='`';// json-save!
 	}
+	if(name[0]=='\''||name[0]=='`')return name+1;
 	return name;
 }
-
+char* getStatementTitle(Statement* s,Node* n){
+	if(!checkStatement(s))return (char *)"";
+	if(s->Object()==n)return getText(s->Subject());
+//	if(s->Subject()==n)
+		return getText(s->Object());// default
+}
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
@@ -83,7 +91,7 @@ int handle(cchar* q0,int conn){
 //	}
     char* q=editable(q0);
 	if(!checkSanity(q,len)){
-		p("checkSanity len>10000");
+		p("checkSanity :command OR len>10000");
 		return 0;// SAFETY!
 	}
     while(q[0]=='/')q++;
@@ -151,6 +159,10 @@ int handle(cchar* q0,int conn){
 		verbosity =  verbose;
 		q = q + 5;
 	}
+	if (startsWith(q, "abstract/")) {
+		verbosity = abstract;
+		q = q + 9;
+	}
 	if (startsWith(q, "verbose/")) {
 		verbosity = verbose;
 		q = q + 8;
@@ -204,6 +216,10 @@ int handle(cchar* q0,int conn){
 		verbosity = verbose;
 		q = q + 8;
 	}
+	if (startsWith(q, "abstract/")) {
+		verbosity = abstract;
+		q = q + 9;
+	}
 	if (startsWith(q, "short/")) {
 		verbosity = shorter;
 		q = q + 6;
@@ -246,10 +262,14 @@ int handle(cchar* q0,int conn){
         verbosity=normal;
         showExcludes=true;
     }
+	bool safeMode=true;
+	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
+	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
+
 	p(q);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
-    NodeVector all = parse(q); // <<<<<<<< HANDLE QUERY WITH NETBASE!
+    NodeVector all = parse(q,safeMode); // <<<<<<<< HANDLE QUERY WITH NETBASE!
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -285,11 +305,13 @@ int handle(cchar* q0,int conn){
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
+	const char* statement_format_json_long = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d, \"title\":\"%s\"}";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == html)statement_format = statement_format_json;
 	if (format == json)statement_format = statement_format_json;
+	if (format == json && verbosity==alle) statement_format = statement_format_json_long;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
     
@@ -378,18 +400,29 @@ int handle(cchar* q0,int conn){
 //			sortStatements(
 			deque<Statement*> statements;// sort
 			while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
-				if (!checkStatement(s))break;
+				if (!checkStatement(s)){
+					p("!checkStatement(s)");
+					bad();
+					show(s);
+					break;
+				}
+//				if (!checkStatement(s))continue;// DANGER!
 //				if(!got_topic &&( s->predicate==_Type|| s->predicate==_SuperClass)){
 //					addStatementToNode(node, s->id(), true);// next time
 //				}
-				if(get_topic &&!got_topic && verbosity != verbose && (s->predicate>100 || s->predicate<-100))
+				if(get_topic &&!got_topic && verbosity != verbose && verbosity != alle && (s->predicate>100 || s->predicate<-100))
 					continue;// only important stuff here!
 				// filter statements
 
 				if(s->object==0)continue;
 //				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
 //					continue;
-				if (s->subject==node->id and s->predicate!=4)//_instance
+
+				if (s->predicate==_derives||s->predicate==_derived){// cognet
+					statements.push_front(s);
+					p("_derives!");
+				}
+				else if (s->subject==node->id and s->predicate!=4)//_instance
 					statements.push_front(s);
 				else statements.push_back(s);
 			}
@@ -411,17 +444,19 @@ int handle(cchar* q0,int conn){
                 p(s);
 				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
-				if(!(verbosity==verbose||verbosity==alle) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
+				if(!(verbosity==verbose||verbosity==alle||verbosity==abstract) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
+				if(verbosity==abstract && s->Predicate()!=Instance && s->Predicate()!=Type)continue;
 				if(use_json && good>0)Writeline(conn, ",\n");
 				char* objectName=s->Object()->name;
-
 				if(s->Predicate()==Instance){
-					N type=findProperty(s->Object(),Type->name,0,50);
-					if(  checkNode(type))
+					N type=getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);
+					if(checkNode(type))
 						objectName=(char*)(concat(concat(objectName, ": "),type->name));
 				}
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
-				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, objectName, s->Subject()->id, s->Predicate()->id, s->Object()->id);
+				char* title="";
+				if(verbosity==alle)title=fixName(getStatementTitle(s,node));
+				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, objectName, s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
 				Writeline(conn, buff);
 				good++;
 			}
@@ -449,6 +484,7 @@ bool checkSanity(char* q,int len){
 	bool bad=false;
 	if(len>MAX_QUERY_LENGTH){
 		q[1000]=0;
+//		p(checkSanity);
 //		bad=true;
 	}
 	if(q[0]==':'||q[0]=='!')bad=true;
@@ -946,7 +982,7 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	Writeline(conn, buffer, strlen(buffer));
 	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
-	else if(contains(reqinfo->resource,"json/")){
+	else if(contains(reqinfo->resource,"json/")||contains(reqinfo->resource,"learn")){
 		Writeline(conn, "Content-Type: application/json; charset=utf-8\r\n");
 		Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
 	}

@@ -2312,12 +2312,6 @@ void importWordnet() {
 	importDescriptions();// English!
 	importStatements();
 	importLexlinks();
-	addStatement(getThe("opposite"), SuperClass, Antonym); // Correct but doesn't work
-	addStatement(Antonym, SuperClass, getThe("opposite")); // Correct but doesn't work
-	addStatement(getThe("opposite"), Synonym, Antonym);
-	addStatement(getAbstract("opposite"), Synonym, Antonym);
-	addStatement(Antonym, Synonym, getThe("opposite"));
-	addStatement(Antonym, Synonym, getAbstract("opposite"));
 	if(germanLabels)
 		importGermanLables(true);// Now the other labels (otherwise abstracts might fail?)
 	context->use_logic=true;

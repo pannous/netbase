@@ -69,6 +69,7 @@ Node* Noun;
 Node* Verb;
 Node* Adverb;
 
+Node* Derives;// KF: Derived^-1
 Node* Derived;// Adjective^-1
 Node* DerivedFromNoun;
 
@@ -146,7 +147,8 @@ void initRelationsDE() {
 	Property=Attribute;
 	bool is_transitive=true;
 	Cause = addRelation(_cause, "Grund",is_transitive); //
-	Derived =addRelation(_derived, "Abgeleitet"); //
+	Derived =addRelation(_derived, "Abgeleitet"); // Abgeleitet von
+	Derives =addRelation(_derives, "abgeleitet"); //
     //	DerivedFromNoun =addRelation(_derived_from_noun, "derived from noun"); //
 	//        DOMAIN_OF_SYNSET_CATEGORY =
 	UsageContext=addRelation(_DOMAIN_CATEGORY, "Kontext"); // # sheet @ maths   // think of!! OWNER -> Part
@@ -276,12 +278,13 @@ void initRelations() {
 
     Error = addRelation(_error, "Error");
 	Missing = addRelation(_missing, "Missing");
-	Antonym = addRelation(_antonym, "antonym");
+	Antonym = addRelation(_antonym, "opposite");// antonym
 //	Part = addRelation(1, "part"); USA etc BUG!?!!
 	Attribute = addRelation(_attribute, "attribute"); // tag
 	Property=Attribute;
 	Cause = addRelation(_cause, "cause",is_transitive); //
 	Derived =addRelation(_derived, "derived"); //
+	Derives =addRelation(_derives, "derives"); //
 //	DerivedFromNoun =addRelation(_derived_from_noun, "derived from noun"); //
 	//        DOMAIN_OF_SYNSET_CATEGORY =
 	UsageContext=addRelation(_DOMAIN_CATEGORY, "usage context"); // # sheet @ maths   // think of!! OWNER -> Part
@@ -386,7 +389,7 @@ void initRelations() {
 	Not = addRelation(_Not, "not");
 
 	Equals = addRelation(_Equals, "=");
-	Greater = addRelation(_Greater, ">");
+	Greater = addRelation(_Greater, ">");// super:derived
 	More=Greater;
 	Less = addRelation(_Less, "<"); //smaller
 	Smaller=Less;
@@ -445,7 +448,6 @@ Node* invert(Node* relation) {
 
 	if (relation->id== _similar)return get(_see_also);
 	if (relation->id==_see_also)return get(_similar);// wtf ;)
-
 
 	if (relation->id==_DOMAIN_MEMBER)return get(_DOMAIN);
 	if (relation->id==_DOMAIN)return get(_DOMAIN_MEMBER);
@@ -512,6 +514,7 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "domain")) return Domain;
 	if (eq(thing, "inverseOf")) return Antonym;
 	if (eq(thing, "Antonym")) return Antonym;
+	if (eq(thing, "see")) return See;
 	if (eq(thing, "seeAlso")) return See;
 	if (eq(thing, "see also")) return See;
 	if (eq(thing, "also see")) return See;
@@ -583,7 +586,7 @@ Node * getRelation(const char* thing) {
 //    if (eq(thing, "Klasse")) return SuperClass;
 //	if (eq(thing, "reverse_property")) return Owner;
 	//	if (eq(thing, "in"))return Loc;
-	return 0;
+	return 0;//getThe(thing);
 }
 
 

@@ -349,36 +349,39 @@ Statement* parseSentence(string sentence, bool learn = false) {
 		ps("Currently only triples can be learned. If you have multiple_word nodes combine them with an underscore");
 		return 0;
 	}
-	Node* subject = 0;
-	Node* predicate = 0;
-	Node* object = 0;
-	for (int i = 0; i < count; i++) {
-        //		string word = matches[i];
-        char* word= matches[i];
-		//		word=stem(word);
-        //		bool getPredicate = subject&&!predicate;
-		int id = atoi(word);
-		Node* node;
-		if (id > 0)
-			node = get(id);
-		else{
-            if (getRelation(word)) // not here! doch
-                node= getRelation(word);
-            else
-                node = getAbstract(word);
-        }
-		//		Node* node = getThe(word); TODO getThe for relation!!!
-		//		Node* abstract=getAbstract(f);// ,getPredicate?Verb:0
-		//		NodeVector& instances=all_instances(abstract, recurse,limit);
-		//		if(instances->size()<=0)word=abstract;
-		//		else word= instances[0];
-		if (!subject)subject = node;
-		else if (!predicate)predicate = node; //stem(word);
-		else if (!object)object = node; // John smells
-	}
-	if (!object)object = Any;
-	if (!(subject && predicate))
-		return 0;
+	Node* subject = getThe(matches[0]);
+	Node* predicate = getThe(matches[1]);// getRelation(matches[1])||
+	Node* object = getThe(matches[2]);
+//	Node* subject = 0;
+//	Node* predicate = 0;
+//	Node* object = 0;
+//	for (int i = 0; i < count; i++) {
+//        //		string word = matches[i];
+//        char* word= matches[i];
+//		//		word=stem(word);
+//        //		bool getPredicate = subject&&!predicate;
+//		int id = atoi(word);
+//		Node* node;
+//		if (id > 0)
+//			node = get(id);
+//		else{
+//            if (getRelation(word)) // not here! doch
+//                node= getRelation(word);
+//            else
+//                node = getAbstract(word);
+//        }
+//		//		Node* node = getThe(word); TODO getThe for relation!!!
+//		//		Node* abstract=getAbstract(f);// ,getPredicate?Verb:0
+//		//		NodeVector& instances=all_instances(abstract, recurse,limit);
+//		//		if(instances->size()<=0)word=abstract;
+//		//		else word= instances[0];
+//		if (!subject)subject = node;
+//		else if (!predicate)predicate = node; //stem(word);
+//		else if (!object)object = node; // John smells
+//	}
+//	if (!object)object = Any;
+//	if (!(subject && predicate))
+//		return 0;
 	if (learn)
 		return addStatement(subject, predicate, object, true);
 	else
@@ -562,6 +565,7 @@ good:
 // maria.freund=sven
 // maria.freund => sven
 Statement* evaluate(string data,bool learn/*false*/) {
+	autoIds=true;
 	Statement* pattern = parseFilter(data,learn); //Hypothesis Aim Objective supposition assumption
 	if(learn){pattern->context=wordnet;return pattern;}
 	// TODO MARK + CLEAR PATTERNS!!!

@@ -1865,10 +1865,17 @@ void testBrandNewStuff() {
 	if(!hasWord("bug")){
 		importWordnet();
 //		load(true);//force
-//		importWikiData();
+		//		importWikiData();
+		mergeNode(get(-81), get(81));// derived
+		mergeNode(get(-80), get(80));// derives pertainym
+		mergeNode(get(-30), get(30));// opposite = antonym
+		// fix how? ^^^^^^^^
 	}
-	mergeNode(get(-81), get(81));
-	handle("html/all/play");
+
+//	handle("json/all/play");
+//	handle("llearn -119408 see super2");
+//	handle("llearn 488327 maybe Wage");
+	handle("/json/all/488327");
 //	save();
 //	fixNames();
 //	testBug();
