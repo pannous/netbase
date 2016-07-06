@@ -296,6 +296,29 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		*limit=0;
 //		if(len<2)return OK;
 	}
+
+	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
+		data=next_word(data);
+		return show(findEntites(data));
+	}
+
+	if(startsWith(data, "seo")||startsWith(data, ":seo")){
+		data=next_word(data);
+		cchar* seo= generateSEOUrl(data).data();
+		p(seo);
+		if(hasWord(seo,true)){
+			N n=hasWord(seo,true);// 'get'
+			if(!n)return OK;// HOW???
+			if(n->statementCount<3){
+				S s= findStatement(Any, Label, n);
+				if(s)n=s->Subject();
+			}
+			return showWrap(n);
+		}else return OK;
+	}
+	
+
+
 	if (eq(data, ":load")) {
 		load(true);
 		return OK;
@@ -504,29 +527,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return showWrap(getAbstract(data));
 	}
 
-	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
-		data=next_word(data);
-		return show(findEntites(data));
-	}
 	if (startsWith(data, ":all ")||startsWith(data, ":children")||startsWith(data, ":instances")){//||startsWith(data, "children ")
 		N da=getAbstract(next_word(data));
 		NS all=findAll(da,instanceFilter);// childFilter
 //		show(all);// ok, show!
 		return setToVector(all);
-	}
-
-	if(startsWith(data, "seo")||startsWith(data, ":seo")){
-		data=next_word(data);
-		cchar* seo= generateSEOUrl(data).data();
-		p(seo);
-		if(hasWord(seo,true)){
-			N n=hasWord(seo,true);// 'get'
-			if(n->statementCount<3){
-				S s= findStatement(Any, Label, n);
-				if(s)n=s->Subject();
-			}
-			return showWrap(n);
-		}else return OK;
 	}
 
 	if (startsWith(data, ":printlabels")){
