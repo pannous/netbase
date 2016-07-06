@@ -1262,7 +1262,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
         //			return found->abstract;
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
-		if(seo && generateSEOUrl(first->name)==thingy)
+		if(seo && first->name && generateSEOUrl(first->name)==thingy)
 			return first;
 	}
     int tries=0; // cycle bugs
