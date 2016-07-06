@@ -73,7 +73,8 @@ char* fixName(char* name){
 	int len=(int)strlen(name);
 	while(--len>=0){
 		if(name[len]==9)name[len]=' ';// json-save!
-		if(name[len]=='"')name[len]='`';// json-save!
+		if(name[len]=='"')name[len]='\'';// json-save!
+		if(name[len]=='`')name[len]='\'';// json-save!
 	}
 	if(name[0]=='\''||name[0]=='`')return name+1;
 	return name;
@@ -265,6 +266,8 @@ int handle(cchar* q0,int conn){
 	bool safeMode=true;
 	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
 	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
+	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
+	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
 
 	p(q);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -378,10 +381,11 @@ int handle(cchar* q0,int conn){
 				Writeline(conn, ",\n\t \"typeid\":"+itoa(ty->id));
 				Writeline(conn, ", \"type\":\""+string(ty->name)+"\"");
 			}
+			Writeline(conn, ", \"seo\":\""+generateSEOUrl(node->name)+"\"");
 		}
 		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
-		bool show_images=SERVER_PORT<1000;// HACK!
+		bool show_images=SERVER_PORT<1000||verbosity==alle;// HACK!
 		if((use_json&&show_images)&&!showExcludes&&node->statementCount>1){
 			string img=getImage(node,150,/*thumb*/true);
 			if(img!=""){
@@ -453,6 +457,13 @@ int handle(cchar* q0,int conn){
 					if(checkNode(type))
 						objectName=(char*)(concat(concat(objectName, ": "),type->name));
 				}
+				if(!objectName){
+					p("PROBLEM WITH");
+					p(s);
+					objectName="???";
+//				continue;// hebrew?
+				}
+
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
 				char* title="";
 				if(verbosity==alle)title=fixName(getStatementTitle(s,node));
@@ -982,7 +993,7 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	Writeline(conn, buffer, strlen(buffer));
 	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
-	else if(contains(reqinfo->resource,"json/")||contains(reqinfo->resource,"learn")){
+	else if(contains(reqinfo->resource,"json/")||contains(reqinfo->resource,"learn") ||contains(reqinfo->resource,"delete")){
 		Writeline(conn, "Content-Type: application/json; charset=utf-8\r\n");
 		Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
 	}

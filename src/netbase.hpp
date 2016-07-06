@@ -418,6 +418,7 @@ void showContext(Context* cp);
 void showNodes(NodeSet all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false);
 NodeVector showNodes(NodeVector all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false); // bool justTitles==showStatements
 NodeVector show(NodeVector all);// alias
+NodeVector showWrap(Node* n);
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
@@ -469,7 +470,7 @@ extern "C" Node* showNode(int id);
 void testBrandNewStuff();
 
 char* initContext(Context*);
-Node* hasWord(const char* thingy);
+Node* hasWord(const char* thingy,bool seo=false);
 extern "C" bool hasNode(const char* thingy);
 string getImage(const char* n, int size = 150,bool thumb=false);
 string getImage(Node* a, int size=150,bool thumb=false);

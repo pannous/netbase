@@ -519,7 +519,8 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "see also")) return See;
 	if (eq(thing, "also see")) return See;
 	if (eq(thing, "also")) return See;
-
+	if (eq(thing, "similar"))return Similar;
+//	if (eq(thing, "next"))return Prede;
 	if (eq(thing, "Ist ein(e)")) return Type;// -10031
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;

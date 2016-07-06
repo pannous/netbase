@@ -483,20 +483,27 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(startsWith(data, ":topic")||startsWith(data, ":to")){
 		data=next_word(data);
 		autoIds=true;
-		return show(nodeVectorWrap(getTopic(getThe(data))));
+		return showWrap(getTopic(getThe(data)));
 	}
 	if(startsWith(data, ":type")||startsWith(data, ":kind")){
 		data=next_word(data);
 		autoIds=true;
 		N n=getType(getThe(data));
 		if(checkNode(n))p(n->id);
-		return show(nodeVectorWrap(n));
+		return showWrap(n);
 	}
 	if(startsWith(data, ":class")){
 		data=next_word(data);
 		autoIds=true;
-		return show(nodeVectorWrap(getClass(get(data))));
+		return showWrap(getClass(get(data)));
 	}
+
+	if(startsWith(data, ":abstract")||startsWith(data, ":ab")||startsWith(data, ":a")){
+		data=next_word(data);
+		if(isInteger(data))data=get(atoi(data))->name;
+		return showWrap(getAbstract(data));
+	}
+
 	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
 		data=next_word(data);
 		return show(findEntites(data));
@@ -506,6 +513,20 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		NS all=findAll(da,instanceFilter);// childFilter
 //		show(all);// ok, show!
 		return setToVector(all);
+	}
+
+	if(startsWith(data, "seo")||startsWith(data, ":seo")){
+		data=next_word(data);
+		cchar* seo= generateSEOUrl(data).data();
+		p(seo);
+		if(hasWord(seo,true)){
+			N n=hasWord(seo,true);// 'get'
+			if(n->statementCount<3){
+				S s= findStatement(Any, Label, n);
+				if(s)n=s->Subject();
+			}
+			return showWrap(n);
+		}else return OK;
 	}
 
 	if (startsWith(data, ":printlabels")){
@@ -659,7 +680,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	int i=atoi(data);
 	if(data[0]=='P' && data[1]<='9')
 		return nodeVectorWrap(get(-atoi(++data)-10000));// P106 -> -10106
-
+	if (startsWith(data, ":")){pf("UNKNOWN COMMAND %s\n",data);showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 //	if(autoIds && i)return nodeVectorWrap(get(i));

@@ -17,6 +17,7 @@ void importWikiData();
 void importTest();// Test new impart features
 //void import(const char* file);
 void import(const char* type,const char* filename=0);
+void importImages();
 void importList(const char* facts_file,const char* type);
 void importCsv(const char* facts_file,Node* type=0,char separator=0,const char* ignoredFields=0,const char* fields=0,int nameRowNr=-1,const char* nameRow=0 );
 //void importXml(const char* facts_file,Context* context=null, const char* ignoredFields=null, const char* includedFields=null);

@@ -760,8 +760,8 @@ void testImages() {
 	if (getImage("alabama") == "" || getImage("Alabama") == "") {
 		clearMemory();
 		importAll();
-		//		importImages();
-		import("images");
+		importImages();
+//		import("images");
 	}
 	p(getImage("Alabama"));
 	p(getImage("alabama"));
@@ -1857,7 +1857,13 @@ void testBrandNewStuff() {
 	debug = true;
 //	germanLabels=true;
 	germanLabels=false;
+	fixCurrent();
 	context=getContext(current_context);
+	show(hasWord("provinz-suedholland"));
+	show(hasWord("provinz-suedholland",true));
+	show(hasWord("loud-as"));
+	show(hasWord("loud-as",true));
+	exit(0);
 //	string x=generateSEOUrl("Entität #-104 (kind: intern #-100)");
 //	p(x);
 //	importTest();
@@ -1871,11 +1877,16 @@ void testBrandNewStuff() {
 		mergeNode(get(-30), get(30));// opposite = antonym
 		// fix how? ^^^^^^^^
 	}
+	auto x=getImage(get(-73791));
+	p(x);
+//	parse(":import images");
+
 
 //	handle("json/all/play");
 //	handle("llearn -119408 see super2");
 //	handle("llearn 488327 maybe Wage");
-	handle("/json/all/488327");
+//	handle("/json/all/488327");
+//	handle("/json/all/-236836+limit+25");
 //	save();
 //	fixNames();
 //	testBug();

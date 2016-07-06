@@ -100,4 +100,6 @@ bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool mat
 bool isA(Node* fro, Node* to);
 bool filterWikiType(int object);
 Statement * findRelations(Node* from, Node * to);
+Statement* parseSentence(string sentence, bool learn = false);
+
 #endif	/* QUERY_H */

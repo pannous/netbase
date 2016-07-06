@@ -153,7 +153,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 	//	char label[1000];
 	char* lastTitle=0;
 	int linecount=0;
-	Node* wiki_image=getAbstract("wiki image");
+	Node* wiki_image=getAbstract("wiki_image");
 	addStatement(wiki_image, is_a, getThe("image"));
 	char image[10000];
 	char *title=(char *) malloc(10000);
@@ -271,6 +271,7 @@ void importImagesEN() { // 18 MILLION!   // 18496249
 
 
 void importImages(){
+	context=getContext(current_context);
 	importWordnetImages("images.wn.all.csv");// via name
 	if(germanLabels)
 		importImagesDE();// dbpedia

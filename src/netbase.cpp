@@ -1246,7 +1246,7 @@ bool hasNode(const char* thingy) {
 }
 
 // merge with getAbstract bool create
-Node * hasWord(const char* thingy) {
+Node * hasWord(const char* thingy,bool seo/*=false*/) {
 	if (!thingy || thingy[0] == 0) return 0;
     //	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
     //    char* fixed=editable(thingy); // free!!!
@@ -1262,8 +1262,10 @@ Node * hasWord(const char* thingy) {
         //			return found->abstract;
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
-    }
-    	int tries=0; // cycle bugs
+		if(seo && generateSEOUrl(first->name)==thingy)
+			return first;
+	}
+    int tries=0; // cycle bugs
 
     //    	map<Node*, bool> visited;
 //#ifdef DEBUG
@@ -1291,6 +1293,8 @@ Node * hasWord(const char* thingy) {
 			//				return found->abstract;
 			char* ab=get(found->abstract)->name;
 			if (eq(ab, thingy, true,true))			//teuer? n��, if 1.letter differs
+				return get(found->abstract);
+			if(seo && generateSEOUrl(ab)==thingy)
 				return get(found->abstract);
 		}
         //		if (get(found->next) == found) {
@@ -2081,6 +2085,12 @@ Statement * isStatement(Node * n) {
 NodeVector show(NodeVector all){
  return showNodes(all);
 }
+NodeVector showWrap(Node* n){
+	show(n);
+	NodeVector r;
+	r.push_back(n);
+	return r;
+}
 NodeSet show(NodeSet all, bool showStatements, bool showRelation, bool showAbstracts){
 	NodeSet::iterator it;
 	for(it = all.begin(); it != all.end(); ++it) {
@@ -2163,7 +2173,9 @@ void initUnits() {
 // SAME as evaluate!!
 Statement * learn(string sentence) {
 	ps("learning " + sentence);
-	Statement* s=evaluate(sentence,true);
+//	//if (!contains(s, ".")
+	Statement* s= parseSentence(sentence,true);
+//	Statement* s=evaluate(sentence,true);
 	if (checkStatement(s)) {
 		showStatement(s);
 		return s;
@@ -2424,8 +2436,8 @@ string getImage(cchar* a, int size,bool thumb) {
 string getImage(Node* a, int size,bool thumb) {
 	if(!a||!checkNode(a))return 0;
 	Node* i=0;
-	//	if(!i)i=findProperty(a, "wiki_image",false,1000);
 	if(!i)i=findProperty(a, "image",false,1000);// Amazon
+	if(!i)i=findProperty(a, "wiki_image",false,1000);
 	if(!i)i=findProperty(a, "product_image_url",false,20);
 	if(!i)i=findProperty(a, "Bild",false,1000);
 	if(!i)i=findProperty(a, "Wappen",false,1000);
@@ -2486,31 +2498,53 @@ while(readFile("replay.log", line)){
 Context* currentContext(){
 	return getContext(current_context);
 }
+
+void stripName(Node* n){
+	int l=(int)strlen(n->name);
+	if(l>1&&n->name&&n->name[l-1]==' '){
+		p(n->name);
+//		continue;
+		N o=hasWord(n->name);
+		if(o){
+			if(o!=n)p(o->name);
+//			if(!checkNode(o))continue;
+			int l=(int)strlen(o->name);
+			if(l>1&&n->name&&o->name[l-1]!=' '){
+				p(o->name);
+				//					n->name[l-1]=0;
+			}
+		}
+	}
+}
+void addSeo(Node* n){
+	if(n->kind!=_abstract && n->kind!=_singleton)return;
+	if(len(n->name)<2)return;
+	string see=generateSEOUrl(n->name);
+	cchar* seo=see.data();
+	if(hasWord(seo,true))return;
+//	N ss=getAbstract(seo);
+//	addStatement(n, Label, ss);
+	pf("addSeo %s	->	%s\n",n->name,seo);
+	insertAbstractHash(wordhash(seo),n,false);
+}
+
 void fixCurrent(){
+	p("fixCurrent: addSeo");
 //	importTest();
 	context=currentContext();
+//	addSeo(get(10506175));
+//	return;
 	for (int i=1; i<maxNodes; i++) {
 		Node* n= get(i);
 		if(!checkNode(n)||!n->name)continue;
-		int l=(int)strlen(n->name);
-		if(l>1&&n->name&&n->name[l-1]==' '){
-			p(n->name);
-			continue;
-			N o=hasWord(n->name);
-			if(o){
-				if(o!=n)p(o->name);
-				if(!checkNode(o))continue;
-				int l=(int)strlen(o->name);
-				if(l>1&&n->name&&o->name[l-1]!=' '){
-					p(o->name);
-//					n->name[l-1]=0;
-				}
-			}
-//			2/2-Wege Direktgesteuertes Ventil 184684 230 V/AC G 1/2 Muffe Nennweite 8 mm Gehäusematerial Messing Dichtungsma  HOW??
+		addSeo(n);
+		stripName(n);
+		//			2/2-Wege Direktgesteuertes Ventil 184684 230 V/AC G 1/2 Muffe Nennweite 8 mm Gehäusematerial Messing Dichtungsma  HOW??
 //				show(hasWord(n->name));
 //			deleteNode(n);
-		}
 	}
+}
+
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 //	replay();
 //	N a=getThe("Amazon dvd product");
@@ -2519,7 +2553,7 @@ void fixCurrent(){
 //		if(wordCount(s->Subject()->name)==1)
 //			deleteNode(s->Subject());
 //	}
-}
+//}
 
 Node* mergeNode(Node* target,Node* node){
 	addStatementToNodeDirect(target,node->firstStatement);

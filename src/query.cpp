@@ -334,8 +334,8 @@ NodeVector nodeVector(vector<string> v) {
 }
 
 // sentenceToStatement
-
-Statement* parseSentence(string sentence, bool learn = false) {
+//if (!contains(s, ".")
+Statement* parseSentence(string sentence, bool learn/* = false*/) {
     
     //	int recurse = 0;
     //	int limit = 5;
@@ -351,7 +351,9 @@ Statement* parseSentence(string sentence, bool learn = false) {
 	}
 	Node* subject = getThe(matches[0]);
 	Node* predicate = getThe(matches[1]);// getRelation(matches[1])||
-	Node* object = getThe(matches[2]);
+	Node* object;
+	if(predicate==Instance)object=getNew(matches[2]);
+	else object= getThe(matches[2]);
 //	Node* subject = 0;
 //	Node* predicate = 0;
 //	Node* object = 0;
@@ -2140,8 +2142,9 @@ N getClass(N n){
 	if(!p)p=getProperty(n,SuperClass,1000);// more specific: Transportflugzeug
 	if(!p)p=getProperty(n,get(-10031),1000);//  	Ist ein(e) :(
 	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
-	if(!p)p=getProperty(n,Type,-10106);// Tätigkeit
+	if(!p)p=getProperty(n,get(-10106),1000);// Tätigkeit
 	if(!p)p=getInferredClass(n,1000);
+	if(!p)p=getProperty(n,Synonym,1000);// Tätigkeit
 	if(!p && (n->kind>0||n->kind<-1000))
 		return get(n->kind);
 	if(!p){
