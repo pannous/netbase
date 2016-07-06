@@ -1294,7 +1294,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 			char* ab=get(found->abstract)->name;
 			if (eq(ab, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return get(found->abstract);
-			if(seo && generateSEOUrl(ab)==thingy)
+			if(ab && seo && generateSEOUrl(ab)==thingy)
 				return get(found->abstract);
 		}
         //		if (get(found->next) == found) {
