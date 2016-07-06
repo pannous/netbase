@@ -1877,8 +1877,6 @@ void testBrandNewStuff() {
 		mergeNode(get(-30), get(30));// opposite = antonym
 		// fix how? ^^^^^^^^
 	}
-	auto x=getImage(get(-73791));
-	p(x);
 //	parse(":import images");
 
 
