@@ -988,91 +988,96 @@ string generateSEOUrl(string input) {
 	replaceAll( s,"ü", "ue");
 	replaceAll( s,"ö", "oe");
 	replaceAll( s,"ß", "ss");
-
-	replaceAll( s,"á", "a");
-	replaceAll( s,"â", "a");
-	replaceAll( s,"å", "a");
-	replaceAll( s,"ã", "a");
-	replaceAll( s,"ā", "a");
-	replaceAll( s,"à", "a");
-	replaceAll( s,"æ", "ae");
-	replaceAll( s,"Á", "a");
-	replaceAll( s,"Â", "a");
-	replaceAll( s,"Å", "a");
-	replaceAll( s,"Ã", "a");
-	replaceAll( s,"Ā", "a");
-	replaceAll( s,"À", "a");
-	replaceAll( s,"Æ", "ae");
-
 	replaceAll( s,"é", "e");
-	replaceAll( s,"ë", "e");
-	replaceAll( s,"ē", "e");
-	replaceAll( s,"ė", "e");
-	replaceAll( s,"ę", "e");
-	replaceAll( s,"ê", "e");
-	replaceAll( s,"è", "e");
-	replaceAll( s,"Ë", "e");
-	replaceAll( s,"Ē", "e");
-	replaceAll( s,"Ė", "e");
-	replaceAll( s,"Ę", "e");
-	replaceAll( s,"Ê", "e");
-	replaceAll( s,"È", "e");
-
-	replaceAll( s,"í", "i");
-	replaceAll( s,"î", "i");
-	replaceAll( s,"ï", "i");
-	replaceAll( s,"ī", "i");
-	replaceAll( s,"į", "i");
-	replaceAll( s,"ì", "i");
-	replaceAll( s,"Í", "i");
-	replaceAll( s,"Î", "i");
-	replaceAll( s,"Ï", "i");
-	replaceAll( s,"Ī", "i");
-	replaceAll( s,"Į", "i");
-	replaceAll( s,"Ì", "i");
-
-	replaceAll( s,"ó", "o");
-	replaceAll( s,"ô", "o");
-	replaceAll( s,"ò", "o");
-	replaceAll( s,"œ", "oe");
-	replaceAll( s,"ø", "o");
-	replaceAll( s,"ō", "o");
-	replaceAll( s,"õ", "o");
-	replaceAll( s,"Ó", "o");
-	replaceAll( s,"Ô", "o");
-	replaceAll( s,"Ò", "o");
-	replaceAll( s,"Œ", "oe");
-	replaceAll( s,"Ø", "o");
-	replaceAll( s,"Ō", "o");
-	replaceAll( s,"Õ", "o");
-
-	replaceAll( s,"ú", "u");
-	replaceAll( s,"û", "u");
-	replaceAll( s,"ù", "u");
-	replaceAll( s,"ū", "u");
-	replaceAll( s,"Ú", "u");
-	replaceAll( s,"Û", "u");
-	replaceAll( s,"Ù", "u");
-	replaceAll( s,"Ū", "u");
-
-
-	replaceAll( s,"ç", "c");
-	replaceAll( s,"ć", "c");
-	replaceAll( s,"č", "c");
-	replaceAll( s,"Ç", "c");
-	replaceAll( s,"Ć", "c");
-	replaceAll( s,"Č", "c");
-
-
-	replaceAll( s,"ś", "s");
-	replaceAll( s,"š", "s");
-	replaceAll( s,"Ś", "s");
-	replaceAll( s,"Š", "s");
-
-	replaceAll( s,"ń", "n");
-	replaceAll( s,"ñ", "n");
-	replaceAll( s,"Ń", "n");
-	replaceAll( s,"Ñ", "n");
+//
+//	replaceAll( s,"á", "a");
+//	replaceAll( s,"â", "a");
+//	replaceAll( s,"å", "a");
+//	replaceAll( s,"ã", "a");
+//	replaceAll( s,"ā", "a");
+//	replaceAll( s,"à", "a");
+//	replaceAll( s,"æ", "ae");
+//	replaceAll( s,"Á", "a");
+//	replaceAll( s,"Â", "a");
+//	replaceAll( s,"Å", "a");
+//	replaceAll( s,"Ã", "a");
+//	replaceAll( s,"Ā", "a");
+//	replaceAll( s,"À", "a");
+//	replaceAll( s,"Æ", "ae");
+//
+//	replaceAll( s,"é", "e");
+//	replaceAll( s,"ë", "e");
+//	replaceAll( s,"ē", "e");
+//	replaceAll( s,"ė", "e");
+//	replaceAll( s,"ę", "e");
+//	replaceAll( s,"ê", "e");
+//	replaceAll( s,"è", "e");
+//	replaceAll( s,"Ë", "e");
+//	replaceAll( s,"Ē", "e");
+//	replaceAll( s,"Ė", "e");
+//	replaceAll( s,"Ę", "e");
+//	replaceAll( s,"Ê", "e");
+//	replaceAll( s,"È", "e");
+//
+//	replaceAll( s,"í", "i");
+//	replaceAll( s,"î", "i");
+//	replaceAll( s,"ï", "i");
+//	replaceAll( s,"ī", "i");
+//	replaceAll( s,"į", "i");
+//	replaceAll( s,"ì", "i");
+//	replaceAll( s,"Í", "i");
+//	replaceAll( s,"Î", "i");
+//	replaceAll( s,"Ï", "i");
+//	replaceAll( s,"Ī", "i");
+//	replaceAll( s,"Į", "i");
+//	replaceAll( s,"Ì", "i");
+//
+//	replaceAll( s,"ó", "o");
+//	replaceAll( s,"ô", "o");
+//	replaceAll( s,"ò", "o");
+//	replaceAll( s,"œ", "oe");
+//	replaceAll( s,"ø", "o");
+//	replaceAll( s,"ō", "o");
+//	replaceAll( s,"õ", "o");
+//	replaceAll( s,"Ó", "o");
+//	replaceAll( s,"Ô", "o");
+//	replaceAll( s,"Ò", "o");
+//	replaceAll( s,"Œ", "oe");
+//	replaceAll( s,"Ø", "o");
+//	replaceAll( s,"Ō", "o");
+//	replaceAll( s,"Õ", "o");
+//
+//	replaceAll( s,"ú", "u");
+//	replaceAll( s,"û", "u");
+//	replaceAll( s,"ù", "u");
+//	replaceAll( s,"ū", "u");
+//	replaceAll( s,"Ú", "u");
+//	replaceAll( s,"Û", "u");
+//	replaceAll( s,"Ù", "u");
+//	replaceAll( s,"Ū", "u");
+//
+//
+//	replaceAll( s,"ç", "c");
+//	replaceAll( s,"ć", "c");
+//	replaceAll( s,"č", "c");
+//	replaceAll( s,"Ç", "c");
+//	replaceAll( s,"Ć", "c");
+//	replaceAll( s,"Č", "c");
+//
+//
+//	replaceAll( s,"ś", "s");
+//	replaceAll( s,"š", "s");
+//	replaceAll( s,"Ś", "s");
+//	replaceAll( s,"Š", "s");
+//
+//	replaceAll( s,"ń", "n");
+//	replaceAll( s,"ñ", "n");
+//	replaceAll( s,"Ń", "n");
+//	replaceAll( s,"Ñ", "n");
+//
+//	replaceAll( s,"ð", "dz");// ?
+//	replaceAll( s,"Ľ", "l");//
+//	replaceAll( s,"ł", "l");//
 
 	replaceAll( s,"€", "E");
 //	replaceAll( s,"$", "S");
