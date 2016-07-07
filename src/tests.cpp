@@ -1853,12 +1853,27 @@ void testBug(){
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
+	context=getContext(current_context);
 	quiet=false;
 	debug = true;
 //	germanLabels=true;
 	germanLabels=false;
+////////////////////////////////////////////////////////////////////
+	string seo=generateSEOUrl("München");
+	addSeo(getAbstract("muenchen"));
+	N n=hasWord(seo.data(),true);
+	check(n!=0);
+//	N abstract=getAbstract("München");
+	N a=getEntity("München");
+	addStatement(a, Type, SuperClass);
+	addStatement(a, Contains, SuperClass);
+	addSeo(a);
+	n=hasWord(seo.data(),true);
+	check(n!=0);
+	check(n==a);
+	exit(0);
 	fixCurrent();
-	context=getContext(current_context);
+
 	show(hasWord("provinz-suedholland"));
 	show(hasWord("provinz-suedholland",true));
 	show(hasWord("loud-as"));

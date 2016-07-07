@@ -554,7 +554,7 @@ extern map <double, short> yetvisitedIsA;
 //Ahash* getAbstractHash(int hashkey);
 //Node* getAbstractHash(const char* word);
 //Ahash* insertAbstractHash(long hashkey, Node* abstract); //debug only
-Ahash* insertAbstractHash(unsigned int hashkey, Node* abstract,bool overwrite=false); //debug only
+Ahash* insertAbstractHash(unsigned int hashkey, Node* abstract,bool overwrite=false,bool seo=false); //debug only
 Ahash* insertAbstractHash(Node* abstract,bool overwrite=false);
 
 void deleteWord(string* s);
@@ -593,7 +593,7 @@ extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
 void bad();
 void show(NodeSet& all);
-
+void addSeo(Node* n);
 //extern
 //#pragma warnings_off
 

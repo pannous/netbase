@@ -156,17 +156,19 @@ Ahash *getAhash(int position){
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash*, bool> badAhashReported;// debug
-Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
+Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/,bool seo/*=false*/) {
 	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
     if(a==0)
         return 0;
 	if(a==Error)
 		return 0;
 	Ahash* ah=getAhash(position);
-	if (!checkHash(ah) || !checkNode(a) || !a->name || !strlen(a->name)) return 0;
+	cchar* name=a->name;
+	if(seo)name=generateSEOUrl(name).data();
+	if (!checkHash(ah) || !checkNode(a) || !a->name || !strlen(name)) return 0;
 	int i=0;
 	while (ah&&ah->next) {
-		if (i++ > 300&&a->name[1]!=0) {	// allow 65536 One letter nodes
+		if (i++ > 300&&name[1]!=0) {	// allow 65536 One letter nodes
             bad();
             if(badAhashReported[ah])return ah;
             badAhashReported[ah]=true;
@@ -185,7 +187,7 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
 		N ab=get(ah->abstract);
 		if (ab == a)
             return ah; //schon da
-		if(ab && eq(ab->name, a->name, true)){
+		if(ab && eq(ab->name, name, true)){
 			if(overwrite){
 //				if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
 //					get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
@@ -200,7 +202,7 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/) {
 	if (ab) { //schon was drin
 		if (ab == a)
 			return ah; //schon da
-		if(ab && eq(ab->name, a->name, true)){
+		if(ab && eq(ab->name, name, true)){
 			if(overwrite){
 //								if(ah->abstract>-propertySlots&&ah->abstract<maxNodes-propertySlots)
 //									get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
@@ -1440,7 +1442,11 @@ Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!
 		return rdfValue(modifyConstChar(thing));
     if(autoIds&&isInteger(thing))return get(atoi(thing));
 	Node* abstract=hasWord(thing);
-	if (abstract) return abstract;
+	if (abstract){
+		if(abstract->kind!=_abstract && abstract->kind!=_singleton)
+			p("HOW???");
+		return abstract;
+	}
 	abstract=add(thing, _abstract, _abstract); // abstract context !!
 	if (!abstract) {
 		p("out of memory!");
@@ -2516,16 +2522,26 @@ void stripName(Node* n){
 		}
 	}
 }
-void addSeo(Node* n){
-	if(n->kind!=_abstract && n->kind!=_singleton)return;
+void addSeo(Node* n0){
+	Node* n=n0;
+	if(n->kind!=_abstract && n->kind!=_singleton)
+		n=getAbstract(n->name);
 	if(len(n->name)<2)return;
 	string see=generateSEOUrl(n->name);
+	if(see==n->name)return;
 	cchar* seo=see.data();
-	if(hasWord(seo,true))return;
+	N old=hasWord(seo,true);
+	if(old){
+		if(old->statementCount>n0->statementCount)return;// ok
+		pf("addSeo FORCE %s	->	%s\n",n->name,seo);
+		insertAbstractHash(wordhash(seo),n,true,true);
+		return;
+	}
 //	N ss=getAbstract(seo);
 //	addStatement(n, Label, ss);
 	pf("addSeo %s	->	%s\n",n->name,seo);
-	insertAbstractHash(wordhash(seo),n,false);
+//	insertAbstractHash(wordhash(seo),n,false,false);// old writing? makes no sense
+	insertAbstractHash(wordhash(seo),n,false,true);
 }
 
 void fixCurrent(){

@@ -2131,7 +2131,7 @@ N getInferredClass(N n,int limit=1000){
 		if(limit && lookup++>=limit)break;
 		if(s->Object()==n){
 			if(s->predicate>0||s->predicate<-1000)
-				if(s->predicate!=-10031)
+				if(s->predicate!=-10031 && s->predicate!=-10361)
 				return s->Predicate();
 		}
 	}
