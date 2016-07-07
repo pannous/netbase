@@ -2532,7 +2532,8 @@ void addSeo(Node* n0){
 	cchar* seo=see.data();
 	N old=hasWord(seo,true);
 	if(old){
-		if(old->statementCount>n0->statementCount)return;// ok
+		if(old->statementCount>=n0->statementCount)return;// ok
+		if(old==n)return;// ok, abstract
 		pf("addSeo FORCE %s	->	%s\n",n->name,seo);
 		insertAbstractHash(wordhash(seo),n,true,true);
 		return;
