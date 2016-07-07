@@ -1443,8 +1443,8 @@ Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!
     if(autoIds&&isInteger(thing))return get(atoi(thing));
 	Node* abstract=hasWord(thing);
 	if (abstract){
-		if(abstract->kind!=_abstract && abstract->kind!=_singleton)
-			pf("HOW is %d not abstract???\n",abstract->id);
+//		if(abstract->kind!=_abstract && abstract->kind!=_singleton)
+//			pf("HOW is %d not abstract?\n",abstract->id);
 		return abstract;
 	}
 	abstract=add(thing, _abstract, _abstract); // abstract context !!
