@@ -1871,6 +1871,11 @@ void testBrandNewStuff() {
 	n=hasWord(seo.data(),true);
 	check(n!=0);
 	check(n==a);
+	N x=getEntity("Aristar PREM192719 Premium");
+	addSeo(x);
+	N no=hasWord("muetter-in-muenche",true);
+	check(no==0);
+	check(x!=no);
 	exit(0);
 	fixCurrent();
 

@@ -1264,7 +1264,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
         //			return found->abstract;
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
-		if(seo && first->name && generateSEOUrl(first->name)==thingy)
+		if(seo && first->name && thingy==generateSEOUrl(first->name))
 			return first;
 	}
     int tries=0; // cycle bugs
@@ -1293,11 +1293,11 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 		if (found&&checkNode(found->abstract)) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
-			char* ab=get(found->abstract)->name;
-			if (eq(ab, thingy, true,true))			//teuer? n��, if 1.letter differs
-				return get(found->abstract);
-			if(ab && seo && generateSEOUrl(ab)==thingy)
-				return get(found->abstract);
+			N a=get(found->abstract);
+			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
+				return a;
+			if(seo && thingy==generateSEOUrl(a->name))
+				return a;
 		}
         //		if (get(found->next) == found) {
         //        debugAhash(h);
