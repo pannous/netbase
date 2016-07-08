@@ -306,7 +306,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if(startsWith(data, "seo")||startsWith(data, ":seo")){
 		data=next_word(data);
-		cchar* seo= generateSEOUrl(data).data();
+		cchar* seo= generateSEOUrl(editable(data)).data();
 		p(seo);
 		if(hasWord(seo,true)){
 			N n=hasWord(seo,true);// 'get'

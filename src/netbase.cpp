@@ -164,7 +164,7 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/,bool
 		return 0;
 	Ahash* ah=getAhash(position);
 	cchar* name=a->name;
-	if(seo)name=generateSEOUrl(name).data();
+	if(seo)name=generateSEOUrl(editable(name)).data();
 	if (!checkHash(ah) || !checkNode(a) || !a->name || !strlen(name)) return 0;
 	int i=0;
 	while (ah&&ah->next) {
@@ -1269,11 +1269,15 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
         //			return found->abstract;
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
-		if(seo && first->name && thingy==generateSEOUrl(first->name)){
+		if(seo&&first->name){
+			cchar* x=generateSEOUrl(editable(first->name)).data();
 			p("=0=");
 			p(thingy);
-			p(generateSEOUrl(first->name));
+			p(x);
+			if(eq(x,thingy)){
+			p("=!!0!!=");
 			return first;
+			}
 		}
 	}
     int tries=0; // cycle bugs
