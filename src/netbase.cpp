@@ -1262,8 +1262,6 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
 	long pos=abs(h) % maxNodes;
 	Ahash* found=&abstracts[pos]; // TODO: abstract=first word!!! (with new 'next' ptr!)
     Node* first=0;
-	if(h==15581587)
-		h=h;
 	if (found&& found->abstract>0 && (first=get(found->abstract))){
         //		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
         //			return found->abstract;
@@ -1332,6 +1330,7 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
         if(found->next<=0||found->next>maxNodes*2||found==&abstracts[found->next])break;
 		found=&abstracts[found->next];
 	}
+	p("/////////////");
 	return 0;
 }
 
