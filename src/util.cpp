@@ -955,8 +955,8 @@ bool empty(char* c){
 bool empty(cchar* c){
 	return c==0||strlen(c)==0;// c[0]==0;
 }
-int len(char* c){return (int)strlen(c);}// python style
-int len(cchar* c){return (int)strlen(c);}// python style
+int len(char* c){return !c?0:(int)strlen(c);}// python style
+int len(cchar* c){return !c?0:(int)strlen(c);}// python style
 
 
 //
