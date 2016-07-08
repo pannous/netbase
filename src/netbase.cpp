@@ -1244,7 +1244,10 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //}
 
 Node *getSeo(const char* thingy){
-	return hasWord(thingy,true);
+	const char* thingyBug=editable(thingy);
+	N ok= hasWord(thingyBug,true);
+	free(&thingyBug);
+	return ok;
 }
 bool hasNode(const char* thingy) {
     return hasWord(thingy);

@@ -308,8 +308,8 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		data=next_word(data);
 		cchar* seo= generateSEOUrl(editable(data)).data();
 		p(seo);
-		if(hasWord(seo,true)){
-			N n=hasWord(seo,true);// 'get'
+		N n=getSeo(seo);
+		if(n){
 			if(!n)return OK;// HOW???
 			if(n->statementCount<3){
 				S s= findStatement(Any, Label, n);
