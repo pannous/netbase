@@ -187,7 +187,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	clearAlgorithmHash(true); //  maybe messed up
     
 	//		scanf ( "%s", data );
-	if (eq(data, ":exit")) return OK;
 	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
 		showHelpMessage();
 		//        printf("type exit or word");
@@ -206,8 +205,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 	lastCommand=clone(data);
 	if (eq(data, ":w")) save();
-	if (eq(data, ":q")) exit(1);
-    
+
+	if (eq(data, ":exit")||eq(data, ":quit")||eq(data, ":q"))
+		exit(1); // before return!
+
+
 //	if (eq(data, "q")) return OK;
 //	if (eq(data, "x")) return OK;
     if (eq(data, ":console")){

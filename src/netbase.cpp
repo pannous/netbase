@@ -2636,8 +2636,9 @@ int main(int argc, char *argv[]) {
 	import_path=path + "import/";
 
 	//	path=sprintf("%s/data",path);
-	if (checkParams(argc, argv, "quiet")) quiet=true;
 
+	// todo REDUNDANT! remove!
+	if (checkParams(argc, argv, "quiet")) quiet=true;
 	if (checkParams(argc, argv, "query")||checkParams(argc, argv, "select")) {
 		quiet=true;
 		initSharedMemory();
@@ -2648,13 +2649,13 @@ int main(int argc, char *argv[]) {
 		exit(0);
 	}
 
-	if (checkParams(argc, argv, "quit")) exit(0);
 
 	germanLabels=true;
 	//    import();
 	initSharedMemory(); // <<<
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
+	if (checkParams(argc, argv, "de"))germanLabels=true;
 
 
 	if (checkParams(argc, argv, "import")) {
@@ -2695,6 +2696,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	if (checkParams(argc, argv, "exit")) exit(0);
+	if (checkParams(argc, argv, "quit")) exit(0);
 
 	//	testBrandNewStuff();
 	console();
