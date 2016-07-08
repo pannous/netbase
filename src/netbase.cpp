@@ -1243,10 +1243,12 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //	found->next=0;
 //}
 
+Node *getSeo(const char* thingy){
+	return hasWord(thingy,true);
+}
 bool hasNode(const char* thingy) {
     return hasWord(thingy);
 }
-
 // merge with getAbstract bool create
 Node * hasWord(const char* thingy,bool seo/*=false*/) {
 	if (!thingy || thingy[0] == 0) return 0;
@@ -1296,8 +1298,11 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 			N a=get(found->abstract);
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
-			if(seo && thingy==generateSEOUrl(a->name))
+			if(seo && thingy==generateSEOUrl(a->name)){
+				p(thingy);
+				p(generateSEOUrl(a->name));
 				return a;
+			}
 		}
         //		if (get(found->next) == found) {
         //        debugAhash(h);
