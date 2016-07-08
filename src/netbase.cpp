@@ -1252,7 +1252,7 @@ bool hasNode(const char* thingy) {
 // merge with getAbstract bool create
 Node * hasWord(const char* thingy,bool seo/*=false*/) {
 	if (!thingy || thingy[0] == 0) return 0;
-	p("thingy");
+	p("thingy>>>");
 	p(thingy);
     //	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
     //    char* fixed=editable(thingy); // free!!!
@@ -1268,8 +1268,12 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
         //			return found->abstract;
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
-		if(seo && first->name && thingy==generateSEOUrl(first->name))
+		if(seo && first->name && thingy==generateSEOUrl(first->name)){
+			p("=0=");
+			p(thingy);
+			p(generateSEOUrl(first->name));
 			return first;
+		}
 	}
     int tries=0; // cycle bugs
 
@@ -1301,6 +1305,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
 			if(seo && thingy==generateSEOUrl(a->name)){
+				p("==");
 				p(thingy);
 				p(generateSEOUrl(a->name));
 				return a;
