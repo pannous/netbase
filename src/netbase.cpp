@@ -1308,10 +1308,13 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
 			if(seo){
 				p("=?=");
 				p(thingy0);
-				string x=generateSEOUrl(a->name);
+				string x=generateSEOUrl(editable(a->name));
 				p(x);
 				if(x==thingy0){
 					p("=!=");
+					p(thingy0);
+					p(x);
+					p("===");
 				return a;
 				}
 			}
