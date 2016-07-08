@@ -1252,6 +1252,8 @@ bool hasNode(const char* thingy) {
 // merge with getAbstract bool create
 Node * hasWord(const char* thingy,bool seo/*=false*/) {
 	if (!thingy || thingy[0] == 0) return 0;
+	p("thingy");
+	p(thingy);
     //	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
     //    char* fixed=editable(thingy); // free!!!
     //	thingy=(const char*) fixQuotesAndTrim(fixed);// NOT HERE!
