@@ -1253,12 +1253,9 @@ bool hasNode(const char* thingy) {
     return hasWord(thingy);
 }
 // merge with getAbstract bool create
-Node * hasWord(const char* thingy0,bool seo/*=false*/) {
-	const char* thingy=editable(thingy0);
+Node * hasWord(const char* thingy,bool seo/*=false*/) {
 	if (!thingy || thingy[0] == 0) return 0;
-	p("thingy>>>");
-	p(thingy);
-    //	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
+	//	if (thingy[0] == ' ' || thingy[0] == '_' || thingy[0] == '"') // get rid of "'" leading spaces etc!
     //    char* fixed=editable(thingy); // free!!!
     //	thingy=(const char*) fixQuotesAndTrim(fixed);// NOT HERE!
 	int h=wordhash(thingy);
@@ -1271,14 +1268,9 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
 		if(seo&&first->name){
-			cchar* x=generateSEOUrl(editable(first->name)).data();
-			p("=0=");
-			p(thingy);
-			p(x);
-			if(eq(x,thingy)){
-			p("=!!0!!=");
+			cchar* seod=generateSEOUrl(editable(first->name)).data();
+			if(eq(seod,thingy))
 			return first;
-			}
 		}
 	}
     int tries=0; // cycle bugs
@@ -1311,18 +1303,9 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
 			if(seo){
-				p("=?=");
-				p(thingy);
-				p(thingy0);
-				string x=generateSEOUrl(editable(a->name));
-				p(x);
-				if(x==thingy0){
-					p("=!=");
-					p(thingy0);
-					p(x);
-					p("===");
-				return a;
-				}
+				cchar* seod=generateSEOUrl(editable(a->name)).data();
+				if(eq(seod,thingy))
+					return a;
 			}
 		}
         //		if (get(found->next) == found) {
