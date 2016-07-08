@@ -1251,7 +1251,7 @@ bool hasNode(const char* thingy) {
 }
 // merge with getAbstract bool create
 Node * hasWord(const char* thingy0,bool seo/*=false*/) {
-	const char* thingy=thingy0;
+	const char* thingy=editable(thingy0);
 	if (!thingy || thingy[0] == 0) return 0;
 	p("thingy>>>");
 	p(thingy);
