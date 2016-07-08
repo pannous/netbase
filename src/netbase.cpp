@@ -1250,7 +1250,8 @@ bool hasNode(const char* thingy) {
     return hasWord(thingy);
 }
 // merge with getAbstract bool create
-Node * hasWord(const char* thingy,bool seo/*=false*/) {
+Node * hasWord(const char* thingy0,bool seo/*=false*/) {
+	const char* thingy=thingy0;
 	if (!thingy || thingy[0] == 0) return 0;
 	p("thingy>>>");
 	p(thingy);
@@ -1304,7 +1305,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 			N a=get(found->abstract);
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
-			if(seo && thingy==generateSEOUrl(a->name)){
+			if(seo && (thingy0==generateSEOUrl(a->name))){
 				p("==");
 				p(thingy);
 				p(generateSEOUrl(a->name));
