@@ -1309,6 +1309,7 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
 				return a;
 			if(seo){
 				p("=?=");
+				p(thingy);
 				p(thingy0);
 				string x=generateSEOUrl(editable(a->name));
 				p(x);
