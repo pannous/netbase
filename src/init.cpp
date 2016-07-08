@@ -62,11 +62,13 @@ void detach_shared_memory(){
 	system("./increase-shared-memory.sh");
 	system("./clear-shared-memory.sh");
 //    sudo: no tty present and no askpass program specified
-//    system("ipcrm -M '0x69190'");
-//    system("ipcrm -M '0x69191'");
-//    system("ipcrm -M '0x69192'");
-//    system("ipcrm -M '0x69193'");
-//    system("ipcrm -M '0x69194'");
+//	system("sudo sysctl -w kernel.shmmax=$shmmax");
+//	system("sudo sysctl -w kernel.shmall=$shmall");
+    system("ipcrm -M '0x69190'");
+    system("ipcrm -M '0x69191'");
+    system("ipcrm -M '0x69192'");
+    system("ipcrm -M '0x69193'");
+    system("ipcrm -M '0x69194'");
 }
 
 void increaseShmMax(){
