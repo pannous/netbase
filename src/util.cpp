@@ -977,17 +977,17 @@ string generateSEOUrl(string input) {
 		return input;
 	}
 	string s = input;
-//	std::transform(data.begin(), data.end(), std::back_inserter(s), ::tolower);
 //	std::transform(s.begin(), s.end(),s.begin(), ::tolower);
-	std::transform(s.begin(), s.end(),s.begin(),(int (*)(int))std::tolower);
-//
-//	string ret = input.toLowerCase();
+	std::transform(s.begin(), s.end(),s.begin(),(int (*)(int))std::tolower);// needs  locale() !!
 
-	//	std::replace( s.begin(), s.end(),'ä', 'a');replaceAll( s,"ä", "ae");
 	replaceAll( s,"ä", "ae");
 	replaceAll( s,"ü", "ue");
 	replaceAll( s,"ö", "oe");
+	replaceAll( s,"Ä", "ae");
+	replaceAll( s,"Ü", "ue");
+	replaceAll( s,"Ö", "oe");
 	replaceAll( s,"ß", "ss");
+	replaceAll( s,"É", "e");
 	replaceAll( s,"é", "e");
 //
 //	replaceAll( s,"á", "a");
@@ -1119,7 +1119,7 @@ string generateSEOUrl(string input) {
 	replaceAll( s," ", "-");
 
 	while (s.find("--")!=std::string::npos) {
-		replaceAll( s,"--", "-");
+		replaceAll( s,"--", "-");//  Ich, Claudius – Kaiser und Gott	->	ich-claudius-–-kaiser-und-gott ƒ
 	}
 
 	while(!s.compare(0, 1, "-"))
