@@ -2664,7 +2664,7 @@ int main(int argc, char *argv[]) {
         else import(argv[2]); // danger netbase clear import save
 		if (checkParams(argc, argv, "save")) save();
 	}
-	if (checkParams(argc, argv, "load")) load(false);
+	if (checkParams(argc, argv, "load")) load(true);
 
 	printf("Warnings: %d\n", badCount);
 	showContext(0);
