@@ -1305,11 +1305,15 @@ Node * hasWord(const char* thingy0,bool seo/*=false*/) {
 			N a=get(found->abstract);
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
-			if(seo && (thingy0==generateSEOUrl(a->name))){
-				p("==");
-				p(thingy);
-				p(generateSEOUrl(a->name));
+			if(seo){
+				p("=?=");
+				p(thingy0);
+				string x=generateSEOUrl(a->name);
+				p(x);
+				if(x==thingy0){
+					p("=!=");
 				return a;
+				}
 			}
 		}
         //		if (get(found->next) == found) {
