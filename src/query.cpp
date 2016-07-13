@@ -352,7 +352,10 @@ Statement* parseSentence(string sentence, bool learn/* = false*/) {
 	Node* subject = getThe(matches[0]);
 	Node* predicate = getThe(matches[1]);// getRelation(matches[1])||
 	Node* object;
-	if(predicate==Instance)object=getNew(matches[2]);
+	if(predicate==Instance){
+		if(atoi(matches[2]))object=get(atoi(matches[2]));
+		else object=getNew(matches[2]);
+	}
 	else object= getThe(matches[2]);
 //	Node* subject = 0;
 //	Node* predicate = 0;
