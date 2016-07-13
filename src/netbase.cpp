@@ -1812,7 +1812,12 @@ void deleteStatement(int id){
 
 // Does NOT delete tautological duplicates!
 void deleteStatement(Statement * s) {
-	if (!checkStatement(s, true, false)) return;
+	if (!checkStatement(s, true, false)){
+		printf("BAD Statement:");
+		p(s);
+		bad();
+		return;
+	}
 	removeStatement(s->Subject(), s);
 //	can be very expensive a->is->b 10000000 is Statements :
 //	removeStatement(s->Predicate(), s);// Keep '//' in mind: not real 'bug' if Statement is broken
@@ -1829,7 +1834,7 @@ void deleteStatement(Statement * s) {
 void deleteWord(const char* data, bool completely) {
 	Context* context=&contexts[current_context];
     if(data[0]=='$'){
-		pf("deleteStatement %s \n", data);
+		pf("deleteStatement %s \n", data+1);
         deleteStatement(&context->statements[atoi(data+1)]);
         return;
     }
