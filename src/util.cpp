@@ -921,6 +921,7 @@ void sortNodes(NodeVector& all){
 	deque<Node*> sorted;
 	for (int i=0; i<all.size(); i++) {
 		Node* n=all[i];
+		if(!checkNode(n))continue;
 		if(n->statementCount>max){
 			sorted.push_front(n);
 			max=n->statementCount;
