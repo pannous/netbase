@@ -58,7 +58,9 @@ void signal_handler(int signum) {
 
 void detach_shared_memory(){
         // TODO (?) programmatically
+	p("AUTOMATIC MEMORY WIPE DISABLED!");
     p("If you cannot start netbase try:\n ./increase-shared-memory.sh && ./clear-shared-memory.sh");
+	return;
 	system("./increase-shared-memory.sh");
 	system("./clear-shared-memory.sh");
 //    sudo: no tty present and no askpass program specified
