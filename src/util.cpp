@@ -532,6 +532,10 @@ char* modifyConstChar(const char* line){
 }
 
 char* editable(const char* line) {
+	if(!line){
+		bad();
+		return "";// or 0?
+	}
 	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
 	strcpy(line0, line);
 	return line0;// callers duty to manually FREE if not kept!
