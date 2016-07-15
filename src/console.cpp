@@ -526,7 +526,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(startsWith(data, ":abstract")||startsWith(data, ":ab")||startsWith(data, ":a")){
 		data=next_word(data);
 		if(isInteger(data))data=get(atoi(data))->name;
-		return showWrap(getAbstract(data));
+		return showWrap(getAbstract(data));// ok, create here! VS hasWord
 	}
 
 	if (startsWith(data, ":all ")||startsWith(data, ":children")||startsWith(data, ":instances")){//||startsWith(data, "children ")

@@ -1,11 +1,11 @@
-// Netbase Graph Viewer - version = 1.2.3
+// Netbase Graph Viewer - version = 1.2.4
 // (C) 2014 - 2016 Pannous + Quasiris
 
 var div=document.getElementById("netbase_results");
 var editMode=false;
 var link_name=true;
 var server="/html/"; // "http://quasiris.big:3333/html/";
-var filterIds=[-11343,-10646,-50,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//   Amerigo Vespucci BnF-ID 12234845j 47674->-10268->36430981 etc
+var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//   Amerigo Vespucci BnF-ID 12234845j 47674->-10268->36430981 etc
 var abstract=-102;// Summary nodes
 function br(){
 	div.appendChild( document.createElement("br"));
@@ -175,12 +175,13 @@ function addStyle(file){
 }
 
 function clean(url){
+	return url;
   url=url.replace("/short/","/");
 	url=url.replace("/long/","/");
 	url=url.replace("/verbose/","/");
 	url=url.replace("/all/","/");
 	url=url.replace("/showview/","/");
-	url=url.replace(/.limit.\d+/,"");	
+	// url=url.replace(/.limit.\d+/,"");	
 	url=url.replace("//","/");
 	return url;
 }

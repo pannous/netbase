@@ -907,6 +907,8 @@ char* dropUrl(char* name){
 
 //inline int
 const static bool sortNodePredicate(Node* a, Node* b) {
+	if(!b)return true;
+	if(!a)return false;
 	int x=a->statementCount;
 	int y=b->statementCount;
 	return x>y;
