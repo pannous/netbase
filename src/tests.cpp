@@ -1859,6 +1859,7 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
+	learn("Gehren.Population=#244797");
 	handle("/json/short/seo/fü fa");
 	exit(0);
 	string seo=generateSEOUrl("München");

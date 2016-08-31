@@ -458,7 +458,13 @@ Statement *parseFilter(string s,bool learn=false) {
 		}
 		s = s.substr(s.find("<") + 1);
 	}
-	object = getThe(fixQuotesAndTrim(editable(s.data())));
+	char* ob=fixQuotesAndTrim(editable(s.data()));
+
+	if(ob[0]=='#'){
+		autoIds=false;
+		object=value(&ob[1], atoi(&ob[1]), Number);
+	}
+	else object = getThe(ob);// auto_ids ??? a.b=123  id or value???
 	if(learn)return addStatement(subject, predicate, object);
 	else return pattern(subject, predicate, object);
 }
@@ -575,7 +581,7 @@ Statement* evaluate(string data,bool learn/*false*/) {
 	if(learn){pattern->context=wordnet;return pattern;}
 	// TODO MARK + CLEAR PATTERNS!!!
 	Statement* result = findStatement(pattern->Subject(), pattern->Predicate(), pattern->Object());
-	show(pattern->Subject());
+//	show(pattern->Subject());
 	if (result && result!=pattern){
         deleteStatement(pattern);// How come it doesn't find itself?
         return result;

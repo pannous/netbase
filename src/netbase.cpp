@@ -1206,7 +1206,7 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //	if(startsWith(thing,"of "))
 //		thing=thing+3;
 //	if(startsWith(thing,"in "))thing=thing+3;
-    if(autoIds&&isInteger(thing))return get(atoi(thing));
+    if(autoIds&&type!=Number&&isInteger(thing))return get(atoi(thing));// WAH, not here! --
 	if (getRelation(thing)) // not here! doch
 		return getRelation(thing);
 //    replaceChar((char*)thing,'_',' ');// NOT HERE!
@@ -1955,7 +1955,7 @@ Node * value(const char* name, double v, Node* unit/*kind*/) {
         name=new_name;
     }
 	Node *n;
-	if(!unit||unit->id<1000)
+	if(!unit||(unit->id<1000&&unit!=Number))
 		n= getThe(name); // 69 (year vs number!!)
 	else
 		n= getThe(name,unit);// 45cm != 45Volt !!!
@@ -2200,9 +2200,11 @@ void initUnits() {
 // SAME as evaluate!!
 Statement * learn(string sentence) {
 	ps("learning " + sentence);
-//	//if (!contains(s, ".")
-	Statement* s= parseSentence(sentence,true);
-//	Statement* s=evaluate(sentence,true);
+	Statement* s;
+	if (!contains(sentence, "="))
+		s= parseSentence(sentence,true);
+	else
+		s=evaluate(sentence,true);
 	if (checkStatement(s)) {
 		showStatement(s);
 		return s;

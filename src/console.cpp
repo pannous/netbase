@@ -50,7 +50,8 @@ void showHelpMessage() {
 	ps(":clear :cl");
 	ps(":context :info");
 	ps("limit <n>");
-	ps("Type words, ids, or queries:");
+	ps("");
+	ps("Query data: type words, ids, or queries");
 	ps("Abraham Lincoln");
 	ps("Q5");
 	ps("subclasses of human");
@@ -66,13 +67,15 @@ void showHelpMessage() {
 	ps(":entities loud-as");
 	ps("");
 	ps("Modify data:");
-    ps(":learn Germany has Gehren");
+//	ps(":set Gehren.Population to 244797");
+//		ps(":update Gehren.Population set current=244797");
+	ps(":update Gehren set Population=244797");
+	//    ps("delete from Stadt.Gemeindeart where typ=244797");
+	ps(":delete blah (entity)");
+	ps(":delete 1234 (entity-id)");
+	ps(":delete $1234 (statement-id)");
+	ps(":learn Gehren ist Ort");
 	ps(":learn 1001 5 2442 (via ids)");
-	ps(":set Gehren.Population to 244797");
-	ps(":update Gehren.Population set current=244797");
-//    ps("delete from Stadt.Gemeindeart where typ=244797");
-    ps(":delete 1234 (entity)");
-	ps(":delete $1234 (statement)");
 	//	ps("update city set type=town where population<10000");
 }
 
@@ -137,7 +140,7 @@ Node *parseProperty(const char *data) {
 void console() {
 	quiet=false;
 	if(germanLabels)printf("\nDeutsch");
-	printf("\nNetbase C++ Version 1.5.2\n");
+	printf("\nNetbase C++ Version 1.5.3\n");
 
 	char* data=(char*) malloc(10000);
 #ifdef signal
@@ -593,7 +596,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 //   update Stadt.Gemeindeart set type=244797 limit 100000
 	if (startsWith(data, ":update")){
-        update(data);
+        return update(data);
     }
 
 	// eq(data, "server") || only in main() !
