@@ -1317,7 +1317,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
         if(found->next<=0||found->next>maxNodes*2||found==&abstracts[found->next])break;
 		found=&abstracts[found->next];
 	}
-	p("/////////////");
+//	p("/////////////");
 	return 0;
 }
 
@@ -2555,7 +2555,7 @@ void addSeo(Node* n0){
 	}
 //	N ss=getAbstract(seo);
 //	addStatement(n, Label, ss);
-	pf("addSeo %s	->	%s\n",n->name,seo);
+//	pf("addSeo %s	->	%s\n",n->name,seo);
 //	insertAbstractHash(wordhash(seo),n,false,false);// old writing? makes no sense
 	insertAbstractHash(wordhash(seo),n,false,true);
 }
