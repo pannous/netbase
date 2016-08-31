@@ -165,7 +165,7 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/,bool
 	Ahash* ah=getAhash(position);
 	cchar* name=a->name;
 	string retain;
-	if(seo){
+	if(seo && name){
 		retain=generateSEOUrl(name);
 		name=retain.data();
 	}
@@ -1273,10 +1273,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
 		if(seo&&first->name){
-//			char* ename=editable(first->name);
-			string seod=generateSEOUrl(first->name);
-//			cchar* seod=.data();
-			if(eq(seod,thingy))
+			if(eq(generateSEOUrl(first->name),thingy))
 				return first;
 		}
 	}
@@ -1310,8 +1307,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
 			if(seo&&a->name){
-				string z=generateSEOUrl(a->name);
-				if(eq(z,thingy))
+				if(eq(generateSEOUrl(a->name),thingy))
 					return a;
 			}
 		}
@@ -2550,7 +2546,7 @@ void addSeo(Node* n0){
 	Node* n=n0;
 	if(n->kind!=_abstract && n->kind!=_singleton)
 		n=getAbstract(n->name);
-	if(len(n->name)<2)return;
+	if(!n->name || len(n->name)<2)return;
 	string see=generateSEOUrl(n->name);
 	if(see==n->name)return;
 	cchar* seo=see.data();
