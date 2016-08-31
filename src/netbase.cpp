@@ -1310,7 +1310,8 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
 			if(seo){
-				if(eq(generateSEOUrl(a->name),thingy))
+				string z=generateSEOUrl(a->name);
+				if(eq(z,thingy))
 					return a;
 			}
 		}
