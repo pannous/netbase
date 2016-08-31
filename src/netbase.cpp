@@ -2507,10 +2507,10 @@ void replay(){
 	char* line=(char*)malloc(MAX_CHARS_PER_LINE);
 //	while(readFile("query.log", line)){
 //	while(readFile("commands.log", line)){
-while(readFile("logs/replay.log", line)){
-	char* data=line;
-	if(data[strlen(data)-1]=='\n')data[strlen(data)-1]=0;
-	if(data[strlen(data)-1]=='\r')data[strlen(data)-1]=0;
+	while(readFile("logs/replay.log", line)){
+		char* data=line;
+		if(data[strlen(data)-1]=='\n')data[strlen(data)-1]=0;
+		if(data[strlen(data)-1]=='\r')data[strlen(data)-1]=0;
 		if(contains(line, ":del"))parse(line);
 		if(contains(line, ":learn"))parse(line);
 		if(contains(line, ":label"))parse(line);
@@ -2561,7 +2561,7 @@ void addSeo(Node* n0){
 }
 
 void buildSeoIndex(){
-	p("fixCurrent: addSeo");
+	p("Building SEO index. This can take some minutes.");
 //	importTest();
 	context=currentContext();
 //	addSeo(get(10506175));

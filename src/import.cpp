@@ -2634,6 +2634,7 @@ void importAllDE() {
 	importAmazon();
 	importBilliger();
 	replay();
+	buildSeoIndex();
 	//    importEntities();
 //	importImagesDE();
 //	importLabels("labels.csv");// todo: why again?

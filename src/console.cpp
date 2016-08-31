@@ -307,7 +307,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(startsWith(data, "seo")||startsWith(data, ":seo")){
 		data=next_word(data);
 		cchar* seo= generateSEOUrl(editable(data)).data();
-		p(seo);
+		pf("SEO FORM: %s	result(s):",seo);
 		N n=getSeo(seo);
 		if(n){
 			if(!n)return OK;// HOW???
