@@ -2560,7 +2560,7 @@ void addSeo(Node* n0){
 	insertAbstractHash(wordhash(seo),n,false,true);
 }
 
-void fixSeo(){
+void buildSeoIndex(){
 	p("fixCurrent: addSeo");
 //	importTest();
 	context=currentContext();
@@ -2578,9 +2578,8 @@ void fixSeo(){
 }
 
 void fixCurrent(){
-//	fixSeo();
+	buildSeoIndex();
 	add_force(current_context, 415898, "Telekom", _singleton);
-
 }
 
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");

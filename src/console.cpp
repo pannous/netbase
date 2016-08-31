@@ -489,6 +489,10 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		fixCurrent();
 		return OK;
 	}
+	if(startsWith(data, ":build_seo")){
+		buildSeoIndex();
+		return OK;
+	}
 	if(startsWith(data, ":replay")){
 		replay();
 		return OK;

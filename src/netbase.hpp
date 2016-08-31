@@ -631,3 +631,4 @@ static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
 static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSize // against unused ahashSize ...
 
+void buildSeoIndex();
