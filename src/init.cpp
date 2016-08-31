@@ -88,7 +88,7 @@ void print_backtrace(void)
 
 // silent: in messages:
 //Jun  3 15:53:30 507 abrt[13188]: abrtd is not running. If it crashed, /proc/sys/kernel/core_pattern contains a stale value, consider resetting it to 'core'
-void signal_handler(int signum) {
+void signal_handler(int signum) {// handle SIGSEGV smoothly
 	printf("Process %d got signal %d\n", getpid(), signum);
 	print_backtrace();
 	signal(signum, SIG_DFL);
