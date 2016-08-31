@@ -51,6 +51,7 @@ int semrm(key_t key, int id=0) {
 
 
 #include <execinfo.h>
+#include "errno.h"
 static void full_write(int fd, const char *buf, size_t len)
 {
 	while (len > 0) {
