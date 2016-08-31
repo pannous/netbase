@@ -190,7 +190,43 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 //	char** args=splitStringC(data, ' '); // WITH 0==cmd!!!
 
 	clearAlgorithmHash(true); //  maybe messed up
-    
+
+
+	// special server requests first:
+	if (contains(data, "limit")||contains(data, ":limit")) {
+		char* limit=(char*)strstr(data,"limit");
+		sscanf(limit, "limit %d", &resultLimit);
+		pf("LIMIT SET TO %d\n",resultLimit);// quiet bug
+		lookupLimit=resultLimit*10;//todo
+		if(limit>data) *(limit-1)=0;
+		*limit=0;
+		//		if(len<2)return OK;
+	}
+
+	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
+		data=next_word(data);
+		return show(findEntites(data));
+	}
+
+	if(startsWith(data, "seo")||startsWith(data, ":seo")){
+		data=next_word(data);
+		string seos= generateSEOUrl(data);
+		cchar* seo= seos.data();
+		pf("SEO form: %s	result(s):\n",seo);
+		N n=getSeo(seo);
+		if(n){
+			if(!n)return OK;// HOW???
+			if(n->statementCount<3){
+				S s= findStatement(Any, Label, n);
+				if(s)n=s->Subject();
+			}
+			return showWrap(n);
+		}else return OK;
+	}
+	
+
+
+
 	//		scanf ( "%s", data );
 	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
 		showHelpMessage();
@@ -294,37 +330,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		*limit=0;
 		if(len<2)return OK;
 	}
-	if (contains(data, "limit")||contains(data, ":limit")) {
-		char* limit=(char*)strstr(data,"limit");
-		sscanf(limit, "limit %d", &resultLimit);
-		pf("LIMIT SET TO %d\n",resultLimit);// quiet bug
-		lookupLimit=resultLimit*10;//todo
-		if(limit>data) *(limit-1)=0;
-		*limit=0;
-//		if(len<2)return OK;
-	}
-
-	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
-		data=next_word(data);
-		return show(findEntites(data));
-	}
-
-	if(startsWith(data, "seo")||startsWith(data, ":seo")){
-		data=next_word(data);
-		cchar* seo= generateSEOUrl(editable(data)).data();
-//		pf("SEO form: %s	result(s):\n",seo);
-		N n=getSeo(seo);
-		if(n){
-			if(!n)return OK;// HOW???
-			if(n->statementCount<3){
-				S s= findStatement(Any, Label, n);
-				if(s)n=s->Subject();
-			}
-			return showWrap(n);
-		}else return OK;
-	}
-	
-
 
 	if (eq(data, ":load")) {
 		load(true);

@@ -1859,6 +1859,8 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
+	handle("/json/short/seo/fü fa");
+	exit(0);
 	string seo=generateSEOUrl("München");
 	addSeo(getAbstract("muenchen"));
 	N n=hasWord(seo.data(),true);

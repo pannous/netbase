@@ -1244,8 +1244,9 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //}
 
 Node *getSeo(const char* thingy){
-	const char* thingyBug=editable(thingy);
-	N ok= hasWord(thingyBug,true);
+//	const char* thingyBug=editable(thingy);
+//	N ok= hasWord(thingyBug,true);
+	N ok= hasWord(thingy,true);
 //	free(&thingyBug); don't free? double free or corruption WHY?
 	return ok;
 }
@@ -1268,9 +1269,11 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 		if (eq(first->name, thingy, true))	// tolower
 			return first;
 		if(seo&&first->name){
-			cchar* seod=generateSEOUrl(editable(first->name)).data();
+//			char* ename=editable(first->name);
+			string seod=generateSEOUrl(first->name);
+//			cchar* seod=.data();
 			if(eq(seod,thingy))
-			return first;
+				return first;
 		}
 	}
     int tries=0; // cycle bugs
