@@ -39,7 +39,7 @@ void showHelpMessage() {
 	ps("help :h or ?");
 	ps(":load :l [force]\tfetch the graph from disk or mem");
 	//	ps("load_files :lf");
-	ps(":import :i [<file>]");
+	ps(":import :i [<file>|dbpedia|wordnet|images|labels|...]");
 	ps(":export :e (all to csv)");
 	//    ps("print :p");
 	ps(":delete :d <node|statement|id|name>");
@@ -56,18 +56,23 @@ void showHelpMessage() {
 	ps("subclasses of human");
 	ps("entities of human limit 1000");
 	//    ps("all animals that have feathers");
-	ps("all animals with feathers");
+	ps(":all animals with feathers");
 //	ps("select * from dogs where terrier");
 	ps("all city with countrycode=ZW");
 	ps("select longitude,latitude from city where Population>10000000");
 	ps("Population of Gehren");
 	ps("opposite of bad");
-    ps("learn Germany has Gehren");
-	ps("learn 1001 5 2442 (via ids)");
-	ps("set Gehren.Population to 244797");
-	ps("update Gehren.Population set current=244797");
+	ps(":seo loud-as");
+	ps(":entities loud-as");
+	ps("");
+	ps("Modify data:");
+    ps(":learn Germany has Gehren");
+	ps(":learn 1001 5 2442 (via ids)");
+	ps(":set Gehren.Population to 244797");
+	ps(":update Gehren.Population set current=244797");
 //    ps("delete from Stadt.Gemeindeart where typ=244797");
-    ps("");
+    ps(":delete 1234 (entity)");
+	ps(":delete $1234 (statement)");
 	//	ps("update city set type=town where population<10000");
 }
 
@@ -307,7 +312,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(startsWith(data, "seo")||startsWith(data, ":seo")){
 		data=next_word(data);
 		cchar* seo= generateSEOUrl(editable(data)).data();
-		pf("SEO FORM: %s	result(s):",seo);
+//		pf("SEO form: %s	result(s):\n",seo);
 		N n=getSeo(seo);
 		if(n){
 			if(!n)return OK;// HOW???
