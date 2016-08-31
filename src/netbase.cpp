@@ -1309,7 +1309,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 			N a=get(found->abstract);
 			if (eq(a->name, thingy, true,true))			//teuer? n��, if 1.letter differs
 				return a;
-			if(seo){
+			if(seo&&a->name){
 				string z=generateSEOUrl(a->name);
 				if(eq(z,thingy))
 					return a;
