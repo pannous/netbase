@@ -50,6 +50,7 @@ int semrm(key_t key, int id=0) {
 
 
 
+#include <execinfo.h>
 static void full_write(int fd, const char *buf, size_t len)
 {
 	while (len > 0) {
@@ -62,7 +63,6 @@ static void full_write(int fd, const char *buf, size_t len)
 		len -= (size_t) ret;
 	}
 }
-#include <execinfo.h>
 void print_backtrace(void)
 {
 
