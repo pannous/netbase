@@ -48,10 +48,49 @@ int semrm(key_t key, int id=0) {
 	return semctl(id, 0, IPC_RMID, arg);
 }
 
+
+
+static void full_write(int fd, const char *buf, size_t len)
+{
+	while (len > 0) {
+		ssize_t ret = write(fd, buf, len);
+
+		if ((ret == -1) && (errno != EINTR))
+			break;
+
+		buf += (size_t) ret;
+		len -= (size_t) ret;
+	}
+}
+#include <execinfo.h>
+void print_backtrace(void)
+{
+
+	static const char start[] = "BACKTRACE ------------\n";
+	static const char end[] = "----------------------\n";
+
+	void *bt[1024];
+	int bt_size;
+	char **bt_syms;
+	int i;
+
+	bt_size = backtrace(bt, 1024);
+	bt_syms = backtrace_symbols(bt, bt_size);
+	full_write(STDERR_FILENO, start, strlen(start));
+	for (i = 1; i < bt_size; i++) {
+		size_t len = strlen(bt_syms[i]);
+		full_write(STDERR_FILENO, bt_syms[i], len);
+		full_write(STDERR_FILENO, "\n", 1);
+	}
+	full_write(STDERR_FILENO, end, strlen(end));
+	free(bt_syms);
+}
+
 // silent: in messages:
 //Jun  3 15:53:30 507 abrt[13188]: abrtd is not running. If it crashed, /proc/sys/kernel/core_pattern contains a stale value, consider resetting it to 'core'
 void signal_handler(int signum) {
 	printf("Process %d got signal %d\n", getpid(), signum);
+	print_backtrace();
 	signal(signum, SIG_DFL);
 	kill(getpid(), signum);
 }
@@ -197,6 +236,7 @@ void checkRootContext() {
 extern "C" void initSharedMemory(bool relations) {
 	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly
 	signal(SIGCHLD, SIG_IGN); // https://stackoverflow.com/questions/6718272/c-exec-fork-defunct-processes
+//	print_backtrace();
     if(!relations)testing=true;
 	//    if ((i = setjmp(try_context)) == 0) {// try once
 	int key=0x69190;

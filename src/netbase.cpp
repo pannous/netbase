@@ -2638,7 +2638,7 @@ Node* mergeNode(Node* target,Node* node){
 //#define _MAIN_
 int main(int argc, char *argv[]) {
 	char* data=getenv("QUERY_STRING");
-	if (data) {
+	if (data) {// ^^ CGI mode
 		printf("Content-Type: text/plain;charset=us-ascii\n\n");
 		printf("got QUERY_STRING %s", data);
 		initSharedMemory();
@@ -2651,7 +2651,7 @@ int main(int argc, char *argv[]) {
 	if(getenv("lookupLimit"))lookupLimit=atoi(getenv("lookupLimit"));
 	defaultLookupLimit=lookupLimit;
 
-	//    signal(SIGSEGV, handler); // only when fully debugged!
+//	signal(SIGSEGV, handler); // only when fully debugged!
     //	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
 	//    setjmp(loop_context);
 	path=argv[0];
