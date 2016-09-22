@@ -1323,8 +1323,7 @@ Node * hasWord(const char* thingy,bool seo/*=false*/) {
 //	p("/////////////");
 	return 0;
 }
-
-
+	
 Node* number(int nr){
     bool tmp=autoIds;
     autoIds=false;

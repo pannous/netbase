@@ -13,6 +13,7 @@ extern "C" void initSharedMemory(bool relations=true);
 extern "C" void init(bool relations); // synonym ^^
 //int semrm(key_t key, int id);
 int share_memory();
+void setMemoryLimit(long maxNodes0,long maxStatements0=-1,long maxChars0=-1);
 //char* share_memory(size_t key,long sizeOfSharedMemory,char* root,const void * desired);
 void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void * desired);
 void fixPointers();

@@ -186,8 +186,17 @@ function clean(url){
 	return url;
 }
 
+function do_query(_query){
+	if(!_query)_query=query.value
+	var script = document.createElement('script');
+	script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';
+	document.body.appendChild(script);
+	return false; // done
+}
+
 function parseResults(results0){
 	if(results0)results=results0;
+	if (typeof results == 'undefined'){console.log("NO results (yet?)!");return;}
 	// var results set via jsonp:
 	// <script src="http://de.netbase.pannous.com:81/js/verbose/gehren"></script>
 	

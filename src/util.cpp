@@ -350,6 +350,11 @@ string join(char** argv, int argc) {
 	return a;
 }
 
+void error(string err){
+	printf("%s", err.data());
+	exit(0);
+}
+
 bool eq(int a,int b){
 	return a==b;// for assertEquals
 }

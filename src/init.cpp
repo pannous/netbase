@@ -277,6 +277,27 @@ extern "C" void initSharedMemory(bool relations) {
 	}
 }
 
+
+//static long shared_memory_2GB=2147483648;
+//static long shared_memory_4GB=4294967296;
+//static long shared_memory_6GB=6442450944;
+//static long shared_memory_8GB=8589934592;
+//static long shared_memory_16GB=17179869184;
+//static long shared_memory_32GB=34359738368;
+//static long shared_memory_64GB=68719476736;
+void setMemoryLimit(long maxNodes0,long maxStatements0,long maxChars0){
+//	void setMemoryLimit(long maxNodes0,long maxStatements0=-1,long maxChars0=-1){
+	if(maxNodes0>4294967296)error("sorry, 4 billion nodes is currently the limit of netbase");
+	maxNodes=maxNodes0; /*max 32bit=4 billion! */
+	if(maxStatements0>0) maxStatements=maxStatements0;
+	else	maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
+	if(maxChars0>0) maxChars=maxChars0;
+	else	maxChars=maxNodes * averageNameLength;
+	bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
+	sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
+	initSharedMemory(true);
+}
+
 extern "C" void init(bool relations) {
 	initSharedMemory(relations);
 }
