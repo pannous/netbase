@@ -2194,7 +2194,12 @@ void initUnits() {
 }
 
 // SAME as evaluate!!
-Statement * learn(string sentence) {
+extern "C"
+//Statement * learn(string& sentence0) {
+Statement * learn(const char* sentence0) {
+	p("OK");
+	p(sentence0);
+	string sentence=sentence0;
 	ps("learning " + sentence);
 	Statement* s;
 	if (!contains(sentence, "="))

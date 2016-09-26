@@ -516,7 +516,7 @@ Query parseQuery(string s, int limit) {
 	return q;
 }
 
-string query2(string s, int limit) {
+extern "C" string query2(string s, int limit) {
 	s = fixQuery(s);
 	Query q = parseQuery(s, limit);
 	NodeVector all = query(q);
@@ -1838,7 +1838,7 @@ NodeVector update(cchar* query){
         all=nodeVectorWrap(getThe(data));
     for (int i=0; i < all.size(); i++) {
         Node* n=(Node*) all[i];
-        learn(itoa(n->id)+"."+expression);
+        learn((itoa(n->id)+"."+expression).data());
     }
     return all;
 }

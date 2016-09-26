@@ -17,7 +17,7 @@ Node* match(string data);
 Node* findMatch(Node* n, const char* match);
 Statement* evaluate(string data,bool learn=false);
 int countInstances(Node* node);
-string query2(string s,int limit=resultLimit);
+extern "C" string query2(string s,int limit=resultLimit);
 Query parseQuery(string s,int limit=resultLimit);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 void clearAlgorithmHash(bool all=false);

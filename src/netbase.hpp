@@ -431,9 +431,8 @@ bool addStatementToNode(Node* node, int statementNr,bool force_insert_at_start);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
 
-extern "C"
-Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
-Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true,bool force_insert_at_start=false);
+extern "C" Statement* addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool check = true);
+extern "C" Statement* addStatement(Node* subject, Node* predicate, Node* object, bool checkDuplicate = true,bool force_insert_at_start=false);
 //inline
 		Node* get(const char* node);
 //inline
@@ -517,7 +516,8 @@ NodeVector find_english(string& data);
 Node* first(NodeVector rows);
 Node* last(NodeVector rows);
 //Node* learn(string data);
-Statement* learn(string data);
+//extern "C" Statement* learn(string& data);
+extern "C" Statement* learn(const char* data);
 extern "C" void deleteNode(int id);
 void deleteNode(Node* n);
 void deleteStatements(Node* n);
@@ -573,7 +573,8 @@ Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
 void replay();
-NodeVector parse(const char* data,bool safeMode=true);// and act
+//extern "C"  C-linkage specified, but returns user-defined type 'NodeVector' (aka 'vector<Node *>') which is incompatible with C
+NodeVector parse(const char* data,bool safeMode=true);// and act -> extern "C" execute
 void fixCurrent();
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);

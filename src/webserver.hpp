@@ -50,3 +50,4 @@ int Return_Error_Msg(int conn, struct ReqInfo * reqinfo);
 int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo);
 int Service_Request(int conn);
 int handle(const char* q,int conn=-1);
+void Serve_Resource(ReqInfo reqinfo, int conn);// local file

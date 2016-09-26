@@ -2551,8 +2551,6 @@ void import(const char* type, const char* filename) {
 		importAmazon();
 	}else if (eq(type, "billiger")) {
 		importBilliger();
-	}else if (eq(type, "all")) {
-		importAll();
 	}else if (eq(type, "test")) {
 		importTest();
 	}else if (eq(type, "labels")) {

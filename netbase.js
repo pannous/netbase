@@ -1,4 +1,4 @@
-// Netbase Graph Viewer - version = 1.2.4
+// Netbase Graph Viewer - version = 1.2.6
 // (C) 2014 - 2016 Pannous + Quasiris
 
 var div=document.getElementById("netbase_results");
@@ -43,7 +43,7 @@ function makeLink(name,url,elem)
 	var a = document.createElement("a");
 	x=document.createTextNode(name.replace(/\$(....)/,"&#x$1;"));
 	a.href=url;
-	a.target="_blank"
+	// a.target="_blank"
 	a.style=nolink+black
 	if(name=="x") a.setAttribute("onclick","return confirm('really delete?')");
 	a.setAttribute("rel","nofollow")
@@ -143,7 +143,7 @@ function makeEntity(entity)
 
 	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
 	link.style=nolink+bold+blue+big
-	link.target="_blank"
+	// link.target="_blank"
 	img=document.createElement("img");
 	img.src="http://pannous.net/files/wikipedia.png";
 	img.width=20
@@ -175,23 +175,15 @@ function addStyle(file){
 }
 
 function clean(url){
-	return url;
-  url=url.replace("/short/","/");
+	// return url;
+  	url=url.replace("/short/","/");
 	url=url.replace("/long/","/");
 	url=url.replace("/verbose/","/");
 	url=url.replace("/all/","/");
 	url=url.replace("/showview/","/");
 	// url=url.replace(/.limit.\d+/,"");	
-	url=url.replace("//","/");
+	// url=url.replace("//","/");
 	return url;
-}
-
-function do_query(_query){
-	if(!_query)_query=query.value
-	var script = document.createElement('script');
-	script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';
-	document.body.appendChild(script);
-	return false; // done
 }
 
 function parseResults(results0){
@@ -199,11 +191,11 @@ function parseResults(results0){
 	if (typeof results == 'undefined'){console.log("NO results (yet?)!");return;}
 	// var results set via jsonp:
 	// <script src="http://de.netbase.pannous.com:81/js/verbose/gehren"></script>
-	
+	div.innerHTML="" //clean
 	div.style="display: none;"// don't render yet
 	url=document.URL.replace(/%20/g," ")
 	addStyle("http://files.pannous.net/styles/table.css")
-	var title=decodeURIComponent(url.replace(/.*\//,"")).replace(":"," : ").replace("."," . ").replace(/\+/g," ").replace(/limit.*/,"");
+	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(":"," : ").replace("."," . ").replace(/\+/g," ").replace(/limit.*/,"");
 	document.title=title;
 	appendText(title,append("h1",div))
 	if(results['results'].length>1)link_name=false;
@@ -237,4 +229,25 @@ function parseResults(results0){
 	div.style="display: block;"// render now
 }
 
-window.onload = function (){parseResults()}
+
+function do_query(_query){
+	try{
+		if(!_query)_query=query.value
+		var script = document.createElement('script');
+		if(document.location.pathname=="index.html") // not a server: fetch external
+			script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';
+		else
+			script.src = '/js/'+_query
+			// script.src = document.location.host+'/js/'+_query // ?callback/jsonp=parseResults';
+		console.log("fetching "+script.src+" ...")
+		document.body.appendChild(script);
+	}catch(e){console.log(e)}
+	return false; // done
+}
+
+
+var search = window.location.search;
+if(search && search.startsWith("?query"))
+	window.onload = ()=>do_query(search.substring(1+5+1))
+else
+	window.onload = function (){parseResults()}

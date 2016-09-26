@@ -31,7 +31,10 @@
 
 int SERVER_PORT=8181;
 int MAX_QUERY_LENGTH=10000;
-static char server_root[1000] = "/Users/me/";
+//static char server_root[1000] = "/Users/me/";
+static char server_root[1000] = "./";
+static char index_html[100] = "./index.html";
+static char netbase_js[100] = "./netbase.js";
 
 int resultLimit = 200; // != lookuplimit reset with every fork !!
 
@@ -86,6 +89,7 @@ char* getStatementTitle(Statement* s,Node* n){
 		return getText(s->Object());// default
 }
 /* CENTRAL METHOD to parse and render html request*/
+
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
 //	if(len>MAX_QUERY_LENGTH){
@@ -673,13 +677,19 @@ int Service_Request(int conn) {
 		return -1;
 	else if(reqinfo.type == FULL)
 		Output_HTTP_Headers(conn, &reqinfo);
-	// file system:	//		Serve_Resource(ReqInfo  reqinfo,int conn)
+
+
 	CleanURL(reqinfo.resource);
 	initSharedMemory(); // for each forked process!
-    if(strlen(reqinfo.resource)>1000)return 0;
+    if(strlen(reqinfo.resource)>1000)return 0;// safety
 	char* q = substr(reqinfo.resource, 1, -1);
+
+	// file system:	//
+	int ok=0;
+	if(len(q)==0 || q[0]=='?' || eq(q,"netbase.js"))
+		Serve_Resource(reqinfo,conn);
 	// ::::::::::::::::::::::::::::::
-    int ok=handle(q,conn); // <<<<<<< CENTRAL CALL
+	else handle(q,conn); // <<<<<<< CENTRAL CALL
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	FreeReqInfo(&reqinfo);
 	return ok;
@@ -974,8 +984,12 @@ int Check_Resource(struct ReqInfo * reqinfo) {
      data, so clean it up just in case.    */
 	CleanURL(reqinfo->resource);
 	/*  Concatenate resource name to server root, and try to open  */
-	strcat(server_root, reqinfo->resource);
-	return open(server_root, O_RDONLY);
+//	strcat(server_root, reqinfo->resource);// DONT allow arbitrary files
+	if(contains(reqinfo->resource,"netbase.js"))
+		return open(netbase_js, O_RDONLY);
+//	return open(string("./")+reqinfo->resource, O_RDONLY);
+    else
+		return open(index_html, O_RDONLY);
 }
 
 int Return_Error_Msg(int conn, struct ReqInfo * reqinfo) {
@@ -1028,15 +1042,15 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 				reqinfo.status = 404;
 		}
 	/*  Output HTTP response headers if we have a full request  */
-	if (reqinfo.type == FULL)
-		Output_HTTP_Headers(conn, &reqinfo);
+//	if (reqinfo.type == FULL) done
+//		Output_HTTP_Headers(conn, &reqinfo);
 	/*  Service the HTTP request  */
-	//	if ( Return_Resource(conn, resource, &reqinfo) )
-	//	    Error_Quit("Something wrong returning resource.");
-	//    }
-	//    else
-	//	Return_Error_Msg(conn, &reqinfo);
-    
+		if ( Return_Resource(conn, resource, &reqinfo) )
+		    Error_Quit("Something wrong returning resource.");
+
+//	    else
+//		Return_Error_Msg(conn, &reqinfo);
+//    
 	if (resource > 0)
 		if (close(resource) < 0)
 			Error_Quit("Error closing resource.");

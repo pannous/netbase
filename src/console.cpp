@@ -672,7 +672,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		// || (contains(data, ":")) && !contains(data, " "))) {
 		if(!contains(data, "="))
 			return parseProperties(data);
-		else return nodeVectorWrap(learn(data));
+//		else return nodeVectorWrap(learn(string(data)));
 	}
 
 	if (args.size() >= 3 && eq(args[1], ":to")) {
@@ -691,7 +691,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 	if ((eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")|| args.size() >= 4 && (
 		string what=next_word(data);
-		NodeVector nv=nodeVectorWrap(learn(what)->Subject());
+		NodeVector nv=nodeVectorWrap(learn(what.data())->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
 		if(!fp){p("NO such file facts.ssv!"); return OK;}
 		fprintf(fp,"%s\n",what.data());

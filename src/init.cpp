@@ -19,6 +19,8 @@
 #include "init.hpp"
 #include "relations.hpp"
 
+bool _allowWipe=false;
+
 /* attach to the segment to get a pointer to it: */
 //const void * shmat_root = (const void *) 0x101000000; // mac 64 bitpointer to it: */
 #ifdef i386
@@ -98,9 +100,11 @@ void signal_handler(int signum) {// handle SIGSEGV smoothly
 
 void detach_shared_memory(){
         // TODO (?) programmatically
+	if(!_allowWipe){
 	p("AUTOMATIC MEMORY WIPE DISABLED!");
     p("If you cannot start netbase try:\n ./increase-shared-memory.sh && ./clear-shared-memory.sh");
 	return;
+	}
 	system("./increase-shared-memory.sh");
 	system("./clear-shared-memory.sh");
 //    sudo: no tty present and no askpass program specified
@@ -111,6 +115,7 @@ void detach_shared_memory(){
     system("ipcrm -M '0x69192'");
     system("ipcrm -M '0x69193'");
     system("ipcrm -M '0x69194'");
+	p("please restart process");
 }
 
 void increaseShmMax(){
@@ -640,4 +645,6 @@ void __attribute__((constructor)) my_init(void) {
 	return 0;
 }
 #endif
-
+extern "C" void allowWipe(){
+ _allowWipe=true;
+}
