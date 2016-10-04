@@ -2339,7 +2339,10 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	return best;
 }
 
-bool isA(Node* fro, Node * to) {
+extern "C"
+bool isA(Node* fro, Node* to) {
+//	show(fro);
+//	show(to);
 	if (isA4(fro, to, 0, 0)) return true;
 
 	Statement* s=0;
@@ -2373,7 +2376,9 @@ void setValue(Node* node, Node* property, Node * value) {
 }
 
 void setName(int node, cchar* label){
-    return setLabel(get(node),label,false,false);
+	p(node);
+	p(label);
+	if(node&&label)	setLabel(get(node),label,false,false);
 }
 
 void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
@@ -2681,6 +2686,7 @@ int main(int argc, char *argv[]) {
 
 	germanLabels=true;
 	//    import();
+	if (checkParams(argc, argv, "debug"))allowWipe();
 	initSharedMemory(); // <<<
 
 	if (checkParams(argc, argv, "clear"))clearMemory();

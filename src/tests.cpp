@@ -201,6 +201,7 @@ void testBasics() {
 void testGeoDB(){
 
 	//    if(nodeCount()<100000)
+	if(!hasNode("Gehren"))
 	importGeoDB();
 	//        execute("import ./import/cities1000.txt");
 
@@ -213,7 +214,9 @@ void testGeoDB(){
 	p(latitude->value.number);
 	check(latitude->value.number==50.65);
 	NV all;
-	NodeVector cities=all_instances(getThe("city"),1);
+	N city=getThe("city");
+	p(city);
+	NodeVector cities=all_instances(city,1);
 	check(cities.size()>10);
 	all=query("city where elevation=141");
 	//	all=query("city where Elevation=141");
@@ -1581,8 +1584,9 @@ void testInclude(){
 }
 
 
-void testAll() {
+extern "C" void testAll() {
 	#ifndef __clang_analyzer__
+	context=getContext(0);
 	germanLabels=false; // for tests!
 	clearMemory();
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
@@ -1818,47 +1822,26 @@ void testLabelInstances(){
 }
 
 void testBug(){
-//	parse("\"billiger.de_category\"");
-//	console();
-	//	handle("ee/Ferien");
-//	handle("ee/UE55H6600");
-//	handle("ee/Tag der Deutschen Einheit");
-
-
-//	handle("ee/DSL-Verfügbarkeit+prüfen%2C+Anbieter+vergleichen%2C+Geld+sparen");
-//	N w=getAbstract("Fernseher");
-//	N w=getThe("Lübeck");
-	N w=getAbstract("Lecka");
-//	N w=getThe("UE55H6600");
-	N t=getTopic(w);
-//	N n=getThe("Erster Weltkrieg");
-//	N n=get(155);
-//	N n=get(5809);
-//	N n=get(225774);
-
-//	N n=getThe("Geburt");
-//	N t=getTopic(n);
-	show(t,false);
-	//	topic
-	check(t!=Entity);
-	check(t!=get(7239));//Lebewesen
-//	check(t==get(7275));//Staat
-	check(t==get(6256));//Staat
-//	check(t!=n);
-
-//	handle("ee/gehren");
+	N a=get(488267);
+	N b=get(488267);
+	bool x= isA(a, b);
+	p(x?"OK":"NO!");
 	exit(0);
 }
 
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
+	allowWipe();
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
+	testBug();
+//	console();
+//	testAll();
 	learn("Gehren.Population=#244797");
 	handle("/json/short/seo/fü fa");
 	exit(0);

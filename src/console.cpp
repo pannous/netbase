@@ -732,22 +732,13 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	return nodeVectorWrap(a);
 }
 
-
-extern "C"  Node** execute(const char* data,int* out){
-//    quiet=true;
-    NodeVector result=parse(data);
+extern "C" Node** execute(const char* data,int* out){
+    NodeVector result=parse(data,true);
     int hits=(int)result.size();
-//    printf(">>>>>>>>>>> %p\n",out);
-    if(out) *out=hits;
+	if(out) *out=hits;
     Node** results=(Node** ) malloc((1+hits)*nodeSize);
     for (int i=0; i< hits; i++) {
-//        results[i]=result[i];
-//        pf("%d %s | ",result[i]->id,result[i]->name);
-//        pf(" %ld\n",(long)(void*)result[i]);
-        //        memccpy(&results[i],result[i],0,sizeof(Node));
-    }
-    flush();
+        results[i]=result[i];
+	}
     return results;
 }
-
-

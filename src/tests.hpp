@@ -1,4 +1,4 @@
 #pragma once
 //extern void tests();
-extern void testAll();
+extern "C" void testAll();
 extern void testBrandNewStuff();

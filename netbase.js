@@ -236,6 +236,11 @@ function do_query(_query){
 		var script = document.createElement('script');
 		if(document.location.pathname=="index.html") // not a server: fetch external
 			script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';
+		if(document.location.protocol=="file:"){ // not a server: fetch external
+			script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';
+ 			// server="index.html?query="
+ 			server="http://de.netbase.pannous.com:81/html/"
+		}
 		else
 			script.src = '/js/'+_query
 			// script.src = document.location.host+'/js/'+_query // ?callback/jsonp=parseResults';
@@ -249,5 +254,7 @@ function do_query(_query){
 var search = window.location.search;
 if(search && search.startsWith("?query"))
 	window.onload = ()=>do_query(search.substring(1+5+1))
+else if(search && search.startsWith("?q"))
+	window.onload = ()=>do_query(search.substring(1+1+1))
 else
 	window.onload = function (){parseResults()}

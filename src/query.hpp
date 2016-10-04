@@ -17,7 +17,8 @@ Node* match(string data);
 Node* findMatch(Node* n, const char* match);
 Statement* evaluate(string data,bool learn=false);
 int countInstances(Node* node);
-extern "C" string query2(string s,int limit=resultLimit);
+//extern "C"
+string query2(string s,int limit=resultLimit);
 Query parseQuery(string s,int limit=resultLimit);
 Statement* pattern(Node* subject, Node* predicate, Node* object);
 void clearAlgorithmHash(bool all=false);
@@ -97,6 +98,7 @@ void setValue(Node* node, Node* property, Node* value);
 //void setKind
 bool isA4(Node* n, string match, int recurse = false, bool semantic = false);
 bool isA4(Node* n, Node* match, int recurse = 0, bool semantic = false, bool matchName=false);
+extern "C"
 bool isA(Node* fro, Node* to);
 bool filterWikiType(int object);
 Statement * findRelations(Node* from, Node * to);

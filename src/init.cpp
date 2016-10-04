@@ -68,8 +68,7 @@ static void full_write(int fd, const char *buf, size_t len)
 }
 void print_backtrace(void)
 {
-
-	static const char start[] = "BACKTRACE ------------\n";
+	static const char start[] = "-- NETBASE BACKTRACE -------\n";
 	static const char end[] = "----------------------\n";
 
 	void *bt[1024];
@@ -91,6 +90,9 @@ void print_backtrace(void)
 
 // silent: in messages:
 //Jun  3 15:53:30 507 abrt[13188]: abrtd is not running. If it crashed, /proc/sys/kernel/core_pattern contains a stale value, consider resetting it to 'core'
+// better: create core dumps! enable:
+// MAC echo "limit core unlimited" | sudo tee -a /etc/launchd.conf     ... see /cores ~/Library/Logs/DiagnosticReports
+// LINUX ulimit -c unlimited
 void signal_handler(int signum) {// handle SIGSEGV smoothly
 	printf("Process %d got signal %d\n", getpid(), signum);
 	print_backtrace();
@@ -98,29 +100,37 @@ void signal_handler(int signum) {// handle SIGSEGV smoothly
 	kill(getpid(), signum);
 }
 
+void increaseShmMax(){
+	return;
+//	system("./increase-shared-memory.sh");
+	//    sudo: no tty present and no askpass program specified in Xcode
+	#ifdef __APPLE__
+	system((string("sudo sysctl -w kern.sysv.shmmax=")+std::to_string(sizeOfSharedMemory)).data());
+	system((string("sudo sysctl -w kern.sysv.shmall=")+std::to_string(sizeOfSharedMemory/4096)).data());
+#else
+	system((string("sudo sysctl -w kernel.shmmax=")+std::to_string(sizeOfSharedMemory)).data());
+	system((string("sudo sysctl -w kernel.shmall=")+std::to_string(sizeOfSharedMemory/4096)).data());
+#endif
+	p("If you still cannot start netbase, decrease maxNodes in netbase.hpp");// or adjust shmmax, see clear-shared-memory.sh");
+}
+void clearSharedMemory(){
+//	system("./clear-shared-memory.sh");
+	system("ipcrm -M '0x69190'");
+	system("ipcrm -M '0x69191'");
+	system("ipcrm -M '0x69192'");
+	system("ipcrm -M '0x69193'");
+	system("ipcrm -M '0x69194'");
+}
 void detach_shared_memory(){
         // TODO (?) programmatically
 	if(!_allowWipe){
-	p("AUTOMATIC MEMORY WIPE DISABLED!");
-    p("If you cannot start netbase try:\n ./increase-shared-memory.sh && ./clear-shared-memory.sh");
-	return;
+		p("AUTOMATIC MEMORY WIPE DISABLED!");
+		p("If you cannot start netbase try:\n ./increase-shared-memory.sh && ./clear-shared-memory.sh");
+		return;
 	}
-	system("./increase-shared-memory.sh");
-	system("./clear-shared-memory.sh");
-//    sudo: no tty present and no askpass program specified
-//	system("sudo sysctl -w kernel.shmmax=$shmmax");
-//	system("sudo sysctl -w kernel.shmall=$shmall");
-    system("ipcrm -M '0x69190'");
-    system("ipcrm -M '0x69191'");
-    system("ipcrm -M '0x69192'");
-    system("ipcrm -M '0x69193'");
-    system("ipcrm -M '0x69194'");
-	p("please restart process");
-}
-
-void increaseShmMax(){
-    // TODO (?)  programmatically
-    p("If you still cannot start netbase decrease maxNodes = 30*million in netbase.hpp or adjust shmmax, see clear-shared-memory.sh");
+	increaseShmMax();
+	clearSharedMemory();
+//	p(">>>>>>\nPLEASE RESTART PROCESS!!\n>>>>>>>");
 }
 
 void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * desired) {
@@ -128,9 +138,6 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 //		ps("root_memory already attached!");
 		return root;
 	}
-//	if (sizeOfSharedMemory > 2147483648) {
-//		p("WARNING sizeOfSharedMemory>2147483648 2GB is limit on most systems\n");
-//	}
 	/* make the key: */
 	//	int key = 0x69190; //0x57020303;// #netbase ftok("netbase", 'RW');
 	int shmid;
@@ -146,7 +153,7 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 				perror("share_memory failed!\nSize changed or NOT ENOUGH MEMORY??\n shmget");
 				//			printf("try calling ./clear-shared-memory.sh\n");
 				//			perror(strerror(errno)); <= ^^ redundant !!!
-				printf("try ipcclean && sudo ipcrm -M 0x69190 ... \n./clear-shared-memory.sh\n");
+				printf("ipcclean && sudo ipcrm -M 0x69190 ... \n./clear-shared-memory.sh\n");
                 detach_shared_memory();
                 increaseShmMax();
 			}
@@ -240,7 +247,7 @@ void checkRootContext() {
 
 
 extern "C" void initSharedMemory(bool relations) {
-	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly
+//	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly. USELESS for print_backtrace
 	signal(SIGCHLD, SIG_IGN); // https://stackoverflow.com/questions/6718272/c-exec-fork-defunct-processes
 //	print_backtrace();
     if(!relations)testing=true;

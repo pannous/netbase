@@ -1047,14 +1047,13 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 	/*  Service the HTTP request  */
 		if ( Return_Resource(conn, resource, &reqinfo) )
 		    Error_Quit("Something wrong returning resource.");
-
 //	    else
 //		Return_Error_Msg(conn, &reqinfo);
 //    
 	if (resource > 0)
 		if (close(resource) < 0)
 			Error_Quit("Error closing resource.");
-	FreeReqInfo(&reqinfo);
+//	FreeReqInfo(&reqinfo);
 }
 
 void start_server(int port=SERVER_PORT) {

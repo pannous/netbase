@@ -516,7 +516,8 @@ Query parseQuery(string s, int limit) {
 	return q;
 }
 
-extern "C" string query2(string s, int limit) {
+//extern "C"
+string query2(string s, int limit) {
 	s = fixQuery(s);
 	Query q = parseQuery(s, limit);
 	NodeVector all = query(q);
@@ -964,18 +965,6 @@ NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 	return all;
 }
 
-NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses) {
-//	RECURE BROKEN! use instanceFilter
-	NodeSet* a=all_instances3(type, recurse, max, includeClasses) ;
-	if(!a)return EMPTY;
-	//	NodeVector v(a->begin(),a->end());
-//	static NodeVector v(a->begin(),a->end());
-//	static NodeVector v(a->size());
-	NodeVector* v=new NodeVector(a->size());// LEAK!
-	std::copy(a->begin(), a->end(), v->begin());
-//	p(v.size());
-	return *v;
-}
 NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasses) {
 	static NodeVector& all = *new NodeVector; // empty before!
 //	static NodeSet& alles=*new NodeSet;
@@ -1046,6 +1035,14 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 		mergeVectors(&all, subtypes); // ja?
 	p(all.size());
 	return all;
+}
+
+NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses) {
+	return all_instances2(type, recurse, max, includeClasses);//	RECURE BROKEN! use instanceFilter
+	NodeSet* a=all_instances3(type, recurse, max, includeClasses);
+	if(!a)return EMPTY;
+	const NodeVector &nv=nodeSetToNodeVector(*a);
+	return (NodeVector&) nv;
 }
 
 NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
@@ -1738,10 +1735,11 @@ bool filterWikiType(int object){
 
 // ONE path! See findAll for all leaves
 NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
+	context=getContext(0);
 	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
 	if (enqueued == 0)throw "out of memory for findPath";
 	memset(enqueued, 0, context->nodeCount * sizeof (int));// Necessary?
-	ps("LOAD!");
+//	ps("LOAD!");
 	NodeQueue q;
 	q.push(fro);
 	runs = 0;
@@ -1756,10 +1754,11 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 		q.push(d);
 		pf("FROM %d %s\n", d->id, d->name);
 	}
+	pf("FROM %d %s\n", fro->id, fro->name);
 	pf("TO %d %s\n", to->id, to->name);
 	//	p(to);
-	p("GO!");
-    
+//	p("GO!");
+
 	Node* current;
 	NodeVector path=EMPTY;
 	while ((current = q.front())) {
