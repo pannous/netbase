@@ -1,14 +1,16 @@
-// Netbase Graph Viewer - version = 1.2.6
-// (C) 2014 - 2016 Pannous + Quasiris
+// Netbase Graph Viewer :: version 1.2.6
+// (C) 2010 - 2016 Pannous + Quasiris
 
 var div=document.getElementById("netbase_results");
 var editMode=false;
 var link_name=true;
-var server="/html/"; // "http://quasiris.big:3333/html/";
-var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//   Amerigo Vespucci BnF-ID 12234845j 47674->-10268->36430981 etc
+var server="/html/"; 
+var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//  BnF-ID 47674->-10268->36430981 etc
 var abstract=-102;// Summary nodes
-function br(){
-	div.appendChild( document.createElement("br"));
+
+function br(elem){
+	if(!elem)elem=div;
+	elem.appendChild( document.createElement("br"));
 }
 
 function append(tag,elem,clazz){
@@ -98,8 +100,6 @@ function makeStatement(statement,elem)
 	if(statement.predicate=="quasiris id")throw new Exception(); 
 	// if(statement.match("quasiris"))throw new Exception();
 }
-
-function br(){append("br",div)}
 
 var imageAdded=false;
 var onerror_handled=0;
@@ -226,7 +226,14 @@ function parseResults(results0){
 	makeLink(" Summary |",clean(url).replace("/html","/html/short"));// entity name + id
 	makeLink(" ALL |",clean(url).replace("/html","/html/all"));
 	makeLink(" VIEW ",clean(url).replace("/html","/html/showview"));///INCLUDES
+	br();
+	br();
 	div.style="display: block;"// render now
+	
+	footer=document.body
+	br(footer);
+	makeLink("© 2010-2016 Pannous.com","http://pannous.com",footer)
+	// makeLink("Provided by pannous.com","http://pannous.com")
 }
 
 

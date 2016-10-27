@@ -1,0 +1,9 @@
+PID 92899 received SIGSEGV for address: 0x78
+0   segfault-handler.node               0x0000000101bfa588 _ZL16segfault_handleriP9__siginfoPv + 280
+1   libsystem_platform.dylib            0x00007fffe6b16bba _sigtramp + 26
+2   ???                                 0x0000000200000000 0x0 + 8589934592
+3   netbase.dylib                       0x00000002068bc82b _Z3isAP4NodeS0_ + 763
+4   netbase.dylib                       0x000000020688f5d2 _Z15testStringLogicv + 178
+5   netbase.dylib                       0x00000002068a1234 testAll + 36
+6   ffi_bindings.node                   0x0000000103227784 ffi_call_unix64 + 76
+7   ???                                 0x0000000103803d60 0x0 + 4353703264

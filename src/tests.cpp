@@ -1822,9 +1822,11 @@ void testLabelInstances(){
 }
 
 void testBug(){
-	N a=get(488267);
-	N b=get(488267);
+	N a=get(8);
+	N b=get(4);
 	bool x= isA(a, b);
+	p(x?"OK":"NO!");
+	x= has(a, b);
 	p(x?"OK":"NO!");
 	exit(0);
 }

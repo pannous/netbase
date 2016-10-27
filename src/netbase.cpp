@@ -1596,6 +1596,7 @@ bool show(Node* n, bool showStatements) {		//=true
 	}
 	return 1; // daisy
 }
+//extern "C"
 Node * showNode(Node* n) {
     show(n);return n;
 }
@@ -1696,7 +1697,7 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object,
 
 		//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject == s->Predicate()) {
-            ps("NO predicate statements!");
+//            ps("NO predicate statements!");
 			break;
 		}
 

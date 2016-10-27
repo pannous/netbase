@@ -99,20 +99,24 @@ void signal_handler(int signum) {// handle SIGSEGV smoothly
 	signal(signum, SIG_DFL);
 	kill(getpid(), signum);
 }
-
+//long GB=1073741824;
 void increaseShmMax(){
-	return;
+	p("increase ShmMax");
+//	return;
 //	system("./increase-shared-memory.sh");
 	//    sudo: no tty present and no askpass program specified in Xcode
-	#ifdef __APPLE__
-	system((string("sudo sysctl -w kern.sysv.shmmax=")+std::to_string(sizeOfSharedMemory)).data());
-	system((string("sudo sysctl -w kern.sysv.shmall=")+std::to_string(sizeOfSharedMemory/4096)).data());
+#ifdef __APPLE__
+	long mem=4*GB;
+//	long mem=sizeOfSharedMemory;
+	system((string("sudo sysctl -w kern.sysv.shmmax=")+std::to_string(mem)).data());
+	system((string("sudo sysctl -w kern.sysv.shmall=")+std::to_string(mem/4096)).data());
 #else
 	system((string("sudo sysctl -w kernel.shmmax=")+std::to_string(sizeOfSharedMemory)).data());
 	system((string("sudo sysctl -w kernel.shmall=")+std::to_string(sizeOfSharedMemory/4096)).data());
 #endif
 	p("If you still cannot start netbase, decrease maxNodes in netbase.hpp");// or adjust shmmax, see clear-shared-memory.sh");
 }
+
 void clearSharedMemory(){
 //	system("./clear-shared-memory.sh");
 	system("ipcrm -M '0x69190'");
@@ -120,6 +124,7 @@ void clearSharedMemory(){
 	system("ipcrm -M '0x69192'");
 	system("ipcrm -M '0x69193'");
 	system("ipcrm -M '0x69194'");
+	increaseShmMax();
 }
 void detach_shared_memory(){
         // TODO (?) programmatically
@@ -130,7 +135,6 @@ void detach_shared_memory(){
 	}
 	increaseShmMax();
 	clearSharedMemory();
-//	p(">>>>>>\nPLEASE RESTART PROCESS!!\n>>>>>>>");
 }
 
 void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * desired) {

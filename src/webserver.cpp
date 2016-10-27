@@ -251,18 +251,39 @@ int handle(cchar* q0,int conn){
 	}
 //	bool get_topic=false;
 	bool get_topic=true;
-	if (startsWith(q, "seo/")) 
+	if (startsWith(q, "seo/")){
 		q[3]=' ';
+		q = q + 4;
+	}
 //	bool sort=false;
 	if (startsWith(q, "ee/")||startsWith(q, "ee ")) {
 		q[2]=' ';
+		q = q + 3;
 		get_topic=true;
 	}
 	if (startsWith(q, "entities/")) {
 		q[8]=' ';
+		q = q + 9;
 		get_topic=true;
 //		verbosity=longer;
 	}
+	if (startsWith(q, "?query=")){
+		q[6]=' ';
+		q = q + 7;
+	}
+	if (startsWith(q, "?q=")){
+		q[2]=' ';
+		q = q + 3;
+	}
+	if (startsWith(q, "query=")){
+		q[5]=' ';
+		q = q + 6;
+	}
+	if (startsWith(q, "q=")){
+		q[1]=' ';
+		q = q + 2;
+	}
+
 	if(hasWord(q)) loadView(q);
     
     if(contains(q,"exclude")||contains(q,"include")){

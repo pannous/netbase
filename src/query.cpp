@@ -1762,9 +1762,9 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	Node* current;
 	NodeVector path=EMPTY;
 	while ((current = q.front())) {
-		if(filterWikiType(current->id))continue;
 		if (q.empty())break;
 		q.pop();
+		if(filterWikiType(current->id))continue;
 		//		if(current->id==230608)
 		//			pf("?? %d %s\n",current->id,current->name);
 		if (to == current){// GOT ONE!
@@ -2267,6 +2267,8 @@ Node * getProperty(Node* node, Node* key,int limit) {
 }
 
 // see findProperty
+
+extern "C"
 Node * getProperty(Node* node, cchar* key,int limit) {
 	// int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false,int limit=lookupLimit
 	S s=findStatement(node, getThe(key), Any ,0,0,0,true,limit);

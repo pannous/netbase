@@ -1,0 +1,36 @@
+{
+  "name": "netbase",
+  "version": "1.0.0",
+  "description": "semantic Graph Database with wordnet, wikidata, freebase, csv, xml, ... importer",
+  "main": "node-netbase.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pannous/node-netbase.git"
+  },
+  "keywords": [
+    "semantic",
+    "Graph",
+    "Database",
+    "wordnet",
+    "wikidata",
+    "freebase",
+    "wikipedia",
+    "data",
+    "nosql",
+    "Database",
+    "DB"
+  ],
+  "author": "Pannous <info@pannous.com> (http://pannous.com)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pannous/node-netbase/issues"
+  },
+  "homepage": "https://github.com/pannous/node-netbase#readme",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.0.2"
+  }
+}

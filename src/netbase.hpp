@@ -464,6 +464,7 @@ void showStatement(Statement* s);
 extern "C" void showStatement(int id);
 bool show(Node* n, bool showStatements = true);
 void show(Statement * s);
+//extern "C"
 Node * showNode(Node* n);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
@@ -565,7 +566,7 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 //bool checkStatement(Statement *s);
 void checkRootContext();
 Node* number(int n);
-Node* getProperty(Node* n,const char* s,int limit=0);
+extern "C" Node* getProperty(Node* n,const char* s,int limit=0);
 Node* getProperty(Node* node, Node* key,int limit);
 Node* getPropertyDummy(const char* id);
 void dissectParent(Node* subject,bool checkDuplicates=false);
@@ -603,7 +604,7 @@ static int nodeSize=sizeof(Node);// 40
 static int statementSize=sizeof(Statement);// 26 after refactor !! // was 56!!
 static int ahashSize=sizeof(Ahash);
 static int MB=1048576;
-static int GB=1024*MB;
+static long GB=1024*MB;
 static int million=MB;
 static int billion=GB;
 #if defined(__APPLE__)
