@@ -19,6 +19,19 @@
 #include "init.hpp"
 #include "relations.hpp"
 
+
+
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
+
+
 bool _allowWipe=false;
 
 /* attach to the segment to get a pointer to it: */
@@ -107,17 +120,6 @@ void increaseShmMax(){
 	//    sudo: no tty present and no askpass program specified in Xcode
 
 
-namespace patch
-{
-    template < typename T > std::string to_string( const T& n )
-    {
-        std::ostringstream stm ;
-        stm << n ;
-        return stm.str() ;
-    }
-}
-
-	
 #ifdef __APPLE__
 	long mem=4*GB;
 //	long mem=sizeOfSharedMemory;
