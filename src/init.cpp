@@ -105,14 +105,27 @@ void increaseShmMax(){
 //	return;
 //	system("./increase-shared-memory.sh");
 	//    sudo: no tty present and no askpass program specified in Xcode
+
+
+namespace patch
+{
+    template < typename T > std::string to_string( const T& n )
+    {
+        std::ostringstream stm ;
+        stm << n ;
+        return stm.str() ;
+    }
+}
+
+	
 #ifdef __APPLE__
 	long mem=4*GB;
 //	long mem=sizeOfSharedMemory;
 	system((string("sudo sysctl -w kern.sysv.shmmax=")+std::to_string(mem)).data());
 	system((string("sudo sysctl -w kern.sysv.shmall=")+std::to_string(mem/4096)).data());
 #else
-	system((string("sudo sysctl -w kernel.shmmax=")+std::to_string(sizeOfSharedMemory)).data());
-	system((string("sudo sysctl -w kernel.shmall=")+std::to_string(sizeOfSharedMemory/4096)).data());
+	system((string("sudo sysctl -w kernel.shmmax=")+patch::to_string(sizeOfSharedMemory)).data());
+	system((string("sudo sysctl -w kernel.shmall=")+patch::to_string(sizeOfSharedMemory/4096)).data());
 #endif
 	p("If you still cannot start netbase, decrease maxNodes in netbase.hpp");// or adjust shmmax, see clear-shared-memory.sh");
 }
