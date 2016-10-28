@@ -1,5 +1,5 @@
 // Netbase Graph Viewer :: version 1.2.6
-// (C) 2010 - 2016 Pannous + Quasiris
+// © 2010 - 2016 Pannous + Quasiris
 
 var div=document.getElementById("netbase_results");
 var editMode=false;
@@ -195,6 +195,8 @@ function parseResults(results0){
 	div.style="display: none;"// don't render yet
 	url=document.URL.replace(/%20/g," ")
 	addStyle("http://files.pannous.net/styles/table.css")
+	// addStyle("http://files.pannous.net/netbase.css")
+	addStyle("netbase.css")
 	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(":"," : ").replace("."," . ").replace(/\+/g," ").replace(/limit.*/,"");
 	document.title=title;
 	appendText(title,append("h1",div))
@@ -230,9 +232,9 @@ function parseResults(results0){
 	br();
 	div.style="display: block;"// render now
 	
-	footer=document.body
-	br(footer);
-	makeLink("© 2010-2016 Pannous.com","http://pannous.com",footer)
+	// footer=document.body
+	// br(footer);
+	// makeLink("© 2010-2016 Pannous.com","http://pannous.com",footer)
 	// makeLink("Provided by pannous.com","http://pannous.com")
 }
 
@@ -251,7 +253,7 @@ function do_query(_query){
 		else
 			script.src = '/js/'+_query
 			// script.src = document.location.host+'/js/'+_query // ?callback/jsonp=parseResults';
-		console.log("fetching "+script.src+" ...")
+		console.log("fetching "+script.src)
 		document.body.appendChild(script);
 	}catch(e){console.log(e)}
 	return false; // done

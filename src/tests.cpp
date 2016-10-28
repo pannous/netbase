@@ -1841,11 +1841,12 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
-	testBug();
+//	testBug();
 //	console();
 //	testAll();
-	learn("Gehren.Population=#244797");
-	handle("/json/short/seo/fü fa");
+//	learn("Gehren.Population=#244797");
+//	handle("/json/short/seo/fü fa");
+	handle("netbase.css");
 	exit(0);
 	string seo=generateSEOUrl("München");
 	addSeo(getAbstract("muenchen"));

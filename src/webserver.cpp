@@ -33,8 +33,10 @@ int SERVER_PORT=8181;
 int MAX_QUERY_LENGTH=10000;
 //static char server_root[1000] = "/Users/me/";
 static char server_root[1000] = "./";
+// explicit whitelist for files that can be served:
 static char index_html[100] = "./index.html";
 static char netbase_js[100] = "./netbase.js";
+static char netbase_css[100] = "./netbase.css";
 
 int resultLimit = 200; // != lookuplimit reset with every fork !!
 
@@ -92,10 +94,8 @@ char* getStatementTitle(Statement* s,Node* n){
 
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-//	if(len>MAX_QUERY_LENGTH){
-//	}
     char* q=editable(q0);
-	if(!checkSanity(q,len)){
+	if(!checkSanity(q,len)){//	if(len>MAX_QUERY_LENGTH){ ...
 		p("checkSanity :command OR len>10000");
 		return 0;// SAFETY!
 	}
@@ -691,6 +691,7 @@ void loadView(char* q){
 
 // WORKS FINE, but not when debugging
 int Service_Request(int conn) {
+	int ok=0;
 	struct ReqInfo reqinfo;
 	InitReqInfo(&reqinfo);
 	/*  Get HTTP request  */
@@ -699,18 +700,15 @@ int Service_Request(int conn) {
 	else if(reqinfo.type == FULL)
 		Output_HTTP_Headers(conn, &reqinfo);
 
-
 	CleanURL(reqinfo.resource);
 	initSharedMemory(); // for each forked process!
     if(strlen(reqinfo.resource)>1000)return 0;// safety
 	char* q = substr(reqinfo.resource, 1, -1);
-
-	// file system:	//
-	int ok=0;
-	if(len(q)==0 || q[0]=='?' || eq(q,"netbase.js"))
-		Serve_Resource(reqinfo,conn);
 	// ::::::::::::::::::::::::::::::
-	else handle(q,conn); // <<<<<<< CENTRAL CALL
+	if(strlen(q)==0 || eq(q,"netbase.js") || eq(q,"netbase.css")|| eq(q,"netbase.html")|| eq(q,"index.html"))
+		Serve_Resource(reqinfo,conn);
+	else
+		handle(q,conn); // <<<<<<< CENTRAL CALL
 	// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 	FreeReqInfo(&reqinfo);
 	return ok;
@@ -1008,6 +1006,8 @@ int Check_Resource(struct ReqInfo * reqinfo) {
 //	strcat(server_root, reqinfo->resource);// DONT allow arbitrary files
 	if(contains(reqinfo->resource,"netbase.js"))
 		return open(netbase_js, O_RDONLY);
+	if(contains(reqinfo->resource,"netbase.css"))
+		return open(netbase_css, O_RDONLY);
 //	return open(string("./")+reqinfo->resource, O_RDONLY);
     else
 		return open(index_html, O_RDONLY);
@@ -1041,6 +1041,8 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
 	else if(contains(reqinfo->resource,"xml/"))
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");// till entities are fixed
+	else if(contains(reqinfo->resource,".css"))
+		Writeline(conn, "Content-Type: text/css; charset=utf-8\r\n");
 //		Writeline(conn, "Content-Type: application/xml; charset=utf-8\r\n");
 	else
 		Writeline(conn, "Content-Type: text/html; charset=utf-8\r\n");
@@ -1053,6 +1055,7 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 
 void Serve_Resource(ReqInfo reqinfo, int conn) {
 	int resource = 0;
+//	p("Serve_Resource!!\n");
 	/*  Check whether resource exists, whether we have permission
      to access it, and update status code accordingly.          */
 	if (reqinfo.status == 200)
