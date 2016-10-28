@@ -181,7 +181,7 @@ function clean(url){
 	url=url.replace("/verbose/","/");
 	url=url.replace("/all/","/");
 	url=url.replace("/showview/","/");
-	// url=url.replace(/.limit.\d+/,"");	
+	url=url.replace(/.limit.\d+/,"");	
 	// url=url.replace("//","/");
 	return url;
 }
@@ -208,6 +208,7 @@ function parseResults(results0){
 	var matched=url.match(/limit.(\d*)/);
 	var limit=matched?matched[1]:200
 	// br();
+	// div.appendChild(document.createElement("small"))
 	if((""+url).match(" -"))
 		makeLink(" MORE |",clean(url).replace("-","limit "+limit*2+" -"));
 	else
@@ -242,6 +243,7 @@ function parseResults(results0){
 function do_query(_query){
 	try{
 		if(!_query)_query=query.value
+		else query.value=_query
 		var script = document.createElement('script');
 		if(document.location.pathname=="index.html") // not a server: fetch external
 			script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';

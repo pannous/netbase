@@ -240,8 +240,7 @@ int handle(cchar* q0,int conn){
     
     if(contains(q,"statement count")){Writeline(conn,itoa((int)context->statementCount).data());return 0;}
     if(contains(q,"node count")){Writeline(conn,itoa(context->nodeCount).data());return 0;}
-    
-    
+
 	if (startsWith(q, "all/")) {
         cut_to(q," +");
         cut_to(q," -");
@@ -303,6 +302,7 @@ int handle(cchar* q0,int conn){
     //
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+	if(contains(q," limit ")){		strstr(q," limit ")[0]=0;	}
 	autoIds=false;
     int size=(int)all.size();
     if(showExcludes){
@@ -321,7 +321,8 @@ int handle(cchar* q0,int conn){
         show(excluded);
     }
     
-    const char* html_block="<!DOCTYPE html><html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head>"\
+    const char* html_block="<!DOCTYPE html><html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head>\n"\
+							"<link rel='stylesheet' href='netbase.css'>\n"\
 							"<body><div id='netbase_results'></div>\n<script>var results=";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
@@ -705,7 +706,7 @@ int Service_Request(int conn) {
     if(strlen(reqinfo.resource)>1000)return 0;// safety
 	char* q = substr(reqinfo.resource, 1, -1);
 	// ::::::::::::::::::::::::::::::
-	if(strlen(q)==0 || eq(q,"netbase.js") || eq(q,"netbase.css")|| eq(q,"netbase.html")|| eq(q,"index.html"))
+	if(strlen(q)==0 || q[0]=='?'|| eq(q,"netbase.js") || eq(q,"netbase.css")|| eq(q,"netbase.html")|| eq(q,"index.html"))
 		Serve_Resource(reqinfo,conn);
 	else
 		handle(q,conn); // <<<<<<< CENTRAL CALL
@@ -1119,7 +1120,7 @@ void start_server(int port=SERVER_PORT) {
 		conn = accept(listener, NULL, NULL);
 		if (conn  < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
-        else p("conn = accept OK");
+        else p("connection accept OK");
 		// WORKS FINE, but not when debugging
 		/*  Fork child process to service connection  */
         pid = fork();

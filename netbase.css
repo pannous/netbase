@@ -11,6 +11,8 @@ body{
 	border-color: #22B;
 	cursor: pointer;
 	text-decoration:none;
+	display: none; 
+	/* until all results are loaded*/
 }
 form{
 	margin: 5px;
