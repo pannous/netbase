@@ -2520,8 +2520,8 @@ int test2() {
 
 void replay(){
 	char* line=(char*)malloc(MAX_CHARS_PER_LINE);
-//	while(readFile("query.log", line)){
-//	while(readFile("commands.log", line)){
+//	while(readFile("logs/query.log", line)){
+//	while(readFile("logs/commands.log", line)){
 	while(readFile("logs/replay.log", line)){
 		char* data=line;
 		if(data[strlen(data)-1]=='\n')data[strlen(data)-1]=0;

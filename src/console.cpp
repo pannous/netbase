@@ -186,7 +186,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
 	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
 	if(data[0]==':')appendFile("logs/commands.log",data);
-//	else appendFile("logs/query.log", data);
+	else appendFile("logs/query.log", data);
 
 	vector<string> args=splitString(data, " "); // WITH 0==cmd!!!
 //	vector<char*> args=vector<char*>(splitStringC(data, ' ')); // WITH 0==cmd!!!
