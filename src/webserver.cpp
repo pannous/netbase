@@ -515,7 +515,7 @@ int handle(cchar* q0,int conn){
 	if (use_json || format == html || format == js)Writeline(conn,good>0?"}\n]}":"]}");
 	if (format == xml)Writeline(conn, "</results>\n");
 	if(format == js)Writeline(conn, ")");// jsonp
-		const char* html_end=";\n</script>\n<script src='http://pannous.net/netbase.js'></script></body></html>\n";
+		const char* html_end=";\n</script>\n<script src='netbase.js'></script></body></html>\n";
 	if(format == html)Writeline(conn, html_end);
 	//		sprintf(buff,	"<script src='/js/%s'></script>",q0);
 	//		Writeline(conn, buff);

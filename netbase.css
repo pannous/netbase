@@ -2,17 +2,22 @@ body{
 	background-color: #EEF;
 	font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, sans-serif;
 }
+#netbase_results a{
+	color: black;
+	border: 0 none;
+	cursor: pointer;
+	text-decoration:none;
+}
 #netbase_results{
+	/*padding: 5px;*/
+	padding-left: 15px;
 	color: black;
 	background-color: white;
-	padding: 4px;
 	border-width: 3px;
 	border-style: double;
 	border-color: #22B;
-	cursor: pointer;
 	text-decoration:none;
-	display: none; 
-	/* until all results are loaded*/
+	display: none; 	/* until all results are loaded*/
 }
 form{
 	margin: 5px;

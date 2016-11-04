@@ -134,7 +134,7 @@ function addImage(image,div){
 function makeEntity(entity)
 {
 	if(entity.topic && entity.topic.startsWith("Wiki"))return;
-	makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
+	if(editMode)makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
 
 	if(entity.kind==abstract)appendText("*");
