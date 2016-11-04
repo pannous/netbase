@@ -710,8 +710,8 @@ int Service_Request(int conn) {
     if(strlen(reqinfo.resource)>1000)return 0;// safety
 	char* q = substr(reqinfo.resource, 1, -1);
 	// ::::::::::::::::::::::::::::::
-	if(strlen(q)==0 || q[0]=='?'
-	   || eq(q,netbase_js) || eq(q,netbase_css)|| contains(q,favicon_ico)|| eq(q,index_html))
+	if(strlen(q)==0 || q[0]=='?' || q[strlen(q)-1]=='/'
+	   || contains(q,netbase_js) || contains(q,netbase_css)|| contains(q,favicon_ico)|| contains(q,index_html))
 		Serve_Resource(reqinfo,conn);
 	else
 		handle(q,conn); // <<<<<<< CENTRAL CALL
