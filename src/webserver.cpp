@@ -34,10 +34,10 @@ int MAX_QUERY_LENGTH=10000;
 //static char server_root[1000] = "/Users/me/";
 static char server_root[1000] = "./";
 // explicit whitelist for files that can be served:
-static char index_html[100] = "./index.html";
-static char netbase_js[100] = "./netbase.js";
-static char netbase_css[100] = "./netbase.css";
-
+static char index_html[100] = "index.html";
+static char netbase_js[100] = "netbase.js";
+static char netbase_css[100] = "netbase.css";
+static char favicon_ico[100] = "favicon.ico";
 int resultLimit = 200; // != lookuplimit reset with every fork !!
 
 int listener, conn,closing=0;
@@ -103,7 +103,6 @@ int handle(cchar* q0,int conn){
 	enum result_format format = html;//txt; html DANGER WITH ROBOTS
 	enum result_verbosity verbosity = normal;
 
-	if (eq(q, "favicon.ico"))return 0;
     if(contains(q,"robots.txt")){
         Writeline(conn,"User-agent: *\n");
         Writeline("Disallow: /\n");
@@ -118,11 +117,16 @@ int handle(cchar* q0,int conn){
 		}
 	else jsonp=(char*)"parseResults";
 
+
+	if (endsWith(q, "?")) {
+		q[len-1]=0;
+	}
+
 	if (endsWith(q, ".json")) {
         format = json;
         q[len-5]=0;
     }
-    
+
 	if (endsWith(q, ".xml")) {
         format = xml;
         q[len-4]=0;
@@ -706,7 +710,8 @@ int Service_Request(int conn) {
     if(strlen(reqinfo.resource)>1000)return 0;// safety
 	char* q = substr(reqinfo.resource, 1, -1);
 	// ::::::::::::::::::::::::::::::
-	if(strlen(q)==0 || q[0]=='?'|| eq(q,"netbase.js") || eq(q,"netbase.css")|| eq(q,"netbase.html")|| eq(q,"index.html"))
+	if(strlen(q)==0 || q[0]=='?'
+	   || eq(q,netbase_js) || eq(q,netbase_css)|| eq(q,favicon_ico)|| eq(q,index_html))
 		Serve_Resource(reqinfo,conn);
 	else
 		handle(q,conn); // <<<<<<< CENTRAL CALL
@@ -1009,6 +1014,9 @@ int Check_Resource(struct ReqInfo * reqinfo) {
 		return open(netbase_js, O_RDONLY);
 	if(contains(reqinfo->resource,"netbase.css"))
 		return open(netbase_css, O_RDONLY);
+	if(contains(reqinfo->resource,"favicon.ico"))
+		return open(favicon_ico, O_RDONLY);
+
 //	return open(string("./")+reqinfo->resource, O_RDONLY);
     else
 		return open(index_html, O_RDONLY);
@@ -1044,6 +1052,8 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");// till entities are fixed
 	else if(contains(reqinfo->resource,".css"))
 		Writeline(conn, "Content-Type: text/css; charset=utf-8\r\n");
+	else if(endsWith(reqinfo->resource,".ico"))
+		Writeline(conn, "Content-Type: image/x-icon\r\n");
 //		Writeline(conn, "Content-Type: application/xml; charset=utf-8\r\n");
 	else
 		Writeline(conn, "Content-Type: text/html; charset=utf-8\r\n");
