@@ -141,7 +141,7 @@ function makeEntity(entity)
 	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
 	if(!entity.description && entity.topic) appendText(" "+entity.topic+" ");
 
-	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
+	link=makeLink("","https://en.wikipedia.org/wiki/"+ entity.name,div)
 	link.style=nolink+bold+blue+big
 	// link.target="_blank"
 	img=document.createElement("img");
