@@ -1057,6 +1057,7 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 //		Writeline(conn, "Content-Type: application/xml; charset=utf-8\r\n");
 	else
 		Writeline(conn, "Content-Type: text/html; charset=utf-8\r\n");
+//	Writeline(conn, "Cache-Control:max-age=10000, public\r\n");
 	Writeline(conn, "Connection: close\r\n");
 	Writeline(conn, "Server: Netbase\r\n");
 	Writeline(conn, "\r\n", 2);
