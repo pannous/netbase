@@ -711,7 +711,7 @@ int Service_Request(int conn) {
 	char* q = substr(reqinfo.resource, 1, -1);
 	// ::::::::::::::::::::::::::::::
 	if(strlen(q)==0 || q[0]=='?'
-	   || eq(q,netbase_js) || eq(q,netbase_css)|| eq(q,favicon_ico)|| eq(q,index_html))
+	   || eq(q,netbase_js) || eq(q,netbase_css)|| contains(q,favicon_ico)|| eq(q,index_html))
 		Serve_Resource(reqinfo,conn);
 	else
 		handle(q,conn); // <<<<<<< CENTRAL CALL
