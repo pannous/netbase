@@ -1,7 +1,7 @@
 // Netbase Graph Viewer :: version 1.2.6
 // © 2010 - 2016 Pannous + Quasiris
 
-var div=document.getElementById("netbase_results");
+var div;// results
 var editMode=false;
 var link_name=true;
 var server="/html/"; 
@@ -186,18 +186,24 @@ function clean(url){
 	return url;
 }
 
+function capitalize(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function parseResults(results0){
 	if(results0)results=results0;
 	if (typeof results == 'undefined'){console.log("NO results (yet?)!");return;}
 	// var results set via jsonp:
 	// <script src="http://de.netbase.pannous.com:81/js/verbose/gehren"></script>
-	div.innerHTML="" //clean
+	div=document.getElementById("netbase_results");
+	div.innerHTML="" //clear
 	div.style="display: none;"// don't render yet
 	url=document.URL.replace(/%20/g," ")
 	addStyle("http://files.pannous.net/styles/table.css")
-	// addStyle("http://files.pannous.net/netbase.css")
-	addStyle("netbase.css")
-	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(":"," : ").replace("."," . ").replace(/\+/g," ").replace(/limit.*/,"");
+	addStyle("/netbase.css")
+	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(/\+/g," ").replace(/limit.*/,"");
+	// title=title.replace(":"," : ").replace("."," . ")
+	title=capitalize(title)
 	document.title=title;
 	appendText(title,append("h1",div))
 	if(results['results'].length>1)link_name=false;

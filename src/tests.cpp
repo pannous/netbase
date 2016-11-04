@@ -1843,10 +1843,10 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 //	testBug();
 //	console();
-//	testAll();
+//	testAll();	
 //	learn("Gehren.Population=#244797");
 //	handle("/json/short/seo/fü fa");
-	handle("netbase.css");
+	handle("/csv/hi limit 400");
 	exit(0);
 	string seo=generateSEOUrl("München");
 	addSeo(getAbstract("muenchen"));

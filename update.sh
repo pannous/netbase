@@ -1,6 +1,10 @@
 date
 
 cd ~/netbase  
+
+scp  netbase.js "root@pannous.net:/public/"
+scp  netbase.js "root@pannous.info:/public/"
+
 git commit -a --allow-empty-message -m \"''\" && git push --all && git status
 
  # server="kfluegge@pannous.jo"
