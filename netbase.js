@@ -208,7 +208,9 @@ function parseResults(results0){
 	var matched=url.match(/limit.(\d*)/);
 	var limit=matched?matched[1]:200
 	// br();
-	// div.appendChild(document.createElement("small"))
+	div.style="display: block;"// render now
+
+	div=div.appendChild(document.createElement("small"))
 	if((""+url).match(" -"))
 		makeLink(" MORE |",clean(url).replace("-","limit "+limit*2+" -"));
 	else
@@ -231,7 +233,6 @@ function parseResults(results0){
 	makeLink(" VIEW ",clean(url).replace("/html","/html/showview"));///INCLUDES
 	br();
 	br();
-	div.style="display: block;"// render now
 	
 	// footer=document.body
 	// br(footer);

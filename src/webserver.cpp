@@ -988,8 +988,8 @@ int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
 	char c;
 	size_t i;
 	while ((i = read(resource, &c, 1))) {
-        //		if (i < 0)
-        //			Error_Quit("Error reading from file.");
+   		if (i < 0)
+   			Error_Quit("Error reading from file.");
 		if (write(conn, &c, 1) < 1)
 			Error_Quit("Error sending file.");
 	}
