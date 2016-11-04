@@ -1,0 +1,3 @@
+[submodule "node-netbase"]
+	path = node-netbase
+	url = https://github.com/pannous/node-netbase
