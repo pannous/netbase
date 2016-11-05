@@ -2291,7 +2291,6 @@ void importStatements() {
 		sscanf(line, "%d\t%d\t%d", &s, &o, &p);
 		//		Statement* old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		//		if (old)return old; // showStatement(old)
-		//
 		if (p == SubClass->id) continue; // Redundant data!
 		if (p == Instance->id) continue; // Redundant data!
 		addStatement4(wordnet, norm_wordnet_id(s), norm_wordnet_id(p), norm_wordnet_id(o));
@@ -2315,6 +2314,11 @@ void importWordnet() {
 	importLexlinks();
 	if(germanLabels)
 		importGermanLables(true);// Now the other labels (otherwise abstracts might fail?)
+
+	mergeNode(get(-81), get(81));// derived
+	mergeNode(get(-80), get(80));// derives pertainym
+	mergeNode(get(-30), get(30));// opposite = antonym
+	// fix how???? ^^^^^^^^
 	context->use_logic=true;
 }
 

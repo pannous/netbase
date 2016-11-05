@@ -500,7 +500,9 @@ int handle(cchar* q0,int conn){
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
 				char* title="";
 				if(verbosity==alle)title=fixName(getStatementTitle(s,node));
-				sprintf(buff, statement_format, s->id(), s->Subject()->name, s->Predicate()->name, objectName, s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
+				sprintf(buff, statement_format, s->id(),  \
+						fixName(s->Subject()->name),  fixName(s->Predicate()->name), fixName(objectName), \
+						s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
 				Writeline(conn, buff);
 				good++;
 			}
