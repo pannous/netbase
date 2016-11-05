@@ -84,3 +84,4 @@ test/
 import
 import/babelnet/translations.tsvnetbase.xcodeproj/xcuserdata
 page.link.sh
+node-netbase/page.link.sh
