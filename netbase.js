@@ -227,12 +227,12 @@ function parseResults(results0){
 		makeLink(" LESS ",clean(url).replace("/html","/html/short"));
 	br();
 	if(!url.match("/html"))url=url.replace("81/","81/html/");
-	makeLink(" tsv |",url.replace("/html","/csv"));
-	makeLink(" json |",url.replace("/html","/json"));
-	makeLink(" xml |",url.replace("/html","/xml"));
-	makeLink(" txt ",url.replace("/html","/txt"));
+	makeLink(" TSV |",url.replace("/html","/csv"));
+	makeLink(" JSON |",url.replace("/html","/json"));
+	makeLink(" XML |",url.replace("/html","/xml"));
+	makeLink(" TXT ",url.replace("/html","/txt"));
 	br();
-	makeLink(" Entity (Json)  |",clean(url).replace("/html","/json/entities").replace("/ee","/"));// :filtered
+	makeLink(" Entity |",clean(url).replace("/html","/json/entities").replace("/ee","/"));// :filtered
 	makeLink(" Normal |",clean(url).replace("/html","/html/verbose"));// :filtered
 	makeLink(" Summary |",clean(url).replace("/html","/html/short"));// entity name + id
 	makeLink(" ALL |",clean(url).replace("/html","/html/all"));

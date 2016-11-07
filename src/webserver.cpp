@@ -337,7 +337,7 @@ int handle(cchar* q0,int conn){
 	if (format == xml)Writeline(conn, "<results>\n");
 	if (format == html)Writeline(conn,html_block);
 //	if (use_json)Writeline(conn, "{\"results\":[\n");
-	if (use_json)Writeline(conn, "{\"query\":\""+string(q)+"\", \"results\":[\n");
+	if (use_json)Writeline(conn, "{\"query\":\""+string(fixName(q))+"\", \"results\":[\n");
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
