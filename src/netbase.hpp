@@ -622,12 +622,12 @@ static int propertySlots=20000;// PROPERTY RELATION SLOTS >-1000 internal, <-100
 static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
 static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 50*million;
-static long maxStatements = maxNodes*4;
+static long maxNodes = 100*million;
+static long maxStatements = maxNodes;
 #endif
 //static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;
-static int averageNameLength =40;// for amazon! else 20
+static int averageNameLength =20;// for amazon! else 20
 static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
