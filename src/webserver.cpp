@@ -29,7 +29,7 @@
 
 /*  Service an HTTP request  */
 
-int SERVER_PORT=8181;
+int SERVER_PORT=8081;
 int MAX_QUERY_LENGTH=10000;
 //static char server_root[1000] = "/Users/me/";
 static char server_root[1000] = "./";
