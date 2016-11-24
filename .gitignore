@@ -36,7 +36,6 @@ netbase.build/
 CMakeLists.txt
 Q5.txt
 a.html
-bin/libNetbase.so
 blueprints-netbase
 commands.log
 deploy.sh
