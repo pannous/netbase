@@ -4,9 +4,11 @@
 var div;// results
 var editMode=false;
 var link_name=true;
-var server="/html/"; 
-var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//  BnF-ID 47674->-10268->36430981 etc
+// var server="/html/"; 
+// var server="http://de.netbase.pannous.com:81"
+var server="http://netbase.pannous.com/"
 var abstract=-102;// Summary nodes
+var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//  BnF-ID 47674->-10268->36430981 etc
 
 function br(elem){
 	if(!elem)elem=div;
@@ -194,7 +196,7 @@ function parseResults(results0){
 	if(results0)results=results0;
 	if (typeof results == 'undefined'){console.log("NO results (yet?)!");return;}
 	// var results set via jsonp:
-	// <script src="http://de.netbase.pannous.com:81/js/verbose/gehren"></script>
+	// <script src="http://netbase.pannous.com/js/verbose/gehren"></script>
 	div=document.getElementById("netbase_results");
 	div.innerHTML="" //clear
 	div.style="display: none;"// don't render yet
@@ -253,14 +255,14 @@ function do_query(_query){
 		else query.value=_query
 		var script = document.createElement('script');
 		if(document.location.pathname=="index.html") // not a server: fetch external
-			script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';
+			script.src = server+'/js/'+_query  // ?callback/jsonp=parseResults';
 		if(document.location.protocol=="file:"){ // not a server: fetch external
-			script.src = 'http://de.netbase.pannous.com:81/js/'+_query // ?callback/jsonp=parseResults';
+			script.src = server+'/js/'+_query  // ?callback/jsonp=parseResults';
  			// server="index.html?query="
- 			server="http://de.netbase.pannous.com:81/html/"
 		}
 		else
 			script.src = '/js/'+_query
+		// server="/html/"
 			// script.src = document.location.host+'/js/'+_query // ?callback/jsonp=parseResults';
 		console.log("fetching "+script.src)
 		document.body.appendChild(script);
