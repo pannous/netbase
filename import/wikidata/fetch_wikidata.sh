@@ -1,4 +1,4 @@
-DATE=20160104
+DATE=20160801
 wget -N https://tools.wmflabs.org/wikidata-exports/rdf/exports/$DATE/wikidata-terms.nt.gz
 wget -N https://tools.wmflabs.org/wikidata-exports/rdf/exports/$DATE/wikidata-properties.nt.gz
 wget -N https://tools.wmflabs.org/wikidata-exports/rdf/exports/$DATE/wikidata-instances.nt.gz
