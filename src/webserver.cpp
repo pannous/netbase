@@ -261,7 +261,7 @@ int handle(cchar* q0,int conn){
 //	bool sort=false;
 	if (startsWith(q, "ee/")||startsWith(q, "ee ")) {
 		q[2]=' ';
-		q = q + 3;
+//		q = q + 3;// KEEP for parse command!
 		get_topic=true;
 	}
 	if (startsWith(q, "entities/")) {
