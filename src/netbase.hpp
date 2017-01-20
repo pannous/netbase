@@ -606,8 +606,8 @@ static int ahashSize=sizeof(Ahash);
 static int MB=1048576;
 static long GB=1024*MB;
 static int million=MB;
-static int billion=GB;
-#if defined(__APPLE__)
+static long billion=GB;
+#if defined(__APPLE__) // TODO! #if defined use wordnet!
 static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet!
 #else
 static int propertySlots=20000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata

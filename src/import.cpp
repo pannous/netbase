@@ -2635,8 +2635,10 @@ void importAllDE() {
 	importGeoDB();
 	importAmazon();
 	importBilliger();
+//	importQuasiris();:
 	replay();
 	buildSeoIndex();
+	importCsv("used_keywords.csv");
 	//    importEntities();
 //	importImagesDE();
 //	importLabels("labels.csv");// todo: why again?

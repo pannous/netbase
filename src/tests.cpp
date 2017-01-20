@@ -1764,9 +1764,11 @@ void recursiveTaxonomy(){
 //	cchar* query="AWS Server";
 //	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
 void testEntities(){
-	parse(":ee Kiel e");
+	handle("/json/entities/Elektroinstallateur darmstadt");
+	exit(0);
+	parse(":ee Elektroinstallateur darmstadt");
 	//	cchar* query="kopfsalat";
-	cchar* query="Kiel e.V";
+	cchar* query="Elektroinstallateur darmstadt";
 //	cchar* query="Kaufmann";
 	N n=getClass(get(query));
 //	N n=getType(get(query));
@@ -1822,12 +1824,8 @@ void testLabelInstances(){
 }
 
 void testBug(){
-	N a=get(8);
-	N b=get(4);
-	bool x= isA(a, b);
-	p(x?"OK":"NO!");
-	x= has(a, b);
-	p(x?"OK":"NO!");
+	testEntities();
+	handle("json/entities/Elektroinstallateur darmstadt");
 	exit(0);
 }
 
@@ -1841,12 +1839,14 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
-//	testBug();
+	testBug();
 //	console();
 //	testAll();	
 //	learn("Gehren.Population=#244797");
 //	handle("/json/short/seo/fü fa");
-	handle("/csv/hi limit 400");
+	//	handle("/csv/hi limit 400");
+//	N e =getEntity("AMG");
+//	show(getTopic(e));
 	exit(0);
 	string seo=generateSEOUrl("München");
 	addSeo(getAbstract("muenchen"));

@@ -266,7 +266,7 @@ int handle(cchar* q0,int conn){
 	}
 	if (startsWith(q, "entities/")) {
 		q[8]=' ';
-		q = q + 9;
+//		q = q + 9;// KEEP for parse command!
 		get_topic=true;
 //		verbosity=longer;
 	}
