@@ -1839,7 +1839,9 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
-	testBug();
+//	testBug();
+	fixCurrent();
+	importCsv("used_keywords.csv");
 //	console();
 //	testAll();	
 //	learn("Gehren.Population=#244797");

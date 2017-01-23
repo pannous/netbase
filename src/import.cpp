@@ -859,7 +859,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			continue;
 		}
 		if (++linecount % 1000 == 0) {
-			pf("importCsv %d good, %d bad in %s    \r", linecount,badCount,file);
+			pf("importCsv %s stats: %d good, %d bad \r", file, linecount,badCount);
 			fflush(stdout);
 		}
 		//        ps(line);

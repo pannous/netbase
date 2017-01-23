@@ -2593,8 +2593,9 @@ void buildSeoIndex(){
 }
 
 void fixCurrent(){
-	buildSeoIndex();
-	add_force(current_context, 415898, "Telekom", _singleton);
+	context->lastNode=1;// RADICAL: fill all empty slots!
+//	buildSeoIndex();
+//	add_force(current_context, 415898, "Telekom", _singleton);
 }
 
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
