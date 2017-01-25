@@ -2539,6 +2539,7 @@ void importWikiData() {
 	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	importN3("wikidata/wikidata-instances.nt.gz");
+	context->lastNode=1;// RADICAL: fill all empty slots, no gaps
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
 	//	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");
@@ -2546,7 +2547,7 @@ void importWikiData() {
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false,true);
 	}
-	context->lastNode=1;// now allow Gaps! // DANGER WITH ENGLISH!
+	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER WITH ENGLISH!
 	showContext(current_context);
 }
 
