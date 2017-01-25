@@ -1840,8 +1840,9 @@ void testBrandNewStuff() {
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
 //	testBug();
-	fixCurrent();
-	importCsv("used_keywords.csv");
+//	fixCurrent();
+	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz",getThe("billiger.de product"));
+//	importCsv("used_keywords.csv");
 //	console();
 //	testAll();	
 //	learn("Gehren.Population=#244797");
