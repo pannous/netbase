@@ -810,7 +810,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	char line[MAX_CHARS_PER_LINE*2];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
 	char** values=(char**) malloc(sizeof(char*) * MAX_ROWS);
-	char* lastValue=0;
+	char lastValue[MAX_CHARS_PER_LINE*2];
 	char* line0 = 0;// nullptr;
 	char* line1;
 	map<char*, Node*> valueCache;
@@ -862,7 +862,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			pf("importCsv %s stats: %d good, %d bad \r", file, linecount,badCount);
 			fflush(stdout);
 		}
-		//        ps(line);
+		if(contains(line, "Bahnunglück"))
+		        ps(line);
 		if (size==1){bad();continue;}
 		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
 			bad();
@@ -925,11 +926,14 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			subject=getSingleton(name,type);
 		else if (getBest)
 			subject=getThe(name, type);
+		else if (eq(name,lastValue))
+			subject=subject; //keep subject
 		else if (name != lastValue)
 			subject=getNew(name, type);
-		else if (subject == null) //keep subject
+		if (subject == null)
 			subject=getThe(name);
-		lastValue=name;
+
+		strcpy(lastValue, name);
 
 		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
 		// 2 objects, 4 relations, 1 name
