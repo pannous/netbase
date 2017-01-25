@@ -806,6 +806,8 @@ string str(char* c){
 }
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("\nimport csv start");
+	bool tmp_autoIds=autoIds;
+	autoIds=false;
 	context=getContext(current_context);
 	char line[MAX_CHARS_PER_LINE*2];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
@@ -862,7 +864,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			pf("importCsv %s stats: %d good, %d bad \r", file, linecount,badCount);
 			fflush(stdout);
 		}
-		if(contains(line, "Bahnunglück"))
+		if(contains(line, "Überschuldung"))
 		        ps(line);
 		if (size==1){bad();continue;}
 		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
@@ -929,7 +931,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		else if (eq(name,lastValue))
 			subject=subject; //keep subject
 		else if (name != lastValue)
-			subject=getNew(name, type);
+			subject=getThe(name, type);
+//			subject=getNew(name, type);
 		if (subject == null)
 			subject=getThe(name);
 
@@ -975,6 +978,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	}
 	p("import csv ok ... lines imported:");
 	p(linecount);
+	autoIds=tmp_autoIds;
 }
 
 void importList(const char* file, const char* type) {
