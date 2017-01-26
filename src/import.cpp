@@ -2642,9 +2642,9 @@ void importAllDE() {
 	//	doDissectAbstracts=true;// already? why not
 	doDissectAbstracts=false;//MESSES TOO MUCH!
 	//	importDBPediaDE();
-	importWikiData();
+//	importWikiData(); KKK
 //	importNames();
-	importGeoDB();
+//	importGeoDB(); KKK
 	importAmazon();
 	importBilliger();
 //	importQuasiris();:
