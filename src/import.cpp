@@ -840,7 +840,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	int size=0;// per row ~ Hopefully equal to fieldCount
 	while (readFile(file,&line[0])) {
 		fixNewline(line,false);
-		free(line0);
+//		free(line0); LEAK, why??: object was probably modified after being freed HOW???
 		line0=editable(line);
 		if (!separator){
 			separator=guessSeparator(editable(line)); // would kill fieldCount
@@ -2642,15 +2642,15 @@ void importAllDE() {
 	//	doDissectAbstracts=true;// already? why not
 	doDissectAbstracts=false;//MESSES TOO MUCH!
 	//	importDBPediaDE();
-//	importWikiData(); KKK
+	importWikiData();
 //	importNames();
-//	importGeoDB(); KKK
+	importGeoDB();
+	importCsv("used_keywords.csv");
 	importAmazon();
 	importBilliger();
 //	importQuasiris();:
 	replay();
 	buildSeoIndex();
-	importCsv("used_keywords.csv");
 	//    importEntities();
 //	importImagesDE();
 //	importLabels("labels.csv");// todo: why again?

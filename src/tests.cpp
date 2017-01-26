@@ -1841,7 +1841,8 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 //	testBug();
 //	fixCurrent();
-	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz",getThe("billiger.de product"));
+	importTest();
+//	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz",getThe("billiger.de product"));
 //	importCsv("used_keywords.csv");
 //	console();
 //	testAll();	
