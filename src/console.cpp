@@ -210,6 +210,9 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		data=next_word(data);
 		return show(findEntites(data));
 	}
+	if(startsWith(data, ":build-seo")){
+		buildSeoIndex();
+	}
 
 	if(startsWith(data, "seo")||startsWith(data, ":seo")){
 		data=next_word(data);

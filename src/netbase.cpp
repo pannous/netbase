@@ -2593,8 +2593,8 @@ void buildSeoIndex(){
 }
 
 void fixCurrent(){
-	context->lastNode=1;// RADICAL: fill all empty slots!
-//	buildSeoIndex();
+//	context->lastNode=1;// RADICAL: fill all empty slots!
+	buildSeoIndex();
 //	add_force(current_context, 415898, "Telekom", _singleton);
 }
 
