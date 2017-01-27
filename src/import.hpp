@@ -9,6 +9,7 @@ using namespace std;
 void importAll();
 void importAllDE();
 void importAllYago() ;
+void importAmazon();
 void importWordnet();
 void importGeoDB();
 void importNames();

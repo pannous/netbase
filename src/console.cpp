@@ -281,9 +281,13 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if (eq(data, ":quit")||eq(data, ":exit")) return OK;
 	if (eq(data, ":quiet")||eq(data,":!debug")){debug=false; quiet=true;return OK;}// !-> NOT !!
     if (eq(data, ":debug")||eq(data, ":!quiet")){debug=true; quiet=false;return OK;}
-    
+
 	if (startsWith(data, ":if")) {
 		importFreebase();
+		return OK;
+	}
+	if (startsWith(data, ":ia")) {
+		importAmazon();
 		return OK;
 	}
 	if (eq(data, ":il")){
