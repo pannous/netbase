@@ -2350,7 +2350,6 @@ void importBilliger(){
 	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz",getThe("billiger.de product"));
 //	importCsv("billiger.de/TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 //	importCsv("billiger.de/20170120-TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
-
 }
 
 	void importAmazon(){
@@ -2502,8 +2501,10 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-	importAmazon();
-//	importBilliger();
+//	importAmazon();
+	importBilliger();
+	replay();
+	buildSeoIndex();
 //	check(hasNode("ue55h6600"));
 //	importAllDE();
 //	importWikiLabels("wikidata/wikidata-terms.de.nt");
