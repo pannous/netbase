@@ -141,7 +141,9 @@ function makeEntity(entity)
 
 	if(entity.kind==abstract)appendText("*");
 	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
-	if(!entity.description && entity.topic) appendText(" "+entity.topic+" ");
+	if(!entity.description && entity.topic)
+		if(!entity.topic.match("Wiki"))return;
+			 appendText(" "+entity.topic+" ");
 
 	link=makeLink("","https://en.wikipedia.org/wiki/"+ entity.name,div)
 	link.style=nolink+bold+blue+big
