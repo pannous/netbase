@@ -1637,6 +1637,8 @@ bool filterWikiType(int object){
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 // AUTO:
 	if(object==488383)return DROP; // Objekt
+	if(object==386724)return DROP; // Werk !?
+	if(object==39546)return DROP; //Werkzeug	Q39546
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==16889133)return DROP; // Klasse
 	if(object==13406463)return DROP; // Wikimedia-Liste

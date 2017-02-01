@@ -808,6 +808,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	p("\nimport csv start");
 	bool tmp_autoIds=autoIds;
 	autoIds=false;
+	total_bad+=bad;
+	bad=0;
 	context=getContext(current_context);
 	char line[MAX_CHARS_PER_LINE*2];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
@@ -940,7 +942,10 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 
 		// conflict: Neustadt.lon=x,Neustadt.lat=y,Neustadt.lon=x2,Neustadt.lon=y2
 		// 2 objects, 4 relations, 1 name
-		if (!checkNode(subject)) continue;
+		if (!checkNode(subject)){
+			bad();
+			continue;
+		}
 		//		if (debug && subject && type && subject->kind > 0 && subject->kind != type->id) {		// subject->kind == 0 ??? MEANING?
 		//			pf("Found one with different type subject->kind != type->id %d,%d,%s,%s\n", subject->kind, type->id, subject->name, type->name);
 		//            //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
