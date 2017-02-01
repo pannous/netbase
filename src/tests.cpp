@@ -1841,7 +1841,19 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 //	testBug();
 //	fixCurrent();
-	importTest();
+	N ab=getAbstract("TEST");
+	check(hasWord("TEST"));
+	N h=hasWord("TEST");
+	check(h==ab);
+//	check(h->name==ab->name);
+	N t=getNew("TEST");
+//	p((long)&ab->name);
+//	p((long)&t->name);
+//	check(&ab->name==&t->name);
+	check(ab->name==t->name);
+
+
+//	importTest();
 //	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz",getThe("billiger.de product"));
 //	importCsv("used_keywords.csv");
 //	console();

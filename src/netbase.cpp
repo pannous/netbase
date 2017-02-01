@@ -624,6 +624,7 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 #ifndef DEBUG
 	if (!nodeName) return 0;
 #endif
+	Node* abstract=hasWord(nodeName);
 	Node* node;
 	do{
 		context->lastNode++;// DON't MOVE!
@@ -635,10 +636,18 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
 			return Error;
 		}
 	}while(node->id!=0);
+
+	if(abstract && abstract->name){
+		if(eq(nodeName,abstract->name)){
+			node->name=abstract->name;// save memory
+//			nodeName=abstract->name;// wofür?
+		}else
+			p("HOW NOT?");
+	}
     initNode(node, context->lastNode, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == _abstract|| kind == _singleton) return node;
-	addStatement(getAbstract(nodeName), Instance, node, false);// done in initNode//setLabel !
+	addStatement(abstract, Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly && kind > 105) // might cause loop?
         addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
 	//	    why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
@@ -1168,6 +1177,7 @@ bool abstractsLoaded=true;
 Node * getNew(const char* thing, Node* type) {
 	if(type==Abstract)return getAbstract(thing);//||type==Singleton
     if (type<node_root||type>&node_root[maxNodes]) type=Object;// default parameter hickup through JNA
+//	N n=add(getAbstract(thing)->name, type->id);
 	N n=add(thing, type->id);
 	return n;
 }
