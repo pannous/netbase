@@ -321,11 +321,17 @@ bool equalsFuzzy(const char* x, const char* y){
 	//    return(strcmp(x0,y0)==0);// free?
 	return true;
 }
-
+#include <fcntl.h> // open
+#include <unistd.h> // write
+int nullfd = open("/dev/random", O_WRONLY);
+bool is_out_of_bounds(cchar* pointer){
+	return (write(nullfd, pointer, 1) < 0);
+}
 bool eq(const char* x, const char* y, bool ignoreCase, bool ignoreUnderscore) { //
 	if (!x && !y) return true; //danger better: undefined?
 	if (!x || !y) return false; //danger better: undefined?
 	if (x < 0 || y<0)return false;
+	if (is_out_of_bounds(x) || is_out_of_bounds(y))return false;// expensive??? << TODO
     if (x && x[0] == 0 && y == 0) return true; // 0=='' danger!
 	if (y && y[0] == 0 && x == 0) return true; // 0=='' danger!
 	if (x == 0 || !y) return false;
