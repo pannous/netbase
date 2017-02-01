@@ -424,7 +424,7 @@ int handle(cchar* q0,int conn){
 		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
 		bool show_images=SERVER_PORT<1000||verbosity==alle;// HACK!
-		if((use_json&&show_images)&&!showExcludes&&node->statementCount>1){
+		if((use_json&&show_images)&&verbosity!=shorter&& !showExcludes&&node->statementCount>1){
 			string img=getImage(node,150,/*thumb*/true);
 			if(img!=""){
 				img=replace_all(replace_all(img,"'","%27"),"\"","%22");
