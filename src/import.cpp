@@ -804,12 +804,14 @@ N addSubCategories(char* name,N kind){
 string str(char* c){
 	return string(c);
 }
+
+int total_bad=0;
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("\nimport csv start");
 	bool tmp_autoIds=autoIds;
 	autoIds=false;
-	total_bad+=bad;
-	bad=0;
+	total_bad+=badCount;
+	badCount=0;
 	context=getContext(current_context);
 	char line[MAX_CHARS_PER_LINE*2];
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
