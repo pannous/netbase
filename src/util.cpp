@@ -325,6 +325,7 @@ bool equalsFuzzy(const char* x, const char* y){
 bool eq(const char* x, const char* y, bool ignoreCase, bool ignoreUnderscore) { //
 	if (!x && !y) return true; //danger better: undefined?
 	if (!x || !y) return false; //danger better: undefined?
+	if (x < 0 || y<0)return false;
     if (x && x[0] == 0 && y == 0) return true; // 0=='' danger!
 	if (y && y[0] == 0 && x == 0) return true; // 0=='' danger!
 	if (x == 0 || !y) return false;
