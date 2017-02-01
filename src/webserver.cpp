@@ -76,12 +76,17 @@ bool checkHideStatement(Statement* s);
 char* fixName(char* name){
 	if(!name)return (char *)"";
 	int len=(int)strlen(name);
+
 	while(--len>=0){
 		if(name[len]==9)name[len]=' ';// json-save!
 		if(name[len]=='"')name[len]='\'';// json-save!
 		if(name[len]=='`')name[len]='\'';// json-save!
 	}
 	if(name[0]=='\''||name[0]=='`')return name+1;
+	if (startsWith(name, "entities"))
+		name+=8;
+	if (startsWith(name, "ee "))
+		name+=3;
 	return name;
 }
 char* getStatementTitle(Statement* s,Node* n){
