@@ -1701,7 +1701,7 @@ bool filterWikiType(int object){
 	if(object==11618417)return DROP;//LAU	Q11618417
 //	if(object==262166)return DROP;//Gemeinde in Deutschland	262166
 	if(object==1048835)return DROP;//territoriale
-	if(object==56061)return DROP;//territoriale
+//	if(object==56061)return DROP;//territoriale skip!
 	if(object==1084)return DROP;//Substantiv	Q1084
 	if(object==486972)return DROP;//territoriale
 	if(object==14757767)return DROP;//Verwaltungseinheit 4. Ebene	Q14757767
