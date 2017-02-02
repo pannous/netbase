@@ -412,7 +412,7 @@ extern "C" Node* getNodeS(int node);
 extern "C" int getId(char* node);
 //extern "C" Node* getNode(char* node);
 
-Context* getContext(int contextId);
+Context* getContext(int contextId=0/*wordnet*/);
 void showContext(int nr);
 void showContext(Context* cp);
 void showNodes(NodeSet all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false);

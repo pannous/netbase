@@ -337,10 +337,10 @@ char* statementString(Statement * s) {
 
 
 bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
-	if(!debug)return true;// bad idea!
 	if (s == 0) return false;
 	if (s < contexts[current_context].statements) return false;
 	if (s >= contexts[current_context].statements + maxStatements) return false;
+	if(!debug)return true;// bad idea!
 	if (s->id() == 0) return false; // !
 	if (checkSPOs || checkNamesOfSPOs) if (s->Subject() == 0 || s->Predicate() == 0 || s->Object() == 0) return false;
 	if (checkNamesOfSPOs) if (s->Subject()->name == 0 || s->Predicate()->name == 0 || s->Object()->name == 0) return false;

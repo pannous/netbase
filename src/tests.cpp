@@ -40,6 +40,21 @@ bool assert(bool test, string what) { // bool nix gut
 	return test;
 }
 
+
+void testNameReuse(){
+	N ab=getAbstract("TEST");
+	check(hasWord("TEST"));
+	N h=hasWord("TEST");
+	check(h==ab);
+	//	check(h->name==ab->name);
+	N t=getNew("TEST");
+	//	p((long)&ab->name);
+	//	p((long)&t->name);
+	//	check(&ab->name==&t->name);
+	check(ab->name==t->name);
+}
+
+
 void testScanf() {
 	//FALSCH!!: A feature with sscanf is that you can define variables inside it:
 	//sscanf("foo % 1 2 3 fum","%s %% %{%d%} %s",string s1, array(string) as, string s2);
@@ -1582,55 +1597,6 @@ void testInclude(){
 	//    handle("/xml/all/Hamburg +type");
 	//    handle("/xml/excluded");
 }
-
-
-extern "C" void testAll() {
-	#ifndef __clang_analyzer__
-	context=getContext(0);
-	germanLabels=false; // for tests!
-	clearMemory();
-	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
-	testStringLogic();
-	testHash();
-	testScanf();
-	testYago();
-	testGeoDB();
-
-	testInstancesAtEnd();
-	testInsertForceStart();
-	testHash();
-	testValueLogic();
-
-	testReification();
-	testStringLogic2();
-	testOpposite();
-	//    share_memory();
-	//    init();
-
-	//    testBasics();
-	//	clearTestContext();
-	//	testBrandNewStuff();// LOOP!
-	//    testStringLogic2();
-	//    testLogic();// test wordnet intersection
-	germanLabels=false;
-	testImportExport();
-	checkWordnet();
-	checkGeo();	//	testDummyLogic();// too big
-	testInclude();
-
-	// shaky
-	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
-	testFacets();
-	testQuery();
-	testPaths();
-	testFactLearning();
-
-	// OK
-
-	p("ALL TESTS SUCCESSFUL!");
-#endif
-	//    testLoop();
-}
 bool assertResult(char* query,char* value0){
 	NodeVector result=parse(query);
 	//	cchar* result=query2(query).data();
@@ -1823,11 +1789,81 @@ void testLabelInstances(){
 	check(contains(all, get(3884)));
 }
 
+
+
+extern "C" void testAll() {
+#ifndef __clang_analyzer__
+	context=getContext(0);
+	germanLabels=false; // for tests!
+	clearMemory();
+	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
+	testStringLogic();
+	testHash();
+	testScanf();
+	testYago();
+	testGeoDB();
+
+	testInstancesAtEnd();
+	testInsertForceStart();
+	testHash();
+	testValueLogic();
+
+	testReification();
+	testStringLogic2();
+	testOpposite();
+	//    share_memory();
+	//    init();
+
+	//    testBasics();
+	//	clearTestContext();
+	//	testBrandNewStuff();// LOOP!
+	//    testStringLogic2();
+	//    testLogic();// test wordnet intersection
+	germanLabels=false;
+	testImportExport();
+	checkWordnet();
+	checkGeo();	//	testDummyLogic();// too big
+	testInclude();
+
+	// shaky
+	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
+	testFacets();
+	testQuery();
+	testPaths();
+	testFactLearning();
+	testNameReuse();
+	// OK
+
+	p("ALL TESTS SUCCESSFUL!");
+#endif
+	//    testLoop();
+}
+
+
 void testBug(){
 	testEntities();
 	handle("json/entities/Elektroinstallateur darmstadt");
 	exit(0);
 }
+
+
+
+
+void collectTopics(){
+	debug=false;
+	for(int i=1;i<(int)nodeCount();i++){
+		Context* context=getContext();
+		if(!checkNode(i))continue;
+		Node *n=&context->nodes[i];
+		if(!checkNode(n))continue;
+		Node *t=getTopic(n);
+		if(!checkNode(t))continue;
+		if(t==n)continue;
+		p(t->name);
+	}
+}
+
+
 
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
@@ -1841,17 +1877,9 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 //	testBug();
 //	fixCurrent();
-	N ab=getAbstract("TEST");
-	check(hasWord("TEST"));
-	N h=hasWord("TEST");
-	check(h==ab);
-//	check(h->name==ab->name);
-	N t=getNew("TEST");
-//	p((long)&ab->name);
-//	p((long)&t->name);
-//	check(&ab->name==&t->name);
-	check(ab->name==t->name);
 
+	collectTopics();
+//	testAll();
 
 //	importTest();
 //	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz",getThe("billiger.de product"));

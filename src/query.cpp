@@ -1539,8 +1539,8 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 //		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
-		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/)||(current->name[0]<'A'))
-			continue;
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/))continue;
+		if(!current->name || current->name[0]<'A')continue;//?
 		if(stopAtGoodWiki(current))
 			return current;
 		if(filterWikiType(current->id))break;
@@ -1552,7 +1552,7 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 		if(depth>deepest)furthest=current;
 		if(!pa)pa=Unknown;// Error;// Nil;
 		//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
-		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
+		if(debug)printf("%s	Q%d	<= %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
 		if(q.size()<lookupLimit){// bad (?) : refill after pop()
 			edgeFilter(current, &q,enqueued);
 		//		show(more);
@@ -1598,7 +1598,8 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 		N pa=get(enqueued[current->id+propertySlots]);
 		if(!pa)pa=Unknown;// Error;// Nil;
 //		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
-		printf("%s	Q%d	=> %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
+		if(debug)
+			printf("%s	Q%d	<= %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
 		if(q.size()<lookupLimit)// bad (?) : refill after pop()
 			NodeVector more = edgeFilter(current, &q,enqueued);// enqued => empty!
 //		show(more);
@@ -2220,6 +2221,7 @@ NV getTopics(NV entities){
 		}
 	return topics;
 }
+
 
 NV showTopics(NV entities){
 	NV all= getTopics(entities);

@@ -84,7 +84,7 @@ char* fixName(char* name){
 	}
 	if(name[0]=='\''||name[0]=='`')return name+1;
 	if (startsWith(name, "entities"))
-		name+=8;
+		name+=9;
 	if (startsWith(name, "ee "))
 		name+=3;
 	return name;
@@ -314,6 +314,7 @@ int handle(cchar* q0,int conn){
 	if(contains(q," limit ")){		strstr(q," limit ")[0]=0;	}
 	autoIds=false;
     int size=(int)all.size();
+	int count=(int)all.size();
     if(showExcludes){
         for (int i = 0; i < size; i++) {
         // todo : own routine!!!
@@ -342,7 +343,7 @@ int handle(cchar* q0,int conn){
 	if (format == xml)Writeline(conn, "<results>\n");
 	if (format == html)Writeline(conn,html_block);
 //	if (use_json)Writeline(conn, "{\"results\":[\n");
-	if (use_json)Writeline(conn, "{\"query\":\""+string(fixName(q))+"\", \"results\":[\n");
+	if (use_json)Writeline(conn, "{\"query\":\""+string(fixName(q))+"\",  \"count\":\""+itoa(count)+"\",\"results\":[\n");
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
@@ -374,7 +375,6 @@ int handle(cchar* q0,int conn){
         entity=keep_to(entity,"limit");
     }
    	sortNodes(all);
-	int count=(int)all.size();
 	int good=0;
 	for (int i = 0; i < count && i<resultLimit; i++) {
 		Node* node = (Node*) all[i];
@@ -499,7 +499,7 @@ int handle(cchar* q0,int conn){
 					p("PROBLEM WITH");
 					p(s);
 					objectName="???";
-//				continue;// hebrew?
+					//continue;// hebrew?
 				}
 
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
@@ -618,8 +618,8 @@ bool checkHideStatement(Statement* s){
 	bool ok=included.size()==0;// no filter
 	for(int i=0;i<included.size();i++){
 		char* include=included.at(i);
-		if(eq(predicateName,"Bundesland"))
-			p(s);
+//		if(eq(predicateName,"Bundesland"))
+//			p(s);
 		if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
 		if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))
 			ok=true;
