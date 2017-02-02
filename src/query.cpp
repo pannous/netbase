@@ -1648,7 +1648,7 @@ bool filterWikiType(int object){
 	if(object==24905)return DROP; // Verb
 	if(object==286583)return DROP; // Manifestation
 	if(object==2944660)return DROP; // Lexikalischer Begriff
-	if(object==15916867)return DROP; // Territoriale Verwaltungseinheit eines Landes
+//	if(object==15916867)return DROP; // Territoriale Verwaltungseinheit eines Landes DONT DROP, SKIP!
 	if(object==211364)return DROP; // Prinzip
 	if(object==147276)return DROP; // Eigenname
 	if(object==36774)return DROP; // Webseite
