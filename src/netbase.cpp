@@ -2729,9 +2729,11 @@ int main(int argc, char *argv[]) {
 		//		tests();
 	} else {
 		showHelpMessage();
+		bool _autoIds=autoIds;
 		// *******************************
-		parse(join(argv, argc).c_str()); // <<< HERE
+		parse(join(argv, argc).c_str(),/*safeMode=*/false); // <<< HERE
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		autoIds=_autoIds;
 	}
 	if (checkParams(argc, argv, "export")) export_csv();
 	if (checkParams(argc, argv, "test")) testAll();

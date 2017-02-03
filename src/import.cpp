@@ -151,7 +151,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 	int id;
 	char line[10000];
 	//	char label[1000];
-	char* lastTitle=0;
+	char lastTitle[10000];
 	int linecount=0;
 	Node* wiki_image=getAbstract("wiki_image");
 	addStatement(wiki_image, is_a, getThe("image"));
@@ -168,7 +168,7 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 		//        if(eq(title,"Uniform"))
 		//            p(line);
 		if (eq(lastTitle, title)) continue;
-		lastTitle=clone(title); // only the first
+		strcpy(lastTitle,title);// only the first
 		id=norm_wordnet_id(id);
 		if(!id)continue;
 		Node* subject=get(id);
@@ -193,7 +193,7 @@ void importImagesDE() {// dbpedia
 	p("image import starting ...");
 	char line[1000];
 	char label[100];
-	char* lastTitle=0;
+	char lastTitle[10000];
 	int linecount=0;
 	Node* wiki_image=getAbstract("wiki image");
 	addStatement(wiki_image, is_a, getThe("image"));
@@ -212,7 +212,7 @@ void importImagesDE() {// dbpedia
 		if (!eq(label,"depiction")) continue;
 		if (eq(lastTitle, title)) continue;
 
-		lastTitle=clone(title); // only the first
+		strcpy(lastTitle,title);
 		//		if (!hasWord(title)) normImageTitle(title); //blue -_fin ==> bluefin
 		if (!hasWord(title)) continue; // currently only import matching words.
 		Node* subject=getAbstract(title);
@@ -226,7 +226,7 @@ void importImagesDE() {// dbpedia
 void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 	p("image import starting ...");
 	char line[1000];
-	char* lastTitle=0;
+	char lastTitle[10000];
 	int linecount=0;
 	Node* wiki_image=getAbstract("wiki image");
 	addStatement(wiki_image, is_a, getThe("image"));
@@ -242,8 +242,7 @@ void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 		};
 		sscanf(line, "%s %*s %s", title, image);
 		if (eq(lastTitle, title)) continue;
-
-		lastTitle=clone(title); // only the first
+		strcpy(lastTitle,title);
 		//		if (!hasWord(title)) normImageTitle(title); //blue -_fin ==> bluefin
 		//		if (!hasWord(title)) continue; // currently only import matching words.
 		//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
@@ -932,7 +931,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			subject=getSingleton(name,type);
 		else if (getBest)
 			subject=getThe(name, type);
-		else if (eq(name,lastValue))
+		else if (eq(name,lastValue))// danger if both are bad?
 			subject=subject; //keep subject
 		else if (name != lastValue)
 			subject=getThe(name, type);
@@ -1774,9 +1773,11 @@ bool dropBadPredicate(char* name) {
 	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
 
 	if(startsWith(name,"P352"))return DROP; //	UniProt ID
+	if(startsWith(name,"P536"))return DROP; //	ATP ID
+	if(startsWith(name,"P652"))return DROP; //	UNII
+	if(startsWith(name,"P494"))return DROP; //	ICD-10
 	if(startsWith(name,"P637"))return DROP; //	RefSeq Protein ID
 	if(startsWith(name,"P705"))return DROP; //	Ensembl Protein ID
-	if(startsWith(name,"P536"))return DROP; //	ATP ID
 
 	if(startsWith(name,"P213>"))return DROP;//	 	ISNI
 	if(startsWith(name,"P214>"))return DROP;//	 	VIAF
@@ -1850,7 +1851,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	char* predicateName=(char*) malloc(10000);
 	char* objectName=(char*) malloc(10000);
 	int linecount=0;
-	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD!!!!!!!!!!!!!!!
+	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD warum??!!!!!!!!!!!!!!!
 	char line[MAX_CHARS_PER_LINE];
 	while (readFile(file,&line[0])) {
 		if(line[0]==0)continue;// skip gzip new_block
@@ -1858,8 +1859,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
 			long lost=ignored + badCount + MISSING;
-			printf("\r%d triples   %d ignored + %d badCount - %d MISSING: %ld  GOOD: %ld   ", linecount, ignored, badCount, MISSING,
-				   lost  ,linecount-lost);
+			printf("\r%d triples ignored:%d  BAD:%d MISSING:%d = LOST:%ld  GOOD:%ld", linecount, ignored, badCount, MISSING,lost ,linecount-lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -2508,9 +2508,9 @@ void importAllYago() {
 
 void importTest(){
 	context=getContext(wikidata);
-//	importAmazon();
+//	replay();
 	importBilliger();
-	replay();
+	importAmazon();
 	buildSeoIndex();
 //	check(hasNode("ue55h6600"));
 //	importAllDE();

@@ -149,7 +149,9 @@ void console() {
 	while (true) {
 		//		clearAlgorithmHash();
 		getline(data);
+		bool _autoIds=autoIds;
 		parse(data,/*safeMode=*/false);// safeMode only for web access
+		autoIds=_autoIds;
 	}
 }
 
