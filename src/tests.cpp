@@ -1883,9 +1883,9 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 //	testBug();
 //	fixCurrent();
-	testMarkedNodes();
+//	testMarkedNodes();
 
-//	collectTopics();
+	collectTopics();
 //	testAll();
 
 //	importTest();

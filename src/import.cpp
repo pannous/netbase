@@ -1618,7 +1618,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		}
 	}
 	//		add(key,label);
-	free(test0);free(label0);	free(key0);
+//	free(test0) free(label0) free(key0) fails, why? egal
 	p("duplicates removed:");
 	p(freebaseKeysConflicts);
 	testPrecious();
