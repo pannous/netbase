@@ -2462,6 +2462,8 @@ char* getText(Node* n){
 	return NO_TEXT;
 }
 
+
+std::string md5(const std::string str);// because undefined reference. why?
 string formatImage(Node* image,int size,bool thumb){
 	if (!image || !checkNode(image)|| !image->name) return "";
     char* name=replaceChar(image->name,' ','_');
