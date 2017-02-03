@@ -1884,8 +1884,8 @@ void testBrandNewStuff() {
 //	testBug();
 //	fixCurrent();
 //	testMarkedNodes();
-
-	collectTopics();
+	importAmazon();
+//	collectTopics();
 //	testAll();
 
 //	importTest();
