@@ -2463,14 +2463,13 @@ char* getText(Node* n){
 }
 
 
-std::string md5(const std::string str);// because undefined reference. why?
 string formatImage(Node* image,int size,bool thumb){
 	if (!image || !checkNode(image)|| !image->name) return "";
     char* name=replaceChar(image->name,' ','_');
 	char* start=strstr(name, "File:");
 	if(start) name=start+5;
 	if(startsWith(name, "http"))return name;
-	string hash=md5(name);
+	string hash=md5(name);// undefined reference? make clear ! why??
 	string base="http://upload.wikimedia.org/wikipedia/commons/";
     if(!thumb)	return base + hash[0] + "/" + hash[0] + hash[1] + "/" +  name;
     char ssize[12];

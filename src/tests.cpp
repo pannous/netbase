@@ -1863,7 +1863,13 @@ void collectTopics(){
 	}
 }
 
-
+void testMarkedNodes(){
+	Node n=*getThe("TEST123");
+	addStatement4(0, n.id, _see, 1234);
+	Node marked=*get(1234);
+	check(marked.kind!=0)
+//	initNode(id, nodeName, kind, contextId);
+}
 
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
@@ -1877,8 +1883,9 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 //	testBug();
 //	fixCurrent();
+	testMarkedNodes();
 
-	collectTopics();
+//	collectTopics();
 //	testAll();
 
 //	importTest();
