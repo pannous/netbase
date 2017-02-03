@@ -2547,7 +2547,6 @@ void importWikiData() {
 	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
 	importN3("wikidata/wikidata-taxonomy.nt.gz");
 	importN3("wikidata/wikidata-instances.nt.gz");
-	context->lastNode=1;// RADICAL: fill all empty slots, no gaps
 	importN3("wikidata/wikidata-simple-statements.nt.gz");
 	//	importN3("wikidata/wikidata-statements.nt.gz");
 	//	importN3("wikidata/wikidata-sitelinks.nt");
@@ -2555,7 +2554,6 @@ void importWikiData() {
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false,true);
 	}
-	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER WITH ENGLISH!
 	showContext(current_context);
 }
 
@@ -2651,20 +2649,21 @@ void importAllDE() {
 	doDissectAbstracts=false;//MESSES TOO MUCH!
 	//	importDBPediaDE();
 	importWikiData();
+//	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER WITH ENGLISH!
 //	importNames();
 	importGeoDB();
 	importCsv("used_keywords.csv");
-	importAmazon();
-	importBilliger();
 //	importQuasiris();:
 	replay();
+//	importFacts();
+	importLabels("labels.csv");// todo: why again?
+//	buildSeoIndex();
+	importBilliger();
+	importAmazon();
 	buildSeoIndex();
-	//    importEntities();
-//	importImagesDE();
-//	importLabels("labels.csv");// todo: why again?
+	//importEntities();
+	//importImagesDE(); deprecated
 	importing=false;
-//	server(); NO! NEEDS ROOT
-	//	importFacts()
 }
 
 void importAll() {
