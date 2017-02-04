@@ -376,7 +376,7 @@ int handle(cchar* q0,int conn){
     }
    	sortNodes(all);
 	int good=0;
-	for (int i = 0; i < count && i<resultLimit; i++) {
+	for (int i = 0; i < count && ( i<resultLimit ); i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
 		if(node->id==0)continue;
