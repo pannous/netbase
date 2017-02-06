@@ -2,6 +2,9 @@
 #include "util.hpp"
 #include <sys/stat.h> // mkdir
 
+
+
+#define _FILE_OFFSET_BITS  64
 bool save() {
     Context* c = getContext(current_context);
 	mkdir((path+"data").c_str(),0777);
