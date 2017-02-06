@@ -13,9 +13,9 @@
 
 #include <stdio.h> // itoa
 #include <stdlib.h>// itoa
-// exit, malloc:
-#include <cstdlib>
+#include <cstdlib> // exit, malloc
 #include <string.h> // strcmp
+#include <sys/stat.h> // mkdir
 
 #include "util.hpp"
 //#include "relations.hpp"
@@ -2681,7 +2681,7 @@ int main(int argc, char *argv[]) {
 	system(string("cd " + path).c_str());
 	data_path=path + "/data/";
 	import_path=path + "import/";
-
+	mkdir("./logs");
 	//	path=sprintf("%s/data",path);
 
 	// todo REDUNDANT! remove!
