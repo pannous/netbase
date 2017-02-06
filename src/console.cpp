@@ -347,8 +347,9 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		load(true);
 		return OK;
 	}
-	if (eq(data, ":ca")) collectAbstracts();
-	if (eq(data, ":ci")) collectInstances();
+	if (eq(data, ":ca")) {collectAbstracts();return OK;}
+	if (eq(data, ":ca!")) {collectAbstracts(true);return OK;}//clear!
+	if (eq(data, ":ci")) {collectInstances();return OK;}
 	if (eq(data, ":load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, ":load!")) {
 		load(true);
 		return OK;

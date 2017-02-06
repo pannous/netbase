@@ -411,7 +411,7 @@ void load(bool force) {
 	fclose(fp);
 
     fp=open_binary( "nodes.bin");
-	fread(c->nodes-propertySlots, sizeof(Node), c->nodeCount, fp);
+	fread(c->nodes-propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
    	fclose(fp);
 
 #ifndef inlineName
@@ -429,9 +429,9 @@ void load(bool force) {
 
 
 	if(true){
-	fp = open_binary("abstracts.bin");
-	fread(abstracts, sizeof (Ahash), maxNodes*2, fp);
-	fclose(fp);
+		fp = open_binary("abstracts.bin");
+		fread(abstracts, sizeof (Ahash), maxNodes*2, fp);
+		fclose(fp);
 	}
 	else{
 			ps("collecting abstracts!");
@@ -486,10 +486,10 @@ int collectAbstracts(bool clear/*=false*/) {
 		memset(abstracts, 0, maxNodes*ahashSize * 2);
 	}
 	Context* c=context;
-	int max=c->nodeCount; // maxNodes;
+//	int max=c->nodeCount; // maxNodes;
 	int count=0;
 	// collect Abstracts
-	for (int i=0; i < max; i++) {
+	for (int i=0; i < max(c->nodeCount,context->lastNode); i++) {
 		Node* n=&c->nodes[i];
 		if (i > 1000 && !checkNode(n)) break;
 		if (n == null || n->name == null || n->id == 0) continue;

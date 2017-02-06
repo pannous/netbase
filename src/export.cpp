@@ -38,7 +38,7 @@ bool save() {
     fclose(fp);
 
     ps("context blob saved!");
-	printf("%d nodes dumped to ./data/ folder \n",c->nodeCount);
+	printf("All %ld nodes and %d registered nodes dumped to ./data/ folder \n",maxNodes,c->nodeCount);
 
     //    fp=fopen("test.bin", "wb");
     //    fwrite(test, sizeof(char), 100, fp);

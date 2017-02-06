@@ -1880,6 +1880,54 @@ void ee(cchar* entities){
 	findEntites(entities);
 }
 
+char *normLabel(char* old){
+	char* neu=(char*)malloc(10000);
+	int j=0;
+	for(int i=0;i<strlen(old);i++){
+		char c=old[i];
+		bool good=0;
+		if(c>='a' && c<='z')good=1;
+		if(c>='A' && c<='Z')good=1;
+		if(c>='0' && c<='9')good=1;
+		if(c==' ')good=1;
+//		if(c=='ä')good=1;
+//		if(c=='ë')good=1;
+//		if(c=='ï')good=1;
+//		if(c=='ö')good=1;
+//		if(c=='ü')good=1;
+//		if(c=='ö')good=1;
+		if(good){
+			neu[j]=c;
+			j++;
+		}
+		else{
+			p(int(c));
+		}
+	}
+	neu[j]=0;
+//	if(i==j)return old;
+	return neu;
+}
+void addNormLabels(){
+
+	for(int i=1;i<max(context->nodeCount,context->lastNode);i++){
+		N n=&context->nodes[i];
+		if(!n->id||n->name<context->nodeNames||n->name > context->nodeNames+context->currentNameSlot)continue;
+		if(!isAbstract(n))continue;
+		if(strlen(n->name)<5)continue;// strange ids ...
+		if(n->name[0]<'A')continue;// strange ids ...
+		char* normed=normLabel(n->name);
+		if(eq(normed,n->name)){
+			free(normed);
+			continue;
+		}
+		N no=getAbstract(normed);
+		addStatement(n, Label, no);
+		free(normed);
+	}
+
+}
+
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
@@ -1890,6 +1938,7 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
+	addNormLabels();
 //	testBug();
 //	fixCurrent();
 //	testMarkedNodes();
