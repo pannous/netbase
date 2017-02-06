@@ -214,6 +214,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 	if(startsWith(data, ":build-seo")){
 		buildSeoIndex();
+		return OK;
 	}
 
 	if(startsWith(data, "seo")||startsWith(data, ":seo")){
@@ -716,7 +717,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	int i=atoi(data);
 	if(data[0]=='P' && data[1]<='9')
 		return nodeVectorWrap(get(-atoi(++data)-10000));// P106 -> -10106
-	if (startsWith(data, ":")){pf("UNKNOWN COMMAND %s\n",data);showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
+	if (startsWith(data, ":")){pf("UNKNOWN COMMAND %s\n",data);}//showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 //	if(autoIds && i)return nodeVectorWrap(get(i));
