@@ -1871,6 +1871,15 @@ void testMarkedNodes(){
 //	initNode(id, nodeName, kind, contextId);
 }
 
+void entity_extraction(char* ee){
+	handle(concat("/ee/",ee));
+	findEntites(ee);
+}
+void ee(cchar* entities){
+	handle(concat("/ee/",entities));
+	findEntites(entities);
+}
+
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
@@ -1885,7 +1894,13 @@ void testBrandNewStuff() {
 //	fixCurrent();
 //	testMarkedNodes();
 //	importAmazon();
-	collectTopics();
+	//	collectTopics();
+	getThe("BMW");
+	getThe("BMW 5er");
+	getThe("BMW 5");
+	getThe("Series 5");
+	getThe("BMW 5 Series");
+	ee("BMW 5 Series");
 //	testAll();
 
 //	importTest();
