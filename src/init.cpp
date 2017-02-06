@@ -360,24 +360,15 @@ FILE* open_binary(cchar* c){
 }
 
 void load(bool force) {
-
 //	clock_t start=clock();
-//	double diff;
-	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
+//	double diff= ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 
 	Context* c=getContext(current_context);
-	//    showContext(c->id);
 	Node* oldNodes=c->nodes;
 	char* oldnodeNames;//=c->nodeNames;
 	oldnodeNames=initContext(c);
 
-	//  #include <sys/stat.h>
-	//  struct stat stFileInfo;
-	//  int intStat = stat((path+ "contexts.bin").data(),&stFileInfo);
-	//  if(intStat != 0) { p("file not found");}
-	//
-	if (!force && context_root) {	//&&root_memory[1000]!=0){// first id==0
-		//        pi(root_memory[0]);
+	if (!force && context_root) {
 		ps("loaded from shared memory");
 //		if (virgin_memory || !hasWord("instance"))
 //			collectAbstracts(); //or load abstracts->bin
@@ -397,10 +388,6 @@ void load(bool force) {
 		fread(contexts, sizeof(Context), maxContexts, fp);
 		fclose(fp);
 	}
-	//    fp=fopen("wordnet.bin", "rb");
-	//    fread(c, sizeof(Context), 1, fp);
-	//    fclose (fp);
-
     
 	fp=open_binary("names.bin");
 	fread(c->nodeNames, sizeof(char), c->currentNameSlot + 100, fp);
@@ -414,19 +401,10 @@ void load(bool force) {
 	fread(c->nodes-propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
    	fclose(fp);
 
-#ifndef inlineName
-	if (oldnodeNames != c->nodeNames) {
-		p("Fixing nodeNames");
-		fixNodeNames(c, oldnodeNames);
-		//        init();// to get back relations CAREFUL!
-	}
-#endif
-
 	if (oldNodes != c->nodes) {
 		p("Fixing nodes");
 		fixStatementNodeIds(c, oldNodes);
 	}
-
 
 	if(true){
 		fp = open_binary("abstracts.bin");
@@ -437,17 +415,7 @@ void load(bool force) {
 			ps("collecting abstracts!");
 			collectAbstracts(); //or load abstracts->bin
 	}
-	//    showContext(c);
-
-
 	showContext(context);
-
-	//    initContext(c);//
-	//
-	//
-	//    fp=fopen("test.bin", "rb");
-	//    if(fp)fread(test, sizeof(char), 100, fp);
-	//   fclose (fp);
 
 	//  cout<<"nanoseconds "<< diff <<'\n';
 }
