@@ -1,4 +1,5 @@
 #pragma once
+#define _FILE_OFFSET_BITS  64
 #include <stdio.h>
 #include <string>
 #include <sstream>

@@ -1,10 +1,11 @@
+#define _FILE_OFFSET_BITS  64
 #include "netbase.hpp"
 #include "util.hpp"
 #include <sys/stat.h> // mkdir
 
 
 
-#define _FILE_OFFSET_BITS  64
+
 bool save() {
     Context* c = getContext(current_context);
 	mkdir((path+"data").c_str(),0777);
@@ -18,7 +19,8 @@ bool save() {
     fclose(fp);
 
 	fp = fopen((data_path+"nodes.bin").data(), "wb");
-	fwrite(c->nodes-propertySlots, sizeof (Node), maxNodes, fp);
+//	fwrite(c->nodes-propertySlots, sizeof (Node), maxNodes, fp);
+	fwrite(c->nodes-propertySlots, sizeof (Node), max(c->nodeCount,c->lastNode), fp);
 //	fwrite(c->nodes-propertySlots, sizeof (Node), findLastNode(), fp);// or fix nodeCount / lastNode
 //	fwrite(c->nodes-propertySlots, sizeof (Node), c->lastNode, fp);
 //	fwrite(c->nodes-propertySlots, sizeof (Node), c->nodeCount, fp);

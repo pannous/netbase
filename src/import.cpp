@@ -2647,7 +2647,8 @@ void importAllDE() {
 	doDissectAbstracts=false;//MESSES TOO MUCH!
 	//	importDBPediaDE();
 	importWikiData();
-//	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER WITH ENGLISH!
+//	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER FUCKUPS! WITH ENGLISH!
+//	context->nodeCount=context->lastNode;// adjust gaps as counted?
 //	importNames();
 	importGeoDB();
 	importCsv("used_keywords.csv");

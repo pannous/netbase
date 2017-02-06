@@ -2319,10 +2319,10 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 
 	Statement * s=0;
     Node* best=0;
-	map<Statement*, int> visited; // You don't have to do anything. Just let the variable go out of scope.
+//	map<Statement*, int> visited; // You don't have to do anything. Just let the variable go out of scope.
 	while ((s=nextStatement(abstract, s))) {
-		if (visited[s]) return 0;
-		visited[s]=1;
+//		if (visited[s]) return 0;
+//		visited[s]=1;
 		if (!checkStatement(s, true, false)) continue;
 		bool subjectMatch=(s->Subject() == abstract || abstract == Any);
 		bool predicateMatch=(s->Predicate() == Instance);
