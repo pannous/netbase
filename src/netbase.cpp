@@ -2681,7 +2681,7 @@ int main(int argc, char *argv[]) {
 	system(string("cd " + path).c_str());
 	data_path=path + "/data/";
 	import_path=path + "import/";
-	mkdir("./logs");
+	mkdir("./logs",0777);
 	//	path=sprintf("%s/data",path);
 
 	// todo REDUNDANT! remove!
