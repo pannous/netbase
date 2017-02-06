@@ -491,7 +491,7 @@ int collectAbstracts(bool clear/*=false*/) {
 	// collect Abstracts
 	for (int i=0; i < max(c->nodeCount,context->lastNode); i++) {
 		Node* n=&c->nodes[i];
-		if (i > 1000 && !checkNode(n)) break;
+		if (i > 1000 && !checkNode(n)) continue;
 		if (n == null || n->name == null || n->id == 0) continue;
 		if (n->kind == Abstract->id || (!clear&&!hasWord(n->name))) {
 			insertAbstractHash(n);// don't force
