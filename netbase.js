@@ -9,8 +9,14 @@ var server="http://87.118.71.26:81/" // for quasiris demo
 // var server="http://big.netbase.pannous.com:81/"
 // var server="http://de.netbase.pannous.com:81/"
 // var server="http://netbase.pannous.com/"
+
+var search = window.location.search;
+var inline=false // compact view, embedded
+var find_entities=false // full text netbase search
 var abstract=-102;// Summary nodes
-var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410,-11978];//  BnF-ID 47674->-10268->36430981 etc
+var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410,-11978];//  BnF-ID  etc
+
+function setInline() {inline=true;find_entities=true}
 
 function br(elem){
 	if(!elem)elem=div;
@@ -78,7 +84,7 @@ function filterStatement(statement){
 	if(statement.subject.startsWith("http"))return true;
 	if(statement.object.match(/rdf/))return true;
 	if(statement.object.match(/ObjectProperty/))return true;
-  // if(statement.object.match(/wikimedia/i))return true;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
+  if(statement.object.match(/wiki/i)&&inline)return true;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
 	if(1+statement.subject>1)return true;
 }
 
@@ -181,9 +187,10 @@ function makeEntity(entity)
 		table=append("table",div,"sorted");
 		count=0
 		for(key in entity.statements){
+  		if(filterStatement(statement))continue;
 			makeStatement(entity.statements[key],table,entity)
 			count++
-			if(inline && count>8)
+			if(inline && count>10)
 				break
 		}
 	}catch(x){}	
@@ -256,20 +263,22 @@ function parseResults(results0){
 	div.style="display: none;"// don't render yet
 	url=document.URL.replace(/%20/g," ")
 	addStyle("http://files.pannous.net/styles/table.css")
-	addStyle("/netbase.css")
+	addStyle(server+"/netbase.css")
 	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(/\+/g," ").replace(/limit.*/,"");
 	// title=title.replace(":"," : ").replace("."," . ")
 	title=capitalize(title)
 	document.title=title;
-	if(!find_entities&&!inline) appendText(title,append("h1",div))
+	if(!find_entities&&!inline) 
+		appendText(title,append("h1",div))
 	else br()
 	if(results['results'].length>1)link_name=false;
 	count=0
 	for(key in results['results']) {
 		entity=results['results'][key]
 		makeEntity(entity);
-		count++
-		if(inline&&count>0)break
+		count=count+1
+		console.log(count)
+		if(inline && count>=2)break
 	}
 	// br();
 	div.style="display: block;"// render now
@@ -282,7 +291,7 @@ function do_query(_query){
 		if(!_query)_query=query.value
 		else query.value=_query
 		_query="verbose/"+_query.replace(/_/g,"+")
-		// if(find_entities)_query="entities/"+_query.replace(/_/g,"+")
+		if(find_entities)_query="entities/"+_query.replace(/_/g,"+")
 		var script = document.createElement('script');
 		if(document.location.pathname=="index.html") // not a server: fetch external
 			script.src = server+'/js/'+_query  // ?callback/jsonp=parseResults';
@@ -299,12 +308,7 @@ function do_query(_query){
 	return false; // done
 }
 
-var search = window.location.search;
-// var inline=true
-var inline=false
-function setInline() {inline=true}
-// var find_entities=true
-var find_entities=false
+
 if(search && search.startsWith("?query"))
 	window.onload = ()=>do_query(search.substring(1+5+1))
 else if(search && search.startsWith("?q"))
