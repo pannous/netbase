@@ -10,7 +10,7 @@ var server="http://87.118.71.26:81/" // for quasiris demo
 // var server="http://de.netbase.pannous.com:81/"
 // var server="http://netbase.pannous.com/"
 var abstract=-102;// Summary nodes
-var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410];//  BnF-ID 47674->-10268->36430981 etc
+var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410,-11978];//  BnF-ID 47674->-10268->36430981 etc
 
 function br(elem){
 	if(!elem)elem=div;
@@ -98,14 +98,14 @@ function makeStatement(statement,elem,entity)
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	if(statement.predicate=="product_image_url")addImage(statement.object,div);
 	var top = document.createElement("tr");
-	if(statement.sid!=entity.id)
+	if(inline && statement.sid!=entity.id)
 		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
 
 	predicate=	makeRow(top)
 	if(editMode)editLinks(predicate,statement,elem)
 	makeLink(statement.predicate,server+statement.pid,predicate);
 
-	if(statement.oid!=entity.id){
+	if(inline && statement.oid!=entity.id){
 		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
 		var x=makeLink(statement.object,objectUrl,makeRow(top));
 	// if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
