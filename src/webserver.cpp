@@ -338,7 +338,7 @@ int handle(cchar* q0,int conn){
     
     const char* html_block="<!DOCTYPE html><html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head>\n"\
 							"<link rel='stylesheet' href='netbase.css'>\n"\
-							"<body><div id='netbase_results'></div>\n<script>var results=";
+							"<body class='netbase'><div id='netbase_results'></div>\n<script>var results=";
     //    if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];

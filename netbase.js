@@ -71,8 +71,8 @@ function makeLink(name,url,elem)
 
 
 function filterStatement(statement){
-    if(filterIds.indexOf(statement.pid)>=0)return true;
-    if(statement.sid==-666)return true;// Error/Missing
+  if(filterIds.indexOf(statement.pid)>=0)return true;
+  if(statement.sid==-666)return true;// Error/Missing
 	if(statement.predicate=="nr in context")return true; 
 	if(statement.predicate.match(/ID/))return true;
 	if(statement.predicate.match(/GND/))return true;
@@ -84,7 +84,7 @@ function filterStatement(statement){
 	if(statement.subject.startsWith("http"))return true;
 	if(statement.object.match(/rdf/))return true;
 	if(statement.object.match(/ObjectProperty/))return true;
-  if(statement.object.match(/wiki/i)&&inline)return true;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
+  if(statement.object.match(/wiki/i) && inline)return true;//  Wikimedia-Begriffsklärungsseite wikimedia.org ...
 	if(1+statement.subject>1)return true;
 }
 
@@ -183,17 +183,20 @@ function makeEntity(entity)
 	if(entity.image && !entity.image.startsWith("Q"))
 		addImage(entity.image,div);
 
-	try{
+	// try{
 		table=append("table",div,"sorted");
-		count=0
+		var count=0
 		for(key in entity.statements){
+			statement=entity.statements[key]
   		if(filterStatement(statement))continue;
-			makeStatement(entity.statements[key],table,entity)
+			makeStatement(statement,table,entity)
 			count++
 			if(inline && count>10)
 				break
 		}
-	}catch(x){}	
+	// }catch(x){
+
+	// }	
 	br();
 }
 
@@ -263,7 +266,7 @@ function parseResults(results0){
 	div.style="display: none;"// don't render yet
 	url=document.URL.replace(/%20/g," ")
 	addStyle("http://files.pannous.net/styles/table.css")
-	addStyle(server+"/netbase.css")
+	if(!inline)addStyle(server+"/netbase.css")
 	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(/\+/g," ").replace(/limit.*/,"");
 	// title=title.replace(":"," : ").replace("."," . ")
 	title=capitalize(title)
@@ -272,16 +275,18 @@ function parseResults(results0){
 		appendText(title,append("h1",div))
 	else br()
 	if(results['results'].length>1)link_name=false;
-	count=0
+	var count=0
+	var lastEntity=0
 	for(key in results['results']) {
 		entity=results['results'][key]
+		// if(inline && entity.name==lastEntity)continue;
+		lastEntity=entity.name;
 		makeEntity(entity);
 		count=count+1
 		console.log(count)
-		if(inline && count>=2)break
+		if(inline && count>=1)break
 	}
-	// br();
-	div.style="display: block;"// render now
+	if(count>0) div.style="display: block;"// render now
 	if(!inline) show_footer()
 }
 
@@ -290,7 +295,8 @@ function do_query(_query){
 	try{
 		if(!_query)_query=query.value
 		else query.value=_query
-		_query="verbose/"+_query.replace(/_/g,"+")
+		_query=_query.replace(/_/g,"+")
+		// _query="verbose/"+_query
 		if(find_entities)_query="entities/"+_query.replace(/_/g,"+")
 		var script = document.createElement('script');
 		if(document.location.pathname=="index.html") // not a server: fetch external
