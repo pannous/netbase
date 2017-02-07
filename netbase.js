@@ -1,10 +1,12 @@
-// Netbase Graph Viewer :: version 1.2.6
-// © 2010 - 2016 Pannous + Quasiris
+// Netbase Graph Viewer :: version 1.2.8
+// © 2010 - 2017 Pannous + Quasiris
 
 var div;// results
 var editMode=false;
 var link_name=true;
-var server="/";//html/"; 
+// var server="/";//html/"; 
+var server="http://87.118.71.26:81" // for quasiris demo
+// var server="http://big.netbase.pannous.com:81"
 // var server="http://de.netbase.pannous.com:81"
 // var server="http://netbase.pannous.com/"
 var abstract=-102;// Summary nodes
@@ -80,27 +82,35 @@ function filterStatement(statement){
 	if(1+statement.subject>1)return true;
 }
 
-function makeStatement(statement,elem)
+function editLinks(predicate,statement,elem)
+{
+		makeLink("x",document.URL.replace(/html.*/,"")+"!delete $"+statement.id,predicate).style=tiny;
+		makeLink(" ^",clean(document.URL).replace(/html/,"html/short")+"."+statement.predicate,predicate).style=tiny;// filter
+		makeLink(" -",document.URL+" -"+statement.predicate,predicate).style=tiny;// filter
+		makeLink(" +",statement.sid+" include "+statement.predicate,predicate).style=tiny;// filter
+		makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
+		makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
+}
+	
+function makeStatement(statement,elem,entity)
 {  // if Wikimedia-Kategorie  BREAK!
   if(filterStatement(statement))return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	if(statement.predicate=="product_image_url")addImage(statement.object,div);
 	var top = document.createElement("tr");
-	makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
+	if(statement.sid!=entity.id)
+		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
+
 	predicate=	makeRow(top)
-	if(editMode)makeLink("x",document.URL.replace(/html.*/,"")+"!delete $"+statement.id,predicate).style=tiny;
+	if(editMode)editLinks(predicate,statement,elem)
 	makeLink(statement.predicate,server+statement.pid,predicate);
-	if(editMode)makeLink(" ^",clean(document.URL).replace(/html/,"html/short")+"."+statement.predicate,predicate).style=tiny;// filter
-	if(editMode)makeLink(" -",document.URL+" -"+statement.predicate,predicate).style=tiny;// filter
-	if(editMode)makeLink(" +",statement.sid+" include "+statement.predicate,predicate).style=tiny;// filter
-	if(editMode)makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
-	if(editMode)makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
-	var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
-	var x=makeLink(statement.object,objectUrl,makeRow(top));
-	if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
+
+	if(statement.oid!=entity.id){
+		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
+		var x=makeLink(statement.object,objectUrl,makeRow(top));
+	// if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
+	}
 	elem.appendChild(top);
-	if(statement.predicate=="quasiris id")throw new Exception(); 
-	// if(statement.match("quasiris"))throw new Exception();
 }
 
 var imageAdded=false;
@@ -116,7 +126,6 @@ function addImage(image,div){
 	var link=document.createElement("a");
 	link.href=image.replace("/thumb/","/").replace(/.150px.*/,"").replace(/\.jpg.*/,".jpg")
 	link.target="_blank"
-	link.style="float:right;width:200px";
 	img=document.createElement("img");
 	img.onerror=function() {
 		if(onerror_handled==0){console.log(this.src);this.src=this.src.replace(/.150px.*/,"");}
@@ -125,10 +134,11 @@ function addImage(image,div){
 		onerror_handled++;;
 	}
 	img.src=image;
-	img.style="float:right;width:200px";
+	if(!inline)link.style="float:right;width:200px";
+	if(!inline) img.style="float:right;width:200px";
 	// img.onerror="this.src=''"
 	link.appendChild(img);
-	appendText(entity.image.replace(/.*\//,""),link);
+	if(!inline)appendText(entity.image.replace(/.*\//,""),link);
 	div.appendChild(link);
 	imageAdded=true;
 }
@@ -138,34 +148,43 @@ function makeEntity(entity)
 	if(entity.topic && entity.topic.startsWith("Wiki"))return;
 	if(editMode)makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
-
+	if(inline)br()
 	if(entity.kind==abstract)appendText("*");
 	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
 	if(!entity.description && entity.topic)
 		if(!entity.topic.match("Wiki"))
 			 appendText(" "+entity.topic+" ");
 
-	link=makeLink("","https://en.wikipedia.org/wiki/"+ entity.name,div)
+	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
 	link.style=nolink+bold+blue+big
 	// link.target="_blank"
 	img=document.createElement("img");
 	img.src="http://pannous.net/files/wikipedia.png";
 	img.width=20
 	link.appendChild(img);
+	if(!inline){
 	if(entity.id>0 && entity.id<20000000)
 	    makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
 	if(entity.id<-10000)
 	    makeLink("P","https://www.wikidata.org/wiki/Property:P"+ ( -10000 - entity.id) ,div)
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
-	if(entity.image && !entity.image.startsWith("Q"))addImage(entity.image,div);
 	// addImage(entity.image,div);
 	appendText("  statements: "+entity.statementCount,div).style="font-size:small;"
+	}
 
-	
+	if(inline)br()
+	if(entity.image && !entity.image.startsWith("Q"))
+		addImage(entity.image,div);
+
 	try{
 		table=append("table",div,"sorted");
-		for(key in entity.statements)
-			makeStatement(entity.statements[key],table)
+		count=0
+		for(key in entity.statements){
+			makeStatement(entity.statements[key],table,entity)
+			count++
+			if(inline && count>8)
+				break
+		}
 	}catch(x){}	
 	br();
 }
@@ -194,32 +213,9 @@ function capitalize(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-function parseResults(results0){
-	if(results0)results=results0;
-	if (typeof results == 'undefined'){console.log("NO results (yet?)!");return;}
-	// var results set via jsonp:
-	// <script src="http://netbase.pannous.com/js/verbose/gehren"></script>
-	div=document.getElementById("netbase_results");
-	div.innerHTML="" //clear
-	div.style="display: none;"// don't render yet
-	url=document.URL.replace(/%20/g," ")
-	addStyle("http://files.pannous.net/styles/table.css")
-	addStyle("/netbase.css")
-	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(/\+/g," ").replace(/limit.*/,"");
-	// title=title.replace(":"," : ").replace("."," . ")
-	title=capitalize(title)
-	document.title=title;
-	appendText(title,append("h1",div))
-	if(results['results'].length>1)link_name=false;
-	for(key in results['results']) {
-		entity=results['results'][key]
-		makeEntity(entity);
-	}
-	var matched=url.match(/limit.(\d*)/);
+function show_footer(){
+	var matched=document.URL.match(/limit.(\d*)/);
 	var limit=matched?matched[1]:200
-	// br();
-	div.style="display: block;"// render now
-
 	div=div.appendChild(document.createElement("small"))
 	if((""+url).match(" -"))
 		makeLink(" MORE |",clean(url).replace("-","limit "+limit*2+" -"));
@@ -243,11 +239,40 @@ function parseResults(results0){
 	makeLink(" VIEW ",clean(url).replace("/html","/html/showview"));///INCLUDES
 	br();
 	br();
-	
 	// footer=document.body
 	// br(footer);
 	// makeLink("© 2010-2016 Pannous.com","http://pannous.com",footer)
 	// makeLink("Provided by pannous.com","http://pannous.com")
+}
+
+function parseResults(results0){
+	if(results0)results=results0;
+	if (typeof results == 'undefined'){console.log("NO results (yet?)!");return;}
+	// var results set via jsonp:
+	// <script src="http://netbase.pannous.com/js/verbose/gehren"></script>
+	div=document.getElementById("netbase_results");
+	div.innerHTML="" //clear
+	div.style="display: none;"// don't render yet
+	url=document.URL.replace(/%20/g," ")
+	addStyle("http://files.pannous.net/styles/table.css")
+	addStyle("/netbase.css")
+	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(/\+/g," ").replace(/limit.*/,"");
+	// title=title.replace(":"," : ").replace("."," . ")
+	title=capitalize(title)
+	document.title=title;
+	if(!find_entities&&!inline) appendText(title,append("h1",div))
+	else br()
+	if(results['results'].length>1)link_name=false;
+	count=0
+	for(key in results['results']) {
+		entity=results['results'][key]
+		makeEntity(entity);
+		count++
+		if(inline&&count>0)break
+	}
+	// br();
+	div.style="display: block;"// render now
+	if(!inline) show_footer()
 }
 
 
@@ -255,15 +280,16 @@ function do_query(_query){
 	try{
 		if(!_query)_query=query.value
 		else query.value=_query
+		_query="verbose/"+_query.replace(/_/g,"+")
+		// if(find_entities)_query="entities/"+_query.replace(/_/g,"+")
 		var script = document.createElement('script');
 		if(document.location.pathname=="index.html") // not a server: fetch external
 			script.src = server+'/js/'+_query  // ?callback/jsonp=parseResults';
 		if(document.location.protocol=="file:"){ // not a server: fetch external
 			script.src = server+'/js/'+_query  // ?callback/jsonp=parseResults';
  			// server="index.html?query="
-		}
-		else
-			script.src = '/js/'+_query
+		}else 
+		 script.src = server+'/js/'+_query
 		// server="/html/"
 			// script.src = document.location.host+'/js/'+_query // ?callback/jsonp=parseResults';
 		console.log("fetching "+script.src)
@@ -272,8 +298,10 @@ function do_query(_query){
 	return false; // done
 }
 
-
 var search = window.location.search;
+var inline=true
+// var find_entities=true
+var find_entities=false
 if(search && search.startsWith("?query"))
 	window.onload = ()=>do_query(search.substring(1+5+1))
 else if(search && search.startsWith("?q"))

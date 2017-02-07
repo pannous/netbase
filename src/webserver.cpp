@@ -357,6 +357,7 @@ int handle(cchar* q0,int conn){
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
 	if (format == html)statement_format = statement_format_json;
+	if (format == js)statement_format = statement_format_json;
 	if (format == json)statement_format = statement_format_json;
 	if (format == json && verbosity==alle) statement_format = statement_format_json_long;
 	if (format == txt)statement_format = statement_format_text;
@@ -389,7 +390,7 @@ int handle(cchar* q0,int conn){
 		if(last==node)continue;
 		if(eq(node->name,"◊"))continue;
 		last=node;
-        if(verbosity ==normal && entity&& eq(entity,node->name))continue;
+        if(verbosity ==normal && entity && eq(entity,node->name))continue;
 		char* text=fixName(getText(node));
 //		if(use_json && get_topic){
 //			if(empty(text))continue;//! no description = no entity? BAD for amazon etc
@@ -439,7 +440,7 @@ int handle(cchar* q0,int conn){
 //		if((use_json)&&getText(node)[0]!=0)
 //			Writeline(", \"description\":\""+string(getText(node))+"\"");
 		Statement* s = 0;
-		if (format==csv|| verbosity == verbose || verbosity == longer|| verbosity == alle || showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
+		if (format==csv|| verbosity ==normal|| verbosity == verbose || verbosity == longer|| verbosity == alle || showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
 			int count=0;
             //            Writeline(",image:\""+getImage(node->name)+"\"");
 			if (use_json)Writeline(conn, ",\n\t \"statements\":[\n");
@@ -457,7 +458,8 @@ int handle(cchar* q0,int conn){
 //				if(!got_topic &&( s->predicate==_Type|| s->predicate==_SuperClass)){
 //					addStatementToNode(node, s->id(), true);// next time
 //				}
-				if(get_topic &&!got_topic && verbosity != verbose && verbosity != alle && (s->predicate>100 || s->predicate<-100))
+				//
+				if(get_topic &&!got_topic &&verbosity != verbose && verbosity != alle  && verbosity != normal && (s->predicate>100 || s->predicate<-100))
 					continue;// only important stuff here!
 				// filter statements
 
@@ -511,9 +513,11 @@ int handle(cchar* q0,int conn){
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
 				char* title="";
 				if(verbosity==alle)title=fixName(getStatementTitle(s,node));
-				sprintf(buff, statement_format, s->id(),  \
-						fixName(s->Subject()->name),  fixName(s->Predicate()->name), fixName(objectName), \
-						s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
+//				p(s);
+				char* subject=fixName(s->Subject()->name);
+				char*  predicate=fixName(s->Predicate()->name);
+				char*  object=fixName(objectName);
+				sprintf(buff, statement_format, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
 				Writeline(conn, buff);
 				good++;
 			}
