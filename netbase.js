@@ -10,7 +10,7 @@ var server="http://87.118.71.26:81/" // for quasiris demo
 // var server="http://de.netbase.pannous.com:81/"
 // var server="http://netbase.pannous.com/"
 var abstract=-102;// Summary nodes
-var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//  BnF-ID 47674->-10268->36430981 etc
+var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410];//  BnF-ID 47674->-10268->36430981 etc
 
 function br(elem){
 	if(!elem)elem=div;
@@ -49,7 +49,7 @@ function makeLink(name,url,elem)
 	var a = document.createElement("a");
 	x=document.createTextNode(name.replace(/\$(....)/,"&#x$1;"));
 	a.href=url;
-	// a.target="_blank"
+	if(inline) a.target="_blank"
 	a.style=nolink+black
 	if(name=="x") a.setAttribute("onclick","return confirm('really delete?')");
 	a.setAttribute("rel","nofollow")
@@ -150,18 +150,19 @@ function makeEntity(entity)
 	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
 	if(inline)br()
 	if(entity.kind==abstract)appendText("*");
+
+	wiki_img=document.createElement("img");
+	wiki_img.src="http://pannous.net/files/wikipedia.png";
+	wiki_img.width=20
+	wiki=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
+	wiki.style=nolink+bold+blue+big
+	wiki.target="_blank"
+	wiki.appendChild(wiki_img);
+
 	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
 	if(!entity.description && entity.topic)
 		if(!entity.topic.match("Wiki"))
 			 appendText(" "+entity.topic+" ");
-
-	link=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
-	link.style=nolink+bold+blue+big
-	// link.target="_blank"
-	img=document.createElement("img");
-	img.src="http://pannous.net/files/wikipedia.png";
-	img.width=20
-	link.appendChild(img);
 	if(!inline){
 	if(entity.id>0 && entity.id<20000000)
 	    makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
@@ -299,7 +300,9 @@ function do_query(_query){
 }
 
 var search = window.location.search;
-var inline=true
+// var inline=true
+var inline=false
+function setInline() {inline=true}
 // var find_entities=true
 var find_entities=false
 if(search && search.startsWith("?query"))
