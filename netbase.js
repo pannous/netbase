@@ -98,14 +98,14 @@ function makeStatement(statement,elem,entity)
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
 	if(statement.predicate=="product_image_url")addImage(statement.object,div);
 	var top = document.createElement("tr");
-	if(inline && statement.sid!=entity.id)
+	if(!inline || statement.sid!=entity.id)
 		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
 
 	predicate=	makeRow(top)
 	if(editMode)editLinks(predicate,statement,elem)
 	makeLink(statement.predicate,server+statement.pid,predicate);
 
-	if(inline && statement.oid!=entity.id){
+	if(!inline || statement.oid!=entity.id){
 		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
 		var x=makeLink(statement.object,objectUrl,makeRow(top));
 	// if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
