@@ -1223,6 +1223,10 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue,int* enqueued){// cha
 	return all;
 }
 
+NodeVector childFilter(Node* subject, NodeQueue * queue,int* enqueued){
+	INCLUDE_CLASSES=true;
+	return instanceFilter(subject,queue,enqueued);
+}
 
 // put as callback into findPath for recursion
 NodeVector subclassFilter(Node* subject, NodeQueue * queue,int *enqueued){
@@ -2564,12 +2568,15 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 	if (recurse > maxRecursions) return 0;
 	//	if (debug&&!eq(match.data(),"wiki_image"))
 	//		show(n);
-	for (int i=0; i < n->statementCount; i++) {
-		Statement* s=getStatementNr(n, i); // Not using instant gap
-		if (!s) {
-			bad();
-			continue;
-		}
+//	for (int i=0; i < n->statementCount; i++) {
+//		Statement* s=getStatementNr(n, i); // Not using instant gap
+
+		Statement* s = 0;
+	int i=0;
+	while ((s = nextStatement(n, s))&& i++<=n->statementCount) {
+			//	for (int i = 0; i < type->statementCount; i++) {
+			//		Statement* s = getStatementNr(type, i);
+		if (!checkStatement(s)){bad();continue;}
 		//		if (debug)showStatement(s);
 		if (isA4(s->Predicate(), match, recurse, semantic)){
 			if (s->Subject() == n) return s->Object();

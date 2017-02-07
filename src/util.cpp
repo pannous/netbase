@@ -39,10 +39,11 @@ bool isNumber(const char* buf) {
 }
 
 char* next_word(char* data){
-	while (data[0]!=0 && data[0]!=' ') {
+	while (data[0]!=0 && data[0]!=' ' && data[0]!='/') {
 		data++;
 	}
 	if(data[0]==' ')data++;
+	if(data[0]=='/')data++;
 	return data;
 }
 string next_word(string data) {
@@ -299,6 +300,7 @@ bool startsWith(string* x, string* y) {
 //string(x)+y
 const char* concat(const char* a,const  char* b){
 //const char* concat(char* a,char* b){// free manually!
+	if(!b)return a;
 	int la=(int)strlen(a);
 	int lb=(int)strlen(b);
 //	char c[la+lb];
@@ -925,6 +927,8 @@ char* dropUrl(char* name){
 const static bool sortNodePredicate(Node* a, Node* b) {
 	if(!b)return true;
 	if(!a)return false;
+	if(!checkNode(a))return false;
+	if(!checkNode(b))return false;
 	int x=a->statementCount;
 	int y=b->statementCount;
 	return x>y;

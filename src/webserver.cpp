@@ -299,10 +299,15 @@ int handle(cchar* q0,int conn){
         showExcludes=true;
     }
 	bool safeMode=true;
-	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
-	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
-	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
-	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
+	if (startsWith(q, "query/")) {
+		q = q + 6;
+		safeMode=false;// RLLY
+	}
+
+//	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
+//	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
+//	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
+//	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
 
 	p(q);
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -488,11 +493,12 @@ int handle(cchar* q0,int conn){
 				fixLabels(s);
 				if(!(verbosity==verbose||verbosity==alle||verbosity==abstract) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
 				if(verbosity==abstract && s->Predicate()!=Instance && s->Predicate()!=Type)continue;
+				if(!checkNode(s->object,false,true))continue;
 				if(use_json && good>0)Writeline(conn, ",\n");
 				char* objectName=s->Object()->name;
 				if(s->Predicate()==Instance){
 					N type=getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);
-					if(checkNode(type))
+					if(checkNode(type,false,true))
 						objectName=(char*)(concat(concat(objectName, ": "),type->name));
 				}
 				if(!objectName){

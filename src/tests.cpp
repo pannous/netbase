@@ -1938,7 +1938,12 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 ////////////////////////////////////////////////////////////////////
-	addNormLabels();
+	//	buildSeoIndex();
+//	handle("/json/all/query/all/6256");
+//	handle("/json/all/state");
+	handle("/json/all/-200032");
+
+//	addNormLabels();
 //	testBug();
 //	fixCurrent();
 //	testMarkedNodes();

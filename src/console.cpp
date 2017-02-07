@@ -490,6 +490,18 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return *findWordsByName(wordnet, data + 13, false,true);
 	if (eq(args[0], ":find"))// ambiguous!
 		return *findWordsByName(wordnet, data + 6, false);
+	if(startsWith(data, ":children")||startsWith(data, ":all ")||startsWith(data, "all/")){
+		N da=getAbstract(next_word(data));
+		NS all=findAll(da,childFilter);
+		return setToVector(all);
+	}
+	if (startsWith(data, ":instances")){
+		N da=getAbstract(next_word(data));
+		//		if(endsWith(data, "s"))data[-1]=0
+		NS all=findAll(da,instanceFilter);// childFilter
+		//		show(all);// ok, show!
+		return setToVector(all);
+	}
 
 	//		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
 	//Big the Cat 	x Species ^ - + -- -!
@@ -557,13 +569,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		data=next_word(data);
 		if(isInteger(data))data=get(atoi(data))->name;
 		return showWrap(getAbstract(data));// ok, create here! VS hasWord
-	}
-
-	if (startsWith(data, ":all ")||startsWith(data, ":children")||startsWith(data, ":instances")){//||startsWith(data, "children ")
-		N da=getAbstract(next_word(data));
-		NS all=findAll(da,instanceFilter);// childFilter
-//		show(all);// ok, show!
-		return setToVector(all);
 	}
 
 	if (startsWith(data, ":printlabels")){

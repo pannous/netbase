@@ -826,6 +826,13 @@ Statement * addStatement(Node* subject, Node* predicate, Node* object, bool chec
 // TODO firstInstanceGap too complicated, but needed for nodes with 1000000 instances (city etc)
 // TODO only used in addStatementToNodeWithInstanceGap !!
 
+
+// USE ITERATOR!! :::
+// Statement* s = 0;int i=0;
+// while ((s = nextStatement(n, s))&& i++<=n->statementCount) {
+//	if (!checkStatement(s)){bad();continue;}
+// USE ITERATOR!! ^^^
+// DEPRECATED :
 Statement * getStatementNr(Node* n, int nr, bool firstInstanceGap) {
 	//	if(nr==0)return 0;// todo ????
 //    	if (nr >= maxStatementsPerNode) {
@@ -1455,7 +1462,7 @@ Node* rdfValue(char* name) {
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
 Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!!
-	if (thing == 0) {
+	if (thing == 0 || strlen(thing)==0) {// or not is
 		bad();
 		return 0;
 	}
@@ -1622,7 +1629,7 @@ NodeVector* findWordsByName(int context, const char* word, bool first,bool conta
 	// pi(context);
 	NodeVector* all=new NodeVector();
 	Context* c=getContext(context);
-	for (int i=0; i < c->nodeCount; i++) {
+	for (int i=-propertySlots; i < c->nodeCount; i++) {
 		Node* n=&c->nodes[i];
 		if (n->id==0||!checkNode(n, i, true, false)) continue;
 		bool good=eq(n->name, word, true);
@@ -2549,7 +2556,7 @@ Context* currentContext(){
 void stripName(Node* n){
 	int l=(int)strlen(n->name);
 	if(l>1&&n->name&&n->name[l-1]==' '){
-		p(n->name);
+		if(debug)p(n->name);
 //		continue;
 		N o=hasWord(n->name);
 		if(o){
@@ -2557,7 +2564,7 @@ void stripName(Node* n){
 //			if(!checkNode(o))continue;
 			int l=(int)strlen(o->name);
 			if(l>1&&n->name&&o->name[l-1]!=' '){
-				p(o->name);
+				if(debug)p(o->name);
 				//					n->name[l-1]=0;
 			}
 		}
@@ -2575,7 +2582,7 @@ void addSeo(Node* n0){
 	if(old){
 		if(old->statementCount>=n0->statementCount)return;// ok
 		if(old==n)return;// ok, abstract
-		pf("addSeo FORCE %s	->	%s\n",n->name,seo);
+		if(debug)pf("addSeo FORCE %s	->	%s\n",n->name,seo);
 		insertAbstractHash(wordhash(seo),n,true,true);
 		return;
 	}
@@ -2586,15 +2593,18 @@ void addSeo(Node* n0){
 	insertAbstractHash(wordhash(seo),n,false,true);
 }
 
+// :build-seo
 void buildSeoIndex(){
 	p("Building SEO index. This can take some minutes.");
 //	importTest();
 	context=currentContext();
+	debug=false;
 //	addSeo(get(10506175));
 //	return;
 	for (int i=1; i<maxNodes; i++) {
+		if(i%10000==0){pf("%d\r",i);fflush(stdout);}
 		Node* n= get(i);
-		if(!checkNode(n)||!n->name)continue;
+		if(!checkNode(n,i,0,1,debug)||!n->name)continue;
 		addSeo(n);
 		stripName(n);
 		//			2/2-Wege Direktgesteuertes Ventil 184684 230 V/AC G 1/2 Muffe Nennweite 8 mm Gehäusematerial Messing Dichtungsma  HOW??

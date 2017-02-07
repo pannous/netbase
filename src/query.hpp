@@ -46,10 +46,10 @@ NodeVector parentFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
 NodeVector subclassFilter(Node* subject, NodeQueue * queue,int* enqueued=null);
 NodeVector memberFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
 NodeVector hasFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
-NodeVector childFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
 NodeVector ownerFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
 NodeVector anyFilter(Node* subject,NodeQueue* queue=null,bool includeRelations=true,int* enqueued=null);
 NodeVector instanceFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);// chage all + edgeFilter!! for , int max= lookupLimit);// resultLimit
+NodeVector childFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
 NodeVector relationsFilter(Node* subject, NodeQueue * queue=null,int* enqueued=null);
 
 NodeVector parseProperties(const char *data);
