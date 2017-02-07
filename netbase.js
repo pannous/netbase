@@ -286,7 +286,7 @@ function parseResults(results0){
 		console.log(count)
 		if(inline && count>=1)break
 	}
-	if(count>0) div.style="display: block;"// render now
+	if(count>0) div.style.display="block"// render now!
 	if(!inline) show_footer()
 }
 
