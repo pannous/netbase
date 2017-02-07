@@ -9,7 +9,7 @@ You can start *experimenting* with the [API](https://www.mashape.com/pannous/net
 [Python](https://github.com/pannous/netbase-python),
 [Ruby](https://github.com/pannous/netbase-ruby),
 [Java](http://github.com/pannous/blueprints-netbase) (alpha) and
-[Node.js](https://github.com/pannous/netbase-node),
+[Node.js](https://github.com/pannous/node-netbase),
 
 *Browse* our [Knowledge Graph](http://netbase.pannous.com/html/verbose/example), run locally
 or host as your own graph database, it is very quick to load.
