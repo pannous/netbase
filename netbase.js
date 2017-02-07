@@ -140,8 +140,12 @@ function addImage(image,div){
 		onerror_handled++;;
 	}
 	img.src=image;
-	if(!inline)link.style="float:right;width:200px";
-	if(!inline) img.style="float:right;width:200px";
+	if(!inline){
+		link.style.float="right"
+		link.style.width="200px"
+		img.style.float="right"
+		img.style.width="200px"
+	}
 	// img.onerror="this.src=''"
 	link.appendChild(img);
 	if(!inline)appendText(entity.image.replace(/.*\//,""),link);
