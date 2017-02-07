@@ -5,9 +5,9 @@ var div;// results
 var editMode=false;
 var link_name=true;
 // var server="/";//html/"; 
-var server="http://87.118.71.26:81" // for quasiris demo
-// var server="http://big.netbase.pannous.com:81"
-// var server="http://de.netbase.pannous.com:81"
+var server="http://87.118.71.26:81/" // for quasiris demo
+// var server="http://big.netbase.pannous.com:81/"
+// var server="http://de.netbase.pannous.com:81/"
 // var server="http://netbase.pannous.com/"
 var abstract=-102;// Summary nodes
 var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159];//  BnF-ID 47674->-10268->36430981 etc
