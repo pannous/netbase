@@ -867,9 +867,8 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			pf("importCsv %s stats: %d good, %d bad \r", file, linecount,badCount);
 			fflush(stdout);
 		}
-		if(contains(line, "Überschuldung"))
-		        ps(line);
-		if (size==1){bad();continue;}
+//		if(contains(line, "DEBUG"))
+//		        ps(line);
 		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
 			bad();
 //			p(line);

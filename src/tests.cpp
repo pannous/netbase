@@ -1942,7 +1942,8 @@ void testBrandNewStuff() {
 //	handle("/json/all/query/all/6256");
 //	handle("/json/all/state");
 //	handle("/json/all/-200032");
-	handle("/js/all/pizza");
+	import("Telekom-Produkt.csv");
+//	handle("/js/all/pizza");
 //	addNormLabels();
 //	testBug();
 //	fixCurrent();
