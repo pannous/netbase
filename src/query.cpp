@@ -350,6 +350,8 @@ Statement* parseSentence(string sentence, bool learn/* = false*/) {
 		ps("Currently only triples can be learned. If you have multiple_word nodes combine them with an underscore");
 		return 0;
 	}
+	fixLabel(matches[0]);
+	fixLabel(matches[2]);
 	replaceChar(matches[0], '_',' ');
 	replaceChar(matches[2], '_',' ');
 	Node* subject = getThe(matches[0]);

@@ -913,6 +913,7 @@ void fixLabel(char* label){
 	wo=strstr(label+1,">");
 	if(wo)wo[-1]=0;
 }
+
 char* dropUrl(char* name){
 	size_t len=strlen(name);
 	if(name[len-1]=='>')name[len-1]=0;
