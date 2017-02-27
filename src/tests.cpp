@@ -1941,8 +1941,9 @@ void testBrandNewStuff() {
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
 //	handle("/json/all/state");
-//	handle("/json/all/-200032");
-	import("Telekom-Produkt.csv");
+	//	handle("/json/all/-200032");
+	import("Telekom-Produkts.n3");
+//	import("Telekom-Produkt.csv");
 //	handle("/js/all/pizza");
 //	addNormLabels();
 //	testBug();
