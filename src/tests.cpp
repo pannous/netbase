@@ -1937,8 +1937,11 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
-//	handle("/json/all/state");
+	//	handle("/json/all/state");
+	parse(":learn \"MagentaMobil S\" is Telekom_Produkt");
+	parse(":learn MagentaMobil_SSS is Telekom_Produkt");
 	//	handle("/json/all/-200032");
+	exit(0);
 	testAll();
 //	import("Telekom-Produkts.n3");
 //	import("Telekom-Produkt.csv");
