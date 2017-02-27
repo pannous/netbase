@@ -1885,6 +1885,7 @@ void deleteNode(int id){
     deleteNode(get(id));
 }
 void deleteNode(Node * n) {
+// 2017-02-30 : STILL EVIL! TEST!!
 	if (!checkNode(n)) return;
 	if (n->kind == _abstract) {
         NodeVector nv=instanceFilter(n);
@@ -1899,7 +1900,7 @@ void deleteNode(Node * n) {
 			a->value.node=0;
 	}
 	deleteStatements(n);
-	memset(n, 0, sizeof(Node)); // hole in context!
+//	memset(n, 0, sizeof(Node)); // hole in context!
 }
 
 void deleteStatements(Node * n) {
@@ -2353,6 +2354,7 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	if(!best){
 		best=add(abstract->name,type->id,0);
 		if(type->id>0) addStatement(best, Type, type);
+		addStatement(abstract, Instance, best,false,true);
 	}
 	return best;
 }

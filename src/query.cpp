@@ -254,6 +254,7 @@ NodeVector query(string s, int limit/*=resultLimit*/) {
 	p(("Executing query "));
 	ps(s);
 	Query q = parseQuery(s, limit);
+	lookupLimit=1000000;// todo: good
 //    q.queryType=sqlQuery;// njet!
     NodeVector results=query(q);
     showNodes(results);
@@ -297,7 +298,7 @@ NodeVector sqlTable(Query& q){
 }
 
 NodeVector query(Query& q) {
-	NodeVector all = allInstances(q.keyword);
+	NodeVector all = allInstances(q.keyword,1,lookupLimit,false);
 	for (int i = 0; i < q.keywords.size(); i++)
 		if (q.keywords[i] != q.keyword)
 			mergeVectors(&all, allInstances(q.keywords[i]));
@@ -1030,7 +1031,8 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 			//			else
 			lookupLimit=max;
 			more = instanceFilter(x);//,null,max); //   all_instances(x, recurse-1, max);
-			mergeVectors(&all, more);
+			if(all.size()<=1)all=more;
+			else mergeVectors(&all, more);
 		}
 	subtypes.push_back(type);
 	if (includeClasses)

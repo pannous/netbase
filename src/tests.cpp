@@ -13,10 +13,6 @@
 #include "webserver.hpp"
 //#define assert(cond) ((cond)?(0): (fprintf (stderr,"FAILED: \ %s, file %s, line %d \n",#cond,__FILE__,__LINE__), abort()))
 
-void clearTestContext() {
-	clearMemory();
-	initRelations();
-}
 
 void checkWordnet() {
 	if (hasWord("effloresce")) return;
@@ -217,8 +213,9 @@ void testGeoDB(){
 
 	//    if(nodeCount()<100000)
 	if(!hasNode("Gehren"))
-	importGeoDB();
+		importGeoDB();
 	//        execute("import ./import/cities1000.txt");
+	//        :import cities1000.txt
 
 	defaultLookupLimit=100000;
 	das(Gehren);
@@ -231,8 +228,15 @@ void testGeoDB(){
 	NV all;
 	N city=getThe("city");
 	p(city);
-	NodeVector cities=all_instances(city,1);
+	NodeVector cities=all_instances(city,2);
 	check(cities.size()>10);
+
+	all=query("city where population=3703");// Gehren
+	check(all.size()>0);
+	N population=getProperty(all[0],"population");
+	p(population);
+	check(population->value.number==3703);
+
 	all=query("city where elevation=141");
 	//	all=query("city where Elevation=141");
 	check(all.size()>0);
@@ -250,13 +254,6 @@ void testGeoDB(){
 	p(latitude);
 	p(latitude->value.number);
 	//    check(latitude->value.number==50.65);// TOTO FOX
-
-	all=query("city where population=3703");
-	check(all.size()>0);
-	//    showNodes(all);
-	show(all[0]);
-	N population=getProperty(all[0],"population");
-	check(population->value.number==3703);
 
 	all=query("all city with countrycode=AD");
 	check(all.size()>0);
@@ -776,8 +773,8 @@ void testImages() {
 	getThe("alabama");
 	getThe("Alabama");
 	if (getImage("alabama") == "" || getImage("Alabama") == "") {
-		clearMemory();
-		importAll();
+//		clearMemory();
+//		importAll();
 		importImages();
 //		import("images");
 	}
@@ -804,14 +801,14 @@ void testInstanceLogic() {
 	check(test3->kind==adjective);
 	check(test3!=test2);// type Adjective vs Noun matters
 	N abstrac=a(test);
-	p(abstrac);
 	check(abstrac->kind==_abstract);
 	//	check(getStatementNr(a(test), 1)->object==test3->id);
+	check(isA4(test3, Adjective)); //semantic, depth 0
 	Node* test4=getThe("test", Adjective);
+	p(abstrac);
 	check(test3==test4);
-	check(getThe("test", Adjective) == test3);
-	deleteNode(test3);
-	deleteNode(test4);
+//	deleteNode(test3);// STILL EVIL!
+//	deleteNode(test4);
 	//	exit(0);//test make!!
 	//    Node* aBaum=getAbstract("Baum");
 	//	deleteWord("tester",true);
@@ -1297,7 +1294,7 @@ void testCities() {
 	vector<char*> fields;
 	//	int n=getFields(editable(line),fields,'\t');
 	//	check(fields.size()==nr);
-	clearMemory();
+//	clearMemory();
 	if (!hasWord("Mersing")) {
 		cchar* ignore=
 		"alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
@@ -1795,7 +1792,8 @@ extern "C" void testAll() {
 #ifndef __clang_analyzer__
 	context=getContext(0);
 	germanLabels=false; // for tests!
-	clearMemory();
+//	clearMemory();
+	testValueLogic();
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
 	testStringLogic();
 	testHash();
@@ -1806,7 +1804,6 @@ extern "C" void testAll() {
 	testInstancesAtEnd();
 	testInsertForceStart();
 	testHash();
-	testValueLogic();
 
 	testReification();
 	testStringLogic2();
@@ -1942,7 +1939,8 @@ void testBrandNewStuff() {
 //	handle("/json/all/query/all/6256");
 //	handle("/json/all/state");
 	//	handle("/json/all/-200032");
-	import("Telekom-Produkts.n3");
+	testAll();
+//	import("Telekom-Produkts.n3");
 //	import("Telekom-Produkt.csv");
 //	handle("/js/all/pizza");
 //	addNormLabels();
