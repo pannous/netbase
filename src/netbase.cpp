@@ -2219,7 +2219,7 @@ Statement * learn(const char* sentence0) {
 	p("OK");
 	p(sentence0);
 	string sentence=sentence0;
-	ps("learning " + sentence);
+	ps("Learning " + sentence);
 	Statement* s;
 	if (!contains(sentence, "="))
 		s= parseSentence(sentence,true);
