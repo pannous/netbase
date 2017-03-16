@@ -194,7 +194,7 @@ static const int _missing= -999;
 static const int _any=0;// !!!
 static const int _unknown=0;
 static const int _see= -50,//50 also, -40 similar
-	_Hypernym = -1,
+	_Hypernym = -1,// ~
 	_SuperClass= -1,//SuperClass  bugs=>ARE=>animals
 	_hyponym = -2,
 	_SubClass= -2,//SubClass	animals=>i.e.=>bugs  (turn around!)

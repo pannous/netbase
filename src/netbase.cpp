@@ -91,9 +91,10 @@ Ahash* extrahash; // for hashes that are not unique, increasing
 map<int, int> wn_map;
 //map<int, int> wn_map2;
 
-map<Node*, bool> yetvisited;
+
+bool useYetvisitedIsA=false; // BROKEN!! EXPENSIVE!!! true; // false;
 map<double, short> yetvisitedIsA;
-bool useYetvisitedIsA=false; // BROKEN!! true; // false; EXPENSIVE!!!
+map<Node*, bool> yetvisited;
 
 //static map < Node*, bool> yetvisited;
 //static map <double, short> yetvisitedIsA;
@@ -2366,19 +2367,11 @@ bool isA(Node* fro, Node* to) {
 	if (isA4(fro, to, 0, 0)) return true;
 
 	Statement* s=0;
-	while ((s=nextStatement(fro, s)))
-		if (s->Object() == fro && isA4(s->Predicate(), to)) return true;// x.son=milan => milan is_a son
+	while ((s=nextStatement(fro, s)))// 'quick' check
+		if (s->Object() == fro && isA4(s->Predicate(), to))
+			return true;// x.son=milan => milan is_a son
 
-	if (fro->kind == Abstract->id) {
-		NodeVector all=instanceFilter(fro);
-		for (int i=0; i < all.size(); i++) {
-			Node* d=(Node*) all[i];
-			while ((s=nextStatement(d, s)))
-				if (s->Object() == d && isA4(s->Predicate(), to)) return true; // x.son=milan => milan is_a son
-			if (!findPath(d, to, parentFilter).empty()) return true;
-		}
-	}
-	return !findPath(fro, to, parentFilter).empty();
+	return findPath(fro, to, parentFilter).empty()==false;
 }
 
 // all mountains higher than Krakatao

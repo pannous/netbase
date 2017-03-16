@@ -510,28 +510,23 @@ void testWordnet() {
 	showContext(wordnet);
 	p("contexts[wordnet].nodeCount:");
 	p(c.nodeCount);
-	//    show(&c.nodes[38749]);
-	// assert(strcmp(c.nodes[38749].name,"disposal")==0,"contexts[wordnet].nodes[38749].name=disposal");
-	//    assert(checkNode(&c.nodes[38749], 38749), "checkNode(c.nodes[38749],38749)");
-	// assert(strcmp(c.nodes[38749].name,"fall")==0,"contexts[wordnet].nodes[38749].name=fall");
-	//    assert(findWord(wordnet, "fall") > 0, "find(wordnet,fall)>0");
-	//    assert(findWord(wordnet, "fall", true) > 0, "find(wordnet,fall)>0");
-	// Node: context:wordnet id=4919 name=test statementCount=17 kind=wordnet
-	//    Node* test = findWord(wordnet, "test", true);
-	// assert(test->id==4919)
-	//    assert(strcmp(test->name, "test") == 0, "test->name==test");
-	//	assert(test->statementCount==17,"test->statementCount==17");
-	//    show(the(duck));
-	//    show(a(duck));
+	show(&c.nodes[-38749]);
+	check(strcmp(c.nodes[-38749].name,"confirm")==0);
+	N bird=a(bird);
+	check(isA(get(-241519), a(bird)));
+//	clearAlgorithmHash(); deprecatred
 	check(isA(a(gooney), a(bird)));
-	//    assert(isA(a(duck), a(bird)), "duck isA poultry");
-	//    assert(isA(a(duck), a(poultry)), "duck isA poultry");
-	//    assert(isA(the(duck), the(bird)), "duck isA poultry");// yeah: the! main concept
-	clearAlgorithmHash();
+	check(isA(a(duck), a(poultry)));
+//	clearAlgorithmHash();
+	check(isA(the(poultry), a(bird)));
+	check(isA(a(poultry), a(bird)));
+	check(isA(a(duck), a(bird)));// wow how?
+//	check(isA(the(duck), the(bird)));// yeah: the! main concept
+//	clearAlgorithmHash();
 	//todo:
 	assert(isA(getAbstract("duck"), getAbstract("bird")), "duck isA bird"); // yuhu! 2010-02-07
 	clearAlgorithmHash();
-	return;
+//	return;
 	//	assert(has("duck", "beak"), "has(duck,beak)");// 241531	duck	flesh of a duck   confusion?
 	assert(has("duck", "tail"), "has(duck,tail)");
 	assert(has("duck", "head"), "has(duck,head)"); // fails but not in console !?! wtf???
@@ -1938,8 +1933,11 @@ void testBrandNewStuff() {
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
 	//	handle("/json/all/state");
-	parse(":learn \"MagentaMobil S\" is Telekom_Produkt");
-	parse(":learn MagentaMobil_SSS is Telekom_Produkt");
+//	parse("gooney");
+//	handle("/html/-210674");
+	testWordnet();
+//	parse(":learn \"MagentaMobil S\" is Telekom_Produkt");
+//	parse(":learn MagentaMobil_SSS is Telekom_Produkt");
 	//	handle("/json/all/-200032");
 	exit(0);
 	testAll();

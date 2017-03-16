@@ -4,8 +4,8 @@
 var div;// results
 var editMode=false;
 var link_name=true;
-// var server="/";//html/"; 
-var server="http://87.118.71.26:81/" // for quasiris demo
+var server="/";//html/"; 
+// var server="http://87.118.71.26:81/" // for quasiris demo
 // var server="http://big.netbase.pannous.com:81/"
 // var server="http://de.netbase.pannous.com:81/"
 // var server="http://netbase.pannous.com/"

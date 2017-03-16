@@ -741,8 +741,10 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	//        findWord(context->id, data);
     if(isAbstract(a)&&i == 0) {
 		lookupLimit=resultLimit;
+		N the=getThe(a);
+		show(the);
 		NV all=instanceFilter(a);
-//		all.insert(a);// include abstract!
+		all.push_back(the);
 		all.push_back(a);// include abstract!
 //		sortNodes(all);
 		return all;

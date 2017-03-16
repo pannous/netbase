@@ -1423,9 +1423,11 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances,in
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == SubClass;
         
 		if (queue) {
-			if (subjectMatch && predicateMatch)enqueue(subject, s->Object(), queue, enqueued);
+			if (subjectMatch && predicateMatch)
+				enqueue(subject, s->Object(), queue, enqueued);
 			if (subjectMatchReverse && predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
-		} else {
+		}
+		else {
 			if (subjectMatch && predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
 		}
@@ -1643,7 +1645,7 @@ NodeVector findAllSubclasses(Node *fro){
 bool filterWikiType(int object){
 	// PROBLEM : Give lower priority with competing correct superclass
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
-	if(object<0)return DROP;
+//	if(object<0)return DROP;// wordnet!
 	if(object==13406463)return DROP; // Wikimedia-Liste	Q13406463
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 // AUTO:
@@ -1749,9 +1751,10 @@ bool filterWikiType(int object){
 // ONE path! See findAll for all leaves
 NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 	context=getContext(0);
-	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	long byteCount=maxNodes * sizeof (int); // context->nodeCount
+	int* enqueued = (int*) malloc(byteCount);
 	if (enqueued == 0)throw "out of memory for findPath";
-	memset(enqueued, 0, context->nodeCount * sizeof (int));// Necessary?
+	memset(enqueued, 0, byteCount);// Necessary?
 //	ps("LOAD!");
 	NodeQueue q;
 	q.push(fro);
@@ -1760,7 +1763,8 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	// NOT neccessary for anyPath , ...
 	NodeVector instances;
 	if (edgeFilter != anyFilterNoKinds && edgeFilter != instanceFilter && edgeFilter != anyFilterRandom) // && edgeFilter!=
-		instances = allInstances(fro);
+		if (edgeFilter != parentFilter || isAbstract(fro))
+			instances = allInstances(fro);
 	for (int i = 0; i < instances.size(); i++) {
 		Node* d = instances[i];
 		enqueued[d->id] = fro->id;
@@ -1777,16 +1781,18 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	while ((current = q.front())) {
 		if (q.empty())break;
 		q.pop();
-		if(filterWikiType(current->id))continue;
-		//		if(current->id==230608)
-		//			pf("?? %d %s\n",current->id,current->name);
+		if(filterWikiType(current->id)){
+//			pf("filterWikiType %d %s\n",current->id,current->name);
+			continue;
+		}
 		if (to == current){// GOT ONE!
 			path=reconstructPath(fro, to,enqueued); // shortcut
 			break;
 		}
 		if (!checkNode(current, 0, true))
 			continue;
-		NodeVector all = edgeFilter(current, &q,enqueued);
+//		NodeVector all = edgeFilter(current, &q,enqueued);// always EMPTY if using queue!
+		NodeVector all = edgeFilter(current, 0,enqueued);// always EMPTY if using queue!
 		if (all != EMPTY)// no queue
 			for (int i = 0; i < all.size(); i++) {
 				Node* d = (Node*) all[i];
