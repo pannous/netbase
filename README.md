@@ -17,12 +17,14 @@ or host as your own graph database, it is very quick to load.
 Start the console via `./netbase`
 and get the available commands with :help
 
-Netbase is much more than a hyperfast triple store: it has the [wordnet](http://wordnet.princeton.edu/) ontology and its relations built-in as its back-bone, so that you can quickly query with synonyms, transitive class hierarchies, part meronyms etc.
+Netbase is much more than a hyperfast triple store: it has the [wordnet](http://wordnet.princeton.edu/) ontology built-in.
+Its relations are the back-bone of netbase, so that you can quickly query with synonyms, transitive class hierarchies, part meronyms etc.
 
-For example instead of asking about the "names of the daughters of Barack Obama" you could just search for "Obamas kids".
+Instead of asking about the "names of the daughters of Barack Obama" you could just search for "Obamas kids".
 
 Extremely fast data import is provided for all common graph/data formats including n3, rdf, owl, csv, mysql, sql and xml;
 The same formats are available for data access and data export together with the  standard.
 
 This database is already used by millions of users through the [Jeannie](http://jeannie-assistant.com/) app.
+Germans might also unknowingly had concert this technology through enterprise customers of [Quasiris Recharge](http://903.hqgmbh.eu/quasiris/wordpress/de/recharge/)
 Here we show the power of natural language queries to get instant answers.
