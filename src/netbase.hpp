@@ -34,6 +34,7 @@ extern int lookupLimit;// set per query :( todo : param! todo: filter while iter
 //#define inlineName true // because of char* loss!!!!  TODO!!!
 
 #define CHECK_DUPLICATES true
+#define DONT_CHECK_DUPLICATES false
 #define DONT_DISSECT false
 #define NO_TYPE 0
 

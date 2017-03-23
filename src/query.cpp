@@ -2190,7 +2190,8 @@ N getClass(N n){
 N getTopic(N node){
 //	NV all=getTopics(node);
 //	return getFurthest(node,parentFilter);
-	N t=getProperty(node, "topic");
+	N t=    getProperty(node, "topic");
+	if(!t)t=getProperty(node, "Kategorie");
 	if(t)return t;
 	return getFurthest(node,topicFilter);
 //	if(all.size()==0)return Entity;

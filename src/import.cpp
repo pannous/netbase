@@ -805,6 +805,22 @@ string str(char* c){
 }
 
 int total_bad=0;
+bool doSplitValues=true;
+void splitValues(N subject,N predicate, char* values){
+	std::vector<string> value_list=splitString(values,"|");
+	N last=0;
+	for(int i =0 ; i<value_list.size();++i)
+	{
+		string v=value_list.at(i);
+		N object=getThe(v);
+		addStatement(subject, predicate,object, !CHECK_DUPLICATES);
+//		if(last)addStatement(last,SubClass,object, CHECK_DUPLICATES);
+		last=object;
+	}
+//	for(string s of splitString(object,"|"))
+//		addStatement(subject, predicate, getThe(object), !CHECK_DUPLICATES);
+}
+
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
 	p("\nimport csv start");
 	bool tmp_autoIds=autoIds;
@@ -971,9 +987,9 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				if (debug) printf("ERROR %s\n", line);
 				continue;
 			}
-			//			Statement *s=
-			addStatement(subject, predicate, object, !CHECK_DUPLICATES);
-			//			showStatement(s);
+			if(doSplitValues && contains( object->name,'|'))
+				splitValues(subject, predicate, object->name);
+			else addStatement(subject, predicate, object, !CHECK_DUPLICATES);
 		}
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
