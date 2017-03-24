@@ -809,7 +809,7 @@ bool doSplitValues=true;
 void splitValues(N subject,N predicate, char* values){
 //	N last=0;
 	for(string s : splitString(values,"|")){
-		N object=getThe(v);
+		N object=getThe(s);
 		addStatement(subject, predicate,object, !CHECK_DUPLICATES);
 //		if(last)addStatement(last,SubClass,object, CHECK_DUPLICATES);
 		//		last=object;
