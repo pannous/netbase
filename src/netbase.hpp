@@ -41,11 +41,12 @@ extern int lookupLimit;// set per query :( todo : param! todo: filter while iter
 //#define name(w) getThe(#w)
 #define word(w) getAbstract(#w)
 #define some(word) getAbstract(#word)
-#define a(word) getAbstract(#word)
+
 //#define a(word) getThe(#word)
 #define all(word) getAbstract(#word)
 //#define all(word) getThe(#word) //todo!
-#define _(w) getThe(#w)
+//#define a(word) getAbstract(#word)
+//#define _(w) getThe(#w)
 #define the(word) getThe(#word)
 #define has_the(word) getThe(#word)// semantic bla
 #define have_the(word) getThe(#word)// semantic bla

@@ -2201,7 +2201,7 @@ void initUnits() {
         //		collectAbstracts();
 	}
 	Node* u=getThe("meter", Unit);
-	addStatement(a(length), has_the("unit"), u);
+	addStatement(getAbstract("length"), has_the("unit"), u);
 
 	//    addSynonyms(u,"m");
 	getThe("m^2", Unit);

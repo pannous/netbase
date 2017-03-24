@@ -2015,14 +2015,14 @@ void importEntities(){
 
 
 void importNames() {
-	addStatement(all(firstname), are, a(name));
-	addStatement(all(firstname), Synonym, a(first name));
-	addStatement(all(male firstname), have_the(gender), a(male));
-	addStatement(all(male firstname), are, a(firstname));
-	addStatement(all(male firstname), Owner, a(male));
-	addStatement(all(female firstname), have_the(gender), a(female));
-	addStatement(all(female firstname), are, a(firstname));
-	addStatement(all(female firstname), Owner, a(female));
+	addStatement(all(firstname), are, the(name));
+	addStatement(all(firstname), Synonym, the(first name));
+	addStatement(all(male firstname), have_the(gender), the(male));
+	addStatement(all(male firstname), are, the(firstname));
+	addStatement(all(male firstname), Owner, the(male));
+	addStatement(all(female firstname), have_the(gender), the(female));
+	addStatement(all(female firstname), are, the(firstname));
+	addStatement(all(female firstname), Owner, the(female));
 	if(!germanLabels){
 	importList("FrauenVornamen.txt", "female firstname");
 	importList("MaennerVornamen.txt", "male firstname");

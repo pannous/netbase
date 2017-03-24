@@ -13,6 +13,8 @@
 #include "webserver.hpp"
 //#define assert(cond) ((cond)?(0): (fprintf (stderr,"FAILED: \ %s, file %s, line %d \n",#cond,__FILE__,__LINE__), abort()))
 
+#define a(word) getAbstract(#word)
+#define _(w) getThe(#w)
 
 void checkWordnet() {
 	if (hasWord("effloresce")) return;
@@ -2079,3 +2081,6 @@ void testBrandNewStuff() {
 #endif
 } // Continue with shell
 
+
+#undef a
+#undef _
