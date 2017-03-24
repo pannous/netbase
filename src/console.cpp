@@ -331,6 +331,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if(startsWith(data, ":the")){
 		data=next_word(data);
+		pf("special %s",data);
 		N t=getThe(data);
 		if(!t){
 			pf("No special %s",data);
