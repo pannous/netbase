@@ -331,7 +331,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if(startsWith(data, ":the")){
 		data=next_word(data);
-		return nodeVectorWrap(getThe(data));
+		return nodeVectorWrap(getThe(data)||getAbstract(data));
 	}
 
 	if (contains(data, ":lookup")) {
