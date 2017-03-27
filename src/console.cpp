@@ -329,16 +329,17 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return nodeVectorWrap(getThe(getImage(data)));
 	}
 
-	if(startsWith(data, ":the")){
-		data=next_word(data);
-		pf("special %s",data);
-		N t=getThe(data);
-		if(!t){
-			pf("No special %s",data);
-			t=getAbstract(data);
-		}
-		return nodeVectorWrap(t);
-	}
+//	if(startsWith(data, ":the")){
+//		data=next_word(data);
+//		pf("special %s",data);
+//		N t=getThe(data);
+//		show(t);
+//		if(!t){
+//			pf("No special %s",data);
+//			t=getAbstract(data);
+//		}
+//		return nodeVectorWrap(t);
+//	}
 
 	if (contains(data, ":lookup")) {
 		char* limit=(char*)strstr(data,"lookup");
