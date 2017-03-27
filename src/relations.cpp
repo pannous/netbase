@@ -108,6 +108,8 @@ Node* From;
 Node* By;
 Node* For;
 Node* On;
+Node* Next;// followed by / comes-before
+Node* Previous;// follows / predecessor / comes-after
 
 Node* Equals;
 Node* Greater;
@@ -259,6 +261,13 @@ void initRelationsDE() {
     
 	True= addRelation(_true,"Wahr");
 	False=addRelation(_false,"Falsch");// todo
+
+
+	From=addRelation(_from,"Von");
+	To=addRelation(_to,"Bis");//  VS NACH!!
+	To=addRelation(_to,"Bis");//  VS NACH!!
+	Next=addRelation(_next,"Next");
+	Previous=addRelation(_previous,"Previous");
 }
 
 
@@ -416,6 +425,12 @@ void initRelations() {
 
 	True= addRelation(_true,"True");
 	False=addRelation(_false,"False");// todo
+
+
+	From=addRelation(_from,"From");
+	To=addRelation(_to,"To");
+	Next=addRelation(_next,"Next");
+	Previous=addRelation(_previous,"Previous");
 }
 
 Node* invert(Node* relation) {
@@ -526,18 +541,47 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;
 
-//	if (eq(thing, "sense number"))return Number;
-//	if (eq(thing, "Sense"))return Number;
+	if (eq(thing, "subclass of")) return SuperClass;
 	if (eq(thing, "subClassOf")) return SuperClass;
-	if (eq(thing, "P1696")) return Antonym;// Opposite;
-	if (eq(thing, "P31")) return Type;
-//	if (eq(thing, "P131")) return In;//PartOf;// 'located in administrative...'
-//	if (eq(thing, "P706")) return In;// PartOf;// 'located in geographic'
+	return 0;// no relation
+}
+
+// https://www.wikidata.org/wiki/Wikidata:List_of_properties
+// WIKIDATA additional useful/structural relations
+Node * getWikidataRelation(const char* thing) {
+	// e.g. _categorys_main_topic https://www.wikidata.org/wiki/Property:P301
+	if (eq(thing, "P31")) return Type; // instance of
+	if (eq(thing, "P279")) return SuperClass;
 	if (eq(thing, "P361")) return PartOf;
 	if (eq(thing, "P527")) return Part;// Holonym= has-part : transitive property!
-//	527> <label> "besteht aus"@de .
+	if (eq(thing, "P127")) return Owner;
+//	if (eq(thing, "P131")) return In;//  1/PartOf;// 'located in administrative...'
+//	if (eq(thing, "P706")) return In;// 1/PartOf;// 'located in geographic'
+
+	if (eq(thing, "P1696")) return Antonym;// Opposite;
 	if (eq(thing, "P461")) return Antonym; // AntonymOf == Antonym LOL
-//	560> <label> "Richtung"@de .
+
+//	if (eq(thing, "P155")) return Previous; //predecessor
+//	if (eq(thing, "P156")) return Next;// follows
+
+//	527> <label> "besteht aus"@de .
+
+	if (eq(thing, "P279")) return SuperClass;// ist Unterklasse von
+	if (eq(thing, "P523")) return Part;// 	Has part
+	if (eq(thing, "P460")) return Synonym;
+
+
+	if (eq(thing, "P585")) return Date;
+//	if (eq(thing, "P580")) return Of;// aus in im von
+//	if (eq(thing, "P580")) return From;// start time
+//	if (eq(thing, "P582")) return To;// end time !
+	if (eq(thing, "P560")) return To;// Richtung
+
+	// Unicode character 	P487
+	// use 	P366 	Item 	use: main use of the subject
+	// facet of 	P1269 	Item
+	// different from 	P1889 	Item
+
 	//	551> <altLabel> "wohnt in"@de . < in
 //	558> <altLabel> "Einheitensymbol"@de .
 //	566> <description> "Synonym eines gültigen wissenschaftlichen Namens, von dem dieser abgeleitet ist"@de .
@@ -547,26 +591,20 @@ Node * getRelation(const char* thing) {
 	//	576> <label> "Auflösungsdatum"@de .
 //	577> <altLabel> "Erscheinungsdatum"@de .
 //	619> <description> "Zeitangabe des Starts eines Raumfahrzeugs"@de . NOOOO LOL
-//	580> <altLabel> "Von"@de .
-//	582> <altLabel> "bis"@de .
+
 //	585> <altLabel> "Datum"@de .
 //	585> <altLabel> "Stand"@de .
 //	585> <label> "Zeitpunkt"@de .
-	if (eq(thing, "P585")) return Date;
 //625> <altLabel> "Geokoordinaten"@de .
-	if (eq(thing, "P642")) return Of;// aus in im von
 //	if (eq(thing, "P706")) return Place;// in Veranstaltungsort, liegt in etc !!
 //	840> <altLabel> "Ort der Handlung"@de . NOO
 //	794> <description> "generischer Qualifikator"@de .
 //	794> <label> "als"@de .
 
-
 //	if (eq(thing, "P856")) return getThe("URL");
 
 //1311> <description> "Datenbank gedeckter Brücken in den Vereinigten Staaten und Kanada"@de . WTF!!!?? LOL
 
-	//	if (eq(thing, "P155")) return Previous; predecessor follows
-	//	if (eq(thing, "P156")) return Next;
 //		if (eq(thing, "P18")) return Image;
 //	18> <label> "Bild"@de . Abbildung  Foto Grafik
 //	58> <altLabel> "Autor"@de .
@@ -580,9 +618,6 @@ Node * getRelation(const char* thing) {
 //	1343> <altLabel> "Quelle"@de .
 //	P1365 replaces ancestor
 //	1366> <altLabel> "ersetztes"@de . predecessor succeeded by
-	if (eq(thing, "P279")) return SuperClass;// ist Unterklasse von
-	if (eq(thing, "P523")) return Part;// 	Has part
-	if (eq(thing, "P460")) return Synonym;
 //	if (eq(thing, "P131")) return PartOf;//located in the administrative
 //	if (eq(thing, "P706")) return PartOf;// located on terrain
 
@@ -595,19 +630,30 @@ Node * getRelation(const char* thing) {
 
 
 void initWikiRelations(){
+// done above:
+	//	addStatement4(current_context,-10279,_SuperClass,_SubClass);//Unterklasse von
+	//	addStatement4(current_context,-10027,_SuperClass,_SubClass);//Unterklasse von
+	//	addStatement4(current_context,-10031,_SuperClass,_SubClass);//ist ein :(
+	//	addStatement4(current_context,-10460,_SuperClass,_Synonym);// Als gleichwertig bezeichnet
+	//	addStatement4(current_context,-10361, _SuperClass, _PartOf);// DIRECTLY!
+
 	//	https://www.wikidata.org/wiki/Property:P131
 	//	addStatement4(current_context,-10131, _SuperClass, In->id);
-	addStatement4(current_context,-10361, _SuperClass, _PartOf);// DIRECTLY!
 	addStatement4(current_context,-10131, _SuperClass, _PartOf);//located in the administrative
 	addStatement4(current_context,-10150, _SuperClass, _Part);//  Untereinheit (administrative Einheit)
-	addStatement4(current_context,-10706, _SuperClass, _PartOf);// located on terrain
-	addStatement4(current_context,-10279,_SuperClass,_SubClass);//Unterklasse von
-	addStatement4(current_context,-10027,_SuperClass,_SubClass);//Unterklasse von
-	addStatement4(current_context,-10031,_SuperClass,_SubClass);//ist ein :(
-//	addStatement4(current_context,-10460 Als gleichwertig bezeichnet
-	addStatement4(current_context,-10035, _synonym, getThe("Präsident")->id);
-
 	addStatement4(current_context,-10527, _SuperClass, _Part);// 	Has part
+	addStatement4(current_context,-10706, _SuperClass, _PartOf);// located on terrain
+
+	addStatement4(current_context,-10035, _synonym, getThe("President")->id);
+	addStatement4(current_context,-10035, _synonym, getThe("Präsident")->id);// head of state
+
+	addStatement4(current_context,-10560, _SuperClass, _to);// 	direction
+
+//	if(endsWith(nam, " of"))
+//		addStatement4(current_context,-10560, _SuperClass, _PartOf);// 	direction
+
+	//	560> <label> "Richtung"@de .
+	//	551> <altLabel> "wohnt in"@de . < in
 
 	//	getEntity( "P131")) return In;//PartOf;// 'located in administrative...'
 	//	if (eq(thing, "P706")) return In;// PartOf;// 'located in geographic'

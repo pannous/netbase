@@ -188,6 +188,15 @@ static const int _StartsWith = -158;
 static const int _EndsWith = -159;
 static const int _false = -200;// not '0' by design!
 static const int _true = -201;
+
+// ToDONT :  There are one is all map very badly between languages!
+static const int _from = -201;
+static const int _to = -560;// direction OR time / limit
+static const int _towards = -560;// direction
+static const int _next = -201;
+static const int _previous = -201;
+// ToDONT ^^^ !!
+
 static const int _sense = -660;// why? ;)
 static const int _error= -666;//-1 = -evil in itself;//
 static const int _missing= -999;
@@ -269,9 +278,18 @@ _supercontext = -45,
 _comment = -46,
 _description = -49;
 
+// WIKIDATA additional useful/structural relations
+static const int // *-1 -10000
+_Is_a=-10031,// https://www.wikidata.org/wiki/Property:P31
+_subclass_of=-10279,// MAP EARLIER!!
+_commons_category=-10373,
+_categorys_main_topic=-10301,
+_topics_main_category=-10910,
+_Is_a_list_of=-10360;
 
 void initRelations();
 Node * getRelation(const char* thing);
+Node * getWikidataRelation(const char* thing);
 Node* invert(Node* relation);
 #endif	/* RELATIONS_HPP */
 

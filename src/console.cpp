@@ -502,7 +502,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return setToVector(all);
 	}
 
-	if(startsWith(data, ":children") ||startsWith(data, ":child")||startsWith(data, ":recurse")||startsWith(data, ":fetch")){
+	if(startsWith(data, ":children") ||startsWith(data, ":list")||startsWith(data, ":recurse")||startsWith(data, ":fetch")){
 		N da=getAbstract(next_word(data));
 		NS all=findAll(da,childFilter);
 		return setToVector(all);

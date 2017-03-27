@@ -1902,7 +1902,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
 		//    if(contains(line,"<Apple")) // debug
 		//        p(line);
-		predicate=getEntity(predicateName);//,fixNamespaces);
+		predicate=getWikidataRelation(predicateName);
+		predicate=predicate||getEntity(predicateName);//,fixNamespaces);
 		subject=getEntity(subjectName);//,fixNamespaces); //
 		object=getEntity(objectName,false);//,fixNamespaces);
 		if (predicate == Instance) {
@@ -2050,17 +2051,12 @@ void importAbstracts() {
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 		name=name0;
 		fixLabel(name0);
-		//		if (hasWord(name)) continue; check earlier
-		//		id=id + 10000; // OVERWRITE EVERYTHING!!!
+//		if (hasWord(name)) continue; // use wikidata abstracts! ok, ignored add_force anyways: (why?)
 		id=-id -100000; // OVERWRITE EVERYTHING below!!!
 //		int id2=norm_wordnet_id2(id);
 //		check(id==id2); OK
 		N a=add_force(current_context, id, name, _abstract);
 		insertAbstractHash(a);
-		//		c->nodeCount=id; // hardcoded hack to sync ids!!!
-		//		Node* a=getAbstract(name);
-		//		//		a->context=wordnet;
-		//		a->kind=_abstract;
 	}
 	fclose(infile); /* Close the file */
 }

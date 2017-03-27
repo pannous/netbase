@@ -1242,11 +1242,13 @@ NodeVector childFilter(Node* subject, NodeQueue * queue,int* enqueued){
 		predicateMatch = predicateMatch || (s->Predicate() == Label);
 
 
+
 		bool subjectMatchReverse = s->Object() == subject && !eq(s->Subject()->name,"◊");
 		bool predicateMatchReverse = s->Predicate() == SuperClass; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Label;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Derived;
+		predicateMatchReverse = predicateMatchReverse || s->predicate==-10360
 		if(s->subject==23||s->object==23)
 			printf("");
 		if (queue) {
@@ -1430,12 +1432,12 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances,in
 		//		if(s->Predicate==Type&&s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool predicateMatch = (s->Predicate() == Type);
-		predicateMatch = predicateMatch || s->predicate == -10031;// ist ein :(
-		predicateMatch = predicateMatch || s->predicate == -10027;// Unterklasse von
-		predicateMatch = predicateMatch || s->predicate == -10279;// Unterklasse von
-//		predicateMatch = predicateMatch || s->predicate==-10301;// Hauptartikel in der Kategorie
-//		predicateMatch = predicateMatch || s->predicate==-10910;// Hauptkategorie zum Artikel
-//		predicateMatch = predicateMatch || s->predicate==-10373;// Commons-Kategorie
+		predicateMatch = predicateMatch || s->predicate == _Is_a_list_of;
+		predicateMatch = predicateMatch || s->predicate == _Is_a;// ist ein :(
+		predicateMatch = predicateMatch || s->predicate == _subclass_of;// Unterklasse von
+//		predicateMatch = predicateMatch || s->predicate==_categorys_main_topic;// Hauptartikel in der Kategorie
+//		predicateMatch = predicateMatch || s->predicate==-_topics_main_category;// Hauptkategorie zum Artikel
+//		predicateMatch = predicateMatch || s->predicate==_commons_category;// Commons-Kategorie
 		predicateMatch = predicateMatch || s->Predicate() == SuperClass;
 		predicateMatch = predicateMatch || s->Predicate() == Synonym;
 		predicateMatch = predicateMatch || s->Predicate() == Translation;
