@@ -496,7 +496,8 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if (eq(args[0], ":find"))// ambiguous!
 		return *findWordsByName(wordnet, data + 6, false);
 	if (startsWith(data, ":all ")||startsWith(data, "all/")){
-		INCLUDE_CLASSES=true;
+//		INCLUDE_CLASSES=true;
+		N da=getAbstract(next_word(data));
 		NS all=findAll(da,instanceFilter);
 		return setToVector(all);
 	}

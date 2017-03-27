@@ -1929,9 +1929,10 @@ void testBrandNewStuff() {
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;
-	germanLabels=true;
-//	germanLabels=false;
+//	germanLabels=true;
+	germanLabels=false;
 	importWordnet();
+	testWordnet();
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");

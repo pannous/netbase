@@ -19,7 +19,6 @@
 
 using namespace std;
 
-cchar* nodes_file="nodes.txt";
 cchar* statements_file="statements.txt";
 cchar* images_file="images.txt";
 cchar* images_file_de="images_de.nt";
@@ -103,9 +102,6 @@ int norm_wordnet_id2(int synsetid,bool force=false) {
 		p("problem!");
 	if (synsetid < million && !force) return synsetid;
 	int id=wordnet_synset_map[synsetid];
-	//	10000000
-	//	112353431
-	//	10000000
 	if (!id&&synsetid<=10000000) id=wordnet_synset_map[synsetid+10000000];
 	if (!id&&synsetid<=20000000) id=wordnet_synset_map[synsetid+100000000];
 	//	if (!id&&force)id=wordnet_synset_map[synsetid+200000000];
@@ -115,7 +111,7 @@ int norm_wordnet_id2(int synsetid,bool force=false) {
 		//		if(synsetid==12353431||synsetid==112353431)
 		//		p("BAD ID!!!");
 	}
-	//	id=id+10000;// NORM!!!
+	id=id+100000;// NORM!!!
 	return id;
 	//	return (synsetid%million)+200000;
 }
@@ -291,6 +287,7 @@ void importNodes() {
 
 	char* name0=(char*) malloc(1000);
 	int linecount=0;
+	cchar* nodes_file="nodes.txt";
 	FILE *infile=open_file(nodes_file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		char tokens[1000];
@@ -1378,7 +1375,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		key=dropUrl(key);
 		int id=atoi(key+1);
 		if(properties)
-			id=-10000-id;
+			id=-100000-id;
 		if(startsWith(test, "altLabel")){
 			if(!altLabels)continue;
 			N oldLabel=getEntity(key,false,false);
@@ -1746,7 +1743,7 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 		if(contains(name, '-'))// "P2430S28b08e46-49c5-061b-4035-1142c2c62e62"
 			return getPropertyDummy(name);// DUMMY!
 		//		return getNode((int)maxNodes-atoi(name+1));
-		int kei=-atoi(name+1)-10000;
+		int kei=-atoi(name+1)-100000;
 		return get(kei);
 	}
 	bool useFreebase=false;
@@ -2054,7 +2051,7 @@ void importAbstracts() {
 		name=name0;
 		//		if (hasWord(name)) continue; check earlier
 		//		id=id + 10000; // OVERWRITE EVERYTHING!!!
-		id=-id - 10000; // OVERWRITE EVERYTHING below!!!
+		id=-id -100000; // OVERWRITE EVERYTHING below!!!
 		N a=add_force(current_context, id, name, _abstract);
 		insertAbstractHash(a);
 		//		c->nodeCount=id; // hardcoded hack to sync ids!!!
@@ -2065,7 +2062,7 @@ void importAbstracts() {
 	fclose(infile); /* Close the file */
 }
 
-int synonyms=400000;// pointer autoincrement
+int wn_synonym_count=400000;// pointer autoincrement
 //            ^^^^^^^ aarg !?? compatible with german??
 
 void importGermanLables(bool addLabels=false) {
@@ -2089,7 +2086,7 @@ void importGermanLables(bool addLabels=false) {
 		//		if(linecount==4951)continue;
 		fixNewline(line);
 		sscanf(line, "%d\t%s\t%s\t%s\t%[^\\]]s", &id, wordkind, /*08950407n -> noun */english,german,translations);
-		//		id=id + 10000; //  label on abstract !?!
+		//		id=id -100000; //  label on abstract !?!
 
 		wn_labels[id]=german;
 		//		if(eq(german,"Autoerotik"))
@@ -2158,7 +2155,7 @@ void importSenses() {
 		sscanf(line, "%d\t%d\t%d\t%d\t%d\t%*d\t%*d\t%s", &id, &labelid, &synsetid0, &senseid,&sensenum,/*&lexid,&tags,*/ name0);
 		if(id<1000)continue;// skip relations
 		//		id=id + 10000; // NORM!!!
-		id=-id-10000;
+		id=-id-100000;
 		//		if (130172 == id) p(line);
 
 		synsetid_mapped=norm_wordnet_id(synsetid0);// 100001740    ->  200000 and so on, no gaps
@@ -2195,11 +2192,12 @@ void importSenses() {
 		if (!sense->id) {
 			initNode(sense, synsetid_mapped, name, 0, wordnet);
 		} else if (!eq(sense->name, name)) {
-			Node* syno=initNode(get(synonyms), synonyms, name, 0, wordnet);
+			int syn_id=-wn_synonym_count; // NEGATIVE !
+			Node* syno=initNode(get(syn_id), syn_id, name, 0, wordnet);
 			addStatement(syno, Synonym, sense);
 			//			addStatement(word,Instance,syno);// Sense
 			sense=syno;
-			synonyms++;
+			wn_synonym_count++;
 		}
 		addStatement(word, Instance, sense, false);
 		if(!germanLabels)
@@ -2256,7 +2254,7 @@ void importDescriptions() {
 		fixNewline(line);
 		sscanf(line, "%*d\t%d\t%[^\n]s", &id, /*&lexdomain,*/definition);
 		//		id=id + 10000; //  label on abstract !?!
-		id=-id -10000; //  label on abstract !?!
+		id=-id -100000; //  label on abstract !?!
 		//		id=norm_wordnet_id(id);
 		if (id >= 200000||id <= -200000) {
 			p(line);
@@ -2288,8 +2286,8 @@ void importLexlinks() {
 		//
 		//		s=s + 10000;
 		//		o=o + 10000;
-		s=-s -10000;
-		o=-o -10000;
+		s=-s -100000;
+		o=-o -100000;
 		if (p == SubClass->id) continue; // Redundant data!
 		if (p == Instance->id) continue; // Redundant data!
 
@@ -2333,7 +2331,7 @@ void importWordnet() {
 	if(germanLabels)
 		importGermanLables();
 	importSenses();
-	getContext(wordnet)->lastNode=synonyms; //200000+117659;//WTH!
+	getContext(wordnet)->lastNode=wn_synonym_count; //200000+117659;//WTH!
 	importSynsets();
 	importDescriptions();// English!
 	importStatements();
