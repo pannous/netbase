@@ -10,7 +10,7 @@ platform=`uname`
 ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
 # options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit cannot specify -o with -c or -S with multiple files
-options="-m64 --debug"
+options="-m64 --debug  -std=c++0x"  #  -std=c++11 once no jserver
 #   -s -std=c++11 for sorting array!
 #  -L$RVM_HOME/usr/lib -I$ruby_include -Ibuild/
 
