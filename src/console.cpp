@@ -676,7 +676,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		if (contains(data, "who ")) // who loves jule
 			return query(data);
 
-		if (eq(args[0], "the") || eq(args[0], "my")) {
+		if (eq(args[0], "the") || eq(args[0], ":the") || eq(args[0], "my")) {
 			N da=getThe(next_word(data), More);
 			show(da);
 			return nodeVectorWrap(da);
