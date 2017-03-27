@@ -1240,15 +1240,13 @@ NodeVector childFilter(Node* subject, NodeQueue * queue,int* enqueued){
 		predicateMatch = predicateMatch || (s->Predicate() == Synonym);
 		predicateMatch = predicateMatch || (s->Predicate() == Derived);
 		predicateMatch = predicateMatch || (s->Predicate() == Label);
-
-
-
+		
 		bool subjectMatchReverse = s->Object() == subject && !eq(s->Subject()->name,"◊");
 		bool predicateMatchReverse = s->Predicate() == SuperClass; // || inverse
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Label;
 		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Derived;
-		predicateMatchReverse = predicateMatchReverse || s->predicate==-10360
+		predicateMatchReverse = predicateMatchReverse || s->predicate==_Is_a_list_of;
 		if(s->subject==23||s->object==23)
 			printf("");
 		if (queue) {

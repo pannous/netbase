@@ -427,8 +427,12 @@ int handle(cchar* q0,int conn){
 			}
 			Writeline(conn, ", \"seo\":\""+generateSEOUrl(node->name)+"\"");
 		}
-		if(use_json)// && (verbosity==verbose||verbosity==shorter))// lol // just name
+		if(use_json)
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
+		if(use_json && verbosity==alle && node->kind!=_abstract && i==0)
+			Writeline(conn, ", \"abstract\":"+itoa(getAbstract(node->name)->id));
+		if(use_json && verbosity==alle && node->kind==_abstract && i==0 && checkNode(getThe(node)))
+			Writeline(conn, ", \"main\":"+itoa(getThe(node)->id));
 		bool show_images=SERVER_PORT<1000||verbosity==alle;// HACK!
 		if((use_json&&show_images)&&verbosity!=shorter&& !showExcludes&&node->statementCount>1){
 			string img=getImage(node,150,/*thumb*/true);

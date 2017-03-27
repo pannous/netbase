@@ -1902,11 +1902,11 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
 		//    if(contains(line,"<Apple")) // debug
 		//        p(line);
-		predicate=getWikidataRelation(predicateName);
-		predicate=predicate||getEntity(predicateName);//,fixNamespaces);
 		subject=getEntity(subjectName);//,fixNamespaces); //
 		object=getEntity(objectName,false);//,fixNamespaces);
-		if (predicate == Instance) {
+		predicate=getWikidataRelation(predicateName);
+		if(!predicate)predicate=getEntity(predicateName);//,fixNamespaces);
+		if (predicate == Instance) {// flip here!
 			predicate=Type;
 			N t=subject;
 			subject=object;
