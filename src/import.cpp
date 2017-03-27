@@ -111,7 +111,7 @@ int norm_wordnet_id2(int synsetid,bool force=false) {
 		//		if(synsetid==12353431||synsetid==112353431)
 		//		p("BAD ID!!!");
 	}
-	id=id+100000;// NORM!!!
+	id=id+100000;// NORM!!! *-1 with wikidata! war: 10000
 	return id;
 	//	return (synsetid%million)+200000;
 }
@@ -2049,9 +2049,12 @@ void importAbstracts() {
 
 		//		for (int i = 0; i < strlen(name); i++)if(name[i]==' ')name[i]='_';
 		name=name0;
+		fixLabel(name0);
 		//		if (hasWord(name)) continue; check earlier
 		//		id=id + 10000; // OVERWRITE EVERYTHING!!!
 		id=-id -100000; // OVERWRITE EVERYTHING below!!!
+//		int id2=norm_wordnet_id2(id);
+//		check(id==id2); OK
 		N a=add_force(current_context, id, name, _abstract);
 		insertAbstractHash(a);
 		//		c->nodeCount=id; // hardcoded hack to sync ids!!!
@@ -2145,7 +2148,7 @@ void importSenses() {
 	int linecount=0;
 	int id, labelid, synsetid0,synsetid_mapped,senseid,sensenum;
 	FILE *infile=open_file("wordnet/senses.tsv");
-	Node* Sense=getSingleton("sense number");// Number;// getRelation("Sense");
+	Node* Sense=add_force(wordnet, _sense, "sense #", _internal);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
 			printf("importSenses %d    \r", linecount);
@@ -2159,7 +2162,7 @@ void importSenses() {
 		//		if (130172 == id) p(line);
 
 		synsetid_mapped=norm_wordnet_id(synsetid0);// 100001740    ->  200000 and so on, no gaps
-		if (synsetid_mapped < 200000 && synsetid_mapped>-200000){
+		if (synsetid_mapped < 300000 && synsetid_mapped>-300000){
 			printf("MOMENT!");
 			continue;
 		}
@@ -2256,7 +2259,7 @@ void importDescriptions() {
 		//		id=id + 10000; //  label on abstract !?!
 		id=-id -100000; //  label on abstract !?!
 		//		id=norm_wordnet_id(id);
-		if (id >= 200000||id <= -200000) {
+		if (id >= 300000||id <= -300000) {
 			p(line);
 			continue;
 		}
@@ -2292,8 +2295,8 @@ void importLexlinks() {
 		if (p == Instance->id) continue; // Redundant data!
 
 		Statement* x = 0;
-		if (ss != so) x=addStatement4(wordnet, norm_wordnet_id(ss), p, norm_wordnet_id(so));
-		if (debug && !x)
+		if (ss != so) x=addStatement4(wordnet, norm_wordnet_id(ss), norm_wordnet_id(p), norm_wordnet_id(so));
+		if (debug && !x && p!=81)
 			pf("ERROR %s\n", line);
 		//		if(s!=o)x=addStatement4(wordnet, s, p, o); not on abstracts! hmm, for antonym properties? nah!
 		//		if(!x)printf("ERROR %s\n",line);
@@ -2339,9 +2342,9 @@ void importWordnet() {
 	if(germanLabels)
 		importGermanLables(true);// Now the other labels (otherwise abstracts might fail?)
 
-	mergeNode(get(-81), get(81));// derived
-	mergeNode(get(-80), get(80));// derives pertainym
-	mergeNode(get(-30), get(30));// opposite = antonym
+//	mergeNode(get(-81), get(81));// derived
+//	mergeNode(get(-80), get(80));// derives pertainym
+//	mergeNode(get(-30), get(30));// opposite = antonym
 	// fix how???? ^^^^^^^^
 	context->use_logic=true;
 }

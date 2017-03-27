@@ -512,10 +512,10 @@ void testWordnet() {
 	showContext(wordnet);
 	p("contexts[wordnet].nodeCount:");
 	p(c.nodeCount);
-	show(&c.nodes[-38749]);
-	check(strcmp(c.nodes[-38749].name,"confirm")==0);
+	check(hasNode("drag_one's_feet"));
+	show(&c.nodes[-128749]);// -38749
+	check(strcmp(c.nodes[-128749].name,"Confirm")==0);
 	N bird=a(bird);
-	check(isA(get(-241519), a(bird)));
 //	clearAlgorithmHash(); deprecatred
 	check(isA(a(gooney), a(bird)));
 	check(isA(a(duck), a(poultry)));
@@ -1931,7 +1931,7 @@ void testBrandNewStuff() {
 	debug = true;
 //	germanLabels=true;
 	germanLabels=false;
-	importWordnet();
+	checkWordnet();// ->	importWordnet();
 	testWordnet();
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();

@@ -1320,10 +1320,10 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue,int* enqueued) {
 		if (s->Predicate() == Derived)continue;
 		//		if (s->Predicate==DerivedFromNoun)continue;
 		if (s->Predicate() == get(_attribute))continue;
-		if (s->Predicate() == get(40))continue; // similar
-		if (s->Predicate() == get(50))continue; // also
-		if (s->Predicate() == get(91))continue; // also bug !!
-		if (s->Predicate() == get(92))continue; // also bug !!
+		if (s->Predicate() == get(_similar))continue; // similar
+		if (s->Predicate() == get(_see_also))continue; // also
+		if (s->Predicate() == get(_DOMAIN_BUG))continue; //
+		if (s->Predicate() == get(_DOMAIN_CATEGORY))continue;
 		bool subjectMatch = (s->Subject() == subject || subject == Any);
 		bool predicateMatch = (s->Predicate() == Member);
 		predicateMatch = predicateMatch || s->Predicate() == Part;

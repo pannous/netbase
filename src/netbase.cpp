@@ -1700,10 +1700,10 @@ Statement * findStatement(Node* subject, Node* predicate, Node* object,
 		//		if(s->Predicate!=Any){
 		if (s->Object() == Adjective && object != Adjective) continue; // bug !!
 		if (s->Predicate() == Derived) continue; // Derived bug !!
-		if (s->Predicate() == get(_attribute)) continue; // Derived bug !!
-		if (s->Predicate() == get(50)) continue; // also bug !!
-		if (s->Predicate() == get(91)) continue; // also bug !!
-		if (s->Predicate() == get(92)) continue; // also bug !!
+		if (s->Predicate() == get(_attribute)) continue; // bug !!
+		if (s->Predicate() == get(_see_also)) continue; // see 'also' wordnet bug !!
+		if (s->Predicate() == get(_DOMAIN_CATEGORY)) continue;
+		if (s->Predicate() == get(_DOMAIN_BUG)) continue;
 		//		}
 		// ^^ todo
 
@@ -2398,6 +2398,7 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
 //    if(addInstance && n!=get(n->id))n=save(n);// HOW!?! WHAT?
 //	if(label[0]=='<')
 //		bad(); "<span dbpedia parser fuckup etc
+	if (label[0] == '"')label++;
     int len=(int)strlen(label);
     Context* c=context;
 	char* newLabel = name_root + c->currentNameSlot;

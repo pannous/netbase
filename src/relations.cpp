@@ -526,6 +526,8 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;
 
+//	if (eq(thing, "sense number"))return Number;
+//	if (eq(thing, "Sense"))return Number;
 	if (eq(thing, "subClassOf")) return SuperClass;
 	if (eq(thing, "P1696")) return Antonym;// Opposite;
 	if (eq(thing, "P31")) return Type;

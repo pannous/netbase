@@ -138,7 +138,7 @@ static const int _object = -104;
 static const int _entity = -104;
 static const int _relation = -105;
 static const int _person = -106;// wow, really?
-static const int _reification=107;//== _statement ??
+static const int _reification= -107;//== _statement ??
 static const int _pattern = -108;
 static const int _statement = -109;
 //static const int _variable ...
@@ -188,12 +188,12 @@ static const int _StartsWith = -158;
 static const int _EndsWith = -159;
 static const int _false = -200;// not '0' by design!
 static const int _true = -201;
-
+static const int _sense = -660;// why? ;)
 static const int _error= -666;//-1 = -evil in itself;//
 static const int _missing= -999;
 static const int _any=0;// !!!
 static const int _unknown=0;
-static const int _see= -50,//50 also, -40 similar
+static const int _see= -50,//50 _see_also, -40 similar
 	_Hypernym = -1,// ~
 	_SuperClass= -1,//SuperClass  bugs=>ARE=>animals
 	_hyponym = -2,
@@ -217,6 +217,7 @@ static const int _see= -50,//50 also, -40 similar
 	_derived_from_noun=-81,//?
 	_synonym= -32, // -21 _ENTAILMENT
 	_DOMAIN_CATEGORY= -91,
+	_DOMAIN_BUG = -91,
 	_DOMAIN_REGION= -93,
 	_DOMAIN_USAGE= -95,
 	_MEMBER_DOMAIN_CATEGORY= -92,
