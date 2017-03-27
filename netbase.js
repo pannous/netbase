@@ -5,13 +5,14 @@ var div;// results
 var editMode=false;
 var link_name=true;
 var server="/";//html/"; 
-// var server="http://87.118.71.26:81/" // for quasiris demo
-// var server="http://big.netbase.pannous.com:81/"
-// var server="http://de.netbase.pannous.com:81/"
-// var server="http://netbase.pannous.com/"
+if(document.location.href.match(/file:/))
+	server="http://netbase.pannous.com/"
+	// server="http://87.118.71.26:81/" // for quasiris demo
+	// server="http://big.netbase.pannous.com:81/"
+	// server="http://de.netbase.pannous.com:81/"
 
 var search = window.location.search;
-var inline=false // compact view, embedded
+var inline=1//false // compact view, embedded
 var find_entities=false // full text netbase search
 var abstract=-102;// Summary nodes
 var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410,-11978];//  BnF-ID  etc

@@ -140,7 +140,7 @@ Node *parseProperty(const char *data) {
 void console() {
 	quiet=false;
 	if(germanLabels)printf("\nDeutsch");
-	printf("\nNetbase C++ Version 1.5.3.2\n");
+	printf("\nNetbase C++ Version 1.5.4\n");
 
 	char* data=(char*) malloc(10000);
 #ifdef signal

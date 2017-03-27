@@ -2,6 +2,12 @@
 	background-color: #EEF;
 	font-family: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, sans-serif;
 }
+.no_underline{
+	text-decoration:none;
+}
+.nolink{
+	text-decoration:none;
+}
 #netbase_results a{
 	color: black;
 	border: 0 none;

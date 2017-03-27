@@ -1231,7 +1231,35 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue,int* enqueued){// cha
 
 NodeVector childFilter(Node* subject, NodeQueue * queue,int* enqueued){
 	INCLUDE_CLASSES=true;
-	return instanceFilter(subject,queue,enqueued);
+	NodeVector all;	int i = 0;
+	Statement* s = 0;
+	while (i++<lookupLimit * 2 && (s = nextStatement(subject, s, false))) {// true !!!!
+		bool subjectMatch = (s->Subject() == subject || subject == Any)  && !eq(s->Object()->name,"◊");;
+		bool predicateMatch = (s->Predicate() == SubClass);
+		predicateMatch = predicateMatch || (s->Predicate() == Instance);
+		predicateMatch = predicateMatch || (s->Predicate() == Synonym);
+		predicateMatch = predicateMatch || (s->Predicate() == Derived);
+		predicateMatch = predicateMatch || (s->Predicate() == Label);
+
+
+		bool subjectMatchReverse = s->Object() == subject && !eq(s->Subject()->name,"◊");
+		bool predicateMatchReverse = s->Predicate() == SuperClass; // || inverse
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Type;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Label;
+		predicateMatchReverse = predicateMatchReverse || s->Predicate() == Derived;
+		if(s->subject==23||s->object==23)
+			printf("");
+		if (queue) {
+			if (subjectMatch&&predicateMatch)
+				enqueue(subject, s->Object(), queue,enqueued);
+			if (subjectMatchReverse&& predicateMatchReverse)
+				enqueue(subject, s->Subject(), queue,enqueued);
+		} else {
+			if (subjectMatch && predicateMatch)all.push_back(s->Object());
+			if (subjectMatchReverse && predicateMatchReverse)all.push_back(s->Subject());
+		}
+	}
+	return all;
 }
 
 // put as callback into findPath for recursion

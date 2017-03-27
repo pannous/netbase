@@ -1929,8 +1929,9 @@ void testBrandNewStuff() {
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;
-//	germanLabels=true;
-	germanLabels=false;
+	germanLabels=true;
+//	germanLabels=false;
+	importWordnet();
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
@@ -1938,7 +1939,7 @@ void testBrandNewStuff() {
 //	parse("gooney");
 	//	handle("/html/-210674");
 //	importXml("whole_data.xml");
-	importCsv("whole_data.csv");
+//	importCsv("whole_data.csv");
 //	testWordnet();
 //	parse(":learn \"MagentaMobil S\" is Telekom_Produkt");
 //	parse(":learn MagentaMobil_SSS is Telekom_Produkt");
