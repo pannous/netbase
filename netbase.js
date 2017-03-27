@@ -230,7 +230,7 @@ function capitalize(string) {
 }
 
 function show_footer(){
-	var matched=document.URL.match(/limit.(\d*)/);
+	var matched=decodeURI(document.URL).match(/limit.(\d*)/);
 	var limit=matched?matched[1]:200
 	div=div.appendChild(document.createElement("small"))
 	if((""+url).match(" -"))
