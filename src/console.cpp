@@ -488,7 +488,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if (startsWith(data, ":select ")) return query(data);
 
-
 	//    Ch��teau
 	if (eq(args[0], ":words"))// all // ambiguous!
 		return *findAllWords(data + 5);
@@ -496,11 +495,18 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return *findWordsByName(wordnet, data + 13, false,true);
 	if (eq(args[0], ":find"))// ambiguous!
 		return *findWordsByName(wordnet, data + 6, false);
-	if(startsWith(data, ":children")||startsWith(data, ":all ")||startsWith(data, "all/")){
+	if (startsWith(data, ":all ")||startsWith(data, "all/")){
+		INCLUDE_CLASSES=true;
+		NS all=findAll(da,instanceFilter);
+		return setToVector(all);
+	}
+
+	if(startsWith(data, ":children") ||startsWith(data, ":child")||startsWith(data, ":recurse")||startsWith(data, ":fetch")){
 		N da=getAbstract(next_word(data));
 		NS all=findAll(da,childFilter);
 		return setToVector(all);
 	}
+
 	if (startsWith(data, ":instances")){
 		N da=getAbstract(next_word(data));
 		//		if(endsWith(data, "s"))data[-1]=0
