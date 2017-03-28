@@ -1935,14 +1935,16 @@ NodeVector parseProperties(char *data) {
 		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
 		all=findProperties(thing, property);
 	}
-	if (all.size()==0)all=findProperties(thing, property,true);// INVERSE!!
+	if (all.size()==0) all=findProperties(thing, property,true);// INVERSE!!
 //	if(malloc(ed)
 //	free(property);
 //	free(thing);
 	showNodes(all);
 	return all;
 }
-NodeVector parseProperties(const char *data) {return parseProperties(editable(data));}
+NodeVector parseProperties(const char *data) {
+	return parseProperties(editable(data));
+}
 bool containsSubstring(vector<char*>& words, char* sub) {
 	for (int j=0; j < words.size(); j++) {
 		char* word=words[j];
@@ -2313,7 +2315,7 @@ Node* findProperty(Node* n , Node* m,bool allowInverse,int limit){
 // see findProperty
 Node * getProperty(Node* node, Node* key,int limit) {
 	S s=findStatement(node, key, Any ,0,0,0,true,limit);
-	if(!checkStatement(s))return 0;
+	if(!checkStatement(s))return findProperty(node,key,true,limit);
 	return s->Object()==node ? s->Subject() : s->Object();// inverse
 }
 
@@ -2324,7 +2326,7 @@ Node * getProperty(Node* node, cchar* key,int limit) {
 	// int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false,int limit=lookupLimit
 	S s=findStatement(node, getThe(key), Any ,0,0,0,true,limit);
 	//findStatement(node, getAbstract(key), Any); // todo? egal
-	if(!checkStatement(s))return 0;
+	if(!checkStatement(s))return findProperty(node,key,true,limit);
 	return s->Object();
 }
 
@@ -2334,12 +2336,14 @@ Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
 	int count=0;
 	while ((s=nextStatement(n,s))) {
 		if(limit && count++>limit)break;
-		if(eq(s->Predicate()->name,m,true))
-			if(allowInverse||eq(s->Subject(),n)){
-//				p("TODO!?!");
-				return s->Object();// whooot??? a.typ=b  b.typ!=a !?!?!?!?!
-			}
-	}
+		bool matches=eq(s->Predicate()->name,m,true);
+		bool matches=matches || allowInverse && contains(s->Predicate()->name, m)
+		if(matches){
+			if(eq(s->Object(),n))
+				return s->Subject();
+			if(eq(s->Subject(),n))
+				return s->Object();
+		}
 	return 0;
 }
 
@@ -2349,7 +2353,10 @@ NodeVector findProperties(Node* n, const char* m,bool allowInverse/*=true*/){
 	NodeVector good;
 	Statement* s=0;
 	while ((s=nextStatement(n,s))) {// todont: lookuplimit
-		if(eq(s->Predicate()->name,m,true)){
+		bool matches=eq(s->Predicate()->name,m,true);
+		matches=matches|| allowInverse && contains(s->Predicate()->name,m,true);
+		matches=matches|| allowInverse && contains(m,s->Predicate()->name,true);
+		if(matches){
 			if(s->Object()==n&&allowInverse)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
 				good.push_back(s->Subject());
 			else if (!contains(good, s->Object(), false))
