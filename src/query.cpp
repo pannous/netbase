@@ -2337,21 +2337,14 @@ Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
 	while ((s=nextStatement(n,s))) {
 		if(limit && count++>limit)break;
 		bool matches=eq(s->Predicate()->name,m,true);
-<<<<<<< HEAD
 		matches=matches || (allowInverse && contains(s->Predicate()->name, m));
-=======
-		bool matches=matches || allowInverse && contains(s->Predicate()->name, m)
->>>>>>> 07fc416e786b8b04f6909d7ffa90bcde95c4a5ca
 		if(matches){
 			if(eq(s->Object(),n))
 				return s->Subject();
 			if(eq(s->Subject(),n))
 				return s->Object();
 		}
-<<<<<<< HEAD
 	}
-=======
->>>>>>> 07fc416e786b8b04f6909d7ffa90bcde95c4a5ca
 	return 0;
 }
 
@@ -2362,13 +2355,8 @@ NodeVector findProperties(Node* n, const char* m,bool allowInverse/*=true*/){
 	Statement* s=0;
 	while ((s=nextStatement(n,s))) {// todont: lookuplimit
 		bool matches=eq(s->Predicate()->name,m,true);
-<<<<<<< HEAD
 		matches=matches|| (allowInverse && contains(s->Predicate()->name,m,true));
 		matches=matches|| (allowInverse && contains(m,s->Predicate()->name,true));
-=======
-		matches=matches|| allowInverse && contains(s->Predicate()->name,m,true);
-		matches=matches|| allowInverse && contains(m,s->Predicate()->name,true);
->>>>>>> 07fc416e786b8b04f6909d7ffa90bcde95c4a5ca
 		if(matches){
 			if(s->Object()==n&&allowInverse)// wrong semantics egal  makes of mazda  "1991 Mazda 323 Hatchback		Make		Mazda"
 				good.push_back(s->Subject());
