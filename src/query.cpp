@@ -1936,10 +1936,6 @@ NodeVector parseProperties(char *data) {
 		all=findProperties(thing, property);
 	}
 	if (all.size()==0) all=findProperties(thing, property,true);// INVERSE!!
-//	if(malloc(ed)
-//	free(property);
-//	free(thing);
-	showNodes(all);
 	return all;
 }
 NodeVector parseProperties(const char *data) {

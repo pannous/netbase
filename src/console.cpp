@@ -138,10 +138,6 @@ Node *parseProperty(const char *data) {
 	Node* found=has(getThe(thing), getAbstract(property));
 	if (found == 0) found=has(getAbstract(thing), getAbstract(property));
 	if (found == 0) found=getProperty(getThe(thing), property);
-	if (checkNode(found)) {
-		show(found);
-		pf("ANSWER: %s\n", found->name);
-	}
 	free(property);
 	return found;
 }
