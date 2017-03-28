@@ -1614,6 +1614,10 @@ bool show(Node* n, bool showStatements) {		//=true
 	}
 	return 1; // daisy
 }
+
+bool showShort(Node* n){
+	return show(n,false);
+}
 //extern "C"
 Node * showNode(Node* n) {
     show(n);return n;
@@ -2130,6 +2134,11 @@ NodeVector show(NodeVector all){
 }
 NodeVector showWrap(Node* n){
 	show(n);
+	NodeVector r;
+	r.push_back(n);
+	return r;
+}
+NodeVector wrap(Node* n){
 	NodeVector r;
 	r.push_back(n);
 	return r;
@@ -2667,7 +2676,7 @@ int main(int argc, char *argv[]) {
 		printf("Content-Type: text/plain;charset=us-ascii\n\n");
 		printf("got QUERY_STRING %s", data);
 		initSharedMemory();
-		parse(data);
+		show(parse(data));
 		//	start_server();
 	}
 	// load environment variables or fall back to defaults
@@ -2738,8 +2747,9 @@ int main(int argc, char *argv[]) {
 		showHelpMessage();
 		bool _autoIds=autoIds;
 		// *******************************
-		parse(join(argv, argc).c_str(),/*safeMode=*/false); // <<< HERE
+		NodeVector results=parse(join(argv, argc).c_str(),/*safeMode=*/false); // <<< HERE
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+		show(results);
 		autoIds=_autoIds;
 	}
 	if (checkParams(argc, argv, "export")) export_csv();

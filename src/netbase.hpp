@@ -422,6 +422,7 @@ void showNodes(NodeSet all, bool showStatements = false,bool showRelation=false,
 NodeVector showNodes(NodeVector all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false); // bool justTitles==showStatements
 NodeVector show(NodeVector all);// alias
 NodeVector showWrap(Node* n);
+NodeVector wrap(Node* n);
 //string query2(string s,int limit=defaultLimit);
 //string query(Query& q);
 Node* initNode(Node* node, int id, const char* nodeName, int kind, int contextId);
@@ -466,6 +467,7 @@ Node* getSingleton(const char* thing, Node* type=0,bool addType=true) ;
 void showStatement(Statement* s);
 extern "C" void showStatement(int id);
 bool show(Node* n, bool showStatements = true);
+bool showShort(Node* n);
 void show(Statement * s);
 //extern "C"
 Node * showNode(Node* n);

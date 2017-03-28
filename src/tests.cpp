@@ -1932,7 +1932,8 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 	checkWordnet();// ->	importWordnet();
-	testWordnet();
+	show(parse(":predicates Germany"));
+//	testWordnet();
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");

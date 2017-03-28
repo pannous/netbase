@@ -111,7 +111,7 @@ static char* lastCommand;
 NodeSet getPredicates(Node* n){
 	NodeSet predicates;
 	Statement* s=0;
-	while (s=nextStatement(n->id, s)) {
+	while ((s=nextStatement(n->id, s))) {
 		predicates.insert(s->Predicate());
 	}
 	return predicates;
@@ -161,7 +161,8 @@ void console() {
 		//		clearAlgorithmHash();
 		getline(data);
 		bool _autoIds=autoIds;
-		parse(data,/*safeMode=*/false);// safeMode only for web access
+		NodeVector results=parse(data,/*safeMode=*/false);// safeMode only for web access
+		show(results);
 		autoIds=_autoIds;
 	}
 }
@@ -240,7 +241,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 				S s= findStatement(Any, Label, n);
 				if(s)n=s->Subject();
 			}
-			return showWrap(n);
+			return wrap(n);
 		}else return OK;
 	}
 	
@@ -337,7 +338,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if(startsWith(data, ":image")){
 		data=next_word(data);
-		return nodeVectorWrap(getThe(getImage(data)));
+		return wrap(getThe(getImage(data)));
 	}
 
 //	if(startsWith(data, ":the")){
@@ -349,7 +350,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 //			pf("No special %s",data);
 //			t=getAbstract(data);
 //		}
-//		return nodeVectorWrap(t);
+//		return wrap(t);
 //	}
 
 	if (contains(data, ":lookup")) {
@@ -420,7 +421,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
     if (eq(args[0], ":show")) {// not ":show" here!!
 		N da=getAbstract(data + 5);
         show(da,true);
-		return nodeVectorWrap(da);
+		return wrap(da);
 	}
 
 	if (startsWith(data, ":merge ")) {
@@ -428,11 +429,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		sscanf(data, ":merge %d %d", &target,&node);
         Node* targetNode=get(target);
         if(node)
-            return showNodes(nodeVectorWrap(mergeNode(targetNode,get(node))));
+            return wrap(mergeNode(targetNode,get(node)));
         else if(target)
-            return showNodes(nodeVectorWrap(mergeAll(targetNode->name)));
+            return wrap(mergeAll(targetNode->name));
         else
-            return showNodes(nodeVectorWrap(mergeAll(args[1].c_str())));// merge <string>
+            return wrap(mergeAll(args[1].c_str()));// merge <string>
     }
     
 	if (startsWith(data, ":path ") || startsWith(data, ":p ")) {
@@ -466,12 +467,12 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
         Node *node=getAbstract(args[0]);
         if(eq(args[0], "exclude"))node=getAbstract(args[1]);
         addStatement(node,getAbstract("exclude"),getAbstract(args[2]));
-        return nodeVectorWrap(getAbstract(args[0]));
+        return wrap(getAbstract(args[0]));
     }
     if (startsWith(data, ":exclude ")){// no ":" here!
         autoIds=true;
         addStatement(get("excluded"), get("exclude"),getAbstract(data+9));
-        return nodeVectorWrap(get("excluded"));
+        return wrap(get("excluded"));
     }
         if (args.size() >=3 && contains(data,":include ")){// no ":" here!
             autoIds=true;
@@ -483,11 +484,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
             N type=getType(node);// auto add to type!!!
             if(type)node=type;
             addStatement(type,getAbstract("include"),to_include);
-            return nodeVectorWrap(node);
+            return wrap(node);
         }
 //  //	if (startsWith(data, "include ")){// globally included? NAH! How? bad
 //        addStatement(get("included"), Instance,getAbstract(data+8));
-//        return nodeVectorWrap(get("included"));
+//        return wrap(get("included"));
 //    }
 
 	if (eq(args[0], ":handle")){
@@ -514,7 +515,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return setToVector(all);
 	}
 	if (startsWith(data, ":predicates ")){
-		N da=getAbstract(next_word(data));
+		N da=getThe(next_word(data));
 		NS all=	getPredicates(da);
 		return setToVector(all);
 	}
@@ -530,14 +531,12 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		N da=getAbstract(next_word(data));
 		//		if(endsWith(data, "s"))data[-1]=0
 		NS all=findAll(da,instanceFilter);// childFilter
-		//		show(all);// ok, show!
 		return setToVector(all);
 	}
 
 	//		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
 	//Big the Cat 	x Species ^ - + -- -!
-	if (startsWith(data, ":show ")||// show?? really?
-		startsWith(data, ":tree")||startsWith(data, ":subclasses")||startsWith(data, "subclasses")){
+	if (startsWith(data, ":tree")||startsWith(data, ":subclasses")||startsWith(data, "subclasses")){
 		data=next_word(data);
 		if(startsWith(data,"of"))data=next_word(data);
 		N da=getAbstract(data);
@@ -551,7 +550,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 //			NodeVector more=query(data);
 //			mergeVectors(&all,more);
 //		}
-//		return showNodes(all,true);
+//		return all,true);
 	}
 
 	if(startsWith(data, ":fix")){
@@ -570,36 +569,36 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if(startsWith(data, ":new")){
 		data=next_word(data);
-		return nodeVectorWrap(add(data));
+		return wrap(add(data));
 	}
 
 	if(startsWith(data, ":topics")){
 		data=next_word(data);
 		autoIds=true;
-		return show(getTopics(getThe(data)));
+		return getTopics(getThe(data));
 	}
 	if(startsWith(data, ":topic")||startsWith(data, ":to")){
 		data=next_word(data);
 		autoIds=true;
-		return showWrap(getTopic(getThe(data)));
+		return wrap(getTopic(getThe(data)));
 	}
 	if(startsWith(data, ":type")||startsWith(data, ":kind")){
 		data=next_word(data);
 		autoIds=true;
 		N n=getType(getThe(data));
 		if(checkNode(n))p(n->id);
-		return showWrap(n);
+		return wrap(n);
 	}
 	if(startsWith(data, ":class")){
 		data=next_word(data);
 		autoIds=true;
-		return showWrap(getClass(get(data)));
+		return wrap(getClass(get(data)));
 	}
 
 	if(startsWith(data, ":abstract")||startsWith(data, ":ab")||startsWith(data, ":a")){
 		data=next_word(data);
 		if(isInteger(data))data=get(atoi(data))->name;
-		return showWrap(getAbstract(data));// ok, create here! VS hasWord
+		return wrap(getAbstract(data));// ok, create here! VS hasWord
 	}
 
 	if (startsWith(data, ":printlabels")){
@@ -614,7 +613,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		const char* label=next_word(what).data();
 		N n=getThe(wordOrId);
 		setLabel(n, label);
-		return nodeVectorWrap(n);
+		return wrap(n);
 	}
 	//	if (args.size() > 2 && eq(args[1], "of")) {
 	//		clearAlgorithmHash();
@@ -627,10 +626,9 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	//		if (found == 0)found = has(Any, propertyA, nodeA);
 	////		if (found == 0)found = has(nodeA, propertyA, Any, true, true, true, true);
 	//		if (checkNode(found)) {
-	//			show(found);
 	//			pf("ANSWER: %s\n", found->name);
 	//		}
-	//		return nodeVectorWrap(found);
+	//		return wrap(found);
 	//	}
     
     //	if (startsWith(q, "m/")) {
@@ -666,7 +664,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 // LEARN
 //	if (args.size() >= 3 && eq(args[1], "is"))
-//		return nodeVectorWrap(learn(data)->Subject());
+//		return wrap(learn(data)->Subject());
 //	startsWith(data, "update")||
 //	eq(data, "daemon") || eq(data, "demon")
 
@@ -696,13 +694,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 		if (eq(args[0], "the") || eq(args[0], ":the") || eq(args[0], "my")) {
 			N da=getThe(next_word(data), More);
-			show(da);
-			return nodeVectorWrap(da);
+			return wrap(da);
 		}
 		if (eq(args[0], "a") || eq(args[0], "abstract")) {
 			N da=getAbstract(next_word(data));
-			show(da);
-			return nodeVectorWrap(da);
+			return wrap(da);
 		}
 
 		if (contains(data, " with ")) return query(data);
@@ -721,7 +717,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		// || (contains(data, ":")) && !contains(data, " "))) {
 		if(!contains(data, "="))
 			return parseProperties(data);
-//		else return nodeVectorWrap(learn(string(data)));
+//		else return wrap(learn(string(data)));
 	}
 
 	if (args.size() >= 3 && eq(args[1], ":to")) {
@@ -736,11 +732,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if (eq(args[0], ":last")){
 		p(context->lastNode);
-		return nodeVectorWrap(get(context->lastNode));
+		return wrap(get(context->lastNode));
 	}
 	if ((eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")|| args.size() >= 4 && (
 		string what=next_word(data);
-		NodeVector nv=nodeVectorWrap(learn(what.data())->Subject());
+		NodeVector nv=wrap(learn(what.data())->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
 		if(!fp){p("NO such file facts.ssv!"); return OK;}
 		fprintf(fp,"%s\n",what.data());
@@ -752,11 +748,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
     
 	int i=atoi(data);
 	if(data[0]=='P' && data[1]<='9')
-		return nodeVectorWrap(get(-atoi(++data)-10000));// P106 -> -10106
+		return wrap(get(-atoi(++data)-10000));// P106 -> -10106
 	if (startsWith(data, ":")){pf("UNKNOWN COMMAND %s\n",data);}//showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
-//	if(autoIds && i)return nodeVectorWrap(get(i));
+//	if(autoIds && i)return wrap(get(i));
 	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
 
 	Node* a=get(data);
@@ -766,21 +762,18 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		insertAbstractHash(a,true);// fix bug! can't be!?
 		}
 	}
-	dissectWord(a, true);
-	show(a);
-    //	if (i == 0) showNodes(instanceFilter(a), true);
+	dissectWord(a, true);    //	if (i == 0) instanceFilter(a), true);
 	//        findWord(context->id, data);
     if(isAbstract(a)&&i == 0) {
 		lookupLimit=resultLimit;
 		N the=getThe(a);
-		show(the);
 		NV all=instanceFilter(a);
 		all.push_back(the);
 		all.push_back(a);// include abstract!
 //		sortNodes(all);
 		return all;
 	}
-	return nodeVectorWrap(a);
+	return wrap(a);
 }
 
 extern "C" Node** execute(const char* data,int* out){
