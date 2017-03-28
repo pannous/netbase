@@ -190,11 +190,11 @@ static const int _false = -200;// not '0' by design!
 static const int _true = -201;
 
 // ToDONT :  There are one is all map very badly between languages!
-static const int _from = -201;
+static const int _from = -559;
 static const int _to = -560;// direction OR time / limit
 static const int _towards = -560;// direction
-static const int _next = -201;
-static const int _previous = -201;
+static const int _previous = -564;
+static const int _next = -565;
 // ToDONT ^^^ !!
 
 static const int _sense = -660;// why? ;)

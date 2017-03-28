@@ -108,6 +108,15 @@ void getline(char *buf) {
 //bool parse(string* data) {
 static char* lastCommand;
 
+NodeSet getPredicates(Node* n){
+	NodeSet predicates;
+	Statement* s=0;
+	while (s=nextStatement(n->id, s)) {
+		predicates.insert(s->Predicate());
+	}
+	return predicates;
+}
+
 Node *parseProperty(const char *data) {
 	char *thing=(char *) malloc(1000);
 	char *property=(char *) malloc(1000);
@@ -124,9 +133,11 @@ Node *parseProperty(const char *data) {
 		thing=splat[0];
 		property=splat[2];
 	}
+//	if(eq(property,"predicates"))return wrap(getPredicates(getThe(thing));
 	pf("does %s have a %s?\n", thing, property);
 	Node* found=has(getThe(thing), getAbstract(property));
 	if (found == 0) found=has(getAbstract(thing), getAbstract(property));
+	if (found == 0) found=getProperty(getThe(thing), property);
 	if (checkNode(found)) {
 		show(found);
 		pf("ANSWER: %s\n", found->name);
@@ -502,6 +513,12 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		NS all=findAll(da,instanceFilter);
 		return setToVector(all);
 	}
+	if (startsWith(data, ":predicates ")){
+		N da=getAbstract(next_word(data));
+		NS all=	getPredicates(da);
+		return setToVector(all);
+	}
+
 
 	if(startsWith(data, ":children") ||startsWith(data, ":list")||startsWith(data, ":recurse")||startsWith(data, ":fetch")){
 		N da=getAbstract(next_word(data));

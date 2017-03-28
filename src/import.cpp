@@ -1905,6 +1905,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		subject=getEntity(subjectName);//,fixNamespaces); //
 		object=getEntity(objectName,false);//,fixNamespaces);
 		predicate=getWikidataRelation(predicateName);
+		// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
 		if(!predicate)predicate=getEntity(predicateName);//,fixNamespaces);
 		if (predicate == Instance) {// flip here!
 			predicate=Type;

@@ -568,7 +568,7 @@ Node * getWikidataRelation(const char* thing) {
 
 	if (eq(thing, "P279")) return SuperClass;// ist Unterklasse von
 	if (eq(thing, "P523")) return Part;// 	Has part
-	if (eq(thing, "P460")) return Synonym;
+	if (eq(thing, "P460")) return Synonym; // Eventuell gleichwertig / Als gleichwertig bezeichnet how?
 
 
 	if (eq(thing, "P585")) return Date;
@@ -638,7 +638,7 @@ void initWikiRelations(){
 	//	addStatement4(current_context,-10361, _SuperClass, _PartOf);// DIRECTLY!
 
 	//	https://www.wikidata.org/wiki/Property:P131
-	//	addStatement4(current_context,-10131, _SuperClass, In->id);
+//		addStatement4(current_context,-10131, _SuperClass,  In->id);
 	addStatement4(current_context,-10131, _SuperClass, _PartOf);//located in the administrative
 	addStatement4(current_context,-10150, _SuperClass, _Part);//  Untereinheit (administrative Einheit)
 	addStatement4(current_context,-10527, _SuperClass, _Part);// 	Has part
