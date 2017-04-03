@@ -504,8 +504,9 @@ int handle(cchar* q0,int conn){
 				char* objectName=s->Object()->name;
 				if(s->Predicate()==Instance){
 					N type=getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);
-					if(checkNode(type,false,true))
-						objectName=(char*)(concat(concat(objectName, ": "),type->name));
+					if(checkNode(type,false,true) && type->id!=_entity)
+//						objectName=(char*)(concat(concat(objectName, ": "),type->name));
+						objectName=(char*)(string(objectName)+ " ("+type->name+")").data();
 				}
 				if(!objectName){
 					p("PROBLEM WITH");
