@@ -804,14 +804,15 @@ string str(char* c){
 int total_bad=0;
 bool doSplitValues=true;
 void splitValues(N subject,N predicate, char* values){
-//	N last=0;
-	for(string s : splitString(values,"|")){
-		N object=getThe(s);
+	std::vector<string> value_list=splitString(values,"|");
+	for(std::vector<string>::iterator it = value_list.begin(); it != value_list.end(); ++it) {
+		N object=getThe(*it);
 		addStatement(subject, predicate,object, !CHECK_DUPLICATES);
-//		if(last)addStatement(last,SubClass,object, CHECK_DUPLICATES);
-		//		last=object;
 	}
-//	std::vector<string> value_list=splitString(values,"|");
+//	for(string s : splitString(values,"|")){// c++11 not on all systems yet:(
+//		N object=getThe(s);
+//		addStatement(subject, predicate,object, !CHECK_DUPLICATES);
+//	}
 }
 
 void importCsv(const char* file, Node* type, char separator, const char* ignoredFields, const char* includedFields, int nameRowNr, const char* nameRow) {
