@@ -1,4 +1,5 @@
 //#pragma once
+// All structured data from the main and property namespace is available under the Creative Commons CC0 License;
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -89,14 +90,16 @@ char* fixName(char* name){
 		name+=3;
 	return name;
 }
+
+// whats this??
 char* getStatementTitle(Statement* s,Node* n){
 	if(!checkStatement(s))return (char *)"";
 	if(s->Object()==n)return getText(s->Subject());
 //	if(s->Subject()==n)
 		return getText(s->Object());// default
 }
-/* CENTRAL METHOD to parse and render html request*/
 
+/* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
     char* q=editable(q0);
@@ -359,7 +362,6 @@ int handle(cchar* q0,int conn){
 	if (format == html)statement_format = statement_format_json;
 	if (format == js)statement_format = statement_format_json;
 	if (format == json)statement_format = statement_format_json;
-	if (format == json && verbosity==alle) statement_format = statement_format_json_long;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
     
@@ -516,13 +518,16 @@ int handle(cchar* q0,int conn){
 				}
 
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
-				char* title="";
-				if(verbosity==alle)title=fixName(getStatementTitle(s,node));
-//				p(s);
 				char* subject=fixName(s->Subject()->name);
 				char*  predicate=fixName(s->Predicate()->name);
 				char*  object=fixName(objectName);
-				sprintf(buff, statement_format, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
+//				if(verbosity==alle){
+//					char* title=fixName(getStatementTitle(s,node));
+//					sprintf(buff, statement_format_json_long, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
+//				}
+//				else
+					sprintf(buff, statement_format, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id);
+
 				Writeline(conn, buff);
 				good++;
 			}

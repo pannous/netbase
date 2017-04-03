@@ -2580,7 +2580,7 @@ void import(const char* type, const char* filename) {
 		importAll();
 	}else if (eq(type, "amazon")) {
 		importAmazon();
-	}else if (eq(type, "billiger")) {
+	}else if (eq(type, "billiger") || eq(type,"billiger.de")) {
 		importBilliger();
 	}else if (eq(type, "test")) {
 		importTest();
@@ -2668,8 +2668,8 @@ void importAllDE() {
 //	importFacts();
 	importLabels("labels.csv");// todo: why again?
 //	buildSeoIndex();
-	importBilliger();
 	importAmazon();
+	importBilliger();
 	buildSeoIndex();
 	//importEntities();
 	//importImagesDE(); deprecated
