@@ -149,7 +149,7 @@ function addImage(image,div){
 	}
 	// img.onerror="this.src=''"
 	link.appendChild(img);
-	if(!inline)appendText(entity.image.replace(/.*\//,""),link);
+	if(!inline)appendText(image.replace(/.*\//,""),link);
 	div.appendChild(link);
 	imageAdded=true;
 }
