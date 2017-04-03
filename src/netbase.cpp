@@ -2579,7 +2579,7 @@ void addSeo(Node* n0){
 	Node* n=n0;
 	if(n->kind!=_abstract && n->kind!=_singleton)
 		n=getAbstract(n->name);
-	if(!n->name || len(n->name)<2)return;
+	if(!n||!n->name || len(n->name)<2)return;
 	string see=generateSEOUrl(n->name);
 	if(see==n->name)return;
 	cchar* seo=see.data();
