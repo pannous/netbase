@@ -7,6 +7,7 @@ var link_name=true;
 var server="/";//html/"; 
 if(document.location.href.match(/file:/))
 	server="http://netbase.pannous.com/"
+else server=document.location.origin
 	// server="http://87.118.71.26:81/" // for quasiris demo
 	// server="http://big.netbase.pannous.com:81/"
 	// server="http://de.netbase.pannous.com:81/"
