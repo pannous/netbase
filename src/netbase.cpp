@@ -520,7 +520,7 @@ bool checkNode(Node* node, int nodeId, bool checkStatements, bool checkNames,boo
 		//		p(nodeId);
 		return false;
 	}
-	if(!debug)return true;
+//	if(!debug)return true;
 	context=getContext(current_context);
 	void* maxNodePointer=&context->nodes[maxNodes];
 	if (node < context->nodes - propertySlots) {
@@ -2579,7 +2579,7 @@ void addSeo(Node* n0){
 	Node* n=n0;
 	if(n->kind!=_abstract && n->kind!=_singleton)
 		n=getAbstract(n->name);
-	if(!n||!n->name || len(n->name)<2)return;
+	if(!checkNode(n,0,0,1,0) || len(n->name)<2)return;
 	string see=generateSEOUrl(n->name);
 	if(see==n->name)return;
 	cchar* seo=see.data();
