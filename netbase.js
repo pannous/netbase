@@ -1,8 +1,6 @@
 // Netbase Graph Viewer :: version 1.2.8
 // © 2010 - 2017 Pannous + Quasiris
-// All structured data from the main and property namespace is available under the Creative Commons CC0 License; 
-// attribution: https://commons.wikimedia.org/wiki/File:Angela_Merkel,_Juli_2010.jpg
-Angela Merkel 	Bild 	http://commons.wikimedia.org/wiki/File:Angela Merkel Juli 2010 - 3zu4.jpg
+
 var div;// results
 var editMode=false;
 var link_name=true;
