@@ -103,7 +103,7 @@ function makeStatement(statement,elem,entity)
 {  // if Wikimedia-Kategorie  BREAK!
   if(filterStatement(statement))return;
 	if(statement.predicate=="Wappen")addImage(statement.object,div);
-	if(statement.predicate=="product_image_url")addImage(statement.object,div);
+	if(statement.predicate.match(/image/))addImage(statement.object,div);
 	var top = document.createElement("tr");
 	if(!inline || statement.sid!=entity.id)
 		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
