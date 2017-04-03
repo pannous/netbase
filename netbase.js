@@ -180,7 +180,7 @@ function makeEntity(entity)
 	if(entity.id<-10000)
 	    makeLink("P","https://www.wikidata.org/wiki/Property:P"+ ( -10000 - entity.id) ,div)
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
-	// addImage(entity.image,div);
+	
 	appendText("  statements: "+entity.statementCount,div).style="font-size:small;"
 	}
 
@@ -242,7 +242,7 @@ function show_footer(){
 	else
 		makeLink(" LESS ",clean(url).replace("/html","/html/short"));
 	br();
-	if(!url.match("/html"))url=url.replace("81/","81/html/");
+	if(!url.match("/html"))url=url.replace(".com/","com/html/").replace(".de/","de/html/").replace("81/","81/html/");
 	makeLink(" TSV |",url.replace("/html","/csv"));
 	makeLink(" JSON |",url.replace("/html","/json"));
 	makeLink(" XML |",url.replace("/html","/xml"));
