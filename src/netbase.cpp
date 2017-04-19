@@ -368,23 +368,14 @@ char* name(Node * node) {
 	return node->name;
 }
 
-//static Context contexts[maxContexts];
-// Context* contexts;
-
 Context * getContext(int contextId) {
-    //	if (contextId == 0) {
-    //        p("Context#0!");
-    //	}
 	if (!multipleContexts) contextId=wordnet; // just one context
-
-	Context* context=&(contexts[contextId]); //*(Context*)malloc(sizeof(Context*));
-
+	Context* context=&(contexts[contextId]);
 	if (context->nodes != null){// && context->id == contextId) {
 		//		printf("Found context %d: %s\n",context->id,context->name);
 		//		flush();
 		return context;
 	}
-
 	printf("Reset context %d: %s", context->id, context->name);
 	context->id=contextId;
 	context->currentNameSlot=0; //context->nodeNames;
@@ -2620,7 +2611,8 @@ void buildSeoIndex(){
 
 void fixCurrent(){
 //	context->lastNode=1;// RADICAL: fill all empty slots!
-	buildSeoIndex();
+//	buildSeoIndex();
+	importRemaining();
 //	add_force(current_context, 415898, "Telekom", _singleton);
 }
 

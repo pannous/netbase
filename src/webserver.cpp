@@ -522,11 +522,9 @@ int handle(cchar* q0,int conn){
 				char*  predicate=fixName(s->Predicate()->name);
 				char*  object=fixName(objectName);
 //				if(verbosity==alle){
-//					char* title=fixName(getStatementTitle(s,node));
+//					char* title=fixName(getStatementTitle(s,node)); ???
 //					sprintf(buff, statement_format_json_long, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
-//				}
-//				else
-					sprintf(buff, statement_format, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id);
+				sprintf(buff, statement_format, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id);
 
 				Writeline(conn, buff);
 				good++;
@@ -534,10 +532,7 @@ int handle(cchar* q0,int conn){
 			if (use_json)Writeline(conn, "]");
 		}
 		if (format == xml)Writeline(conn, "</entity>\n");
-		//		string img=getImage(node->name);
-		//		if(img!="")Writeline(conn,"<img src=\""+img+"\"/>");
 	}
-//	if(good==0&&q[0]=='\'')Writeline(conn,"omit_quotes?");
 
 	if (use_json || format == html || format == js)Writeline(conn,good>0?"}\n]}":"]}");
 	if (format == xml)Writeline(conn, "</results>\n");

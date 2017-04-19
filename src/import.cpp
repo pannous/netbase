@@ -2592,7 +2592,7 @@ void import(const char* type, const char* filename) {
 		importWordnet();
 	} else if (eq(type, "freebase")) {
 		importFreebase();
-	} else if (eq(type, "geodb")||eq(type, "locations")||eq(type, "places")) {
+	} else if (eq(type, "geodb")||eq(type, "locations")||eq(type, "places")||eq(type, "cities")) {
 		importGeoDB();
 	}
 	else if (eq(type, "dbpedia")) {
@@ -2663,16 +2663,32 @@ void importAllDE() {
 //	importNames();
 	importGeoDB();
 	importCsv("used_keywords.csv");
+	importCsv("whole_data.csv");
+	importCsv("Telekom_Entitaet.csv");
+	importCsv("Telekom-Produkt.csv");
 //	importQuasiris();:
 	replay();
 //	importFacts();
 	importLabels("labels.csv");// todo: why again?
 //	buildSeoIndex();
+	importBilliger();
+	buildSeoIndex();
+	importAmazon();
+	//importEntities();
+	//importImagesDE(); deprecated
+	importing=false;
+}
+
+void importRemaining(){
+	importing=true;
+	germanLabels=true;
+	autoIds=false;
+	importCsv("Telekom_Entitaet.csv");
+	importCsv("Telekom-Produkt.csv");
+	importCsv("whole_data.csv");
 	importAmazon();
 	importBilliger();
 	buildSeoIndex();
-	//importEntities();
-	//importImagesDE(); deprecated
 	importing=false;
 }
 
