@@ -2592,7 +2592,7 @@ void import(const char* type, const char* filename) {
 		importWordnet();
 	} else if (eq(type, "freebase")) {
 		importFreebase();
-	} else if (eq(type, "geodb")||eq(type, "locations")||eq(type, "places")||eq(type, "cities")) {
+	} else if (eq(type, "geodb")||eq(type, "geo")||eq(type, "locations")||eq(type, "places")||eq(type, "cities")) {
 		importGeoDB();
 	}
 	else if (eq(type, "dbpedia")) {

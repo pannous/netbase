@@ -2699,7 +2699,7 @@ int main(int argc, char *argv[]) {
 		load();
 //		quiet=false;
 		const char* query=(const char*)cut_to(cut_to(join(argv, argc).data(), "query "),"select");
-		parse(query);
+		show(parse(query));
 		exit(0);
 	}
 

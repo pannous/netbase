@@ -158,7 +158,8 @@ void console() {
 		getline(data);
 		bool _autoIds=autoIds;
 		NodeVector results=parse(data,/*safeMode=*/false);// safeMode only for web access
-		show(results);
+		if(results.size()==1)show(results[0]);
+		else show(results);
 		autoIds=_autoIds;
 	}
 }
