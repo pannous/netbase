@@ -1627,14 +1627,14 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 	while ((current = q.front())) {
 //		if(enqueued[current->id+propertySlots])continue;
 //		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
-		all.insert(current);
-		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
 		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/)||(current->name[0]<'A'))
 			continue;
 		if(startsWith(current->name,"http"))
 			continue;
+		all.insert(current);
+		if(all.size()>resultLimit)break;
 		N pa=get(enqueued[current->id+propertySlots]);
 		if(!pa)pa=Unknown;// Error;// Nil;
 //		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);

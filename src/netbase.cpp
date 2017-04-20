@@ -2608,11 +2608,21 @@ void buildSeoIndex(){
 //			deleteNode(n);
 	}
 }
+void fixBrokenStatement(){
+	for (int i=1; i<maxStatements; i++) {
+		if(i%10000==0){pf("%d\r",i);fflush(stdout);}
+		Statement* s= getStatement(i);
+		if(s->subject<-propertySlots || s->subject>maxNodes)s->subject=_error;
+		if(s->predicate<-propertySlots || s->predicate>maxNodes)s->predicate=_error;
+		if(s->object<-propertySlots || s->object>maxNodes)s->object=_error;
+	}
+}
 
 void fixCurrent(){
+	fixBrokenStatement();
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 //	buildSeoIndex();
-	importRemaining();
+//	importRemaining();
 //	add_force(current_context, 415898, "Telekom", _singleton);
 }
 

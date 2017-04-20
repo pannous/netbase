@@ -1933,6 +1933,9 @@ void testBrandNewStuff() {
 	germanLabels=false;
 	checkWordnet();// ->	importWordnet();
 	show(parse(":predicates Germany"));
+//	fixCurrent();
+	show(parse(":all Depeche Mode"));
+	exit(0);
 //	testWordnet();
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
