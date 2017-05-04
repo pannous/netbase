@@ -639,7 +639,8 @@ Node * add(const char* nodeName, int kind, int contextId) { //=node =current_con
     initNode(node, context->lastNode, nodeName, kind, contextId);
 	context->nodeCount++;
 	if (kind == _abstract|| kind == _singleton) return node;
-	addStatement(abstract, Instance, node, false);// done in initNode//setLabel !
+	if(abstract)
+		addStatement(abstract, Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly && kind > 105) // might cause loop?
         addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
 	//	    why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
