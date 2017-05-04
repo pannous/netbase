@@ -1932,8 +1932,8 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 //	checkWordnet();// ->	importWordnet();
-//	importAll();
-	importGeoDB();
+	importAll();
+//	importGeoDB();
 	show(parse(":predicates Germany"));
 //	fixCurrent();
 	show(parse(":all Depeche Mode"));

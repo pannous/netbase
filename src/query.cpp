@@ -2218,7 +2218,7 @@ N getTopic(N node){
 //	return getFurthest(node,parentFilter);
 	N t=    getProperty(node, "topic");
 	if(!t)t=getProperty(node, "Kategorie");
-	if(t)return t;
+	if(t&&t!=node)return t;
 	return getFurthest(node,topicFilter);
 //	if(all.size()==0)return Entity;
 //	return all[all.size()-1];// best?
