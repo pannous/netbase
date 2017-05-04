@@ -2217,7 +2217,7 @@ N getTopic(N node){
 //	NV all=getTopics(node);
 //	return getFurthest(node,parentFilter);
 	N t=    getProperty(node, "topic");
-	if(!t)t=getProperty(node, "Kategorie");
+//	if(!t)t=getProperty(node, "Kategorie");
 	if(t&&t!=node)return t;
 	return getFurthest(node,topicFilter);
 //	if(all.size()==0)return Entity;
