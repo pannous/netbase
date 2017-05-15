@@ -1932,6 +1932,7 @@ void testBrandNewStuff() {
 //	germanLabels=true;
 	germanLabels=false;
 //	checkWordnet();// ->	importWordnet();
+//	importCsv("Telekom-Shop-Produkt.csv");
 	importAll();
 //	importGeoDB();
 	show(parse(":predicates Germany"));

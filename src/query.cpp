@@ -1679,6 +1679,7 @@ bool filterWikiType(int object){
 // AUTO:
 	if(object==488383)return DROP; // Objekt
 	if(object==386724)return DROP; // Werk !?
+	if(object==11461)return DROP; // Schall	Q11461
 //	if(object==39546)return DROP; //Werkzeug	Q39546
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==16889133)return DROP; // Klasse
@@ -2218,7 +2219,10 @@ N getTopic(N node){
 //	return getFurthest(node,parentFilter);
 	N t=    getProperty(node, "topic");
 //	if(!t)t=getProperty(node, "Kategorie");
-	if(t&&t!=node)return t;
+	if(t&&t!=node){
+		printf("DUB");
+		return t;
+	}
 	return getFurthest(node,topicFilter);
 //	if(all.size()==0)return Entity;
 //	return all[all.size()-1];// best?

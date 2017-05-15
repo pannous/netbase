@@ -406,8 +406,9 @@ void load(bool force) {
 		fixStatementNodeIds(c, oldNodes);
 	}
 
-	if(true){
-		fp = open_binary("abstracts.bin");
+
+	fp = open_binary("abstracts.bin");
+	if(fp){
 		fread(abstracts, sizeof (Ahash), maxNodes*2, fp);
 		fclose(fp);
 	}

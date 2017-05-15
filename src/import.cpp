@@ -963,7 +963,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 		for (int i=0; i < size; i++) {
 			if(i==nameRowNr)continue;
 			predicate=predicates[i];
-			if (predicate == null) continue;
+			if (predicate == null || !checkNode(predicate)) continue;
 			if (contains(ignoreFields, predicate->name)) continue;
 			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
@@ -1901,8 +1901,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if (predicateName[3] == '-' || predicateName[3] == '_' || predicateName[3] == 0) continue;        // <zh-ch, id ...
 		if (predicateName[2] == '-' || predicateName[2] == '_' || predicateName[2] == 0) continue;        // zh-ch, id ...
 		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
-		//    if(contains(line,"<Apple")) // debug
-		//        p(line);
+		if(contains(line,"Q1454986")) // debug
+		        p(line);
 		subject=getEntity(subjectName);//,fixNamespaces); //
 		object=getEntity(objectName,false);//,fixNamespaces);
 		predicate=getWikidataRelation(predicateName);
