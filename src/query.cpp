@@ -1680,6 +1680,7 @@ bool filterWikiType(int object){
 	if(object==488383)return DROP; // Objekt
 	if(object==386724)return DROP; // Werk !?
 	if(object==11461)return DROP; // Schall	Q11461
+	if(object==3249551)return DROP; // Prozess	Q3249551	<= Kunst	Q735	<= Musik	Q638 
 //	if(object==39546)return DROP; //Werkzeug	Q39546
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==16889133)return DROP; // Klasse
