@@ -625,7 +625,8 @@ Node * getWikidataRelation(const char* thing) {
 //    if (eq(thing, "Klasse")) return SuperClass;
 //	if (eq(thing, "reverse_property")) return Owner;
 	//	if (eq(thing, "in"))return Loc;
-	return 0;//getThe(thing);
+	return 0;
+//	return getThe(thing);
 }
 
 

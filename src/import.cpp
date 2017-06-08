@@ -1738,7 +1738,11 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 			return getPropertyDummy(name);
 			//			return Missing;// bad() counted before
 		}
-		if(id>0)return getNode(id);
+		if(id>0){
+			N n=getNode(id);
+			n->id=id;// That's all we know for dummies
+			return n;
+		}
 	}
 	if(name[0]=='P' && name[1]<='9'){
 		if(contains(name, '-'))// "P2430S28b08e46-49c5-061b-4035-1142c2c62e62"
@@ -1906,8 +1910,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		subject=getEntity(subjectName);//,fixNamespaces); //
 		object=getEntity(objectName,false);//,fixNamespaces);
 		predicate=getWikidataRelation(predicateName);
+		if(!predicate)predicate=getEntity(predicateName,true);
 		// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
-		if(!predicate)predicate=getEntity(predicateName);//,fixNamespaces);
 		if (predicate == Instance) {// flip here!
 			predicate=Type;
 			N t=subject;

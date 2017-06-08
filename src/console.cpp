@@ -733,6 +733,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 	if ((eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")|| args.size() >= 4 && (
 		string what=next_word(data);
+		if(what.empty()){load(/*,8,*/1);return OK;}
 		NodeVector nv=wrap(learn(what.data())->Subject());
 		FILE *fp= fopen((data_path+"/facts.ssv").data(), "a");
 		if(!fp){p("NO such file facts.ssv!"); return OK;}
