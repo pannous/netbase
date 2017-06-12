@@ -624,7 +624,7 @@ static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-1
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
 #if defined(__APPLE__)
-static long maxNodes /*max 32bit=4GB!*/= 20*million;// long would need a new structure!!
+static long maxNodes=/*max 32bit=4GB!*/100*million;// long would need a new structure!!
 static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
 #else
 static long maxNodes = 100*million;

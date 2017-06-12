@@ -760,15 +760,18 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		insertAbstractHash(a,true);// fix bug! can't be!?
 		}
 	}
+	show(a);
 	dissectWord(a, true);    //	if (i == 0) instanceFilter(a), true);
 	//        findWord(context->id, data);
     if(isAbstract(a)&&i == 0) {
 		lookupLimit=resultLimit;
 		N the=getThe(a);
+		show(the);
 		NV all=instanceFilter(a);
-		all.push_back(the);
+//		all.push_back(the);
 		all.push_back(a);// include abstract!
 //		sortNodes(all);
+
 		return all;
 	}
 	return wrap(a);

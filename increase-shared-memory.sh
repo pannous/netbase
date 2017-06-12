@@ -12,7 +12,8 @@ shared_memory_64GB=68719476736
 # allow bigger shared memory
 if [ $APPLE ] 
 then
-  export shmmax=$shared_memory_4GB
+  # export shmmax=$shared_memory_4GB
+  export shmmax=$shared_memory_16GB
   let "shmall=$shmmax/4096" # pages,  4096 bytes per page
   sudo sysctl -w kern.sysv.shmmax=$shmmax
   sudo sysctl -w kern.sysv.shmall=$shmall
