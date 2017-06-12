@@ -1929,8 +1929,8 @@ void testBrandNewStuff() {
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;
-//	germanLabels=true;
-	germanLabels=false;
+	germanLabels=true;
+//	germanLabels=false;
 //	checkWordnet();// ->	importWordnet();
 //	importCsv("Telekom-Shop-Produkt.csv");
 	importAll();

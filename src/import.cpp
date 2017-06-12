@@ -1351,6 +1351,8 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		}
 		if(line[0]==0||linecount==1234144)
 			continue;
+		if(contains(line, "Q550866"))
+			p("Q550866");
 		//		if(debug)if(linecount>100)break;
 		u8_unescape(line,MAX_CHARS_PER_LINE,line);
 		//		if(line[0]=='#')continue;
@@ -1868,6 +1870,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	char line[MAX_CHARS_PER_LINE];
 	while (readFile(file,&line[0])) {
 		if(line[0]==0)continue;// skip gzip new_block
+		if(!contains(line, "Q550866"))continue;
 		//        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
@@ -2552,7 +2555,7 @@ void importWikiData() {
 	else{
 		importWikiLabels("wikidata/wikidata-properties.nt.gz",true);
 		importWikiLabels("wikidata/wikidata-terms.en.nt",false);// fill up missing ONLY!
-		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
+//		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
 	}
 //	doDissectAbstracts=true;// already? why not
 	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!

@@ -756,9 +756,10 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	Node* a=get(data);
 	if(!isAbstract(a)){
 		if(i == 0 || !hasWord(a->name)){
-//		a->kind=abstractId;// not for singletons AMAZON!
-		insertAbstractHash(a,true);// fix bug! can't be!?
-		}
+			//		a->kind=abstractId;// not for singletons AMAZON!
+			insertAbstractHash(a,true);// fix bug! can't be!?
+		}else
+			addStatement(getAbstract(a), Instance, a,true);
 	}
 	show(a);
 	dissectWord(a, true);    //	if (i == 0) instanceFilter(a), true);
