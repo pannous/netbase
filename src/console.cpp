@@ -759,7 +759,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 			//		a->kind=abstractId;// not for singletons AMAZON!
 			insertAbstractHash(a,true);// fix bug! can't be!?
 		}else
-			addStatement(getAbstract(a), Instance, a,true);
+			addStatement(getAbstract(a), Instance, a,true,true);
 	}
 	show(a);
 	dissectWord(a, true);    //	if (i == 0) instanceFilter(a), true);

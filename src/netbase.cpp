@@ -1490,6 +1490,9 @@ Node* getAbstract(const char* thing) {			// AND CREATE! use hasWord for lookup!!
 Node* getAbstract(string thing){
 	return getAbstract(thing.c_str());
 }
+Node* getAbstract(Node *node){
+	return getAbstract(node->name);
+}
 void collectAbstractInstances(Node* abstract) {
 	Context* c=getContext(current_context);
 	for (int i=0; i < c->nodeCount; i++) {
