@@ -2624,8 +2624,26 @@ void fixBrokenStatement(){
 	}
 }
 
+
+void fixInstances(){
+	for(int i=1;i<maxNodes-propertySlots;i++){
+		if(!checkNode(i))continue;
+		N n=get(i);
+		if(empty(n->name))continue;
+		N a=getAbstract(n);
+		if(a==n)continue;
+		if(isAbstract(n)){
+			n->kind=_entity;// was singleton!
+//			bad();
+//			p(i);
+		}
+		addStatement(a, Instance, n,true,true);
+	}
+}
+
 void fixCurrent(){
-	fixBrokenStatement();
+	fixInstances();
+//	fixBrokenStatement();
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 //	buildSeoIndex();
 //	importRemaining();

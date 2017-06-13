@@ -761,7 +761,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		}else
 			addStatement(getAbstract(a), Instance, a,true,true);
 	}
-	show(a);
 	dissectWord(a, true);    //	if (i == 0) instanceFilter(a), true);
 	//        findWord(context->id, data);
     if(isAbstract(a)&&i == 0) {
@@ -772,7 +771,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 //		all.push_back(the);
 		all.push_back(a);// include abstract!
 //		sortNodes(all);
-
+		showNodes(all,true);
 		return all;
 	}
 	return wrap(a);
