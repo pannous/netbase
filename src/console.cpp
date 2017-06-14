@@ -147,7 +147,7 @@ Node *parseProperty(const char *data) {
 void console() {
 	quiet=false;
 	if(germanLabels)printf("\nDeutsch");
-	printf("\nNetbase C++ Version 1.5.5\n");
+	printf("\nNetbase C++ Version 1.5.6\n");
 
 	char* data=(char*) malloc(10000);
 #ifdef signal
@@ -577,9 +577,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(startsWith(data, ":topic")||startsWith(data, ":to")){
 		data=next_word(data);
 		autoIds=true;
-		N n=getThe(data,More);
-		p(n);
-		return wrap(getTopic(n));
+		return wrap(getTopic(getThe(data,More)));
 	}
 	if(startsWith(data, ":type")||startsWith(data, ":kind")){
 		data=next_word(data);

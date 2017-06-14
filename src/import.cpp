@@ -865,7 +865,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			fixValues(values, fieldCount);
 			for (int i=0; i < fieldCount; i++) {
 				char* field=values[i];
-//				p(field);
 				Node* fielt=getThe(field); // Firma		instance		Terror_Firma LOL
 //				dissectWord(fielt);
 				predicates.push_back(fielt);
@@ -2671,6 +2670,8 @@ void importAllDE() {
 	importCsv("whole_data.csv");
 	importCsv("Telekom_Entitaet.csv");
 	importCsv("Telekom-Produkt.csv");
+	importCsv("manual_entities.csv");
+
 //	importQuasiris();:
 	replay();
 //	importFacts();

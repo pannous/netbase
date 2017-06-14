@@ -492,14 +492,17 @@ Node* invert(Node* relation) {
 
 // expansive! todo! merge later
 Node * getRelation(const char* thing) {
+//	N wiki=getWikidataRelation(field);
+//	if(wiki)return wiki;
 	if (thing[0] == '#') thing++;
 	if (eq(thing, "Item"))return Entity;// <http://www.wikidata.org/entity/Q9486626> <#type> <http://www.wikidata.org/ontology#Item> .
 //	if (eq(thing, "Item"))return Object;// Entity
 	if (eq(thing, "instance")) return Instance;
     if (eq(thing, "Contains")) return Part;
 //    if (eq(thing, "broader")) return Unknown;//Any;// Related, See Also SuperClass or Type
-    if (eq(thing, "Broader")) return SuperClass;
-    if (eq(thing, "Broader topic")) return SuperClass;
+	if (eq(thing, "Broader")) return SuperClass;
+	if (eq(thing, "Broader topic")) return SuperClass;
+//	if (eq(thing, "topic")) return Topic;
     if (eq(thing, "narrower")) return SubClass;
     if (eq(thing, "narrower topic")) return SubClass;
 	if (eq(thing, "Unterklasse von"))return SuperClass;

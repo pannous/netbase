@@ -1219,8 +1219,8 @@ Node * getThe(const char* thing, Node* type){//, bool dissect) {
 //		thing=thing+3;
 //	if(startsWith(thing,"in "))thing=thing+3;
     if(autoIds&&type!=Number&&isInteger(thing))return get(atoi(thing));// WAH, not here! --
-	if (getRelation(thing)) // not here! doch
-		return getRelation(thing);
+	Node* rel=getRelation(thing); // not here! doch
+	if(rel)return rel;
 //    replaceChar((char*)thing,'_',' ');// NOT HERE!
 	Node* abstract=getAbstract(thing);
 	Node* insta=getThe(abstract, type); // todo: best?
