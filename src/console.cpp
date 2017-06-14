@@ -577,7 +577,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(startsWith(data, ":topic")||startsWith(data, ":to")){
 		data=next_word(data);
 		autoIds=true;
-		N n=getThe(data);
+		N n=getThe(data,More);
 		p(n);
 		return wrap(getTopic(n));
 	}
