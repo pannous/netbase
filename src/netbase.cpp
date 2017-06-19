@@ -2626,6 +2626,7 @@ void fixBrokenStatement(){
 
 
 void fixInstances(){
+	autoIds=false;
 	for(int i=1;i<maxNodes-propertySlots;i++){
 		if(!checkNode(i))continue;
 		N n=get(i);

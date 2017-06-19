@@ -657,10 +657,6 @@ void fixLabels(Statement* s){
 void getIncludes(Node* n){
 	if(verbosity==shorter||verbosity==alle)return;
 	if(n->id<0)return;
-	if(eq("Release track",n->name))return;
-	if(eq("Recording",n->name))return;
-	if(eq("Document",n->name))return;
-	if(eq("Cataloged instance",n->name))return;
 	pf("getIncludes %d >>%s<<\n",n->id,n->name);
 	Statement *s=0;
 	int lookups=0;
@@ -676,7 +672,6 @@ void getIncludes(Node* n){
 			includedIds.push_back(s->Object()->id);
 		}
 	}
-
 }
 
 void loadView(Node* n){

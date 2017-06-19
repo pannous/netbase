@@ -2670,6 +2670,7 @@ void importAllDE() {
 	importCsv("whole_data.csv");
 	importCsv("Telekom_Entitaet.csv");
 	importCsv("Telekom-Produkt.csv");
+	importCsv("Telekom_Produkt.csv");
 	importCsv("manual_entities.csv");
 
 //	importQuasiris();:
