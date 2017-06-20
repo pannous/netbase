@@ -1044,7 +1044,8 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 }
 
 NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses) {
-	return all_instances2(type, recurse, max, includeClasses);//	RECURE BROKEN! use instanceFilter
+	if(/* DISABLES CODE */ true)
+		return all_instances2(type, recurse, max, includeClasses);//	RECURE BROKEN! use instanceFilter
 	NodeSet* a=all_instances3(type, recurse, max, includeClasses);
 	if(!a)return EMPTY;
 	const NodeVector &nv=nodeSetToNodeVector(*a);
@@ -2216,45 +2217,14 @@ N getClass(N n){
 }
 
 N getTopic(N node){
-//	NV all=getTopics(node);
-//	return getFurthest(node,parentFilter);
 	N t=    getProperty(node, "topic");
 //	if(!t)t=getProperty(node, "Kategorie");
-	if(t&&t!=node){
-		printf("DUB");
-		return t;
-	}
+	if(t && t!=node)return t;
 	return getFurthest(node,topicFilter);
-//	if(all.size()==0)return Entity;
-//	return all[all.size()-1];// best?
-//	return all[0];// best?
-//	return getClass(n);
-}
-
-N getTopic2(N n){// n-Titty = entity
-	return Error;
-	if(isAbstract(n))
-		return Abstract;
-	//		n=getThe(n);// best!
-	//		NV classes=findStatements(n->id, _SuperClass, _any);
-	NV papas=findProperties(n,SuperClass);
-	if(papas.size()==0)
-		papas=findProperties(n,Type);
-	if(papas.size()>0){
-		papas=sortTopics(papas, n);
-		N p=papas[0];
-		//		if(p->id==134556)return 0;// Single : ignore!
-		//		if(p->id==11424)return 0;// Film 'Eine Familie' wtf : ignore!
-		if(eq(p->name,"◊"))return Entity;
-		if(p->id!=4167836)// Wikimedia-Kategorie
-			return p;
-	}else
-		pf("Unknown type: %s\n",n->name);
-	return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 }
 
 NV getTopics(N entity){
-	NodeSet all=findAll(entity, parentFilter);
+	NodeSet all=findAll(entity, topicFilter);
 	NV topics=	setToVector(all);
 	topics=sortTopics(topics,entity);
 	return topics;

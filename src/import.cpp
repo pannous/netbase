@@ -756,7 +756,6 @@ N addSubword(char* name,int words,N kind){
 		return 0;
 	int l=len(name);
 	int i=0;
-	int w=0;
 	N found=addSubword(name,kind);// ok, only if new
 	if(wordCount(name)==words)
 		return found;
@@ -785,7 +784,7 @@ N addSubCategories(char* name,N kind){
 		i--;
 		if (name[i]=='/') {
 			name[i]=0;// cut
-			char *kat=name+i+1;
+//			char *kat=name+i+1;
 			N label=addSubword(name,kind);
 //			if(label)break;// known
 			if(!label){toll++;
@@ -827,7 +826,6 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	char** values=(char**) malloc(sizeof(char*) * MAX_ROWS);
 	char lastValue[MAX_CHARS_PER_LINE*2];
 	char* line0 = 0;// nullptr;
-	char* line1;
 	map<char*, Node*> valueCache;
 	Node* subject=0;
 	Node* predicate=0;
@@ -899,7 +897,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			// Tennis", "id":31409028,"topic":"Amazon music product BAD
 			if(cut_billiger && !contains(name, " "))subject= addSubword(name,type);
 			else{
-				int l=len(name);int i,w=0;
+				int l=len(name);int i = 0,w=0;
 				while (i++<l)
 					if (name[i]==' ')// cut after 4th word
 						if(++w==5){name[i]=0;break;}
@@ -1191,7 +1189,7 @@ bool importYago(const char* file) {
 		if (ok < 3) {
 			printf("id %s  subjectName %s  predicateName %s objectName  %s\n", id, subjectName, predicateName, objectName);
 			printf("MISMATCH2 %s\n", line);
-			continue; //todo
+			if(1>0)continue; //todo
 			char** all=splitStringC(line, '\t');
 			if (all[2] == 0) {
 				if (debug) printf("ERROR %s\n", line);
@@ -1304,33 +1302,6 @@ static map<int, Node*> labels;//=new map<int, Node*>();
 map<int,string> wn_labels;
 int freebaseKeysConflicts=0;
 
-void testPrecious2() {
-	if (freebaseKeys.size() < 20000000) return;
-	long testE=freebaseHash("023gm0>");
-	//	check(477389594 == testE);
-	int testI=freebaseKeys[testE];
-	p(testI);
-	Node* testN=get(testI);
-	p(testN);
-	check(startsWith(testN->name, "Christen"));
-}
-
-void testPrecious() {
-	return; //FAIL on 2nd import !!:( TODO!!!
-	long testE=freebaseHash("01000m1>");
-	Node* testA=getAbstract("Most Precious Days");
-	//	Node* testA=getThe("Most Precious Days");
-	int testI=freebaseKeys[testE];
-	Node* testN=get(testI);
-	p(testA);
-	p(testN);
-	check(testN == testA);
-	check(freebaseKeys[testE] == testA->id);
-	//	if (linecount > 40000000)
-	//	check(freebaseKeys[freebaseHash("0c21rgr>")] != 0);
-	//            check(!hasWord("molaresvolumen"));
-	//            check(hasWord("Molares Volumen"));
-}
 map<int,bool> wiki_abstracts;
 bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 	p("ONLY COMPATIBLE WITH PURE WIKIDATA");
@@ -1343,17 +1314,21 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 	char* test;
 	int linecount=0;
 	bool english=contains(file, ".en.");
+	if(properties){
+		p("TODO: properties in labels?");
+		exit(-1);
+	}
 	while (readFile(file,&line[0])) {
 		if (++linecount % 10000 == 0) {
 			printf("%d labels, %d bad\r", linecount, badCount);
 			fflush(stdout);
 		}
-		if(line[0]==0||linecount==1234144)
+		if(line[0]==0)
 			continue;
-		if(contains(line, "Q550866"))
-			p("Q550866");
+		if(contains(line, "Q3168"))
+			p(line);
 		//		if(debug)if(linecount>100)break;
-		u8_unescape(line,MAX_CHARS_PER_LINE,line);
+//		u8_unescape(line,MAX_CHARS_PER_LINE,line); not with new labels.csv!! removes 'ä' WTF why?
 		//		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);
@@ -1365,8 +1340,11 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		test=dropUrl(test);
 		if(key[0]=='<')key++;
 		if(test[0]=='<')test++;
-		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label");
-		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
+		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label"); || P1476:title
+
+		if (!altLabels and startsWith(test, "altLabel"))continue;
+		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description"))
+			continue;
 		if(germanLabels && !english && !endsWith(line,"@de ."))
 			continue;
 		if(!(germanLabels || english) &&!endsWith(line,"@en ."))continue;
@@ -1387,6 +1365,10 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 			continue;//for now!
 		}
 		if(startsWith(test, "description")){
+			if(eq(label,"scientific article")){
+				N a=getEntity(key,false,false);
+				a->kind=_ignore;
+			}
 			if(startsWith(label,"Wikimedia")){
 				N a=getEntity(key,false,false);
 //				bool hadAbstract=isAbstract(a);
@@ -1631,7 +1613,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 //	free(test0) free(label0) free(key0) fails, why? egal
 	p("duplicates removed:");
 	p(freebaseKeysConflicts);
-	testPrecious();
+//	testPrecious();
 	pf("DONE importing %d labels from %s\n",linecount,file);
 	closeFile(file);
 	return true;
@@ -1770,11 +1752,12 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 #define DROP true;
 #define KEEP false;
 bool dropBadSubject(char* name) {
-	if(name[0]<='9')return DROP;// || name[1]<='9')continue;//
-	if(endsWith(name,"#propertyStatementLinkage>"))return DROP;
-
-	if(startsWith(name,"Q5570970"))return DROP; // Globe
-	if(startsWith(name,"Q26956302"))return DROP; // rdf.freebase.com id?
+	if(name[0]<='9')return DROP;
+//	too expensive here!
+	//	if(endsWith(name,"#propertyStatementLinkage>"))return DROP;
+//	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
+//	if(startsWith(name,"Q5570970"))return DROP; // Globe
+//	if(startsWith(name,"Q26956302"))return DROP; // rdf.freebase.com id?
 	if(startsWith(name,"http")||startsWith(name,"<http")){
 		if(startsWith(name,"<http://www.wikidata.org/entity/"))return KEEP;
 		return DROP;
@@ -1784,18 +1767,14 @@ bool dropBadSubject(char* name) {
 
 bool dropBadPredicate(char* name) {
 	//	if(name[0]=='.')return DROP;
-	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
-
 	if(startsWith(name,"P352"))return DROP; //	UniProt ID
 	if(startsWith(name,"P536"))return DROP; //	ATP ID
 	if(startsWith(name,"P652"))return DROP; //	UNII
 	if(startsWith(name,"P494"))return DROP; //	ICD-10
 	if(startsWith(name,"P637"))return DROP; //	RefSeq Protein ID
 	if(startsWith(name,"P705"))return DROP; //	Ensembl Protein ID
-
 	if(startsWith(name,"P213>"))return DROP;//	 	ISNI
 	if(startsWith(name,"P214>"))return DROP;//	 	VIAF
-
 	if(startsWith(name,"P646>"))return DROP;
 	if(startsWith(name,"P508>"))return DROP;
 	if(startsWith(name,"P910>"))return DROP;
@@ -1869,7 +1848,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	char line[MAX_CHARS_PER_LINE];
 	while (readFile(file,&line[0])) {
 		if(line[0]==0)continue;// skip gzip new_block
-		if(!contains(line, "Q550866"))continue;
+		if(DEBUG && !contains(line, "P1476"))
+			continue;
 		//        if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
@@ -1887,6 +1867,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		memset(predicateName, 0, 10000);
 		memset(subjectName, 0, 10000);
 		if(line[0]=='#')continue;
+
 		//        subjectName=line;
 		//        int i=0;
 		//        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
@@ -1897,7 +1878,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		if(dropBadSubject(subjectName)){ignored++; continue;}//p(line);}
 		if(dropBadPredicate(predicateName)){ignored++; continue;}
-		if(dropBadObject(predicateName)){ignored++; continue;}
+		if(dropBadObject(objectName)){ignored++; continue;}
 		//		if(filterFreebase(objectName)){ignored++;continue;}
 		fixNewline(objectName);
 		// deCamel(predicateName);
@@ -1951,10 +1932,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 void importFreebase() {
 	useHash=true;
 	autoIds=false;
-	if (!freebaseKeys[freebaseHash("0zzxc3>")]) {					// always
-		importFreebaseLabels();
-		testPrecious2();
-	}
+//	if (!freebaseKeys[freebaseHash("0zzxc3>")]) // always
+	importFreebaseLabels();
 	importN3("freebase.data.txt");
 }
 
@@ -2531,7 +2510,19 @@ void importTest(){
 //	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 }
 
+
 void importWikiData() {
+	context=getContext(wikidata);
+	useHash=false;
+	autoIds=false;
+	importing=true;
+//	context->lastNode=(int)maxNodes/2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
+	context->lastNode=30244576; // as of 06/2017!
+	importWikiLabels("wikidata/labels.csv");
+	importN3("wikidata/wikidata.n3");
+}
+
+void importWikiDataALT() {
 	context=getContext(wikidata);
 	useHash=false;
 	autoIds=false;

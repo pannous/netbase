@@ -199,6 +199,7 @@ static const int _next = -565;
 
 static const int _sense = -660;// why? ;)
 static const int _error= -666;//-1 = -evil in itself;//
+static const int _ignore= -777;
 static const int _missing= -999;
 static const int _any=0;// !!!
 static const int _unknown=0;

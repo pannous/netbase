@@ -33,7 +33,7 @@
 int SERVER_PORT=8080;
 int MAX_QUERY_LENGTH=10000;
 //static char server_root[1000] = "/Users/me/";
-static char server_root[1000] = "./";
+//static char server_root[1000] = "./";
 // explicit whitelist for files that can be served:
 static char index_html[100] = "index.html";
 static char netbase_js[100] = "netbase.js";
@@ -355,7 +355,7 @@ int handle(cchar* q0,int conn){
 	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
 	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
 	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
-	const char* statement_format_json_long = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d, \"title\":\"%s\"}";
+//	const char* statement_format_json_long = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d, \"title\":\"%s\"}";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
@@ -513,8 +513,8 @@ int handle(cchar* q0,int conn){
 				if(!objectName){
 					p("PROBLEM WITH");
 					p(s);
-					objectName="???";
-					//continue;// hebrew?
+//					objectName="???";
+					continue;// hebrew?
 				}
 
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;

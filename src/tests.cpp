@@ -1937,7 +1937,8 @@ void testBrandNewStuff() {
 //	germanLabels=false;
 //	checkWordnet();// ->	importWordnet();
 //	importCsv("Telekom-Shop-Produkt.csv");
-	importAll();
+//	importAll();
+	importWikiData();
 //	importGeoDB();
 	show(parse(":predicates Germany"));
 //	fixCurrent();
