@@ -1314,10 +1314,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 	char* test;
 	int linecount=0;
 	bool english=contains(file, ".en.");
-	if(properties){
-		p("TODO: properties in labels?");
-		exit(-1);
-	}
+
 	while (readFile(file,&line[0])) {
 		if (++linecount % 10000 == 0) {
 			printf("%d labels, %d bad\r", linecount, badCount);
@@ -1325,8 +1322,8 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		}
 		if(line[0]==0)
 			continue;
-		if(contains(line, "Q3168"))
-			p(line);
+//		if(contains(line, "Q3521>"))
+//			p(line);
 		//		if(debug)if(linecount>100)break;
 //		u8_unescape(line,MAX_CHARS_PER_LINE,line); not with new labels.csv!! removes 'ä' WTF why?
 		//		if(line[0]=='#')continue;
@@ -1354,7 +1351,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		label=dropUrl(label);
 		key=dropUrl(key);
 		int id=atoi(key+1);
-		if(properties)
+		if(properties||key[0]=='P')// <P2900> "Faxnummer"@de .
 			id=-100000-id;
 		if(startsWith(test, "altLabel")){
 			if(!altLabels)continue;
@@ -1892,6 +1889,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		object=getEntity(objectName,false);//,fixNamespaces);
 		predicate=getWikidataRelation(predicateName);
 		if(!predicate)predicate=getEntity(predicateName,true);
+//		if(predicate&&predicate->id==-101476)// title ...
 		// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
 		if (predicate == Instance) {// flip here!
 			predicate=Type;
@@ -1899,7 +1897,6 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			subject=object;
 			object=t;
 		}
-
 		if (!subject || !predicate || !object ||
 			!subject->id || !predicate->id || !object->id ||
 			subject==Error || predicate==Error || object==Error ) {// G.o.d. dot problem !?
@@ -1908,7 +1905,12 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			//			subject=getEntity(subjectName);
 			//			if(!subject)// try again / debug
 			bad(); // subject->id ==0 ZB Q5 (no German!) OK
-		} else {
+		}
+		else if(subject->kind==_ignore||predicate->kind==_ignore||object->kind==_ignore ){
+			ignored++;
+			continue;
+		}
+		else {
 			//            else// Statement* s=
 			if(object==Class|| endsWith(objectName, "#Class"))
 				subject->kind=_clazz;
@@ -2518,7 +2520,9 @@ void importWikiData() {
 	importing=true;
 //	context->lastNode=(int)maxNodes/2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	context->lastNode=30244576; // as of 06/2017!
+	//	importWikiLabels("wikidata/properties.de",true);
 	importWikiLabels("wikidata/labels.csv");
+	importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
 	importN3("wikidata/wikidata.n3");
 }
 

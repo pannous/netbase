@@ -1928,7 +1928,7 @@ void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
 //	allowWipe();
-	fixCurrent();
+//	fixCurrent();
 
 	context=getContext(current_context);
 	quiet=false;
