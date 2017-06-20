@@ -44,7 +44,7 @@ void setText(Node *node, char* text) {
 void normImageTitle(char* title) {// blue_fin => bluefin // what?
 	int l=len(title);
 	for (int i=l; i >= 0; --i) {
-		if (title[i] == ' ' || title[i] == '_' || title[i] == '-') {
+		if (title[i] == ' ' or title[i] == '_' or title[i] == '-') {
 			strcpy(&title[i], &title[i + 1]); //,len-i);
 		}
 	}
@@ -61,7 +61,7 @@ bool checkLowMemory() {
 		printf("MEMORY: %zX Peak: %zX FREE: %zX \n", currentSize, peakSize, free);
 		return true;
 	}
-	//		|| currentSize*1.2>sizeOfSharedMemory||
+	//		 or currentSize*1.2>sizeOfSharedMemory or 
 	if (context->nodeCount + 30000 > maxNodes) {
 		p("OUT OF MEMORY!");
 		pf("%d nodes!\n", context->nodeCount);
@@ -95,20 +95,20 @@ bool checkLowMemory() {
 //int wordnet_synset_map[117659];
 std::map<int, int> wordnet_synset_map;
 
-// 100001740    ->  200000 and so on, no gaps
+// 100001740  -> 200000 and so on, no gaps
 int norm_wordnet_id2(int synsetid,bool force=false) {
 	if(synsetid < 1000 )return synsetid;// relations!
-	if(synsetid>10000&&synsetid < 14000)
+	if(synsetid>10000 and synsetid < 14000)
 		p("problem!");
-	if (synsetid < million && !force) return synsetid;
+	if (synsetid < million and !force) return synsetid;
 	int id=wordnet_synset_map[synsetid];
-	if (!id&&synsetid<=10000000) id=wordnet_synset_map[synsetid+10000000];
-	if (!id&&synsetid<=20000000) id=wordnet_synset_map[synsetid+100000000];
-	//	if (!id&&force)id=wordnet_synset_map[synsetid+200000000];
-	//	if (!id&&force)id=wordnet_synset_map[synsetid+300000000];
+	if (!id and synsetid<=10000000) id=wordnet_synset_map[synsetid+10000000];
+	if (!id and synsetid<=20000000) id=wordnet_synset_map[synsetid+100000000];
+	//	if (!id and force)id=wordnet_synset_map[synsetid+200000000];
+	//	if (!id and force)id=wordnet_synset_map[synsetid+300000000];
 	if (!id){
 		p(synsetid);
-		//		if(synsetid==12353431||synsetid==112353431)
+		//		if(synsetid==12353431 or synsetid==112353431)
 		//		p("BAD ID!!!");
 	}
 	id=id+100000;// NORM!!! *-1 with wikidata! war: 10000
@@ -128,7 +128,7 @@ void load_wordnet_synset_map() {
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		fixNewline(line);
 		sscanf(line, "%d\t%d", &s, &id);
-		//		if(s==112353431||id==266407)
+		//		if(s==112353431 or id==266407)
 		//			s=s;
 		wordnet_synset_map[s]=id;
 	}
@@ -141,7 +141,7 @@ map<long, string> nodeNameImages2; // chopped
 
 
 
-void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
+void importWordnetImages(cchar* file) { // 18 MILLION!  // 18496249
 	load_wordnet_synset_map();
 	p("image import starting ...");
 	int id;
@@ -157,25 +157,25 @@ void importWordnetImages(cchar* file) { // 18 MILLION!   // 18496249
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
 			if(checkLowMemory())break;
-			pf("importImages %d    \r", linecount);
+			pf("importImages %d  \r", linecount);
 			fflush(stdout);
 		};
 		sscanf(line, "%s\t%*s\t%s\t%d", title,/*md5,*/image,&id);
-		//        if(eq(title,"Uniform"))
-		//            p(line);
+		//    if(eq(title,"Uniform"))
+		//      p(line);
 		if (eq(lastTitle, title)) continue;
 		strcpy(lastTitle,title);// only the first
 		id=norm_wordnet_id(id);
 		if(!id)continue;
 		Node* subject=get(id);
-		if (!subject && !hasWord(title)){
+		if (!subject and !hasWord(title)){
 			p(line);
 			bad(); continue; // currently only import matching words.
 		}
 		Node* object=getAbstract(image);
-		if(subject&&subject->id!=0)
+		if(subject and subject->id!=0)
 			addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
-		if(!subject||subject->id==0||!isAbstract(subject)){
+		if(!subject or subject->id==0 or !isAbstract(subject)){
 			if(hasWord(title))
 				addStatement(getAbstract(title), wiki_image, object, !CHECK_DUPLICATES);
 		}
@@ -198,7 +198,7 @@ void importImagesDE() {// dbpedia
 	FILE* infile=open_file((char*) images_file_de);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			pf("importImages %d    \r", linecount);
+			pf("importImages %d  \r", linecount);
 			fflush(stdout);
 		};
 		//		sscanf(line, "<%[^>]s> <%[^>]s> <%[^>]s> .\n", title,label,image);
@@ -219,7 +219,7 @@ void importImagesDE() {// dbpedia
 	fclose(infile);
 }
 
-void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
+void importImageTripels(const char* file) { // 18 MILLION!  // 18496249
 	p("image import starting ...");
 	char line[1000];
 	char lastTitle[10000];
@@ -233,7 +233,7 @@ void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 	FILE* infile=open_file((char*) file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			pf("importImages %d    \r", linecount);
+			pf("importImages %d  \r", linecount);
 			fflush(stdout);
 		};
 		sscanf(line, "%s %*s %s", title, image);
@@ -241,12 +241,12 @@ void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 		strcpy(lastTitle,title);
 		//		if (!hasWord(title)) normImageTitle(title); //blue -_fin ==> bluefin
 		//		if (!hasWord(title)) continue; // currently only import matching words.
-		//            if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
+		//      if(++bad%1000==0){ps("bad image (without matching word) #");pi(bad);}
 		//		if (getImage(title) != "")
 		//			continue; //already has one ; only one so far!
 		Node* subject=getAbstract(title);
 		Node* object=getAbstract(image); // getThe(image);;
-		//		if(endswith(image,".ogg")||endswith(image,".mid")||endswith(image,".mp3"))
+		//		if(endswith(image,".ogg") or endswith(image,".mid") or endswith(image,".mp3"))
 		addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
 		printf("%s\n", title);
 		//		if (!eq(title, downcase(title),false))
@@ -260,7 +260,7 @@ void importImageTripels(const char* file) { // 18 MILLION!   // 18496249
 	fclose(infile);
 }
 
-void importImagesEN() { // 18 MILLION!   // 18496249
+void importImagesEN() { // 18 MILLION!  // 18496249
 	importImageTripels(images_file);
 }
 
@@ -272,13 +272,13 @@ void importImages(){
 		importImagesDE();// dbpedia
 	else
 		importImagesEN();
-	//        importWordnetImages("images.wn.csv");// via ids
+	//    importWordnetImages("images.wn.csv");// via ids
 }
 
 void importNodes() {
 	p("node import starting ...");
 	// char fname[40]="/Users/me/data/base/netbase.sql";
-	//  ('2282','Anacreon','N'),
+	// ('2282','Anacreon','N'),
 
 	// char* fname="/Users/me/data/base/netbase/nodes.test";
 	//2026896532	103	dry_out	Verb	\N	\N	11	103
@@ -294,12 +294,12 @@ void importNodes() {
 		/* Get each line from the infile */
 
 		if (++linecount % 1000 == 0) {
-			pf("importNodes %d    \r", linecount);
+			pf("importNodes %d  \r", linecount);
 			fflush(stdout);
 		}
 		strcpy(tokens, line);
 		char* name=name0;
-		//        replaceChar(tokens,, <#char what#>, <#char with#>)
+		//    replaceChar(tokens,, <#char what#>, <#char with#>)
 		//		int x=0; // replace ' ' with '_'
 		//		while (tokens[x]) {
 		//			if (tokens[x] == ' ') tokens[x]='_';
@@ -324,16 +324,16 @@ void importNodes() {
 		sscanf(tokens, "%d\t%s\t%s\t%*s\t%*s\t%*s\t%d\t%*d", &Id, contextId_s, name, &kind); // wordKind->kind !
 		if (kind == 105) kind=_relation; //relation
 		if (kind == 1) kind=_concept; //noun
-		//        if(kind==1)continue;
+		//    if(kind==1)continue;
 		if (kind == 103) kind=noun; //noun
 		if (kind == 10) kind=noun; //noun
 		if (kind == 11) kind=verb; //verb
 		if (kind == 12) kind=adjective; //adjective
 		if (kind == 13) kind=adverb; //adverb
-		//        contextId = atoi(contextId_s);
+		//    contextId = atoi(contextId_s);
 		//
-		//        if (Id < 1000)contextId = wordnet; //wn
-		//        if (contextId == 100 && Id > 1000)contextId = 100;
+		//    if (Id < 1000)contextId = wordnet; //wn
+		//    if (contextId == 100 and Id > 1000)contextId = 100;
 		Node* n;
 		if (Id > 1000) n=add(name, kind, contextId);
 		else n=add_force(contextId, Id, name, kind);
@@ -358,14 +358,14 @@ void importStatements2() {
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		/* Get each line from the infile */
 		if (++linecount % 1000 == 0) {
-			pf("importStatements %d    \r", linecount);
+			pf("importStatements %d  \r", linecount);
 			fflush(stdout);
 		}		// p(line);
-		//	strcpy(  tokens,line);
+		//	strcpy( tokens,line);
 		//		int x = 0;
-		//    while (tokens[x++])
-		//        if (tokens[x]==' ')
-		//		    tokens[x]='_';
+		//  while (tokens[x++])
+		//    if (tokens[x]==' ')
+		//		  tokens[x]='_';
 		//		int contextId;
 		int subjectId;
 		int predicateId;
@@ -377,7 +377,7 @@ void importStatements2() {
 		if (predicateId > 100) predicateId=wn_map[predicateId]; //%1000000;
 		objectId=wn_map[objectId]; //%1000000;
 		// printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
-		if (subjectId < 1000 || objectId < 1000 || predicateId == 50 || predicateId == 0 || subjectId == 1043 || subjectId == 1044)
+		if (subjectId < 1000 or objectId < 1000 or predicateId == 50 or predicateId == 0 or subjectId == 1043 or subjectId == 1044)
 			continue;
 		//		Statement* s=
 		addStatement4(wordnet, subjectId, predicateId, objectId);
@@ -419,14 +419,14 @@ string deCamel(string s) {
 	static string space=" ";
 	for (int i=(int) s.length(); i > 1; i--) {
 		char c=s[i];
-		if (c > 65 && c < 91) s.replace(i, 1, space + (char) tolower(c));
+		if (c > 65 and c < 91) s.replace(i, 1, space + (char) tolower(c));
 		if (c == '(') s[i - 1]=0; //cut _( )
 		if (c == ',') s[i]=0; //cut ,_
 		if (c == ')') s[i]=0;
 	}
-	//    s[0]=tolower(s[0]);
+	//  s[0]=tolower(s[0]);
 	s=replace_all(s, "_", " ");
-	s=replace_all(s, "  ", " ");
+	s=replace_all(s, " ", " ");
 	return s;
 }
 ;
@@ -434,15 +434,15 @@ string deCamel(string s) {
 // TODO :!test MEMLEAK!
 
 const char* parseWikiTitle(char* item, int id=0, int context=current_context) {
-	//    string s="wordnet_raw_material_114596700";
+	//  string s="wordnet_raw_material_114596700";
 	static string s;
 	s=string(item); //"Uncanny_Tales_(Canadian_pulp_magazine)";
-	//    South_Taft,_California
+	//  South_Taft,_California
 	// facts/hasPopulationDensity/ArticleExtractor.txt:205483101	Sapulpa,_Oklahoma	397.1#/km^2	0.9561877303748038
 
-	//    string s="wordnet_yagoActorGeo_1";
-	//    wordnet_yagoActorGeo_1
-	//    if(s.find("wordnet"))contextId=wordnet;
+	//  string s="wordnet_yagoActorGeo_1";
+	//  wordnet_yagoActorGeo_1
+	//  if(s.find("wordnet"))contextId=wordnet;
 	//if(s.find("wikicategory")) kind=list / category
 	s=replace_all(s, "wikicategory_", "");
 	s=replace_all(s, "wordnet_(.*)_(\\d*)", "$1"); // todo
@@ -455,14 +455,14 @@ const char* parseWikiTitle(char* item, int id=0, int context=current_context) {
 	string clazz=deCamel(s.substr(type + 1, -1));
 	string word=s;
 	string Id=s.substr(last + 1, -1);
-	//    int
+	//  int
 	id=atoi(Id.c_str());
 	if (id > 0) {
 		word=s.substr(0, last);
 	}
-	//    word=deCamel(word);
-	//    item=word.c_str();
-	//    ~word;
+	//  word=deCamel(word);
+	//  item=word.c_str();
+	//  ~word;
 	return word.c_str(); // TODO!! MEMLEAK!!
 }
 
@@ -502,7 +502,7 @@ int getNameRow(char** tokens, int nameRowNr=-1, const char* nameRow=0) {
 		//		if (nameRowNr < 0) {
 		if (nameRow == 0) {
 			if (eq("name", token)) nameRowNr=row;
-			if (contains(token, "name", true)&&nameRowNr<0) nameRowNr=row; // first come!
+			if (contains(token, "name", true) and nameRowNr<0) nameRowNr=row; // first come!
 			if (eq("title", token)) nameRowNr=row;
 		} else if (eq(nameRow, token)) nameRowNr=row;
 		//		}
@@ -541,7 +541,7 @@ int getFields(char* line, vector<char*>& fields, char separator, int nameRowNr, 
 
 void fixNewline(char* line,bool limit/*0=none*/) {
 	int l=len(line)-1;
-	if(limit&&l>=limit)
+	if(limit and l>=limit)
 		line[limit-1]=0;
 	else
 		while(l>=0){
@@ -563,7 +563,7 @@ char* extractTagValue(char* line) {
 }
 
 bool isNameField(char* field, char* nameField) {
-	if (nameField && !eq(field, nameField)) return false;
+	if (nameField and !eq(field, nameField)) return false;
 	if (eq(field, nameField)) return true;
 	if (eq(field, "name")) return true;
 	if (eq(field, "title")) return true;
@@ -629,7 +629,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 	//	map<Node*,Node*> fields;
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 1000 == 0) {
-			pf("importXml %d    \r", linecount);
+			pf("importXml %d  \r", linecount);
 			fflush(stdout);
 		}
 		fixNewline(line);
@@ -654,10 +654,10 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			continue;
 		}
 		// <address> <city> <zip>12345</zip> <name>bukarest</name> </city> </address>
-		if (match(line, "<[a-z]") && contains(line, "</")) {
+		if (match(line, "<[a-z]") and contains(line, "</")) {
 			field=extractTagName(line);
 			value=extractTagValue(line);
-			if (ignoredFields && contains(ignoredFields, field)) continue;
+			if (ignoredFields and contains(ignoredFields, field)) continue;
 			if (isNameField(field, nameField)) {
 				//				parent=parents.front();
 				// rewrite address.member=city
@@ -706,7 +706,7 @@ void importXml(const char* file, char* nameField, const char* ignoredFields, con
 			//			fields.insert(predicate,object);//
 			continue;
 		}
-		if (startsWith(line, "<") && !contains(line, "</")) {
+		if (startsWith(line, "<") and !contains(line, "</")) {
 			parent=subject;
 			//			parents.push(subject); // <address> <city> ...
 			field=extractTagName(line);
@@ -759,7 +759,7 @@ N addSubword(char* name,int words,N kind){
 	N found=addSubword(name,kind);// ok, only if new
 	if(wordCount(name)==words)
 		return found;
-	while (l>0&&i<l&&i>=0) {
+	while (l>0 and i<l and i>=0) {
 		i++;
 		if (name[i]==' ') {
 			words--;
@@ -789,7 +789,7 @@ N addSubCategories(char* name,N kind){
 //			if(label)break;// known
 			if(!label){toll++;
 				if(toll%1000==0)printf("\ntoll :%d\n",toll);
-			   }
+			  }
 		}
 	}
 	addSubword(name,kind);
@@ -875,27 +875,27 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			fflush(stdout);
 		}
 //		if(contains(line, "DEBUG"))
-//		        ps(line);
-		if (fieldCount != size && fieldCount != size+1 && fieldCount+1 != size) {
+//		    ps(line);
+		if (fieldCount != size and fieldCount != size+1 and fieldCount+1 != size) {
 			bad();
 //			p(line);
-//			if(debug) printf("Warning: fieldCount!=columns (%d!=%d) in line %d  %s \n", fieldCount, size,linecount - 1, file);
+//			if(debug) printf("Warning: fieldCount!=columns (%d!=%d) in line %d %s \n", fieldCount, size,linecount - 1, file);
 			continue;
 		}
 		fixValues(values, size);
 		char* name=values[nameRowNr];
-		if(!name||len(name)==0){
+		if(!name or len(name)==0){
 			bad();
 			continue;
 		}
-		if(cut_amazon||cut_billiger){
+		if(cut_amazon or cut_billiger){
 			replaceChar(name, ',', 0);// cut!
 			replaceChar(name, '(', 0);// cut!
 			replaceChar(name, '[', 0);// cut!
 			fixNewline(name);
 			if(name[0]==0)continue;//!
 			// Tennis", "id":31409028,"topic":"Amazon music product BAD
-			if(cut_billiger && !contains(name, " "))subject= addSubword(name,type);
+			if(cut_billiger and !contains(name, " "))subject= addSubword(name,type);
 			else{
 				int l=len(name);int i = 0,w=0;
 				while (i++<l)
@@ -921,7 +921,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 				N marke=getThe(values[1],Marke);
 				getThe(values[3],getThe("billiger.de Kategorie"));
 				if(subject)addStatement(subject, Marke, marke);
-//				if(checkNode(m)){// && !contains(name, " ")
+//				if(checkNode(m)){// and !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
 //				}
@@ -953,32 +953,32 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			bad();
 			continue;
 		}
-		//		if (debug && subject && type && subject->kind > 0 && subject->kind != type->id) {		// subject->kind == 0 ??? MEANING?
+		//		if (debug and subject and type and subject->kind > 0 and subject->kind != type->id) {		// subject->kind == 0 ??? MEANING?
 		//			pf("Found one with different type subject->kind != type->id %d,%d,%s,%s\n", subject->kind, type->id, subject->name, type->name);
-		//            //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
+		//      //			subject = getThe(values[nameRowNr], type, dissect); // todo : match more or less strictly? EG Hasloh
 		//		}
 		for (int i=0; i < size; i++) {
 			if(i==nameRowNr)continue;
 			predicate=predicates[i];
-			if (predicate == null || !checkNode(predicate)) continue;
+			if (predicate == null or !checkNode(predicate)) continue;
 			if (contains(ignoreFields, predicate->name)) continue;
-			if (includedFields != null && !contains(includeFields, predicate->name)) continue;
+			if (includedFields != null and !contains(includeFields, predicate->name)) continue;
 			char* vali=values[i];
-			if (!vali || strlen(vali) == 0) continue; //HOW *vali<100??
-			if(atoi(vali)!=0&&isInteger(vali))// eq(itoa(atoi(vali)),vali))
+			if (!vali or strlen(vali) == 0) continue; //HOW *vali<100??
+			if(atoi(vali)!=0 and isInteger(vali))// eq(itoa(atoi(vali)),vali))
 				object=value(vali,atoi(vali),Integer);
-			else if(atof(vali)!=0&&isNumber(vali))// &&eq(itoa(atof(vali)),vali)
+			else if(atof(vali)!=0 and isNumber(vali))// and eq(itoa(atof(vali)),vali)
 				object=value(vali,atof(vali),Number);
 			else{
 				object=getThe(vali);
 //				dissectWord(object);// nee, einmal für alle!
 			}
-			if (!object || object->id > maxNodes) {
+			if (!object or object->id > maxNodes) {
 				bad();
 				if (debug) printf("ERROR %s\n", line);
 				continue;
 			}
-			if(doSplitValues && contains( object->name,'|'))
+			if(doSplitValues and contains( object->name,'|'))
 				splitValues(subject, predicate, object->name);
 			else addStatement(subject, predicate, object, !CHECK_DUPLICATES);
 		}
@@ -1002,13 +1002,13 @@ void importList(const char* file, const char* type) {
 	FILE *infile=open_file(file);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			pf("importList %d    \r", linecount);
+			pf("importList %d  \r", linecount);
 			fflush(stdout);
 		}
-		if (linecount % 10000 == 0 && checkLowMemory()) break;
+		if (linecount % 10000 == 0 and checkLowMemory()) break;
 		fixNewline(line);
 		object=getThe(line);
-		if (!object || object->id > maxNodes) {
+		if (!object or object->id > maxNodes) {
 			bad();
 			if (debug) printf("ERROR %s\n", line);
 			continue;
@@ -1025,7 +1025,7 @@ char *cut_wordnet_id(char *key) {
 		if (key[i] == '_') {
 			char* id=key + i + 1;
 			key[i]=0;
-			return id; // <wordnet_album_106591815> ->  06591815 DROP LEADING 1 !!!
+			return id; // <wordnet_album_106591815> -> 06591815 DROP LEADING 1 !!!
 		}
 	}
 	return 0;
@@ -1036,7 +1036,7 @@ bool hasCamel(char* key) {
 	char last=key[0];
 	for (int i=0; i < strlen(key); i++) {
 		char c=key[i];
-		if (c > 64 && c < 91) if (last > 96 && last < 123) {
+		if (c > 64 and c < 91) if (last > 96 and last < 123) {
 			p(i);
 			return true;
 		}
@@ -1100,7 +1100,7 @@ Node* rdfOwl(char* name) {
 	if (eq(name, "owl:disjointWith")) return getAbstract("disjoint with"); // symmetric!
 	//	if(eq(key,"xsd:string"))return Text;// redundant
 	if (eq(name, "owl:FunctionalProperty")) return Label;
-	if (!startsWith(name, "wiki") && contains(name, ":") && !startsWith(name, "http")) {
+	if (!startsWith(name, "wiki") and contains(name, ":") and !startsWith(name, "http")) {
 		name=strstr(name, ":");
 		if (!name) return 0; // contains(name, ":") WTF????????
 		name=name + 2;
@@ -1123,14 +1123,14 @@ Node* parseWordnetKey(char* key) {
 Node* getYagoConcept(char* key) {
 	if (startsWith(key, "<wordnet_")) return parseWordnetKey(key);
 	char* name=fixYagoName(key); // Normalized instead of using similar, key POINTER not touched
-	if (contains(name, ":") && !startsWith(name, "http")) return rdfOwl(key);
+	if (contains(name, ":") and !startsWith(name, "http")) return rdfOwl(key);
 	if (eq(name, "isPreferredMeaningOf")) return Label;
 	if (eq(name, "#label")) return Label;
 	if (eq(name, "hasGloss")) return Label;
 	if (eq(name, "hasWordnetDomain")) return Domain;
 	//	if(eq(key,"owl:FunctionalProperty"))return Transitive;
 	if (contains(name, "^^")) return rdfValue(key);
-	//	if (contains(name, ".jpg") || contains(name, ".gif") || contains(name, ".svg") || startsWith(name, "#") || startsWith(name, "<#")) {
+	//	if (contains(name, ".jpg") or contains(name, ".gif") or contains(name, ".svg") or startsWith(name, "#") or startsWith(name, "<#")) {
 	//		printf(" bad key %s\n", name);
 	//		return 0;
 	//	}
@@ -1138,7 +1138,7 @@ Node* getYagoConcept(char* key) {
 	if (!hasWord(name)) n=getAbstract(name);
 	else n=getThe(name); //fixYagoName(key));
 	//	dissectWord(n);
-	//	if(!eq(name,"MC_Zwieback")&&!eq(name,"Stefanie_Zweig")&&!eq(name,"Ca���o_Central")&&!eq(name,"Beitbridge"))
+	//	if(!eq(name,"MC_Zwieback") and !eq(name,"Stefanie_Zweig") and !eq(name,"Ca���o_Central") and !eq(name,"Beitbridge"))
 	//		dissectParent(getAbstract(name));
 	return n;
 }
@@ -1172,24 +1172,25 @@ bool importYago(const char* file) {
 		fixNewline(line);
 		if (line[0] == '\t') line[0]=' '; // don't line++ , else nothing left!!!
 		if (linecount % 10000 == 0) {
-			labels=endsWith(line, "@eng"); //||endsWith(line,"@en")||endsWith(line,"@de");
+			labels=endsWith(line, "@eng"); // or endsWith(line,"@en") or endsWith(line,"@de");
 			if (checkLowMemory()) //MEMORY
 				return 0; //exit(0);
 		}
 		if (++linecount % 10000 == 0) {
-			printf("%d %s    \r", linecount, file);
+			printf("%d %s  \r", linecount, file);
 			fflush(stdout);
 		}
 		int ok=rows=countRows(line);
-		if (labels && line[0] == ' ') ok+=sscanf(line + 1, " %s\t%s\t\"%[^\"]s", subjectName, predicateName, objectName);
+		if (labels and line[0] == ' ') ok+=sscanf(line + 1, " %s\t%s\t\"%[^\"]s", subjectName, predicateName, objectName);
 		else if (labels) ok=sscanf(line, "%*s\t%s\t%s\t\"%[^\"]s", subjectName, predicateName, objectName);
-		else if (rows == 4 && leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
-		else if (rows == 4 && !leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", subjectName, predicateName, objectName, id); // data
+		else if (rows == 4 and leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", id, subjectName, predicateName, objectName);
+		else if (rows == 4 and !leadingId) ok=sscanf(line, "%s\t%s\t%s\t%s", subjectName, predicateName, objectName, id); // data
 		else ok=sscanf(line, "%s\t%s\t%s", subjectName, predicateName, objectName /*, &certainty*/);
 		if (ok < 3) {
-			printf("id %s  subjectName %s  predicateName %s objectName  %s\n", id, subjectName, predicateName, objectName);
+			printf("id %s subjectName %s predicateName %s objectName %s\n", id, subjectName, predicateName, objectName);
 			printf("MISMATCH2 %s\n", line);
-			if(1>0)continue; //todo
+			if(/* DISABLES CODE */ (true))
+				continue; //todo
 			char** all=splitStringC(line, '\t');
 			if (all[2] == 0) {
 				if (debug) printf("ERROR %s\n", line);
@@ -1199,7 +1200,7 @@ bool importYago(const char* file) {
 			if (startsWith(predicateName, "has")) {
 				char next=predicateName[3];
 				if (next == ' ') predicateName=predicateName + 4;
-				if ('A' <= next && next <= 'Z') predicateName=predicateName + 3;
+				if ('A' <= next and next <= 'Z') predicateName=predicateName + 3;
 			}
 
 			subject=getYagoConcept(all[1]); //
@@ -1207,7 +1208,7 @@ bool importYago(const char* file) {
 			object=getYagoConcept(all[3]);
 			free(all);
 		} else {
-			if (labels && wordhash(objectName) == wordhash(subjectName)) continue;
+			if (labels and wordhash(objectName) == wordhash(subjectName)) continue;
 			if (eq(predicateName, "<hasGeonamesEntityId>")) continue;
 			//			if(eq("<Tommaso_Caudera>",subjectName))
 			//							p(subjectName);// subject==0 bug Disappears when debugging!!!
@@ -1215,14 +1216,14 @@ bool importYago(const char* file) {
 			object=getYagoConcept(objectName);
 			if (object == Type) {
 				bad();
-				continue;            //!?
+				continue;      //!?
 			}
 			subject=getYagoConcept(subjectName); //
 			predicate=getYagoConcept(predicateName);
 			//			if (subject == 0) subject=getYagoConcept(editable(subjectName)); // wth ???
 			//			if (object == 0) object=getYagoConcept(objectName); // wth ???
 		}
-		if (subject == 0 || predicate == 0 || object == 0) {
+		if (subject == 0 or predicate == 0 or object == 0) {
 			//			if (debug) printf("ERROR %s\n", line);
 			//			subject==0 bug Disappears when debugging!!!
 			//			subject = getYagoConcept(subjectName); //
@@ -1263,9 +1264,9 @@ const char *fixFreebaseName(char *key) {
 	if (endsWith(key, ".bmp")) return key;
 
 	int l=len(key);
-	if(l>5&&key[l-4]=='.')return key;// .svg ... file endings
+	if(l>5 and key[l-4]=='.')return key;// .svg ... file endings
 	for (int i=l - 1; i > 0; --i)
-		if (key[i] == '.'&&key[i-1]>'9') {// no numbers!
+		if (key[i] == '.' and key[i-1]>'9') {// no numbers!
 			key[i]=0;
 			if (!eq(&key[i + 1], "topic")) return &key[i + 1];
 		} else if (key[i] == '#') return &key[i + 1];
@@ -1337,27 +1338,27 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 		test=dropUrl(test);
 		if(key[0]=='<')key++;
 		if(test[0]=='<')test++;
-		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label"); || P1476:title
+		bool isLabel=startsWith(test, "label");// or startsWith(test, "<#label"); or P1476:title
 
 		if (!altLabels and startsWith(test, "altLabel"))continue;
-		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description"))
+		if (!isLabel and !startsWith(test, "altLabel") and !startsWith(test, "description"))
 			continue;
-		if(germanLabels && !english && !endsWith(line,"@de ."))
+		if(germanLabels and !english and !endsWith(line,"@de ."))
 			continue;
-		if(!(germanLabels || english) &&!endsWith(line,"@en ."))continue;
+		if(!(germanLabels or english) and !endsWith(line,"@en ."))continue;
 
 		fixLabel(label);
-		if(!label || label[0]==0){bad();continue;}
+		if(!label or label[0]==0){bad();continue;}
 		label=dropUrl(label);
 		key=dropUrl(key);
 		int id=atoi(key+1);
-		if(properties||key[0]=='P')// <P2900> "Faxnummer"@de .
+		if(properties or key[0]=='P')// <P2900> "Faxnummer"@de .
 			id=-100000-id;
 		if(startsWith(test, "altLabel")){
 			if(!altLabels)continue;
 			N oldLabel=getEntity(key,false,false);
-			if(!oldLabel|| oldLabel->id==0 || oldLabel==Error){bad();continue;}// NOT YET?
-			N the_label=getAbstract(label);// NOT YET!  getTHE??
+			if(!oldLabel or oldLabel->id==0 or oldLabel==Error){bad();continue;}// NOT YET?
+			N the_label=getAbstract(label);// NOT YET! getTHE??
 			addStatement(oldLabel,Label,the_label);
 			continue;//for now!
 		}
@@ -1378,19 +1379,19 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 				continue;
 			}
 			if(!altLabels)continue;
-			if(english&&germanLabels)continue;
+			if(english and germanLabels)continue;
 			N oldLabel=getEntity(key,false,false);
-			if(!oldLabel || oldLabel==Error)continue;
+			if(!oldLabel or oldLabel==Error)continue;
 //			if(oldLabel->value.text){
 //				p(oldLabel->value.text);
 //			}
-			if(oldLabel&&checkNode(oldLabel)){
+			if(oldLabel and checkNode(oldLabel)){
 				// _singleton vs _abstract->value conflict !?
 				setText(oldLabel, label); //addStatement(oldLabel,Description,getAbstract(label));
 				continue;
 			}// else use as label i.e. "<Q9486626> <description> \"Wikimedia-Kategorie\"@de .\n"	WTF!
 		}
-		if(altLabels)continue;//  important in second run only!
+		if(altLabels)continue;// important in second run only!
 
 		//		if(properties)id=(int)maxNodes-id;
 //		if(id==2)
@@ -1398,7 +1399,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 
 		if(id<maxNodes/2-propertySlots){
 			Node* node=&context->nodes[id];
-			if(english&&germanLabels&&node->name)
+			if(english and germanLabels and node->name)
 				continue;// Only set labels of entities that don't have a German translation
 			N old=hasWord(label);
 			if(!old){
@@ -1406,18 +1407,18 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 				if(wiki_abstracts[id])
 					initNode(node, id, label, _abstract, 0);// _entity -> class later
 				else
-					initNode(node, id, label, _singleton, 0);// MAY LOOSE _singleton status!!  _entity -> class later
+					initNode(node, id, label, _singleton, 0);// MAY LOOSE _singleton status!! _entity -> class later
 				insertAbstractHash(node);// _singleton as abstract!? HACK, DANGER !
 			}else{
 				if(old==node)
-					continue;//  WHY: a->kind= _entity; no longer _singleton
+					continue;// WHY: a->kind= _entity; no longer _singleton
 				if(!node->name){
 					context->nodeCount++;
 					initNode(node, id, label, _entity, 0);
-					if(english&&germanLabels)continue;
+					if(english and germanLabels)continue;
 				}
 				N ab;
-				if(wiki_abstracts[id]||old->kind == _abstract){
+				if(wiki_abstracts[id] or old->kind == _abstract){
 					ab=old;
 					ab->kind=_abstract;
 				}else{
@@ -1456,7 +1457,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		if (linecount > 1000000) break;
 #endif
 		if (++linecount % 10000 == 0) {
-			printf("%d labels, %d duplicates     \r", linecount, freebaseKeysConflicts);
+			printf("%d labels, %d duplicates   \r", linecount, freebaseKeysConflicts);
 			fflush(stdout);
 			if (checkLowMemory()){
 				printf("Quitting import\n");
@@ -1487,19 +1488,19 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		test=dropUrl(test);
 		if(key[0]=='<')key++;
 		if(test[0]=='<')test++;
-		bool isLabel=startsWith(test, "label");//||startsWith(test, "<#label");
-		if (!isLabel && !startsWith(test, "altLabel")&&!startsWith(test, "description")) continue;
+		bool isLabel=startsWith(test, "label");// or startsWith(test, "<#label");
+		if (!isLabel and !startsWith(test, "altLabel") and !startsWith(test, "description")) continue;
 
 		//		if (startsWith(label, "\"")) label++;
 		//		if (startsWith(key, "<")){ key++;key[strlen(key)-1]=0;}
 
 		//		if(endsWith(line," .")){
-		if(germanLabels && !endsWith(line,"@de ."))continue;
-		if(!germanLabels&& !endsWith(line,"@en ."))continue;
-		//		   }
-		//		if (!useHash&&contains(label, "\\u")) continue;// no strange umlauts 'here'
+		if(germanLabels and !endsWith(line,"@de ."))continue;
+		if(!germanLabels and !endsWith(line,"@en ."))continue;
+		//		  }
+		//		if (!useHash and contains(label, "\\u")) continue;// no strange umlauts 'here'
 		if (useHash){
-			if(!startsWith(key, "m.") && !startsWith(key, "g.")) continue;
+			if(!startsWith(key, "m.") and !startsWith(key, "g.")) continue;
 			else key=key+2;
 		}
 		//		if (startsWith(label, "http")) continue;
@@ -1511,7 +1512,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		key=dropUrl(key);
 		fixLabel(label);
 		label=dropUrl(label);
-		if(eq(key,"Q2696789")||eq(key,"P106"))
+		if(eq(key,"Q2696789") or eq(key,"P106"))
 			p(line);
 		if(eq(key,"Q22335"))continue;// bug why?
 
@@ -1521,7 +1522,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			int spaces=0;
 			for (int i=0; i < l; i++) {
 				if (label[i] == ' ') spaces++;
-				if (spaces == 6 || label[i] == '(' || label[i] == ':') {
+				if (spaces == 6 or label[i] == '(' or label[i] == ':') {
 					label[i]=label[i + 1]=label[i + 2]='.';
 					label[i + 3]=0;
 					break;
@@ -1529,7 +1530,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 			}
 			label[100]=0;
 		}
-		if(overwrite && hasWord(key)){
+		if(overwrite and hasWord(key)){
 			freebaseKeysConflicts++;
 			N old=getAbstract(key);
 			setLabel(old,label,false,true);
@@ -1547,7 +1548,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		Node* oldLabel=labels[kei];
 
 		if(eq(test,"description")){
-			if(oldLabel&&checkNode(oldLabel)){
+			if(oldLabel and checkNode(oldLabel)){
 				setText(oldLabel, label);
 				//				addStatement(oldLabel,Description,getAbstract(label));
 				continue;
@@ -1558,27 +1559,27 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		if(oldLabel){
 			if(!altLabel)continue;
 			if(eq(oldLabel->name,label))continue;// OK
-			if(contains(label,"\\u"))continue; //Stra��enverkehr || Stra\u00DFenverkehr
+			if(contains(label,"\\u"))continue; //Stra��enverkehr or Stra\u00DFenverkehr
 			freebaseKeysConflicts++;
-			printf("labels[key] duplicate! %s => %s || %s\n", key , oldLabel->name, label);
+			printf("labels[key] duplicate! %s => %s or %s\n", key , oldLabel->name, label);
 			addStatement(oldLabel,Label,getAbstract(label),!CHECK_DUPLICATES);
 			continue;// don't overwrite german with english
-			//Stra��enverkehr || Stra\u00DFenverkehr
+			//Stra��enverkehr or Stra\u00DFenverkehr
 			//			setLabel(oldLabel, label,false,false);
 		}
 
-		if (useHash && freebaseKeys[h] != 0 ) {
-			//            printf("freebaseKeys[key] already reUSED!! %s => %s || %s\n", key , label, freebaseKeys[key]->name);
-			//       freebaseKeysConflicts:2305228 not worth It
+		if (useHash and freebaseKeys[h] != 0 ) {
+			//      printf("freebaseKeys[key] already reUSED!! %s => %s or %s\n", key , label, freebaseKeys[key]->name);
+			//    freebaseKeysConflicts:2305228 not worth It
 			//				if(!eq(get(freebaseKeys[h])->name, label,false))
-			//					printf("freebaseKeys[h] already USED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+			//					printf("freebaseKeys[h] already USED!! %s %d %s or %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
 			//				else
-			//					printf("freebaseKeys[h] already reUSED!! %s %d %s || %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
+			//					printf("freebaseKeys[h] already reUSED!! %s %d %s or %s\n", key + 3, h, label, get(freebaseKeys[h])->name);
 			freebaseKeysConflicts++;
 			continue;
 		}
-		//        if(contains(line,"Arsenic"))
-		//            p(line);
+		//    if(contains(line,"Arsenic"))
+		//      p(line);
 
 		Node* n;
 		if (hasWord(label)) n=getNew(label);		//get(1);//
@@ -1590,7 +1591,7 @@ bool importLabels(cchar* file, bool useHash=false,bool overwrite=false,bool altL
 		if (n) {
 			//			if(keepLabel)addStatement(n, ID, key);
 			if (useHash) freebaseKeys[h]=n->id;					// idea: singleton id's !!! 1mio+hash!
-			//                freebaseKeys.insert(pair<long,int>(h,n->id));
+			//        freebaseKeys.insert(pair<long,int>(h,n->id));
 			else{
 				//				labels[key]=n;
 
@@ -1630,7 +1631,7 @@ Node *dissectFreebase(char* name) {
 		if (a) return a;
 		a=getAbstract(name);
 		if(!a)return 0;//BUG HOW??? out of memory!
-		if (a->lastStatement && getStatement(a->lastStatement)->predicate == _instance)
+		if (a->lastStatement and getStatement(a->lastStatement)->predicate == _instance)
 			return getStatement(a->lastStatement)->Object();// LAST INSTANCE == 'THE' one !?!? In import flow?
 		else
 			return a;
@@ -1640,13 +1641,13 @@ Node *dissectFreebase(char* name) {
 	if(useHash){
 		h=freebaseHash(name);
 		int got=freebaseKeys[h];
-		if (got && get(got)->id != 0)
+		if (got and get(got)->id != 0)
 			return get(freebaseKeys[h]);
 	}
 	const char* fixed=fixFreebaseName(name);
 	if(fixed[0]==0)fixed=name;// NO FREEBASE!?
 	N n=getThe(fixed);
-	if(useHash&&n)
+	if(useHash and n)
 		freebaseKeys[h]=n->id;
 	return n;
 }
@@ -1683,14 +1684,14 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 	}
 	size_t len=strlen(name);
 	if(len==0)return 0;
-	if(name[0]=='_' && name[1]==':')//  	_:
+	if(name[0]=='_' and name[1]==':')// 	_:
 		return getPropertyDummy(name);// Missing;// _:node1a8gbf20dx14041
 
 	if(endsWith(name, "\" .")){name[len-3]=0;len-=3;}
 	if (contains(name, "^^"))
 		return rdfValue(name);
 	for (size_t i=len-1; i>0; --i){
-		if(name[i]=='#' || (fixUrls && name[i]=='/')){ // cut http://.../ namespaces
+		if(name[i]=='#' or (fixUrls and name[i]=='/')){ // cut http://.../ namespaces
 			name=name+i+1;//str[i]=0;
 			break;
 		}
@@ -1707,9 +1708,9 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 	cut_to(name," (");
 	//	if(name[0]!='0'){// ECHSE
 
-	if((name[0]=='V' && name[1]<='C') || (name[0]=='n' && name[1]<='m'))
+	if((name[0]=='V' and name[1]<='C') or (name[0]=='n' and name[1]<='m'))
 		return getPropertyDummy(name);// DUMMY!
-	if(name[0]=='Q' && name[1]<='9'){
+	if(name[0]=='Q' and name[1]<='9'){
 		if(contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
 		int id=atoi(name+1);
@@ -1724,7 +1725,10 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 			return n;
 		}
 	}
-	if(name[0]=='P' && name[1]<='9'){
+	if(name[0]=='P' and name[1]<='9'){
+//		if(thing[len(predicateName)-1]==">")thing[len(predicateName)-1]=0;
+		N p=getWikidataRelation(name);
+		if(p)return p;
 		if(contains(name, '-'))// "P2430S28b08e46-49c5-061b-4035-1142c2c62e62"
 			return getPropertyDummy(name);// DUMMY!
 		//		return getNode((int)maxNodes-atoi(name+1));
@@ -1732,17 +1736,18 @@ Node* getEntity(char* name,bool fixUrls,bool create) {//=true
 		return get(kei);
 	}
 	bool useFreebase=false;
-	// skip <m. but  LEAVE THE >
-	if (useFreebase&& (startsWith(name, "m.") || startsWith(name, "g."))) {
+	// skip <m. but LEAVE THE >
+	if (useFreebase and (startsWith(name, "m.") or startsWith(name, "g."))) {
 		long h=freebaseHash(name + 2);
 		int got=freebaseKeys[h];
-		if (got && get(got)->id != 0) return get(freebaseKeys[h]);
+		if (got and get(got)->id != 0) return get(freebaseKeys[h]);
 		else {
-			//            pf("MISSING %s\n", name);
+			//      pf("MISSING %s\n", name);
 			MISSING++;
 			return 0;
 		}
 	}
+	if(name[0]=='+')name++;// ausser +49 ...
 	name=(char *) fixYagoName(name);
 	return dissectFreebase(name);
 }
@@ -1755,7 +1760,7 @@ bool dropBadSubject(char* name) {
 //	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
 //	if(startsWith(name,"Q5570970"))return DROP; // Globe
 //	if(startsWith(name,"Q26956302"))return DROP; // rdf.freebase.com id?
-	if(startsWith(name,"http")||startsWith(name,"<http")){
+	if(startsWith(name,"http") or startsWith(name,"<http")){
 		if(startsWith(name,"<http://www.wikidata.org/entity/"))return KEEP;
 		return DROP;
 	}
@@ -1764,12 +1769,13 @@ bool dropBadSubject(char* name) {
 
 bool dropBadPredicate(char* name) {
 	//	if(name[0]=='.')return DROP;
-	if(startsWith(name,"P352"))return DROP; //	UniProt ID
-	if(startsWith(name,"P536"))return DROP; //	ATP ID
-	if(startsWith(name,"P652"))return DROP; //	UNII
-	if(startsWith(name,"P494"))return DROP; //	ICD-10
-	if(startsWith(name,"P637"))return DROP; //	RefSeq Protein ID
-	if(startsWith(name,"P705"))return DROP; //	Ensembl Protein ID
+	if(name[0]=='<')name++;
+	if(startsWith(name,"P352>"))return DROP; //	UniProt ID
+	if(startsWith(name,"P536>"))return DROP; //	ATP ID
+	if(startsWith(name,"P652>"))return DROP; //	UNII
+	if(startsWith(name,"P494>"))return DROP; //	ICD-10
+	if(startsWith(name,"P637>"))return DROP; //	RefSeq Protein ID
+	if(startsWith(name,"P705>"))return DROP; //	Ensembl Protein ID
 	if(startsWith(name,"P213>"))return DROP;//	 	ISNI
 	if(startsWith(name,"P214>"))return DROP;//	 	VIAF
 	if(startsWith(name,"P646>"))return DROP;
@@ -1789,19 +1795,42 @@ bool dropBadPredicate(char* name) {
 	if(startsWith(name,"P949>"))return DROP;
 	if(startsWith(name,"P734>"))return DROP;
 	if(startsWith(name,"P1207>"))return DROP;
+	if(startsWith(name,"P3221>"))return DROP;
+	if(startsWith(name,"P3984>"))return DROP;
+	if(startsWith(name,"P2633>"))return DROP;
+	if(startsWith(name,"P1343>"))return DROP;
+	if(startsWith(name,"P3417"))return DROP;
+	if(startsWith(name,"P3733"))return DROP;
+	if(startsWith(name,"P3106"))return DROP;
+	if(startsWith(name,"P3478"))return DROP;
+	if(startsWith(name,"P1417"))return DROP;
+	if(startsWith(name,"P1245"))return DROP;
+	if(startsWith(name,"P3222"))return DROP;
+	if(startsWith(name,"P3569"))return DROP;
+	if(startsWith(name,"P1036"))return DROP;
+
 	return KEEP;
 }
+
+bool dropRedundantPredicate(char* name) {
+	if(name[0]=='<')name++;
+	if(eq(name,"P1081"))return DROP;// Index der menschlichen Entwicklung
+	if(eq(name,"P1082"))return DROP;// Einwohnerzahl
+	return KEEP;
+}
+
+
 bool dropBadObject(char* name) {
-	//	if(strstr(name,"Q4167410>"))return DROP;// Wikimedia-Begriffsklärungsseite later |  Merge with abstract!
+	//	if(strstr(name,"Q4167410>"))return DROP;// Wikimedia-Begriffsklärungsseite later | Merge with abstract!
 	return KEEP;
 }
 bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
-	//    	.
-	//    <m.05bjb__>	<#label>	"final-fantasy-xiii.jpg"@en	.
-	//    <m.05bswf1>	<#label>	"andrew jackson first.jpg"@en	.
-	//    <m.05c76ht>	<#label>	"Via Crucis.jpg"@en	.
-	//    <m.05crs6s>	<#label>	"weinberg1.jpg"@en	.
-	//    <m.05dchmw>	<#label>	"scan0008.jpg"@en	.
+	//  	.
+	//  <m.05bjb__>	<#label>	"final-fantasy-xiii.jpg"@en	.
+	//  <m.05bswf1>	<#label>	"andrew jackson first.jpg"@en	.
+	//  <m.05c76ht>	<#label>	"Via Crucis.jpg"@en	.
+	//  <m.05crs6s>	<#label>	"weinberg1.jpg"@en	.
+	//  <m.05dchmw>	<#label>	"scan0008.jpg"@en	.
 	if (startsWith(name, "<book.isbn")) return DROP;
 	if (startsWith(name, "<biology.gene")) return DROP;
 	if (startsWith(name, "<freebase.")) return DROP;
@@ -1829,29 +1858,30 @@ bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
 
 bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	autoIds=false;
-	//    if(hasWord("vote_value"))return true;
+	//  if(hasWord("vote_value"))return true;
 	context=getContext(current_context);
 	pf("Current nodeCount: %d\n", context->nodeCount);
 	Node* subject;
 	Node* predicate;
 	Node* object;
+	Node* lastPredicate;
 	int ignored=0;
 	badCount=0;
 	char* subjectName=(char*) malloc(10000);
 	char* predicateName=(char*) malloc(10000);
 	char* objectName=(char*) malloc(10000);
 	int linecount=0;
-	//    char* line=(char*) malloc(100000);// GEHT NICHT PERIOD warum??!!!!!!!!!!!!!!!
+	//  char* line=(char*) malloc(100000);// GEHT NICHT PERIOD warum??!!!!!!!!!!!!!!!
 	char line[MAX_CHARS_PER_LINE];
 	while (readFile(file,&line[0])) {
 		if(line[0]==0)continue;// skip gzip new_block
-		if(DEBUG && !contains(line, "P1476"))
-			continue;
-		//        if(linecount > 1000)break;//test!
-		//		if (linecount % 1000 == 0 && linecount > 140000) p(linecount);
+//		if(DEBUG and !contains(line, "P1476"))
+//			continue;
+		//    if(linecount > 1000)break;//test!
+		//		if (linecount % 1000 == 0 and linecount > 140000) p(linecount);
 		if (++linecount % 10000 == 0) {
 			long lost=ignored + badCount + MISSING;
-			printf("\r%d triples ignored:%d  BAD:%d MISSING:%d = LOST:%ld  GOOD:%ld", linecount, ignored, badCount, MISSING,lost ,linecount-lost);
+			printf("\r%d triples ignored:%d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld", linecount, ignored, badCount, MISSING,lost ,linecount-lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -1865,11 +1895,11 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		memset(subjectName, 0, 10000);
 		if(line[0]=='#')continue;
 
-		//        subjectName=line;
-		//        int i=0;
-		//        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
-		//        for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;objectName=line+i+1;break;}
-		//        for (;i<10000;i++)if(line[i]=='\t')line[i]=0;
+		//    subjectName=line;
+		//    int i=0;
+		//    for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;predicateName=line+i+1;break;}
+		//    for (;i<10000;i++)if(line[i]=='\t'){line[i]=0;objectName=line+i+1;break;}
+		//    for (;i<10000;i++)if(line[i]=='\t')line[i]=0;
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
@@ -1879,17 +1909,20 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		//		if(filterFreebase(objectName)){ignored++;continue;}
 		fixNewline(objectName);
 		// deCamel(predicateName);
-		u8_unescape(objectName, (int)strlen(objectName), objectName);
-		u8_unescape(subjectName, (int)strlen(subjectName), subjectName);
 
-		if (predicateName[3] == '-' || predicateName[3] == '_' || predicateName[3] == 0) continue;        // <zh-ch, id ...
-		if (predicateName[2] == '-' || predicateName[2] == '_' || predicateName[2] == 0) continue;        // zh-ch, id ...
-		if (objectName[0] == '/' || objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
+//		u8_unescape(objectName, (int)strlen(objectName), objectName); NOT with new wikidata.n3!
+//		u8_unescape(subjectName, (int)strlen(subjectName), subjectName);
+
+		if (predicateName[3] == '-' or predicateName[3] == '_' or predicateName[3] == 0) continue;    // <zh-ch, id ...
+		if (predicateName[2] == '-' or predicateName[2] == '_' or predicateName[2] == 0) continue;    // zh-ch, id ...
+		if (objectName[0] == '/' or objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
+
+
 		subject=getEntity(subjectName);//,fixNamespaces); //
 		object=getEntity(objectName,false);//,fixNamespaces);
-		predicate=getWikidataRelation(predicateName);
-		if(!predicate)predicate=getEntity(predicateName,true);
-//		if(predicate&&predicate->id==-101476)// title ...
+		predicate=getEntity(predicateName,true);
+
+//		if(predicate and predicate->id==-101476)// title ...
 		// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
 		if (predicate == Instance) {// flip here!
 			predicate=Type;
@@ -1897,33 +1930,38 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			subject=object;
 			object=t;
 		}
-		if (!subject || !predicate || !object ||
-			!subject->id || !predicate->id || !object->id ||
-			subject==Error || predicate==Error || object==Error ) {// G.o.d. dot problem !?
+		if (!subject or !predicate or !object or 
+			!subject->id or !predicate->id or !object->id or 
+			subject==Error or predicate==Error or object==Error ) {// G.o.d. dot problem !?
 			// KEEP MISSING
-			//            printf("_"); // ignored
+			//      printf("_"); // ignored
 			//			subject=getEntity(subjectName);
 			//			if(!subject)// try again / debug
 			bad(); // subject->id ==0 ZB Q5 (no German!) OK
 		}
-		else if(subject->kind==_ignore||predicate->kind==_ignore||object->kind==_ignore ){
+		else if(subject->kind==_ignore or predicate->kind==_ignore or object->kind==_ignore ){
+			ignored++;
+			continue;
+		}
+		else if (eq(predicate,lastPredicate) and dropRedundantPredicate(predicateName)){
 			ignored++;
 			continue;
 		}
 		else {
-			//            else// Statement* s=
-			if(object==Class|| endsWith(objectName, "#Class"))
+			//      else// Statement* s=
+			if(object==Class or endsWith(objectName, "#Class"))
 				subject->kind=_clazz;
-			else if(object==Entity||endsWith(objectName, "#Entity"))
+			else if(object==Entity or endsWith(objectName, "#Entity"))
 				subject->kind=_entity;
 			else
 				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
+			lastPredicate=predicate;
 		}
 		//		showStatement(s);
 	}
 	p("import N3 ok");
 	closeFile(file);
-	pf("BAD: %d     MISSING: %d\n",badCount, MISSING);
+	pf("BAD: %d   MISSING: %d\n",badCount, MISSING);
 	context->use_logic=false;
 	free(subjectName);free(objectName);	free(predicateName);
 	//	freebaseKeys.clear();
@@ -1947,7 +1985,7 @@ bool importFacts(const char* file, const char* predicateName="population") {
 	Node* predicate;
 	Node* object;
 	char line[1000];
-	//    char* predicateName=(char*) malloc(100);
+	//  char* predicateName=(char*) malloc(100);
 	predicate=getClass(predicateName);
 	int linecount=0;
 	FILE *infile=open_file(file);
@@ -1956,17 +1994,17 @@ bool importFacts(const char* file, const char* predicateName="population") {
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		/* Get each line from the infile */
 		if (++linecount % 10000 == 0) {
-			printf("%d %s    \r", linecount, file);
+			printf("%d %s  \r", linecount, file);
 			fflush(stdout);
 		}
 		if (!eq(predicateName, "population")) sscanf(line, "%s\t%s", subjectName, objectName); // no contextId? cause this db assumes GLOBAL id!
 		else sscanf(line, "%*d\t%s\t%s\t%*d", /*&id,*/subjectName, objectName /*, &certainty*/); // no contextId? cause this db assumes GLOBAL id!
 		// printf(line);
 		//	 printf("%d\t%d\t%d\n",subjectId,predicateId,objectId);
-		//		if (contains(subjectName, "Begriffskl") || contains(subjectName, "Abk��rzung") || contains(subjectName, ":") || contains(subjectName, "#"))
+		//		if (contains(subjectName, "Begriffskl") or contains(subjectName, "Abk��rzung") or contains(subjectName, ":") or contains(subjectName, "#"))
 		//			continue;
-		if (contains(objectName, "jpg") || contains(objectName, "gif") || contains(objectName, "svg") || contains(objectName, "#")
-			|| contains(objectName, ":")) continue;
+		if (contains(objectName, "jpg") or contains(objectName, "gif") or contains(objectName, "svg") or contains(objectName, "#")
+			 or contains(objectName, ":")) continue;
 
 		subject=getAbstract(subjectName); //
 		object=getAbstract(objectName);
@@ -2030,7 +2068,7 @@ void importAbstracts() {
 	FILE *infile=open_file("wordnet/abstracts.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			printf("importAbstracts %d               \r", linecount);
+			printf("importAbstracts %d        \r", linecount);
 			fflush(stdout);
 		}
 		sscanf(line, "%d\t%[^\n]s", &id, name0); // %[^\n]s == REST OF LINE!
@@ -2049,7 +2087,7 @@ void importAbstracts() {
 }
 
 int wn_synonym_count=400000;// pointer autoincrement
-//            ^^^^^^^ aarg !?? compatible with german??
+//      ^^^^^^^ aarg !?? compatible with german??
 
 void importGermanLables(bool addLabels=false) {
 	bool modify_english=hasWord("autoeroticism");//english already there
@@ -2060,19 +2098,19 @@ void importGermanLables(bool addLabels=false) {
 	char *wordkind=(char*)malloc(100);
 	int linecount=0;
 	int id;
-	//    char pos;
+	//  char pos;
 	FILE *infile=open_file("translations.tsv");
 	//	char** translationList=(char**)malloc(100);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			printf("importLables %d    \r", linecount);
+			printf("importLables %d  \r", linecount);
 			fflush(stdout);
 		}
 		if(line[0]=='[')continue;
 		//		if(linecount==4951)continue;
 		fixNewline(line);
 		sscanf(line, "%d\t%s\t%s\t%s\t%[^\\]]s", &id, wordkind, /*08950407n -> noun */english,german,translations);
-		//		id=id -100000; //  label on abstract !?!
+		//		id=id -100000; // label on abstract !?!
 
 		wn_labels[id]=german;
 		//		if(eq(german,"Autoerotik"))
@@ -2085,11 +2123,11 @@ void importGermanLables(bool addLabels=false) {
 		else {
 			p(line);
 		}
-		id=norm_wordnet_id(id,true); // 100001740  -> 200000 etc
+		id=norm_wordnet_id(id,true); // 100001740 -> 200000 etc
 		if(!id)continue;
 		Node* node=get(id);
 		if(!isAbstract(node))node->kind=kind;
-		if((id<1000&&id>-1000)|| id >1000)
+		if((id<1000 and id>-1000) or id >1000)
 			printf("MOMENT!");
 		//		Node* abstract=getAbstract(german);
 		if(modify_english){
@@ -2102,7 +2140,7 @@ void importGermanLables(bool addLabels=false) {
 		}
 		wn_labels[id]=german;
 		wn_labels[-id]=german;
-		if(addLabels&&strlen(translations)>2){// later, when settled (?)
+		if(addLabels and strlen(translations)>2){// later, when settled (?)
 			char** translationList=(char**)malloc(1000);
 			char sep=',';
 			char* translationz=modifyConstChar(translations);
@@ -2134,7 +2172,7 @@ void importSenses() {
 	Node* Sense=add_force(wordnet, _sense, "sense #", _internal);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			printf("importSenses %d    \r", linecount);
+			printf("importSenses %d  \r", linecount);
 			fflush(stdout);
 		}
 		fixNewline(line);
@@ -2144,8 +2182,8 @@ void importSenses() {
 		id=-id-100000;
 		//		if (130172 == id) p(line);
 
-		synsetid_mapped=norm_wordnet_id(synsetid0);// 100001740    ->  200000 and so on, no gaps
-		if (synsetid_mapped < 300000 && synsetid_mapped>-300000){
+		synsetid_mapped=norm_wordnet_id(synsetid0);// 100001740  -> 200000 and so on, no gaps
+		if (synsetid_mapped < 300000 and synsetid_mapped>-300000){
 			printf("MOMENT!");
 			continue;
 		}
@@ -2157,12 +2195,12 @@ void importSenses() {
 		//			pf("id %d synsetid0 %d synsetid %d name %s",id,synsetid0,synsetid_mapped,name0);
 		if(germanLabels){
 			const char* german=wn_labels[synsetid_mapped].data();
-			if(!german||strlen(german)==0){
+			if(!german or strlen(german)==0){
 				//				pf("id %d synsetid0 %d synsetid %d >>> %s\n",id,synsetid0,synsetid_mapped,name0);
 				name=name0;// DEBUG with english!! //continue;
 			}
 			else name=german;
-			//            OR add label!
+			//      OR add label!
 		}else name=name0;
 
 		//		Node* word=get(id);// redundant and risky! just use
@@ -2170,7 +2208,7 @@ void importSenses() {
 		//		if(word!=word2){
 		//			printf("bug");
 		//		}
-		//		if(word->name&&!eq(word->name,name)){
+		//		if(word->name and !eq(word->name,name)){
 		//			printf("bug");
 		//		}
 
@@ -2204,12 +2242,12 @@ void importSynsets() {
 	FILE *infile=open_file("wordnet/synsets.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 1000 == 0) {
-			printf("importSynsets %d    \r", linecount);
+			printf("importSynsets %d  \r", linecount);
 			fflush(stdout);
 		}
 		fixNewline(line);
 		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/
-			   definition);
+			  definition);
 		id=norm_wordnet_id(id);
 		if(!id)continue;
 		if (pos == 'n') addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun; DEFAULT!!
@@ -2230,19 +2268,19 @@ void importDescriptions() {
 	char definition[1000];
 	int linecount=0;
 	int id;
-	//    char pos;
+	//  char pos;
 	FILE *infile=open_file("wordnet/labels.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			printf("importDescriptions %d    \r", linecount);
+			printf("importDescriptions %d  \r", linecount);
 			fflush(stdout);
 		}
 		fixNewline(line);
 		sscanf(line, "%*d\t%d\t%[^\n]s", &id, /*&lexdomain,*/definition);
-		//		id=id + 10000; //  label on abstract !?!
-		id=-id -100000; //  label on abstract !?!
+		//		id=id + 10000; // label on abstract !?!
+		id=-id -100000; // label on abstract !?!
 		//		id=norm_wordnet_id(id);
-		if (id >= 300000||id <= -300000) {
+		if (id >= 300000 or id <= -300000) {
 			p(line);
 			continue;
 		}
@@ -2261,7 +2299,7 @@ void importLexlinks() {
 	FILE *infile=open_file("wordnet/lexlinks.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
-			printf("importLexlinks %d    \r", linecount);
+			printf("importLexlinks %d  \r", linecount);
 			fflush(stdout);
 		}
 		//			printf(line);
@@ -2279,7 +2317,7 @@ void importLexlinks() {
 
 		Statement* x = 0;
 		if (ss != so) x=addStatement4(wordnet, norm_wordnet_id(ss), norm_wordnet_id(p), norm_wordnet_id(so));
-		if (debug && !x && p!=81)
+		if (debug and !x and p!=81)
 			pf("ERROR %s\n", line);
 		//		if(s!=o)x=addStatement4(wordnet, s, p, o); not on abstracts! hmm, for antonym properties? nah!
 		//		if(!x)printf("ERROR %s\n",line);
@@ -2294,7 +2332,7 @@ void importStatements() {
 	FILE *infile=open_file("wordnet/statements.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 1000 == 0) {
-			printf("importStatements %d    \r", linecount);
+			printf("importStatements %d  \r", linecount);
 			fflush(stdout);
 		}
 		fixNewline(line);
@@ -2339,7 +2377,7 @@ void importWordnet2() {
 
 void importGeoDB() {
 	importCsv("cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid",
-			  "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
+			 "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
 }
 
 /*
@@ -2442,10 +2480,10 @@ void importDBPediaDE() {
 
 void importAllYago() {
 	autoIds=false;
-	//    importYago("yagoGeonamesData.tsv");// expansive !!! don't dissect!
+	//  importYago("yagoGeonamesData.tsv");// expansive !!! don't dissect!
 	//	importYago()
 	load_wordnet_synset_map();
-	//    importYago("yagoLabels.tsv");
+	//  importYago("yagoLabels.tsv");
 
 	importYago("yagoSimpleTypes.tsv");
 	importYago("yagoFacts.tsv");
@@ -2485,19 +2523,19 @@ void importAllYago() {
 
 
 /*root@h1642655:~/netbase# l facts/
- actedIn           during              hasChild           hasISBN                hasRevenue       interestedIn    isSubstanceOf    subClassOf
- bornIn            establishedOnDate   hasCurrency        hasLabor               hasSuccessor     inTimeZone      livesIn          subPropertyOf
- bornOnDate        exports             hasDuration        hasMotto               hasTLD           inUnit          locatedIn        type
- created           familyNameOf        hasEconomicGrowth  hasNominalGDP          hasUnemployment  isAffiliatedTo  madeCoverFor     until
- createdOnDate     foundIn             hasExpenses        hasNumberOfPeople      hasUTCOffset     isCalled        means            using
- dealsWith         givenNameOf         hasExport          hasOfficialLanguage    hasValue         isCitizenOf     musicalRole      worksAt
- describes         graduatedFrom       hasGDPPPP          hasPages               hasWaterPart     isLeaderOf      originatesFrom   writtenInYear
- diedIn            happenedIn          hasGini            hasPopulation          hasWebsite       isMarriedTo     participatedIn   wrote
- diedOnDate        hasAcademicAdvisor  hasHDI             hasPopulationDensity   hasWeight        isMemberOf      politicianOf
- directed          hasArea             hasHeight          hasPoverty             hasWonPrize      isNativeNameOf  produced
- discovered        hasBudget           hasImdb            hasPredecessor         imports          isNumber        publishedOnDate
- discoveredOnDate  hasCallingCode      hasImport          hasProduct             influences       isOfGenre       range
- domain            hasCapital          hasInflation       hasProductionLanguage  inLanguage       isPartOf        since
+ actedIn      during       hasChild      hasISBN        hasRevenue    interestedIn  isSubstanceOf  subClassOf
+ bornIn      establishedOnDate  hasCurrency    hasLabor        hasSuccessor   inTimeZone   livesIn     subPropertyOf
+ bornOnDate    exports       hasDuration    hasMotto        hasTLD      inUnit     locatedIn    type
+ created      familyNameOf    hasEconomicGrowth hasNominalGDP     hasUnemployment isAffiliatedTo madeCoverFor   until
+ createdOnDate   foundIn       hasExpenses    hasNumberOfPeople   hasUTCOffset   isCalled    means      using
+ dealsWith     givenNameOf     hasExport     hasOfficialLanguage  hasValue     isCitizenOf   musicalRole   worksAt
+ describes     graduatedFrom    hasGDPPPP     hasPages        hasWaterPart   isLeaderOf   originatesFrom  writtenInYear
+ diedIn      happenedIn     hasGini      hasPopulation     hasWebsite    isMarriedTo   participatedIn  wrote
+ diedOnDate    hasAcademicAdvisor hasHDI       hasPopulationDensity  hasWeight    isMemberOf   politicianOf
+ directed     hasArea       hasHeight     hasPoverty       hasWonPrize   isNativeNameOf produced
+ discovered    hasBudget      hasImdb      hasPredecessor     imports     isNumber    publishedOnDate
+ discoveredOnDate hasCallingCode   hasImport     hasProduct       influences    isOfGenre    range
+ domain      hasCapital     hasInflation    hasProductionLanguage inLanguage    isPartOf    since
  */
 
 void importTest(){
@@ -2521,8 +2559,10 @@ void importWikiData() {
 //	context->lastNode=(int)maxNodes/2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	context->lastNode=30244576; // as of 06/2017!
 	//	importWikiLabels("wikidata/properties.de",true);
-	importWikiLabels("wikidata/labels.csv");
-	importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
+	if(!eq(get(1)->name,"Universum")){
+		importWikiLabels("wikidata/labels.csv");
+		importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
+	}
 	importN3("wikidata/wikidata.n3");
 }
 
@@ -2568,10 +2608,10 @@ void importWikiDataALT() {
 
 void import(const char* type, const char* filename) {
 	importing=true;
-	//    clock_t start;
-	//    double diff;
-	//  start = clock();
-	//  diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
+	//  clock_t start;
+	//  double diff;
+	// start = clock();
+	// diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 	if (filename == 0) filename=type;
 	if(eq(filename,"de")){
 		importAllDE();
@@ -2579,7 +2619,7 @@ void import(const char* type, const char* filename) {
 		importAll();
 	}else if (eq(type, "amazon")) {
 		importAmazon();
-	}else if (eq(type, "billiger") || eq(type,"billiger.de")) {
+	}else if (eq(type, "billiger") or eq(type,"billiger.de")) {
 		importBilliger();
 	}else if (eq(type, "test")) {
 		importTest();
@@ -2591,7 +2631,7 @@ void import(const char* type, const char* filename) {
 		importWordnet();
 	} else if (eq(type, "freebase")) {
 		importFreebase();
-	} else if (eq(type, "geodb")||eq(type, "geo")||eq(type, "locations")||eq(type, "places")||eq(type, "cities")) {
+	} else if (eq(type, "geodb") or eq(type, "geo") or eq(type, "locations") or eq(type, "places") or eq(type, "cities")) {
 		importGeoDB();
 	}
 	else if (eq(type, "dbpedia")) {
@@ -2605,7 +2645,7 @@ void import(const char* type, const char* filename) {
 		importImages();
 	} else if (startsWith(type, "images ")) {
 		importImageTripels(substr(type,7,-1));
-	} else if (eq(type, "wiki") || eq(type, "wikidata")) {
+	} else if (eq(type, "wiki") or eq(type, "wikidata")) {
 		importWikiData();
 		//	} else if (eq(type, "wiki")) {
 		//		importWikipedia();
@@ -2627,11 +2667,11 @@ void import(const char* type, const char* filename) {
 		importCsv(filename);
 	} else if (endsWith(filename, "xml")) {
 		importXml(filename);
-	}  else if (endsWith(filename, "n3")) {
+	} else if (endsWith(filename, "n3")) {
 		importN3(filename);
-	}  else if (endsWith(filename, "nt")) {
+	} else if (endsWith(filename, "nt")) {
 		importN3(filename);
-	}  else if (endsWith(filename, "ttl")) {
+	} else if (endsWith(filename, "ttl")) {
 		importN3(filename);
 	} else {
 		//if (!importFacts(filename, filename))
@@ -2639,11 +2679,11 @@ void import(const char* type, const char* filename) {
 		//		importAll();
 	}
 	importing=false;
-	//  cout<<"nanoseconds "<< diff <<'\n';
+	// cout<<"nanoseconds "<< diff <<'\n';
 
 	// importSqlite(filename);
-	//    importNodes();
-	//    importStatements();
+	//  importNodes();
+	//  importStatements();
 }
 
 void importAllDE() {
@@ -2718,10 +2758,10 @@ void importAll() {
 	showContext(wordnet);
 	//	importFreebase();
 	showContext(wordnet);
-	//   	importAllYago();// BETTER THAN DBPEDIA!?
+	//  	importAllYago();// BETTER THAN DBPEDIA!?
 	importImages();
 	importing=false;
-	//  ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
-	//    importEntities();
+	// ./import/yago/yagoSimpleTypes.tsv Error opening file: No such file or directory Segmentation fault
+	//  importEntities();
 }
 

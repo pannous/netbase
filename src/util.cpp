@@ -39,7 +39,7 @@ bool isNumber(const char* buf) {
 }
 
 char* next_word(char* data){
-	while (data[0]!=0 && data[0]!=' ' && data[0]!='/') {
+	while (data[0]!=0 and data[0]!=' ' and data[0]!='/') {
 		data++;
 	}
 	if(data[0]==' ')data++;
@@ -85,10 +85,10 @@ void empty(vector<T, std::allocator<T> > &v) {
 
 template void empty(vector<Statement*, std::allocator<Statement*> > &v);
 //bool contains(vector<Node*>& all,Node* node){
-//    for(int i=0;i<all.size();i++){
-//      if((Node*)all[i]==node)return true;
-//    }
-//    return false;
+//  for(int i=0;i<all.size();i++){
+//   if((Node*)all[i]==node)return true;
+//  }
+//  return false;
 //}
 bool contains(const char* x, const char y){
 	for (int i=0; i<strlen(x); i++) {
@@ -99,8 +99,8 @@ bool contains(const char* x, const char y){
 
 bool contains(const char* x, const char* y, bool ignoreCase) {
 	// Sonderfall: contains("abc","")==false
-	if (!x || !y) return false;
-	if (x[0] == 0 || y[0] == 0) return false;
+	if (!x or !y) return false;
+	if (x[0] == 0 or y[0] == 0) return false;
 	if (strstr(x, y) >= x) return true;
 	if (ignoreCase){
 		char* mx=tolower(x);
@@ -126,7 +126,7 @@ bool contains(NodeSet* all, Node* node) {
 	NodeSet::iterator it;
 	for(it=all->begin();it!=all->end();it++){
 		if ((Node*) *it == node) return true;
-//		if (fuzzy && eq(*it, node)) return true;
+//		if (fuzzy and eq(*it, node)) return true;
 	}
 	return false;
 }
@@ -135,7 +135,7 @@ bool contains(NodeSet* all, Node* node) {
 bool contains(vector<string>& all, char* name) {
 	for (int i=0; i < all.size(); i++) {
 		if (eq((string) all[i],name)) return true;
-//		if (fuzzy && eq(all[i], &node)) return true;
+//		if (fuzzy and eq(all[i], &node)) return true;
 	}
 	return false;
 }
@@ -145,7 +145,7 @@ bool contains(NodeVector& all, Node& node, bool fuzzy) {
 //		return contains2(all,&node);
 	for (int i=0; i < all.size(); i++) {
 		if ((Node*) all[i] == &node) return true;
-		if (fuzzy && eq(all[i], &node)) return true;
+		if (fuzzy and eq(all[i], &node)) return true;
 	}
 	return false;
 }
@@ -154,7 +154,7 @@ bool contains(NodeVector& all, Node* node, bool fuzzy) {
 //	return contains2(all,node);
 	for (int i=0; i < all.size(); i++) {
 		Node* n=(Node*) all[i];
-		if (n == node || (fuzzy && eq(n, node)))
+		if (n == node or (fuzzy and eq(n, node)))
 			return true;
 	}
 	return false;
@@ -189,29 +189,29 @@ bool contains(vector<char*>& all, char* node) {
 }
 //
 //bool contains(NodeVector* v, Node* node,bool fuzzy) {
-//    for (int i = 0; i < v->size(); i++)
-//        if (v->at(i) == node)return true;
-//		if(fuzzy && eq(v->at(i), node))return true;
-//    return false;
+//  for (int i = 0; i < v->size(); i++)
+//    if (v->at(i) == node)return true;
+//		if(fuzzy and eq(v->at(i), node))return true;
+//  return false;
 //}
 //bool contains(NodeVector* v, Node* o) {
-//    for (int i = 0; i < v->size(); i++)
-//        if (v->at(i) == o)return true;
-//    return false;
+//  for (int i = 0; i < v->size(); i++)
+//    if (v->at(i) == o)return true;
+//  return false;
 //}
 //bool contains(NodeVector v, Node* o) {
-//    for (int i = 0; i < v.size(); i++) {
-//        Node* n = (Node*) v[i];
-//        if (n == o)return true;
-//    }
-//    return false;
+//  for (int i = 0; i < v.size(); i++) {
+//    Node* n = (Node*) v[i];
+//    if (n == o)return true;
+//  }
+//  return false;
 //}
 //bool contains(NodeVector& v, Node* o) {
-//    for (int i = 0; i < v.size(); i++) {
-//        Node* n = (Node*) v[i];
-//        if (n == o)return true;
-//    }
-//    return false;
+//  for (int i = 0; i < v.size(); i++) {
+//    Node* n = (Node*) v[i];
+//    if (n == o)return true;
+//  }
+//  return false;
 //}
 //
 
@@ -230,16 +230,16 @@ string replace_all(string str, string what, string with) {
 }
 
 cchar* cut_to(cchar* str, cchar* match){
-    cchar* i=strstr(str,match);
-    if(!i)return str;
-    return i+strlen(match);
+  cchar* i=strstr(str,match);
+  if(!i)return str;
+  return i+strlen(match);
 }
 
 char* cut_to(char* str, cchar* match){
-    char* i=strstr(str,match);
-    if(!i)return str;
-    if(i)i[0]=0;
-    return i+strlen(match);
+  char* i=strstr(str,match);
+  if(!i)return str;
+  if(i)i[0]=0;
+  return i+strlen(match);
 }
 
 //#include <sstrings2.h> Linking with -lsstrings2
@@ -253,9 +253,9 @@ char* reverse_cut_to(char* str, char match){
 
 // NOT const !!
 char* keep_to(char* str, cchar* match){
-    char* i=(char*)strstr(str,match);
-    if(i)i[0]=0;
-    return str;
+  char* i=(char*)strstr(str,match);
+  if(i)i[0]=0;
+  return str;
 }
 
 
@@ -268,7 +268,7 @@ char* keep_to(char* str, cchar* match){
 bool quiet=false;
 
 //void flush(){
-//   fflush(stdout);
+//  fflush(stdout);
 //}
 
 bool endsWith(const char* x, const char* y) {
@@ -298,20 +298,20 @@ bool startsWith(string* x, string* y) {
 }
 
 //string(x)+y
-const char* concat(const char* a,const  char* b){
+const char* concat(const char* a,const char* b){
 //const char* concat(char* a,char* b){// free manually!
 	if(!b)return a;
 	int la=(int)strlen(a);
 	int lb=(int)strlen(b);
 //	char c[la+lb];
-    char* c=(char*)malloc((la+lb)*sizeof(char)+1);
+  char* c=(char*)malloc((la+lb)*sizeof(char)+1);
 	strcpy(c,a);
 	strcpy(&c[la],b);
-    c[la+lb]=0;
+  c[la+lb]=0;
 	return c;
 }
 bool equalsFuzzy(const char* x, const char* y){
-    int xl=(int)strlen(x);
+  int xl=(int)strlen(x);
 	if (xl != strlen(y)) return false; // xl!=strlen(y) != !xl==strlen(y) !!!!!
 	int i=0;
 	for (; i < xl; i++) {
@@ -319,8 +319,8 @@ bool equalsFuzzy(const char* x, const char* y){
 		if (normChar(x[i]) == normChar(y[i])) continue;
 		if (tolower(x[i]) != tolower(y[i])) return false;
 	}
-	//    for(int i=0;i<strlen(y);i++)y0[i]=tolower(y[i]);
-	//    return(strcmp(x0,y0)==0);// free?
+	//  for(int i=0;i<strlen(y);i++)y0[i]=tolower(y[i]);
+	//  return(strcmp(x0,y0)==0);// free?
 	return true;
 }
 #include <fcntl.h> // open
@@ -330,21 +330,21 @@ bool is_out_of_bounds(cchar* pointer){
 	return (write(nullfd, pointer, 1) < 0);
 }
 bool eq(const char* x, const char* y, bool ignoreCase, bool ignoreUnderscore) { //
-	if (!x && !y) return true; //danger better: undefined?
-	if (!x || !y) return false; //danger better: undefined?
-//	if (x < 0 || y<0)return false;
-//	if (is_out_of_bounds(x) || is_out_of_bounds(y))return false;// expensive??? << TODO
-    if (x && x[0] == 0 && y == 0) return true; // 0=='' danger!
-	if (y && y[0] == 0 && x == 0) return true; // 0=='' danger!
-	if (x == 0 || !y) return false;
+	if (!x and !y) return true; //danger better: undefined?
+	if (!x or !y) return false; //danger better: undefined?
+//	if (x < 0 or y<0)return false;
+//	if (is_out_of_bounds(x) or is_out_of_bounds(y))return false;// expensive??? << TODO
+  if (x and x[0] == 0 and y == 0) return true; // 0=='' danger!
+	if (y and y[0] == 0 and x == 0) return true; // 0=='' danger!
+	if (x == 0 or !y) return false;
 	if (strcmp(x, y) == 0) return true;
 	if (!ignoreCase) return false;
-    if (strcasecmp(x, y) == 0) return true;//ignoreCase
-    if(!ignoreUnderscore)return false;
-    return equalsFuzzy(x, y);
+  if (strcasecmp(x, y) == 0) return true;//ignoreCase
+  if(!ignoreUnderscore)return false;
+  return equalsFuzzy(x, y);
 }
 
-//const char* concat(const char* a,const  char* b) {
+//const char* concat(const char* a,const char* b) {
 //	string c="";
 //	c=a+c+b;
 //	return c.data();// LOST POINTER!
@@ -484,7 +484,7 @@ NodeVector intersect(NodeVector a, NodeVector b) {
 //		Node* n=a[0];
 //		if (contains(b, n)) c.push_back(n);
 //	}
-    return c;
+  return c;
 }
 
 // AAAHH NEVER WORKS!!! use splitStringC !!!
@@ -569,15 +569,15 @@ int splitStringC(char* line, char** tokens, char separator) {// leeeeak!
 	int i=0;
 	bool inQuote=false;
 	char* lastgood=line;
-	while (i < len && row<MAX_ROWS) {
+	while (i < len and row<MAX_ROWS) {
 		char c=line[i];
 		if (c == '"')inQuote=!inQuote;
-		if (!inQuote && c == separator) {
+		if (!inQuote and c == separator) {
 			line[i]=0;
 			token=lastgood;
 			lastgood=&line[i + 1];
 			if (tokens) tokens[row]=token;
-			//        token = strtok (NULL, separator);
+			//    token = strtok (NULL, separator);
 			row++;
 		}
 		i++;
@@ -604,8 +604,8 @@ char** splitStringC(char* line0, char separator, int maxRows) {
 	return tokens;
 }
 char* replaceChar(char* thing,char what,char with){
-    for(int i=0;i<strlen(thing);i++)if(thing[i]==what)thing[i]=with;
-    return thing;
+  for(int i=0;i<strlen(thing);i++)if(thing[i]==what)thing[i]=with;
+  return thing;
 }
 //inline
 bool ignoreNonLatin=false;// true; against insertAbstractHash FULL!
@@ -613,26 +613,26 @@ short normChar(char c) {// 0..36 damn ;)
 //	if(c=='\xc3')// ö -> short<0 !!!
 //		c=c;//'o'; //etc really?
 	if (c == '\n')return 0;
-	if (c >= '0' && c <= '9') return c-'0'+26;
-	if (c >= 'a' && c <= 'z') return c-'a'+1;// NOT 0!!!
-	if (c >= 'A' && c <= 'Z') return c-'A'+1;
+	if (c >= '0' and c <= '9') return c-'0'+26;
+	if (c >= 'a' and c <= 'z') return c-'a'+1;// NOT 0!!!
+	if (c >= 'A' and c <= 'Z') return c-'A'+1;
 	if(ignoreNonLatin)
-		return 0;// no chinese etc! why not? (small) problem: €==$ Жабка == Λάδων  etc
-    switch (c) {
-        case '"':return 0;
-            break;
-        case '\'':return 0;
-            break;
-        case '(':return 0;
-            break;
-        case '_':return 0;
-            break;
-        case ' ':return 0;
-            break;
-        case '-':return 0;
-            break;
-        default: return c;// for asian etc!
-    }
+		return 0;// no chinese etc! why not? (small) problem: €==$ Жабка == Λάδων etc
+  switch (c) {
+    case '"':return 0;
+      break;
+    case '\'':return 0;
+      break;
+    case '(':return 0;
+      break;
+    case '_':return 0;
+      break;
+    case ' ':return 0;
+      break;
+    case '-':return 0;
+      break;
+    default: return c;// for asian etc!
+  }
 }
 
 //unsigned int hashMod=(int)abstractHashSize / ahashSize;
@@ -653,22 +653,22 @@ unsigned int wordhash(const char *str) { // unsigned
 }
 
 
-// call by object => destination unmodified!   (how) expensive?!
+// call by object => destination unmodified!  (how) expensive?!
 //void addRange(NodeVector& some, NodeVector more, bool checkDuplicates) { // bool keep destination unmodified=TRUE
 //	some.insert(more.begin(),more.end());
 ////	for (int i=0; i < more.size(); i++) {
 ////		Node*n=(Node*) more[i];
 ////		if (!checkNode(n)) continue;
-////		if (!checkDuplicates || !contains(some, n)) some.push_back(n);
+////		if (!checkDuplicates or !contains(some, n)) some.push_back(n);
 ////	}
 //}
 
 //NodeVector mergeVectors(NodeVector some, NodeVector more) {// bool keep destination unmodified=TRUE
-//    for (int i = 0; i < more.size(); i++) {
-//        if (!contains(some, (Node*) more[i],false))
-//            some.push_back(more[i]);
-//    }
-//    return some;
+//  for (int i = 0; i < more.size(); i++) {
+//    if (!contains(some, (Node*) more[i],false))
+//      some.push_back(more[i]);
+//  }
+//  return some;
 //}
 
 //#include <algorithm>
@@ -684,7 +684,7 @@ void mergeVectors(NodeVector* some, NodeVector more) { // bool keep destination 
 	for (int i=0; i < more.size(); i++) {
 		if (!contains(*some, (Node*) more[i], false))
 //		if (std::find(some->begin(), some->end(), more[i]) == some->end())// NOT contains x yet
-            some->push_back(more[i]);
+      some->push_back(more[i]);
 	}
 }
 
@@ -717,22 +717,22 @@ char* match(char* input,cchar* pattern) {
 // std::remove(arg.begin(), arg.end(), ' ');
 char* fixQuotesAndTrim(char* tmp) {
 	bool quote=false;
-	while (tmp[0] == ' ' || tmp[0] == '_' || tmp[0] == '"') {
+	while (tmp[0] == ' ' or tmp[0] == '_' or tmp[0] == '"') {
 		if (tmp[0] == '"') quote=true;
 		tmp=tmp + 1;
 	}
 	int len=(int)strlen(tmp);
 	for (int i=0; i < len; i++) {
 		char c=tmp[i];
-		if (c == '+' || c == 0x2b) tmp[i]=' ';
-		if (quote && c == ' ') tmp[i]='_';
-		if (quote && c == '"') {
+		if (c == '+' or c == 0x2b) tmp[i]=' ';
+		if (quote and c == ' ') tmp[i]='_';
+		if (quote and c == '"') {
 			quote=false;
 			tmp[i]=' ';
 		}
 	}
 	len--;
-	while (len >= 0 && (tmp[len] == ' ' || tmp[len] == '_' || tmp[len] == '"'))
+	while (len >= 0 and (tmp[len] == ' ' or tmp[len] == '_' or tmp[len] == '"'))
 		tmp[len--]=0;
 	return tmp;
 }
@@ -746,9 +746,9 @@ string itoa(int i) {
 
 
 char* replace(char* data,char what,char with){
-    for (int i=0; i<strlen(data); i++)
-        if(data[i]==what)data[i]=with;
-    return data;// chain
+  for (int i=0; i<strlen(data); i++)
+    if(data[i]==what)data[i]=with;
+  return data;// chain
 }
 
 void appendFile(const char* fileName,const char* data){
@@ -844,7 +844,7 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 	else{
 		bool ok=true;
 		current_line=next_line;
-		if(!current_line || strlen(current_line)==0 || next_line-first_line>OUT_CHUNK){
+		if(!current_line or strlen(current_line)==0 or next_line-first_line>OUT_CHUNK){
 			current_line=first_line;
 			memset(gzip_in, 0, CHUNK);
 			memset(gzip_out, 0, OUT_CHUNK);
@@ -855,7 +855,7 @@ bool readFile(FILE* infile,char* line,z_stream strm,bool gzipped){
 		}
 		if(ok){
 			next_line=strstr(current_line,"\n");
-			if(next_line && next_line<first_line+OUT_CHUNK){
+			if(next_line and next_line<first_line+OUT_CHUNK){
 				next_line[0]=0;
 				next_line++;
 				strcpy(line+strlen(hangover),current_line);
@@ -883,7 +883,7 @@ bool readFile(const char* file,char* line){
 	static FILE *infile;
 	static z_stream strm;
 	static bool gzipped;
-	if(file==0||line==0){
+	if(file==0 or line==0){
 		printf("%s DONE!\n",file);
 //		if(infile)fclose(infile); FUCK IT!
 		infile=0;
@@ -892,7 +892,7 @@ bool readFile(const char* file,char* line){
 		current_file="";
 		return false;
 	}
-	if(!infile){//||!eq(current_file,file) EXC!
+	if(!infile){// or !eq(current_file,file) EXC!
 		current_file=file;
 		infile=open_file(file);
 		gzipped=endsWith(file, ".gz");
@@ -918,7 +918,7 @@ char* dropUrl(char* name){
 	size_t len=strlen(name);
 	if(name[len-1]=='>')name[len-1]=0;
 	for (size_t i=len-1; i>0; --i)
-		if(name[i]=='#' || name[i]=='/'|| name[i]==':') // cut http://.../ namespaces
+		if(name[i]=='#' or name[i]=='/' or name[i]==':') // cut http://.../ namespaces
 			return name+i+1;//str[i]=0;
 	return name;
 }
@@ -974,10 +974,10 @@ int wordCount(char* c){
 }
 
 bool empty(char* c){
-	return c==0||c[0]==0;
+	return c==0 or c[0]==0;
 }
 bool empty(cchar* c){
-	return c==0||strlen(c)==0;// c[0]==0;
+	return c==0 or strlen(c)==0;// c[0]==0;
 }
 int len(char* c){return !c?0:(int)strlen(c);}// python style
 int len(cchar* c){return !c?0:(int)strlen(c);}// python style
@@ -1002,7 +1002,7 @@ string generateSEOUrl(string input) {
 	}
 	string s = input;
 //	std::transform(s.begin(), s.end(),s.begin(), ::tolower);
-	std::transform(s.begin(), s.end(),s.begin(),(int (*)(int))std::tolower);// needs  locale() !!
+	std::transform(s.begin(), s.end(),s.begin(),(int (*)(int))std::tolower);// needs locale() !!
 
 	replaceAll( s,"ä", "ae");
 	replaceAll( s,"ü", "ue");
@@ -1143,7 +1143,7 @@ string generateSEOUrl(string input) {
 	replaceAll( s," ", "-");
 
 	while (s.find("--")!=std::string::npos) {
-		replaceAll( s,"--", "-");//  Ich, Claudius – Kaiser und Gott	->	ich-claudius-–-kaiser-und-gott ƒ
+		replaceAll( s,"--", "-");// Ich, Claudius – Kaiser und Gott	->	ich-claudius-–-kaiser-und-gott ƒ
 	}
 
 	while(!s.compare(0, 1, "-"))

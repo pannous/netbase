@@ -1,5 +1,5 @@
 /*
- * File:   query.h
+ * File:  query.h
  * Author: me
  *
  * Created on March 28, 2012, 6:46 PM

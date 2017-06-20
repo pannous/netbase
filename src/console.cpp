@@ -34,14 +34,14 @@ NodeVector OK;
 // static struct termios stored_settings;
 
 void showHelpMessage() {
-    ps("");
+  ps("");
 	ps("AVAILABLE COMMANDS:");
 	ps("help :h or ?");
 	ps(":load :l [force]\tfetch the graph from disk or mem");
 	//	ps("load_files :lf");
 	ps(":import :i [<file>|dbpedia|wordnet|images|labels|...]");
 	ps(":export :e (all to csv)");
-	//    ps("print :p");
+	//  ps("print :p");
 	ps(":delete :d <node|statement|id|name>");
 	ps(":save :s or :w");
 	//	ps("save and exit :x");
@@ -56,7 +56,7 @@ void showHelpMessage() {
 	ps("Q5");
 	ps("subclasses of human");
 	ps("entities of human limit 1000");
-	//    ps("all animals that have feathers");
+	//  ps("all animals that have feathers");
 	ps(":all animals with feathers");
 //	ps("select * from dogs where terrier");
 	ps("all city with countrycode=ZW");
@@ -70,7 +70,7 @@ void showHelpMessage() {
 //	ps(":set Gehren.Population to 244797");
 //		ps(":update Gehren.Population set current=244797");
 	ps(":update Gehren set Population=244797");
-	//    ps("delete from Stadt.Gemeindeart where typ=244797");
+	//  ps("delete from Stadt.Gemeindeart where typ=244797");
 	ps(":delete blah (entity)");
 	ps(":delete 1234 (entity-id)");
 	ps(":delete $1234 (statement-id)");
@@ -88,16 +88,16 @@ void getline(char *buf) {
 #ifdef RL_READLINE_VERSION // USE_READLINE
 	if (!file_read_done) file_read_done=1 + read_history(0);
 	char *tmp=readline(PROMPT);
-	if (tmp == 0 || strlen(tmp) == 0) {
+	if (tmp == 0 or strlen(tmp) == 0) {
 		return;
 	}
 //	tmp=fixQuotesAndTrim(tmp);// LATER!
-	if (strncmp(tmp, buf, MAXLENGTH) && strlen(tmp) > 0) add_history(tmp); // only add new content
+	if (strncmp(tmp, buf, MAXLENGTH) and strlen(tmp) > 0) add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
 	buf[MAXLENGTH - 1]='\0';
 	write_history(0);
 	//	append_history(1,0);
-	//            free(tmp);
+	//      free(tmp);
 #else
 	std::cout << PROMPT;
 	std::cin.get(buf, MAXLENGTH);
@@ -195,7 +195,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(data[len-1]=='\''){data[len-1]=0;len--;}
 	if(data[0]=='\'')data++;
 	if(data[0]=='!')((char*)data)[0]=':';// norm!
-	if(data[0]=='Q' && data[1]<='9')data++;//Q1325845
+	if(data[0]=='Q' and data[1]<='9')data++;//Q1325845
 	if(data[0]==':')appendFile("logs/commands.log",data);
 	else appendFile("logs/query.log", data);
 
@@ -203,11 +203,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 //	vector<char*> args=vector<char*>(splitStringC(data, ' ')); // WITH 0==cmd!!!
 //	char** args=splitStringC(data, ' '); // WITH 0==cmd!!!
 
-	clearAlgorithmHash(true); //  maybe messed up
+	clearAlgorithmHash(true); // maybe messed up
 
 
 	// special server requests first:
-	if (contains(data, "limit")||contains(data, ":limit")) {
+	if (contains(data, "limit") or contains(data, ":limit")) {
 		char* limit=(char*)strstr(data,"limit");
 		sscanf(limit, "limit %d", &resultLimit);
 		pf("LIMIT SET TO %d\n",resultLimit);// quiet bug
@@ -217,7 +217,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		//		if(len<2)return OK;
 	}
 
-	if(startsWith(data, ":entities")||startsWith(data, "entities")||startsWith(data, "EE")||startsWith(data, "ee")||startsWith(data, ":ee")){
+	if(startsWith(data, ":entities") or startsWith(data, "entities") or startsWith(data, "EE") or startsWith(data, "ee") or startsWith(data, ":ee")){
 		data=next_word(data);
 		return show(findEntites(data));
 	}
@@ -226,7 +226,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return OK;
 	}
 
-	if(startsWith(data, "seo")||startsWith(data, ":seo")){
+	if(startsWith(data, "seo") or startsWith(data, ":seo")){
 		data=next_word(data);
 		string seos= generateSEOUrl(data);
 		cchar* seo= seos.data();
@@ -246,18 +246,18 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 
 	//		scanf ( "%s", data );
-	if (eq(data, "help") ||eq(data, ":help") || eq(data, "?")) {
+	if (eq(data, "help") or eq(data, ":help") or eq(data, "?")) {
 		showHelpMessage();
-		//        printf("type exit or word");
+		//    printf("type exit or word");
 		return OK;
 	}
-    
+  
 	if (eq(data, ":more")) {
 		resultLimit=resultLimit * 2;
 		if (lastCommand) return parse(lastCommand);
 		else return OK;
 	}
-    
+  
 	if (eq(data, ":x")) {
 		save();
 		exit(1);
@@ -265,20 +265,20 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	lastCommand=clone(data);
 	if (eq(data, ":w")) save();
 
-	if (eq(data, ":exit")||eq(data, ":quit")||eq(data, ":q"))
+	if (eq(data, ":exit") or eq(data, ":quit") or eq(data, ":q"))
 		exit(1); // before return!
 
 
 //	if (eq(data, "q")) return OK;
 //	if (eq(data, "x")) return OK;
-    if (eq(data, ":console")){
-        console();
-        return OK;}
+  if (eq(data, ":console")){
+    console();
+    return OK;}
 	if (eq(data, ":export")) {
 		export_csv();
 		return OK;
 	}
-	if (eq(data, ":cl")||eq(data, ":clear")||eq(data, ":clean")||eq(data, ":cleanup")) {
+	if (eq(data, ":cl") or eq(data, ":clear") or eq(data, ":clean") or eq(data, ":cleanup")) {
 		clearMemory();
 		return OK;
 	}
@@ -290,9 +290,9 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		export_csv();
 		return OK;
 	}
-	if (eq(data, ":quit")||eq(data, ":exit")) return OK;
-	if (eq(data, ":quiet")||eq(data,":!debug")){debug=false; quiet=true;return OK;}// !-> NOT !!
-    if (eq(data, ":debug")||eq(data, ":!quiet")){debug=true; quiet=false;return OK;}
+	if (eq(data, ":quit") or eq(data, ":exit")) return OK;
+	if (eq(data, ":quiet") or eq(data,":!debug")){debug=false; quiet=true;return OK;}// !-> NOT !!
+  if (eq(data, ":debug") or eq(data, ":!quiet")){debug=true; quiet=false;return OK;}
 
 	if (startsWith(data, ":if")) {
 		importFreebase();
@@ -310,21 +310,21 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		importTest();
 		return OK;
 	}
-	if (startsWith(data, ":iw") || startsWith(data, ":wi")) {
+	if (startsWith(data, ":iw") or startsWith(data, ":wi")) {
 		if (endsWith(data, "!")) deleteWord("acceptant");
 		if (!hasWord("acceptant")) importWordnet();
 		return OK;
 	}
-	if (startsWith(data, ":iwd") || startsWith(data, ":wd")) {
+	if (startsWith(data, ":iwd") or startsWith(data, ":wd")) {
 		importWikiData();
 		return OK;
 	}
-	if (startsWith(data, ":iy") || startsWith(data, ":yi")) {
+	if (startsWith(data, ":iy") or startsWith(data, ":yi")) {
 		if (endsWith(data, "!")) deleteWord("yagoGeoEntity");
 		importAllYago();
 		return OK;
 	}
-	if (startsWith(data, ":i ") || eq(data, ":i") || startsWith(data, ":import")) {
+	if (startsWith(data, ":i ") or eq(data, ":i") or startsWith(data, ":import")) {
 		autoIds=false;
 		string arg=next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
@@ -367,11 +367,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if (eq(data, ":ca")) {collectAbstracts();return OK;}
 	if (eq(data, ":ca!")) {collectAbstracts(true);return OK;}//clear!
 	if (eq(data, ":ci")) {collectInstances();return OK;}
-	if (eq(data, ":load_files") || eq(data, ":lf") || eq(data, ":l!") || eq(data, ":load!")) {
+	if (eq(data, ":load_files") or eq(data, ":lf") or eq(data, ":l!") or eq(data, ":load!")) {
 		load(true);
 		return OK;
 	}
-	if (eq(data, ":save")||eq(data, ":s")) {
+	if (eq(data, ":save") or eq(data, ":s")) {
 		save();
 		return OK;
 	}
@@ -382,63 +382,63 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		//		maxNodes += 1000;
 		return OK;
 	}
-	if (eq(data, ":c")|| eq(data, ":context")) {
+	if (eq(data, ":c") or eq(data, ":context")) {
 		showContext(context);
 		return OK;
 	}
-	if (eq(data, ":t") || eq(data, ":test") || eq(data, ":tests")) {
+	if (eq(data, ":t") or eq(data, ":test") or eq(data, ":tests")) {
 		exitOnFailure=false;
 		testAll();
 		return OK;
 	}
-	if (eq(data, ":tb")||eq(data, ":tbn")) {
+	if (eq(data, ":tb") or eq(data, ":tbn")) {
 		exitOnFailure=false;
 		testBrandNewStuff();
 		return OK;
 	}
-	if (eq(data, ":debug") || eq(data, ":debug on") || eq(data, ":debug 1")) {
+	if (eq(data, ":debug") or eq(data, ":debug on") or eq(data, ":debug 1")) {
 		debug=true;
 		return OK;
 	}
-	if (eq(data, ":debug off") || eq(data, ":no debug") || eq(data, ":debug 0")) {
+	if (eq(data, ":debug off") or eq(data, ":no debug") or eq(data, ":debug 0")) {
 		debug=true;
 		return OK;
 	}
-	if (startsWith(data, ":d ") || startsWith(data, ":delete ") ||startsWith(data, ":del ") || startsWith(data, ":remove ")) {
+	if (startsWith(data, ":d ") or startsWith(data, ":delete ") or startsWith(data, ":del ") or startsWith(data, ":remove ")) {
 		string d=next_word(data);
 		const char* what=d.data();
 		deleteWord(what);
-        return OK;
+    return OK;
 	}
-    
-    if(contains(data,":english")||contains(data,":en")){germanLabels=false;initRelations();return OK;}
-    if(contains(data,":german")||contains(data,":de")){germanLabels=true;initRelations();return OK;}
+  
+  if(contains(data,":english") or contains(data,":en")){germanLabels=false;initRelations();return OK;}
+  if(contains(data,":german") or contains(data,":de")){germanLabels=true;initRelations();return OK;}
 	if(args.size()==0)
 		return OK;
-    if (eq(args[0], ":show")) {// not ":show" here!!
+  if (eq(args[0], ":show")) {// not ":show" here!!
 		N da=getAbstract(data + 5);
-        show(da,true);
+    show(da,true);
 		return wrap(da);
 	}
 
 	if (startsWith(data, ":merge ")) {
-        int target,node=0;
+    int target,node=0;
 		sscanf(data, ":merge %d %d", &target,&node);
-        Node* targetNode=get(target);
-        if(node)
-            return wrap(mergeNode(targetNode,get(node)));
-        else if(target)
-            return wrap(mergeAll(targetNode->name));
-        else
-            return wrap(mergeAll(args[1].c_str()));// merge <string>
-    }
-    
-	if (startsWith(data, ":path ") || startsWith(data, ":p ")) {
+    Node* targetNode=get(target);
+    if(node)
+      return wrap(mergeNode(targetNode,get(node)));
+    else if(target)
+      return wrap(mergeAll(targetNode->name));
+    else
+      return wrap(mergeAll(args[1].c_str()));// merge <string>
+  }
+  
+	if (startsWith(data, ":path ") or startsWith(data, ":p ")) {
 		Node* from=getAbstract(args[1]);
 		Node* to=getAbstract(args[2]);
 		return shortestPath(from, to);
 	}
-    
+  
 	if (startsWith(data, ":script ")) {
 		cchar* file=args[1].c_str();
 		return runScript(file);
@@ -448,45 +448,45 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 
 
-	if (args.size() > 1 && (startsWith(data, ":has "))) {
+	if (args.size() > 1 and (startsWith(data, ":has "))) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return memberPath(from, to);
 	}
-	if (args.size() > 1 && (startsWith(data, ":is "))) {
+	if (args.size() > 1 and (startsWith(data, ":is "))) {
 		Node* from=getAbstract(args.at(1));
 		Node* to=getAbstract(args.at(2));
 		return parentPath(from, to);
 	}
-    
-    if (args.size() ==3 && contains(data,":exclude ")){// no ":" here!
-        autoIds=true;
-        Node *node=getAbstract(args[0]);
-        if(eq(args[0], "exclude"))node=getAbstract(args[1]);
-        addStatement(node,getAbstract("exclude"),getAbstract(args[2]));
-        return wrap(getAbstract(args[0]));
+  
+  if (args.size() ==3 and contains(data,":exclude ")){// no ":" here!
+    autoIds=true;
+    Node *node=getAbstract(args[0]);
+    if(eq(args[0], "exclude"))node=getAbstract(args[1]);
+    addStatement(node,getAbstract("exclude"),getAbstract(args[2]));
+    return wrap(getAbstract(args[0]));
+  }
+  if (startsWith(data, ":exclude ")){// no ":" here!
+    autoIds=true;
+    addStatement(get("excluded"), get("exclude"),getAbstract(data+9));
+    return wrap(get("excluded"));
+  }
+    if (args.size() >=3 and contains(data,":include ")){// no ":" here!
+      autoIds=true;
+      Node *node=getAbstract(args[0]);
+      Node *to_include=getAbstract(args[2]);// next //join(sublist(args,2)," "));
+      if(eq(args[0], ":include"))node=getAbstract(args[1]);
+      else to_include=getAbstract(cut_to(data, "include "));
+      addStatement(node,getAbstract("include"),to_include);
+      N type=getType(node);// auto add to type!!!
+      if(type)node=type;
+      addStatement(type,getAbstract("include"),to_include);
+      return wrap(node);
     }
-    if (startsWith(data, ":exclude ")){// no ":" here!
-        autoIds=true;
-        addStatement(get("excluded"), get("exclude"),getAbstract(data+9));
-        return wrap(get("excluded"));
-    }
-        if (args.size() >=3 && contains(data,":include ")){// no ":" here!
-            autoIds=true;
-            Node *node=getAbstract(args[0]);
-            Node *to_include=getAbstract(args[2]);// next //join(sublist(args,2)," "));
-            if(eq(args[0], ":include"))node=getAbstract(args[1]);
-            else to_include=getAbstract(cut_to(data, "include "));
-            addStatement(node,getAbstract("include"),to_include);
-            N type=getType(node);// auto add to type!!!
-            if(type)node=type;
-            addStatement(type,getAbstract("include"),to_include);
-            return wrap(node);
-        }
-//  //	if (startsWith(data, "include ")){// globally included? NAH! How? bad
-//        addStatement(get("included"), Instance,getAbstract(data+8));
-//        return wrap(get("included"));
-//    }
+// //	if (startsWith(data, "include ")){// globally included? NAH! How? bad
+//    addStatement(get("included"), Instance,getAbstract(data+8));
+//    return wrap(get("included"));
+//  }
 
 	if (eq(args[0], ":handle")){
 		if(args.size() >= 2 ){
@@ -498,14 +498,14 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	if (startsWith(data, ":select ")) return query(data);
 
-	//    Ch��teau
+	//  Ch��teau
 	if (eq(args[0], ":words"))// all // ambiguous!
 		return *findAllWords(data + 5);
 	if (eq(args[0], ":matches"))// ambiguous!
 		return *findWordsByName(wordnet, data + 13, false,true);
 	if (eq(args[0], ":find"))// ambiguous!
 		return *findWordsByName(wordnet, data + 6, false);
-	if (startsWith(data, ":all ")||startsWith(data, "all/")){
+	if (startsWith(data, ":all ") or startsWith(data, "all/")){
 //		INCLUDE_CLASSES=true;
 		N da=getAbstract(next_word(data));
 		NS all=findAll(da,instanceFilter);
@@ -518,7 +518,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 
 
-	if(startsWith(data, ":children") ||startsWith(data, ":list")||startsWith(data, ":recurse")||startsWith(data, ":fetch")){
+	if(startsWith(data, ":children") or startsWith(data, ":list") or startsWith(data, ":recurse") or startsWith(data, ":fetch")){
 		N da=getAbstract(next_word(data));
 		NS all=findAll(da,childFilter);
 		return setToVector(all);
@@ -533,7 +533,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 	//		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
 	//Big the Cat 	x Species ^ - + -- -!
-	if (startsWith(data, ":tree")||startsWith(data, ":subclasses")||startsWith(data, "subclasses")){
+	if (startsWith(data, ":tree") or startsWith(data, ":subclasses") or startsWith(data, "subclasses")){
 		data=next_word(data);
 		if(startsWith(data,"of"))data=next_word(data);
 		N da=getAbstract(data);
@@ -574,12 +574,12 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		autoIds=true;
 		return getTopics(getThe(data));
 	}
-	if(startsWith(data, ":topic")||startsWith(data, ":to")){
+	if(startsWith(data, ":topic") or startsWith(data, ":to")){
 		data=next_word(data);
 		autoIds=true;
 		return wrap(getTopic(getThe(data,More)));
 	}
-	if(startsWith(data, ":type")||startsWith(data, ":kind")){
+	if(startsWith(data, ":type") or startsWith(data, ":kind")){
 		data=next_word(data);
 		autoIds=true;
 		N n=getType(getThe(data));
@@ -592,7 +592,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		return wrap(getClass(get(data)));
 	}
 
-	if(startsWith(data, ":abstract")||startsWith(data, ":ab")||startsWith(data, ":a")){
+	if(startsWith(data, ":abstract") or startsWith(data, ":ab") or startsWith(data, ":a")){
 		data=next_word(data);
 		if(isInteger(data))data=get(atoi(data))->name;
 		return wrap(getAbstract(data));// ok, create here! VS hasWord
@@ -603,7 +603,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	}
 
 
-	if (startsWith(data, ":label ") || startsWith(data, ":l ") || startsWith(data, ":rename")|| startsWith(data, ":name")) {
+	if (startsWith(data, ":label ") or startsWith(data, ":l ") or startsWith(data, ":rename") or startsWith(data, ":name")) {
 		const char* what=next_word(data);
 		appendFile("import/labels.csv",what);
 		cchar* wordOrId=args[1].c_str();
@@ -612,7 +612,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		setLabel(n, label);
 		return wrap(n);
 	}
-	//	if (args.size() > 2 && eq(args[1], "of")) {
+	//	if (args.size() > 2 and eq(args[1], "of")) {
 	//		clearAlgorithmHash();
 	//		Node* property = getThe(args[0]);
 	//		Node* propertyA = getAbstract(args[0]);
@@ -627,27 +627,27 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	//		}
 	//		return wrap(found);
 	//	}
-    
-    //	if (startsWith(q, "m/")) {
-//	if (startsWith(data, "<m.") || startsWith(data, "<g.")) {
+  
+  //	if (startsWith(q, "m/")) {
+//	if (startsWith(data, "<m.") or startsWith(data, "<g.")) {
 //		p("<m.0c21rgr> needs shared memory or boost ");
 //		Node* n=getEntity((char*) data,true);
-//		show(n);    //<g.11vjx36lj>
+//		show(n);  //<g.11vjx36lj>
 //		return OK;
 //	}
 
 	
 
-//   update Stadt.Gemeindeart set type=244797 limit 100000
+//  update Stadt.Gemeindeart set type=244797 limit 100000
 	if (startsWith(data, ":update")){
-        return update(data);
-    }
+    return update(data);
+  }
 
-	// eq(data, "server") || only in main() !
-	if (startsWith(data, ":server") || startsWith(data, ":daemon") || startsWith(data, ":demon")) {
+	// eq(data, "server") or only in main() !
+	if (startsWith(data, ":server") or startsWith(data, ":daemon") or startsWith(data, ":demon")) {
 		printf("starting server\n");
 		if(getenv("SERVER_PORT"))SERVER_PORT=atoi(getenv("SERVER_PORT"));
-		while((data=next_word(data))&&strlen(data)>0)
+		while((data=next_word(data)) and strlen(data)>0)
 			if(atoi(data)>0)SERVER_PORT=atoi(data);
 		start_server(SERVER_PORT);
 		return OK;
@@ -660,13 +660,13 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 
 
 // LEARN
-//	if (args.size() >= 3 && eq(args[1], "is"))
+//	if (args.size() >= 3 and eq(args[1], "is"))
 //		return wrap(learn(data)->Subject());
-//	startsWith(data, "update")||
-//	eq(data, "daemon") || eq(data, "demon")
+//	startsWith(data, "update") or 
+//	eq(data, "daemon") or eq(data, "demon")
 
 	bool QUESTIONS=true;//false; OK, not EE
-	if (startsWith(data, ":select ")||startsWith(data, ":query ")) {// ||&&endsWith(data, "?")
+	if (startsWith(data, ":select ") or startsWith(data, ":query ")) {// or and endsWith(data, "?")
 		data=next_word(data);// whoot?
 		QUESTIONS=true;
 	}
@@ -675,13 +675,13 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		QUESTIONS=true;
 	}
 
-	if(QUESTIONS && !safeMode && !startsWith(data0,"'") && data0[0]!='"'){
+	if(QUESTIONS and !safeMode and !startsWith(data0,"'") and data0[0]!='"'){
 		if (startsWith(data, "an ")) return query(data);
 		if (startsWith(data, "a ")) return query(data);
 		if (startsWith(data, "any ")) return query(data);
 
-		//        if(startsWith(data,"is ")){  check_statement(data);return OK;}
-		//        if(startsWith(data,"does ")){  check_statement(data);return OK;}
+		//    if(startsWith(data,"is ")){ check_statement(data);return OK;}
+		//    if(startsWith(data,"does ")){ check_statement(data);return OK;}
 		if (contains(data, " in ")) return query(data);
 
 		if (startsWith(data, "these ")) return query(data);
@@ -689,11 +689,11 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		if (contains(data, "who ")) // who loves jule
 			return query(data);
 
-		if (eq(args[0], "the") || eq(args[0], ":the") || eq(args[0], "my")) {
+		if (eq(args[0], "the") or eq(args[0], ":the") or eq(args[0], "my")) {
 			N da=getThe(next_word(data), More);
 			return wrap(da);
 		}
-		if (eq(args[0], "a") || eq(args[0], "abstract")) {
+		if (eq(args[0], "a") or eq(args[0], "abstract")) {
 			N da=getAbstract(next_word(data));
 			return wrap(da);
 		}
@@ -710,14 +710,14 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		if (contains(data, "who ")) return query(data);
 
 
-		if ((args.size() > 2 && eq(args[1], "of")) || contains(data, " of ") || contains(data, " by ") || (contains(data, "."))) {
-		// || (contains(data, ":")) && !contains(data, " "))) {
+		if ((args.size() > 2 and eq(args[1], "of")) or contains(data, " of ") or contains(data, " by ") or (contains(data, "."))) {
+		// or (contains(data, ":")) and !contains(data, " "))) {
 		if(!contains(data, "="))
 			return parseProperties(data);
 //		else return wrap(learn(string(data)));
 	}
 
-	if (args.size() >= 3 && eq(args[1], ":to")) {
+	if (args.size() >= 3 and eq(args[1], ":to")) {
 		Node* from=getAbstract(args.at(0));
 		Node* to=getAbstract(args.at(2));
 		return shortestPath(from, to);
@@ -731,7 +731,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		p(context->lastNode);
 		return wrap(get(context->lastNode));
 	}
-	if ((eq(args[0], ":learn")||eq(args[0], ":l")||eq(args[0], ":!"))){// eq(args[0], "learn")|| args.size() >= 4 && (
+	if ((eq(args[0], ":learn") or eq(args[0], ":l") or eq(args[0], ":!"))){// eq(args[0], "learn") or args.size() >= 4 and (
 		string what=next_word(data);
 		if(what.empty()){load(/*,8,*/1);return OK;}
 		NodeVector nv=wrap(learn(what.data())->Subject());
@@ -741,29 +741,29 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		fclose(fp);
 		return nv;
 	}
-    
+  
 	data=replace((char*) data, ' ', '_');
-    
+  
 	int i=atoi(data);
-	if(data[0]=='P' && data[1]<='9')
+	if(data[0]=='P' and data[1]<='9')
 		return wrap(get(-atoi(++data)-10000));// P106 -> -10106
 	if (startsWith(data, ":")){pf("UNKNOWN COMMAND %s\n",data);}//showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
-//	if(autoIds && i)return wrap(get(i));
-	if(i==0 && !hasWord(data))return OK;// don't create / dissect here!
+//	if(autoIds and i)return wrap(get(i));
+	if(i==0 and !hasWord(data))return OK;// don't create / dissect here!
 
 	Node* a=get(data);
 	if(!isAbstract(a)){
-		if(i == 0 || !hasWord(a->name)){
+		if(i == 0 or !hasWord(a->name)){
 			//		a->kind=abstractId;// not for singletons AMAZON!
 			insertAbstractHash(a,true);// fix bug! can't be!?
 		}else
 			addStatement(getAbstract(a), Instance, a,true,true);
 	}
-	dissectWord(a, true);    //	if (i == 0) instanceFilter(a), true);
-	//        findWord(context->id, data);
-    if(isAbstract(a)&&i == 0) {
+	dissectWord(a, true);  //	if (i == 0) instanceFilter(a), true);
+	//    findWord(context->id, data);
+  if(isAbstract(a) and i == 0) {
 		lookupLimit=resultLimit;
 		N the=getThe(a);
 		show(the);
@@ -778,12 +778,12 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 }
 
 extern "C" Node** execute(const char* data,int* out){
-    NodeVector result=parse(data,true);
-    int hits=(int)result.size();
+  NodeVector result=parse(data,true);
+  int hits=(int)result.size();
 	if(out) *out=hits;
-    Node** results=(Node** ) malloc((1+hits)*nodeSize);
-    for (int i=0; i< hits; i++) {
-        results[i]=result[i];
+  Node** results=(Node** ) malloc((1+hits)*nodeSize);
+  for (int i=0; i< hits; i++) {
+    results[i]=result[i];
 	}
-    return results;
+  return results;
 }

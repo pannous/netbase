@@ -1,15 +1,15 @@
 #!/usr/bin/ruby
-# gem install rice   # http://rice.rubyforge.org/
+# gem install rice  # http://rice.rubyforge.org/
 # require "mkmf-rice"
 require "mkmf"
 
 # $CFLAGS << "-O3"
 # 
 # HEADER_DIRS = [
-#   ".."
+#  ".."
 # ]
 # LIB_DIRS = [
-#   "../../build/"
+#  "../../build/"
 # ]
 # 
 # dir_config("libs", HEADER_DIRS, LIB_DIRS)

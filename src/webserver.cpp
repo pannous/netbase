@@ -7,16 +7,16 @@
 #include <ctype.h>
 #include <string.h>
 #include <errno.h>
-#include <sys/socket.h>       /*  socket definitions        */
-#include <sys/types.h>        /*  socket types              */
-#include <sys/wait.h>         /*  for waitpid()             */
-#include <arpa/inet.h>        /*  inet (3) funtions         */
-#include <unistd.h>           /*  misc. UNIX functions      */
+#include <sys/socket.h>    /* socket definitions    */
+#include <sys/types.h>    /* socket types       */
+#include <sys/wait.h>     /* for waitpid()       */
+#include <arpa/inet.h>    /* inet (3) funtions     */
+#include <unistd.h>      /* misc. UNIX functions   */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <sys/time.h>             /*  For select()  */
+#include <sys/time.h>       /* For select() */
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -28,7 +28,7 @@
 #include "relations.hpp" // Node* Entity;
 //#include "helper.h"
 
-/*  Service an HTTP request  */
+/* Service an HTTP request */
 
 int SERVER_PORT=8080;
 int MAX_QUERY_LENGTH=10000;
@@ -43,7 +43,7 @@ int resultLimit = 200; // != lookuplimit reset with every fork !!
 
 int listener, conn,closing=0;
 pid_t pid;
-//    socklen_t
+//  socklen_t
 struct sockaddr_in servaddr;
 
 /// true = filter
@@ -83,7 +83,7 @@ char* fixName(char* name){
 		if(name[len]=='"')name[len]='\'';// json-save!
 		if(name[len]=='`')name[len]='\'';// json-save!
 	}
-	if(name[0]=='\''||name[0]=='`')return name+1;
+	if(name[0]=='\'' or name[0]=='`')return name+1;
 	if (startsWith(name, "entities"))
 		name+=9;
 	if (startsWith(name, "ee "))
@@ -102,20 +102,20 @@ char* getStatementTitle(Statement* s,Node* n){
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar* q0,int conn){
 	int len=(int)strlen(q0);
-    char* q=editable(q0);
+  char* q=editable(q0);
 	if(!checkSanity(q,len)){//	if(len>MAX_QUERY_LENGTH){ ...
 		p("checkSanity :command OR len>10000");
 		return 0;// SAFETY!
 	}
-    while(q[0]=='/')q++;
+  while(q[0]=='/')q++;
 	enum result_format format = html;//txt; html DANGER WITH ROBOTS
 	enum result_verbosity verbosity = normal;
 
-    if(contains(q,"robots.txt")){
-        Writeline(conn,"User-agent: *\n");
-        Writeline("Disallow: /\n");
-        return 0;
-    }
+  if(contains(q,"robots.txt")){
+    Writeline(conn,"User-agent: *\n");
+    Writeline("Disallow: /\n");
+    return 0;
+  }
 	
 	char* jsonp=strstr(q,"jsonp");// ?jsonp=fun
 	if(jsonp){
@@ -131,25 +131,25 @@ int handle(cchar* q0,int conn){
 	}
 
 	if (endsWith(q, ".json")) {
-        format = json;
-        q[len-5]=0;
-    }
+    format = json;
+    q[len-5]=0;
+  }
 
 	if (endsWith(q, ".xml")) {
-        format = xml;
-        q[len-4]=0;
-    }
-    
-	if (endsWith(q, ".csv")||endsWith(q, ".tsv")) {
-        format = csv;
-        q[len-4]=0;
-    }
-    
+    format = xml;
+    q[len-4]=0;
+  }
+  
+	if (endsWith(q, ".csv") or endsWith(q, ".tsv")) {
+    format = csv;
+    q[len-4]=0;
+  }
+  
 	if (endsWith(q, ".txt")) {
-        format = txt;
-        q[len-4]=0;
-    }
-    
+    format = txt;
+    q[len-4]=0;
+  }
+  
 	if (endsWith(q, ".html")) {
 		format = html;
 		q[len-5]=0;
@@ -169,11 +169,11 @@ int handle(cchar* q0,int conn){
 		verbosity = alle;
 	}
 	if (startsWith(q, "long/")){
-		verbosity =  longer;
+		verbosity = longer;
 		q = q + 5;
 	}
 	if (startsWith(q, "full/")) {
-		verbosity =  verbose;
+		verbosity = verbose;
 		q = q + 5;
 	}
 	if (startsWith(q, "abstract/")) {
@@ -190,11 +190,11 @@ int handle(cchar* q0,int conn){
 	}
 
 	if (startsWith(q, "html/")) {
-        format = html;
-        if(!contains(q,".")&&!contains(q,":"))
+    format = html;
+    if(!contains(q,".") and !contains(q,":"))
 			verbosity=verbose;
-        q = q + 5;
-    }
+    q = q + 5;
+  }
 	if (startsWith(q, "plain/")) {
 		format = txt;
 		q = q + 6;
@@ -211,7 +211,7 @@ int handle(cchar* q0,int conn){
 		format = xml;
 		q = q + 4;
 	}
-	if (startsWith(q, "csv/")||startsWith(q, "tsv/")) {
+	if (startsWith(q, "csv/") or startsWith(q, "tsv/")) {
 		format = csv;
 		q = q + 4;
 	}
@@ -241,21 +241,21 @@ int handle(cchar* q0,int conn){
 		verbosity = shorter;
 		q = q + 6;
 	}
-	if (startsWith(q, "excludes/")||startsWith(q, "includes/")||startsWith(q, "excluded/")||startsWith(q, "included/")||startsWith(q, "showview/")) {
-        showExcludes=true;
-        verbosity=longer;
+	if (startsWith(q, "excludes/") or startsWith(q, "includes/") or startsWith(q, "excluded/") or startsWith(q, "included/") or startsWith(q, "showview/")) {
+    showExcludes=true;
+    verbosity=longer;
 		q = q + 9;
 	}
-    else showExcludes=false;
-    excluded.clear();
-    included.clear();
-    
-    if(contains(q,"statement count")){Writeline(conn,itoa((int)context->statementCount).data());return 0;}
-    if(contains(q,"node count")){Writeline(conn,itoa(context->nodeCount).data());return 0;}
+  else showExcludes=false;
+  excluded.clear();
+  included.clear();
+  
+  if(contains(q,"statement count")){Writeline(conn,itoa((int)context->statementCount).data());return 0;}
+  if(contains(q,"node count")){Writeline(conn,itoa(context->nodeCount).data());return 0;}
 
 	if (startsWith(q, "all/")) {
-        cut_to(q," +");
-        cut_to(q," -");
+    cut_to(q," +");
+    cut_to(q," -");
 		q = q + 4;
 		showExcludes=false;
 		verbosity = alle;
@@ -267,7 +267,7 @@ int handle(cchar* q0,int conn){
 		q = q + 4;
 	}
 //	bool sort=false;
-	if (startsWith(q, "ee/")||startsWith(q, "ee ")) {
+	if (startsWith(q, "ee/") or startsWith(q, "ee ")) {
 		q[2]=' ';
 //		q = q + 3;// KEEP for parse command!
 		get_topic=true;
@@ -296,11 +296,11 @@ int handle(cchar* q0,int conn){
 	}
 
 	if(hasWord(q)) loadView(q);
-    
-    if(contains(q,"exclude")||contains(q,"include")){
-        verbosity=normal;
-        showExcludes=true;
-    }
+  
+  if(contains(q,"exclude") or contains(q,"include")){
+    verbosity=normal;
+    showExcludes=true;
+  }
 	bool safeMode=true;
 	if (startsWith(q, "query/")) {
 		q = q + 6;
@@ -313,49 +313,49 @@ int handle(cchar* q0,int conn){
 //	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
 
 	p(q);
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
-    NodeVector all = parse(q,safeMode); // <<<<<<<< HANDLE QUERY WITH NETBASE!
-    //
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!
+  NodeVector all = parse(q,safeMode); // <<<<<<<< HANDLE QUERY WITH NETBASE!
+  //
+  // !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	if(contains(q," limit ")){		strstr(q," limit ")[0]=0;	}
 	autoIds=false;
-    int size=(int)all.size();
+  int size=(int)all.size();
 	int count=(int)all.size();
-    if(showExcludes){
-        for (int i = 0; i < size; i++) {
-        // todo : own routine!!!
-        Node* node = (Node*) all[i];
-        if(!contains(all,getAbstract(node->name)))
-            all.push_back(getAbstract(node->name));
-        N parent= getType(node);
-        if(parent){
-            if(!contains(all,parent))all.push_back(parent);
-            N abs= getAbstract(parent->name);
-            if(parent&&!contains(all,abs))all.push_back(abs);
-        }
-        }
-        show(excluded);
+  if(showExcludes){
+    for (int i = 0; i < size; i++) {
+    // todo : own routine!!!
+    Node* node = (Node*) all[i];
+    if(!contains(all,getAbstract(node->name)))
+      all.push_back(getAbstract(node->name));
+    N parent= getType(node);
+    if(parent){
+      if(!contains(all,parent))all.push_back(parent);
+      N abs= getAbstract(parent->name);
+      if(parent and !contains(all,abs))all.push_back(abs);
     }
-    
-    const char* html_block="<!DOCTYPE html><html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head>\n"\
+    }
+    show(excluded);
+  }
+  
+  const char* html_block="<!DOCTYPE html><html><head><META HTTP-EQUIV='CONTENT-TYPE' CONTENT='text/html; charset=UTF-8'/></head>\n"\
 							"<link rel='stylesheet' href='netbase.css'>\n"\
 							"<body class='netbase'><div id='netbase_results'></div>\n<script>var results=";
-    //    if((int)all.size()==0)Writeline("0");
+  //  if((int)all.size()==0)Writeline("0");
 	//	Writeline(conn,q);
 	char buff[10000];
 
-	bool use_json= format == json || format == js || format == html;
-	if (format == xml && (startsWith(q,"select")||contains(q," where "))){Writeline(conn,query2(q));return 0;}
+	bool use_json= format == json or format == js or format == html;
+	if (format == xml and (startsWith(q,"select") or contains(q," where "))){Writeline(conn,query2(q));return 0;}
 	if (format == xml)Writeline(conn, "<results>\n");
 	if (format == html)Writeline(conn,html_block);
 //	if (use_json)Writeline(conn, "{\"results\":[\n");
-	if (use_json)Writeline(conn, "{\"query\":\""+string(fixName(q))+"\",  \"count\":\""+itoa(count)+"\",\"results\":[\n");
-	const char* statement_format_xml = "   <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
-	const char* statement_format_text = "   $%d %s %s %s %d->%d->%d\n";
-	const char* statement_format_json = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
-//	const char* statement_format_json_long = "      { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d, \"title\":\"%s\"}";
+	if (use_json)Writeline(conn, "{\"query\":\""+string(fixName(q))+"\", \"count\":\""+itoa(count)+"\",\"results\":[\n");
+	const char* statement_format_xml = "  <statement id='%d' subject=\"%s\" predicate=\"%s\" object=\"%s\" sid='%d' pid='%d' oid='%d'/>\n";
+	const char* statement_format_text = "  $%d %s %s %s %d->%d->%d\n";
+	const char* statement_format_json = "   { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d}";
+//	const char* statement_format_json_long = "   { \"id\":%d, \"subject\":\"%s\", \"predicate\":\"%s\", \"object\":\"%s\", \"sid\":%d, \"pid\":%d, \"oid\":%d, \"title\":\"%s\"}";
 	const char* statement_format_csv = "%d\t%s\t%s\t%s\t%d\t%d\t%d\n";
 	const char* statement_format = 0;
 	if (format == xml)statement_format = statement_format_xml;
@@ -364,27 +364,27 @@ int handle(cchar* q0,int conn){
 	if (format == json)statement_format = statement_format_json;
 	if (format == txt)statement_format = statement_format_text;
 	if (format == csv)statement_format = statement_format_csv;
-    
+  
 	const char* entity_format = 0;
 	const char* entity_format_txt = "%s #%d (statements:%d) %s\n";
 	const char* entity_format_xml = "<entity name=\"%s\" id='%d' statementCount='%d' description='%s'>\n";
-	const char* entity_format_json = "   {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d, \"description\":\"%s\"";
-   	const char* entity_format_csv = "%s\t%d\t%d\t%s\n";
-    if(all.size()==1)entity_format_csv = "";//statements!
+	const char* entity_format_json = "  {\"name\":\"%s\", \"id\":%d, \"statementCount\":%d, \"description\":\"%s\"";
+  	const char* entity_format_csv = "%s\t%d\t%d\t%s\n";
+  if(all.size()==1)entity_format_csv = "";//statements!
 	if (format == xml)entity_format = entity_format_xml;
 	if (format == txt)entity_format = entity_format_txt;
 	if (format == csv)entity_format = entity_format_csv;
-	if (use_json)	  entity_format = entity_format_json;
+	if (use_json)	 entity_format = entity_format_json;
 	Node* last=0;
-    warnings=0;
-    char* entity=0;
-    if(startsWith(q,"all")){
-        entity=(char*)cut_to(q," ");
-        entity=keep_to(entity,"limit");
-    }
-   	sortNodes(all);
+  warnings=0;
+  char* entity=0;
+  if(startsWith(q,"all")){
+    entity=(char*)cut_to(q," ");
+    entity=keep_to(entity,"limit");
+  }
+  	sortNodes(all);
 	int good=0;
-	for (int i = 0; i < count && ( i<resultLimit ); i++) {
+	for (int i = 0; i < count and ( i<resultLimit ); i++) {
 		Node* node = (Node*) all[i];
 		if(!checkNode(node))continue;
 		if(node->id==0)continue;
@@ -392,9 +392,9 @@ int handle(cchar* q0,int conn){
 		if(last==node)continue;
 		if(eq(node->name,"◊"))continue;
 		last=node;
-        if(verbosity ==normal && entity && eq(entity,node->name))continue;
+    if(verbosity ==normal and entity and eq(entity,node->name))continue;
 		char* text=fixName(getText(node));
-//		if(use_json && get_topic){
+//		if(use_json and get_topic){
 //			if(empty(text))continue;//! no description = no entity? BAD for amazon etc
 //			if(isAbstract(node))continue;
 //			N t=getTopic(node);
@@ -403,10 +403,10 @@ int handle(cchar* q0,int conn){
 		if (use_json)if(good>1)Writeline(conn, "},\n");
 		sprintf(buff, entity_format, fixName(node->name), node->id,node->statementCount,text);
 		Writeline(conn, buff);
-//        if(verbosity != alle && !get_topic)
+//    if(verbosity != alle and !get_topic)
 //			loadView(node);
 		bool got_topic=false;
-		if(use_json && get_topic){
+		if(use_json and get_topic){
 			N c=getClass(node);
 			N t=getTopic(node);
 			N ty=getType(node);
@@ -414,16 +414,16 @@ int handle(cchar* q0,int conn){
 //			if(!c)c=t;
 			if(!t)t=ty;
 			if(t==node)t=ty;
-			if(t && t!=Entity  && checkNode(t) && t->id!=0){
+			if(t and t!=Entity  and checkNode(t) and t->id!=0){
 				got_topic=true;
 				Writeline(conn, ",\n\t \"topicid\":"+itoa(t->id));
 				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
 			}
-			if(c && checkNode(c) && c->id!=0 && c!=t){
+			if(c and checkNode(c) and c->id!=0 and c!=t){
 				Writeline(conn, ",\n\t \"classid\":"+itoa(c->id));
 				Writeline(conn, ", \"class\":\""+string(c->name)+"\"");
 			}
-			if(ty && checkNode(ty) && ty->id!=0 && c!=ty && ty!=t){
+			if(ty and checkNode(ty) and ty->id!=0 and c!=ty and ty!=t){
 				Writeline(conn, ",\n\t \"typeid\":"+itoa(ty->id));
 				Writeline(conn, ", \"type\":\""+string(ty->name)+"\"");
 			}
@@ -431,29 +431,29 @@ int handle(cchar* q0,int conn){
 		}
 		if(use_json)
 			Writeline(conn, ", \"kind\":"+itoa(node->kind));
-		if(use_json && verbosity==alle && node->kind!=_abstract && i==0)
+		if(use_json and verbosity==alle and node->kind!=_abstract and i==0)
 			Writeline(conn, ", \"abstract\":"+itoa(getAbstract(node->name)->id));
-		if(use_json && verbosity==alle && node->kind==_abstract && i==0 && checkNode(getThe(node)))
+		if(use_json and verbosity==alle and node->kind==_abstract and i==0 and checkNode(getThe(node)))
 			Writeline(conn, ", \"main\":"+itoa(getThe(node)->id));
-		bool show_images=SERVER_PORT<1000||verbosity==alle;// HACK!
-		if((use_json&&show_images)&&verbosity!=shorter&& !showExcludes&&node->statementCount>1){
+		bool show_images=SERVER_PORT<1000 or verbosity==alle;// HACK!
+		if((use_json and show_images) and verbosity!=shorter and !showExcludes and node->statementCount>1){
 			string img=getImage(node,150,/*thumb*/true);
 			if(img!=""){
 				img=replace_all(replace_all(img,"'","%27"),"\"","%22");
 				Writeline(", \"image\":\""+img+"\"");
 			}
 		}
-//		if((use_json)&&getText(node)[0]!=0)
+//		if((use_json) and getText(node)[0]!=0)
 //			Writeline(", \"description\":\""+string(getText(node))+"\"");
 		Statement* s = 0;
-		if (format==csv|| verbosity ==normal|| verbosity == verbose || verbosity == longer|| verbosity == alle || showExcludes || ( all.size() == 1 && !(verbosity == shorter))) {
+		if (format==csv or verbosity ==normal or verbosity == verbose or verbosity == longer or verbosity == alle or showExcludes or ( all.size() == 1 and !(verbosity == shorter))) {
 			int count=0;
-            //            Writeline(",image:\""+getImage(node->name)+"\"");
+      //      Writeline(",image:\""+getImage(node->name)+"\"");
 			if (use_json)Writeline(conn, ",\n\t \"statements\":[\n");
 
 //			sortStatements(
 			deque<Statement*> statements;// sort
-			while ((s = nextStatement(node, s))&&count++<lookupLimit){// resultLimit
+			while ((s = nextStatement(node, s)) and count++<lookupLimit){// resultLimit
 				if (!checkStatement(s)){
 					p("!checkStatement(s)");
 					bad();
@@ -461,19 +461,19 @@ int handle(cchar* q0,int conn){
 					break;
 				}
 //				if (!checkStatement(s))continue;// DANGER!
-//				if(!got_topic &&( s->predicate==_Type|| s->predicate==_SuperClass)){
+//				if(!got_topic and ( s->predicate==_Type or s->predicate==_SuperClass)){
 //					addStatementToNode(node, s->id(), true);// next time
 //				}
 				//
-				if(get_topic &&!got_topic &&verbosity != verbose && verbosity != alle  && verbosity != normal && (s->predicate>100 || s->predicate<-100))
+				if(get_topic and !got_topic and verbosity != verbose and verbosity != alle  and verbosity != normal and (s->predicate>100 or s->predicate<-100))
 					continue;// only important stuff here!
 				// filter statements
 
 				if(s->object==0)continue;
-//				if(eq(s->Predicate()->name,"Offizielle Website") && !contains(s->Object()->name,"www"))
+//				if(eq(s->Predicate()->name,"Offizielle Website") and !contains(s->Object()->name,"www"))
 //					continue;
 
-				if (s->predicate==_derives||s->predicate==_derived){// cognet
+				if (s->predicate==_derives or s->predicate==_derived){// cognet
 					statements.push_front(s);
 					p("_derives!");
 				}
@@ -481,10 +481,10 @@ int handle(cchar* q0,int conn){
 					statements.push_front(s);
 				else statements.push_back(s);
 			}
-//			if(get_topic && verbosity!=shorter){
+//			if(get_topic and verbosity!=shorter){
 //				NV topics=getTopics(node);
 //				N s=topics[0];
-//				for (int j = 0; j < topics.size() && j<=resultLimit; j++) {
+//				for (int j = 0; j < topics.size() and j<=resultLimit; j++) {
 //					N s=topics[j];
 //					Temporary statement (node,topic,s)
 //					statements.push_front(s);
@@ -492,21 +492,21 @@ int handle(cchar* q0,int conn){
 //			}
 
 			int good=0;
-			for (int j = 0; j < statements.size() && j<=resultLimit; j++) {
+			for (int j = 0; j < statements.size() and j<=resultLimit; j++) {
 				s=statements.at(j);
-//			while ((s = nextStatement(node, s))&&count++<resultLimit) {
-                if(format==csv&&all.size()>1)break;// entities vs statements
-                p(s);
-				if(verbosity!=alle&&checkHideStatement(s)){warnings++;continue;}
+//			while ((s = nextStatement(node, s)) and count++<resultLimit) {
+        if(format==csv and all.size()>1)break;// entities vs statements
+        p(s);
+				if(verbosity!=alle and checkHideStatement(s)){warnings++;continue;}
 				fixLabels(s);
-				if(!(verbosity==verbose||verbosity==alle||verbosity==abstract) && (s->Predicate()==Instance||s->Predicate()==Type))continue;
-				if(verbosity==abstract && s->Predicate()!=Instance && s->Predicate()!=Type)continue;
+				if(!(verbosity==verbose or verbosity==alle or verbosity==abstract) and (s->Predicate()==Instance or s->Predicate()==Type))continue;
+				if(verbosity==abstract and s->Predicate()!=Instance and s->Predicate()!=Type)continue;
 				if(!checkNode(s->object,false,true))continue;
-				if(use_json && good>0)Writeline(conn, ",\n");
+				if(use_json and good>0)Writeline(conn, ",\n");
 				char* objectName=s->Object()->name;
 				if(s->Predicate()==Instance){
 					N type=getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);
-					if(checkNode(type,false,true) && type->id!=_entity && !contains(objectName, type->name))
+					if(checkNode(type,false,true) and type->id!=_entity and !contains(objectName, type->name))
 //						objectName=(char*)(concat(concat(objectName, ": "),type->name));
 						objectName=(char*)(string(objectName)+ " ("+type->name+")").data();
 				}
@@ -519,8 +519,8 @@ int handle(cchar* q0,int conn){
 
 				if(objectName[strlen(objectName)-1]=='\n')objectName[strlen(objectName)-1]=0;
 				char* subject=fixName(s->Subject()->name);
-				char*  predicate=fixName(s->Predicate()->name);
-				char*  object=fixName(objectName);
+				char* predicate=fixName(s->Predicate()->name);
+				char* object=fixName(objectName);
 //				if(verbosity==alle){
 //					char* title=fixName(getStatementTitle(s,node)); ???
 //					sprintf(buff, statement_format_json_long, s->id(),subject, predicate, object, s->Subject()->id, s->Predicate()->id, s->Object()->id,title);
@@ -534,7 +534,7 @@ int handle(cchar* q0,int conn){
 		if (format == xml)Writeline(conn, "</entity>\n");
 	}
 
-	if (use_json || format == html || format == js)Writeline(conn,good>0?"}\n]}":"]}");
+	if (use_json or format == html or format == js)Writeline(conn,good>0?"}\n]}":"]}");
 	if (format == xml)Writeline(conn, "</results>\n");
 	if(format == js)Writeline(conn, ")");// jsonp
 		const char* html_end=";\n</script>\n<script src='netbase.js'></script></body></html>\n";
@@ -542,8 +542,8 @@ int handle(cchar* q0,int conn){
 	//		sprintf(buff,	"<script src='/js/%s'></script>",q0);
 	//		Writeline(conn, buff);
 	//	}
-    pf("Warnings/excluded: %d\n",warnings);
-    return 0;// 0K
+  pf("Warnings/excluded: %d\n",warnings);
+  return 0;// 0K
 }
 
 bool checkSanity(char* q,int len){
@@ -553,7 +553,7 @@ bool checkSanity(char* q,int len){
 //		p(checkSanity);
 //		bad=true;
 	}
-	if(q[0]==':'||q[0]=='!')bad=true;
+	if(q[0]==':' or q[0]=='!')bad=true;
 	for (int i=0; i<len; i++) {
 		if(q[i]>127)bad=true;// no illegal chars!
 	}
@@ -567,7 +567,7 @@ void removeSpecialChars(char* line){
 	for(int i=0; line[i]!='\0'; ++i)
 	{
 		char c=line[i];
-		while (!( ( c>='a' && c<='z' ) || (c==' ' && last !=' ') || ( c>='A' && c<='Z') || c=='\0'))
+		while (!( ( c>='a' and c<='z' ) or (c==' ' and last !=' ') or ( c>='A' and c<='Z') or c=='\0'))
 		{
 			for(j=i;line[j]!='\0';++j)
 				line[j]=line[j+1];
@@ -583,7 +583,7 @@ void fixLabel(Node* n){
 	if(n->name==0)return;// HOW? checkNames=false :(
 	if(n->name[0]=='"')n->name=n->name+1;
 
-	if(n->name[strlen(n->name)-1]=='"'&&n->name[strlen(n->name)-2]!='"')
+	if(n->name[strlen(n->name)-1]=='"' and n->name[strlen(n->name)-2]!='"')
 		n->name[strlen(n->name)-1]=0;
 	if(n->name[strlen(n->name)-1]=='\\')
 		n->name[strlen(n->name)-1]=0;
@@ -599,15 +599,15 @@ void fixLabel(Node* n){
 bool checkHideStatement(Statement* s){
 	if(s->predicate==23025403)return true;// 	Topic equivalent webpage
 //	if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
-	if(s->subject==0||s->predicate==0||s->object==0){warnings++;return true;}
+	if(s->subject==0 or s->predicate==0 or s->object==0){warnings++;return true;}
 	char* predicateName=s->Predicate()->name;
 	char* objectName=s->Object()->name;
 	char* subjectName=s->Subject()->name;
-	if(subjectName==0||predicateName==0||objectName==0){warnings++;return true;}
+	if(subjectName==0 or predicateName==0 or objectName==0){warnings++;return true;}
 
 	if(showExcludes){
-		if(eq(subjectName,"exclude",1)||eq(predicateName,"exclude",1)||eq(objectName,"exclude",1))return false;
-		if(eq(subjectName,"include",1)||eq(predicateName,"include",1)||eq(objectName,"include",1))return false;
+		if(eq(subjectName,"exclude",1) or eq(predicateName,"exclude",1) or eq(objectName,"exclude",1))return false;
+		if(eq(subjectName,"include",1) or eq(predicateName,"include",1) or eq(objectName,"include",1))return false;
 		return true;
 	}
 
@@ -621,31 +621,31 @@ bool checkHideStatement(Statement* s){
 	if(eq(predicateName,"schema"))return true;
 	if(startsWith(predicateName,"http"))return true;
 
-	if(predicateName[2]=='-'||predicateName[2]=='_'||predicateName[2]==0)
+	if(predicateName[2]=='-' or predicateName[2]=='_' or predicateName[2]==0)
 		return true;// zh-ch, id ...
-	if(objectName[0]=='/'||objectName[1]=='/')return true;// ?
+	if(objectName[0]=='/' or objectName[1]=='/')return true;// ?
 
 
 	for(int i=0;i<excluded.size();i++){
 		char* exclude=excluded.at(i);
-		if(contains(subjectName,exclude,1)||contains(predicateName,exclude,1)||contains(objectName,exclude,1))return true;
-		if(eq(itoa(s->subject),exclude)||eq(itoa(s->predicate),exclude)||eq(itoa(s->object),exclude))return true;
+		if(contains(subjectName,exclude,1) or contains(predicateName,exclude,1) or contains(objectName,exclude,1))return true;
+		if(eq(itoa(s->subject),exclude) or eq(itoa(s->predicate),exclude) or eq(itoa(s->object),exclude))return true;
 	}
 	bool ok=included.size()==0;// no filter
 	for(int i=0;i<included.size();i++){
 		char* include=included.at(i);
 //		if(eq(predicateName,"Bundesland"))
 //			p(s);
-		if(eq(itoa(s->subject),include)||eq(itoa(s->predicate),include)||eq(itoa(s->object),include))ok=true;
-		if(contains(subjectName,include,1)||contains(predicateName,include,1)||contains(objectName,include,1))
+		if(eq(itoa(s->subject),include) or eq(itoa(s->predicate),include) or eq(itoa(s->object),include))ok=true;
+		if(contains(subjectName,include,1) or contains(predicateName,include,1) or contains(objectName,include,1))
 			ok=true;
 	}
 
-	//    if(contains(predicateName,excluded,1)||contains(objectName,excluded,1)||contains(subjectName,excluded,1))return true;
-	//    if(contains(predicateName,excluded2,1)||contains(objectName,excluded2,1)||contains(subjectName,excluded2,1))return true;
-	//    if(contains(predicateName,excluded3,1)||contains(objectName,excluded3,1)||contains(subjectName,excluded3,1))return true;
+	//  if(contains(predicateName,excluded,1) or contains(objectName,excluded,1) or contains(subjectName,excluded,1))return true;
+	//  if(contains(predicateName,excluded2,1) or contains(objectName,excluded2,1) or contains(subjectName,excluded2,1))return true;
+	//  if(contains(predicateName,excluded3,1) or contains(objectName,excluded3,1) or contains(subjectName,excluded3,1))return true;
 	return !ok;
-	//    return false;
+	//  return false;
 }
 
 void fixLabels(Statement* s){
@@ -655,14 +655,14 @@ void fixLabels(Statement* s){
 }
 
 void getIncludes(Node* n){
-	if(verbosity==shorter||verbosity==alle)return;
+	if(verbosity==shorter or verbosity==alle)return;
 	if(n->id<0)return;
 	pf("getIncludes %d >>%s<<\n",n->id,n->name);
 	Statement *s=0;
 	int lookups=0;
 	while((s=nextStatement(n,s))){
 		if(++lookups>50)break;
-		//        p(s);
+		//    p(s);
 		if(eq(s->Predicate()->name,"exclude")){
 			excluded.push_back(s->Object()->name);
 			excludedIds.push_back(s->Object()->id);
@@ -679,18 +679,18 @@ void loadView(Node* n){
 	N parent= getType(n);
 	if(parent)
 		getIncludes(parent);
-	if(parent&&parent->kind!=Abstract->kind)
+	if(parent and parent->kind!=Abstract->kind)
 		getIncludes(getAbstract(parent->name));
 }
 
 void loadView(char* q){
 	N ex=get("excluded");// globally
-	if(ex && verbosity != alle )getIncludes(ex);
+	if(ex and verbosity != alle )getIncludes(ex);
 	ex=getAbstract(q);// todo AND TYPE city
-	if(ex && verbosity != alle )getIncludes(ex);
+	if(ex and verbosity != alle )getIncludes(ex);
 
 	char* exclude=q;
-	while(exclude&&contains(exclude," -")){
+	while(exclude and contains(exclude," -")){
 		exclude=strstr(exclude," -");
 		if(exclude[2]!=' '){// not 2009 - 2010 etc
 			exclude[0]=0;
@@ -700,7 +700,7 @@ void loadView(char* q){
 		}else exclude=0;
 	}
 	char* include=q;
-	while(include&&contains(include," +")){
+	while(include and contains(include," +")){
 		include=strstr(exclude," +");
 		include[0]=0;
 		include+=2;
@@ -717,7 +717,7 @@ int Service_Request(int conn) {
 	int ok=0;
 	struct ReqInfo reqinfo;
 	InitReqInfo(&reqinfo);
-	/*  Get HTTP request  */
+	/* Get HTTP request */
 	if (Get_Request(conn, &reqinfo) < 0)
 		return -1;
 	else if(reqinfo.type == FULL)
@@ -725,11 +725,11 @@ int Service_Request(int conn) {
 
 	CleanURL(reqinfo.resource);
 	initSharedMemory(); // for each forked process!
-    if(strlen(reqinfo.resource)>1000)return 0;// safety
+  if(strlen(reqinfo.resource)>1000)return 0;// safety
 	char* q = substr(reqinfo.resource, 1, -1);
 	// ::::::::::::::::::::::::::::::
-	if(strlen(q)==0 || q[0]=='?' || q[strlen(q)-1]=='/'
-	   || contains(q,netbase_js) || contains(q,netbase_css)|| contains(q,favicon_ico)|| contains(q,index_html))
+	if(strlen(q)==0 or q[0]=='?' or q[strlen(q)-1]=='/'
+	  or contains(q,netbase_js) or contains(q,netbase_css) or contains(q,favicon_ico) or contains(q,index_html))
 		Serve_Resource(reqinfo,conn);
 	else
 		handle(q,conn); // <<<<<<< CENTRAL CALL
@@ -739,21 +739,21 @@ int Service_Request(int conn) {
 }
 
 
-/*  Prints an error message and quits  */
+/* Prints an error message and quits */
 void Error_Quit(char const * msg) {
 	fprintf(stderr, "WEBSERV: %s\n", msg);
 	exit(EXIT_FAILURE);
 }
 
-/*  Read a line from a socket  */
+/* Read a line from a socket */
 ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 	ssize_t n, rc;
 	char c, *buffer;
-    
+  
 	buffer = (char*) vptr;
-    
+  
 	for (n = 1; n < maxlen; n++) {
-        
+    
 		if ((rc = read(sockd, &c, 1)) == 1) {
 			*buffer++ = c;
 			if (c == '\n')
@@ -769,7 +769,7 @@ ssize_t Readline(int sockd, void *vptr, size_t maxlen) {
 			Error_Quit("Error in Readline()");
 		}
 	}
-    
+  
 	*buffer = 0;
 	return n;
 }
@@ -782,7 +782,7 @@ void Writeline(string s) {
 	Writeline(lastSockd, s.data(), 0);
 }
 
-/*  Write a line to a socket  */
+/* Write a line to a socket */
 ssize_t Writeline(int sockd, string s) {
 	return Writeline(sockd, s.data(), s.length());
 }
@@ -790,19 +790,19 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 	size_t nleft;
 	ssize_t nwritten;
 	const char *buffer;
-    if(sockd==-1){// debug
-        p(vptr);
-        return 0;
-    }
+  if(sockd==-1){// debug
+    p(vptr);
+    return 0;
+  }
 	if (sockd == 0)sockd = lastSockd; //not thread safe!
 	lastSockd = sockd;
-    
+  
 	buffer = vptr;
-	if (n == 0 || n == -1)
+	if (n == 0 or n == -1)
 		n = strlen(buffer);
 	//	printf("%d:%s\n",n,buffer);
 	nleft = n;
-    
+  
 	while (nleft > 0) {
 		if ((nwritten = write(sockd, buffer, nleft)) <= 0) {
 			if (errno == EINTR)
@@ -813,16 +813,16 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 		nleft -= nwritten;
 		buffer += nwritten;
 	}
-    
+  
 	return n;
 }
 
 int Trim(char * buffer) {
 	long n = strlen(buffer) - 1;
-    
-	while (!isalnum(buffer[n]) && n >= 0)
+  
+	while (!isalnum(buffer[n]) and n >= 0)
 		buffer[n--] = '\0';
-    
+  
 	return 0;
 }
 
@@ -834,11 +834,11 @@ int StrUpper(char * buffer) {
 	return 0;
 }
 
-/*  Cleans up url-encoded string  */
+/* Cleans up url-encoded string */
 void CleanURL(char * buffer) {
 	char asciinum[3] = {0};
 	int i = 0, c;
-    
+  
 	while (buffer[i]) {
 		if (buffer[i] == '+')
 			buffer[i] = ' ';
@@ -855,19 +855,19 @@ void CleanURL(char * buffer) {
 	}
 }
 
-/*  Parses a string and updates a request  information structure if necessary.    */
+/* Parses a string and updates a request information structure if necessary.  */
 int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
-    
+  
 	static int first_header = 1;
 	char *temp;
 	char *endptr;
 	size_t len;
 	if (first_header == 1) {
-		/*  If first_header is 0, this is the first line of
-         the HTTP request, so this should be the request line.  */
-		/*  Get the request method, which is case-sensitive. This
-         version of the server only supports the GET and HEAD
-         request methods.                                        */
+		/* If first_header is 0, this is the first line of
+     the HTTP request, so this should be the request line. */
+		/* Get the request method, which is case-sensitive. This
+     version of the server only supports the GET and HEAD
+     request methods.                    */
 		if (!strncmp(buffer, "GET ", 4)) {
 			reqinfo->method = GET;
 			buffer += 4;
@@ -876,66 +876,66 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 			buffer += 5;
 		} else {
 			reqinfo->method = UNSUPPORTED;
-            //			reqinfo->status = 501;
-            //			return -1;
+      //			reqinfo->status = 501;
+      //			return -1;
 		}
-		/*  Skip to start of resource  */
-		while (*buffer && isspace(*buffer))
+		/* Skip to start of resource */
+		while (*buffer and isspace(*buffer))
 			buffer++;
-		/*  Calculate string length of resource...  */
+		/* Calculate string length of resource... */
 		endptr = strchr(buffer, ' ');
 		if (endptr == NULL)
 			len = strlen(buffer);
 		else
 			len = endptr - buffer;
 		if (len == 0) {
-            //			reqinfo->status = 400;
-            //			return -1;
+      //			reqinfo->status = 400;
+      //			return -1;
 		}
-		/*  ...and store it in the request information structure.  */
+		/* ...and store it in the request information structure. */
 		reqinfo->resource = (char*) calloc(len + 1, sizeof (char));
 		strncpy(reqinfo->resource, buffer, len);
-		/*  Test to see if we have any HTTP version information.
-         If there isn't, this is a simple HTTP request, and we
-         should not try to read any more headers. For simplicity,
-         we don't bother checking the validity of the HTTP version
-         information supplied - we just assume that if it is
-         supplied, then it's a full request.                        */
-		if (contains(buffer, "HTTP/")||contains(buffer, "http/"))
+		/* Test to see if we have any HTTP version information.
+     If there isn't, this is a simple HTTP request, and we
+     should not try to read any more headers. For simplicity,
+     we don't bother checking the validity of the HTTP version
+     information supplied - we just assume that if it is
+     supplied, then it's a full request.            */
+		if (contains(buffer, "HTTP/") or contains(buffer, "http/"))
 			reqinfo->type = FULL;
 		else
 			reqinfo->type = SIMPLE;
 		first_header = 0;
 		return 0;
 	}
-	/*  If we get here, we have further headers aside from the
-     request line to parse, so this is a "full" HTTP request.  */
-	/*  HTTP field names are case-insensitive, so make an
-     upper-case copy of the field name to aid comparison.
-     We need to make a copy of the header up until the colon.
-     If there is no colon, we return a status code of 400
-     (bad request) and terminate the connection. Note that
-     HTTP/1.0 allows (but discourages) headers to span multiple
-     lines if the following lines start with a space or a
-     tab. For simplicity, we do not allow this here.              */
+	/* If we get here, we have further headers aside from the
+   request line to parse, so this is a "full" HTTP request. */
+	/* HTTP field names are case-insensitive, so make an
+   upper-case copy of the field name to aid comparison.
+   We need to make a copy of the header up until the colon.
+   If there is no colon, we return a status code of 400
+   (bad request) and terminate the connection. Note that
+   HTTP/1.0 allows (but discourages) headers to span multiple
+   lines if the following lines start with a space or a
+   tab. For simplicity, we do not allow this here.       */
 	endptr = strchr(buffer, ':');
 	if (endptr == NULL) {
-        //		reqinfo->status = 400;
+    //		reqinfo->status = 400;
 		return -1;//ok
 	}
 	temp = (char*) calloc((endptr - buffer) + 1, sizeof (char));
 	strncpy(temp, buffer, (endptr - buffer));
 	StrUpper(temp);
-	/*  Increment buffer so that it now points to the value.
-     If there is no value, just return.                    */
+	/* Increment buffer so that it now points to the value.
+   If there is no value, just return.          */
 	buffer = endptr + 1;
-	while (*buffer && isspace(*buffer))
+	while (*buffer and isspace(*buffer))
 		++buffer;
 	if (*buffer == '\0')
 		return 0;
-	/*  Now update the request information structure with the
-     appropriate field value. This version only supports the
-     "Referer:" and "User-Agent:" headers, ignoring all others.  */
+	/* Now update the request information structure with the
+   appropriate field value. This version only supports the
+   "Referer:" and "User-Agent:" headers, ignoring all others. */
 	if (!strcmp(temp, "USER-AGENT")) {
 		reqinfo->useragent = (char*) malloc(strlen(buffer) + 1);
 		strcpy(reqinfo->useragent, buffer);
@@ -947,39 +947,39 @@ int Parse_HTTP_Header(char * buffer, struct ReqInfo * reqinfo) {
 	return 0;
 }
 
-/*  Gets request headers. A CRLF terminates a HTTP header line,
+/* Gets request headers. A CRLF terminates a HTTP header line,
  but if one is never sent we would wait forever. Therefore,
  we use select() to set a maximum length of time we will
  wait for the next complete header. If we timeout before
- this is received, we terminate the connection.               */
+ this is received, we terminate the connection.        */
 int Get_Request(int conn, struct ReqInfo * reqinfo) {
 	char buffer[MAX_REQ_LINE] = {0};
 	int rval;
 	fd_set fds;
 	struct timeval tv;
-	/*  Set timeout to 5 seconds  */
+	/* Set timeout to 5 seconds */
 	tv.tv_sec = 5;
 	tv.tv_usec = 0;
-	/*  Loop through request headers. If we have a simple request,
-     then we will loop only once. Otherwise, we will loop until
-     we receive a blank line which signifies the end of the headers,
-     or until select() times out, whichever is sooner.                */
+	/* Loop through request headers. If we have a simple request,
+   then we will loop only once. Otherwise, we will loop until
+   we receive a blank line which signifies the end of the headers,
+   or until select() times out, whichever is sooner.        */
 	do {
-		/*  Reset file descriptor set  */
+		/* Reset file descriptor set */
 		FD_ZERO(&fds);
 		FD_SET(conn, &fds);
-		/*  Wait until the timeout to see if input is ready  */
+		/* Wait until the timeout to see if input is ready */
 		rval = select(conn + 1, &fds, NULL, NULL, &tv);
-		/*  Take appropriate action based on return from select()  */
+		/* Take appropriate action based on return from select() */
 		if (rval < 0) {
 			Error_Quit("Error calling select() in get_request()");
 		} else if (rval == 0) {
-			p(" input not ready after timeout  ");
+			p(" input not ready after timeout ");
 			return -1;
 		} else {
-			/*  We have an input line waiting, so retrieve it  */
+			/* We have an input line waiting, so retrieve it */
 			Readline(conn, buffer, MAX_REQ_LINE - 1);
-			//	    Trim(buffer);
+			//	  Trim(buffer);
 			if (buffer[0] == '\0')
 				break;
 			if (Parse_HTTP_Header(buffer, reqinfo))
@@ -1011,22 +1011,22 @@ int Return_Resource(int conn, int resource, struct ReqInfo * reqinfo) {
 	char c;
 	size_t i;
 	while ((i = read(resource, &c, 1))) {
-   		if (i < 0)
-   			Error_Quit("Error reading from file.");
+  		if (i < 0)
+  			Error_Quit("Error reading from file.");
 		if (write(conn, &c, 1) < 1)
 			Error_Quit("Error sending file.");
 	}
 	return 0;
 }
 
-/*  Tries to open a resource. The calling function can use
+/* Tries to open a resource. The calling function can use
  the return value to check for success, and then examine
- errno to determine the cause of failure if neceesary.    */
+ errno to determine the cause of failure if neceesary.  */
 int Check_Resource(struct ReqInfo * reqinfo) {
-	/*  Resource name can contain urlencoded
-     data, so clean it up just in case.    */
+	/* Resource name can contain urlencoded
+   data, so clean it up just in case.  */
 	CleanURL(reqinfo->resource);
-	/*  Concatenate resource name to server root, and try to open  */
+	/* Concatenate resource name to server root, and try to open */
 //	strcat(server_root, reqinfo->resource);// DONT allow arbitrary files
 	if(contains(reqinfo->resource,"netbase.js"))
 		return open(netbase_js, O_RDONLY);
@@ -1036,7 +1036,7 @@ int Check_Resource(struct ReqInfo * reqinfo) {
 		return open(favicon_ico, O_RDONLY);
 
 //	return open(string("./")+reqinfo->resource, O_RDONLY);
-    else
+  else
 		return open(index_html, O_RDONLY);
 }
 
@@ -1056,9 +1056,9 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 	char buffer[100];
 	sprintf(buffer, "HTTP/1.1 %d OK\r\n", reqinfo->status);
 	Writeline(conn, buffer, strlen(buffer));
-	if(contains(reqinfo->resource,"text/")||contains(reqinfo->resource,"txt/")||contains(reqinfo->resource,"plain/"))
+	if(contains(reqinfo->resource,"text/") or contains(reqinfo->resource,"txt/") or contains(reqinfo->resource,"plain/"))
 		Writeline(conn, "Content-Type: text/plain; charset=utf-8\r\n");
-	else if(contains(reqinfo->resource,"json/")||contains(reqinfo->resource,"learn") ||contains(reqinfo->resource,"delete")){
+	else if(contains(reqinfo->resource,"json/") or contains(reqinfo->resource,"learn") or contains(reqinfo->resource,"delete")){
 		Writeline(conn, "Content-Type: application/json; charset=utf-8\r\n");
 		Writeline(conn, "Access-Control-Allow-Origin: *\r\n");// http://quasiris.com
 	}
@@ -1086,8 +1086,8 @@ int Output_HTTP_Headers(int conn, struct ReqInfo * reqinfo) {
 void Serve_Resource(ReqInfo reqinfo, int conn) {
 	int resource = 0;
 //	p("Serve_Resource!!\n");
-	/*  Check whether resource exists, whether we have permission
-     to access it, and update status code accordingly.          */
+	/* Check whether resource exists, whether we have permission
+   to access it, and update status code accordingly.     */
 	if (reqinfo.status == 200)
 		if ((resource = Check_Resource(&reqinfo)) < 0) {
 			if (errno == EACCES)
@@ -1095,15 +1095,15 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 			else
 				reqinfo.status = 404;
 		}
-	/*  Output HTTP response headers if we have a full request  */
+	/* Output HTTP response headers if we have a full request */
 //	if (reqinfo.type == FULL) done
 //		Output_HTTP_Headers(conn, &reqinfo);
-	/*  Service the HTTP request  */
+	/* Service the HTTP request */
 		if ( Return_Resource(conn, resource, &reqinfo) )
-		    Error_Quit("Something wrong returning resource.");
-//	    else
+		  Error_Quit("Something wrong returning resource.");
+//	  else
 //		Return_Error_Msg(conn, &reqinfo);
-//    
+//  
 	if (resource > 0)
 		if (close(resource) < 0)
 			Error_Quit("Error closing resource.");
@@ -1114,71 +1114,71 @@ void start_server(int port=SERVER_PORT) {
 	printf("STARTING SERVER!\n localhost:%d\n", port);
 	if(port<1024)p("sudo netbase if port < 1024!");
 	flush();
-	/*  Create socket  */
+	/* Create socket */
 	if ((listener = socket(AF_INET, SOCK_STREAM, 0)) < 0)
 		Error_Quit("Couldn't create listening socket.");
-    
+  
 	int flag = 1;// allow you to bind a local port that is in TIME_WAIT.
-    //	This is very useful to ensure you don't have to wait 4 minutes after killing a server before restarting it.
+  //	This is very useful to ensure you don't have to wait 4 minutes after killing a server before restarting it.
 	setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
-    
-	/*  Populate socket address structure  */
+  
+	/* Populate socket address structure */
 	memset(&servaddr, 0, sizeof (servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(port);
-    
-	/*  Assign socket address to socket  */
-    //	__bind<int&,sockaddr *,unsigned long> x=
-    bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr));
-    if(listener<0)
+  
+	/* Assign socket address to socket */
+  //	__bind<int&,sockaddr *,unsigned long> x=
+  bind(listener, (struct sockaddr *) &servaddr, sizeof (servaddr));
+  if(listener<0)
 		Error_Quit("Couldn't bind listening socket.");
-    
-	/*  Make socket a listening socket  */
-    //    	if (listen(listener, BACKLOG) < 0)
+  
+	/* Make socket a listening socket */
+  //  	if (listen(listener, BACKLOG) < 0)
 	if (listen(listener, LISTENQ) < 0)
 		Error_Quit("Call to listen failed.");
-    
+  
 	printf("listening on %d port %d\n", INADDR_ANY, port);
-    p(" [debugging server doesn't work with xcode, use ./compile.sh ]");
-    
-	/*  Loop infinitely to accept and service connections  */
+  p(" [debugging server doesn't work with xcode, use ./compile.sh ]");
+  
+	/* Loop infinitely to accept and service connections */
 	while (1) {
-		/*  Wait for connection  */
+		/* Wait for connection */
 		// NOT with XCODE -> WEBSERV
 		conn = accept(listener, NULL, NULL);
-		if (conn  < 0)
+		if (conn < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
-        else p("connection accept OK");
+    else p("connection accept OK");
 		// WORKS FINE, but not when debugging
-		/*  Fork child process to service connection  */
-        pid = fork();
+		/* Fork child process to service connection */
+    pid = fork();
 		if (pid == 0) {
-			/*  This is now the forked child process, so
-             close listening socket and service request   */
+			/* This is now the forked child process, so
+       close listening socket and service request  */
 			if (close(listener) < 0)
 				Error_Quit("Error closing listening socket in child.");
 			Service_Request(conn);
-			/*  Close connected socket and exit forked process */
+			/* Close connected socket and exit forked process */
 			if (close(conn) < 0)
 				Error_Quit("Error closing connection socket.");
 			exit(EXIT_SUCCESS);
 		}else{
-//            p("not forked yet"); // !!?!
-//            Service_Request(conn);// whatever
-        }
-		/*  If we get here, we are still in the parent process,
-         so close the connected socket, clean up child processes,
-         and go back to accept a new connection.
-         */
+//      p("not forked yet"); // !!?!
+//      Service_Request(conn);// whatever
+    }
+		/* If we get here, we are still in the parent process,
+     so close the connected socket, clean up child processes,
+     and go back to accept a new connection.
+     */
 		waitpid(-1, NULL, WNOHANG);
-        
+    
 		if (close(conn) < 0)
 			Error_Quit("Error closing connection socket in parent.");
-        
+    
 	}
 	Error_Quit("FORK web server failed");
-	return; // EXIT_FAILURE;    /*  We shouldn't get here  */
+	return; // EXIT_FAILURE;  /* We shouldn't get here */
 }
 
 

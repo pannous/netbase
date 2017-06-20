@@ -1,7 +1,7 @@
 
 SHELL = /bin/sh
 
-# V=0 quiet, V=1 verbose.  other values don't work.
+# V=0 quiet, V=1 verbose. other values don't work.
 V = 0
 Q1 = $(V:1=)
 Q = $(Q1:0=@)
@@ -63,16 +63,16 @@ OUTFLAG = -o
 COUTFLAG = -o 
 
 RUBY_EXTCONF_H = 
-cflags   =  $(optflags) $(debugflags) $(warnflags)
+cflags  = $(optflags) $(debugflags) $(warnflags)
 optflags = -O3
 debugflags = -g
 warnflags = -Wextra -Wno-unused-parameter -Wno-parentheses -Wno-long-long -Wno-missing-field-initializers -Wpointer-arith -Wwrite-strings -Wdeclaration-after-statement -Wshorten-64-to-32 -Wimplicit-function-declaration
-CFLAGS   = -fno-common $(cflags)  -fno-common -pipe $(ARCH_FLAG)
+CFLAGS  = -fno-common $(cflags) -fno-common -pipe $(ARCH_FLAG)
 INCFLAGS = -I. -I$(arch_hdrdir) -I$(hdrdir)/ruby/backward -I$(hdrdir) -I$(srcdir)
-DEFS     = 
-CPPFLAGS =  -I/Users/me/.rvm/usr/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE $(DEFS) $(cppflags)
+DEFS   = 
+CPPFLAGS = -I/Users/me/.rvm/usr/include -D_XOPEN_SOURCE -D_DARWIN_C_SOURCE $(DEFS) $(cppflags)
 CXXFLAGS = $(CFLAGS) $(cxxflags)
-ldflags  = -L. 
+ldflags = -L. 
 dldflags = -Wl,-undefined,dynamic_lookup -Wl,-multiply_defined,suppress -Wl,-flat_namespace
 ARCH_FLAG = 
 DLDFLAGS = $(ldflags) $(dldflags) $(ARCH_FLAG)
@@ -103,7 +103,7 @@ COPY = cp
 preload = 
 
 libpath = . $(libdir) /Users/me/.rvm/usr/lib
-LIBPATH =  -L. -L$(libdir) -L/Users/me/.rvm/usr/lib
+LIBPATH = -L. -L$(libdir) -L/Users/me/.rvm/usr/lib
 DEFFILE = 
 
 CLEANFILES = mkmf.log
@@ -114,7 +114,7 @@ extout =
 extout_prefix = 
 target_prefix = 
 LOCAL_LIBS = 
-LIBS = $(LIBRUBYARG_SHARED)  -lpthread -ldl -lobjc 
+LIBS = $(LIBRUBYARG_SHARED) -lpthread -ldl -lobjc 
 SRCS = console.cpp export.cpp import.cpp init.cpp md5.cpp netbase-ruby.cpp netbase.cpp query.cpp reflection.cpp relations.cpp tests.cpp util.cpp webserver.cpp
 OBJS = console.o export.o import.o init.o md5.o netbase-ruby.o netbase.o query.o reflection.o relations.o tests.o util.o webserver.o
 TARGET = netbase
@@ -122,18 +122,18 @@ DLLIB = $(TARGET).bundle
 EXTSTATIC = 
 STATIC_LIB = 
 
-BINDIR        = $(bindir)
+BINDIR    = $(bindir)
 RUBYCOMMONDIR = $(sitedir)$(target_prefix)
-RUBYLIBDIR    = $(sitelibdir)$(target_prefix)
-RUBYARCHDIR   = $(sitearchdir)$(target_prefix)
-HDRDIR        = $(rubyhdrdir)/ruby$(target_prefix)
-ARCHHDRDIR    = $(rubyhdrdir)/$(arch)/ruby$(target_prefix)
+RUBYLIBDIR  = $(sitelibdir)$(target_prefix)
+RUBYARCHDIR  = $(sitearchdir)$(target_prefix)
+HDRDIR    = $(rubyhdrdir)/ruby$(target_prefix)
+ARCHHDRDIR  = $(rubyhdrdir)/$(arch)/ruby$(target_prefix)
 
-TARGET_SO     = $(DLLIB)
-CLEANLIBS     = $(TARGET).bundle 
-CLEANOBJS     = *.o  *.bak
+TARGET_SO   = $(DLLIB)
+CLEANLIBS   = $(TARGET).bundle 
+CLEANOBJS   = *.o *.bak
 
-all:    $(DLLIB)
+all:  $(DLLIB)
 static: $(STATIC_LIB)
 .PHONY: all install static install-so install-rb
 .PHONY: clean clean-so clean-rb
@@ -150,7 +150,7 @@ distclean-so::
 distclean: clean distclean-so distclean-rb-default distclean-rb
 		@-$(RM) Makefile $(RUBY_EXTCONF_H) conftest.* mkmf.log
 		@-$(RM) core ruby$(EXEEXT) *~ $(DISTCLEANFILES)
-		@-$(RMDIRS) $(DISTCLEANDIRS) 2> /dev/null || true
+		@-$(RMDIRS) $(DISTCLEANDIRS) 2> /dev/null or true
 
 realclean: distclean
 install: install-so install-rb

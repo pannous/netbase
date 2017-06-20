@@ -1,5 +1,5 @@
 /*
- * File:   relations.hpp
+ * File:  relations.hpp
  * Author: me
  *
  * Created on March 28, 2012, 7:49 PM
@@ -20,7 +20,7 @@ extern Node* SuperClass;// Parent
 extern Node* SubClass;
 extern Node* Cause;
 extern Node* Entailment; // Implication
-extern Node* Owner;//Owner inverse Member   (Prince of Persia) <=> (Persia has Prince)
+extern Node* Owner;//Owner inverse Member  (Prince of Persia) <=> (Persia has Prince)
 extern Node* Member;
 extern Node* Part;
 extern Node* PartOf;
@@ -123,7 +123,7 @@ extern Context* Wordnet;
 // NEGATIVE VALUES GO IN PROPERTY_SLOTS!
 // remove '-' if this scheme is detested
 
-static const int wordnet = 0;// 303; //context==Class??   TODO!
+static const int wordnet = 0;// 303; //context==Class??  TODO!
 static const int wikidata = 0;// for now
 // DANGER!!
 static const int _property = -98;
@@ -189,7 +189,7 @@ static const int _EndsWith = -159;
 static const int _false = -200;// not '0' by design!
 static const int _true = -201;
 
-// ToDONT :  There are one is all map very badly between languages!
+// ToDONT : There are one is all map very badly between languages!
 static const int _from = -559;
 static const int _to = -560;// direction OR time / limit
 static const int _towards = -560;// direction
@@ -205,9 +205,9 @@ static const int _any=0;// !!!
 static const int _unknown=0;
 static const int _see= -50,//50 _see_also, -40 similar
 	_Hypernym = -1,// ~
-	_SuperClass= -1,//SuperClass  bugs=>ARE=>animals
+	_SuperClass= -1,//SuperClass bugs=>ARE=>animals
 	_hyponym = -2,
-	_SubClass= -2,//SubClass	animals=>i.e.=>bugs  (turn around!)
+	_SubClass= -2,//SubClass	animals=>i.e.=>bugs (turn around!)
 	_Type= -3,
 	_instance= -4,
 	_ENTAILMENT= -21,// implies VS SYNONYM !!
