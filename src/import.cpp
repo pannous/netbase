@@ -1808,7 +1808,10 @@ bool dropBadPredicate(char* name) {
 	if(startsWith(name,"P3222"))return DROP;
 	if(startsWith(name,"P3569"))return DROP;
 	if(startsWith(name,"P1036"))return DROP;
-
+	if(startsWith(name,"P3500"))return DROP;
+	if(startsWith(name,"P3743"))return DROP;
+	if(startsWith(name,"P3225"))return DROP;
+	if(startsWith(name,"P998"))return DROP;
 	return KEEP;
 }
 
