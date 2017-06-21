@@ -157,7 +157,7 @@ function addImage(image,div){
 
 function makeEntity(entity)
 {
-	if(entity.topic && entity.topic.startsWith("Wiki"))return;
+	// if(entity.topic && entity.topic.startsWith("Wiki"))return; -102046  Wikidata-Eigenschaft show!
 	if(editMode)makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
 	if(inline)br()
