@@ -132,7 +132,7 @@ function makeStatement(statement,elem,entity)
 var imageAdded=false;
 var onerror_handled=0;
 function addImage(image,div){
-	if(imageAdded)return;
+	// if(imageAdded)return;
 	if(image.match("/Q"))return;
 	image=image.replace(/ /,"_")
 	var url="https://commons.wikimedia.org/wiki/"
