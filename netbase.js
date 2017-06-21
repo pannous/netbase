@@ -114,7 +114,7 @@ function makeStatement(statement,elem,entity)
 	makeLink(statement.predicate,server+statement.pid,predicate);
 	if(!inline || statement.oid!=entity.id){
 		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
-		if(statement.predicate.index("Koord")>=0)
+		if(statement.predicate.match("Koord"))
 			objectUrl="https://www.mapquest.com/latlng/"+statement.object.replace(" ","")
 		var x=makeLink(statement.object,objectUrl,makeRow(top));
 	// if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
