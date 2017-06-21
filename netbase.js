@@ -103,8 +103,14 @@ function editLinks(predicate,statement,elem)
 function makeStatement(statement,elem,entity)
 {  // if Wikimedia-Kategorie  BREAK!
   if(filterStatement(statement))return;
-	if(statement.predicate=="Wappen")addImage(statement.object,div);
+	if(statement.predicate.match(/Wappen/i))addImage(statement.object,div);
+	if(statement.predicate.match(/karte/i))addImage(statement.object,div);
 	if(statement.predicate.match(/image/))addImage(statement.object,div);
+	if(statement.predicate.match(/bild/i))addImage(statement.object,div);
+	if(statement.object.match(/\.svg/))addImage(statement.object,div);
+	if(statement.object.match(/\.png/))addImage(statement.object,div);
+	if(statement.object.match(/\.jpg/))addImage(statement.object,div);
+	if(statement.object.match(/\.bmp/))addImage(statement.object,div);
 	var top = document.createElement("tr");
 	if(!inline || statement.sid!=entity.id)
 		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));

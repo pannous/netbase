@@ -1819,7 +1819,8 @@ bool dropRedundantPredicate(char* name) {
 	if(name[0]=='<')name++;
 	if(eq(name,"P1081"))return DROP;// Index der menschlichen Entwicklung
 	if(eq(name,"P1082"))return DROP;// Einwohnerzahl
-	if(eq(name,"P2046"))return DROP;// Einwohnerzahl
+	if(eq(name,"P2046"))return DROP;// Fläche
+	if(eq(name,"P36"))return DROP;// Hauptstadt
 	return KEEP;
 }
 
