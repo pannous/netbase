@@ -177,7 +177,7 @@ int handle(cchar* q0,int conn){
 		q = q + 5;
 	}
 	if (startsWith(q, "the/")) {
-		q[3]=" ";
+		q[3]=' ';
 	}
 	if (startsWith(q, "abstract/")) {
 		verbosity = abstract;
