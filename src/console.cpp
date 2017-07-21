@@ -675,6 +675,10 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		QUESTIONS=true;
 	}
 
+	if (eq(args[0], "the") or eq(args[0], ":the") or eq(args[0], "my")) {
+		N da=getThe(next_word(data), More);
+		return wrap(da);
+	}
 	if(QUESTIONS and !safeMode and !startsWith(data0,"'") and data0[0]!='"'){
 		if (startsWith(data, "an ")) return query(data);
 		if (startsWith(data, "a ")) return query(data);
@@ -689,10 +693,6 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 		if (contains(data, "who ")) // who loves jule
 			return query(data);
 
-		if (eq(args[0], "the") or eq(args[0], ":the") or eq(args[0], "my")) {
-			N da=getThe(next_word(data), More);
-			return wrap(da);
-		}
 		if (eq(args[0], "a") or eq(args[0], "abstract")) {
 			N da=getAbstract(next_word(data));
 			return wrap(da);
