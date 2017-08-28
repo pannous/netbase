@@ -1929,7 +1929,9 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	allowWipe();
 //	fixCurrent();
-
+	N h=getThe("hamburg");
+	p(h);
+	check(h->id==1055);
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;
