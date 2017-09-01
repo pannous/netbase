@@ -21,7 +21,7 @@ void importRemaining();// fix
 extern "C" void import(const char* type,const char* filename=0);
 void importImages();
 void importList(const char* facts_file,const char* type);
-void importCsv(const char* facts_file,Node* type=0,char separator=0,const char* ignoredFields=0,const char* fields=0,int nameRowNr=-1,const char* nameRow=0 );
+void importCsv(const char* facts_file,Node* type=0,char separator=0,const char* ignoredFields=0,const char* fields=0,int nameRowNr=0,const char* nameRow=0 );
 //void importXml(const char* facts_file,Context* context=null, const char* ignoredFields=null, const char* includedFields=null);
 void importXml(const char* facts_file, char* nameField=0, const char* ignoredFields=0, const char* includedFields=0);
 bool importN3(const char* file);

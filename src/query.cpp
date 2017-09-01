@@ -1677,6 +1677,10 @@ bool filterWikiType(int object){
 //	if(object<0)return DROP;// wordnet!
 	if(object==13406463)return DROP; // Wikimedia-Liste	Q13406463
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
+	if(object==12139612)return DROP; // Liste
+	if(object==15633587)return DROP; //  MediaWiki-Seite im Hauptnamenraum
+//	if(object==4167410)return DROP;	//	<= Wikimedia-Begriffsklärungsseite OK
+	if(object==600590)return DROP; // Tupel
 // AUTO:
 	if(object==488383)return DROP; // Objekt
 	if(object==386724)return DROP; // Werk !?

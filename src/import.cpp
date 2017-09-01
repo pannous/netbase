@@ -834,6 +834,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 	if(!type){
 		char* typeName=keep_to(editable(cut_to(cut_to(file,"/"),"/")),".");
 		type=getThe(typeName);
+		getBest=true;
 	}
 	vector<Node*> predicates=*new vector<Node*>();
 	vector<string>& ignoreFields=splitString(ignoredFields, ",");
@@ -857,7 +858,7 @@ void importCsv(const char* file, Node* type, char separator, const char* ignored
 			separator=guessSeparator(editable(line)); // would kill fieldCount
 		}
 		size=splitStringC(line0, values, separator);
-		if (linecount == 0) {
+		if (linecount == 0 && size>1) {
 			fieldCount=size;
 			nameRowNr=getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
@@ -1808,7 +1809,10 @@ bool dropBadPredicate(char* name) {
 	if(startsWith(name,"P3222"))return DROP;
 	if(startsWith(name,"P3569"))return DROP;
 	if(startsWith(name,"P1036"))return DROP;
-
+	if(startsWith(name,"P3500"))return DROP;
+	if(startsWith(name,"P3743"))return DROP;
+	if(startsWith(name,"P3225"))return DROP;
+	if(startsWith(name,"P998"))return DROP;
 	return KEEP;
 }
 
@@ -1816,6 +1820,8 @@ bool dropRedundantPredicate(char* name) {
 	if(name[0]=='<')name++;
 	if(eq(name,"P1081"))return DROP;// Index der menschlichen Entwicklung
 	if(eq(name,"P1082"))return DROP;// Einwohnerzahl
+	if(eq(name,"P2046"))return DROP;// Fläche
+	if(eq(name,"P36"))return DROP;// Hauptstadt
 	return KEEP;
 }
 

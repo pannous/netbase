@@ -16,7 +16,7 @@ var search = window.location.search;
 var inline=false // compact view, embedded
 var find_entities=false // full text netbase search
 var abstract=-102;// Summary nodes
-var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410,-11978,-11315,/*10k*/ -101343,-100646,-100508,-100910,-101566,-100268, -100950, -100349, -101006, -100269,-100263, -100244, -100409, -101017, -100691, -100906, -101005, -100213, -100949, -100734, -101207,-100487,-100373,-101978,-101284,-101315];//  BnF-ID  etc
+var filterIds=[-50,-11343,-10646,-10508,-10910,-11566,-10268, -10950, -10349, -11006, -10269, -10409, -11017, -10691, -10906, -11005, -10949, -10734, -11207, 12209159,-10487,-10373,4167410,-11978,-11315,/*10k*/ -101343,-100646,-100508,-100910,-101566,-100268, -100950, -100349, -101006, -100269,-100263, -100244, -100409, -101017, -100691, -100906, -101005, -100213, -100949, -100734, -101207,-100487,-100373,-101978,-101284,-101315,-100998];//  BnF-ID  etc
 
 function setInline() {inline=true;find_entities=true}
 
@@ -103,8 +103,15 @@ function editLinks(predicate,statement,elem)
 function makeStatement(statement,elem,entity)
 {  // if Wikimedia-Kategorie  BREAK!
   if(filterStatement(statement))return;
-	if(statement.predicate=="Wappen")addImage(statement.object,div);
-	if(statement.predicate.match(/image/))addImage(statement.object,div);
+	// if(statement.predicate.match(/Wappen/i))addImage(statement.object,div);
+	// if(statement.predicate.match(/Flagge/i))addImage(statement.object,div);
+	// if(statement.predicate.match(/karte/i))addImage(statement.object,div);
+	// if(statement.predicate.match(/image/))addImage(statement.object,div);
+	// if(statement.predicate.match(/bild/i))addImage(statement.object,div);
+	// if(statement.object.match(/\.svg/))addImage(statement.object,div);
+	// if(statement.object.match(/\.png/))addImage(statement.object,div);
+	// if(statement.object.match(/\.jpg/))addImage(statement.object,div);
+	// if(statement.object.match(/\.bmp/))addImage(statement.object,div);
 	var top = document.createElement("tr");
 	if(!inline || statement.sid!=entity.id)
 		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
@@ -112,9 +119,10 @@ function makeStatement(statement,elem,entity)
 	predicate=	makeRow(top)
 	if(editMode)editLinks(predicate,statement,elem)
 	makeLink(statement.predicate,server+statement.pid,predicate);
-
 	if(!inline || statement.oid!=entity.id){
 		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
+		if(statement.predicate.match("Koord"))
+			objectUrl="https://www.mapquest.com/latlng/"+statement.object.replace(" ","")
 		var x=makeLink(statement.object,objectUrl,makeRow(top));
 	// if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
 	}
@@ -124,7 +132,7 @@ function makeStatement(statement,elem,entity)
 var imageAdded=false;
 var onerror_handled=0;
 function addImage(image,div){
-	if(imageAdded)return;
+	// if(imageAdded)return;
 	if(image.match("/Q"))return;
 	image=image.replace(/ /,"_")
 	var url="https://commons.wikimedia.org/wiki/"
@@ -157,7 +165,7 @@ function addImage(image,div){
 
 function makeEntity(entity)
 {
-	if(entity.topic && entity.topic.startsWith("Wiki"))return;
+	// if(entity.topic && entity.topic.startsWith("Wiki"))return; -102046  Wikidata-Eigenschaft show!
 	if(editMode)makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
 	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
 	if(inline)br()

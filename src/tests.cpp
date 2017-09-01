@@ -1929,7 +1929,9 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	allowWipe();
 //	fixCurrent();
-
+	N h=getThe("hamburg");
+	p(h);
+	check(h->id==1055);
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;
@@ -1937,8 +1939,9 @@ void testBrandNewStuff() {
 //	germanLabels=false;
 //	checkWordnet();// ->	importWordnet();
 //	importCsv("Telekom-Shop-Produkt.csv");
+	importCsv("ttt.csv");
 //	importAll();
-	importWikiData();
+//	importWikiData();
 //	importGeoDB();
 	show(parse(":predicates Germany"));
 //	fixCurrent();
