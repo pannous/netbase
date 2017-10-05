@@ -9,6 +9,14 @@ using namespace std;
 #include <string.h>
 #include <regex.h>
 
+#include <cstdlib>
+#include <zlib.h> // zlib1g-dev
+#include "zlib.h"
+#include <unistd.h> //getcwd
+#include <stdio.h> //getcwd
+#include <string.h>
+
+
 #include "util.hpp"
 
 bool assert(bool test, cchar* what) { // bool nix gut
@@ -548,9 +556,9 @@ char* modifyConstChar(const char* line){
 char* editable(const char* line) {
 	if(!line){
 		bad();
-		return "";// or 0?
+		return (char*)"";// or 0?
 	}
-	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
+    auto line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
 	strcpy(line0, line);
 	return line0;// callers duty to manually FREE if not kept!
 }
@@ -765,12 +773,6 @@ void printlabels(){
 			p(s->Predicate()->name);
 	}
 }
-#include <cstdlib>
-#include <zlib.h> // zlib1g-dev
-#include <unistd.h> //getcwd
-#include <stdio.h> //getcwd
-#include <string.h>
-
 #define CHUNK 0x1000
 #define OUT_CHUNK CHUNK*100
 unsigned char gzip_in[CHUNK];

@@ -588,7 +588,7 @@ extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);
 extern "C" Node* getType(Node* n);// != kind!
 extern "C" char* getText(Node* n);
-static char* NO_TEXT="";
+static char* NO_TEXT=(char*)"";
 #define _MAIN_
 int main(int argc, char *argv[]);
 extern "C" int test2();// extern "C" -> don't mangle!

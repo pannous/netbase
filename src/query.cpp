@@ -1248,8 +1248,6 @@ NodeVector childFilter(Node* subject, NodeQueue * queue,int* enqueued){
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Label;
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Derived;
 		predicateMatchReverse = predicateMatchReverse or s->predicate==_Is_a_list_of;
-		if(s->subject==23 or s->object==23)
-			printf("");
 		if (queue) {
 			if (subjectMatch and predicateMatch)
 				enqueue(subject, s->Object(), queue,enqueued);
@@ -1273,8 +1271,6 @@ NodeVector subclassFilter(Node* subject, NodeQueue * queue,int *enqueued){
 
 		bool subjectMatchReverse = s->Object() == subject and !eq(s->Subject()->name,"◊");
 		bool predicateMatchReverse = s->Predicate() == SuperClass; // or inverse
-		if(s->subject==23 or s->object==23)
-			printf("");
 		if (queue) {
 			if (subjectMatch and predicateMatch)
 				enqueue(subject, s->Object(), queue,enqueued);

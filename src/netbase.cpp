@@ -2161,7 +2161,7 @@ NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, boo
 		if (i > 0 and showRelation) {
 			S r=findRelations(all[i - 1], node);
 			N n=findRelation(all[i - 1], node);
-			if (!r or !n) p("???->??? \n");
+			if (!r or !n) p("? -> ? \n");
 			else {
 				pf("$%d-> ", r->id());
 				pf("%s\n", n->name);

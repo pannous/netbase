@@ -19,15 +19,16 @@
 #include "relations.hpp"
 #include "webserver.hpp" // int handle(char* q,int conn) TEST
 
-#define USE_READLINE
+//#define USE_READLINE
 // compile with -lreadline !
-#ifdef USE_READLINE
+//#ifdef USE_READLINE
 //ai libreadline-dev
-#include <readline/history.h> // libreadline-dev
-#include <readline/readline.h>
 //#include <readline.h>
 //#include <history.h>
-#endif
+//#endif
+
+#include <readline/history.h> // libreadline-dev
+#include <readline/readline.h>
 
 using namespace std;
 NodeVector OK;
@@ -85,7 +86,7 @@ void getline(char *buf) {
 	if (buf == 0) return; // end
 	int MAXLENGTH=10000;
 	const char* PROMPT="netbase> ";
-#ifdef RL_READLINE_VERSION // USE_READLINE
+#ifdef USE_READLINE
 	if (!file_read_done) file_read_done=1 + read_history(0);
 	char *tmp=readline(PROMPT);
 	if (tmp == 0 or strlen(tmp) == 0) {

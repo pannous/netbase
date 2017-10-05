@@ -36,7 +36,7 @@ if [[ $platform == 'Darwin' ]]; then
 	cp netbase lib/libNetbase.dylib
 	cp netbase bin/netbase-mac
 else
-	g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
+	g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -lz -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
 	cp netbase bin/
 	cp netbase lib/linux/
 	cp netbase lib/linux/libNetbase.a

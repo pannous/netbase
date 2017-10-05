@@ -21,6 +21,12 @@ void checkWordnet() {
 	else importWordnet();
 }
 
+
+void checkWikiData() {
+    if (hasWord("hamburg")&&eq(get(1055)->name,"hamburg")) return;
+    else importWikiData();
+}
+
 void checkGeo(){
 	if (hasWord("Canillo")) return;
 	else importGeoDB();
@@ -505,12 +511,13 @@ void testDummyLogic() {
 }
 
 void testWordnet() {
-	//  load();
-	checkWordnet();
-	//  importAll();
-	Context c=*getContext(wordnet);
-	showContext(wordnet);
-	p("contexts[wordnet].nodeCount:");
+    Context c=*getContext(wordnet);
+    //  load();
+    //  importAll();
+//    checkWordnet();
+    checkWikiData();
+    showContext(wordnet);
+    p("contexts[wordnet].nodeCount:");
 	p(c.nodeCount);
 	check(hasNode("drag_one's_feet"));
 	show(&c.nodes[-128749]);// -38749
@@ -530,8 +537,8 @@ void testWordnet() {
 	clearAlgorithmHash();
 //	return;
 	//	assert(has("duck", "beak"), "has(duck,beak)");// 241531	duck	flesh of a duck  confusion?
-	assert(has("duck", "tail"), "has(duck,tail)");
-	assert(has("duck", "head"), "has(duck,head)"); // fails but not in console !?! wtf???
+	check(has("duck", "tail"));
+    assert(has("duck", "head"), "has(duck,head)"); // fails but not in console !?! wtf???
 	assert(has("duck", "foot"), "has(duck,foot)");
 	addStatement(the(foot), Plural, the(feet));
 	assert(has("duck", "feet"), "has(duck,feet)");
@@ -1929,6 +1936,7 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	allowWipe();
 //	fixCurrent();
+    checkWordnet();
 	N h=getThe("hamburg");
 	p(h);
 	check(h->id==1055);
@@ -1995,14 +2003,14 @@ void testBrandNewStuff() {
 	N n=hasWord(seo.data(),true);
 	check(n!=0);
 //	N abstract=getAbstract("München");
-	N a=getEntity("München");
+	N a=getEntity((char*)"München");
 	addStatement(a, Type, SuperClass);
 	addStatement(a, Contains, SuperClass);
 	addSeo(a);
 	n=hasWord(seo.data(),true);
 	check(n!=0);
 	check(n==a);
-	N x=getEntity("Aristar PREM192719 Premium");
+	N x=getEntity((char*)"Aristar PREM192719 Premium");
 	addSeo(x);
 	N no=hasWord("muetter-in-muenche",true);
 	check(no==0);
