@@ -1361,6 +1361,7 @@ extern "C" int nextId(){
 Node* dateValue(const char* val) {
 	Node* n=getAbstract(val);// getThe(val);
 	n->kind=Date->id;
+//	n->value = getdate(name) std:get_time ?
 //	n->value == 	char *	"1732-02-22\""
 	return n;
 	//	return value(val, atoi(val), Date);
@@ -2724,14 +2725,12 @@ int main(int argc, char *argv[]) {
 	if(getenv("lookupLimit"))lookupLimit=atoi(getenv("lookupLimit"));
 	defaultLookupLimit=lookupLimit;
 
-//	signal(SIGSEGV, handler); // only when fully debugged!
-  //	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
+	//	signal(SIGSEGV, handler); // only when fully debugged!
+    //	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
 	//  setjmp(loop_context);
 	path=argv[0];
 	path=path.substr(0, path.rfind("/") + 1);
-	if (path.rfind("/dist") != -1) {
-		path=path.substr(0, path.rfind("/dist") + 1);
-	}
+	if (path.rfind("/dist") != -1) path=path.substr(0, path.rfind("/dist") + 1);
 	system(string("cd " + path).c_str());
 	data_path=path + "/data/";
 	import_path=path + "import/";
@@ -2746,14 +2745,15 @@ int main(int argc, char *argv[]) {
 		load();
 //		quiet=false;
 		const char* query=(const char*)cut_to(cut_to(join(argv, argc).data(), "query "),"select");
-		show(parse(query));
+		p("query:");
+		p(query);
+		show(parse(query, false));
 		exit(0);
 	}
 
 
 	germanLabels=true;
 	//  import();
-	if (checkParams(argc, argv, "debug"))allowWipe();
 	initSharedMemory(); // <<<
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
@@ -2784,8 +2784,10 @@ int main(int argc, char *argv[]) {
 	} else {
 		showHelpMessage();
 		bool _autoIds=autoIds;
+		autoIds=true;
 		// *******************************
-		NodeVector results=parse(join(argv, argc).c_str(),/*safeMode=*/false); // <<< HERE
+		auto query=join(argv, argc).c_str();
+		NodeVector results=parse(query,/*safeMode=*/false); // <<< HERE
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 		show(results);
 		autoIds=_autoIds;

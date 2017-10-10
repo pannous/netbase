@@ -1,6 +1,7 @@
 #include <cstdlib> // malloc, exit:
 #include <string.h> // strcmp
 #include <stdlib.h>
+#include <iomanip>
 
 #include "netbase.hpp"
 #include "import.hpp"
@@ -1934,14 +1935,16 @@ void addNormLabels(){
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
+//	char* name="2017-09-27T07:28:28Z";
+//	auto a = std::get_time(string(name), "YYYY-MM-DD-HH-MM-SS");
+//	p(a);
 //	allowWipe();
 //	fixCurrent();
 //	checkWordnet();
-	checkWikiData();
+//	checkWikiData();
 	N h=getThe("berlin");
 	p(h);
 	check(h->id==64);
-	importWikiData();
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;

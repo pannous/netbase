@@ -1693,8 +1693,8 @@ Node *getEntity(char *name) {//=true
 
 
 	if(endsWith(name, "\" .")){name[len-3]=0;len-=3;}
-	if(name[len-1]=='Z' && name[5]=='-' && name[len-4]==':')// "2017-09-27T07:28:28Z"
-		return value(name,getdate(name)->tm_gmtoff);
+//	if(name[len-1]=='Z' && name[4]=='-' && name[len-4]==':')// "2017-09-27T07:28:28Z"
+//		return dateValue(name);
 	if (contains(name, "^^"))
 		return rdfValue(name);
 //    if(fixUrls)cut_wordnet_id(name)
@@ -1743,20 +1743,25 @@ Node *getEntity(char *name) {//=true
 #define DROP true;
 #define KEEP false;
 bool dropBadSubject(char* name) {
+	if(!name)return DROP;
+	if(eq(name,""))return DROP;
 	if(name[0]<='9')return DROP;
 //	too expensive here!
 	//	if(endsWith(name,"#propertyStatementLinkage>"))return DROP;
 //	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
 //	if(startsWith(name,"Q5570970"))return DROP; // Globe
 //	if(startsWith(name,"Q26956302"))return DROP; // rdf.freebase.com id?
-	if(startsWith(name,"http") or startsWith(name,"<http")){
-		if(startsWith(name,"<http://www.wikidata.org/entity/"))return KEEP;
-		return DROP;
-	}
+//	if(startsWith(name,"http") or startsWith(name,"<http")){
+//		if(startsWith(name,"<http://www.wikidata.org/entity/"))return KEEP;
+//		return DROP;
+//	}
 	return KEEP;
 }
 
 bool dropBadPredicate(char* name) {
+	if(!name)return DROP;
+	if(eq(name,""))return DROP;
+
 	//	if(name[0]=='.')return DROP;
 	if(name[0]=='<')name++;
 
@@ -1833,6 +1838,9 @@ bool dropRedundantPredicate(char* name) {
 
 
 bool dropBadObject(char* name) {
+	if(!name)return DROP;
+	if(eq(name,""))return DROP;
+
 	//	if(strstr(name,"Q4167410>"))return DROP;// Wikimedia-Begriffsklärungsseite later | Merge with abstract!
 	return KEEP;
 }
@@ -1867,6 +1875,13 @@ bool filterFreebase(char* name) { // EXPENSIVE!! do via shell!
 	return false;
 }
 
+
+bool isUrl(char *predicateName) {
+	return eq(predicateName,"P854") or eq(predicateName,"P856")or eq(predicateName,"P973")  \
+            or eq(predicateName,"P1896") or  eq(predicateName,"P1630")or eq(predicateName,"P1065")\
+            or eq(predicateName,"P953") or eq(predicateName,"P963")or eq(predicateName,"P2699");// website
+	// P973 Wird beschrieben in URL   P953 Fulltext hmmm  P963 Downloadlink not used P2699 URL not used
+}
 
 bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	autoIds=false;
@@ -1932,9 +1947,6 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 //		u8_unescape(subjectName, (int)strlen(subjectName), subjectName);
 
 		if (!objectName or objectName[0] == '/' or objectName[1] == '/') continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
-
-
-
 		subject= getEntity(subjectName);//,fixNamespaces); //
 		object= getEntity(objectName);//,fixNamespaces);
 		predicate= getEntity(predicateName);
@@ -1982,18 +1994,12 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	closeFile(file);
 	pf("BAD: %d   MISSING: %d\n",badCount, MISSING);
 	context->use_logic=false;
-	free(subjectName0);free(objectName0);free(predicateName0);// noone cares
+	//	free(subjectName0);free(objectName0);free(predicateName0);// noone cares about 100bytes
 	//	freebaseKeys.clear();
 	//	free(freebaseKeys);
 	return true;
 }
 
-bool isUrl(char *predicateName) {
-	return eq(predicateName,"P854") or eq(predicateName,"P856")or eq(predicateName,"P973")  \
-            or eq(predicateName,"P1896") or  eq(predicateName,"P1630")or eq(predicateName,"P1065")\
-            or eq(predicateName,"P953") or eq(predicateName,"P963")or eq(predicateName,"P2699");// website
-	// P973 Wird beschrieben in URL   P953 Fulltext hmmm  P963 Downloadlink not used P2699 URL not used
-}
 
 void importFreebase() {
 	useHash=true;
@@ -2720,7 +2726,7 @@ void importAllDE() {
 //	importLabels("labels.csv");
 //	importWordnet();
 	//	doDissectAbstracts=true;// already? why not
-	doDissectAbstracts=false;//MESSES TOO MUCH!
+	doDissectAbstracts=false;//MESSES TOO MUCH! why?
 	//	importDBPediaDE();
 	importWikiData();
 //	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER FUCKUPS! WITH ENGLISH!

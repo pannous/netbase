@@ -19,7 +19,7 @@
 #include "relations.hpp"
 #include "webserver.hpp" // int handle(char* q,int conn) TEST
 
-//#define USE_READLINE
+#define USE_READLINE
 // compile with -lreadline !
 #ifdef USE_READLINE
 #include <readline/history.h> // libreadline-dev
@@ -196,7 +196,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if(data[0]==':')appendFile("logs/commands.log",data);
 	else appendFile("logs/query.log", data);
 
-	vector<string> args=splitString(data, " "); // WITH 0==cmd!!!
+	vector<string>& args=splitString(data, " "); // WITH 0==cmd!!!
 //	vector<char*> args=vector<char*>(splitStringC(data, ' ')); // WITH 0==cmd!!!
 //	char** args=splitStringC(data, ' '); // WITH 0==cmd!!!
 
