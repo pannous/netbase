@@ -89,3 +89,6 @@ logs/
 cmake-build-debug
 cmake_install.cmake
 netbase.xcodeproj/.AppleDouble/
+CMakeCache.txt
+CMakeFiles/
+netbase.cbp
