@@ -600,7 +600,7 @@ extern Node* node_root;
 extern char* name_root;
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
-void bad();
+void bad();//string="");
 void show(NodeSet& all);
 void addSeo(Node* n);
 Node *getSeo(const char* thingy);
@@ -614,11 +614,11 @@ static int MB=1048576;
 static long GB=1024*MB;
 static int million=MB;
 static long billion=GB;
-//#if defined(__APPLE__) // TODO! #if defined use wordnet!
-static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet!
-//#else
-//static int propertySlots=20000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata
-//#endif
+
+static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-200000-317658 wordnet!
+static int propertyOffset=10000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet abstracts
+static int wordnetOffset=20000;//
+static int synsetOffset=100000;//
 // 200000-317658 for wordnet + other !
 
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!

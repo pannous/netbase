@@ -21,14 +21,10 @@
 
 //#define USE_READLINE
 // compile with -lreadline !
-//#ifdef USE_READLINE
-//ai libreadline-dev
-//#include <readline.h>
-//#include <history.h>
-//#endif
-
+#ifdef USE_READLINE
 #include <readline/history.h> // libreadline-dev
 #include <readline/readline.h>
+#endif
 
 using namespace std;
 NodeVector OK;
@@ -747,7 +743,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
   
 	int i=atoi(data);
 	if(data[0]=='P' and data[1]<='9')
-		return wrap(get(-atoi(++data)-10000));// P106 -> -10106
+		return wrap(get(-atoi(++data)-propertyOffset));// P106 -> -10106
 	if (startsWith(data, ":")){pf("UNKNOWN COMMAND %s\n",data);}//showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));

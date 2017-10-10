@@ -495,6 +495,12 @@ Node * getRelation(const char* thing) {
 //	N wiki=getWikidataRelation(field);
 //	if(wiki)return wiki;
 	if (thing[0] == '#') thing++;
+	if (eq(thing, "altLabel"))return Label;
+		if (eq(thing, "name"))return Label;
+		if (eq(thing, "Name"))return Label;
+	if (eq(thing, "prefLabel"))
+		return 0;// ignore!
+
 	if (eq(thing, "Item"))return Entity;// <http://www.wikidata.org/entity/Q9486626> <#type> <http://www.wikidata.org/ontology#Item> .
 //	if (eq(thing, "Item"))return Object;// Entity
 	if (eq(thing, "instance")) return Instance;

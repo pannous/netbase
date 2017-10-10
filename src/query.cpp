@@ -2596,7 +2596,7 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 	while ((s = nextStatement(n, s)) and i++<=n->statementCount) {
 			//	for (int i = 0; i < type->statementCount; i++) {
 			//		Statement* s = getStatementNr(type, i);
-		if (!checkStatement(s)){bad();continue;}
+		if (!checkStatement(s)){ bad();continue;}
 		//		if (debug)showStatement(s);
 		if (isA4(s->Predicate(), match, recurse, semantic)){
 			if (s->Subject() == n) return s->Object();

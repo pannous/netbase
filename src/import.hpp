@@ -28,5 +28,5 @@ bool importN3(const char* file);
 int getFields(char* line, vector<char*>& fields, char separator = 0, int nameRowNr = -1, const char* nameRow = 0);
 char* extractTagName(char* line);
 char* extractTagValue(char* line);
-Node* getEntity(char* name,bool fixUrls=true,bool create=true);
+Node *getEntity(char *name);
 Node* rdfValue(char* name);

@@ -1936,10 +1936,12 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	allowWipe();
 //	fixCurrent();
-    checkWordnet();
-	N h=getThe("hamburg");
+//	checkWordnet();
+	checkWikiData();
+	N h=getThe("berlin");
 	p(h);
-	check(h->id==1055);
+	check(h->id==64);
+	importWikiData();
 	context=getContext(current_context);
 	quiet=false;
 	debug = true;
@@ -1947,162 +1949,16 @@ void testBrandNewStuff() {
 //	germanLabels=false;
 //	checkWordnet();// ->	importWordnet();
 //	importCsv("Telekom-Shop-Produkt.csv");
-	importCsv("ttt.csv");
 //	importAll();
 //	importWikiData();
 //	importGeoDB();
 	show(parse(":predicates Germany"));
 //	fixCurrent();
-	show(parse(":all Depeche Mode"));
-	exit(0);
 //	testWordnet();
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
-	//	handle("/json/all/state");
-//	parse("gooney");
-	//	handle("/html/-210674");
-//	importXml("whole_data.xml");
-//	importCsv("whole_data.csv");
-//	testWordnet();
-//	parse(":learn \"MagentaMobil S\" is Telekom_Produkt");
-//	parse(":learn MagentaMobil_SSS is Telekom_Produkt");
-	//	handle("/json/all/-200032");
 	exit(0);
-	testAll();
-//	import("Telekom-Produkts.n3");
-//	import("Telekom-Produkt.csv");
-//	handle("/js/all/pizza");
-//	addNormLabels();
-//	testBug();
-//	fixCurrent();
-//	testMarkedNodes();
-//	importAmazon();
-	//	collectTopics();
-	getThe("BMW");
-	getThe("BMW 5er");
-	getThe("BMW 5");
-	getThe("Series 5");
-	getThe("BMW 5 Series");
-	ee("BMW 5 Series");
-//	testAll();
-
-//	importTest();
-//	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz",getThe("billiger.de product"));
-//	importCsv("used_keywords.csv");
-//	console();
-//	testAll();	
-//	learn("Gehren.Population=#244797");
-//	handle("/json/short/seo/fü fa");
-	//	handle("/csv/hi limit 400");
-//	N e =getEntity("AMG");
-//	show(getTopic(e));
-	exit(0);
-	string seo=generateSEOUrl("München");
-	addSeo(getAbstract("muenchen"));
-	N n=hasWord(seo.data(),true);
-	check(n!=0);
-//	N abstract=getAbstract("München");
-	N a=getEntity((char*)"München");
-	addStatement(a, Type, SuperClass);
-	addStatement(a, Contains, SuperClass);
-	addSeo(a);
-	n=hasWord(seo.data(),true);
-	check(n!=0);
-	check(n==a);
-	N x=getEntity((char*)"Aristar PREM192719 Premium");
-	addSeo(x);
-	N no=hasWord("muetter-in-muenche",true);
-	check(no==0);
-	check(x!=no);
-	exit(0);
-	fixCurrent();
-
-	show(hasWord("provinz-suedholland"));
-	show(hasWord("provinz-suedholland",true));
-	show(hasWord("loud-as"));
-	show(hasWord("loud-as",true));
-	exit(0);
-//	string x=generateSEOUrl("Entität #-104 (kind: intern #-100)");
-//	p(x);
-//	importTest();
-//	load(true);//force
-	if(!hasWord("bug")){
-		importWordnet();
-//		load(true);//force
-		//		importWikiData();
-		mergeNode(get(-81), get(81));// derived
-		mergeNode(get(-80), get(80));// derives pertainym
-		mergeNode(get(-30), get(30));// opposite = antonym
-		// fix how? ^^^^^^^^
-	}
-//	parse(":import images");
-
-
-//	handle("json/all/play");
-//	handle("llearn -119408 see super2");
-//	handle("llearn 488327 maybe Wage");
-//	handle("/json/all/488327");
-//	handle("/json/all/-236836+limit+25");
-//	save();
-//	fixNames();
-//	testBug();
-	//	importTest();
-//	parse(":server --port 2000");
-//	parse(":server");
-//	import("billiger.de/TOI_Suggest_Export_Products.csv");
-
-//	testDelete();
-//	testEntities();
-//	replay();
-//	testQuery();
-//	context->nodeCount=maxNodes/2;
-//	context->lastNode=1;// RADICAL: fill all empty slots!
-//	germanLabels=false;
-//	p("test -> SHELL");return;// for shell
-//	if(!(eq(get(1)->name,"Universe") or eq(get(1)->name,"Universum")))
-//		importWikiData();
-
-//	importTest();
-//	handle(":last dfsfddasfadfss asdfasdfsadfdfsa");
-//	handle("hi?");// pakistan.capital
-//		handle("Highest point of Brazil?");
-//	testWikidata();
-//	testTopics();
-
-	//	importN3("wikidata/wikidata-taxonomy.nt.gz");
-	//	getClasses();
-	//	fixRelations();
-	//	testAll();
-
-	germanLabels=true;
-	//  import("test.csv");
-	//	handle("/verbose/Mensch");
-//		handle("/ee/Mensch are bool and ignoreCase");
-//	handle("/ee/The United States of America");
-	//	handle("/ee/Ladon (griechisch Λάδων) ist von Herakles bezwungen");
-	showContext(context);
-//	int c=0;
-//	while(c++<10){
-//		handle("/long/entities/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
-//		handle("/long/entities/Wohnung Thalkirchen %3A Wohnungen in M%C3%BCnchen Thalkirchen mieten immobilo");
-//	}
-//Is	showContext(context);
-//	handle("/entities/verbose/x Ladon Französische Gemeinde Q 1391647150px-Blason_de_la_ville_de_Ladon_(Loiret).svgstatements%3A 16");
-//	handle("/ee/	Seitdem der Wettbewerb seinen Anfang nahm, erfuhr er in seinem Ablauf zahlreiche Veränderungen. Ursprünglich feuerten einzelne Panzer von festen Positionen. Von 1963 bis 1968 wurde der Wettbewerb einmal jährlich abgehalten");
-//	importWordnet();
-//		flattenGeographischeKoordinaten();
-	//	handle("/P106");
-	//	parse(":server");
-//		parse(":all Bug");
-//	parse("query :all Mensch limit 1000000");
-//	handle("Mensch");
-	//	handle("/41172206");
-	//	handle("/90962");
-	//	handle(":server");
-	//	handle("/-1");
-	//	fixAllNames();
-	//	handle("all+pennsylvania+marijuana");
 #endif
 } // Continue with shell
 

@@ -3,7 +3,8 @@
 #include "netbase.hpp"
 
 //extern int MAX_CHARS_PER_LINE;
-#define MAX_CHARS_PER_LINE 0x100000 // amazon wtf!
+//#define MAX_CHARS_PER_LINE 0x100000 // amazon wtf!
+#define MAX_CHARS_PER_LINE 0x10000 // debug only! against gdb more than max-value-size
 #define MAX_ROWS 100
 using namespace std;
 
@@ -129,7 +130,7 @@ FILE *open_file(const char* file,bool exitOnFailure=true);
 bool readFile(const char* file,char* line);
 void closeFile(const char* file);
 
-void fixLabel(char* label);
+char * fixLabel(char* label);
 char* dropUrl(char* name);
 void sortNodes(NodeVector& all);
 bool empty(char* c);

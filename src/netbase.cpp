@@ -109,7 +109,11 @@ void flush() {
 }
 
 //inline
+//map<string,int> reasons;
+//string last_reason="";
+//void bad(string reason) {
 void bad(){
+//	if(reason!="")reasons[reason]=(reasons[reason]||0)+1;
 	badCount++;
 }
 
@@ -156,6 +160,7 @@ Ahash *getAhash(int position){
   if(position<0 or position>maxNodes*2)return 0;
   return &abstracts[position];
 }
+
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash*, bool> badAhashReported;// debug
@@ -176,7 +181,7 @@ Ahash * insertAbstractHash(uint position, Node * a,bool overwrite/*=false*/,bool
 	int i=0;
 	while (ah and ah->next) {
 		if (i++ > 300 and name[1]!=0) {	// allow 65536 One letter nodes
-      bad();
+			bad();
       if(badAhashReported[ah])return ah;
       badAhashReported[ah]=true;
 			debugAhash(position);
@@ -2317,19 +2322,16 @@ Node * getThe(Node* abstract, Node * type) {// first instance, TODO
 	if (type == 0) {
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		Statement* s=0;
+		Node* best=0;
 		while ((s=nextStatement(abstract, s)))
-			if (s->Predicate() == Instance and s->object!=0) {		// ASSUME RIGHT ORDER!?
-				abstract->value.node=s->Object();
-				return s->Object();
-//				if (s->Subject() == abstract and eq(s->Object()->name,abstract->name))
-//          //			abstract->value.node = last->Object; // + cache!
-//					return s->Object();
-//				if (s->Object() == abstract and eq(s->Subject()->name,abstract->name))
-//					if (isAbstract(s->Subject())) // abstract was not abstract!!!??
-//						return s->Object();
-//				//			abstract->value.node = last->Object; // + cache!
-//				return s->Subject();
+			if (s->Predicate() == Instance and s->object!=0) {		// CAN NOT ASSUME RIGHT ORDER!
+				if(!best || best->statementCount<s->Object()->statementCount)
+					best=s->Object();
 			}
+		if(best){
+			abstract->value.node=best;
+			return best;
+		}
 		N first= add(abstract->name, 0); // NO SUCH!! CREATE!?
 		if(!atoi(abstract->name))
 			abstract->value.node=first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
@@ -2431,12 +2433,12 @@ void setLabel(Node* n, cchar* label,bool addInstance,bool renameInstances) {
   }
 	if (n->kind == _internal)return;
 	if (n->kind == _abstract) {
-		if(!renameInstances)return;
-    NV all=instanceFilter(n);
-    for(int i=0;i<all.size();i++)
-      setLabel(all[i],label,false);
-    if(!hasWord(label))
-      insertAbstractHash(n);
+        if(!renameInstances)return;
+        NV all=instanceFilter(n);
+        for(int i=0;i<all.size();i++)
+            setLabel(all[i],label,false);
+        if(!hasWord(label))
+            insertAbstractHash(n);
     //    else
 		//      mergeNode(getAbstract(label),n);
 	} else {
@@ -2768,7 +2770,6 @@ int main(int argc, char *argv[]) {
 
 	printf("Warnings: %d\n", badCount);
 	showContext(0);
-	loadBlacklist(true);
 
 //	bool FORCE_DEBUG=true;// profile hack
 	if (checkParams(argc, argv, "load_files")) load(true);

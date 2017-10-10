@@ -907,13 +907,14 @@ bool readFile(const char* file,char* line){
 }
 
 
-void fixLabel(char* label){
+char * fixLabel(char* label){
 	fixNewline(label);
 	label[0]=toupper(label[0]);
 	char* wo=strstr(label+1,"@");
 	if(wo)wo[-1]=0;
 	wo=strstr(label+1,">");
 	if(wo)wo[-1]=0;
+    return dropUrl(label);
 }
 
 char* dropUrl(char* name){
