@@ -1,3 +1,7 @@
+**/.AppleDouble/
+**/*.origimport/dbpedia_de/
+*.orig
+.*.orig
 .dep.inc
 .idea/
 build/
@@ -25,9 +29,6 @@ netbase_results.html
 adjust.sh
 import/babelnet/images.wn.all.csv
 import/data/images.txt
-*.orig
-.*.orig
-**/*.origimport/dbpedia_de/
 import/freebase.data.txt.2 import/freebase.labels.de.txt import/freebase.labels.en.txt import/freebase.labels.en.txt.2 import/freebase.rb import/freebase.seds.sh
 netbase.build/
 .cproject
@@ -85,3 +86,6 @@ import/babelnet/translations.tsvnetbase.xcodeproj/xcuserdata
 page.link.sh
 node-netbase/page.link.sh
 logs/
+cmake-build-debug
+cmake_install.cmake
+netbase.xcodeproj/.AppleDouble/
