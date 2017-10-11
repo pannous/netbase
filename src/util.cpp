@@ -228,6 +228,7 @@ bool contains(string x, const char* y) {
 	return x.find(string(y)) != string::npos;
 }
 
+
 string replace_all(string str, string what, string with) {
 	int idx=0;
 	while ((idx=(int)str.find(what, idx)) >= 0) {
@@ -235,6 +236,12 @@ string replace_all(string str, string what, string with) {
 		idx=idx + (int)with.length() + 1;
 	}
 	return str;
+}
+
+string replace_all(char* str, string what, string with, bool replace_inline) {
+	string neu=replace_all(string(str),what,with);
+	if(replace_inline)	strcpy(str,neu.data());
+	return neu;
 }
 
 cchar* cut_to(cchar* str, cchar* match){

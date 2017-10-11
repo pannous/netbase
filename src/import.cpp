@@ -1898,8 +1898,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	char* predicateName0=(char*) malloc(10000);
 	char* objectName0=(char*) malloc(10000);
 	int linecount=0;
-	//  char* line=(char*) malloc(100000);// GEHT NICHT PERIOD warum??!!!!!!!!!!!!!!!
-	char line[MAX_CHARS_PER_LINE];
+//	char* line=(char*) malloc(MAX_CHARS_PER_LINE* sizeof(char));
+	char line[MAX_CHARS_PER_LINE* sizeof(char)];
 	while (readFile(file,&line[0])) {
 		if(line[0]==0)continue;// skip gzip new_block
 //		if(debug and !contains(line, "P1476"))
@@ -1907,9 +1907,9 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 //        p(line);
 		//    if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 and linecount > 140000) p(linecount);
-		if (++linecount % 10000 == 0) {
+		if (++linecount % 100000 == 0) {
 			long lost=ignored + badCount + MISSING;
-			printf("\r%d triples ignored:%d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld", linecount, ignored, badCount, MISSING,lost ,linecount-lost);
+			printf("\r%d triples, ignored:%d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld", linecount, ignored, badCount, MISSING,lost ,linecount-lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -1917,6 +1917,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 				break;
 			}
 		}
+		if(linecount<29000000)continue;
 		//		if(debug)if(linecount>100)break;
 		memset(objectName0, 0, 10000);
 		memset(predicateName0, 0, 10000);
@@ -1925,13 +1926,15 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
         char* subjectName=subjectName0;
         char* predicateName=predicateName0;
         char* objectName=objectName0;
+//		if(contains(line,"Q16061885"))
+//			p(line);
+//		else continue;
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		if(line[len(line)-1]=='.' and contains(line,"@") and !contains(line,"@de ") and !contains(line,"@en ")){ignored++;continue;}
 		subjectName=cut_wiki_id(subjectName);
         predicateName=cut_wiki_id(predicateName);
-
 		if(!isUrl(predicateName))
             objectName=cut_wiki_id(objectName);
 		if(debug&&eq(predicateName,"description"))continue;// ignore in debug!
@@ -2594,7 +2597,8 @@ void importWikiData() {
 //		importWikiLabels("wikidata/labels.csv");
 //		importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
 //	}
-    importN3("wikidata/latest-truthy.nt.gz");
+	importN3("wikidata/latest-truthy.nt");
+//	importN3("wikidata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
 //    importN3("wikidata/wikidata.n3");
 }
 

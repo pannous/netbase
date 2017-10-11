@@ -11,6 +11,7 @@ using namespace std;
 #define null 0
 extern bool quiet;
 
+string replace_all(char* str, string what, string with, bool replace_inline= true);
 string replace_all(string str, string what, string with);
 extern void flush();
 

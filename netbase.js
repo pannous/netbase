@@ -7,7 +7,7 @@ var link_name=true;
 var server="/";//html/"; 
 if(document.location.href.match(/file:/))
 	server="http://netbase.pannous.com/"
-else server=document.location.origin+"/"
+else server=document.location.origin+"/html/"
 	// server="http://87.118.71.26:81/" // for quasiris demo
 	// server="http://big.netbase.pannous.com:81/"
 	// server="http://de.netbase.pannous.com:81/"
@@ -133,8 +133,10 @@ var imageAdded=false;
 var onerror_handled=0;
 function addImage(image,div){
 	// if(imageAdded)return;
+	console.log(image)
 	if(image.match("/Q"))return;
 	image=image.replace(/ /,"_")
+	image=image.replace(/%20/,"_")
 	var url="https://commons.wikimedia.org/wiki/"
 	if(image.match(/http/))url="" // Already there
 	// image=image.replace(/.150px.*/,"");
@@ -186,7 +188,7 @@ function makeEntity(entity)
 	if(!inline){
 	if(entity.id>0 && entity.id<20000000)
 	    makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
-	if(entity.id<-10000)
+	if(entity.id<-10000 && entity.id>-110000)
 	    makeLink("P","https://www.wikidata.org/wiki/Property:P"+ ( -10000 - entity.id) ,div)
 	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
 	

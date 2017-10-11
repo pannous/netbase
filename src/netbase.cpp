@@ -2483,7 +2483,8 @@ char* getText(Node* n){
 
 string formatImage(Node* image,int size,bool thumb){
 	if (!image or !checkNode(image) or !image->name) return "";
-  char* name=replaceChar(image->name,' ','_');
+    char* name=replaceChar(image->name,' ','_');
+	replace_all(name,"%20","_",true);
 	char* start=strstr(name, "File:");
 	if(start) name=start+5;
 	if(startsWith(name, "http"))return name;

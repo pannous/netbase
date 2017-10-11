@@ -1942,6 +1942,7 @@ void testBrandNewStuff() {
 //	fixCurrent();
 //	checkWordnet();
 //	checkWikiData();
+	importWikiData();
 	N h=getThe("berlin");
 	p(h);
 	check(h->id==64);
@@ -1961,6 +1962,8 @@ void testBrandNewStuff() {
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
+//	handle("/html/1");
+//	handle("/html/Ära");
 	exit(0);
 #endif
 } // Continue with shell

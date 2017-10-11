@@ -422,11 +422,11 @@ int handle(cchar* q0,int conn){
 				Writeline(conn, ",\n\t \"topicid\":"+itoa(t->id));
 				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");
 			}
-			if(c and checkNode(c) and c->id!=0 and c!=t){
+			if(c and checkNode(c,-1, false, true) and c->id!=0 and c!=t){
 				Writeline(conn, ",\n\t \"classid\":"+itoa(c->id));
 				Writeline(conn, ", \"class\":\""+string(c->name)+"\"");
 			}
-			if(ty and checkNode(ty) and ty->id!=0 and c!=ty and ty!=t){
+			if(ty and checkNode(ty-1, false, true) and ty->id!=0 and c!=ty and ty!=t){
 				Writeline(conn, ",\n\t \"typeid\":"+itoa(ty->id));
 				Writeline(conn, ", \"type\":\""+string(ty->name)+"\"");
 			}
@@ -438,7 +438,7 @@ int handle(cchar* q0,int conn){
 			Writeline(conn, ", \"abstract\":"+itoa(getAbstract(node->name)->id));
 		if(use_json and verbosity==alle and node->kind==_abstract and i==0 and checkNode(getThe(node)))
 			Writeline(conn, ", \"main\":"+itoa(getThe(node)->id));
-		bool show_images=SERVER_PORT<1000 or verbosity==alle;// HACK!
+		bool show_images=SERVER_PORT<1000 or verbosity==alle or format==html;// HACK!
 		if((use_json and show_images) and verbosity!=shorter and !showExcludes and node->statementCount>1){
 			string img=getImage(node,150,/*thumb*/true);
 			if(img!=""){
@@ -509,7 +509,7 @@ int handle(cchar* q0,int conn){
 				char* objectName=s->Object()->name;
 				if(s->Predicate()==Instance){
 					N type=getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);
-					if(checkNode(type,false,true) and type->id!=_entity and !contains(objectName, type->name))
+					if(checkNode(type,-1,false,true) and type->id!=_entity and !contains(objectName, type->name))
 //						objectName=(char*)(concat(concat(objectName, ": "),type->name));
 						objectName=(char*)(string(objectName)+ " ("+type->name+")").data();
 				}
