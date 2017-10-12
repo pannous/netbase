@@ -629,8 +629,8 @@ static int synsetOffset=100000;//
 static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
 static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 100*million;
-static long maxStatements = maxNodes*2;// was: 1*!
+static long maxNodes = 100*million; // 200 on sqb
+static long maxStatements = maxNodes*1;// *2 on sqb was: 1*!
 #endif
 //static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;

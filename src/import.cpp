@@ -1963,7 +1963,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 //		if(predicate==Label||predicate==Description)
 //			u8_unescape(objectName,len(objectName),objectName);// unicode utf8 umlaut fix done in labels!
 		if(predicate==Label) {
-			p(objectName);
+//			p(objectName);
 	        if(!subject->name)setLabel(subject, objectName);
 	        else if(!eq(subject->name,objectName))addStatement(subject,Label,object);
             continue;
