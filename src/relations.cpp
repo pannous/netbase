@@ -549,6 +549,7 @@ Node * getRelation(const char* thing) {
 	if (eq(thing, "Ist ein(e)")) return Type;// -10031
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;
+    if (eq(thing, "sameAs")) return Synonym; // instance of
 
 	if (eq(thing, "subclass of")) return SuperClass;
 	if (eq(thing, "subClassOf")) return SuperClass;
@@ -560,7 +561,9 @@ Node * getRelation(const char* thing) {
 Node * getWikidataRelation(const char* thing) {
 	// e.g. _categorys_main_topic https://www.wikidata.org/wiki/Property:P301
 	if(thing[0]=='<')thing++;
-	if (eq(thing, "P31")) return Type; // instance of
+
+
+    if (eq(thing, "P31")) return Type; // instance of
 //	if (eq(thing, "P18")) return getThe("image");
 	if (eq(thing, "P279")) return SuperClass;
 	if (eq(thing, "P361")) return PartOf;

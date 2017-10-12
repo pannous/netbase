@@ -1381,9 +1381,9 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 				N a= getEntity(key);
 //				bool hadAbstract=isAbstract(a);
 //				if(!hadAbstract){
-					wiki_abstracts[id]=true;
-//					insertAbstractHash(a,true);// remove old abstract
-					insertAbstractHash(a,false);// keep old abstract
+				wiki_abstracts[id]=true;
+//				insertAbstractHash(a,true);// remove old abstract
+				insertAbstractHash(a,false);// keep old abstract
 				a->kind=_abstract;// too early-> ignored! if(hasWord(key)==oldLabel)
 //				}
 				continue;
@@ -1407,7 +1407,7 @@ bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 //		if(id==2)
 //			p("ERde");
 
-		if(id<maxNodes/2-propertySlots){
+		if(id<maxNodes/2){
 			Node* node=&context->nodes[id];
 			if(english and germanLabels and node->name)
 				continue;// Only set labels of entities that don't have a German translation
@@ -1630,7 +1630,7 @@ bool useHash=false;
 Node *dissectFreebase(char* name) {
 	if (!contains(name, ".")) {
 		//		if(endsWith(name," of"))// FLIP RELATION!
-		N a=getRelation((const char*) name);
+		N a=getRelation(name);
 		if (a) return a;
 		a=getAbstract(name);
 		if(!a)return 0;//BUG HOW??? out of memory!
@@ -1689,9 +1689,7 @@ Node *getEntity(char *name) {//=true
 	if(len==0)return 0;
 //	if(name[0]=='_' and name[1]==':')// 	_:
 //		return getPropertyDummy(name);// Missing;// _:node1a8gbf20dx14041
-
-
-
+	if(contains(name,":"))return getAbstract(name);// Kategorie: ...
 	if(endsWith(name, "\" .")){name[len-3]=0;len-=3;}
 //	if(name[len-1]=='Z' && name[4]=='-' && name[len-4]==':')// "2017-09-27T07:28:28Z"
 //		return dateValue(name);
@@ -1737,9 +1735,10 @@ Node *getEntity(char *name) {//=true
 		}
 	}
 	if(name[0]=='+')name++;// ausser +49 ...
-	name=(char *) fixYagoName(name);
+//	name= fixYagoName(name);
 	return dissectFreebase(name);
 }
+
 #define DROP true;
 #define KEEP false;
 bool dropBadSubject(char* name) {
@@ -1816,8 +1815,8 @@ bool dropBadPredicate(char* name) {
 	if(eq(name,"P227"))return DROP;
 	if(eq(name,"P1855"))return DROP;// Wikidata-Eigenschafts-Beispiel
 	if(eq(name,"P244"))return DROP;// lcauth
-	if(eq(name,"P1263"))return DROP;// Notable Names Database
-//	if(eq(name,"P"))return DROP;
+//	if(eq(name,"P1263"))return DROP;// Notable Names Database
+	if(eq(name,"P3138"))return DROP; // OFDb-ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -1917,7 +1916,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 				break;
 			}
 		}
-		if(linecount<29000000)continue;
+		if(!contains(line,"Q32652340"))continue;
+//		if(linecount<29000000)continue;
 		//		if(debug)if(linecount>100)break;
 		memset(objectName0, 0, 10000);
 		memset(predicateName0, 0, 10000);
@@ -1985,8 +1985,10 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			//      else// Statement* s=
 			if(object==Class)// or endsWith(objectName, "#Class"))
 				subject->kind=_clazz;
-			else if(object==Entity || object==Item)// or endsWith(objectName, "#Entity"))
+			else if(object==Entity || object==Item )// or endsWith(objectName, "#Entity"))
 				subject->kind=_entity;
+			else if(object->id==1172284/*Dataset*/ || object->id==4167836/*Wikimedia-Kategorie*/)
+				subject->kind=_abstract;// todo?
 			else
 				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
 			lastPredicate=predicate;
