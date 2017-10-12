@@ -2,7 +2,7 @@
 
 /* is c the start of a utf8 sequence? */
 #define isutf(c) (((c)&0xC0)!=0x80)
-
+#define u_int32_t unsigned int
 /* convert UTF-8 data to wide character */
 int u8_toucs(u_int32_t *dest, int sz, char *src, int srcsz);
 

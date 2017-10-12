@@ -11,6 +11,7 @@
 
 
 #include "utf8.hpp"
+//#include "utf8.h"
 #include "netbase.hpp"
 #include "util.hpp"
 #include "import.hpp"
@@ -1317,6 +1318,7 @@ map<int,string> wn_labels;
 int freebaseKeysConflicts=0;
 
 map<int,bool> wiki_abstracts;
+
 bool importWikiLabels(cchar* file,bool properties=false,bool altLabels=false){
 	p("ONLY COMPATIBLE WITH PURE WIKIDATA");
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
@@ -1932,7 +1934,9 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
-		if(line[len(line)-1]=='.' and contains(line,"@") and !contains(line,"@de ") and !contains(line,"@en ")){ignored++;continue;}
+		int leng=len(line);
+		if((line[leng-1]=='.' || line[leng-2]=='.') and contains(line,"\"@"))
+			if(!contains(line,"@de ") and !contains(line,"@en ")){ignored++;continue;}
 		subjectName=cut_wiki_id(subjectName);
         predicateName=cut_wiki_id(predicateName);
 		if(!isUrl(predicateName))
@@ -1956,9 +1960,10 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if(subject==object){ bad();continue;}// no cyclic statements!
 //		if(predicate and predicate->id==-101476)// title ...
 		// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
-		if(predicate==Label||predicate==Description)
-			u8_unescape(objectName,len(objectName),objectName);// unicode utf8 umlaut fix done in labels!
+//		if(predicate==Label||predicate==Description)
+//			u8_unescape(objectName,len(objectName),objectName);// unicode utf8 umlaut fix done in labels!
 		if(predicate==Label) {
+			p(objectName);
 	        if(!subject->name)setLabel(subject, objectName);
 	        else if(!eq(subject->name,objectName))addStatement(subject,Label,object);
             continue;
