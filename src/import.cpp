@@ -1916,7 +1916,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 				break;
 			}
 		}
-		if(!contains(line,"Q32652340"))continue;
+//		if(!contains(line,"Q32652340"))continue; else p(line);
 //		if(linecount<29000000)continue;
 		//		if(debug)if(linecount>100)break;
 		memset(objectName0, 0, 10000);
@@ -1965,6 +1965,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
         }
 		if (!subject or !predicate or !object){ bad();continue;}
 		if (!subject->id or !predicate->id or !object->id ){ bad();continue;}
+//		if (!subject->name or !object->name ){ ignored++;continue;}// only german!
 		if (!subject->id==_ignore or !predicate->id==_ignore or !object->id==_ignore ){ ignored++;continue;}
 		if (subject==Error or predicate==Error or object==Error ) { bad();continue;}
         if (predicate == Instance) {// flip here!
