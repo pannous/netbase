@@ -2787,7 +2787,7 @@ int main(int argc, char *argv[]) {
 		bool _autoIds=autoIds;
 		autoIds=true;
 		// *******************************
-		auto query=join(argv, argc).c_str();
+		cchar* query=join(argv, argc).c_str();
 		NodeVector results=parse(query,/*safeMode=*/false); // <<< HERE
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 		show(results);
