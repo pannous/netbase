@@ -40,6 +40,8 @@ set(CMAKE_C_FLAGS "-lreadline -lz -Wno-write-strings ")
 set(CMAKE_CXX_FLAGS "-lreadline -lz -Wno-write-strings  ${CMAKE_CXX_FLAGS}")
 
 set(SOURCE_FILES
+        src/utf8.cpp
+        src/utf8.hpp
         src/console.cpp
         src/console.hpp
         src/export.cpp

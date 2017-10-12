@@ -1894,6 +1894,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 	Node* object;
 	Node* lastPredicate=0;
 	int ignored=0;
+	int foreign=0;// special case of ignored
 	badCount=0;
 	char* subjectName0=(char*) malloc(10000);
 	char* predicateName0=(char*) malloc(10000);
@@ -1936,7 +1937,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		int leng=len(line);
 		if((line[leng-1]=='.' || line[leng-2]=='.') and contains(line,"\"@"))
-			if(!contains(line,"@de ") and !contains(line,"@en ")){ignored++;continue;}
+			if(!contains(line,"@de ")){foreign++;continue;}//  and !contains(line,"@en ")
 		subjectName=cut_wiki_id(subjectName);
         predicateName=cut_wiki_id(predicateName);
 		if(!isUrl(predicateName))
@@ -1964,8 +1965,11 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 //			u8_unescape(objectName,len(objectName),objectName);// unicode utf8 umlaut fix done in labels!
 		if(predicate==Label) {
 //			p(objectName);
-	        if(!subject->name)setLabel(subject, objectName);
-	        else if(!eq(subject->name,objectName))addStatement(subject,Label,object);
+	        if(!subject->name)
+		        setLabel(subject, objectName);
+	        else
+	            if(!eq(subject->name,objectName))
+		            addStatement(subject,Label,object);
             continue;
         }
 		if (!subject or !predicate or !object){ bad();continue;}
