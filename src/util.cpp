@@ -565,7 +565,7 @@ char* editable(const char* line) {
 		bad();
 		return (char*)"";// or 0?
 	}
-    auto line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
+	char* line0=(char*) malloc(strlen(line) * 2 + 1); //dont free!
 	strcpy(line0, line);
 	return line0;// callers duty to manually FREE if not kept!
 }
