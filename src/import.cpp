@@ -1819,6 +1819,8 @@ bool dropBadPredicate(char* name) {
 	if(eq(name,"P244"))return DROP;// lcauth
 //	if(eq(name,"P1263"))return DROP;// Notable Names Database
 	if(eq(name,"P3138"))return DROP; // OFDb-ID
+	if(eq(name,"P2892"))return DROP;// UMLS CUI
+	if(eq(name,"P1043"))return DROP;// IDEO-Berufs-ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -1961,8 +1963,8 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		if(subject==object){ bad();continue;}// no cyclic statements!
 //		if(predicate and predicate->id==-101476)// title ...
 		// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
-//		if(predicate==Label||predicate==Description)
-//			u8_unescape(objectName,len(objectName),objectName);// unicode utf8 umlaut fix done in labels!
+		if(predicate==Label||predicate==Description)
+			u8_unescape(objectName,len(objectName),objectName);// unicode utf8 umlaut fix done in labels!
 		if(predicate==Label) {
 //			p(objectName);
 	        if(!subject->name)

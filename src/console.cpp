@@ -404,7 +404,7 @@ NodeVector parse(const char* data0,bool safeMode/*true*/) {
 	if (startsWith(data, ":d ") or startsWith(data, ":delete ") or startsWith(data, ":del ") or startsWith(data, ":remove ")) {
 		string d=next_word(data);
 		const char* what=d.data();
-		deleteWord(what);
+		deleteWord(what,true /*completely*/);
     return OK;
 	}
   

@@ -1,4 +1,4 @@
-#cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
 project(netbase)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -64,10 +64,6 @@ set(SOURCE_FILES
         src/shared_map.hpp
         src/tests.cpp
         src/tests.hpp
-        src/utf8.c
-        src/utf8.cpp
-        src/utf8.h
-        src/utf8.hpp
         src/util.cpp
         src/util.hpp
         src/webserver.cpp
