@@ -417,7 +417,7 @@ int handle(cchar* q0,int conn){
 //			if(!c)c=t;
 			if(!t)t=ty;
 			if(t==node)t=ty;
-			if(t and t!=Entity  and checkNode(t) and t->id!=0){
+			if(t and t!=Entity  and checkNode(t,-1, false, true) and t->id!=0){
 				got_topic=true;
 				Writeline(conn, ",\n\t \"topicid\":"+itoa(t->id));
 				Writeline(conn, ", \"topic\":\""+string(t->name)+"\"");

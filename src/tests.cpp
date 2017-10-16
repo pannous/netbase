@@ -1935,6 +1935,7 @@ void addNormLabels(){
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
+	importJson("query.json");
 //	char* name="2017-09-27T07:28:28Z";
 //	auto a = std::get_time(string(name), "YYYY-MM-DD-HH-MM-SS");
 //	p(a);

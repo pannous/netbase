@@ -42,6 +42,11 @@ set(CMAKE_CXX_FLAGS "-lreadline -lz -Wno-write-strings  ${CMAKE_CXX_FLAGS}")
 set(SOURCE_FILES
         src/utf8.cpp
         src/utf8.hpp
+        #        src/json.cpp
+        #        src/json.h
+        src/json.hpp
+        src/md5.cpp
+        src/md5.h
         src/console.cpp
         src/console.hpp
         src/export.cpp
@@ -50,8 +55,6 @@ set(SOURCE_FILES
         src/import.hpp
         src/init.cpp
         src/init.hpp
-        src/md5.cpp
-        src/md5.h
         src/netbase.cpp
         src/netbase.hpp
         src/query.cpp
@@ -67,7 +70,7 @@ set(SOURCE_FILES
         src/util.cpp
         src/util.hpp
         src/webserver.cpp
-        src/webserver.hpp)
+        src/webserver.hpp src/rapid.h)
 
 add_executable(netbase ${SOURCE_FILES})
 target_link_libraries( netbase ${ZLIB_LIBRARIES} )

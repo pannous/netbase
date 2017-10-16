@@ -7,8 +7,9 @@
 #include <unistd.h> //getcwd
 #ifdef sqlite3
 #include "sqlite3.h"
-#endif
 
+
+#endif
 
 #include "utf8.hpp"
 //#include "utf8.h"
@@ -17,6 +18,9 @@
 #include "import.hpp"
 #include "relations.hpp"// for wordnet
 #include "reflection.hpp"
+//#undef null
+//#include "json.hpp"
+//#define null 0
 
 using namespace std;
 
@@ -550,8 +554,14 @@ void fixNewline(char* line,bool limit/*0=none*/) {
 		}
 }
 
-char* extractTagName(char* line) {
-	return match(line, "<([^>]+)>");
+char* extractTagName(const char *line) {
+	return match(editable(line), "<([^>]+)>");
+}
+
+Node* extractType(const char *file) {
+	char* typeName=keep_to(cut_to(cut_to(editable(file),"/"),"/"),".");
+	Node* type=getThe(typeName);
+	return type;
 }
 
 char* extractTagValue(char* line) {
@@ -1627,6 +1637,7 @@ void importFreebaseLabels() {
 		importLabels("freebase.labels.de.txt", true);
 	importLabels("freebase.labels.en.txt", true);
 }
+
 
 bool useHash=false;
 Node *dissectFreebase(char* name) {
@@ -2715,6 +2726,8 @@ void import(const char* type, const char* filename) {
 		importCsv(filename);
 	} else if (endsWith(filename, "tsv")) {
 		importCsv(filename);
+	}else if (endsWith(filename, "json")) {
+		importJson(filename);
 	} else if (endsWith(filename, "xml")) {
 		importXml(filename);
 	} else if (endsWith(filename, "n3")) {
@@ -2815,3 +2828,94 @@ void importAll() {
 	//  importEntities();
 }
 
+
+#include "rapidjson/document.h"
+using namespace rapidjson;
+typedef rapidjson::Value JValue;
+void importJson(const char* file, Node* type, const char* ignoredFields, const char* foldFields){
+	p("\nimport importJson start\n");
+#undef MAX_CHARS_PER_LINE
+#define MAX_CHARS_PER_LINE 100000
+	bool tmp_autoIds=autoIds;
+	autoIds=false;
+	badCount=0;
+	context=getContext(current_context);
+	char line[MAX_CHARS_PER_LINE];
+	char** values=(char**) malloc(sizeof(char*) * MAX_ROWS);
+	char lastValue[MAX_CHARS_PER_LINE];
+	char* line0 = 0;// nullptr;
+	map<char*, Node*> valueCache;
+	Node* subject=0;
+	Node* predicate=0;
+	Node* object=0;
+	int linecount=0;
+//	if(!type)type=extractType(file); // Node* type,  auto per row
+
+	vector<Node*> predicates=*new vector<Node*>();
+//	vector<string>& ignoreFields=splitString(ignoredFields, ",");
+//	vector<string>& includeFields=splitString(includedFields, ",");
+	int fieldCount=0;
+	int size=0;// per row ~ Hopefully equal to fieldCount
+	while (readFile(file,&line[0])) {
+		fixNewline(line, false);
+//		free(line0); LEAK, why??: object was probably modified after being freed HOW???
+		line0 = editable(line);
+		size = splitStringC(line0, values, ',');
+		if (linecount == 0 && size > 1) {
+			fieldCount = size;
+			fixValues(values, fieldCount);
+			for (int i = 0; i < fieldCount; i++) {
+				char *field = values[i];
+				Node *fielt = getThe(field); // Firma		instance		Terror_Firma LOL
+//				dissectWord(fielt);
+				predicates.push_back(fielt);
+			}
+			++linecount;
+			continue;
+		}
+		if (++linecount % 1000 == 0) {
+			pf("importCsv %s stats: %d good, %d bad \r", file, linecount, badCount);
+			fflush(stdout);
+		}
+//		for (int i = 0; i < size; i++) {
+//			p(values[i]);
+//		}
+//		json_value * json=json_parse(line0,MAX_CHARS_PER_LINE*100);
+//		char* err[1000];
+//		json::from_json()
+
+//		const char* json = "{\"project\":\"rapidjson\",\"stars\":10}";
+		p("----------------------------------------");
+		rapidjson::Document json;
+		json.Parse(line);
+//		JValue& s =json["_index"];
+		JValue& s =json["_source"]["coordinate"]["lon"];
+		auto err=json.GetParseError();
+		p(err);
+//		cout << s.HasMember();
+		if(s.IsString())
+			printf("%s",s.GetString());
+		else if(s.IsDouble())
+			printf("%lf",s.GetDouble());
+
+
+//		auto vals = nlohmann::json::parse(line);
+//		for(nlohmann::basic_json<> val:vals){
+//			auto typ = val.type();
+//			val
+//			printf("%s",typ);
+//		}
+//		json_settings settings;
+//		json_value * json=json_parse_ex(&settings,line0,MAX_CHARS_PER_LINE*100,*err);
+//		pf("%s",err);
+//		if(!json)continue;
+//		p(json->type);
+//		auto fields = json->u.array;
+//		for(auto f : fields)
+//			printf("%s",f->type);
+//		p(json->u.array);
+
+//		if(contains(line, "DEBUG"))
+//		    ps(line);
+	}
+}
