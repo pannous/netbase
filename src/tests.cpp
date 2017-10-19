@@ -1943,6 +1943,12 @@ void testBrandNewStuff() {
 //	fixCurrent();
 //	checkWordnet();
 //	checkWikiData();
+	int i=0;
+	while(i++<100) {
+		printf("\r%d", i);
+		fflush(stdout);
+	}
+//	return;
 	importWikiData();
 	N h=getThe("berlin");
 	p(h);

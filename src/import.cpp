@@ -1758,7 +1758,9 @@ bool dropBadSubject(char* name) {
 	if(!name)return DROP;
 	if(eq(name,""))return DROP;
 	if(name[0]<='9')return DROP;
-//	too expensive here!
+	if(startsWith(name,"Category:"))return DROP;
+	if(startsWith(name,"Kategorie:"))return DROP;
+//	too expensive here!  startsWith not that expensive?
 	//	if(endsWith(name,"#propertyStatementLinkage>"))return DROP;
 //	if(startsWith(name,"Q79823>"))return DROP; // <18736170>	◊		Globe		Erde		17744458=>79823=>2
 //	if(startsWith(name,"Q5570970"))return DROP; // Globe
@@ -1832,7 +1834,9 @@ bool dropBadPredicate(char* name) {
 	if(eq(name,"P3138"))return DROP; // OFDb-ID
 	if(eq(name,"P2892"))return DROP;// UMLS CUI
 	if(eq(name,"P1043"))return DROP;// IDEO-Berufs-ID
-//	if(eq(name,"P"))return DROP;
+	if(eq(name,"P971"))return DROP;// Category:cu:Earth		Kategorie kombiniert die Themen
+	if(eq(name,"P3911"))return DROP;// STW-ID  // 421 statements not worth it
+	if(eq(name,"P2347"))return DROP;// YSO ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -2616,7 +2620,7 @@ void importWikiData() {
 	context->lastNode=(int)maxNodes/2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
 //	context->lastNode=30244576; // as of 06/2017!
 //    importWikiLabels("wikidata/properties.de",true);
-	if(!eq(get(1)->name,"Universum"))
+//	if(!eq(get(1)->name,"Universum"))
         importWikiLabels("wikidata/labels.de.n3");
 
 //		importWikiLabels("wikidata/labels.csv");
@@ -2828,7 +2832,7 @@ void importAll() {
 	//  importEntities();
 }
 
-
+#ifdef rapidjson
 #include "rapidjson/document.h"
 using namespace rapidjson;
 typedef rapidjson::Value JValue;
@@ -2919,3 +2923,8 @@ void importJson(const char* file, Node* type, const char* ignoredFields, const c
 //		    ps(line);
 	}
 }
+#else
+void importJson(const char* file, Node* type, const char* ignoredFields, const char* foldFields) {
+	p("importJson not supported without rapidjson");
+}
+#endif

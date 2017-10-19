@@ -1675,6 +1675,8 @@ bool filterWikiType(int object){
 	if(object==4167836)return DROP; // Wikimedia-Kategorie
 	if(object==160872476)return DROP; // Dataset
 	if(object==12139612)return DROP; // Liste
+	if(object==217594)return DROP; // Klasse
+	if(object==1347367)return DROP; // Fertigkeit
 	if(object==15633587)return DROP; //  MediaWiki-Seite im Hauptnamenraum
 //	if(object==4167410)return DROP;	//	<= Wikimedia-Begriffsklärungsseite OK
 	if(object==600590)return DROP; // Tupel
@@ -2188,8 +2190,8 @@ N getInferredClass(N n,int limit=1000){
 		if(limit and lookup++>=limit)break;
 		if(s->Object()==n){
 			if(s->predicate>0 or s->predicate<-1000)
-				if(s->predicate!=-10031 and s->predicate!=-10361)
-				return s->Predicate();
+				if(s->predicate!=-10031 and s->predicate!=-10361)// part
+					return s->Predicate();
 		}
 	}
 	return 0;
