@@ -1955,6 +1955,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		int leng=len(line);
 		if((line[leng-1]=='.' || line[leng-2]=='.') and contains(line,"\"@"))
 			if(!contains(line,"@de ")){foreign++;continue;}//  and !contains(line,"@en ")
+		if(objectName[0]=='Q'&&objectName[1]<='9')objectName[0]='q';// hack against auto wiki ids
 		subjectName=cut_wiki_id(subjectName);
         predicateName=cut_wiki_id(predicateName);
 		if(!isUrl(predicateName))

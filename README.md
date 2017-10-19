@@ -11,10 +11,10 @@ You can start *experimenting* with the [API](https://www.mashape.com/pannous/net
 [Java](http://github.com/pannous/blueprints-netbase) (alpha) and
 [Node.js](https://github.com/pannous/node-netbase),
 
+## Online Examples
+
 *Browse* our [Knowledge Graph](http://netbase.pannous.com/html/verbose/example), run locally
 or host as your own graph database, it is very quick to load.
-
-## Online Examples
 
 ## Installation
 
@@ -32,5 +32,5 @@ Extremely fast data import is provided for all common graph/data formats includi
 The same formats are available for data access and data export together with the  standard.
 
 This database is already used by millions of users through the [Jeannie](http://jeannie-assistant.com/) app.
-Germans might also unknowingly had concert this technology through enterprise customers of [Quasiris Recharge](http://903.hqgmbh.eu/quasiris/wordpress/de/recharge/)
+Germans might also have contact with this technology through enterprise customers of [Quasiris Recharge](https://www.quasiris.de/de/recharge/).
 Here we show the power of natural language queries to get instant answers.
