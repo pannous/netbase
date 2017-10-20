@@ -1837,6 +1837,8 @@ bool dropBadPredicate(char* name) {
 	if(eq(name,"P971"))return DROP;// Category:cu:Earth		Kategorie kombiniert die Themen
 	if(eq(name,"P3911"))return DROP;// STW-ID  // 421 statements not worth it
 	if(eq(name,"P2347"))return DROP;// YSO ID
+//	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
+//	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;

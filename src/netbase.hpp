@@ -9,7 +9,7 @@
 #include <set> // faster vector!
 #include <queue>
 using namespace std;
-
+extern bool NO_TOPICS;
 extern bool useSemantics;
 extern bool germanLabels;
 extern bool exitOnFailure;

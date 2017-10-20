@@ -14,10 +14,12 @@ bool save() {
 	p("saving context blob to "+data_path);
 	p("This can take a few minutes");
   FILE *fp;
+	p("saving statements.bin");
   fp = fopen((data_path+"statements.bin").data(), "wb");
   fwrite(c->statements, (unsigned long int) sizeof (Statement),(unsigned long int) (c->statementCount), fp);
   fclose(fp);
 
+	p("saving nodes.bin");
 	fp = fopen((data_path+"nodes.bin").data(), "wb");
 //	fwrite(c->nodes-propertySlots, sizeof (Node), maxNodes, fp);
 	fwrite(c->nodes-propertySlots, sizeof (Node), max(c->nodeCount,c->lastNode), fp);
@@ -26,10 +28,12 @@ bool save() {
 //	fwrite(c->nodes-propertySlots, sizeof (Node), c->nodeCount, fp);
   fclose(fp);
 
+	p("saving names.bin");
   fp = fopen((data_path+"names.bin").data(), "wb");
   fwrite(c->nodeNames, sizeof (char), c->currentNameSlot + 100, fp);
   fclose(fp);
 
+	p("saving contexts.bin");
   fp = fopen((data_path+"contexts.bin").data(), "wb");
   fwrite(contexts, sizeof (Context), maxContexts, fp);
   fclose(fp);
@@ -38,12 +42,14 @@ bool save() {
 //  fwrite(c, sizeof (Context), 1, fp);
 //  fclose(fp);
 //
+
+	p("saving abstracts.bin");
   fp = fopen((data_path+"abstracts.bin").data(), "wb");
 	fwrite(abstracts, sizeof (Ahash), maxNodes*2, fp);// todo
   fclose(fp);
 
   ps("context blob saved!");
-	printf("All %ld nodes and %d registered nodes dumped to ./data/ folder \n",maxNodes,c->nodeCount);
+	printf("All %ld nodes (%d registered) and %i edges dumped to ./data/ folder \n",maxNodes,c->nodeCount,c->statementCount);
 
   //  fp=fopen("test.bin", "wb");
   //  fwrite(test, sizeof(char), 100, fp);
