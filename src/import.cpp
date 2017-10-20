@@ -2950,7 +2950,7 @@ ostream &operator<<(ostream &outputStream, Node *node) {
 	return outputStream;
 }
 
-#define RAPIDJSON
+//#define RAPIDJSON
 #ifdef RAPIDJSON
 
 #include "rapidjson/document.h"
