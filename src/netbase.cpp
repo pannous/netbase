@@ -112,9 +112,10 @@ void flush() {
 //map<string,int> reasons;
 //string last_reason="";
 //void bad(string reason) {
-void bad(){
+Node* bad(){
 //	if(reason!="")reasons[reason]=(reasons[reason]||0)+1;
 	badCount++;
+	return Error;
 }
 
 bool isAbstract(Node* object) {

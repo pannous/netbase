@@ -600,7 +600,7 @@ extern Node* node_root;
 extern char* name_root;
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
-void bad();//string="");
+Node* bad();//string="");
 void show(NodeSet& all);
 void addSeo(Node* n);
 Node *getSeo(const char* thingy);

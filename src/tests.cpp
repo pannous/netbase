@@ -1935,7 +1935,8 @@ void addNormLabels(){
 void testBrandNewStuff() {
 	#ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
-	importJson("query.json");
+//	importJson("query.json");
+	importN3("quantum.n3");
 //	char* name="2017-09-27T07:28:28Z";
 //	auto a = std::get_time(string(name), "YYYY-MM-DD-HH-MM-SS");
 //	p(a);
@@ -1948,7 +1949,7 @@ void testBrandNewStuff() {
 		printf("\r%d", i);
 		fflush(stdout);
 	}
-//	return;
+	return;
 	importWikiData();
 	N h=getThe("berlin");
 	p(h);

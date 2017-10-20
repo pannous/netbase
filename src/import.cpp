@@ -1946,6 +1946,7 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
         char* subjectName=subjectName0;
         char* predicateName=predicateName0;
         char* objectName=objectName0;
+		replaceChar(line,' ','_');
 //		if(contains(line,"Q16061885"))
 //			p(line);
 //		else continue;
@@ -1977,12 +1978,10 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 		object= getEntity(objectName);//,fixNamespaces);
 		predicate= getEntity(predicateName);
 		if(subject==object){ bad();continue;}// no cyclic statements!
-//		if(predicate and predicate->id==-101476)// title ...
-		// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
 		if(predicate==Label||predicate==Description)
-			u8_unescape(objectName,len(objectName),objectName);// unicode utf8 umlaut fix done in labels!
+			u8_unescape(objectName,len(objectName),objectName);
+		// unicode utf8 umlaut fix done in labels!
 		if(predicate==Label) {
-//			p(objectName);
 	        if(!subject->name)
 		        setLabel(subject, objectName);
 	        else
@@ -2010,18 +2009,17 @@ bool importN3(cchar* file){//,bool fixNamespaces=true) {
 			continue;
 		}
 		else {
-			//      else// Statement* s=
+			lastPredicate=predicate;
+			// todo Wikimedia-Begriffsklärungsseite Q4167410 -> abstract (force!?!)
 			if(object==Class)// or endsWith(objectName, "#Class"))
 				subject->kind=_clazz;
 			else if(object==Entity || object==Item )// or endsWith(objectName, "#Entity"))
 				subject->kind=_entity;
-			else if(object->id==1172284/*Dataset*/ || object->id==4167836/*Wikimedia-Kategorie*/)
+			else if(object->id==1172284/*Dataset*/ || object->id==4167410|| object->id==4167836/*Wikimedia-Kategorie*/)
 				subject->kind=_abstract;// todo?
 			else
 				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
-			lastPredicate=predicate;
 		}
-		//		showStatement(s);
 	}
 	p("import N3 ok");
 	closeFile(file);
@@ -2833,10 +2831,35 @@ void importAll() {
 	//  importEntities();
 }
 
-#ifdef rapidjson
+
+ostream& operator <<(ostream& outputStream, Node& node){
+	outputStream << "Node #"<<node.id<<" "<<node.name;
+	return outputStream;
+}
+
+ostream& operator <<(ostream& outputStream, Node* node){
+	outputStream << "Node #"<<node->id<<" "<<node->name;
+	return outputStream;
+}
+
+#define RAPIDJSON
+#ifdef RAPIDJSON
 #include "rapidjson/document.h"
 using namespace rapidjson;
 typedef rapidjson::Value JValue;
+void p(JValue& s){
+	if(s.IsString())
+		printf("%s",s.GetString());
+	else if(s.IsDouble())
+		printf("%lf",s.GetDouble());
+}
+Node* entity(JValue& s){
+	if(s.IsString())return getThe(s.GetString());
+	else return bad();
+}
+Node* value(JValue& s){
+	if(s.IsDouble())return value(0,s.GetDouble());
+}
 void importJson(const char* file, Node* type, const char* ignoredFields, const char* foldFields){
 	p("\nimport importJson start\n");
 #undef MAX_CHARS_PER_LINE
@@ -2853,6 +2876,13 @@ void importJson(const char* file, Node* type, const char* ignoredFields, const c
 	Node* subject=0;
 	Node* predicate=0;
 	Node* object=0;
+	Node* _street=getThe("street");
+	Node* _state=getThe("state");
+	Node* _postcode=getThe("postcode");
+	Node* _city=getThe("city");
+	Node* _longitude=getThe("longitude");
+	Node* _latitude=getThe("latitude");
+	Node* _osm_id=getThe("osm_id");
 	int linecount=0;
 //	if(!type)type=extractType(file); // Node* type,  auto per row
 
@@ -2863,65 +2893,70 @@ void importJson(const char* file, Node* type, const char* ignoredFields, const c
 	int size=0;// per row ~ Hopefully equal to fieldCount
 	while (readFile(file,&line[0])) {
 		fixNewline(line, false);
-//		free(line0); LEAK, why??: object was probably modified after being freed HOW???
-		line0 = editable(line);
-		size = splitStringC(line0, values, ',');
-		if (linecount == 0 && size > 1) {
-			fieldCount = size;
-			fixValues(values, fieldCount);
-			for (int i = 0; i < fieldCount; i++) {
-				char *field = values[i];
-				Node *fielt = getThe(field); // Firma		instance		Terror_Firma LOL
-//				dissectWord(fielt);
-				predicates.push_back(fielt);
-			}
-			++linecount;
-			continue;
-		}
+		line0 = &line[0];
 		if (++linecount % 1000 == 0) {
 			pf("importCsv %s stats: %d good, %d bad \r", file, linecount, badCount);
 			fflush(stdout);
 		}
-//		for (int i = 0; i < size; i++) {
-//			p(values[i]);
-//		}
-//		json_value * json=json_parse(line0,MAX_CHARS_PER_LINE*100);
-//		char* err[1000];
-//		json::from_json()
-
-//		const char* json = "{\"project\":\"rapidjson\",\"stars\":10}";
-		p("----------------------------------------");
+/*{"_index":"photon","_type":"place","_id":"30006709","_score":1,"_source":{"osm_key":"building","coordinate":{"lon":13.558588612847423,"lat":52.76052905},"street":{"de":"Am Obersee","default":"Am Obersee"},"state":{"de":"Brandenburg","default":"Brandenburg","it":"Brandeburgo","fr":"Brandebourg"},"osm_type":"W","postcode":"16359","osm_value":"yes","city":{"de":"Wandlitz","default":"Wandlitz"},"country":{"default":"Deutschland","it":"Germania","fr":"Allemagne","en":"Germany"},"importance":0,"extent":{"type":"envelope","coordinates":[[13.5584493,52.7606334],[13.558727,52.7604211]]},"name":{"default":"Hochzeitsvilla am See in Lanke"},"context":{},"osm_id":510144480}}
+*/
+//		p("----------------------------------------");
 		rapidjson::Document json;
 		json.Parse(line);
-//		JValue& s =json["_index"];
-		JValue& s =json["_source"]["coordinate"]["lon"];
-		auto err=json.GetParseError();
-		p(err);
-//		cout << s.HasMember();
-		if(s.IsString())
-			printf("%s",s.GetString());
-		else if(s.IsDouble())
-			printf("%lf",s.GetDouble());
+		auto err = json.GetParseError();
+		if(err){
+			p("ERROR");
+			p(line);
+			p(err);
+			continue;
+		}
 
+		Node *type0 = entity(json["_type"]);
+		if (!eq(type0->name, "place"))
+			p(type0->name);
+		Node *id = entity(json["_id"]);
+		JValue &source = json["_source"];
+		Node *type = entity(source["osm_key"]);
 
-//		auto vals = nlohmann::json::parse(line);
-//		for(nlohmann::basic_json<> val:vals){
-//			auto typ = val.type();
-//			val
-//			printf("%s",typ);
-//		}
-//		json_settings settings;
-//		json_value * json=json_parse_ex(&settings,line0,MAX_CHARS_PER_LINE*100,*err);
-//		pf("%s",err);
-//		if(!json)continue;
-//		p(json->type);
-//		auto fields = json->u.array;
-//		for(auto f : fields)
-//			printf("%s",f->type);
-//		p(json->u.array);
+//		if(source["country"]["default"].GetString()!="Deutschland")
+//			continue;
+//		Node* node;
 
-//		if(contains(line, "DEBUG"))
-//		    ps(line);
+		Node *node;
+		Node *street;
+
+		if (source.HasMember("name") and source["name"].HasMember("default"))
+			node = entity(source["name"]["default"]);
+		else if (!source.HasMember("street"))
+			continue;//bad
+
+		if (source.HasMember("street")) {
+			if (source["street"].HasMember("default"))
+				street = entity(source["street"]["default"]);
+			else if (source["street"].HasMember("de"))
+				street = entity(source["street"]["de"]);
+			else if(!node)continue;
+		}
+		if(!node)node=street;
+//		p(source["osm_key"]);
+		addStatement(node, get(_Type), type);
+//		addStatement(node, get(_Type), type0);
+		if (street and street!=node)
+			addStatement(node, _street, street);
+		if (source.HasMember("postcode"))
+			addStatement(node, _postcode, entity(source["postcode"]));
+		if (source.HasMember("city"))
+			addStatement(node, _city, entity(source["city"]["default"]));
+		if (source.HasMember("state"))
+			addStatement(node, _state, entity(source["state"]["default"]));
+		if (source.HasMember("coordinate")) {
+			Node *lon = value(source["coordinate"]["lon"]);
+			Node *lat = value(source["coordinate"]["lat"]);
+			addStatement(node, _longitude, lon);
+			addStatement(node, _latitude, lat);
+		}
+		addStatement(node,_osm_id,id);
+//		p(node);
 	}
 }
 #else
