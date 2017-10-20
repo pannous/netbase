@@ -2,6 +2,7 @@
 #include "util.hpp"
 #include "query.hpp"
 #include "relations.hpp"
+#include "init.hpp"
 
 #include <cstdlib>
 #include <string.h>
@@ -2220,6 +2221,8 @@ N getClass(N n){
 }
 
 N getTopic(N node){
+	if (NO_TOPICS)
+		return getType(node);
 	N t=  getProperty(node, "topic");
 //	if(!t)t=getProperty(node, "Kategorie");
 	if(t and t!=node)return t;

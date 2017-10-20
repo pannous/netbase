@@ -1,6 +1,5 @@
 //#pragma once
 // All structured data from the main and property namespace is available under the Creative Commons CC0 License;
-bool NO_TOPICS = true;
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -429,7 +428,7 @@ int handle(cchar *q0, int conn) {
 		bool got_topic = false;
 		if (use_json and get_topic) {
 			N c = getClass(node);
-			N t = NO_TOPICS && c || getTopic(node);
+			N t = NO_TOPICS?  c : getTopic(node);
 			N ty = getType(node);
 			if (ty == Internal)continue;
 //			if(!c)c=t;

@@ -7,6 +7,7 @@
 
 #ifndef INIT_HPP
 #define	INIT_HPP
+bool NO_TOPICS = true;
 bool clearMemory();
 void load(bool force=false);
 extern "C" void initSharedMemory(bool relations=true);
