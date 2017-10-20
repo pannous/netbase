@@ -53,7 +53,7 @@ static mymap *themap=segment.find_or_construct<mymap>("shared_map") //object nam
 
 void shared_map::clear(char* shared_map_memory_name){
   try{
-    shared_memory_object::remove(shared_map_memory_name);
+	shared_memory_object::remove(shared_map_memory_name);
   }catch(...){}
 }
 
@@ -73,9 +73,9 @@ void shared_map::clear(){
 
 ValueType shared_map::operator[](KeyType index){
   if(themap->count(index)){
-    return themap->at(index);
+	return themap->at(index);
   }else{
-    return 0;
+	return 0;
   }
 }
 void shared_map::operator()(KeyType index,ValueType val){
@@ -106,39 +106,39 @@ void shared_map::load ()
 {  //Create shared memory
   //  managed_shared_memory segment(open_or_create, "shared_map_memory", 100000000);
   //  managed_shared_memory segment(open_or_create, "shared_map_memory", 1024^3);
-  
+
   //  int initial_buckets=51705469;
   //  int initial_buckets=100000;
   //Construct a shared memory hash map.
   //Note that the first parameter is the initial bucket count and
   //after that, the hash function, the equality function and the allocator
-  
+
   //  managed_shared_memory segment(open_or_create, shared_map_memory, 1024^2);
   //  managed_shared_memory segment2(open_or_create, shared_map_memory, 1024*1024);
   //  segment=&segment2;
   //  clear();
   //  themap=segment2.find_or_construct<mymap>("shared_map") //object name
   //  ( initial_buckets, boost::hash<KeyType>(), std::equal_to<KeyType>() , segment2.get_allocator<KeyValuePair>());
-  
+
   // for(mymap::iterator i = themap->begin(); i != themap->end(); ++i){
   //   std::cout << i->first << "=" << i->second << std::endl;
   //  }
   //
-  
+
   if(themap->count(1)){
-    float v2=themap->at(1);// themap[1]; ???
-    std::cout << "got " <<v2<< std::endl;
+	float v2=themap->at(1);// themap[1]; ???
+	std::cout << "got " <<v2<< std::endl;
   }else{
-    //Insert data in the hash map
-    themap->insert(KeyValuePair((long)1,1));
-    std::cout << "charged " << std::endl;
-    //    if(themap->count(1)){
-    float v2=themap->at(1);// themap[1]; ???
-    std::cout << "got " <<v2<< std::endl;
-    themap->count(1);
-    themap->count(1343252532353325);
-    themap->count(426078365);
-    themap->count((long)426078365);    themap->count((int)426078365);
+	//Insert data in the hash map
+	themap->insert(KeyValuePair((long)1,1));
+	std::cout << "charged " << std::endl;
+	//    if(themap->count(1)){
+	float v2=themap->at(1);// themap[1]; ???
+	std::cout << "got " <<v2<< std::endl;
+	themap->count(1);
+	themap->count(1343252532353325);
+	themap->count(426078365);
+	themap->count((long)426078365);    themap->count((int)426078365);
   }
 }
 

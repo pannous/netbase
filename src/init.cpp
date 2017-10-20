@@ -20,29 +20,27 @@
 #include "relations.hpp"
 
 
-
-namespace patch
-{
-  template < typename T > std::string to_string( const T& n )
-  {
-    std::ostringstream stm ;
-    stm << n ;
-    return stm.str() ;
-  }
+namespace patch {
+	template<typename T>
+	std::string to_string(const T &n) {
+		std::ostringstream stm;
+		stm << n;
+		return stm.str();
+	}
 }
 
 
-bool _allowWipe=false;
+bool _allowWipe = false;
 
 /* attach to the segment to get a pointer to it: */
 //const void * shmat_root = (const void *) 0x101000000; // mac 64 bitpointer to it: */
 #ifdef i386
 const void * shmat_root = (const void *) 0x10000000; // just higher than system Recommendation
 #else
-const void * shmat_root=(const void *) 0x0220000000;// java !
+const void *shmat_root = (const void *) 0x0220000000;// java !
 #endif
 
-bool virgin_memory=false;
+bool virgin_memory = false;
 #if defined(__FreeBSD__) or defined(__APPLE__)
 /* union semun is defined by including <sys/sem.h> */
 #else
@@ -56,19 +54,18 @@ union semun {
 };
 #endif
 
-int semrm(key_t key, int id=0) {
+int semrm(key_t key, int id = 0) {
 	union semun arg;
-	id=semget(key, 0, 0);
+	id = semget(key, 0, 0);
 	if (id == -1) return -1;
 	return semctl(id, 0, IPC_RMID, arg);
 }
 
 
-
 #include <execinfo.h>
 #include "errno.h"
-static void full_write(int fd, const char *buf, size_t len)
-{
+
+static void full_write(int fd, const char *buf, size_t len) {
 	while (len > 0) {
 		ssize_t ret = write(fd, buf, len);
 
@@ -79,8 +76,8 @@ static void full_write(int fd, const char *buf, size_t len)
 		len -= (size_t) ret;
 	}
 }
-void print_backtrace(void)
-{
+
+void print_backtrace(void) {
 	static const char start[] = "-- NETBASE BACKTRACE -------\n";
 	static const char end[] = "----------------------\n";
 
@@ -112,8 +109,9 @@ void signal_handler(int signum) {// handle SIGSEGV smoothly
 	signal(signum, SIG_DFL);
 	kill(getpid(), signum);
 }
+
 //long GB=1073741824;
-void increaseShmMax(){
+void increaseShmMax() {
 	p("increase ShmMax");
 //	return;
 //	system("./increase-shared-memory.sh");
@@ -126,13 +124,13 @@ void increaseShmMax(){
 	system((string("sudo sysctl -w kern.sysv.shmmax=")+std::to_string(mem)).data());
 	system((string("sudo sysctl -w kern.sysv.shmall=")+std::to_string(mem/4096)).data());
 #else
-	system((string("sudo sysctl -w kernel.shmmax=")+patch::to_string(sizeOfSharedMemory)).data());
-	system((string("sudo sysctl -w kernel.shmall=")+patch::to_string(sizeOfSharedMemory/4096)).data());
+	system((string("sudo sysctl -w kernel.shmmax=") + patch::to_string(sizeOfSharedMemory)).data());
+	system((string("sudo sysctl -w kernel.shmall=") + patch::to_string(sizeOfSharedMemory / 4096)).data());
 #endif
 	p("If you still cannot start netbase, decrease maxNodes in netbase.hpp");// or adjust shmmax, see clear-shared-memory.sh");
 }
 
-void clearSharedMemory(){
+void clearSharedMemory() {
 //	system("./clear-shared-memory.sh");
 	system("ipcrm -M '0x69190'");
 	system("ipcrm -M '0x69191'");
@@ -141,9 +139,10 @@ void clearSharedMemory(){
 	system("ipcrm -M '0x69194'");
 	increaseShmMax();
 }
-void detach_shared_memory(){
-    // TODO (?) programmatically
-	if(!_allowWipe){
+
+void detach_shared_memory() {
+	// TODO (?) programmatically
+	if (!_allowWipe) {
 		p("AUTOMATIC MEMORY WIPE DISABLED!");
 		p("If you cannot start netbase try:\n ./increase-shared-memory.sh and ./clear-shared-memory.sh");
 		return;
@@ -152,7 +151,7 @@ void detach_shared_memory(){
 	clearSharedMemory();
 }
 
-void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * desired) {
+void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *desired) {
 	if (root) {
 //		ps("root_memory already attached!");
 		return root;
@@ -161,42 +160,42 @@ void* share_memory(key_t key, long sizeOfSharedMemory, void* root, const void * 
 	//	int key = 0x69190; //0x57020303;// #netbase ftok("netbase", 'RW');
 	int shmid;
 	//        virgin_memory=0;
-	int READ_WRITE=0666; //
-	if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE)) == -1) {
+	int READ_WRITE = 0666; //
+	if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE)) == -1) {
 		ps("share_memory used for the first time");
-		pf("requesting 0x%lx bytes ~ %ld MB \n",sizeOfSharedMemory,sizeOfSharedMemory/MB);
-		virgin_memory=1;
-		if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
+		pf("requesting 0x%lx bytes ~ %ld MB \n", sizeOfSharedMemory, sizeOfSharedMemory / MB);
+		virgin_memory = 1;
+		if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 			semrm(key); // clean and try again
-			if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
+			if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 				perror("share_memory failed!\nSize changed or NOT ENOUGH MEMORY??\n shmget");
 				//			printf("try calling ./clear-shared-memory.sh\n");
 				//			perror(strerror(errno)); <= ^^ redundant !!!
 				printf("ipcclean and sudo ipcrm -M 0x69190 ... \n./clear-shared-memory.sh\n");
-        detach_shared_memory();
-        increaseShmMax();
+				detach_shared_memory();
+				increaseShmMax();
 			}
-			if ((shmid=shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
+			if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 				perror("share_memory failed: shmget! Not enough memory?");
 				exit(1);
 			}
 		}
 	}
-	root=(char *) shmat(shmid, (const void *) desired, 0);
+	root = (char *) shmat(shmid, (const void *) desired, 0);
 	if (root == 0 or root == (void *) (-1)) { //virgin_memory=1;
 		ps("receiving other share_memory address");
-		root=(char *) shmat(shmid, (const void *) 0, 0); //void
+		root = (char *) shmat(shmid, (const void *) 0, 0); //void
 	}
 	if (root == 0 or root == (void *) (-1)) {
 		perror("share_memory failed: shmat! Not enough memory?");
 		exit(1);
 	}
 //	Context* c=context; // getContext(node->context);
-	if ((char*) root != (char*) desired) { // 64 BIT : %x -> %016llX
+	if ((char *) root != (char *) desired) { // 64 BIT : %x -> %016llX
 		printf("FYI: root_memory != desired shmat_root %p!=%p \n", root, desired);
 //		fixPointers();
 	}
-	pf("share_memory at %p	size = %zX	max = %p\n", root, sizeOfSharedMemory, (char*) root + sizeOfSharedMemory);
+	pf("share_memory at %p	size = %zX	max = %p\n", root, sizeOfSharedMemory, (char *) root + sizeOfSharedMemory);
 	return root;
 }
 
@@ -209,13 +208,13 @@ long getMemory() {
 
 long GetAvailableMemory(void) {
 	void *p, *q;
-	long siz=10000000;
-	q=p=calloc(1, siz);
+	long siz = 10000000;
+	q = p = calloc(1, siz);
 	while (q) {
-		siz=siz * 1.2; // Can be more to speed up things
-		q=realloc(p, siz);
+		siz = siz * 1.2; // Can be more to speed up things
+		q = realloc(p, siz);
 		if (q) // infinite virtual mem :{ 31107287834197
-			p=q;
+			p = q;
 	}
 	free(p);
 	return siz;
@@ -224,7 +223,7 @@ long GetAvailableMemory(void) {
 // modify char* in vivo / inline!
 
 void initRootContext() {
-	Context* rootContext=(Context*) context_root;
+	Context *rootContext = (Context *) context_root;
 	memset(contexts, 0, contextOffset); // ? why only?
 	initContext(rootContext);
 	//	if(rootContext)
@@ -232,14 +231,14 @@ void initRootContext() {
 //	rootContext->id=1; // not virgin_memory any more
 	//	rootContext->nodes=(Node*)&context_root[contextOffset];
 	//	rootContext->statements=(Statement*)&context_root[contextOffset+nodeSize * maxNodes];
-	rootContext->nodes=(Node*) node_root+ propertySlots;
-	rootContext->statements=(Statement*) statement_root;
-	rootContext->nodeNames=name_root;
+	rootContext->nodes = (Node *) node_root + propertySlots;
+	rootContext->statements = (Statement *) statement_root;
+	rootContext->nodeNames = name_root;
 }
 
 void checkRootContext() {
-	Context* rootContext=(Context*) context_root;
-	if (rootContext->nodeCount==0) {
+	Context *rootContext = (Context *) context_root;
+	if (rootContext->nodeCount == 0) {
 		p("STARTING WITH CLEAN MEMORY");
 		initRootContext();
 //    clearMemory();
@@ -254,10 +253,10 @@ void checkRootContext() {
 //		
 ////		context->nodes=rootContext->nodes;	// hack
 //	}
-  if (context->nodeNames!=name_root)
-    fixPointers();
-  rootContext->nodes=(Node*) node_root+ propertySlots;;
-  rootContext->statements=statement_root;
+	if (context->nodeNames != name_root)
+		fixPointers();
+	rootContext->nodes = (Node *) node_root + propertySlots;;
+	rootContext->statements = statement_root;
 //	else if (context->nodes != rootContext->nodes) {
 //		fixPointers();
 //		context->nodes=rootContext->nodes;
@@ -269,42 +268,46 @@ extern "C" void initSharedMemory(bool relations) {
 //	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly. USELESS for print_backtrace
 	signal(SIGCHLD, SIG_IGN); // https://stackoverflow.com/questions/6718272/c-exec-fork-defunct-processes
 //	print_backtrace();
-  if(!relations)testing=true;
+	if (!relations)testing = true;
 	//  if ((i = setjmp(try_context)) == 0) {// try once
-	int key=0x69190;
-	char* root=(char*) shmat_root;
-	long context_size=contextOffset;
-	long node_size=maxNodes * nodeSize;
-	long abstract_size=maxNodes * ahashSize * 2;
-	long name_size=maxChars;
-	long statement_size=maxStatements * statementSize;
+	int key = 0x69190;
+	char *root = (char *) shmat_root;
+	long context_size = contextOffset;
+	long node_size = maxNodes * nodeSize;
+	long abstract_size = maxNodes * ahashSize * 2;
+	long name_size = maxChars;
+	long statement_size = maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
 //	p("abstract_root:");
-	abstract_root=(Node*) share_memory(key , abstract_size * 2, abstract_root,root);// ((char*) context_root) + context_size
+	abstract_root = (Node *) share_memory(key, abstract_size * 2, abstract_root,
+	                                      root);// ((char*) context_root) + context_size
 //	p("name_root:");
-	int mega_debug=getenv("MEGA_DEBUG")?0x40000:0; // objective xcode zombie diagnostics etc
-	name_root=(char*) share_memory(key + 1, name_size, name_root, ((char*) abstract_root) + abstract_size * 2 + mega_debug);
+	int mega_debug = getenv("MEGA_DEBUG") ? 0x40000 : 0; // objective xcode zombie diagnostics etc
+	name_root = (char *) share_memory(key + 1, name_size, name_root,
+	                                  ((char *) abstract_root) + abstract_size * 2 + mega_debug);
 //	p("node_root:");
-	node_root=(Node*) share_memory(key + 2, node_size, node_root, name_root + name_size);
+	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
 //	p("statement_root:");
-	statement_root=(Statement*) share_memory(key + 3, statement_size, statement_root, ((char*) node_root) + node_size);
+	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root,
+	                                            ((char *) node_root) + node_size);
 //	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 	//	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
 
 //  	p("context_root:");
-	context_root=(Context*) share_memory(key+4, context_size, context_root, ((char*) statement_root) + statement_size);
+	context_root = (Context *) share_memory(key + 4, context_size, context_root,
+	                                        ((char *) statement_root) + statement_size);
 
-	abstracts=(Ahash*) (abstract_root); // reuse or reinit
-	extrahash=(Ahash*) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
-	contexts=(Context*) context_root;
-	context=getContext(current_context);
+	abstracts = (Ahash *) (abstract_root); // reuse or reinit
+	extrahash = (Ahash *) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
+	contexts = (Context *) context_root;
+	context = getContext(current_context);
 	checkRootContext();
-  if(relations){
+	if (relations) {
 		initRelations();
 		if (context->lastNode < 0)
-			context->lastNode=1;
+			context->lastNode = 1;
 	}
 }
 
@@ -316,16 +319,16 @@ extern "C" void initSharedMemory(bool relations) {
 //static long shared_memory_16GB=17179869184;
 //static long shared_memory_32GB=34359738368;
 //static long shared_memory_64GB=68719476736;
-void setMemoryLimit(long maxNodes0,long maxStatements0,long maxChars0){
+void setMemoryLimit(long maxNodes0, long maxStatements0, long maxChars0) {
 //	void setMemoryLimit(long maxNodes0,long maxStatements0=-1,long maxChars0=-1){
-	if(maxNodes0>4294967296)error("sorry, 4 billion nodes is currently the limit of netbase");
-	maxNodes=maxNodes0; /*max 32bit=4 billion! */
-	if(maxStatements0>0) maxStatements=maxStatements0;
-	else	maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
-	if(maxChars0>0) maxChars=maxChars0;
-	else	maxChars=maxNodes * averageNameLength;
-	bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
-	sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
+	if (maxNodes0 > 4294967296)error("sorry, 4 billion nodes is currently the limit of netbase");
+	maxNodes = maxNodes0; /*max 32bit=4 billion! */
+	if (maxStatements0 > 0) maxStatements = maxStatements0;
+	else maxStatements = maxNodes * 2;// *10 = crude average of Statements per Node (yago:12!!)
+	if (maxChars0 > 0) maxChars = maxChars0;
+	else maxChars = maxNodes * averageNameLength;
+	bytesPerNode = (nodeSize + averageNameLength);//+ahashSize*2
+	sizeOfSharedMemory = contextOffset + maxNodes * bytesPerNode + maxStatements * statementSize;
 	initSharedMemory(true);
 }
 
@@ -334,7 +337,7 @@ extern "C" void init(bool relations) {
 }
 
 
-void fixStatementNodeIds(Context* context, Node* oldNodes) {
+void fixStatementNodeIds(Context *context, Node *oldNodes) {
 #ifndef explicitNodes
 	return;
 #else
@@ -352,21 +355,21 @@ void fixStatementNodeIds(Context* context, Node* oldNodes) {
 #endif
 }
 
-FILE* open_binary(cchar* c){
+FILE *open_binary(cchar *c) {
 	printf("Opening File %s\n", (data_path + c).data());
-   FILE* fp= fopen((data_path + c).data(), "rb");
-  if(fp==NULL)perror("Error opening file");
-  return fp;
+	FILE *fp = fopen((data_path + c).data(), "rb");
+	if (fp == NULL)perror("Error opening file");
+	return fp;
 }
 
 void load(bool force) {
 //	clock_t start=clock();
 //	double diff= ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 
-	Context* c=getContext(current_context);
-	Node* oldNodes=c->nodes;
-	char* oldnodeNames;//=c->nodeNames;
-	oldnodeNames=initContext(c);
+	Context *c = getContext(current_context);
+	Node *oldNodes = c->nodes;
+	char *oldnodeNames;//=c->nodeNames;
+	oldnodeNames = initContext(c);
 
 	if (!force and context_root) {
 		ps("loaded from shared memory");
@@ -378,8 +381,8 @@ void load(bool force) {
 
 	ps("Loading graph from files!");
 
-	FILE *fp=open_binary("contexts.bin");
-	if (fp== NULL) {
+	FILE *fp = open_binary("contexts.bin");
+	if (fp == NULL) {
 		p("starting with fresh context!");
 		clearMemory();
 		return;
@@ -388,18 +391,18 @@ void load(bool force) {
 		fread(contexts, sizeof(Context), maxContexts, fp);
 		fclose(fp);
 	}
-  
-	fp=open_binary("names.bin");
+
+	fp = open_binary("names.bin");
 	fread(c->nodeNames, sizeof(char), c->currentNameSlot + 100, fp);
 	fclose(fp);
 
-	fp=open_binary( "statements.bin");
+	fp = open_binary("statements.bin");
 	fread(c->statements, sizeof(Statement), c->statementCount, fp); //c->statementCount maxStatements
 	fclose(fp);
 
-  fp=open_binary( "nodes.bin");
-	fread(c->nodes-propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
-  	fclose(fp);
+	fp = open_binary("nodes.bin");
+	fread(c->nodes - propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
+	fclose(fp);
 
 	if (oldNodes != c->nodes) {
 		p("Fixing nodes");
@@ -408,13 +411,12 @@ void load(bool force) {
 
 
 	fp = open_binary("abstracts.bin");
-	if(fp){
-		fread(abstracts, sizeof (Ahash), maxNodes*2, fp);
+	if (fp) {
+		fread(abstracts, sizeof(Ahash), maxNodes * 2, fp);
 		fclose(fp);
-	}
-	else{
-			ps("collecting abstracts!");
-			collectAbstracts(); //or load abstracts->bin
+	} else {
+		ps("collecting abstracts!");
+		collectAbstracts(); //or load abstracts->bin
 	}
 	showContext(context);
 
@@ -422,8 +424,8 @@ void load(bool force) {
 }
 
 void fixPointers() {
-  if(context->nodeNames==name_root)
-    return;// all INT now, no more pointers!!! except chars
+	if (context->nodeNames == name_root)
+		return;// all INT now, no more pointers!!! except chars
 	p("ADJUSTING SHARED MEMORY");
 //	if(!checkC)
 	//	showContext(context);
@@ -436,10 +438,10 @@ void fixPointers() {
 	collectAbstracts();
 }
 
-void fixPointers(Context* context) {
+void fixPointers(Context *context) {
 	p("ADJUSTING Context");
-	Node* oldNodes=context->nodes;
-	char* oldNames=context->nodeNames;
+	Node *oldNodes = context->nodes;
+	char *oldNames = context->nodeNames;
 	initContext(context);
 //	check((char*) context->nodes == context_root + contextOffset);
 	//	context->nodes=root_memory
@@ -450,17 +452,17 @@ void fixPointers(Context* context) {
 int collectAbstracts(bool clear/*=false*/) {
 	ps("collecting abstracts = buildAbstractHashes");// int now
 	initRelations();
-	if(clear){
+	if (clear) {
 		p("WIPING OLD abstracts!");
-		memset(abstracts, 0, maxNodes*ahashSize * 2);
+		memset(abstracts, 0, maxNodes * ahashSize * 2);
 	}
-	Context* c=context;
+	Context *c = context;
 //	int max=c->nodeCount; // maxNodes;
-	int count=0;
+	int count = 0;
 	// collect Abstracts
-	for (int i=0; i < max(c->nodeCount,context->lastNode); i++) {
-		Node* n=&c->nodes[i];
-		if (i > 1000 and !checkNode(n,i,0,0,0)) continue;// checkStatements=0, bool checkNames,bool report
+	for (int i = 0; i < max(c->nodeCount, context->lastNode); i++) {
+		Node *n = &c->nodes[i];
+		if (i > 1000 and !checkNode(n, i, 0, 0, 0)) continue;// checkStatements=0, bool checkNames,bool report
 		if (n == null or n->name == null or n->id == 0) continue;
 		if (n->kind == Abstract->id or (!clear and !hasWord(n->name))) {
 			insertAbstractHash(n);// don't force
@@ -473,50 +475,50 @@ int collectAbstracts(bool clear/*=false*/) {
 int collectInstances() {
 	ps("collecting instances");// int now
 	initRelations();
-	memset(abstracts, 0, maxNodes*ahashSize * 2);
-	Context* c=context;
-	int max=c->nodeCount; // maxNodes;
-	int count=0;
+	memset(abstracts, 0, maxNodes * ahashSize * 2);
+	Context *c = context;
+	int max = c->nodeCount; // maxNodes;
+	int count = 0;
 	// collect Abstracts
-	for (int i=0; i < max; i++) {
-		Node* n=&c->nodes[i];
+	for (int i = 0; i < max; i++) {
+		Node *n = &c->nodes[i];
 		if (i > 1000 and !checkNode(n)) break;
 		if (n == null or n->name == null or n->id == 0) continue;
 		if (n->kind == Abstract->id) {
 			insertAbstractHash(n);
 			count++;
-		}else{
-			addStatement(getAbstract(n->name),Instance,n,false);
+		} else {
+			addStatement(getAbstract(n->name), Instance, n, false);
 		}
 	}
 	return count;
 }
 
-void fixNodeNames(Context* context, char* oldnodeNames) {
+void fixNodeNames(Context *context, char *oldnodeNames) {
 #ifdef inlineName
 	printf("inlineNames!");
 	return;
 #else
-	long newOffset=context->nodeNames - oldnodeNames;
-	if(newOffset==0)return;
-	int max=context->nodeCount; // maxNodes;
-	for (int i=0; i < max; i++) {
-		Node* n=&context->nodes[i];
+	long newOffset = context->nodeNames - oldnodeNames;
+	if (newOffset == 0)return;
+	int max = context->nodeCount; // maxNodes;
+	for (int i = 0; i < max; i++) {
+		Node *n = &context->nodes[i];
 		//		show(n,true);
-		if (!checkNode(n,i,0,0)) continue;
+		if (!checkNode(n, i, 0, 0)) continue;
 //		n->name=newOffset;
-    n->name=n->name+newOffset;
+		n->name = n->name + newOffset;
 	}
 #endif
 }
 
 bool clearMemory() {
-  if (!virgin_memory) {
+	if (!virgin_memory) {
 		ps("Cleansing Memory!");
-    detach_shared_memory();
-    initSharedMemory();
-    //		if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
-    // EXPENSIVE on big machines!! like: 10 minutes!!
+		detach_shared_memory();
+		initSharedMemory();
+		//		if (!node_root) memset(context_root, 0, sizeOfSharedMemory);
+		// EXPENSIVE on big machines!! like: 10 minutes!!
 //		else {
 //			memset(context_root, 0, contextOffset);
 //			memset(node_root, 0, nodeSize * maxNodes); //calloc!
@@ -525,90 +527,92 @@ bool clearMemory() {
 //			memset(abstracts, 0, abstractHashSize * 2);
 //			//		memset(extrahash, 0, abstractHashSize / 2);
 //		}
-    virgin_memory=false;
+		virgin_memory = false;
 	}
-  initRootContext();
-  if(testing){
-  memset(node_root+propertySlots, 0, 100000); // for testing
-  memset(statement_root, 0, 100000); // for testing
-  memset(name_root, 0, 100000); // for testing
-	memset(abstract_root, 0, maxNodes*ahashSize * 2);
+	initRootContext();
+	if (testing) {
+		memset(node_root + propertySlots, 0, 100000); // for testing
+		memset(statement_root, 0, 100000); // for testing
+		memset(name_root, 0, 100000); // for testing
+		memset(abstract_root, 0, maxNodes * ahashSize * 2);
 //	memset(abstracts, 0, maxNodes*ahashSize * 2);
 //  context->nodeCount=1000;// 0 = ANY
-  context->nodeCount=1;// 0 = ANY
-	context->lastNode=1;
-  context->nodeNames=name_root;
-  context->statementCount=1;// 0 = ERROR
-  }
+		context->nodeCount = 1;// 0 = ANY
+		context->lastNode = 1;
+		context->nodeNames = name_root;
+		context->statementCount = 1;// 0 = ERROR
+	}
 //  if(!testing)
 	initRelations();
 	return true;
 	//		Context* context=context;
 }
 
-char* initContext(Context* context) {
+char *initContext(Context *context) {
 	pf("Initiating context %d\n", context->id);
-	Node* nodes=0;
-	Statement* statements=0;
-	char* nodeNames=0;
+	Node *nodes = 0;
+	Statement *statements = 0;
+	char *nodeNames = 0;
 //	int nodeSize=sizeof(Node); // 40
 //	int statementSize=sizeof(Statement); //
 //	int ahashSize=sizeof(Ahash); //
 	//  int contextOffset=sizeof (Context) *maxContexts;
-	long nameSegmentSize=sizeof(char) * averageNameLength * maxNodes;
-	long nodeSegmentSize=nodeSize * maxNodes;
-	long statementSegmentSize=statementSize * maxStatements;
+	long nameSegmentSize = sizeof(char) * averageNameLength * maxNodes;
+	long nodeSegmentSize = nodeSize * maxNodes;
+	long statementSegmentSize = statementSize * maxStatements;
 //	long abstractOffset=contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize; //just put them at the end!!
 	if (node_root) {
 		p("Multiple shared memory segments");
-		nodes=(Node*) node_root+propertySlots;
-		nodeNames=(char*) name_root;
-		statements=(Statement*) statement_root;
+		nodes = (Node *) node_root + propertySlots;
+		nodeNames = (char *) name_root;
+		statements = (Statement *) statement_root;
 	} else if (context_root) {
 		p("ONE shared memory segment");
-		if (contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize > sizeOfSharedMemory + ahashSize * 2) { //
+		if (contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize >
+		    sizeOfSharedMemory + ahashSize * 2) { //
 			ps("ERROR sizeOfSharedMemory TOO SMALL!");
 			ps("contextOffset+nodeSegmentSize+nameSegmentSize+statementSegmentSizeabstractSegment > sizeOfSharedMemory !");
 			p(contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize);
 			p(sizeOfSharedMemory);
 			exit(1);
 		}
-		nodes=(Node*) (context_root + contextOffset);
-		nodeNames=(char*) &context_root[contextOffset + nodeSegmentSize];
-		statements=(Statement*) &context_root[contextOffset + nodeSegmentSize + nameSegmentSize];
-	} else do {
-		p("NO shared memory -> MALLOC memory segments");
-		// 'POTENTIAL LEAK' OK! keep alive as long as app runs!
-		#ifndef __clang_analyzer__
-		statements=(Statement*) malloc(statementSegmentSize + 1);
-		nodes=(Node*) malloc(nodeSegmentSize + 1);
-		nodeNames=(char*) malloc(nameSegmentSize + 1);
-		#endif
-		//    nodeNames=(char*)malloc(sizeof(char)*nameBatch);// incremental
-		if (nodes == 0 or statements == 0 or nodeNames == 0) {
-			ps("System has not enough memory to support ");
-			printf("%ld Nodes and %ld Statements\nDividing by 2 ...\n", maxNodes, maxStatements);
-			maxStatements=maxStatements / 2;
-			maxNodes=maxNodes / 2;
-			// negotiate memory cleverly!!
-		}
-	} while (nodes == 0 or statements == 0);
+		nodes = (Node *) (context_root + contextOffset);
+		nodeNames = (char *) &context_root[contextOffset + nodeSegmentSize];
+		statements = (Statement *) &context_root[contextOffset + nodeSegmentSize + nameSegmentSize];
+	} else
+		do {
+			p("NO shared memory -> MALLOC memory segments");
+			// 'POTENTIAL LEAK' OK! keep alive as long as app runs!
+#ifndef __clang_analyzer__
+			statements = (Statement *) malloc(statementSegmentSize + 1);
+			nodes = (Node *) malloc(nodeSegmentSize + 1);
+			nodeNames = (char *) malloc(nameSegmentSize + 1);
+#endif
+			//    nodeNames=(char*)malloc(sizeof(char)*nameBatch);// incremental
+			if (nodes == 0 or statements == 0 or nodeNames == 0) {
+				ps("System has not enough memory to support ");
+				printf("%ld Nodes and %ld Statements\nDividing by 2 ...\n", maxNodes, maxStatements);
+				maxStatements = maxStatements / 2;
+				maxNodes = maxNodes / 2;
+				// negotiate memory cleverly!!
+			}
+		} while (nodes == 0 or statements == 0);
 //	if (!context_root or virgin_memory) clearMemory();
 //	Statement* oldstatements=context->statements;
-	if (!context)context=getContext(current_context);
-	char* oldnodeNames=context->nodeNames;
+	if (!context)context = getContext(current_context);
+	char *oldnodeNames = context->nodeNames;
 //	Node* oldnodes=context->nodes;
-	context->nodes=nodes;
-	context->statements=statements;
-	context->nodeNames=nodeNames;
-	if(context->currentNameSlot<=0)
-		context->currentNameSlot=1;
-	if(context->statementCount==0)// ??
-		context->statementCount=1;// 0 = error
-	if(context->nodeCount<=0)
-		context->nodeCount=1;
-	if(context->lastNode<=0)
-		context->lastNode=1;
+	context->nodes = nodes;
+	context->statements = statements;
+	context->nodeNames = nodeNames;
+	if (context->currentNameSlot <= 0)
+		context->currentNameSlot = 1;
+	if (context->statementCount == 0)// ??
+		context->statementCount = 1;// 0 = error
+	if (context->nodeCount <= 0)
+		context->nodeCount = 1;
+	if (context->lastNode <= 0)
+		context->lastNode = 1;
 
 //	px(context);
 //	px(nodes);
@@ -640,6 +644,6 @@ void __attribute__((constructor)) my_init(void) {
 	return 0;
 }
 #endif
-extern "C" void allowWipe(){
- _allowWipe=true;
+extern "C" void allowWipe() {
+	_allowWipe = true;
 }

@@ -21,7 +21,7 @@ string select(string s) {
 }
 
 string fixQuery(string s) {
-	s = "^"+ s + string(" $");
+	s = "^" + s + string(" $");
 	s = replace_all(s, "types of ", select(s)); //todo .*types of regex
 	s = replace_all(s, "kinds of ", select(s));
 	s = replace_all(s, "list of ", select(s));
@@ -50,17 +50,17 @@ string fixQuery(string s) {
 	s = replace_all(s, " of ", " where "); // owner= or location=
 	s = replace_all(s, " that ", " where ");
 	s = replace_all(s, "ies ", "y "); //singular
-  if(!contains(s," where "))
-    s = replace_all(s, "s ", " "); //singular singular
+	if (!contains(s, " where "))
+		s = replace_all(s, "s ", " "); //singular singular
 	s = replace_all(s, " $", ""); //trim hack
 	s = replace_all(s, "^", ""); //trim hack
 	return s;
 }
 
-Facet& findFacet(Query& q, Node* field) {
+Facet &findFacet(Query &q, Node *field) {
 	if (q.facetMap.find(field) != q.facetMap.end())
 		return *q.facetMap[field];
-	Facet* f;
+	Facet *f;
 	for (int i = 0; i < q.facets.size(); i++) {
 		f = q.facets[i];
 		if (isA4(f->field, field)) {
@@ -69,7 +69,7 @@ Facet& findFacet(Query& q, Node* field) {
 		}
 	}
 	//  if q.autoFacet
-	Facet& f2 = *new Facet(); // life cycle !?!
+	Facet &f2 = *new Facet(); // life cycle !?!
 	f2.field = field;
 	f2.type = get(field->kind);
 	//  f2.values = new map<Node*, int>();
@@ -78,15 +78,15 @@ Facet& findFacet(Query& q, Node* field) {
 	return f2;
 }
 
-int getFieldNr(Query& q, Node* predicate) {
-  int nrFields=(int)q.fields.size();
+int getFieldNr(Query &q, Node *predicate) {
+	int nrFields = (int) q.fields.size();
 	for (int i = 0; i < nrFields; i++) {
-		Node* field = q.fields[i];
+		Node *field = q.fields[i];
 		if (field == predicate)
 			return i;
 	}
 	for (int i = 0; i < nrFields; i++) {
-		Node* field = q.fields[i];
+		Node *field = q.fields[i];
 		if (eq(predicate->name, field->name))
 			return i;
 		if (isA4(predicate, field, false, false))
@@ -97,63 +97,64 @@ int getFieldNr(Query& q, Node* predicate) {
 	return -1;
 }
 
-void collectFieldsAndFacets(Query& q) {
+void collectFieldsAndFacets(Query &q) {
 	NodeVector all = q.instances;
-	int nrFields = (int)q.fields.size();
-	int size=(int)all.size();
+	int nrFields = (int) q.fields.size();
+	int size = (int) all.size();
 	for (int rowNr = 0; rowNr < size; rowNr++) {
-		Node* n = all[rowNr];
-		q.values[n] = (NodeList) malloc(sizeof (Node*) * nrFields);
-		Statement* s = 0;
+		Node *n = all[rowNr];
+		q.values[n] = (NodeList) malloc(sizeof(Node *) * nrFields);
+		Statement *s = 0;
 		while ((s = nextStatement(n, s, true))) {
-      Node* subject=s->Subject();
-      Node* predicate = s->Predicate();
-      Node* object=s->Object() ;
-      Node* value;
+			Node *subject = s->Subject();
+			Node *predicate = s->Predicate();
+			Node *object = s->Object();
+			Node *value;
 			if (subject == n) {
-        value=object;
-      }else if(object== n){
-        //        predicate = invert(predicate);// reverse! -> 0 if none !!
+				value = object;
+			} else if (object == n) {
+				//        predicate = invert(predicate);// reverse! -> 0 if none !!
 				value = subject;
-      }else{
-        p("Predicate facets not allowed");
-        continue;
-      }
-      if(predicate==Any)continue; // if reverse failed !
-      
-      // fieldValues for node
-      int fieldNr = getFieldNr(q, predicate);
-      if(fieldNr>nrFields)p("fieldNr>nrFields!?!!?");
-      NodeList& fieldValues = q.values[n];
-      if (fieldNr >= 0)// and  !checkNode(nl[fieldNr]))// and nl[fieldNr]==0 don't Over wright todo : multiple values?nl[fieldNr]
-        fieldValues[fieldNr] = value;
-      
-      //        addHit(q,predicate)
-      Facet& f = findFacet(q, predicate);
-      f.hits++;
-      map<Node*, int>& values = *(f.values);
-      if (values.find(value) != values.end()) {// 4m!=4m !?!?
-        values[value] = values[value] + 1;
-        f.maxHits = max(f.maxHits, values[value]);
-      }//        if (values.find(value)!=values.end())// no
-      //          values[value] = values[value] + 1;
-      //          f->values[value] = f->values->[value] + 1;
-      else {
-        values[value] = 1;
-        if (f.maxHits == 0)f.maxHits = 1;
-      }
-      //				else
-      //					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
+			} else {
+				p("Predicate facets not allowed");
+				continue;
+			}
+			if (predicate == Any)continue; // if reverse failed !
+
+			// fieldValues for node
+			int fieldNr = getFieldNr(q, predicate);
+			if (fieldNr > nrFields)p("fieldNr>nrFields!?!!?");
+			NodeList &fieldValues = q.values[n];
+			if (fieldNr >=
+			    0)// and  !checkNode(nl[fieldNr]))// and nl[fieldNr]==0 don't Over wright todo : multiple values?nl[fieldNr]
+				fieldValues[fieldNr] = value;
+
+			//        addHit(q,predicate)
+			Facet &f = findFacet(q, predicate);
+			f.hits++;
+			map<Node *, int> &values = *(f.values);
+			if (values.find(value) != values.end()) {// 4m!=4m !?!?
+				values[value] = values[value] + 1;
+				f.maxHits = max(f.maxHits, values[value]);
+			}//        if (values.find(value)!=values.end())// no
+				//          values[value] = values[value] + 1;
+				//          f->values[value] = f->values->[value] + 1;
+			else {
+				values[value] = 1;
+				if (f.maxHits == 0)f.maxHits = 1;
+			}
+			//				else
+			//					pf("ignoring predicate %d %s\n",predicate->id,predicate->name);
 		}
-    
+
 	}
 }
 
-string renderResults(Query& q) {
+string renderResults(Query &q) {
 	NodeVector all = q.instances;
-	int nrFields = (int)q.fields.size();
+	int nrFields = (int) q.fields.size();
 	stringstream buffer; //(1000000, ' ');
-  
+
 	buffer << "<response>\n";
 	buffer << "<lst name=\"responseHeader\">\n";
 	buffer << "<int name=\"QTime\">0</int>\n";
@@ -164,14 +165,15 @@ string renderResults(Query& q) {
 	buffer << " <int name=\"limit\">" << q.limit << "</int>\n";
 	buffer << "</lst>\n";
 	buffer << "</lst>\n";
-  
-  //	buffer << "<table name=\"response\" numFound=" << q.instances.size() << " start=" << q.start << " rows=" << q.hitsPerPage << ">\n";
-	buffer << "<results numFound='" << q.instances.size() << "' start='" << q.start << "' rows='" << q.hitsPerPage << "'>\n";
+
+	//	buffer << "<table name=\"response\" numFound=" << q.instances.size() << " start=" << q.start << " rows=" << q.hitsPerPage << ">\n";
+	buffer << "<results numFound='" << q.instances.size() << "' start='" << q.start << "' rows='" << q.hitsPerPage
+	       << "'>\n";
 	//  buffer << "<result name=\"response\" numFound=\"559\" start=\"0\">\n";
-  
+
 	// Field header
 	buffer << "<th>\n";
-  
+
 	buffer << "  <td name=\"id\">id</td>\n";
 	//		buffer << "  <td name=\"context\">context</td>\n";
 	buffer << "  <td name=\"name\">name</td>\n";
@@ -180,15 +182,17 @@ string renderResults(Query& q) {
 	for (int columnNr = 0; columnNr < nrFields; columnNr++) {
 		Node *f = q.fields[columnNr];
 		string kind = "td"; // "str"
-		buffer << "  <" << kind << " name=\"" << f->name << "\" field_id=" << f->id << ">" << f->name << "</" << kind << ">\n";
+		buffer << "  <" << kind << " name=\"" << f->name << "\" field_id=" << f->id << ">" << f->name << "</" << kind
+		       << ">\n";
 	}
 	buffer << "</th>\n";
-  
+
 	// results
 	for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++) {
-		Node* n = all[rowNr];
+		Node *n = all[rowNr];
 		//  buffer << "<doc>\n";
-		buffer << "<entity name='" << n->name << "' id='" << n->id << "' statementCount='" << n->statementCount << "'>\n";
+		buffer << "<entity name='" << n->name << "' id='" << n->id << "' statementCount='" << n->statementCount
+		       << "'>\n";
 		//  buffer << "<doc>\n";
 		//		buffer << "<tr name='entity'>\n";
 		//		buffer << "  <td name=\"id\">" << n->id << "</td>\n";
@@ -199,15 +203,16 @@ string renderResults(Query& q) {
 		NodeList values = q.values[n];
 		for (int columnNr = 0; columnNr < nrFields; columnNr++) {
 			Node *f = q.fields[columnNr];
-			if(f==Any)continue;
+			if (f == Any)continue;
 			Node *v = values[columnNr];
-      
+
 			string kind = "field"; // "td"; // "str"
 			if (!checkNode(v)) {
 				buffer << "  <" << kind << " name='" << f->name << "' missing='true'/>\n";
 				continue;
 			} else
-				buffer << "  <" << kind << " name=\"" << f->name << "\" value_id='" << v->id << "'>" << v->name << "</" << kind << ">\n";
+				buffer << "  <" << kind << " name=\"" << f->name << "\" value_id='" << v->id << "'>" << v->name << "</"
+				       << kind << ">\n";
 		}
 		buffer << "</entity>\n";
 		//		buffer << "</tr>\n";
@@ -215,34 +220,34 @@ string renderResults(Query& q) {
 	}
 	//	buffer << "</table>\n";
 	buffer << "</results>\n";
-  
+
 	// renderFacets
 	//	buffer << "<lst name=\"facet_counts\"/>\n";
 	//  buffer << "<lst name=\"facet_queries\"/>\n";
 	//	buffer << "<lst name=\"facet_fields\"/>\n";
 	buffer << "<facets>\n";
 	for (int i = 0; i < q.facets.size(); i++) {
-		Facet& f = *q.facets[i];
+		Facet &f = *q.facets[i];
 		if (f.field == Synonym)continue;
 		if (f.field == Member)continue;
 		if (f.field == Derived)continue;
 		//		if(f.field==SuperClass)continue;
 		buffer << "<facet name=\"" << f.field->name << "\">\n";
-		std::multimap<int, Node*> sorted;
-		map<Node*, int>::iterator it = f.values->begin();
+		std::multimap<int, Node *> sorted;
+		map<Node *, int>::iterator it = f.values->begin();
 		while (it != f.values->end()) {
-			sorted.insert(std::pair<int, Node*>(it->second, it->first));
+			sorted.insert(std::pair<int, Node *>(it->second, it->first));
 			it++;
 		}
-    
-    
-		multimap<int, Node*>::iterator ti = sorted.end();
+
+
+		multimap<int, Node *>::iterator ti = sorted.end();
 		int max = 0;
-		while (ti-- != sorted.begin() and max++<q.maxFacets) {
+		while (ti-- != sorted.begin() and max++ < q.maxFacets) {
 			Node *slot = ti->second;
 			int count = ti->first; // same as (*it).first  (the key value)
-			if(count>1)// todo : switch
-        buffer << "  <int name=\"" << slot->name << "\">" << count << "</int>\n";
+			if (count > 1)// todo : switch
+				buffer << "  <int name=\"" << slot->name << "\">" << count << "</int>\n";
 		}
 		buffer << "</facet>\n";
 	}
@@ -255,78 +260,78 @@ NodeVector query(string s, int limit/*=resultLimit*/) {
 	p(("Executing query "));
 	ps(s);
 	Query q = parseQuery(s, limit);
-	lookupLimit=1000000;// todo: good
+	lookupLimit = 1000000;// todo: good
 //  q.queryType=sqlQuery;// njet!
-  NodeVector results=query(q);
-  showNodes(results);
+	NodeVector results = query(q);
+	showNodes(results);
 	return results;
-  //	return evaluate_sql(s, limit);
+	//	return evaluate_sql(s, limit);
 }
 
 
-NodeVector sqlTable(Query& q){
-  NodeVector all=q.instances;
-  NodeVector rows;
-  if(q.fields.size()==0)return q.instances;
-  if(q.fields.size()==1)
-    for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++){
-      Node* n = all[rowNr];
-      if(q.values[n]){
-        Node *v = q.values[n][0];
-        if (checkNode(v))
-          rows.push_back(v);
-        else
-          rows.push_back(n);//DEBUG:n Any
-      }
-      else rows.push_back(n);// Any
-    }
-  //copy to dummy result
-  if(q.fields.size()>1)
-    for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++) {
-      Node* n = all[rowNr];
-      Node* dummy=getNew(n->name);
-      dummy->kind=Internal->kind;
-      rows.push_back(dummy);
-      for (int columnNr = 0; columnNr < q.fields.size(); columnNr++) {
-        Node *f = q.fields[columnNr];
-        if(f==Any)continue;
-        Node *v = q.values[n][columnNr];
-        //			if (!checkNode(v))addStatement(dummy,f,Null);else
-        addStatement(dummy,f,v);
-      }
-    }
-  return rows;
+NodeVector sqlTable(Query &q) {
+	NodeVector all = q.instances;
+	NodeVector rows;
+	if (q.fields.size() == 0)return q.instances;
+	if (q.fields.size() == 1)
+		for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++) {
+			Node *n = all[rowNr];
+			if (q.values[n]) {
+				Node *v = q.values[n][0];
+				if (checkNode(v))
+					rows.push_back(v);
+				else
+					rows.push_back(n);//DEBUG:n Any
+			} else rows.push_back(n);// Any
+		}
+	//copy to dummy result
+	if (q.fields.size() > 1)
+		for (int rowNr = 0; rowNr < minimum((int) all.size(), q.limit); rowNr++) {
+			Node *n = all[rowNr];
+			Node *dummy = getNew(n->name);
+			dummy->kind = Internal->kind;
+			rows.push_back(dummy);
+			for (int columnNr = 0; columnNr < q.fields.size(); columnNr++) {
+				Node *f = q.fields[columnNr];
+				if (f == Any)continue;
+				Node *v = q.values[n][columnNr];
+				//			if (!checkNode(v))addStatement(dummy,f,Null);else
+				addStatement(dummy, f, v);
+			}
+		}
+	return rows;
 }
 
-NodeVector query(Query& q) {
-	NodeVector all = allInstances(q.keyword,1,lookupLimit,false);
+NodeVector query(Query &q) {
+	NodeVector all = allInstances(q.keyword, 1, lookupLimit, false);
 	for (int i = 0; i < q.keywords.size(); i++)
 		if (q.keywords[i] != q.keyword)
 			mergeVectors(&all, allInstances(q.keywords[i]));
 	q.instances = all;
 	for (int i = 0; i < q.filters.size(); i++) {
-		pf("candidates so far %lu\n",all.size());
-		Statement* _filter = q.filters[i];
+		pf("candidates so far %lu\n", all.size());
+		Statement *_filter = q.filters[i];
 		clearAlgorithmHash();
 		q.instances = filter(q, _filter);
 	}
-	pf("candidates: %lu\n",all.size());
-  pf("hits: %lu\n",q.instances.size());
-	
-  collectFieldsAndFacets(q);
-  
-  if(q.queryType==sqlQuery ){return sqlTable(q);}
-  
-  return q.instances; // renderResults(q);
+	pf("candidates: %lu\n", all.size());
+	pf("hits: %lu\n", q.instances.size());
+
+	collectFieldsAndFacets(q);
+
+	if (q.queryType == sqlQuery) { return sqlTable(q); }
+
+	return q.instances; // renderResults(q);
 }
 
-NodeVector nodeVector(vector<char*> v) {
+NodeVector nodeVector(vector<char *> v) {
 	NodeVector nv;
 	for (int i = 0; i < v.size(); i++) {
 		nv.push_back(getThe(v[i]));
 	}
 	return nv;
 }
+
 NodeVector nodeVector(vector<string> v) {
 	NodeVector nv;
 	for (int i = 0; i < v.size(); i++) {
@@ -337,32 +342,31 @@ NodeVector nodeVector(vector<string> v) {
 
 // sentenceToStatement
 //if (!contains(s, ".")
-Statement* parseSentence(string sentence, bool learn/* = false*/) {
-  
-  //	int recurse = 0;
-  //	int limit = 5;
+Statement *parseSentence(string sentence, bool learn/* = false*/) {
+
+	//	int recurse = 0;
+	//	int limit = 5;
 	sentence = replace_all(sentence, " a ", " ");
 	sentence = replace_all(sentence, " the ", " ");
-  char** matches=(char**)malloc(100);
-  char* data=editable(sentence.data());
-  int count=splitStringC(data,matches, ' ');//matches.size();
-  //	vector<char*> matches = splitString(sentence, " ");
+	char **matches = (char **) malloc(100);
+	char *data = editable(sentence.data());
+	int count = splitStringC(data, matches, ' ');//matches.size();
+	//	vector<char*> matches = splitString(sentence, " ");
 	if (count != 3) {
 		ps("Currently only triples can be learned. If you have multiple_word nodes combine them with an underscore");
 		return 0;
 	}
 	fixLabel(matches[0]);
 	fixLabel(matches[2]);
-	replaceChar(matches[0], '_',' ');
-	replaceChar(matches[2], '_',' ');
-	Node* subject = getThe(matches[0]);
-	Node* predicate = getThe(matches[1]);// getRelation(matches[1]) or 
-	Node* object;
-	if(predicate==Instance){
-		if(atoi(matches[2]))object=get(atoi(matches[2]));
-		else object=getNew(matches[2]);
-	}
-	else object= getThe(matches[2]);
+	replaceChar(matches[0], '_', ' ');
+	replaceChar(matches[2], '_', ' ');
+	Node *subject = getThe(matches[0]);
+	Node *predicate = getThe(matches[1]);// getRelation(matches[1]) or
+	Node *object;
+	if (predicate == Instance) {
+		if (atoi(matches[2]))object = get(atoi(matches[2]));
+		else object = getNew(matches[2]);
+	} else object = getThe(matches[2]);
 //	Node* subject = 0;
 //	Node* predicate = 0;
 //	Node* object = 0;
@@ -400,33 +404,31 @@ Statement* parseSentence(string sentence, bool learn/* = false*/) {
 }
 
 
+Statement *parseFilter(string s, bool learn = false) {
+	//  if (!contains(s, " "))return addStatement(Any,Any,getAbstract(s.data()));
+	if (!contains(s, ".") and !contains(s, "=") and !contains(s, "<") and !contains(s, ">")) {
+		if (!contains(s, " ")) {
+			Statement *anyField = addStatement(Any, Equals, getAbstract(s.data()));
+			Statement *anyProperty = addStatement(Any, getAbstract(s.data()), Any);
+			return addStatement(reify(anyField), Or, reify(anyProperty));
+		} else
+			return parseSentence(s);
+	}
 
-Statement *parseFilter(string s,bool learn=false) {
-  //  if (!contains(s, " "))return addStatement(Any,Any,getAbstract(s.data()));
-	if (!contains(s, ".") and !contains(s, "=") and !contains(s, "<") and !contains(s, ">")){
-    if (!contains(s, " ")){
-      Statement* anyField=addStatement(Any,Equals,getAbstract(s.data()));
-      Statement* anyProperty =addStatement(Any,getAbstract(s.data()),Any);
-      return addStatement(reify(anyField), Or,reify(anyProperty));
-    }
-    else
-      return parseSentence(s);
-  }
-  
-	Node* subject = Any;
-	Node* predicate = Any;
-	Node* object;// Any;
+	Node *subject = Any;
+	Node *predicate = Any;
+	Node *object;// Any;
 	// a.b=>(a,Member,b);
 	// a.b=c => (a,b,c);
 	if (s.find(".") != s.npos) {
-    if(atoi(s.substr(s.find(".")+1).data())==0){// no 3.14
-		subject = getThe(s.substr(0, s.find(".")));
-		s = s.substr(s.find(".") + 1);
-    }
+		if (atoi(s.substr(s.find(".") + 1).data()) == 0) {// no 3.14
+			subject = getThe(s.substr(0, s.find(".")));
+			s = s.substr(s.find(".") + 1);
+		}
 	}
-  
+
 	if (contains(s, " is ")) {
-		Node* p = getThe(s.substr(0, s.find(" is ")));
+		Node *p = getThe(s.substr(0, s.find(" is ")));
 		if (subject != Any)predicate = p;
 		else {
 			subject = p;
@@ -436,17 +438,17 @@ Statement *parseFilter(string s,bool learn=false) {
 	}
 	if (contains(s, "=")) {
 		string ding = s.substr(0, s.find("="));
-		Node* p = getThe(ding);
+		Node *p = getThe(ding);
 		if (subject != Any)
 			predicate = p; // a.b=c
 		else {
 			subject = p; // b=c
 			predicate = Equals;
 		}
-    s = s.substr(s.find("=") + 1);
+		s = s.substr(s.find("=") + 1);
 	}
 	if (contains(s, ">")) {
-		Node* p = getThe(s.substr(0, s.find(">")));
+		Node *p = getThe(s.substr(0, s.find(">")));
 		if (subject != Any)
 			predicate = p;
 		else {
@@ -456,7 +458,7 @@ Statement *parseFilter(string s,bool learn=false) {
 		s = s.substr(s.find(">") + 1);
 	}
 	if (contains(s, "<")) {
-		Node* p = getThe(s.substr(0, s.find("<")));
+		Node *p = getThe(s.substr(0, s.find("<")));
 		if (subject != Any)predicate = p;
 		else {
 			subject = p;
@@ -464,42 +466,41 @@ Statement *parseFilter(string s,bool learn=false) {
 		}
 		s = s.substr(s.find("<") + 1);
 	}
-	char* ob=fixQuotesAndTrim(editable(s.data()));
+	char *ob = fixQuotesAndTrim(editable(s.data()));
 
-	if(ob[0]=='#'){
-		autoIds=false;
-		object=value(&ob[1], atoi(&ob[1]), Number);
-	}
-	else object = getThe(ob);// auto_ids ??? a.b=123 id or value???
-	if(learn)return addStatement(subject, predicate, object);
+	if (ob[0] == '#') {
+		autoIds = false;
+		object = value(&ob[1], atoi(&ob[1]), Number);
+	} else object = getThe(ob);// auto_ids ??? a.b=123 id or value???
+	if (learn)return addStatement(subject, predicate, object);
 	else return pattern(subject, predicate, object);
 }
 
 Query parseQuery(string s, int limit) {
-  autoIds=false;
+	autoIds = false;
 	Query q;
-  // static ???
-	char* fields;
-	char* type;
-	char* match;
-	int li = (int)s.find("limit");
+	// static ???
+	char *fields;
+	char *type;
+	char *match;
+	int li = (int) s.find("limit");
 	if (li > 0) {
 		limit = atoi(s.substr(li + 5).c_str());
 		s = s.substr(0, li);
 	}
 	q.limit = limit;
 	p(s);
-	s=fixQuery(s);
+	s = fixQuery(s);
 	if ((int) s.find("from") < 0)
 		s = string("select * from ") + s; // why neccessary???
 	if ((int) s.find("where") < 0)
 		s = s + " where *"; // why neccessary???
 	//sscanf(s.c_str(), "select %s from %s where %s", fields, type,match);// NO SPACES :(
-	char* ss=modifyConstChar(s.c_str());
-	match=cut_to(ss," where "); 
-	type=cut_to(ss," from ");
-	fields=cut_to(ss,"select ");
-  if(!germanLabels and type[strlen(type)-1]=='s')type[strlen(type)-1]=0;// remove plural todo better
+	char *ss = modifyConstChar(s.c_str());
+	match = cut_to(ss, " where ");
+	type = cut_to(ss, " from ");
+	fields = cut_to(ss, "select ");
+	if (!germanLabels and type[strlen(type) - 1] == 's')type[strlen(type) - 1] = 0;// remove plural todo better
 	p(ss);
 	p(fields);
 	p(type);
@@ -508,9 +509,9 @@ Query parseQuery(string s, int limit) {
 	//  q.keywords=nodeVector(splitString(type, ","));
 	//  if(q.keywords.size()>0)
 	//  q.keyword=q.keywords[0];
-  if(!eq(fields,"*"))
+	if (!eq(fields, "*"))
 		q.fields = nodeVector(splitString(fields, ","));
-	if(eq(match,"*"))return q;
+	if (eq(match, "*"))return q;
 	vector<string> matches = splitString(replace_all(match, " and ", ","), ",");
 	for (int i = 0; i < matches.size(); i++) {
 		string f = matches[i];
@@ -552,28 +553,28 @@ NodeVector evaluate_sql(string s, int limit = 20) {//,bool onlyResults=true){
 	p(fields);
 	p(type);
 	p(where);
-  
+
 //	int batch = limit * 50; // 200000000;//// dont limit wegen filter!! limit + 100;
 	//  while (found.size() < limit and batch < 200000000) {
 	//    batch = batch * 100; //=> max 9 runs
 	// what if all==1000000 but limit==3?
-  
+
 	NodeVector all = allInstances(getAbstract(type));
 	// find_all(type, current_context, true, batch); // dont limit wegen filter!!
 	pf("%lu so far\n", all.size());
 	if (where[0])
 		found = filter(all, where); //fields
-  
+
 	//  add instance matches
 	for (int i = 0; i < all.size(); i++) {
 		if (found.size() >= limit)goto good;
 		all.clear(); // hack to reset all_instances
-		NodeVector all2 = all_instances((Node*) all[i], true, limit);
+		NodeVector all2 = all_instances((Node *) all[i], true, limit);
 		if (where[0])
 			mergeVectors(&found, filter(all2, where)); //fields)
 	}
-  
-good:
+
+	good:
 	if (found.size() > limit)// dont deliver too much
 		found.erase(found.begin() + limit, found.end());
 	showNodes(found);
@@ -582,34 +583,36 @@ good:
 
 // maria.freund=sven
 // maria.freund => sven
-Statement* evaluate(string data,bool learn/*false*/) {
-	autoIds=true;
-	Statement* pattern = parseFilter(data,learn); //Hypothesis Aim Objective supposition assumption
-	if(learn){pattern->context=wordnet;return pattern;}
+Statement *evaluate(string data, bool learn/*false*/) {
+	autoIds = true;
+	Statement *pattern = parseFilter(data, learn); //Hypothesis Aim Objective supposition assumption
+	if (learn) {
+		pattern->context = wordnet;
+		return pattern;
+	}
 	// TODO MARK + CLEAR PATTERNS!!!
-	Statement* result = findStatement(pattern->Subject(), pattern->Predicate(), pattern->Object());
+	Statement *result = findStatement(pattern->Subject(), pattern->Predicate(), pattern->Object());
 //	show(pattern->Subject());
-	if (result and result!=pattern){
-    deleteStatement(pattern);// How come it doesn't find itself?
-    return result;
-  }
-	else {
-    //		return addStatement(s->Subject(), s->Predicate(), s->Object(), true);
-    pattern->context=0;// NO LONGER PaTTERN! PROBLEM: abstract vs 'the'
-    return pattern;
-  }
+	if (result and result != pattern) {
+		deleteStatement(pattern);// How come it doesn't find itself?
+		return result;
+	} else {
+		//		return addStatement(s->Subject(), s->Predicate(), s->Object(), true);
+		pattern->context = 0;// NO LONGER PaTTERN! PROBLEM: abstract vs 'the'
+		return pattern;
+	}
 }
 
-Node* match(string data) {
+Node *match(string data) {
 	//  size_type t=data.find("[");
-	const char* match = data.substr(data.find("[") + 1, data.find("]") - 1).c_str();
-	const char* word = data.substr(0, data.find("[")).c_str();
-  return findMatch(getAbstract(word), match);
+	const char *match = data.substr(data.find("[") + 1, data.find("]") - 1).c_str();
+	const char *word = data.substr(0, data.find("[")).c_str();
+	return findMatch(getAbstract(word), match);
 }
 
 NodeVector exclude(NodeVector some, NodeVector less) {// bool keep destination unmodified=TRUE
-	for (int i = (int)some.size(); i > 0; --i) {
-		if (contains(less, (Node*) some[i]))
+	for (int i = (int) some.size(); i > 0; --i) {
+		if (contains(less, (Node *) some[i]))
 			some.erase(some.begin() + i);
 	}
 	return some;
@@ -618,24 +621,27 @@ NodeVector exclude(NodeVector some, NodeVector less) {// bool keep destination u
 int queryContext = _pattern; // hypothesis
 
 // TODO MARK + CLEAR PATTERNS!!! [clear OK]
-Statement* pattern(Node* subject, Node* predicate, Node* object) {
+Statement *pattern(Node *subject, Node *predicate, Node *object) {
 	Statement *s = addStatement(subject, predicate, object, false); //todo mark (+reuse?) !
-  //#ifdef useContext
+	//#ifdef useContext
 	if (checkStatement(s))
 		s->context = _pattern;
-	else{printf("Error: no valid Statement");return 0;}
+	else {
+		printf("Error: no valid Statement");
+		return 0;
+	}
 //		return Error;
-  //#endif
-	Node* pattern = reify(s); // why here?
+	//#endif
+	Node *pattern = reify(s); // why here?
 	pattern->kind = _pattern;
 	addStatement(pattern, is_a, Pattern, false);
 	return s; // pattern?
 }
 
-NodeVector filter(NodeVector all, cchar* matches) {
+NodeVector filter(NodeVector all, cchar *matches) {
 	if (!matches or strlen(matches) == 0 or all.size() == 0)return all;
-  
-	Query& q = *new Query();
+
+	Query &q = *new Query();
 	q.instances = all;
 	static int calls = 0;
 	// !! method static declaration will still increase with: !!!
@@ -646,21 +652,21 @@ NodeVector filter(NodeVector all, cchar* matches) {
 	stringstream ss(matchess); // Insert the string into a stream
 	while (ss >> buf)
 		tokens.push_back(buf);
-  
-	for (int y = (int)all.size() - 1; y >= 0; --y) {
-		Node* node = (Node *) all[y];
+
+	for (int y = (int) all.size() - 1; y >= 0; --y) {
+		Node *node = (Node *) all[y];
 		if (!checkNode(node, 0, 0, 1))continue;
 		if (!checkNode(node))continue;
 		p("!++++++++++++++++++++++++++++\nfiltering node:");
 		//		if (quiet)printf("%s ?",node->name);
 		show(node, false);
-    
+
 		p("+++++++++++++++++++++++++++++\n");
 		bool good = true;
-    
+
 		if (!quiet)
 			printf("%lu tokens in %s\n", tokens.size(), matches);
-    
+
 		// create match tree
 		for (int i = 0; i < tokens.size(); i++) {
 			string match = tokens[i];
@@ -676,35 +682,35 @@ NodeVector filter(NodeVector all, cchar* matches) {
 				match.replace(0, strlen(node->name), "");
 			if (match.find(".") == 0)
 				match.replace(0, 1, "");
-			int comp = (int)match.find("!=");
+			int comp = (int) match.find("!=");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 2).data());
 				filter(q, pattern(s, Not, o));
 				continue;
 			}
-			comp = (int)match.find("=");
+			comp = (int) match.find("=");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
 				filter(q, pattern(s, Equals, o));
 				continue;
 			}
-			comp = (int)match.find("~");
+			comp = (int) match.find("~");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
 				filter(q, pattern(s, Circa, o));// todo: approximately
 				continue;
 			}
-			comp = (int)match.find(">");
+			comp = (int) match.find(">");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
 				filter(q, pattern(s, Greater, o));
 				continue;
 			}
-			comp = (int)match.find("<");
+			comp = (int) match.find("<");
 			if (comp >= 0) {
 				Node *s = getThe(match.substr(0, comp).data());
 				Node *o = parseValue(match.substr(comp + 1).data());
@@ -738,7 +744,7 @@ NodeVector filter(NodeVector all, cchar* matches) {
 //}
 // must assign q.instances=filter(
 
-NodeVector filter(Query& q, Statement* filterTree, int limit) {
+NodeVector filter(Query &q, Statement *filterTree, int limit) {
 	NodeVector hits;
 	NodeVector all = q.instances;
 	if (limit < 0)limit = q.lookuplimit;
@@ -748,7 +754,7 @@ NodeVector filter(Query& q, Statement* filterTree, int limit) {
 	N subject = filterTree->Subject();
 	N predicate = filterTree->Predicate();
 	N object = filterTree->Object();
-  
+
 	if (predicate == And) {
 		NV a = filter(q, subject, q.lookuplimit);
 		q.instances = a;
@@ -761,52 +767,54 @@ NodeVector filter(Query& q, Statement* filterTree, int limit) {
 		return a;
 	} else if (predicate == Not) {// todo test
 		NV a = all; //.clone()!
-		NV b = filter(q, object, (int)all.size());
+		NV b = filter(q, object, (int) all.size());
 		return exclude(a, b);
 	}
-  
+
 	p(filterTree);
-	int size = (int)all.size();
+	int size = (int) all.size();
 	for (int y = size - 1; y >= 0 and hits.size() <= limit; --y) {
-		Node* node = (Node *) all.at(y);
-    //    if(q.onlyObjects)
-    //		if (node->kind == Abstract->id)continue;
+		Node *node = (Node *) all.at(y);
+		//    if(q.onlyObjects)
+		//		if (node->kind == Abstract->id)continue;
 //		show(node);
 		// cities where city->population->3999
 		// cities where *->population->3999
-    Statement* found=0;
-    if (predicate == Equals) // a=b => n.a:b
-			found=findStatement(node, subject, object, q.recursion, q.semantic, false, q.predicatesemantic,q.matchNames);
-    else if (isA4(subject, node, q.recursion, q.semantic) or subject == Any){
-      found= findStatement(node, predicate, object, q.recursion, q.semantic, false, q.predicatesemantic,q.matchNames);
-    }else {
-      // cities where population->equals->3999
+		Statement *found = 0;
+		if (predicate == Equals) // a=b => n.a:b
+			found = findStatement(node, subject, object, q.recursion, q.semantic, false, q.predicatesemantic,
+			                      q.matchNames);
+		else if (isA4(subject, node, q.recursion, q.semantic) or subject == Any) {
+			found = findStatement(node, predicate, object, q.recursion, q.semantic, false, q.predicatesemantic,
+			                      q.matchNames);
+		} else {
+			// cities where population->equals->3999
 			// match Berlin.population=3999
-      
-      // free filters: // cities where population->equals->3999
-      has(node, filterTree, q.recursion, q.semantic, false, q.predicatesemantic);
-      found=/*TRUE*/filterTree;// hack
-    }
-    
-    if(!found)
-      all.erase(all.begin() + y);
-    else {
-      hits.push_back(node);
-      ps("found");
-      show(node, false);
-      p(y);
-    }
+
+			// free filters: // cities where population->equals->3999
+			has(node, filterTree, q.recursion, q.semantic, false, q.predicatesemantic);
+			found =/*TRUE*/filterTree;// hack
+		}
+
+		if (!found)
+			all.erase(all.begin() + y);
+		else {
+			hits.push_back(node);
+			ps("found");
+			show(node, false);
+			p(y);
+		}
 	}
 	return hits;
 }
 
-NodeVector filter(Query& q, Node* _filter, int limit) {
+NodeVector filter(Query &q, Node *_filter, int limit) {
 	if (isStatement(_filter))
 		return filter(q, isStatement(_filter));
 	NodeVector all = q.instances;
 	NodeVector hits;
-	for (int y = (int)all.size() - 1; y >= 0 and hits.size() <= limit; --y) {
-		Node* node = (Node *) all[y];
+	for (int y = (int) all.size() - 1; y >= 0 and hits.size() <= limit; --y) {
+		Node *node = (Node *) all[y];
 		if (!findStatement(node, Any, _filter, q.recursion, q.semantic, false, q.predicatesemantic)) {
 			all.erase(all.begin() + y);
 		} else {
@@ -820,7 +828,7 @@ NodeVector filter(Query& q, Node* _filter, int limit) {
 
 //char* all="*";
 
-void enqueueClass(Query& q, queue<Node*>& classQueue, Node * c) {
+void enqueueClass(Query &q, queue<Node *> &classQueue, Node *c) {
 	if (!checkNode(c))return;
 	//  if(!contains(classQueue | q.classes, c)){// cyclesave!
 	classQueue.push(c);
@@ -828,10 +836,10 @@ void enqueueClass(Query& q, queue<Node*>& classQueue, Node * c) {
 	//  }
 }
 
-NodeVector & nodesOfDirectType(int kind) {
-	NodeVector* all=new NodeVector;
+NodeVector &nodesOfDirectType(int kind) {
+	NodeVector *all = new NodeVector;
 	for (int i = 0; i < context->nodeCount; i++) {
-		Node* n = &context->nodes[i];
+		Node *n = &context->nodes[i];
 		if (checkNode(n, i, false, false) and n->kind == kind)
 			all->push_back(n);
 	}
@@ -905,8 +913,8 @@ NodeVector & nodesOfDirectType(int kind) {
 
 // todo?: EXCLUDING classes and direct instances on demand!
 // WDYM direct instances ???
-NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
-	static NodeSet* all=new NodeSet;
+NodeSet *all_instances3(Node *type, int recurse, int max, bool includeClasses) {
+	static NodeSet *all = new NodeSet;
 	if (type == 0) {
 		all->clear(); // hack!!!
 		return 0;
@@ -919,9 +927,9 @@ NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 	runs++;
 	if (runs > maxNodes)return all; // no infinite loops!
 	NodeVector subtypes;
-	bool is_abstract=isAbstract(type);
+	bool is_abstract = isAbstract(type);
 	// todo : via instanceFilter see below
-	Statement* s = 0;
+	Statement *s = 0;
 	while ((s = nextStatement(type, s)) and all->size() <= max and subtypes.size() <= max) {
 		//	for (int i = 0; i < type->statementCount; i++) {
 		//		Statement* s = getStatementNr(type, i);
@@ -934,18 +942,35 @@ NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 		//  	po
 		p(s);
 		if (s->Subject() == type) {// todo contains SLOW!!!
-			if (is_abstract and isA4(s->Predicate(), Instance, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (!is_abstract and isA4(s->Predicate(), Instance, false, false))if (!contains(all, s->Object()))all->insert(s->Object());
-			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (is_abstract and isA4(s->Predicate(), Instance, false, false))
+				if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (!is_abstract and isA4(s->Predicate(), Instance, false, false))
+				if (!contains(all, s->Object()))
+					all->insert(s->Object());
+			if (isA4(s->Predicate(), SubClass, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Plural, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Synonym, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Translation, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
 		} else {
 			if (isA4(s->Predicate(), Type, false, false))all->insert(s->Subject());
 			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
-			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
-			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
-			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Plural, false, false))
+				if (!contains(subtypes, s->Subject()))
+					subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Synonym, false, false))
+				if (!contains(subtypes, s->Subject()))
+					subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Translation, false, false))
+				if (!contains(subtypes, s->Subject()))
+					subtypes.push_back(s->Subject());
 		}
 	}
 	p(all->size());
@@ -954,13 +979,13 @@ NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 		for (int i = 0; i < subtypes.size(); i++) {// subtypes
 			if (all->size() >= max)
 				return all;
-			Node* x = (Node*) subtypes[i];
+			Node *x = (Node *) subtypes[i];
 			pf("all %d %s *%d\n", x->statementCount, x->name, x->id);
 			if (!checkNode(x))continue; // how??
 			//			if (recurse)
 			//				more = all_instances(x, recurse, max - all.size());// why sooo slooow ???
 			//			else
-			lookupLimit=max;
+			lookupLimit = max;
 			NodeVector more = instanceFilter(x);//,null,max); //  all_instances(x, recurse-1, max);
 			mergeVectors(all, more);
 		}
@@ -971,8 +996,8 @@ NodeSet* all_instances3(Node* type, int recurse, int max, bool includeClasses) {
 	return all;
 }
 
-NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasses) {
-	static NodeVector& all = *new NodeVector; // empty before!
+NodeVector &all_instances2(Node *type, int recurse, int max, bool includeClasses) {
+	static NodeVector &all = *new NodeVector; // empty before!
 //	static NodeSet& alles=*new NodeSet;
 	NodeVector v;
 	if (type == 0) {
@@ -987,12 +1012,12 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 	runs++;
 	if (runs > maxNodes)return all; // no infinite loops!
 	NodeVector subtypes;
-  bool is_abstract=isAbstract(type);
+	bool is_abstract = isAbstract(type);
 	// todo : via instanceFilter see below
-  Statement* s = 0;
+	Statement *s = 0;
 	while ((s = nextStatement(type, s)) and all.size() <= max and subtypes.size() <= max) {
-    //	for (int i = 0; i < type->statementCount; i++) {
-    //		Statement* s = getStatementNr(type, i);
+		//	for (int i = 0; i < type->statementCount; i++) {
+		//		Statement* s = getStatementNr(type, i);
 		if (!checkStatement(s))continue;
 		if (s->Predicate() == type)continue; // NO Predicate matches!!
 		//		if (s->subject == 613424) {
@@ -1000,24 +1025,41 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 		//			show((Node*) (all.end() - 1).base());
 		//		}
 		//  	po
-    p(s);
+		p(s);
 		if (s->Subject() == type) {// todo contains SLOW!!!
-			if (is_abstract and isA4(s->Predicate(), Instance, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (!is_abstract and isA4(s->Predicate(), Instance, false, false))if (!contains(all, s->Object()))all.push_back(s->Object());
-			if (isA4(s->Predicate(), SubClass, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
-			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (is_abstract and isA4(s->Predicate(), Instance, false, false))
+				if (!contains(subtypes, s->Object()))subtypes.push_back(s->Object());
+			if (!is_abstract and isA4(s->Predicate(), Instance, false, false))
+				if (!contains(all, s->Object()))
+					all.push_back(s->Object());
+			if (isA4(s->Predicate(), SubClass, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Plural, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Synonym, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
+			if (isA4(s->Predicate(), Translation, false, false))
+				if (!contains(subtypes, s->Object()))
+					subtypes.push_back(s->Object());
 		} else {
 			if (isA4(s->Predicate(), Type, false, false))
 				all.push_back(s->Subject());
 			if (isA4(s->Predicate(), SuperClass, false, false))subtypes.push_back(s->Subject());
-			if (isA4(s->Predicate(), Plural, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
-			if (isA4(s->Predicate(), Synonym, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
-			if (isA4(s->Predicate(), Translation, false, false))if (!contains(subtypes, s->Subject()))subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Plural, false, false))
+				if (!contains(subtypes, s->Subject()))
+					subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Synonym, false, false))
+				if (!contains(subtypes, s->Subject()))
+					subtypes.push_back(s->Subject());
+			if (isA4(s->Predicate(), Translation, false, false))
+				if (!contains(subtypes, s->Subject()))
+					subtypes.push_back(s->Subject());
 		}
-    
-    
+
+
 	}
 	p(all.size());
 	//	subtypes.push_back(type); NOT AGAIN
@@ -1025,16 +1067,16 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 		for (int i = 0; i < subtypes.size(); i++) {// subtypes
 			if (all.size() >= max)
 				return all;
-			Node* x = (Node*) subtypes[i];
+			Node *x = (Node *) subtypes[i];
 			pf("all %d %s *%d\n", x->statementCount, x->name, x->id);
 			if (!checkNode(x))continue; // how??
 			NodeVector more;
 			//			if (recurse)
 			//				more = all_instances(x, recurse, max - all.size());// why sooo slooow ???
 			//			else
-			lookupLimit=max;
+			lookupLimit = max;
 			more = instanceFilter(x);//,null,max); //  all_instances(x, recurse-1, max);
-			if(all.size()<=1)all=more;
+			if (all.size() <= 1)all = more;
 			else mergeVectors(&all, more);
 		}
 	subtypes.push_back(type);
@@ -1044,17 +1086,17 @@ NodeVector & all_instances2(Node* type, int recurse, int max, bool includeClasse
 	return all;
 }
 
-NodeVector & all_instances(Node* type, int recurse, int max, bool includeClasses) {
-	if(/* DISABLES CODE */ (true))
+NodeVector &all_instances(Node *type, int recurse, int max, bool includeClasses) {
+	if (/* DISABLES CODE */ (true))
 		return all_instances2(type, recurse, max, includeClasses);//	RECURE BROKEN! use instanceFilter
-	NodeSet* a=all_instances3(type, recurse, max, includeClasses);
-	if(!a)return EMPTY;
-	const NodeVector &nv=nodeSetToNodeVector(*a);
-	return (NodeVector&) nv;
+	NodeSet *a = all_instances3(type, recurse, max, includeClasses);
+	if (!a)return EMPTY;
+	const NodeVector &nv = nodeSetToNodeVector(*a);
+	return (NodeVector &) nv;
 }
 
-NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
-	static NodeVector& all = *new NodeVector; // empty before!
+NodeVector &recurseFilter(Node *type, int recurse, int max, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
+	static NodeVector &all = *new NodeVector; // empty before!
 	if (type == 0) {
 		all.clear(); // hack!!!
 		return EMPTY;
@@ -1066,13 +1108,13 @@ NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFil
 	if (recurse > maxRecursions)return all;
 	runs++;
 	if (runs > maxNodes)return all; // no infinite loops!
-  
-	NodeVector more = edgeFilter(type, null,null);
+
+	NodeVector more = edgeFilter(type, null, null);
 	mergeVectors(&all, more);
-  
+
 	for (int i = 0; i < more.size(); i++) {// subtypes
 		if (all.size() >= max)return all;
-		Node* x = (Node*) more[i];
+		Node *x = (Node *) more[i];
 		if (!checkNode(x))continue; // how??
 		pf("all %d %s *%d\n", x->statementCount, x->name, x->id);
 		recurseFilter(x, recurse, max, edgeFilter); // recurse++ above OK, adds to 'all'
@@ -1082,8 +1124,8 @@ NodeVector & recurseFilter(Node* type, int recurse, int max, NodeVector(*edgeFil
 	return all;
 }
 
-Query & getQuery(Node * keyword) {
-	Query& q = *new Query();
+Query &getQuery(Node *keyword) {
+	Query &q = *new Query();
 	q.keywords.clear(); // =new NodeVector();
 	q.keyword = keyword;
 	q.classes.clear();
@@ -1105,19 +1147,19 @@ void clearAlgorithmHash(bool all) {
 	recurseFilter(0, 0, 0, 0);
 }
 
-NodeVector find_all(cchar* name, int context, int recurse, int limit) {
+NodeVector find_all(cchar *name, int context, int recurse, int limit) {
 	clearAlgorithmHash();
 	// if(context> -1)search subcontexts also?
 	// if(context==-1)search all
 	// if(context==-2)context=current_context;
-  //	Context* c = getContext(context);
+	//	Context* c = getContext(context);
 	NodeVector all;
 	if (recurse > 0)recurse++;
 	if (recurse > maxRecursions)return all;
-  
-  //	int max = minimum((long) c->nodeCount, maxNodes);
+
+	//	int max = minimum((long) c->nodeCount, maxNodes);
 	all.push_back(getAbstract(name));
-  
+
 	//  for (int i = 0; i < max; i++) {// inefficient^2 use word->instance->... instead
 	//    Node* n = &c->nodes[i];
 	//    if (n == null or n->name == null or name == null)
@@ -1129,18 +1171,18 @@ NodeVector find_all(cchar* name, int context, int recurse, int limit) {
 	//      // show(n);
 	//    }
 	//  }
-	int alle = (int)all.size();
+	int alle = (int) all.size();
 	if (recurse)
 		for (int i = 0; i < alle; i++) {
 			all.clear(); // hack to reset all_instances
-			Node* node = (Node*) all[i];
-			NodeVector& neu = all_instances(node, true, limit);
+			Node *node = (Node *) all[i];
+			NodeVector &neu = all_instances(node, true, limit);
 			mergeVectors(&all, neu);
 		}
 	return all;
 }
 
-Node * findMatch(Node* n, const char* match) {//
+Node *findMatch(Node *n, const char *match) {//
 	char a[10000];
 	char b[10000];
 	char c[10000];
@@ -1160,7 +1202,7 @@ Node * findMatch(Node* n, const char* match) {//
 		p("n[a=b]");
 		if (!quiet)
 			printf("show(findStatement(%s,%s,%s))", n->name, a, b);
-		Statement* statement = findStatement(n, getAbstract(a), getAbstract(b));
+		Statement *statement = findStatement(n, getAbstract(a), getAbstract(b));
 		if (statement) {
 			showStatement(statement);
 			return n; //statement->Subject;
@@ -1170,7 +1212,7 @@ Node * findMatch(Node* n, const char* match) {//
 		p("n[match]");
 		if (!quiet)
 			printf("show(findMember(%s,%s))", n->name, a);
-		Node* member = findMember(n, a);
+		Node *member = findMember(n, a);
 		//		show(member);
 		if (member)return n; //findMember(n,a);
 		else return 0;
@@ -1179,11 +1221,15 @@ Node * findMatch(Node* n, const char* match) {//
 }
 
 // expensive
-int countInstances(Node * node) {
-	int j = (int)instanceFilter(node).size();
-	int i = (int)allInstances(node).size();
-	setValue(node, the(direct instance count), value(0, j));
-	setValue(node, the(total instance count), value(0, i));
+int countInstances(Node *node) {
+	int j = (int) instanceFilter(node).size();
+	int i = (int) allInstances(node).size();
+	setValue(node, the(direct
+			                   instance
+			                   count), value(0, j));
+	setValue(node, the(total
+			                   instance
+			                   count), value(0, i));
 	show(node, false);
 	ps("statement count");
 	p(node->statementCount);
@@ -1200,29 +1246,32 @@ int countInstances(Node * node) {
 //childFilter == instanceFilter (+SubClass or not?)
 // todo: deduplicate code: childFilter=filter<Instance,SubClass>
 //bool INCLUDE_LABELS=false;// why not?
-bool INCLUDE_LABELS=true;// reverse ok!
-bool INCLUDE_CLASSES=false;
-NodeVector instanceFilter(Node* subject, NodeQueue * queue,int* enqueued){// chage all + edgeFilter!! for , int max) {
-	NodeVector all;	int i = 0;
-	Statement* s = 0;
-	while (i++<lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
+bool INCLUDE_LABELS = true;// reverse ok!
+bool INCLUDE_CLASSES = false;
+
+NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// chage all + edgeFilter!! for , int max) {
+	NodeVector all;
+	int i = 0;
+	Statement *s = 0;
+	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject or subject == Any);
 		bool predicateMatch = (s->Predicate() == Instance) or (INCLUDE_CLASSES and s->Predicate() == SubClass);
-		predicateMatch = predicateMatch or s->predicate==-10301;// Hauptartikel in der Kategorie
-		predicateMatch = predicateMatch or s->predicate==-10910;// Hauptkategorie zum Artikel
-		predicateMatch = predicateMatch or s->predicate==-10373;// Commons-Kategorie
+		predicateMatch = predicateMatch or s->predicate == -10301;// Hauptartikel in der Kategorie
+		predicateMatch = predicateMatch or s->predicate == -10910;// Hauptkategorie zum Artikel
+		predicateMatch = predicateMatch or s->predicate == -10373;// Commons-Kategorie
 
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse or (INCLUDE_CLASSES and s->Predicate() == SuperClass);
-		predicateMatchReverse = predicateMatchReverse or (INCLUDE_LABELS  and s->Predicate() == Label) ; // or inverse
-		predicateMatchReverse = predicateMatchReverse or s->predicate==-10373;// Commons-Kategorie
-		predicateMatchReverse = predicateMatchReverse or s->predicate==-10910;// Hauptkategorie zum Artikel
-		predicateMatchReverse = predicateMatchReverse or (s->Predicate() == Label and contains(s->Subject()->name, subject->name));// Frankfurt (Oder)
+		predicateMatchReverse = predicateMatchReverse or (INCLUDE_LABELS and s->Predicate() == Label); // or inverse
+		predicateMatchReverse = predicateMatchReverse or s->predicate == -10373;// Commons-Kategorie
+		predicateMatchReverse = predicateMatchReverse or s->predicate == -10910;// Hauptkategorie zum Artikel
+		predicateMatchReverse = predicateMatchReverse or (s->Predicate() == Label and contains(s->Subject()->name,
+		                                                                                       subject->name));// Frankfurt (Oder)
 
 		if (queue) {
-			if (subjectMatch and predicateMatch)enqueue(subject, s->Object(), queue,enqueued);
-			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue,enqueued);
+			if (subjectMatch and predicateMatch)enqueue(subject, s->Object(), queue, enqueued);
+			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
 			if (subjectMatch and predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
@@ -1231,29 +1280,30 @@ NodeVector instanceFilter(Node* subject, NodeQueue * queue,int* enqueued){// cha
 	return all;
 }
 
-NodeVector childFilter(Node* subject, NodeQueue * queue,int* enqueued){
-	INCLUDE_CLASSES=true;
-	NodeVector all;	int i = 0;
-	Statement* s = 0;
-	while (i++<lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
-		bool subjectMatch = (s->Subject() == subject or subject == Any)  and !eq(s->Object()->name,"◊");;
+NodeVector childFilter(Node *subject, NodeQueue *queue, int *enqueued) {
+	INCLUDE_CLASSES = true;
+	NodeVector all;
+	int i = 0;
+	Statement *s = 0;
+	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
+		bool subjectMatch = (s->Subject() == subject or subject == Any) and !eq(s->Object()->name, "◊");;
 		bool predicateMatch = (s->Predicate() == SubClass);
 		predicateMatch = predicateMatch or (s->Predicate() == Instance);
 		predicateMatch = predicateMatch or (s->Predicate() == Synonym);
 		predicateMatch = predicateMatch or (s->Predicate() == Derived);
 		predicateMatch = predicateMatch or (s->Predicate() == Label);
-		
-		bool subjectMatchReverse = s->Object() == subject and !eq(s->Subject()->name,"◊");
+
+		bool subjectMatchReverse = s->Object() == subject and !eq(s->Subject()->name, "◊");
 		bool predicateMatchReverse = s->Predicate() == SuperClass; // or inverse
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Label;
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Derived;
-		predicateMatchReverse = predicateMatchReverse or s->predicate==_Is_a_list_of;
+		predicateMatchReverse = predicateMatchReverse or s->predicate == _Is_a_list_of;
 		if (queue) {
 			if (subjectMatch and predicateMatch)
-				enqueue(subject, s->Object(), queue,enqueued);
+				enqueue(subject, s->Object(), queue, enqueued);
 			if (subjectMatchReverse and predicateMatchReverse)
-				enqueue(subject, s->Subject(), queue,enqueued);
+				enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
 			if (subjectMatch and predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
@@ -1263,20 +1313,21 @@ NodeVector childFilter(Node* subject, NodeQueue * queue,int* enqueued){
 }
 
 // put as callback into findPath for recursion
-NodeVector subclassFilter(Node* subject, NodeQueue * queue,int *enqueued){
-	NodeVector all;	int i = 0;
-	Statement* s = 0;
-	while (i++<lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
-		bool subjectMatch = (s->Subject() == subject or subject == Any)  and !eq(s->Object()->name,"◊");;
+NodeVector subclassFilter(Node *subject, NodeQueue *queue, int *enqueued) {
+	NodeVector all;
+	int i = 0;
+	Statement *s = 0;
+	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
+		bool subjectMatch = (s->Subject() == subject or subject == Any) and !eq(s->Object()->name, "◊");;
 		bool predicateMatch = (s->Predicate() == SubClass);
 
-		bool subjectMatchReverse = s->Object() == subject and !eq(s->Subject()->name,"◊");
+		bool subjectMatchReverse = s->Object() == subject and !eq(s->Subject()->name, "◊");
 		bool predicateMatchReverse = s->Predicate() == SuperClass; // or inverse
 		if (queue) {
 			if (subjectMatch and predicateMatch)
-				enqueue(subject, s->Object(), queue,enqueued);
+				enqueue(subject, s->Object(), queue, enqueued);
 			if (subjectMatchReverse and predicateMatchReverse)
-				enqueue(subject, s->Subject(), queue,enqueued);
+				enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
 			if (subjectMatch and predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
@@ -1286,14 +1337,14 @@ NodeVector subclassFilter(Node* subject, NodeQueue * queue,int *enqueued){
 }
 
 // put as callback into findPath for recursion
-NodeVector relationsFilter(Node* subject, NodeQueue * queue){//, int max) {
+NodeVector relationsFilter(Node *subject, NodeQueue *queue) {//, int max) {
 	NodeVector all;
 //  vector<int> relations;
 	int i = 0;
-	Statement* s = 0;
-	while (i++<lookupLimit * 2 and (s = nextStatement(subject, s, false))) {
-    if(!contains(all,s->Predicate()))
-      all.push_back(s->Predicate());
+	Statement *s = 0;
+	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {
+		if (!contains(all, s->Predicate()))
+			all.push_back(s->Predicate());
 	}
 	return all;
 }
@@ -1301,10 +1352,10 @@ NodeVector relationsFilter(Node* subject, NodeQueue * queue){//, int max) {
 
 // how to find paths with property predicates??
 // put as callback into findPath for recursion
-NodeVector memberFilter(Node* subject, NodeQueue * queue,int* enqueued) {
+NodeVector memberFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 	NodeVector all;
 	int i = 0;
-	Statement* s = 0;
+	Statement *s = 0;
 	while (i++ < 1000 and (s = nextStatement(subject, s, false))) {// true !!!!
 		//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject->id == 213112)
@@ -1339,7 +1390,7 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue,int* enqueued) {
 		predicateMatch = predicateMatch or s->Predicate()->id == _MEMBER_DOMAIN_REGION;
 		predicateMatch = predicateMatch or s->Predicate()->id == _MEMBER_DOMAIN_USAGE;
 		//		predicateMatch = predicateMatch or isA4(s->Predicate,)
-    
+
 		bool subjectMatchReverse = s->Object() == subject;
 		bool predicateMatchReverse = s->Predicate() == Owner; // or inverse
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == By;
@@ -1357,8 +1408,8 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue,int* enqueued) {
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Instance;
 		//		predicateMatchReverse = predicateMatchReverse or isA4(s->Predicate)
 		if (queue) {
-			if (subjectMatch and predicateMatch)enqueue(subject, s->Object(), queue,enqueued);
-			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue,enqueued);
+			if (subjectMatch and predicateMatch)enqueue(subject, s->Object(), queue, enqueued);
+			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
 			if (subjectMatch and predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
@@ -1371,58 +1422,58 @@ NodeVector memberFilter(Node* subject, NodeQueue * queue,int* enqueued) {
 		return all;
 }
 
-bool stopAtGoodWiki(N n){
-	int object=n->id;
+bool stopAtGoodWiki(N n) {
+	int object = n->id;
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
-	if(object==6256)return true;// Land	Q6256
-	if(object==571)return true;//Buch
-	if(object==7275)return true;//Staat
-	if(object==43229)return true;//Organisation	Q43229
+	if (object == 6256)return true;// Land	Q6256
+	if (object == 571)return true;//Buch
+	if (object == 7275)return true;//Staat
+	if (object == 43229)return true;//Organisation	Q43229
 //	if(object==15324)return true;//Gewässer	Q15324
-	if(object==121359)return true;//Infrastruktur	Q121359
-	if(object==618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
-	if(object==215627)return true;//Person	Q215627
-	if(object==5)return true;//=> Mensch	Q5
-	if(object==6511271)return true;//Gemeinde	Q6511271
-	if(object==107425)return true;// Landschaft	Q107425
-	if(object==3266850)return true;//Kommune	Q3266850
-	if(object==515)return true;//Stadt	Q
+	if (object == 121359)return true;//Infrastruktur	Q121359
+	if (object == 618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
+	if (object == 215627)return true;//Person	Q215627
+	if (object == 5)return true;//=> Mensch	Q5
+	if (object == 6511271)return true;//Gemeinde	Q6511271
+	if (object == 107425)return true;// Landschaft	Q107425
+	if (object == 3266850)return true;//Kommune	Q3266850
+	if (object == 515)return true;//Stadt	Q
 //	if(object==482994)return true;//Musikalbum	Q482994
-	if(object==838948)return true;//Kunstwerk	Q838948
-	if(object==2188189)return true;//Musikalisches Werk	Q2188189
-	if(object==234460)return true;//Text	Q234460
+	if (object == 838948)return true;//Kunstwerk	Q838948
+	if (object == 2188189)return true;//Musikalisches Werk	Q2188189
+	if (object == 234460)return true;//Text	Q234460
 //	if(object==7725634)return true;//Literarisches Werk	Q7725634
-	if(object==5)return true;//
-	if(object==5)return true;//
-	if(object==5)return true;//
-	if(object==5)return true;//
-	if(object==5)return true;//
-	if(object==5)return true;//
-	if(object==5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
 	return false;
 }
 
-NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances,int *enqueued) {
+NodeVector parentFilter2(Node *subject, NodeQueue *queue, bool backInstances, int *enqueued) {
 	NodeVector all;
-	if(stopAtGoodWiki(subject) or filterWikiType(subject->id)){
+	if (stopAtGoodWiki(subject) or filterWikiType(subject->id)) {
 		all.push_back(subject);
 		return all;// none
 	}
 	int i = 0;
-	Statement* s = 0;
-	int type_lookup_limit=100;// type statements should be at the very beginning
+	Statement *s = 0;
+	int type_lookup_limit = 100;// type statements should be at the very beginning
 	while (i++ < type_lookup_limit and (s = nextStatement(subject, s, false))) {// true !!!!
-		if(!checkStatement(s))break;
+		if (!checkStatement(s))break;
 //		p(s);
-    //#ifdef useContext
+		//#ifdef useContext
 		if (s->context == _pattern)continue;// important!!//    else it always matches!!!
-    //#endif
+		//#endif
 		if (s->Object() == Adjective)continue; // bug !!
 		if (s->Predicate() == PERTAINYM)continue;
 		if (s->Predicate() == Derived)continue;
 		//		if (s->Predicate==DerivedFromNoun)continue;
 		if (s->Predicate() == get(_attribute))continue;
-		if(filterWikiType(s->object))continue;
+		if (filterWikiType(s->object))continue;
 
 		//		if(s->Predicate==Instance and !eq(s->Object->name,subject->name) )break;// needs ORDER! IS THE FIRST!!
 		//		if(s->Predicate==Type and s->Object==subject)break;// todo PUT TO END TOO!!!
@@ -1447,13 +1498,12 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances,in
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Synonym;
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == Translation;
 		predicateMatchReverse = predicateMatchReverse or s->Predicate() == SubClass;
-    
+
 		if (queue) {
 			if (subjectMatch and predicateMatch)
 				enqueue(subject, s->Object(), queue, enqueued);
 			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
-		}
-		else {
+		} else {
 			if (subjectMatch and predicateMatch)all.push_back(s->Object());
 			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
 		}
@@ -1467,22 +1517,22 @@ NodeVector parentFilter2(Node* subject, NodeQueue * queue, bool backInstances,in
 
 // put as callback into findPath for recursion.
 // Currently same concept as topicFilter, with filterWikiType in findPath
-NodeVector parentFilter(Node* subject, NodeQueue * queue,int* enqueued) {
-	return parentFilter2(subject,queue,true,enqueued);
+NodeVector parentFilter(Node *subject, NodeQueue *queue, int *enqueued) {
+	return parentFilter2(subject, queue, true, enqueued);
 }
 
-NodeVector topicFilter(Node* subject, NodeQueue * queue,int* enqueued) {
-	return parentFilter2(subject,queue,false,enqueued);
+NodeVector topicFilter(Node *subject, NodeQueue *queue, int *enqueued) {
+	return parentFilter2(subject, queue, false, enqueued);
 }
 
 // todo : memory LEAK NodeVector ?
 // todo : enqueue instances?
 // put as callback into findPath for recursion
-NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations,int* enqueued) {
+NodeVector anyFilter(Node *subject, NodeQueue *queue, bool includeRelations, int *enqueued) {
 	if (!includeRelations and subject->id < 1000)return EMPTY;
 	NodeVector all;
 	int i = 0;
-	Statement* s = 0;
+	Statement *s = 0;
 	while (i++ < 10000 and (s = nextStatement(subject, s, false))) {
 		if (!checkStatement(s)) {
 			badCount++;
@@ -1491,8 +1541,8 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations,int
 		bool subjectMatch = (s->Subject() == subject or subject == Any);
 		bool subjectMatchReverse = s->Object() == subject;
 		if (queue) {
-			if (subjectMatch)enqueue(subject, s->Object(), queue,enqueued);
-			if (subjectMatchReverse)enqueue(subject, s->Subject(), queue,enqueued);
+			if (subjectMatch)enqueue(subject, s->Object(), queue, enqueued);
+			if (subjectMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
 			if (subjectMatch)all.push_back(s->Object());
 			if (subjectMatchReverse)all.push_back(s->Subject());
@@ -1504,16 +1554,16 @@ NodeVector anyFilter(Node* subject, NodeQueue * queue, bool includeRelations,int
 		return all;
 }
 
-NodeVector anyFilterNoKinds(Node* subject, NodeQueue * queue,int *enqueued) {
-	return anyFilter(subject, queue, false,enqueued);
+NodeVector anyFilterNoKinds(Node *subject, NodeQueue *queue, int *enqueued) {
+	return anyFilter(subject, queue, false, enqueued);
 }
 
-NodeVector anyFilterRandom(Node* subject, NodeQueue * queue,int *enqueued) {
-	return anyFilter(subject, queue, true,enqueued);
+NodeVector anyFilterRandom(Node *subject, NodeQueue *queue, int *enqueued) {
+	return anyFilter(subject, queue, true, enqueued);
 }
 
-NodeVector reconstructPath(Node* from, Node * to,int *enqueued) {
-	Node* current = to;
+NodeVector reconstructPath(Node *from, Node *to, int *enqueued) {
+	Node *current = to;
 	NodeVector all;
 //	bool ok = true;
 	//	p("++++++++ FOUND PATH ++++++++++++++");
@@ -1533,43 +1583,45 @@ NodeVector reconstructPath(Node* from, Node * to,int *enqueued) {
 	return all;
 }
 
-bool enqueue(Node* current, Node* d, NodeQueue * q,int* enqueued) {
-	if(!checkNode(d))return false;
-	if (!d or (enqueued and enqueued[d->id+propertySlots]))return false; // already done -> continue;
+bool enqueue(Node *current, Node *d, NodeQueue *q, int *enqueued) {
+	if (!checkNode(d))return false;
+	if (!d or (enqueued and enqueued[d->id + propertySlots]))return false; // already done -> continue;
 //	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
-	if(enqueued)
-	enqueued[d->id+propertySlots] = current->id;
-	if(q)q->push(d);
+	if (enqueued)
+		enqueued[d->id + propertySlots] = current->id;
+	if (q)q->push(d);
 	runs++;
 	return true;
 }
-#define min(x,y) x<y?x:y
 
-Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
-	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
-	int* depths	 = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+#define min(x, y) x<y?x:y
+
+Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
+	int *enqueued = (int *) malloc(maxNodes * sizeof(int)); //context->nodeCount * 2
+	int *depths = (int *) malloc(maxNodes * sizeof(int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 	//	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
 	q.push(fro);
-	depths[fro->id+propertySlots]=0;
-	N furthest=fro;
-	int deepest=0;
+	depths[fro->id + propertySlots] = 0;
+	N furthest = fro;
+	int deepest = 0;
 	// NOT neccessary for anyPath , ...
 	NodeVector instances;
-	if (isAbstract(fro) and edgeFilter != anyFilterNoKinds and edgeFilter != instanceFilter and edgeFilter != anyFilterRandom and edgeFilter != topicFilter)
+	if (isAbstract(fro) and edgeFilter != anyFilterNoKinds and edgeFilter != instanceFilter and
+	    edgeFilter != anyFilterRandom and edgeFilter != topicFilter)
 		// and edgeFilter!=
 		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
 
 	for (int i = 0; i < instances.size(); i++) {
-		Node* d = instances[i];
-		enqueued[d->id+propertySlots] = fro->id;
-		depths[d->id+propertySlots]=1;
+		Node *d = instances[i];
+		enqueued[d->id + propertySlots] = fro->id;
+		depths[d->id + propertySlots] = 1;
 		q.push(d);
 		pf("instance %d %s\n", d->id, d->name);
 	}
-	Node* current;
+	Node *current;
 //	NodeSet all;
 	while ((current = q.front())) {
 		//		if(enqueued[current->id+propertySlots])continue;
@@ -1577,23 +1629,23 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 //		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
-		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/))continue;
-		if(!current->name or current->name[0]<'A')continue;//?
-		if(stopAtGoodWiki(current))
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, true /*report*/))continue;
+		if (!current->name or current->name[0] < 'A')continue;//?
+		if (stopAtGoodWiki(current))
 			return current;
-		if(filterWikiType(current->id))break;
-		if(startsWith(current->name,"http"))
+		if (filterWikiType(current->id))break;
+		if (startsWith(current->name, "http"))
 			continue;
 //		all.insert(current);
-		N pa=get(enqueued[current->id+propertySlots]);
-		int depth=depths[current->id+propertySlots]+1;
-		if(depth>deepest)furthest=current;
-		if(!pa)pa=Unknown;// Error;// Nil;
+		N pa = get(enqueued[current->id + propertySlots]);
+		int depth = depths[current->id + propertySlots] + 1;
+		if (depth > deepest)furthest = current;
+		if (!pa)pa = Unknown;// Error;// Nil;
 		//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
-		if(debug)printf("%s	Q%d	<= %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
-		if(q.size()<lookupLimit){// bad (?) : refill after pop()
-			edgeFilter(current, &q,enqueued);
-		//		show(more);
+		if (debug)printf("%s	Q%d	<= %s	Q%d\r\n", current->name, current->id, pa->name, pa->id);
+		if (q.size() < lookupLimit) {// bad (?) : refill after pop()
+			edgeFilter(current, &q, enqueued);
+			//		show(more);
 		}
 	}
 	free(enqueued);
@@ -1603,43 +1655,45 @@ Node* getFurthest(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 
 
 // i.e. findAll(a(Person),subclassFilter)
-NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
+NodeSet findAll(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
 //	bool* enqueued = (bool*) malloc(maxNodes * sizeof (bool)); //context->nodeCount * 2
-	int* enqueued = (int*) malloc(maxNodes * sizeof (int)); //context->nodeCount * 2
+	int *enqueued = (int *) malloc(maxNodes * sizeof(int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 //	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
 	q.push(fro);
 	// NOT neccessary for anyPath , ...
 	NodeVector instances;
-	if (isAbstract(fro) and edgeFilter != anyFilterNoKinds and edgeFilter != instanceFilter and edgeFilter != anyFilterRandom) // and edgeFilter!=
+	if (isAbstract(fro) and edgeFilter != anyFilterNoKinds and edgeFilter != instanceFilter and
+	    edgeFilter != anyFilterRandom) // and edgeFilter!=
 		instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
 	for (int i = 0; i < instances.size(); i++) {
-		Node* d = instances[i];
-		enqueued[d->id+propertySlots] = fro->id;
+		Node *d = instances[i];
+		enqueued[d->id + propertySlots] = fro->id;
 		q.push(d);
 		pf("instance %d %s\n", d->id, d->name);
 	}
-	Node* current;
+	Node *current;
 	NodeSet all;
 	while ((current = q.front())) {
 //		if(enqueued[current->id+propertySlots])continue;
 //		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
 		if (q.empty())break;
 		q.pop();
-		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/,true /*report*/) or (current->name[0]<'A'))
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, true /*report*/) or
+		    (current->name[0] < 'A'))
 			continue;
-		if(startsWith(current->name,"http"))
+		if (startsWith(current->name, "http"))
 			continue;
 		all.insert(current);
-		if(all.size()>resultLimit)break;
-		N pa=get(enqueued[current->id+propertySlots]);
-		if(!pa)pa=Unknown;// Error;// Nil;
+		if (all.size() > resultLimit)break;
+		N pa = get(enqueued[current->id + propertySlots]);
+		if (!pa)pa = Unknown;// Error;// Nil;
 //		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
-		if(debug)
-			printf("%s	Q%d	<= %s	Q%d\r\n",current->name,current->id,pa->name,pa->id);
-		if(q.size()<lookupLimit)// bad (?) : refill after pop()
-			NodeVector more = edgeFilter(current, &q,enqueued);// enqued => empty!
+		if (debug)
+			printf("%s	Q%d	<= %s	Q%d\r\n", current->name, current->id, pa->name, pa->id);
+		if (q.size() < lookupLimit)// bad (?) : refill after pop()
+			NodeVector more = edgeFilter(current, &q, enqueued);// enqued => empty!
 //		show(more);
 //		mergeVectors(&all, more);
 	}
@@ -1648,12 +1702,13 @@ NodeSet findAll(Node* fro, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
 }
 
 //NodeVector NodeVectorFrom(NodeSet& input){
-NodeVector setToVector(NodeSet& input){
+NodeVector setToVector(NodeSet &input) {
 	NodeVector neu;
 	std::copy(input.begin(), input.end(), std::back_inserter(neu));
 	return neu;
 }
-NodeVector nodeSetToNodeVector(NodeSet& input){
+
+NodeVector nodeSetToNodeVector(NodeSet &input) {
 	NodeVector neu;
 	std::copy(input.begin(), input.end(), std::back_inserter(neu));
 	return neu;
@@ -1661,147 +1716,149 @@ NodeVector nodeSetToNodeVector(NodeSet& input){
 
 
 // ok to return NodeVector, not &NodeVector !! see S.O.
-NodeVector findAllSubclasses(Node *fro){
-	NodeSet all=findAll(fro, subclassFilter);
+NodeVector findAllSubclasses(Node *fro) {
+	NodeSet all = findAll(fro, subclassFilter);
 	return setToVector(all);
 }
 
 #define DROP true
 #define KEEP false
-bool filterWikiType(int object){
+
+bool filterWikiType(int object) {
 	// PROBLEM : Give lower priority with competing correct superclass
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 //	if(object<0)return DROP;// wordnet!
-	if(object==13406463)return DROP; // Wikimedia-Liste	Q13406463
-	if(object==4167836)return DROP; // Wikimedia-Kategorie
-	if(object==160872476)return DROP; // Dataset
-	if(object==12139612)return DROP; // Liste
-	if(object==217594)return DROP; // Klasse
-	if(object==1347367)return DROP; // Fertigkeit
-	if(object==15633587)return DROP; //  MediaWiki-Seite im Hauptnamenraum
+	if (object == 13406463)return DROP; // Wikimedia-Liste	Q13406463
+	if (object == 4167836)return DROP; // Wikimedia-Kategorie
+	if (object == 160872476)return DROP; // Dataset
+	if (object == 12139612)return DROP; // Liste
+	if (object == 217594)return DROP; // Klasse
+	if (object == 1347367)return DROP; // Fertigkeit
+	if (object == 15633587)return DROP; //  MediaWiki-Seite im Hauptnamenraum
 //	if(object==4167410)return DROP;	//	<= Wikimedia-Begriffsklärungsseite OK
-	if(object==600590)return DROP; // Tupel
+	if (object == 600590)return DROP; // Tupel
 // AUTO:
-	if(object==488383)return DROP; // Objekt
-	if(object==386724)return DROP; // Werk !?
-	if(object==11461)return DROP; // Schall	Q11461
-	if(object==3249551)return DROP; // Prozess	Q3249551	<= Kunst	Q735	<= Musik	Q638 
+	if (object == 488383)return DROP; // Objekt
+	if (object == 386724)return DROP; // Werk !?
+	if (object == 11461)return DROP; // Schall	Q11461
+	if (object == 3249551)return DROP; // Prozess	Q3249551	<= Kunst	Q735	<= Musik	Q638
 //	if(object==39546)return DROP; //Werkzeug	Q39546
-	if(object==4167836)return DROP; // Wikimedia-Kategorie
-	if(object==16889133)return DROP; // Klasse
-	if(object==13406463)return DROP; // Wikimedia-Liste
-	if(object==188524)return DROP; // Tensor
-	if(object==16686022)return DROP; // Natürliches physisches Objekt
-	if(object==24905)return DROP; // Verb
-	if(object==286583)return DROP; // Manifestation
-	if(object==2944660)return DROP; // Lexikalischer Begriff
+	if (object == 4167836)return DROP; // Wikimedia-Kategorie
+	if (object == 16889133)return DROP; // Klasse
+	if (object == 13406463)return DROP; // Wikimedia-Liste
+	if (object == 188524)return DROP; // Tensor
+	if (object == 16686022)return DROP; // Natürliches physisches Objekt
+	if (object == 24905)return DROP; // Verb
+	if (object == 286583)return DROP; // Manifestation
+	if (object == 2944660)return DROP; // Lexikalischer Begriff
 //	if(object==15916867)return DROP; // Territoriale Verwaltungseinheit eines Landes DONT DROP, SKIP!
-	if(object==211364)return DROP; // Prinzip
-	if(object==147276)return DROP; // Eigenname
-	if(object==36774)return DROP; // Webseite
-	if(object==15621286)return DROP; // Geistiges Werk
-	if(object==14204246)return DROP; // Seite im Projektnamensraum
-	if(object==830077)return DROP; // Subjekt
-	if(object==837766)return DROP; // Gebietskörperschaft
-	if(object==16686448)return DROP; // Künstliche Entität
-	if(object==1639378)return DROP; // Soziales System
-	if(object==2145290)return DROP; // Repräsentation
-	if(object==53361976)return DROP; // ObjectProperty
-	if(object==874405)return DROP; // Soziale Gruppe
-	if(object==4663903)return DROP; // Wikimedia-Portal
-	if(object==1799794)return DROP; // Politische Ebene
-	if(object==15222213)return DROP; // Künstliches physikalisches Objekt
+	if (object == 211364)return DROP; // Prinzip
+	if (object == 147276)return DROP; // Eigenname
+	if (object == 36774)return DROP; // Webseite
+	if (object == 15621286)return DROP; // Geistiges Werk
+	if (object == 14204246)return DROP; // Seite im Projektnamensraum
+	if (object == 830077)return DROP; // Subjekt
+	if (object == 837766)return DROP; // Gebietskörperschaft
+	if (object == 16686448)return DROP; // Künstliche Entität
+	if (object == 1639378)return DROP; // Soziales System
+	if (object == 2145290)return DROP; // Repräsentation
+	if (object == 53361976)return DROP; // ObjectProperty
+	if (object == 874405)return DROP; // Soziale Gruppe
+	if (object == 4663903)return DROP; // Wikimedia-Portal
+	if (object == 1799794)return DROP; // Politische Ebene
+	if (object == 15222213)return DROP; // Künstliches physikalisches Objekt
 	//
 //	if(object==15617994)return DROP; // Verwaltungseinheit besser als http://87.118.71.26:81/html/770948
-	if(object==488383)return DROP; // Objekt
-	if(object==16686022)return DROP; // Natürliches physisches Objekt
-	if(object==830077)return DROP; //Subjekt
-	if(object==874405)return DROP; //Soziale Gruppe
-	if(object==20719696)return DROP; //Physisch-geographisches Objekt
+	if (object == 488383)return DROP; // Objekt
+	if (object == 16686022)return DROP; // Natürliches physisches Objekt
+	if (object == 830077)return DROP; //Subjekt
+	if (object == 874405)return DROP; //Soziale Gruppe
+	if (object == 20719696)return DROP; //Physisch-geographisches Objekt
 //	if(object==618123)return DROP; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
-	if(object==17633526)return DROP; // "class":"Artikel bei Wikinews
-	if(object==770948)return DROP; //Okres
+	if (object == 17633526)return DROP; // "class":"Artikel bei Wikinews
+	if (object == 770948)return DROP; //Okres
 //	if(object==2424752)return DROP; //Produkt	Q2424752 ???
-	if(object==0)return DROP; //
-	if(object==0)return DROP; //
-	if(object==0)return DROP; //
-	if(object==0)return DROP; //
-	if(object==0)return DROP; //
-	if(object==0)return DROP; //
-	if(object==14946396)return DROP;//Einheit", "id":14946396
-	if(object==11028)return DROP;//Information	Q11028
-	if(object==246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
-	if(object==6671777)return DROP;//Struktur	Q6671777
-	if(object==602884)return DROP;//Sozialphänomen	Q602884
-	if(object==2088357)return DROP;//Ensemble	Q2088357
-	if(object==9332)return DROP;//Verhalten	Q9332
-	if(object==937228)return DROP;//937228, "topic":"Eigenschaft
-	if(object==4373292)return DROP;//4373292, "topic":"Eigenschaft
-	if(object==309314)return DROP;//"topicid":309314, "topic":"Quantität",
-	if(object==2091629)return DROP;//"topicid":2091629, "topic":"Magnitude",
-	if(object==11471)return DROP;//Zeit	Q11471
-	if(object==186081)return DROP;//Zeitintervall	Q186081
-	if(object==14204246)return DROP;//Seite im Projektnamensraum	Q14204246
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 14946396)return DROP;//Einheit", "id":14946396
+	if (object == 11028)return DROP;//Information	Q11028
+	if (object == 246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
+	if (object == 6671777)return DROP;//Struktur	Q6671777
+	if (object == 602884)return DROP;//Sozialphänomen	Q602884
+	if (object == 2088357)return DROP;//Ensemble	Q2088357
+	if (object == 9332)return DROP;//Verhalten	Q9332
+	if (object == 937228)return DROP;//937228, "topic":"Eigenschaft
+	if (object == 4373292)return DROP;//4373292, "topic":"Eigenschaft
+	if (object == 309314)return DROP;//"topicid":309314, "topic":"Quantität",
+	if (object == 2091629)return DROP;//"topicid":2091629, "topic":"Magnitude",
+	if (object == 11471)return DROP;//Zeit	Q11471
+	if (object == 186081)return DROP;//Zeitintervall	Q186081
+	if (object == 14204246)return DROP;//Seite im Projektnamensraum	Q14204246
 //	if(object==82799)return DROP;//Name	Q82799
-	if(object==82042)return DROP;//Wortart	Q82042
-	if(object==10856962)return DROP;//Anthroponymie	Q10856962
-	if(object==11618417)return DROP;//LAU	Q11618417
+	if (object == 82042)return DROP;//Wortart	Q82042
+	if (object == 10856962)return DROP;//Anthroponymie	Q10856962
+	if (object == 11618417)return DROP;//LAU	Q11618417
 //	if(object==262166)return DROP;//Gemeinde in Deutschland	262166
-	if(object==1048835)return DROP;//territoriale
+	if (object == 1048835)return DROP;//territoriale
 //	if(object==56061)return DROP;//territoriale skip! -> 
-	if(object==1084)return DROP;//Substantiv	Q1084
-	if(object==486972)return DROP;//territoriale
-	if(object==14757767)return DROP;//Verwaltungseinheit 4. Ebene	Q14757767
-	if(object==387917)return DROP;//Verwaltungsgliederung Q387917
-	if(object==2097994)return DROP;//Gemeindebehörde	Q2097994
-	if(object==1418640)return DROP;//Gebietskörperschaft	Q1418640
-	if(object==1183543)return DROP;//Gerät	Q1183543
-	if(object==11023058)return DROP;// Kommunikation
-	if(object==186408)return DROP;// Zeitpunkt
-	if(object==1269299)return DROP;// Rechtsform	Q1269299
-	if(object==1796670)return DROP;// rperschaft	Q1796670
+	if (object == 1084)return DROP;//Substantiv	Q1084
+	if (object == 486972)return DROP;//territoriale
+	if (object == 14757767)return DROP;//Verwaltungseinheit 4. Ebene	Q14757767
+	if (object == 387917)return DROP;//Verwaltungsgliederung Q387917
+	if (object == 2097994)return DROP;//Gemeindebehörde	Q2097994
+	if (object == 1418640)return DROP;//Gebietskörperschaft	Q1418640
+	if (object == 1183543)return DROP;//Gerät	Q1183543
+	if (object == 11023058)return DROP;// Kommunikation
+	if (object == 186408)return DROP;// Zeitpunkt
+	if (object == 1269299)return DROP;// Rechtsform	Q1269299
+	if (object == 1796670)return DROP;// rperschaft	Q1796670
 //	if(object==2996394)return DROP;//	Biologischer Prozess
 //	if(object==1190554)return DROP;// Ereignis
-	if(object==1914636)return DROP;//Tätigkeit	Q1914636 <=un Technik	Q2695280 BAD
-	if(object==373065)return DROP;//Angewandte Physik	Q373065
-	if(object==5962346)return DROP;//, "topic":"Klassifikation",
-	if(object==58778)return DROP;//=> System	Q58778
-	if(object==80071)return DROP;// Symbol
-	if(object==19361238)return DROP;//=x Metaklasse
-	if(object==35120)return DROP; // Entität
-	if(object==223557)return DROP; // 	"topicid":223557, "topic":"Körper",
-	if(object==5127848)return DROP; // Gruppe
-	if(object==27948)return DROP; // Liste
-	if(object==827335)return DROP; // Abstrakter Datentyp
-	if(object==1979154)return DROP; // 	Modell
-	if(object==386724)return DROP; //	Werk	Q386724	=> Produkt	Q2424752
-	if(object==28877)return DROP; //	Gut	Q28877	=> Produkt	Q2424752
-	if(object==7184903)return DROP; //	Abstraktes Objekt
-	if(object==853614)return DROP; //	 Identifikator
-	if(object==2221906)return DROP; //		Standort
-	if(object==9158768)return DROP; //		Speicher
+	if (object == 1914636)return DROP;//Tätigkeit	Q1914636 <=un Technik	Q2695280 BAD
+	if (object == 373065)return DROP;//Angewandte Physik	Q373065
+	if (object == 5962346)return DROP;//, "topic":"Klassifikation",
+	if (object == 58778)return DROP;//=> System	Q58778
+	if (object == 80071)return DROP;// Symbol
+	if (object == 19361238)return DROP;//=x Metaklasse
+	if (object == 35120)return DROP; // Entität
+	if (object == 223557)return DROP; // 	"topicid":223557, "topic":"Körper",
+	if (object == 5127848)return DROP; // Gruppe
+	if (object == 27948)return DROP; // Liste
+	if (object == 827335)return DROP; // Abstrakter Datentyp
+	if (object == 1979154)return DROP; // 	Modell
+	if (object == 386724)return DROP; //	Werk	Q386724	=> Produkt	Q2424752
+	if (object == 28877)return DROP; //	Gut	Q28877	=> Produkt	Q2424752
+	if (object == 7184903)return DROP; //	Abstraktes Objekt
+	if (object == 853614)return DROP; //	 Identifikator
+	if (object == 2221906)return DROP; //		Standort
+	if (object == 9158768)return DROP; //		Speicher
 	return KEEP;
 }
 
 // ONE path! See findAll for all leaves
-NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueue*,int*)) {
-	context=getContext(0);
-	long byteCount=maxNodes * sizeof (int); // context->nodeCount
-	int* enqueued = (int*) malloc(byteCount);
+NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
+	context = getContext(0);
+	long byteCount = maxNodes * sizeof(int); // context->nodeCount
+	int *enqueued = (int *) malloc(byteCount);
 	if (enqueued == 0)throw "out of memory for findPath";
 	memset(enqueued, 0, byteCount);// Necessary?
 //	ps("LOAD!");
 	NodeQueue q;
 	q.push(fro);
 	runs = 0;
-  
+
 	// NOT neccessary for anyPath , ...
 	NodeVector instances;
-	if (edgeFilter != anyFilterNoKinds and edgeFilter != instanceFilter and edgeFilter != anyFilterRandom) // and edgeFilter!=
+	if (edgeFilter != anyFilterNoKinds and edgeFilter != instanceFilter and
+	    edgeFilter != anyFilterRandom) // and edgeFilter!=
 		if (edgeFilter != parentFilter or isAbstract(fro))
 			instances = allInstances(fro);
 	for (int i = 0; i < instances.size(); i++) {
-		Node* d = instances[i];
+		Node *d = instances[i];
 		enqueued[d->id] = fro->id;
 		q.push(d);
 		pf("FROM %d %s\n", d->id, d->name);
@@ -1811,31 +1868,31 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	//	p(to);
 //	p("GO!");
 
-	Node* current;
-	NodeVector path=EMPTY;
+	Node *current;
+	NodeVector path = EMPTY;
 	while ((current = q.front())) {
 		if (q.empty())break;
 		q.pop();
-		if(filterWikiType(current->id)){
+		if (filterWikiType(current->id)) {
 //			pf("filterWikiType %d %s\n",current->id,current->name);
 			continue;
 		}
-		if (to == current){// GOT ONE!
-			path=reconstructPath(fro, to,enqueued); // shortcut
+		if (to == current) {// GOT ONE!
+			path = reconstructPath(fro, to, enqueued); // shortcut
 			break;
 		}
 		if (!checkNode(current, 0, true))
 			continue;
 //		NodeVector all = edgeFilter(current, &q,enqueued);// always EMPTY if using queue!
-		NodeVector all = edgeFilter(current, 0,enqueued);// always EMPTY if using queue!
+		NodeVector all = edgeFilter(current, 0, enqueued);// always EMPTY if using queue!
 		if (all != EMPTY)// no queue
 			for (int i = 0; i < all.size(); i++) {
-				Node* d = (Node*) all[i];
-				if (to == current){// GOT ONE!
-					path=reconstructPath(fro, to,enqueued); // shortcut
+				Node *d = (Node *) all[i];
+				if (to == current) {// GOT ONE!
+					path = reconstructPath(fro, to, enqueued); // shortcut
 					break;
 				}
-				enqueue(current, d, &q,enqueued);
+				enqueue(current, d, &q, enqueued);
 			}
 	}
 	free(enqueued);
@@ -1843,20 +1900,20 @@ NodeVector findPath(Node* fro, Node* to, NodeVector(*edgeFilter)(Node*, NodeQueu
 	return path;
 }
 
-NodeVector memberPath(Node* from, Node * to) {
+NodeVector memberPath(Node *from, Node *to) {
 	NodeVector all = findPath(from, to, memberFilter);
 	showNodes(all, false, true);
 	return all;
 }
 
-NodeVector parentPath(Node* from, Node * to) {
+NodeVector parentPath(Node *from, Node *to) {
 	NodeVector all = findPath(from, to, parentFilter);
 	if (all.size() > 0)p("+++++++++++++++++++++++++++++++++");
 	showNodes(all, false, true);
 	return all;
 }
 
-NodeVector shortestPath(Node* from, Node * to) {
+NodeVector shortestPath(Node *from, Node *to) {
 	NodeVector all = findPath(from, to, anyFilterNoKinds);
 	if (all.size() == 0)all = findPath(from, to, anyFilterRandom);
 	showNodes(all, false, true);
@@ -1864,95 +1921,97 @@ NodeVector shortestPath(Node* from, Node * to) {
 }
 
 
-NodeVector nodeVectorWrap(Node* n) {
+NodeVector nodeVectorWrap(Node *n) {
 	NodeVector r;
 	r.push_back(n);
 	return r;
 }
-NodeVector nodeVectorWrap(Statement* n) {
+
+NodeVector nodeVectorWrap(Statement *n) {
 	NodeVector r;
 	r.push_back(n->Subject());
 	return r;
 }
 
-NodeVector update(cchar* query){
-  autoIds=true;
-	char* data=modifyConstChar(query);
-	if(startsWith(data, "update "))data+=7;
-	if(startsWith(data, ":update "))data+=8;
-  char* i=strstr(data, " set ");
-  if(!i)throw "SYNTAX: UPDATE * SET x=y";// NOT OK;
-  i[0]=0;
-  string expression=i+5;
-  NV all;
-  if(contains(data,"."))
-    all= parseProperties(data);
-  else
-    all=nodeVectorWrap(getThe(data));
-  for (int i=0; i < all.size(); i++) {
-    Node* n=(Node*) all[i];
-    learn((itoa(n->id)+"."+expression).data());
-  }
-  return all;
+NodeVector update(cchar *query) {
+	autoIds = true;
+	char *data = modifyConstChar(query);
+	if (startsWith(data, "update "))data += 7;
+	if (startsWith(data, ":update "))data += 8;
+	char *i = strstr(data, " set ");
+	if (!i)throw "SYNTAX: UPDATE * SET x=y";// NOT OK;
+	i[0] = 0;
+	string expression = i + 5;
+	NV all;
+	if (contains(data, "."))
+		all = parseProperties(data);
+	else
+		all = nodeVectorWrap(getThe(data));
+	for (int i = 0; i < all.size(); i++) {
+		Node *n = (Node *) all[i];
+		learn((itoa(n->id) + "." + expression).data());
+	}
+	return all;
 }
-
 
 
 NodeVector parseProperties(char *data) {
-	lookupLimit=10000;
-	char *thing=0;//=(char *) malloc(1000);
-	char *property=0;//=(char *) malloc(1000);
-	thing=strstr(data, " of ");
-	if(!thing)thing=strstr(data, " by ");
-	if(!thing)thing=strstr(data, " in ");
-	if(!thing)thing=strstr(data, " von ");
-	if(thing){
-		property=data;
-		thing[0]=0;
-		thing=thing+4;
+	lookupLimit = 10000;
+	char *thing = 0;//=(char *) malloc(1000);
+	char *property = 0;//=(char *) malloc(1000);
+	thing = strstr(data, " of ");
+	if (!thing)thing = strstr(data, " by ");
+	if (!thing)thing = strstr(data, " in ");
+	if (!thing)thing = strstr(data, " von ");
+	if (thing) {
+		property = data;
+		thing[0] = 0;
+		thing = thing + 4;
 		//		sscanf(data, "%s of %[^\n]", property, thing);
 		//		sscanf(data, "%s of %s", property, thing);
-	}
-	else if (contains(data, ":")) {
+	} else if (contains(data, ":")) {
 		//			sscanf(data,"%s:%s",property,thing);
-		char** splat=splitStringC(data, ':');
-		thing=splat[1];// can't free no more
-		property=splat[0];
-    //		bool inverse=1;
+		char **splat = splitStringC(data, ':');
+		thing = splat[1];// can't free no more
+		property = splat[0];
+		//		bool inverse=1;
 	} else if (contains(data, ".")) {
 		//			sscanf(data,"%s.%s",thing,property);
-		char** splat=splitStringC(data, '.');
-		thing=splat[0];
-		property=splat[1];
+		char **splat = splitStringC(data, '.');
+		thing = splat[0];
+		property = splat[1];
 	}
 
 	// OK: opponent+of+barack_obama
-  // todo : birth_place of james -> %[a-zA-Z _] or splitStringC
+	// todo : birth_place of james -> %[a-zA-Z _] or splitStringC
 	// sscanf is EVIL PERIOD!
-	
+
 	if (!property) {
-		char** splat=splitStringC(data, ' ');// leeeeak!
-		thing=splat[0];
-		property=splat[2];// pointer being freed was not allocated
+		char **splat = splitStringC(data, ' ');// leeeeak!
+		thing = splat[0];
+		property = splat[2];// pointer being freed was not allocated
 	}
-  
+
 	pf("does %s have %s?\n", thing, property);
-	NodeVector all=findProperties(thing, property,false);
-	if (all.size()==0 and property[strlen(property) - 1] == 's'){
-		property[strlen(property) - 1]=0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
-		all=findProperties(thing, property);
+	NodeVector all = findProperties(thing, property, false);
+	if (all.size() == 0 and property[strlen(property) - 1] == 's') {
+		property[strlen(property) -
+		         1] = 0;// http://netbase.pannous.com/html/South%20Park.Seasons -> http://netbase.pannous.com/html/South%20Park.Season
+		all = findProperties(thing, property);
 	}
-	if (all.size()==0) all=findProperties(thing, property,true);// INVERSE!!
+	if (all.size() == 0) all = findProperties(thing, property, true);// INVERSE!!
 	return all;
 }
+
 NodeVector parseProperties(const char *data) {
 	return parseProperties(editable(data));
 }
-bool containsSubstring(vector<char*>& words, char* sub) {
-	for (int j=0; j < words.size(); j++) {
-		char* word=words[j];
-		if (contains(word, sub,true/*ignoreCase*/)){
-			if(eq(word,sub))
+
+bool containsSubstring(vector<char *> &words, char *sub) {
+	for (int j = 0; j < words.size(); j++) {
+		char *word = words[j];
+		if (contains(word, sub, true/*ignoreCase*/)) {
+			if (eq(word, sub))
 				continue;// only true substrings!
 			else
 				return true;
@@ -1961,26 +2020,26 @@ bool containsSubstring(vector<char*>& words, char* sub) {
 	return false;
 }
 
-NV filterCandidates(NV all){
+NV filterCandidates(NV all) {
 	VC words;
-	int size=(int)all.size();
-	for(int i=size-1;i>=0;i--)
-		if(endsWith(all[i]->name," "))
-		  printf("bug name %s",all[i]->name);
+	int size = (int) all.size();
+	for (int i = size - 1; i >= 0; i--)
+		if (endsWith(all[i]->name, " "))
+			printf("bug name %s", all[i]->name);
 		else
-		  words.push_back(all[i]->name);
+			words.push_back(all[i]->name);
 
-	for(int i=size-1;i>=0;i--){
-		N entity=all[i];
-		if(containsSubstring(words, entity->name))
-			all.erase(all.begin() +i);
+	for (int i = size - 1; i >= 0; i--) {
+		N entity = all[i];
+		if (containsSubstring(words, entity->name))
+			all.erase(all.begin() + i);
 	}
 	//	all.shrink_to_fit();
-	size=(int)all.size();
-	for(int i=0;i<size;i++){
-		N entity=all[i];
-		if(isAbstract(entity)){
-			NV more=allInstances(entity);
+	size = (int) all.size();
+	for (int i = 0; i < size; i++) {
+		N entity = all[i];
+		if (isAbstract(entity)) {
+			NV more = allInstances(entity);
 			mergeVectors(&all, more);
 		}
 	}
@@ -1994,34 +2053,33 @@ NV filterCandidates(NV all){
 }
 
 
-
 //vector<cchar*>
 //N
-map<int,bool> loadBlacklist(bool reload/*=false*/){
-	N blacklist=getAbstract("entity blacklist");
-	map<int,bool> forbidden; // int: wordhash
+map<int, bool> loadBlacklist(bool reload/*=false*/) {
+	N blacklist = getAbstract("entity blacklist");
+	map<int, bool> forbidden; // int: wordhash
 	// todo
 
-	FILE *infile=open_file("blacklist.csv",false);
-	if(!infile)return forbidden;
+	FILE *infile = open_file("blacklist.csv", false);
+	if (!infile)return forbidden;
 	char line[1000];// Relativ geschwind!
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		forbidden[wordhash(line)]=true;
+		forbidden[wordhash(line)] = true;
 	}
-	if(!reload and blacklist->statementCount>1000)return forbidden;
+	if (!reload and blacklist->statementCount > 1000)return forbidden;
 //	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
 //	if(forbidden.size()>0)return forbidden;
 
-	bool check=blacklist->statementCount>1000;
+	bool check = blacklist->statementCount > 1000;
 
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		if(check and forbidden[wordhash(line)])continue;// already loaded
-		forbidden[wordhash(line)]=true;
-			//contains(blacklist,line,true/*ignoreCase*/))
+		if (check and forbidden[wordhash(line)])continue;// already loaded
+		forbidden[wordhash(line)] = true;
+		//contains(blacklist,line,true/*ignoreCase*/))
 		fixNewline(line);
-		addStatement(blacklist, Part, getAbstract(line),false);
-		addStatement(blacklist, Part, getAbstract(concat(line,"e")),false);// sein -> seine Berg -> Berge
-		addStatement(blacklist, Part, getAbstract(concat(line,"en")),false);// sein -> seinen Berg -> Bergen
+		addStatement(blacklist, Part, getAbstract(line), false);
+		addStatement(blacklist, Part, getAbstract(concat(line, "e")), false);// sein -> seine Berg -> Berge
+		addStatement(blacklist, Part, getAbstract(concat(line, "en")), false);// sein -> seinen Berg -> Bergen
 //		forbidden.push_back(editable(line));
 	}
 	return forbidden;
@@ -2029,90 +2087,91 @@ map<int,bool> loadBlacklist(bool reload/*=false*/){
 }
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
-NV findEntites(cchar* query0){
-	char* query=modifyConstChar(query0);
-	query=replaceChar(query,'.',' ');
-	query=replaceChar(query,'?',' ');
-	query=replaceChar(query,'!',' ');
-	query=replaceChar(query,'(',' ');
-	query=replaceChar(query,')',' ');
-	query=replaceChar(query,'%',' ');
+NV findEntites(cchar *query0) {
+	char *query = modifyConstChar(query0);
+	query = replaceChar(query, '.', ' ');
+	query = replaceChar(query, '?', ' ');
+	query = replaceChar(query, '!', ' ');
+	query = replaceChar(query, '(', ' ');
+	query = replaceChar(query, ')', ' ');
+	query = replaceChar(query, '%', ' ');
 	NV all;
 	NV entities;// Merkel
 	NV classes; // Politiker
-	NV topics;	// Politik
+	NV topics;    // Politik
 //	vector<cchar*> forbidden=loadBlacklist();
 //	N forbidden=loadBlacklist();
-	map<int,bool> forbidden=loadBlacklist();
+	map<int, bool> forbidden = loadBlacklist();
 
 //	if(hasWord(query0) and !forbidden[wordhash(query0)])
 //		all.push_back(getAbstract(query0));// quick
-	int max_words=6;// max words per entity: 'president of the United States of America' == 7
+	int max_words = 6;// max words per entity: 'president of the United States of America' == 7
 	//	int min_chars=4;//
-	int min_chars=2;// VW ? :(
-	int len=(int)strlen(query);
-	char* start=query;
-	char* last=query;
-	char* end=&query[len];
-	char* mid=strstr(start," ");
-	if(!mid)mid=end;// 1 word queries
-	while(start<end){
-		int words=1;
-		while(mid<=end and words<max_words and mid-start>=min_chars){
-			mid[0]=0;// Artificial cut
+	int min_chars = 2;// VW ? :(
+	int len = (int) strlen(query);
+	char *start = query;
+	char *last = query;
+	char *end = &query[len];
+	char *mid = strstr(start, " ");
+	if (!mid)mid = end;// 1 word queries
+	while (start < end) {
+		int words = 1;
+		while (mid <= end and words < max_words and mid - start >= min_chars) {
+			mid[0] = 0;// Artificial cut
 //			if(!forbidden[ wordhash(start)]){
 //			p(start);
-			N entity=hasWord(start);
-			if(!entity and endsWith(start, "s")){ //!germanLabels and 
-				mid[-1]=0; // ^^ Minimum stemming
-				entity=hasWord(start);// abstract OK
-				mid[-1]='s';// HAHA HAxk! ;)
+			N entity = hasWord(start);
+			if (!entity and endsWith(start, "s")) { //!germanLabels and
+				mid[-1] = 0; // ^^ Minimum stemming
+				entity = hasWord(start);// abstract OK
+				mid[-1] = 's';// HAHA HAxk! ;)
 			}
-			if(!entity and germanLabels and endsWith(start, "e")){ // Berge -> Berg
-				mid[-1]=0; // ^^ Minimum stemming
-				entity=hasWord(start);// abstract OK
-				mid[-1]='e';// HAHA HAxk! ;)
+			if (!entity and germanLabels and endsWith(start, "e")) { // Berge -> Berg
+				mid[-1] = 0; // ^^ Minimum stemming
+				entity = hasWord(start);// abstract OK
+				mid[-1] = 'e';// HAHA HAxk! ;)
 			}
 			// the United https://www.wikidata.org/wiki/Q7771566
 			// 239790	United				9 statements
-			if(atoi(start))entity=0;// no numbers hack
-			if(entity){
+			if (atoi(start))entity = 0;// no numbers hack
+			if (entity) {
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
-				if(!forbidden[ wordhash(entity->name)]){
+				if (!forbidden[wordhash(entity->name)]) {
 					all.push_back(entity);
-					if(!isAbstract(entity)){
-						entity->kind=abstractId;
-						insertAbstractHash(entity,true);// fix bug!
+					if (!isAbstract(entity)) {
+						entity->kind = abstractId;
+						insertAbstractHash(entity, true);// fix bug!
 					}
-					string ename=string(start)+" "+last;
-					if(start!=last and !forbidden[ wordhash(ename.data())]){
-						entity=hasWord(ename.data());
-						if(entity)all.push_back(entity);
+					string ename = string(start) + " " + last;
+					if (start != last and !forbidden[wordhash(ename.data())]) {
+						entity = hasWord(ename.data());
+						if (entity)all.push_back(entity);
 					}
 
-				}else{
-					pf("blacklisted: %s\n",entity->name);
+				} else {
+					pf("blacklisted: %s\n", entity->name);
 				}
 			}
-			mid[0]=' ';// fix
+			mid[0] = ' ';// fix
 //		}
-			if(mid==end)break;
-			mid=strstr(mid+1," ");// expand
-			if(!mid)mid=end;
+			if (mid == end)break;
+			mid = strstr(mid + 1, " ");// expand
+			if (!mid)mid = end;
 			words++;
 		}
-		last=start;
-		while(start[0]!=' ' and start!=end) start++;
-		start[0]=0;// cut last word!
+		last = start;
+		while (start[0] != ' ' and start != end) start++;
+		start[0] = 0;// cut last word!
 		start++; // skip ' '
-		if(start>=end)break;
-		mid=strstr(start," ");// first sub-word
-		if(!mid)mid=end;
+		if (start >= end)break;
+		mid = strstr(start, " ");// first sub-word
+		if (!mid)mid = end;
 	}
 	free(query);
 	return filterCandidates(all);
 }
+
 //
 //// ignore space!
 //NV findSubEntites(cchar* query0){
@@ -2150,139 +2209,142 @@ NV findEntites(cchar* query0){
 //	free(query);
 //	return filterCandidates(all);
 //}
-bool stopTopic(N t){
-	if(t->id==5)return true;
+bool stopTopic(N t) {
+	if (t->id == 5)return true;
 	return false;
 }
-NV sortTopics(NV topics,N entity){
-	deque<Node*> sorted;
-	for(int i=0;i<(int)topics.size();i++){
-		N topic=topics[i];
-		if(!checkNode(topic))continue;
-		if(eq(topic->name,"◊"))continue;
-		if(eq(topic->name,entity->name))continue;
+
+NV sortTopics(NV topics, N entity) {
+	deque<Node *> sorted;
+	for (int i = 0; i < (int) topics.size(); i++) {
+		N topic = topics[i];
+		if (!checkNode(topic))continue;
+		if (eq(topic->name, "◊"))continue;
+		if (eq(topic->name, entity->name))continue;
 //		if(contains(entity->name, getText(topic))) // a great politician , politician
 //		sorted.push_back(topic);
 //		else
-		sorted.push_front( topic);
-		if(stopTopic(topic))
+		sorted.push_front(topic);
+		if (stopTopic(topic))
 			break;
 	}
 //	topics.clear();
-	for (int i=0; i<sorted.size(); i++) {
-		topics[i]=sorted[i];
+	for (int i = 0; i < sorted.size(); i++) {
+		topics[i] = sorted[i];
 	}
 	return topics;
 }
 
 
 extern "C"
-Node* getType(Node* n){
-	return getProperty(n,Type,1000);
+Node *getType(Node *n) {
+	return getProperty(n, Type, 1000);
 //	Statement* s=findStatement(n,Type,Any);
 //	if(!checkStatement(s))return 0;// n
 //	return s->Object();
 }
-N getInferredClass(N n,int limit=1000){
-	Statement * s=0;
-	map<Statement*, bool> visited;
-	int lookup=0;
-	while ((s=nextStatement(n,s))) { // kf predicate!=Any 24.1. REALLY??
-		if(limit and lookup++>=limit)break;
-		if(s->Object()==n){
-			if(s->predicate>0 or s->predicate<-1000)
-				if(s->predicate!=-10031 and s->predicate!=-10361)// part
+
+N getInferredClass(N n, int limit = 1000) {
+	Statement *s = 0;
+	map<Statement *, bool> visited;
+	int lookup = 0;
+	while ((s = nextStatement(n, s))) { // kf predicate!=Any 24.1. REALLY??
+		if (limit and lookup++ >= limit)break;
+		if (s->Object() == n) {
+			if (s->predicate > 0 or s->predicate < -1000)
+				if (s->predicate != -10031 and s->predicate != -10361)// part
 					return s->Predicate();
 		}
 	}
 	return 0;
 }
-N getClass(N n){
-	N p=0;
-	if(!p)p=getProperty(n,SuperClass,1000);// more specific: Transportflugzeug
-	if(!p)p=getProperty(n,get(-10031),1000);// 	Ist ein(e) :(
-	if(!p)p=getProperty(n,Type,1000); // Typ Flugzeug
-	if(!p)p=getProperty(n,get(-10106),1000);// Tätigkeit
-	if(!p)p=getInferredClass(n,1000);
-	if(!p)p=getProperty(n,Synonym,1000);// Tätigkeit
-	if(!p and (n->kind>0 or n->kind<-1000))
+
+N getClass(N n) {
+	N p = 0;
+	if (!p)p = getProperty(n, SuperClass, 1000);// more specific: Transportflugzeug
+	if (!p)p = getProperty(n, get(-10031), 1000);// 	Ist ein(e) :(
+	if (!p)p = getProperty(n, Type, 1000); // Typ Flugzeug
+	if (!p)p = getProperty(n, get(-10106), 1000);// Tätigkeit
+	if (!p)p = getInferredClass(n, 1000);
+	if (!p)p = getProperty(n, Synonym, 1000);// Tätigkeit
+	if (!p and (n->kind > 0 or n->kind < -1000))
 		return get(n->kind);
-	if(!p){
+	if (!p) {
 //		if(!p)p=getProperty(n,Type,1500);
 //		if(p)addStatement(n, Type, p,false);
 //		else
 		{
-			if(n->statementCount>3 and !atoi(n->name))
-			pf("Unknown type: %s %d\n",n->name,n->id);
+			if (n->statementCount > 3 and !atoi(n->name))
+				pf("Unknown type: %s %d\n", n->name, n->id);
 			return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 		}
 	}
 	return p;
 }
 
-N getTopic(N node){
+N getTopic(N node) {
 	if (NO_TOPICS)
 		return getType(node);
-	N t=  getProperty(node, "topic");
+	N t = getProperty(node, "topic");
 //	if(!t)t=getProperty(node, "Kategorie");
-	if(t and t!=node)return t;
-	return getFurthest(node,topicFilter);
+	if (t and t != node)return t;
+	return getFurthest(node, topicFilter);
 }
 
-NV getTopics(N entity){
-	NodeSet all=findAll(entity, topicFilter);
-	NV topics=	setToVector(all);
-	topics=sortTopics(topics,entity);
+NV getTopics(N entity) {
+	NodeSet all = findAll(entity, topicFilter);
+	NV topics = setToVector(all);
+	topics = sortTopics(topics, entity);
 	return topics;
 }
 
-NV getTopics(NV entities){
+NV getTopics(NV entities) {
 	NV topics;
-	for(int i=0;i<(int)entities.size();i++){
-		N entity=entities[i];
-		N topic=getTopic(entity);
+	for (int i = 0; i < (int) entities.size(); i++) {
+		N entity = entities[i];
+		N topic = getTopic(entity);
 		topics.push_back(topic);
-		}
+	}
 	return topics;
 }
 
 
-NV showTopics(NV entities){
-	NV all= getTopics(entities);
-	bool splitAbstract=false;
-	for(int i=0;i<(int)all.size();i++){
-	N entity=all[i];
-	printf("====================================\n");
-	if(isAbstract(entity)){
-		if(!splitAbstract)continue;
-		NV instances=allInstances(entity);
-		//			all_instances3(Node* type, int recurse, int max, bool includeClasses)
-		for(int j=0;j<(int)instances.size();j++){
-			entity=instances[j];
-			NV topics=getTopics(entity);
-			if(topics.size()<=2)continue;// self + abstract
-			printf("------------------------------------\n");
-			show(topics);
+NV showTopics(NV entities) {
+	NV all = getTopics(entities);
+	bool splitAbstract = false;
+	for (int i = 0; i < (int) all.size(); i++) {
+		N entity = all[i];
+		printf("====================================\n");
+		if (isAbstract(entity)) {
+			if (!splitAbstract)continue;
+			NV instances = allInstances(entity);
+			//			all_instances3(Node* type, int recurse, int max, bool includeClasses)
+			for (int j = 0; j < (int) instances.size(); j++) {
+				entity = instances[j];
+				NV topics = getTopics(entity);
+				if (topics.size() <= 2)continue;// self + abstract
+				printf("------------------------------------\n");
+				show(topics);
+			}
+		} else {
+			NV topics = getTopics(entity);
+			//		show(topics);
 		}
-	}else{
-		NV topics=getTopics(entity);
-		//		show(topics);
-	}
 	}
 	return all;
 }
 
 
 // see getProperty
-Node* findProperty(Node* n , Node* m,bool allowInverse,int limit){
-	Statement* s=0;
-	int count=0;
-	while ((s=nextStatement(n,s))) {
-		if(limit and count++>limit)break;
-		if(s->Predicate()==m){
+Node *findProperty(Node *n, Node *m, bool allowInverse, int limit) {
+	Statement *s = 0;
+	int count = 0;
+	while ((s = nextStatement(n, s))) {
+		if (limit and count++ > limit)break;
+		if (s->Predicate() == m) {
 			return s->Object();
 		}
-		if (allowInverse and s->Predicate()==invert(m)) {
+		if (allowInverse and s->Predicate() == invert(m)) {
 			return s->Subject();
 		}
 	}
@@ -2290,150 +2352,151 @@ Node* findProperty(Node* n , Node* m,bool allowInverse,int limit){
 }
 
 // see findProperty
-Node * getProperty(Node* node, Node* key,int limit) {
-	S s=findStatement(node, key, Any ,0,0,0,true,limit);
-	if(!checkStatement(s))return findProperty(node,key,true,limit);
-	return s->Object()==node ? s->Subject() : s->Object();// inverse
+Node *getProperty(Node *node, Node *key, int limit) {
+	S s = findStatement(node, key, Any, 0, 0, 0, true, limit);
+	if (!checkStatement(s))return findProperty(node, key, true, limit);
+	return s->Object() == node ? s->Subject() : s->Object();// inverse
 }
 
 // see findProperty
 
 extern "C"
-Node * getProperty(Node* node, cchar* key,int limit) {
+Node *getProperty(Node *node, cchar *key, int limit) {
 	// int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false,int limit=lookupLimit
-	S s=findStatement(node, getThe(key), Any ,0,0,0,true,limit);
+	S s = findStatement(node, getThe(key), Any, 0, 0, 0, true, limit);
 	//findStatement(node, getAbstract(key), Any); // todo? egal
-	if(!checkStatement(s))return findProperty(node,key,true,limit);
+	if (!checkStatement(s))return findProperty(node, key, true, limit);
 	return s->Object();
 }
 
 // see getProperty
-Node* findProperty(Node* n , const char* m,bool allowInverse,int limit){
-	Statement* s=0;
-	int count=0;
-	while ((s=nextStatement(n,s))) {
-		if(limit and count++>limit)break;
-		bool matches=eq(s->Predicate()->name,m,true);
-		matches=matches or (allowInverse and contains(s->Predicate()->name, m));
-		if(matches){
-			if(eq(s->Object(),n))
+Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
+	Statement *s = 0;
+	int count = 0;
+	while ((s = nextStatement(n, s))) {
+		if (limit and count++ > limit)break;
+		bool matches = eq(s->Predicate()->name, m, true);
+		matches = matches or (allowInverse and contains(s->Predicate()->name, m));
+		if (matches) {
+			if (eq(s->Object(), n))
 				return s->Subject();
-			if(eq(s->Subject(),n))
+			if (eq(s->Subject(), n))
 				return s->Object();
 		}
 	}
 	return 0;
 }
 
-NodeVector findProperties(Node* n, const char* m,bool allowInverse/*=true*/){
-	if(!m)return EMPTY;// !checkNode(n)
-	if(isInteger(m)) m=getThe(m)->name;
+NodeVector findProperties(Node *n, const char *m, bool allowInverse/*=true*/) {
+	if (!m)return EMPTY;// !checkNode(n)
+	if (isInteger(m)) m = getThe(m)->name;
 	NodeVector good;
-	Statement* s=0;
-	while ((s=nextStatement(n,s))) {// todont: lookuplimit
-		bool matches=eq(s->Predicate()->name,m,true);
-		matches=matches or (allowInverse and contains(s->Predicate()->name,m,true));
-		matches=matches or (allowInverse and contains(m,s->Predicate()->name,true));
-		if(matches){
-			if(s->Object()==n and allowInverse)// wrong semantics egal makes of mazda "1991 Mazda 323 Hatchback		Make		Mazda"
+	Statement *s = 0;
+	while ((s = nextStatement(n, s))) {// todont: lookuplimit
+		bool matches = eq(s->Predicate()->name, m, true);
+		matches = matches or (allowInverse and contains(s->Predicate()->name, m, true));
+		matches = matches or (allowInverse and contains(m, s->Predicate()->name, true));
+		if (matches) {
+			if (s->Object() == n and
+			    allowInverse)// wrong semantics egal makes of mazda "1991 Mazda 323 Hatchback		Make		Mazda"
 				good.push_back(s->Subject());
 			else if (!contains(good, s->Object(), false))
-				if(allowInverse or eq(s->Subject(),n))
+				if (allowInverse or eq(s->Subject(), n))
 					good.push_back(s->Object());
-			if(good.size()>resultLimit)return good;
+			if (good.size() > resultLimit)return good;
 		}
 	}
 	return good;
 }
 
 
-NodeVector findProperties(Node* n , Node* m,bool allowInverse/*=true*/){
+NodeVector findProperties(Node *n, Node *m, bool allowInverse/*=true*/) {
 	NodeVector good;
-	if(!m){
-		pf("Warning: empty property null for node %d\t%s",n->id,n->name);
+	if (!m) {
+		pf("Warning: empty property null for node %d\t%s", n->id, n->name);
 		return good;
 	}
 	NV all;
-	if(isAbstract(n))
-		all=instanceFilter(n);// need big lookuplimit here :( todo: filter onthe fly!
+	if (isAbstract(n))
+		all = instanceFilter(n);// need big lookuplimit here :( todo: filter onthe fly!
 	//  if(!isAbstract(n))
 	all.push_back(n);// especially for freebase singletons!
 	// OR//  findStatement(Node *subject, Node *predicate, Node *object)
-	for (int i=0; i<all.size(); i++){
-		mergeVectors(&good, findProperties(all[i],m->name,false));
-		if(good.size()>resultLimit)return good;
+	for (int i = 0; i < all.size(); i++) {
+		mergeVectors(&good, findProperties(all[i], m->name, false));
+		if (good.size() > resultLimit)return good;
 	}
-	if(allowInverse)
-		for (int i=0; i<all.size(); i++){
-			mergeVectors(&good, findProperties(all[i],m->name,true));
-			if(good.size()>resultLimit)return good;
+	if (allowInverse)
+		for (int i = 0; i < all.size(); i++) {
+			mergeVectors(&good, findProperties(all[i], m->name, true));
+			if (good.size() > resultLimit)return good;
 		}
 	return good;
 }
 
-NodeVector findProperties(const char* n, const char* m,bool allowInverse){
-	if(isInteger(n)) return findProperties(getAbstract(n),m,allowInverse);
-	if(isInteger(m)) return findProperties(getAbstract(n),getThe(m),allowInverse);
+NodeVector findProperties(const char *n, const char *m, bool allowInverse) {
+	if (isInteger(n)) return findProperties(getAbstract(n), m, allowInverse);
+	if (isInteger(m)) return findProperties(getAbstract(n), getThe(m), allowInverse);
 	NodeVector good;
-	N a=getAbstract(n);
-	NV all=  instanceFilter(a);// need big lookuplimit here :( todo: filter onthe fly!
+	N a = getAbstract(n);
+	NV all = instanceFilter(a);// need big lookuplimit here :( todo: filter onthe fly!
 	all.push_back(a);// especially for freebase singletons!
-	for (int i=0; i<all.size(); i++){
-		NV more=findProperties(all[i],m,allowInverse);
+	for (int i = 0; i < all.size(); i++) {
+		NV more = findProperties(all[i], m, allowInverse);
 		mergeVectors(&good, more);
-		if(good.size()>resultLimit)return good;
+		if (good.size() > resultLimit)return good;
 	}
 	return good;// dedup(good);
 }
 
 
-Node * has(Node* n, Node * m) {
+Node *has(Node *n, Node *m) {
 	clearAlgorithmHash(true);
-	int tmp=resultLimit;
-	resultLimit=1;
-	NodeVector all=memberPath(n, m);
-	resultLimit=tmp;
+	int tmp = resultLimit;
+	resultLimit = 1;
+	NodeVector all = memberPath(n, m);
+	resultLimit = tmp;
 	if (all.size() > 0) return all.front();
 
 	// how to find paths with property predicates?? so:
 	clearAlgorithmHash();
-	Node *no=0;
-	if (!no) no=has(n, m, Any); // TODO: test
+	Node *no = 0;
+	if (!no) no = has(n, m, Any); // TODO: test
 	return no; // others already done!!
 
 	// deprecated:
 	//	if (m->value.text != 0)// hasloh population:3000
 	//		no = has(n, m, m->value); // TODO: test
 	//  findPath(n,m,hasFilter);// Todo new algoritym
-	if (!no) no=has(n, Part, m);
-	if (!no) no=has(n, Attribute, m);
-	if (!no) no=has(n, Substance, m);
-	if (!no) no=has(n, Member, m);
-	if (!no) no=has(n, UsageContext, m);
-	if (!no) no=has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
-	if (!no) no=has(n, get(_MEMBER_DOMAIN_REGION), m);
-	if (!no) no=has(n, get(_MEMBER_DOMAIN_USAGE), m);
+	if (!no) no = has(n, Part, m);
+	if (!no) no = has(n, Attribute, m);
+	if (!no) no = has(n, Substance, m);
+	if (!no) no = has(n, Member, m);
+	if (!no) no = has(n, UsageContext, m);
+	if (!no) no = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
+	if (!no) no = has(n, get(_MEMBER_DOMAIN_REGION), m);
+	if (!no) no = has(n, get(_MEMBER_DOMAIN_USAGE), m);
 	//inverse
-	if (!no) no=has(m, Owner, n);
-	if (!no) no=has(m, PartOf, n);
-	if (!no) no=has(m, get(_DOMAIN_CATEGORY), n);
-	if (!no) no=has(m, get(_DOMAIN_REGION), n);
-	if (!no) no=has(m, get(_DOMAIN_USAGE), n);
+	if (!no) no = has(m, Owner, n);
+	if (!no) no = has(m, PartOf, n);
+	if (!no) no = has(m, get(_DOMAIN_CATEGORY), n);
+	if (!no) no = has(m, get(_DOMAIN_REGION), n);
+	if (!no) no = has(m, get(_DOMAIN_USAGE), n);
 
 	//  if(!n)n=has(n,Predicate,m);// TODO!
 	//	if (!no)no = has(save, Any, m); //TODO: really?
 	return no;
 }
 
-Statement * findRelations(Node* from, Node * to) {
-	Statement* s=findStatement(from, Any, to, false, false, false, false);
+Statement *findRelations(Node *from, Node *to) {
+	Statement *s = findStatement(from, Any, to, false, false, false, false);
 	if (!s) return findStatement(to, Any, from, false, false, false, false);
 	else return s;
 }
 
-Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
-	Statement* s=findStatement(from, Any, to, false, false, false, false);
-	if (!s) s=findStatement(to, Any, from, false, false, false, false);
+Node *findRelation(Node *from, Node *to) {    // todo : broken Instance !!!
+	Statement *s = findStatement(from, Any, to, false, false, false, false);
+	if (!s) s = findStatement(to, Any, from, false, false, false, false);
 	if (s) {
 		if (s->Subject() == from) return s->Predicate();
 		if (s->Object() == to) return s->Predicate();
@@ -2447,21 +2510,21 @@ Node * findRelation(Node* from, Node * to) {	// todo : broken Instance !!!
 	return null;
 }
 
-bool hasValue(Node * n) {
-	return (*(int*) &n->value) != 0;
+bool hasValue(Node *n) {
+	return (*(int *) &n->value) != 0;
 }
 
 //bool isA4(Node* n, string match, bool recurse, bool semantic){
 // return	isA4(n, match, recurse?1:0, semantic);
 //}
-bool isA4(Node* n, string match, int recurse, bool semantic) {
+bool isA4(Node *n, string match, int recurse, bool semantic) {
 
 	if (!checkNode(n)) return false;
 	if (eq(n->name, match.c_str())) return true; // and n->name==match
 	if (get(n->kind) and eq(get(n->kind)->name, match.c_str())) return true;
 
 	if (recurse > 0) recurse++;
-	else recurse=maxRecursions;
+	else recurse = maxRecursions;
 	if (recurse > maxRecursions) return false;
 
 	if (semantic and has(n, "synonym", match, false, false, true)) return true;
@@ -2474,8 +2537,8 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 	if (semantic and has(n, "is", match, false, false, false)) return true; // --
 
 	if (semantic and n->kind == Abstract->id) { // or isA(n,List)
-		Statement* s=0;
-		while ((s=nextStatement(n, s, false))) {
+		Statement *s = 0;
+		while ((s = nextStatement(n, s, false))) {
 			if (s->Predicate() == Instance) if (isA4(s->Object(), match, recurse, semantic)) return true;
 			if (s->Predicate() == Type) if (isA4(s->Subject(), match, recurse, semantic)) return true;
 		}
@@ -2490,16 +2553,16 @@ bool isA4(Node* n, string match, int recurse, bool semantic) {
 }
 
 
-bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
+bool isA4(Node *n, Node *match, int recurse, bool semantic, bool matchName) {
 	if (n == match) return true;
 	if (!n or !n->name or !match or !match->name) return false; //!!
 	if (n->kind == match->id) return true; //
 	//	if (n->id < 100 and match->id < 100)return false; // danger!
-	if (get(n->kind) and eq(get(n->kind)->name, match->name, true))return true;	// danger: instance, noun
+	if (get(n->kind) and eq(get(n->kind)->name, match->name, true))return true;    // danger: instance, noun
 	if (n->id == match->id) return true; // how so??? "Type" overwritten by "kind" !!!!
-	if(isAbstract(match))matchName=true;
+	if (isAbstract(match))matchName = true;
 	if (matchName and eq(n->name, match->name, true)) return true;// only sometimes !!!
-	long badHash=n->id + match->id * 10000000;
+	long badHash = n->id + match->id * 10000000;
 	if (useYetvisitedIsA) {
 		if (yetvisitedIsA[badHash] == -1) return false;
 		if (yetvisitedIsA[badHash] == 1) return true;
@@ -2512,7 +2575,7 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 	if (recurse > maxRecursions) return false;
 	runs++;
 
-	if (hasValue(n)) {	// false else?
+	if (hasValue(n)) {    // false else?
 		//    if(isA4(n->kind,match->kind))
 		if (n->kind == match->kind) {
 			if (n->value.number == match->value.number) return true;
@@ -2526,69 +2589,70 @@ bool isA4(Node* n, Node* match, int recurse, bool semantic, bool matchName) {
 
 
 	// todo:semantic true (level1)
-	bool quickCheckSynonym=recurse == maxRecursions; // todo !?!??!
+	bool quickCheckSynonym = recurse == maxRecursions; // todo !?!??!
 	if (quickCheckSynonym and findStatement(n, Synonym, match, false, false, true)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	}
 
-	bool semantic2=semantic and recurse > 5; // and ... ?;
+	bool semantic2 = semantic and recurse > 5; // and ... ?;
 
 	if (semantic and findStatement(n, Synonym, match, recurse, semantic2, true)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	}
 	//  if(semantic and has(n,Plural,match,false,false,true))return true;
 	if (semantic and has(n, SuperClass, match, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	}
 	if (semantic and has(n, Type, match, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	}
 	if (semantic and has(match, Instance, n, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	}
 	if (semantic and has(match, SubClass, n, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	}
 	if (semantic and has(n, Label, match, false, false, false)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	}
 	if (semantic and recurse > 0 and findStatement(n, Plural, match, maxRecursions - 1, semantic2)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	} //(n,Plural,match,0,true,true))return true;
 	if (semantic and recurse > 0 and findStatement(match, Plural, n, maxRecursions - 1, semantic2)) {
-		yetvisitedIsA[badHash]=true;
+		yetvisitedIsA[badHash] = true;
 		return true;
 	} //(n,Plural,match,0,true,true))return true;
 
 	//  if(isA(n,match->name,false,false))return true;// compare by name
-	if (isAbstract(n) and recurse>0 and recurse < 3) { // or isA(n,List)
-		Statement* s=0;
-		map<Statement*, bool> visited;
-		while ((s=nextStatement(n, s, false))) {
+	if (isAbstract(n) and recurse > 0 and recurse < 3) { // or isA(n,List)
+		Statement *s = 0;
+		map<Statement *, bool> visited;
+		while ((s = nextStatement(n, s, false))) {
 			if (visited[s]) return 0;
-			visited[s]=1;
-			if (s->Predicate() == Instance) if (recurse and isA4(s->Object(), match, recurse, semantic)) {
-				yetvisitedIsA[badHash]=true;
-				return true;
-			}
+			visited[s] = 1;
+			if (s->Predicate() == Instance)
+				if (recurse and isA4(s->Object(), match, recurse, semantic)) {
+					yetvisitedIsA[badHash] = true;
+					return true;
+				}
 		}
 	}
-	if(useYetvisitedIsA)
-		yetvisitedIsA[badHash]=-1;
+	if (useYetvisitedIsA)
+		yetvisitedIsA[badHash] = -1;
 
 	return false;
 }
 
 // todo: a.b=c findMember(b,b) error
-Node * findMember(Node* n, string match, int recurse, bool semantic) {
+Node *findMember(Node *n, string match, int recurse, bool semantic) {
 	if (!n) return 0;
 	if (recurse > 0) recurse++;
 	if (recurse > maxRecursions) return 0;
@@ -2597,14 +2661,17 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 //	for (int i=0; i < n->statementCount; i++) {
 //		Statement* s=getStatementNr(n, i); // Not using instant gap
 
-		Statement* s = 0;
-	int i=0;
-	while ((s = nextStatement(n, s)) and i++<=n->statementCount) {
-			//	for (int i = 0; i < type->statementCount; i++) {
-			//		Statement* s = getStatementNr(type, i);
-		if (!checkStatement(s)){ bad();continue;}
+	Statement *s = 0;
+	int i = 0;
+	while ((s = nextStatement(n, s)) and i++ <= n->statementCount) {
+		//	for (int i = 0; i < type->statementCount; i++) {
+		//		Statement* s = getStatementNr(type, i);
+		if (!checkStatement(s)) {
+			bad();
+			continue;
+		}
 		//		if (debug)showStatement(s);
-		if (isA4(s->Predicate(), match, recurse, semantic)){
+		if (isA4(s->Predicate(), match, recurse, semantic)) {
 			if (s->Subject() == n) return s->Object();
 			else return s->Subject();
 		}
@@ -2617,13 +2684,13 @@ Node * findMember(Node* n, string match, int recurse, bool semantic) {
 
 
 //NodeVector & allInstances(Node * type) {
-NodeVector allInstances(Node * type, int recurse, int max, bool includeClasses) {
+NodeVector allInstances(Node *type, int recurse, int max, bool includeClasses) {
 	clearAlgorithmHash();
-	NodeVector all; 	// COMPARE: !!
-	INCLUDE_CLASSES=includeClasses;// todo: param!
-	if(!recurse)
+	NodeVector all;    // COMPARE: !!
+	INCLUDE_CLASSES = includeClasses;// todo: param!
+	if (!recurse)
 		all = instanceFilter(type);
-	//	all = all_instances(getQuery(type));
+		//	all = all_instances(getQuery(type));
 	else
 		all = all_instances(type, recurse, max, includeClasses);
 	//	all = recurseFilter(type,true,resultLimit,instanceFilter);
