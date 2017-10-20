@@ -585,17 +585,17 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 
 	if (checkNames and node->name == 0) {// WHY AGAIN??
 		bad();
-		if (report)printf("node->name == 0 %p\n", node);
+		if (report)printf("node->name == 0 %i\n", node->id);
 		return false;
 	}
 	if (checkNames and (node->name >= &context->nodeNames[averageNameLength * maxNodes])) {
 		bad();
-		if (report)printf("node->name out of bounds %p\n", node);
+		if (report)printf("node->name out of bounds %i\n", node->id);
 		return false;
 	}
 	if (checkNames and (node->name < context->nodeNames)) {
 		bad();
-		if (report)printf("node->name out of bounds %p\n", node);
+		if (report)printf("node->name out of bounds %i\n", node->id);
 		return false;
 	}
 #ifdef inlineStatements

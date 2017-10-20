@@ -1494,8 +1494,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 	return true;
 }
 
-bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, bool altLabel = false,
-                  bool checkDuplicates = true) {
+bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, bool altLabel = false, bool checkDuplicates = true) {
 	// TODO: RESTORE TO BEFORE! ~ 01.01.2016
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
 	char *label0 = (char *) malloc(10000);
@@ -1937,7 +1936,9 @@ bool isUrl(char *predicateName) {
  or eq(predicateName, "P953") or eq(predicateName, "P963") or eq(predicateName, "P2699");// website
 	// P973 Wird beschrieben in URL   P953 Fulltext hmmm  P963 Downloadlink not used P2699 URL not used
 }
-
+#define var auto
+#define let auto
+//#define auto var
 bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	autoIds = false;
 	//  if(hasWord("vote_value"))return true;
@@ -1965,8 +1966,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		//		if (linecount % 1000 == 0 and linecount > 140000) p(linecount);
 		if (++linecount % 100000 == 0) {
 			long lost = ignored + badCount + MISSING;
-			printf("\r%d triples, ignored:%d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld", linecount, ignored, badCount,
-			       MISSING, lost, linecount - lost);
+			var format = "\r%d triples, ignored:%d foreign %d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld";
+			printf(format, linecount, ignored, foreign,badCount, MISSING, lost, linecount - lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -1984,7 +1985,6 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		char *subjectName = subjectName0;
 		char *predicateName = predicateName0;
 		char *objectName = objectName0;
-		replaceChar(line, ' ', '_');
 //		if(contains(line,"Q16061885"))
 //			p(line);
 //		else continue;

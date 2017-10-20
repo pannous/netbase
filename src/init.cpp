@@ -426,7 +426,8 @@ void load(bool force) {
 void fixPointers() {
 	if (context->nodeNames == name_root)
 		return;// all INT now, no more pointers!!! except chars
-	p("ADJUSTING SHARED MEMORY");
+	p("ADJUSTING SHARED MEMORY DISABLED");
+	return;
 //	if(!checkC)
 	//	showContext(context);
 	fixPointers(context);
