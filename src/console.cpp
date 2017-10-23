@@ -789,6 +789,7 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		return nv;
 	}
 	if (data[len - 1] == '=')data[len - 1] = 0;
+	if (data[len - 1] == ',')data[len - 1] = 0;
 	data = replace(data, ' ', '_');
 
 	int i = atoi(data);

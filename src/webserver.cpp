@@ -183,9 +183,6 @@ int handle(cchar *q0, int conn) {
 		verbosity = verbose;
 		q = q + 5;
 	}
-	if (startsWith(q, "the/")) {
-		q[3] = ' ';
-	}
 	if (startsWith(q, "abstract/")) {
 		verbosity = abstract;
 		q = q + 9;
@@ -250,6 +247,9 @@ int handle(cchar *q0, int conn) {
 	if (startsWith(q, "short/")) {
 		verbosity = shorter;
 		q = q + 6;
+	}
+	if (startsWith(q, "the/")) {
+		q[3] = ' ';
 	}
 	if (startsWith(q, "excludes/") or startsWith(q, "includes/") or startsWith(q, "excluded/") or
 	    startsWith(q, "included/") or startsWith(q, "showview/")) {
