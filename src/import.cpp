@@ -2721,8 +2721,7 @@ void importWikiData() {
 	context = getContext(wikidata);
 	autoIds = false;
 	importing = true;
-	context->lastNode =
-			(int) maxNodes / 2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
+	context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
 //	context->lastNode=30244576; // as of 06/2017!
 //    importWikiLabels("wikidata/properties.de",true);
 //	if(!eq(get(1)->name,"Universum"))

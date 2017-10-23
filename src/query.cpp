@@ -2088,6 +2088,7 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(cchar *query0) {
+	autoIds= false;
 	char *query = modifyConstChar(query0);
 	query = replaceChar(query, '.', ' ');
 	query = replaceChar(query, '?', ' ');
@@ -2133,7 +2134,7 @@ NV findEntites(cchar *query0) {
 			}
 			// the United https://www.wikidata.org/wiki/Q7771566
 			// 239790	United				9 statements
-			if (atoi(start))entity = 0;// no numbers hack
+			if (!NO_TOPICS)if (atoi(start))entity = 0;// no numbers hack
 			if (entity) {
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))

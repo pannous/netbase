@@ -19,13 +19,10 @@
 #include "relations.hpp"
 #include "webserver.hpp" // int handle(char* q,int conn) TEST
 
-#define USE_READLINE
-// compile with -lreadline !
-#ifdef USE_READLINE
-
+// g++ -DNO_READLINE or compile with -lreadline !
+#ifndef NO_READLINE
 #include <readline/history.h> // libreadline-dev
 #include <readline/readline.h>
-
 #endif
 
 using namespace std;
@@ -327,13 +324,13 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		importTest();
 		return OK;
 	}
+	if (startsWith(data, ":iwd") or startsWith(data, ":wd")) {
+		importWikiData();
+		return OK;
+	}
 	if (startsWith(data, ":iw") or startsWith(data, ":wi")) {
 		if (endsWith(data, "!")) deleteWord("acceptant");
 		if (!hasWord("acceptant")) importWordnet();
-		return OK;
-	}
-	if (startsWith(data, ":iwd") or startsWith(data, ":wd")) {
-		importWikiData();
 		return OK;
 	}
 	if (startsWith(data, ":iy") or startsWith(data, ":yi")) {

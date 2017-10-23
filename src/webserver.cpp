@@ -1158,7 +1158,7 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 }
 
 void start_server(int port = SERVER_PORT) {
-	printf("STARTING SERVER!\n localhost:%d\n", port);
+	printf("STARTING SERVER!\n http://localhost:%d\n", port);
 	if (port < 1024)p("sudo netbase if port < 1024!");
 	flush();
 	/* Create socket */
