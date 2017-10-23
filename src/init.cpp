@@ -181,7 +181,7 @@ void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *d
 			}
 		}
 	}
-	root = (char *) shmat(shmid, (const void *) desired, 0);
+	root = (char *) shmat(shmid, desired, 0);
 	if (root == 0 or root == (void *) (-1)) { //virgin_memory=1;
 		ps("receiving other share_memory address");
 		root = (char *) shmat(shmid, (const void *) 0, 0); //void

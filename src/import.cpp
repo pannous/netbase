@@ -1984,9 +1984,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		char *subjectName = subjectName0;
 		char *predicateName = predicateName0;
 		char *objectName = objectName0;
-//		if(contains(line,"Q16061885"))
-//			p(line);
-//		else continue;
+
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
@@ -2006,7 +2004,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		if (dropBadSubject(subjectName)) {
 			ignored++;
 			continue;
-		}//p(line);}
+		}
 		if (dropBadPredicate(predicateName)) {
 			ignored++;
 			continue;
@@ -2015,25 +2013,18 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 			ignored++;
 			continue;
 		}
-		//		if(filterFreebase(objectName)){ignored++;continue;}
 		fixNewline(objectName);
-		// deCamel(predicateName);
-
-//		u8_unescape(objectName, (int)strlen(objectName), objectName); NOT with new wikidata.n3!
-//		u8_unescape(subjectName, (int)strlen(subjectName), subjectName);
-
 		if (!objectName or objectName[0] == '/' or objectName[1] == '/')
 			continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
 		subject = getEntity(subjectName);//,fixNamespaces); //
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
 		if (subject == object) {
-			bad();
+			bad();// no cyclic statements!
 			continue;
-		}// no cyclic statements!
+		}
 		if (predicate == Label || predicate == Description)
-			u8_unescape(objectName, len(objectName), objectName);
-		// unicode utf8 umlaut fix done in labels!
+			u8_unescape(objectName, len(objectName), objectName);//done in labels!
 		if (predicate == Label) {
 			if (!subject->name)
 				setLabel(subject, objectName);

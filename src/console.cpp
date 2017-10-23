@@ -21,6 +21,7 @@
 
 // g++ -DNO_READLINE or compile with -lreadline !
 #ifndef NO_READLINE
+#define USE_READLINE
 #include <readline/history.h> // libreadline-dev
 #include <readline/readline.h>
 #endif
@@ -177,11 +178,7 @@ NodeVector runScript(const char *file) {
 // CENTRAL CONSOLE INSTRUCTION PARSING
 NodeVector parse(const char *data0, bool safeMode/*true*/) {
 	if (eq(data0, null)) return OK;
-	if (!isprint(data0[0])) // chinese \0a etc
-		return OK;
-	if (eq(data0, "")) {
-		return OK;
-	}
+
 	context = getContext(current_context);
 	char *data = fixQuotesAndTrim(editable(data0));
 	int len = (int) strlen(data);
@@ -197,11 +194,15 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		data[len - 1] = 0;
 		len--;
 	}
+	if (eq(data0, ""))return OK;
+	if (!isprint(data0[0])) // chinese \0a etc
+		return OK;
 	if (data[0] == '\'')data++;
 	if (data[0] == '!')((char *) data)[0] = ':';// norm!
 	if (data[0] == 'Q' and data[1] <= '9')data++;//Q1325845
 	if (data[0] == ':')appendFile("logs/commands.log", data);
 	else appendFile("logs/query.log", data);
+
 
 	vector<string> &args = splitString(data, " "); // WITH 0==cmd!!!
 //	vector<char*> args=vector<char*>(splitStringC(data, ' ')); // WITH 0==cmd!!!
