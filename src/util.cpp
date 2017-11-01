@@ -103,6 +103,7 @@ template void empty(vector<Statement *, std::allocator<Statement *> > &v);
 //  return false;
 //}
 bool contains(const char *x, const char y) {
+	if (!x)return false;
 	for (int i = 0; i < strlen(x); i++) {
 		if (x[i] == y)return true;
 	}

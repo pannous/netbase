@@ -993,7 +993,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 				object = getThe(vali);
 //				dissectWord(object);// nee, einmal für alle!
 			}
-			if (!object or object->id > maxNodes) {
+			if (!object or !object->name or object->id > maxNodes) {
 				bad();
 				if (debug) printf("ERROR %s\n", line);
 				continue;
