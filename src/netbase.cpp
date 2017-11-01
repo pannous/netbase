@@ -2291,6 +2291,8 @@ void initUnits() {
 Statement *error_statement = 0;
 
 // SAME as evaluate!!
+void fixPostleitzahlen();
+
 extern "C"
 //Statement * learn(string& sentence0) {
 Statement *learn(const char *sentence0) {
@@ -2728,7 +2730,8 @@ void fixInstances() {
 }
 
 void fixCurrent() {
-	fixInstances();
+	fixPostleitzahlen();
+//	fixInstances();
 //	fixBrokenStatement();
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 //	buildSeoIndex();
@@ -2736,10 +2739,18 @@ void fixCurrent() {
 //	add_force(current_context, 415898, "Telekom", _singleton);
 }
 
+void fixPostleitzahlen() {
+	N a=get(-10281);
+	Statement* s=0;
+	while ((s=nextStatement(a, s))){
+		addStatement(s->Object(),Type,a);
+	}
+}
+
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 //	replay();
 //	N a=getThe("Amazon dvd product");
-//	Statement* s;
+//	Statement* s=0;
 //	while ((s=nextStatement(a, s))){
 //		if(wordCount(s->Subject()->name)==1)
 //			deleteNode(s->Subject());

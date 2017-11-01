@@ -2709,6 +2709,7 @@ void importTest() {
 
 
 void importWikiData() {
+
 	context = getContext(wikidata);
 	autoIds = false;
 	importing = true;
@@ -2859,7 +2860,10 @@ void importAllDE() {
 	//	doDissectAbstracts=true;// already? why not
 	doDissectAbstracts = false;//MESSES TOO MUCH! why?
 	//	importDBPediaDE();
-	importWikiData();
+	if (eq(get(1)->name,"Universum"))
+		p("importWikiData already done");
+	else
+		importWikiData();
 //	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER FUCKUPS! WITH ENGLISH!
 //	context->nodeCount=context->lastNode;// adjust gaps as counted?
 //	importNames();
