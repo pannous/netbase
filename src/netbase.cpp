@@ -34,7 +34,7 @@
 //#define assert(cond) ((cond)?(void)(0): (void)(fprintf (stderr,"FAILED: %s, file %s, line %d \n",#cond,__FILE__,__LINE__), (void)abort()))
 
 using namespace std;
-bool NO_TOPICS = true;
+bool NO_TOPICS = false;//true;
 int nameBatch = 100;
 Context *context_root = 0; // Base of shared memory after attached
 Node *node_root = 0;
