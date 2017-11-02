@@ -1423,10 +1423,13 @@ NodeVector memberFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 }
 
 bool stopAtGoodWiki(N n) {
-	int object = n->id;
+	return n and stopAtGoodWiki(n->id);
+}
+bool stopAtGoodWiki(int object) {
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
 	if (object == 6256)return true;// Land	Q6256
 	if (object == 571)return true;//Buch
+	if (object == 2424752)return true;//	Produkt
 	if (object == 7275)return true;//Staat
 	if (object == 43229)return true;//Organisation	Q43229
 //	if(object==15324)return true;//Gewässer	Q15324
@@ -1724,6 +1727,7 @@ NodeVector findAllSubclasses(Node *fro) {
 #define DROP true
 #define KEEP false
 
+//stopAtGoodWiki
 bool goodWikiType(int object) {
 	if (object == 2424752)return true;//	Produkt
 }
@@ -1881,7 +1885,7 @@ NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQue
 	while ((current = q.front())) {
 		if (q.empty())break;
 		q.pop();
-		if (goodWikiType(current->id))return wrap(current);
+		if (stopAtGoodWiki(current->id))return wrap(current);
 		if (filterWikiType(current->id)) {
 //			pf("filterWikiType %d %s\n",current->id,current->name);
 			continue;
