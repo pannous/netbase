@@ -1724,6 +1724,10 @@ NodeVector findAllSubclasses(Node *fro) {
 #define DROP true
 #define KEEP false
 
+bool goodWikiType(int object) {
+	if (object == 2424752)return true;//	Produkt
+}
+
 bool filterWikiType(int object) {
 	// PROBLEM : Give lower priority with competing correct superclass
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
@@ -1877,6 +1881,7 @@ NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQue
 	while ((current = q.front())) {
 		if (q.empty())break;
 		q.pop();
+		if (goodWikiType(current->id))return wrap(current);
 		if (filterWikiType(current->id)) {
 //			pf("filterWikiType %d %s\n",current->id,current->name);
 			continue;
