@@ -1960,7 +1960,7 @@ void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
 //	importJson("query.json");
-	importN3("quantum.n3");
+//	importN3("quantum.n3");
 //	save();
 //	char* name="2017-09-27T07:28:28Z";
 //	auto a = std::get_time(string(name), "YYYY-MM-DD-HH-MM-SS");
@@ -1968,6 +1968,7 @@ void testBrandNewStuff() {
 //	allowWipe();
 //	fixCurrent();
 //	checkWordnet();
+	importWikiData();
 //	checkWikiData();
 	int i = 0;
 	while (i++ < 100) {

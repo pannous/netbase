@@ -1042,7 +1042,7 @@ bool replaceAll(std::string &str, const std::string &from, const std::string &to
 string generateSEOUrl(string input) {
 //	if (!input)return "";
 	if (input == ("")) {
-		return input;
+		return "";
 	}
 	string s = input;
 //	std::transform(s.begin(), s.end(),s.begin(), ::tolower);

@@ -406,7 +406,7 @@ int handle(cchar *q0, int conn) {
 	int good = 0;
 	for (int i = 0; i < count and (i < resultLimit); i++) {
 		Node *node = (Node *) all[i];
-		if (!checkNode(node))continue;
+		if (!checkNode(node, -1, false, true))continue;
 		if (node->id == 0)continue;
 //		if(node->kind==_internal)continue;
 		if (last == node)continue;
@@ -443,11 +443,14 @@ int handle(cchar *q0, int conn) {
 				Writeline(conn, ",\n\t \"classid\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(c->name) + "\"");
 			}
-			if (ty and checkNode(ty - 1, false, true) and ty->id != 0 and c != ty and ty != t) {
+			if (ty and checkNode(ty, -1, false, true) and ty->id != 0 and c != ty and ty != t) {
 				Writeline(conn, ",\n\t \"typeid\":" + itoa(ty->id));
 				Writeline(conn, ", \"type\":\"" + string(ty->name) + "\"");
 			}
-			Writeline(conn, ", \"seo\":\"" + generateSEOUrl(node->name) + "\"");
+			if (node->name and !empty(node->name)){
+			string seo=generateSEOUrl(node->name);
+			Writeline(conn, ", \"seo\":\"" + seo + "\"");
+			}
 		}
 		if (use_json)
 			Writeline(conn, ", \"kind\":" + itoa(node->kind));
