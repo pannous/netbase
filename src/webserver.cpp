@@ -329,7 +329,7 @@ int handle(cchar *q0, int conn) {
 //	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
 //	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
 
-	pf("query: %s",q);
+	p(q);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
 	NodeVector all = parse(q, safeMode); // <<<<<<<< HANDLE QUERY WITH NETBASE!
@@ -832,16 +832,14 @@ void Writeline(string s) {
 
 /* Write a line to a socket */
 ssize_t Writeline(int sockd, string s) {
-	if (s=="")return 0;
 	return Writeline(sockd, s.data(), s.length());
 }
 
 ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 	size_t nleft;
-	ssize_t nwritten=-1;
+	ssize_t nwritten;
 	const char *buffer;
 	if (sockd == -1) {// debug
-		p("EMPTY SOCKED");
 		p(vptr);
 		return 0;
 	}
@@ -854,7 +852,7 @@ ssize_t Writeline(int sockd, const char *vptr, size_t n) {
 	//	printf("%d:%s\n",n,buffer);
 	nleft = n;
 
-	while (nleft > 0 and nwritten>0) {
+	while (nleft > 0) {
 		if ((nwritten = write(sockd, buffer, nleft)) <= 0) {
 			if (errno == EINTR)
 				nwritten = 0;
@@ -1140,14 +1138,13 @@ void Serve_Resource(ReqInfo reqinfo, int conn) {
 //	p("Serve_Resource!!\n");
 	/* Check whether resource exists, whether we have permission
    to access it, and update status code accordingly.     */
-	if (reqinfo.status == 200){
+	if (reqinfo.status == 200)
 		if ((resource = Check_Resource(&reqinfo)) < 0) {
 			if (errno == EACCES)
 				reqinfo.status = 401;
 			else
 				reqinfo.status = 404;
 		}
-	}
 	/* Output HTTP response headers if we have a full request */
 //	if (reqinfo.type == FULL) done
 //		Output_HTTP_Headers(conn, &reqinfo);
