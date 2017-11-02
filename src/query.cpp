@@ -1736,6 +1736,7 @@ bool filterWikiType(int object) {
 	if (object == 12139612)return DROP; // Liste
 	if (object == 202805)return DROP; // Kombination
 	if (object == 217594)return DROP; // Klasse
+	if (object == 24017414)return DROP; // First-order metaclass
 	if (object == 1347367)return DROP; // Fertigkeit
 	if (object == 15633587)return DROP; //  MediaWiki-Seite im Hauptnamenraum
 //	if(object==4167410)return DROP;	//	<= Wikimedia-Begriffsklärungsseite OK
