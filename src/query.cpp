@@ -1422,9 +1422,6 @@ NodeVector memberFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 		return all;
 }
 
-bool stopAtGoodWiki(N n) {
-	return n and stopAtGoodWiki(n->id);
-}
 bool stopAtGoodWiki(int object) {
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
 	if (object == 6256)return true;// Land	Q6256
@@ -1454,6 +1451,10 @@ bool stopAtGoodWiki(int object) {
 	if (object == 5)return true;//
 	if (object == 5)return true;//
 	return false;
+}
+
+bool stopAtGoodWiki(N n) {
+	return n and stopAtGoodWiki(n->id);
 }
 
 NodeVector parentFilter2(Node *subject, NodeQueue *queue, bool backInstances, int *enqueued) {
