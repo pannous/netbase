@@ -31,7 +31,7 @@
 /* Service an HTTP request */
 
 int SERVER_PORT = 8080;
-int MAX_QUERY_LENGTH = 10000;
+int MAX_QUERY_LENGTH = 1000;
 //static char server_root[1000] = "/Users/me/";
 //static char server_root[1000] = "./";
 // explicit whitelist for files that can be served:
@@ -580,12 +580,12 @@ int handle(cchar *q0, int conn) {
 bool checkSanity(char *q, int len) {
 	bool bad = false;
 	if (len > MAX_QUERY_LENGTH) {
-		q[1000] = 0;
+		q[MAX_QUERY_LENGTH] = 0;
 //		p(checkSanity);
 //		bad=true;
 	}
 	if (q[0] == ':' or q[0] == '!')bad = true;
-	for (int i = 0; i < len; i++) {
+	for (int i = 0; i < len and i< MAX_QUERY_LENGTH; i++) {
 		if (q[i] > 127)bad = true;// no illegal chars!
 	}
 	if (bad)
@@ -708,8 +708,7 @@ void getIncludes(Node *n) {
 	pf("getIncludes %d >>%s<<\n", n->id, n->name);
 	Statement *s = 0;
 	int lookups = 0;
-	while ((s = nextStatement(n, s))) {
-		if (++lookups > 50)break;
+	while ((s = nextStatement(n, s)) and ++lookups < 50) {
 		//    p(s);
 		if (eq(s->Predicate()->name, "exclude")) {
 			excluded.push_back(s->Object()->name);

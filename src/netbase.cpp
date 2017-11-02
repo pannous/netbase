@@ -472,14 +472,19 @@ Statement *nextStatement(int node, Statement *current) {
 	return nextStatement(get(node), current);
 }
 
+int nextStatement_lookupLimit=10000000;
 Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
-	if (current == 0) return getStatement(n->firstStatement);
+	if (nextStatement_lookupLimit--<0)return null;// per web request todo better
+	if (current == null) return getStatement(n->firstStatement);
 	if (stopAtInstances and current->Predicate() == Instance) return null;
 	//	if (stopAtInstances and current->Object == n and current->Predicate == Type)return null; PUT TO END!!
 	Statement *neu = null;
-	if (current->Subject() == n) return getStatement(current->nextSubjectStatement);
-	if (current->Predicate() == n)return getStatement(current->nextPredicateStatement);
-	if (current->Object() == n) return getStatement(current->nextObjectStatement);
+	if (current->Subject() == n and getStatement(current->nextSubjectStatement)!=current)
+		return getStatement(current->nextSubjectStatement);
+	if (current->Predicate() == n and getStatement(current->nextPredicateStatement)!=current)
+		return getStatement(current->nextPredicateStatement);
+	if (current->Object() == n and getStatement(current->nextObjectStatement)!=current)
+		return getStatement(current->nextObjectStatement);
 //	if(current==neu){	// check here?
 //		p("MEGABUG: current==neu");
 //		return null;
