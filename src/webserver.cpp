@@ -85,6 +85,7 @@ char *fixName(char *name) {
 	int len = (int) strlen(name);
 
 	while (--len >= 0) {
+		if (name[len] == '_')name[len] = ' ';// json-save!
 		if (name[len] == 9)name[len] = ' ';// json-save!
 		if (name[len] == '"')name[len] = '\'';// json-save!
 		if (name[len] == '`')name[len] = '\'';// json-save!
