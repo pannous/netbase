@@ -1926,9 +1926,11 @@ void deleteWord(const char *data, bool completely) {
 				deleteNode(word); // DANGER!!
 			}
 		}
-	} else if (checkNode(&context->nodes[id], id, false, false)) deleteNode(&context->nodes[id]);
-	else if (checkStatement(&context->statements[id], false, false)) deleteStatement(&context->statements[id]);
-
+	}
+	else if (checkNode(&context->nodes[id], id, false, false))
+		deleteNode(&context->nodes[id]);
+	else if (checkStatement(&context->statements[id], false, false))
+		deleteStatement(&context->statements[id]);
 	else ps("No such node or statement: " + string(data));
 }
 
@@ -1956,7 +1958,7 @@ void deleteNode(Node *n) {
 			a->value.node = 0;
 	}
 	deleteStatements(n);
-//	memset(n, 0, sizeof(Node)); // hole in context!
+	memset(n, 0, sizeof(Node)); // hole in context!  KF 2.11.17 reactived
 }
 
 void deleteStatements(Node *n) {
