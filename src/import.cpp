@@ -1940,7 +1940,7 @@ bool isUrl(char *predicateName) {
 //#define var auto
 //#define let auto
 bool importN3(cchar *file) {//,bool fixNamespaces=true) {
-	autoIds = false;
+//	autoIds = false; // KF: 3.11.17 allow? todo : <1> vs "1" !
 	//  if(hasWord("vote_value"))return true;
 	context = getContext(current_context);
 	pf("Current nodeCount: %d\n", context->nodeCount);
@@ -2080,7 +2080,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	}
 	p("import N3 ok");
 	closeFile(file);
-	pf("BAD: %d   MISSING: %d\n", badCount, MISSING);
+	pf("LINES IMPORTED: %d   BAD: %d   MISSING: %d\n",linecount-badCount, badCount, MISSING);
 	context->use_logic = false;
 	//	free(subjectName0);free(objectName0);free(predicateName0);// noone cares about 100bytes
 	//	freebaseKeys.clear();

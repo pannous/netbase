@@ -1443,8 +1443,8 @@ bool stopAtGoodWiki(int object) {
 	if (object == 2188189)return true;//Musikalisches Werk	Q2188189
 	if (object == 234460)return true;//Text	Q234460
 //	if(object==7725634)return true;//Literarisches Werk	Q7725634
-	if (object == 5)return true;//
-	if (object == 5)return true;//
+	if (object == 28640)return true;//Beruf
+	if (object == 82799)return true;//Name
 	if (object == 5)return true;//
 	if (object == 5)return true;//
 	if (object == 5)return true;//

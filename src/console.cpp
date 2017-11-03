@@ -181,18 +181,18 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 
 	context = getContext(current_context);
 	char *data = fixQuotesAndTrim(editable(data0));
-	int len = (int) strlen(data);
-	if (data[len - 1] == '\n') {
-		data[len - 1] = 0;
-		len--;
+	int lenge = (int) strlen(data);
+	if (data[lenge - 1] == '\n') {
+		data[lenge - 1] = 0;
+		lenge--;
 	}
-	if (data[len - 1] == '\r') {
-		data[len - 1] = 0;
-		len--;
+	if (data[lenge - 1] == '\r') {
+		data[lenge - 1] = 0;
+		lenge--;
 	}
-	if (data[len - 1] == '\'') {
-		data[len - 1] = 0;
-		len--;
+	if (data[lenge - 1] == '\'') {
+		data[lenge - 1] = 0;
+		lenge--;
 	}
 	if (eq(data0, ""))return OK;
 	if (!isprint(data0[0])) // chinese \0a etc
@@ -203,13 +203,11 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 	if (data[0] == ':')appendFile("logs/commands.log", data);
 	else appendFile("logs/query.log", data);
 
-
 	vector<string> &args = splitString(data, " "); // WITH 0==cmd!!!
 //	vector<char*> args=vector<char*>(splitStringC(data, ' ')); // WITH 0==cmd!!!
 //	char** args=splitStringC(data, ' '); // WITH 0==cmd!!!
 
 	clearAlgorithmHash(true); // maybe messed up
-
 
 	// special server requests first:
 	if (contains(data, "limit") or contains(data, ":limit")) {
@@ -221,7 +219,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		*limit = 0;
 		//		if(len<2)return OK;
 	}
-
 	if (startsWith(data, ":entities") or startsWith(data, "entities") or startsWith(data, "EE") or
 	    startsWith(data, "ee") or startsWith(data, ":ee")) {
 		data = next_word(data);
@@ -231,7 +228,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		buildSeoIndex();
 		return OK;
 	}
-
 	if (startsWith(data, "seo") or startsWith(data, ":seo")) {
 		data = next_word(data);
 		string seos = generateSEOUrl(data);
@@ -247,34 +243,24 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 			return wrap(n);
 		} else return OK;
 	}
-
-
-
-
-	//		scanf ( "%s", data );
 	if (eq(data, "help") or eq(data, ":help") or eq(data, "?")) {
 		showHelpMessage();
 		//    printf("type exit or word");
 		return OK;
 	}
-
 	if (eq(data, ":more")) {
 		resultLimit = resultLimit * 2;
 		if (lastCommand) return parse(lastCommand);
 		else return OK;
 	}
-
 	if (eq(data, ":x")) {
 		save();
 		exit(1);
 	}
 	lastCommand = clone(data);
 	if (eq(data, ":w")) save();
-
 	if (eq(data, ":exit") or eq(data, ":quit") or eq(data, ":q"))
 		exit(1); // before return!
-
-
 //	if (eq(data, "q")) return OK;
 //	if (eq(data, "x")) return OK;
 	if (eq(data, ":console")) {
@@ -308,7 +294,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		quiet = false;
 		return OK;
 	}
-
 	if (startsWith(data, ":if")) {
 		importFreebase();
 		return OK;
@@ -339,20 +324,24 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		importAllYago();
 		return OK;
 	}
+	if (startsWith(data, ":autoids")||startsWith(data, ":autoIds")) {
+		data = next_word(data);
+		autoIds= !eq(data, "off") && !eq(data, "false");
+		pf("autoids %s\n",autoIds?"on":"off");
+	}
+	else autoIds = false;// n3:  <-3> => <typ> !
 	if (startsWith(data, ":i ") or eq(data, ":i") or startsWith(data, ":import")) {
-		autoIds = false;
+//		autoIds = false ^^^ !
 		string arg = next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
 		else importAll();
 		return OK;
 	}
 	autoIds = true;
-
 	if (startsWith(data, ":image")) {
 		data = next_word(data);
 		return wrap(getThe(getImage(data)));
 	}
-
 //	if(startsWith(data, ":the")){
 //		data=next_word(data);
 //		pf("special %s",data);
@@ -364,7 +353,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 //		}
 //		return wrap(t);
 //	}
-
 	if (contains(data, ":lookup")) {
 		char *limit = (char *) strstr(data, "lookup");
 		sscanf(limit, "lookup %d", &lookupLimit);
@@ -372,7 +360,7 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		defaultLookupLimit = lookupLimit;
 		if (limit > data) *(limit - 1) = 0;
 		*limit = 0;
-		if (len < 2)return OK;
+		if (lenge < 2)return OK;
 	}
 
 	if (eq(data, ":load")) {
@@ -435,7 +423,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		deleteWord(what, true /*completely*/);
 		return OK;
 	}
-
 	if (contains(data, ":english") or contains(data, ":en")) {
 		germanLabels = false;
 		initRelations();
@@ -453,7 +440,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		show(da, true);
 		return wrap(da);
 	}
-
 	if (startsWith(data, ":merge ")) {
 		int target, node = 0;
 		sscanf(data, ":merge %d %d", &target, &node);
@@ -465,13 +451,11 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		else
 			return wrap(mergeAll(args[1].c_str()));// merge <string>
 	}
-
 	if (startsWith(data, ":path ") or startsWith(data, ":p ")) {
 		Node *from = getAbstract(args[1]);
 		Node *to = getAbstract(args[2]);
 		return shortestPath(from, to);
 	}
-
 	if (startsWith(data, ":script ")) {
 		cchar *file = args[1].c_str();
 		return runScript(file);
@@ -479,8 +463,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 	if (startsWith(data, ":rh")) {
 		return runScript("logs/commands.log");
 	}
-
-
 	if (args.size() > 1 and (startsWith(data, ":has "))) {
 		Node *from = getAbstract(args.at(1));
 		Node *to = getAbstract(args.at(2));
@@ -491,7 +473,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		Node *to = getAbstract(args.at(2));
 		return parentPath(from, to);
 	}
-
 	if (args.size() == 3 and contains(data, ":exclude ")) {// no ":" here!
 		autoIds = true;
 		Node *node = getAbstract(args[0]);
@@ -549,22 +530,18 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		NS all = getPredicates(da);
 		return setToVector(all);
 	}
-
-
 	if (startsWith(data, ":children") or startsWith(data, ":list") or startsWith(data, ":recurse") or
 	    startsWith(data, ":fetch")) {
 		N da = getAbstract(next_word(data));
 		NS all = findAll(da, childFilter);
 		return setToVector(all);
 	}
-
 	if (startsWith(data, ":instances")) {
 		N da = getAbstract(next_word(data));
 		//		if(endsWith(data, "s"))data[-1]=0
 		NS all = findAll(da, instanceFilter);// childFilter
 		return setToVector(all);
 	}
-
 	//		//Dusty the Klepto Kitty Organism type ^ - + -- -! 	Cat ^
 	//Big the Cat 	x Species ^ - + -- -!
 	if (startsWith(data, ":tree") or startsWith(data, ":subclasses") or startsWith(data, "subclasses")) {
@@ -596,8 +573,6 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		replay();
 		return OK;
 	}
-
-
 	if (startsWith(data, ":new")) {
 		data = next_word(data);
 		return wrap(add(data));
@@ -711,7 +686,7 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		QUESTIONS = true;
 	}
 	if (endsWith(data, "?")) {
-		data[len - 1] = 0;
+		data[lenge - 1] = 0;
 		QUESTIONS = true;
 	}
 
@@ -789,8 +764,8 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		fclose(fp);
 		return nv;
 	}
-	if (data[len - 1] == '=')data[len - 1] = 0;
-	if (data[len - 1] == ',')data[len - 1] = 0;
+	if (data[lenge - 1] == '=')data[lenge - 1] = 0;
+	if (data[lenge - 1] == ',')data[lenge - 1] = 0;
 	data = replace(data, ' ', '_');
 
 	int i = atoi(data);
