@@ -2717,11 +2717,9 @@ void importWikiData() {
 	autoIds = false;
 	importing = true;
 	context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
-//	context->lastNode=30244576; // as of 06/2017!
 //    importWikiLabels("wikidata/properties.de",true);
 //	if(!eq(get(1)->name,"Universum"))
 	importWikiLabels("wikidata/labels.de.n3");
-
 //		importWikiLabels("wikidata/labels.csv");
 //		importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
 //	}
@@ -2740,8 +2738,7 @@ void importWikiDataALT() {
 	//		importLabels("dbpedia_de/labels.csv");
 	//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
 	//	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
-	context->lastNode =
-			(int) maxNodes / 2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
+	context->lastNode = (int) maxNodes / 2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	if (germanLabels) {
 		importWikiLabels("wikidata/wikidata-properties.nt.gz", true);
 		importWikiLabels("wikidata/wikidata-terms.de.nt");

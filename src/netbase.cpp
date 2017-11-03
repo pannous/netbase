@@ -2737,7 +2737,8 @@ void fixInstances() {
 }
 
 void fixCurrent() {
-	fixPostleitzahlen();
+	context->lastNode = (int) maxNodes / 2;
+//	fixPostleitzahlen();
 //	fixInstances();
 //	fixBrokenStatement();
 //	context->lastNode=1;// RADICAL: fill all empty slots!
