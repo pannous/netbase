@@ -2737,7 +2737,8 @@ void fixInstances() {
 }
 
 void fixCurrent() {
-	context->lastNode = (int) maxNodes / 2;
+	context->lastNode =50000000;// as of 11/2017  vs  https://www.wikidata.org/wiki/Q40000000
+//	context->lastNode = (int) maxNodes / 2;
 //	fixPostleitzahlen();
 //	fixInstances();
 //	fixBrokenStatement();

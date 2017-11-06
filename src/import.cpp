@@ -1940,7 +1940,7 @@ bool isUrl(char *predicateName) {
 //#define var auto
 //#define let auto
 bool importN3(cchar *file) {//,bool fixNamespaces=true) {
-//	autoIds = false; // KF: 3.11.17 allow? todo : <1> vs "1" !
+	autoIds = false; // use Q12134 P123 if needed !
 	//  if(hasWord("vote_value"))return true;
 	context = getContext(current_context);
 	pf("Current nodeCount: %d\n", context->nodeCount);

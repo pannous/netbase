@@ -325,13 +325,10 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		return OK;
 	}
 	if (startsWith(data, ":autoids")||startsWith(data, ":autoIds")) {
-		data = next_word(data);
-		autoIds= !eq(data, "off") && !eq(data, "false");
-		pf("autoids %s\n",autoIds?"on":"off");
+		p("use Q12134 P123 if needed ");
 	}
-	else autoIds = false;// n3:  <-3> => <typ> !
 	if (startsWith(data, ":i ") or eq(data, ":i") or startsWith(data, ":import")) {
-//		autoIds = false ^^^ !
+		autoIds = false;
 		string arg = next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
 		else importAll();

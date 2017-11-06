@@ -1086,6 +1086,169 @@ NodeVector &all_instances2(Node *type, int recurse, int max, bool includeClasses
 	return all;
 }
 
+
+
+#define DROP true
+#define KEEP false
+
+
+bool stopAtGoodWiki(int object) {
+//	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
+	if (object == 6256)return true;// Land	Q6256
+	if (object == 571)return true;//Buch
+	if (object == 2424752)return true;//	Produkt
+	if (object == 7275)return true;//Staat
+	if (object == 43229)return true;//Organisation	Q43229
+//	if(object==15324)return true;//Gewässer	Q15324
+	if (object == 121359)return true;//Infrastruktur	Q121359
+	if (object == 618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
+	if (object == 215627)return true;//Person	Q215627
+	if (object == 5)return true;//=> Mensch	Q5
+	if (object == 6511271)return true;//Gemeinde	Q6511271
+	if (object == 107425)return true;// Landschaft	Q107425
+	if (object == 3266850)return true;//Kommune	Q3266850
+	if (object == 515)return true;//Stadt	Q
+//	if(object==482994)return true;//Musikalbum	Q482994
+	if (object == 838948)return true;//Kunstwerk	Q838948
+	if (object == 2188189)return true;//Musikalisches Werk	Q2188189
+	if (object == 234460)return true;//Text	Q234460
+//	if(object==7725634)return true;//Literarisches Werk	Q7725634
+	if (object == 28640)return true;//Beruf
+	if (object == 82799)return true;//Name
+	if (object == 2425052)return true;//  Elektrogerät
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	if (object == 5)return true;//
+	return false;
+}
+
+bool stopAtGoodWiki(N n) {
+	return n and stopAtGoodWiki(n->id);
+}
+
+bool filterWikiType(int object) {
+	// PROBLEM : Give lower priority with competing correct superclass
+//	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
+//	if(object<0)return DROP;// wordnet!
+	if (object == 13406463)return DROP; // Wikimedia-Liste	Q13406463
+	if (object == 4167836)return DROP; // Wikimedia-Kategorie
+	if (object == 160872476)return DROP; // Dataset
+	if (object == 2465832)return DROP; // Wissenschaftsdisziplin
+	if (object == 29413259)return DROP; // Wissenschaftsdisziplin
+	if (object == 12139612)return DROP; // Liste
+	if (object == 202805)return DROP; // Kombination
+	if (object == 217594)return DROP; // Klasse
+	if (object == 22811462)return DROP; //
+	if (object == 24017414)return DROP; // First-order metaclass
+	if (object == 931447)return DROP; //
+	if (object == 1347367)return DROP; // Fertigkeit
+	if (object == 15633587)return DROP; //  MediaWiki-Seite im Hauptnamenraum
+//	if(object==4167410)return DROP;	//	<= Wikimedia-Begriffsklärungsseite OK
+	if (object == 600590)return DROP; // Tupel
+// AUTO:
+	if (object == 488383)return DROP; // Objekt
+	if (object == 386724)return DROP; // Werk !?
+	if (object == 11461)return DROP; // Schall	Q11461
+	if (object == 3249551)return DROP; // Prozess	Q3249551	<= Kunst	Q735	<= Musik	Q638
+//	if(object==39546)return DROP; //Werkzeug	Q39546
+	if (object == 4167836)return DROP; // Wikimedia-Kategorie
+	if (object == 16889133)return DROP; // Klasse
+	if (object == 13406463)return DROP; // Wikimedia-Liste
+	if (object == 188524)return DROP; // Tensor
+	if (object == 16686022)return DROP; // Natürliches physisches Objekt
+	if (object == 24905)return DROP; // Verb
+	if (object == 286583)return DROP; // Manifestation
+	if (object == 2944660)return DROP; // Lexikalischer Begriff
+//	if(object==15916867)return DROP; // Territoriale Verwaltungseinheit eines Landes DONT DROP, SKIP!
+	if (object == 211364)return DROP; // Prinzip
+	if (object == 147276)return DROP; // Eigenname
+	if (object == 36774)return DROP; // Webseite
+	if (object == 15621286)return DROP; // Geistiges Werk
+	if (object == 14204246)return DROP; // Seite im Projektnamensraum
+	if (object == 830077)return DROP; // Subjekt
+	if (object == 837766)return DROP; // Gebietskörperschaft
+	if (object == 16686448)return DROP; // Künstliche Entität
+	if (object == 1639378)return DROP; // Soziales System
+	if (object == 2145290)return DROP; // Repräsentation
+	if (object == 53361976)return DROP; // ObjectProperty
+	if (object == 874405)return DROP; // Soziale Gruppe
+	if (object == 4663903)return DROP; // Wikimedia-Portal
+	if (object == 1799794)return DROP; // Politische Ebene
+	if (object == 15222213)return DROP; // Künstliches physikalisches Objekt
+	//
+//	if(object==15617994)return DROP; // Verwaltungseinheit besser als http://87.118.71.26:81/html/770948
+	if (object == 488383)return DROP; // Objekt
+	if (object == 16686022)return DROP; // Natürliches physisches Objekt
+	if (object == 830077)return DROP; //Subjekt
+	if (object == 874405)return DROP; //Soziale Gruppe
+	if (object == 20719696)return DROP; //Physisch-geographisches Objekt
+//	if(object==618123)return DROP; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
+	if (object == 17633526)return DROP; // "class":"Artikel bei Wikinews
+	if (object == 770948)return DROP; //Okres
+//	if(object==2424752)return DROP; //Produkt	Q2424752 ???
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 0)return DROP; //
+	if (object == 14946396)return DROP;//Einheit", "id":14946396
+	if (object == 11028)return DROP;//Information	Q11028
+	if (object == 246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
+	if (object == 6671777)return DROP;//Struktur	Q6671777
+	if (object == 602884)return DROP;//Sozialphänomen	Q602884
+	if (object == 2088357)return DROP;//Ensemble	Q2088357
+	if (object == 9332)return DROP;//Verhalten	Q9332
+	if (object == 937228)return DROP;//937228, "topic":"Eigenschaft
+	if (object == 4373292)return DROP;//4373292, "topic":"Eigenschaft
+	if (object == 309314)return DROP;//"topicid":309314, "topic":"Quantität",
+	if (object == 2091629)return DROP;//"topicid":2091629, "topic":"Magnitude",
+	if (object == 11471)return DROP;//Zeit	Q11471
+	if (object == 186081)return DROP;//Zeitintervall	Q186081
+	if (object == 14204246)return DROP;//Seite im Projektnamensraum	Q14204246
+//	if(object==82799)return DROP;//Name	Q82799
+	if (object == 82042)return DROP;//Wortart	Q82042
+	if (object == 10856962)return DROP;//Anthroponymie	Q10856962
+	if (object == 11618417)return DROP;//LAU	Q11618417
+//	if(object==262166)return DROP;//Gemeinde in Deutschland	262166
+	if (object == 1048835)return DROP;//territoriale
+//	if(object==56061)return DROP;//territoriale skip! ->
+	if (object == 1084)return DROP;//Substantiv	Q1084
+	if (object == 486972)return DROP;//territoriale
+	if (object == 14757767)return DROP;//Verwaltungseinheit 4. Ebene	Q14757767
+	if (object == 387917)return DROP;//Verwaltungsgliederung Q387917
+	if (object == 2097994)return DROP;//Gemeindebehörde	Q2097994
+	if (object == 1418640)return DROP;//Gebietskörperschaft	Q1418640
+	if (object == 1183543)return DROP;//Gerät	Q1183543
+	if (object == 11023058)return DROP;// Kommunikation
+	if (object == 186408)return DROP;// Zeitpunkt
+	if (object == 1269299)return DROP;// Rechtsform	Q1269299
+	if (object == 1796670)return DROP;// rperschaft	Q1796670
+//	if(object==2996394)return DROP;//	Biologischer Prozess
+//	if(object==1190554)return DROP;// Ereignis
+	if (object == 1914636)return DROP;//Tätigkeit	Q1914636 <=un Technik	Q2695280 BAD
+	if (object == 373065)return DROP;//Angewandte Physik	Q373065
+	if (object == 5962346)return DROP;//, "topic":"Klassifikation",
+	if (object == 58778)return DROP;//=> System	Q58778
+	if (object == 80071)return DROP;// Symbol
+	if (object == 19361238)return DROP;//=x Metaklasse
+	if (object == 35120)return DROP; // Entität
+	if (object == 223557)return DROP; // 	"topicid":223557, "topic":"Körper",
+	if (object == 5127848)return DROP; // Gruppe
+	if (object == 27948)return DROP; // Liste
+	if (object == 827335)return DROP; // Abstrakter Datentyp
+	if (object == 1979154)return DROP; // 	Modell
+	if (object == 386724)return DROP; //	Werk	Q386724	=> Produkt	Q2424752
+	if (object == 28877)return DROP; //	Gut	Q28877	=> Produkt	Q2424752
+	if (object == 7184903)return DROP; //	Abstraktes Objekt
+	if (object == 853614)return DROP; //	 Identifikator
+	if (object == 2221906)return DROP; //		Standort
+	if (object == 9158768)return DROP; //		Speicher
+	return KEEP;
+}
+
+
 NodeVector &all_instances(Node *type, int recurse, int max, bool includeClasses) {
 	if (/* DISABLES CODE */ (true))
 		return all_instances2(type, recurse, max, includeClasses);//	RECURE BROKEN! use instanceFilter
@@ -1336,6 +1499,7 @@ NodeVector subclassFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 	return all;
 }
 
+
 // put as callback into findPath for recursion
 NodeVector relationsFilter(Node *subject, NodeQueue *queue) {//, int max) {
 	NodeVector all;
@@ -1422,40 +1586,6 @@ NodeVector memberFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 		return all;
 }
 
-bool stopAtGoodWiki(int object) {
-//	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
-	if (object == 6256)return true;// Land	Q6256
-	if (object == 571)return true;//Buch
-	if (object == 2424752)return true;//	Produkt
-	if (object == 7275)return true;//Staat
-	if (object == 43229)return true;//Organisation	Q43229
-//	if(object==15324)return true;//Gewässer	Q15324
-	if (object == 121359)return true;//Infrastruktur	Q121359
-	if (object == 618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
-	if (object == 215627)return true;//Person	Q215627
-	if (object == 5)return true;//=> Mensch	Q5
-	if (object == 6511271)return true;//Gemeinde	Q6511271
-	if (object == 107425)return true;// Landschaft	Q107425
-	if (object == 3266850)return true;//Kommune	Q3266850
-	if (object == 515)return true;//Stadt	Q
-//	if(object==482994)return true;//Musikalbum	Q482994
-	if (object == 838948)return true;//Kunstwerk	Q838948
-	if (object == 2188189)return true;//Musikalisches Werk	Q2188189
-	if (object == 234460)return true;//Text	Q234460
-//	if(object==7725634)return true;//Literarisches Werk	Q7725634
-	if (object == 28640)return true;//Beruf
-	if (object == 82799)return true;//Name
-	if (object == 5)return true;//
-	if (object == 5)return true;//
-	if (object == 5)return true;//
-	if (object == 5)return true;//
-	if (object == 5)return true;//
-	return false;
-}
-
-bool stopAtGoodWiki(N n) {
-	return n and stopAtGoodWiki(n->id);
-}
 
 NodeVector parentFilter2(Node *subject, NodeQueue *queue, bool backInstances, int *enqueued) {
 	NodeVector all;
@@ -1723,133 +1853,6 @@ NodeVector nodeSetToNodeVector(NodeSet &input) {
 NodeVector findAllSubclasses(Node *fro) {
 	NodeSet all = findAll(fro, subclassFilter);
 	return setToVector(all);
-}
-
-#define DROP true
-#define KEEP false
-
-//stopAtGoodWiki
-bool goodWikiType(int object) {
-	if (object == 2424752)return true;//	Produkt
-}
-
-bool filterWikiType(int object) {
-	// PROBLEM : Give lower priority with competing correct superclass
-//	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
-//	if(object<0)return DROP;// wordnet!
-	if (object == 13406463)return DROP; // Wikimedia-Liste	Q13406463
-	if (object == 4167836)return DROP; // Wikimedia-Kategorie
-	if (object == 160872476)return DROP; // Dataset
-	if (object == 2465832)return DROP; // Wissenschaftsdisziplin
-	if (object == 29413259)return DROP; // Wissenschaftsdisziplin
-	if (object == 12139612)return DROP; // Liste
-	if (object == 202805)return DROP; // Kombination
-	if (object == 217594)return DROP; // Klasse
-	if (object == 24017414)return DROP; // First-order metaclass
-	if (object == 1347367)return DROP; // Fertigkeit
-	if (object == 15633587)return DROP; //  MediaWiki-Seite im Hauptnamenraum
-//	if(object==4167410)return DROP;	//	<= Wikimedia-Begriffsklärungsseite OK
-	if (object == 600590)return DROP; // Tupel
-// AUTO:
-	if (object == 488383)return DROP; // Objekt
-	if (object == 386724)return DROP; // Werk !?
-	if (object == 11461)return DROP; // Schall	Q11461
-	if (object == 3249551)return DROP; // Prozess	Q3249551	<= Kunst	Q735	<= Musik	Q638
-//	if(object==39546)return DROP; //Werkzeug	Q39546
-	if (object == 4167836)return DROP; // Wikimedia-Kategorie
-	if (object == 16889133)return DROP; // Klasse
-	if (object == 13406463)return DROP; // Wikimedia-Liste
-	if (object == 188524)return DROP; // Tensor
-	if (object == 16686022)return DROP; // Natürliches physisches Objekt
-	if (object == 24905)return DROP; // Verb
-	if (object == 286583)return DROP; // Manifestation
-	if (object == 2944660)return DROP; // Lexikalischer Begriff
-//	if(object==15916867)return DROP; // Territoriale Verwaltungseinheit eines Landes DONT DROP, SKIP!
-	if (object == 211364)return DROP; // Prinzip
-	if (object == 147276)return DROP; // Eigenname
-	if (object == 36774)return DROP; // Webseite
-	if (object == 15621286)return DROP; // Geistiges Werk
-	if (object == 14204246)return DROP; // Seite im Projektnamensraum
-	if (object == 830077)return DROP; // Subjekt
-	if (object == 837766)return DROP; // Gebietskörperschaft
-	if (object == 16686448)return DROP; // Künstliche Entität
-	if (object == 1639378)return DROP; // Soziales System
-	if (object == 2145290)return DROP; // Repräsentation
-	if (object == 53361976)return DROP; // ObjectProperty
-	if (object == 874405)return DROP; // Soziale Gruppe
-	if (object == 4663903)return DROP; // Wikimedia-Portal
-	if (object == 1799794)return DROP; // Politische Ebene
-	if (object == 15222213)return DROP; // Künstliches physikalisches Objekt
-	//
-//	if(object==15617994)return DROP; // Verwaltungseinheit besser als http://87.118.71.26:81/html/770948
-	if (object == 488383)return DROP; // Objekt
-	if (object == 16686022)return DROP; // Natürliches physisches Objekt
-	if (object == 830077)return DROP; //Subjekt
-	if (object == 874405)return DROP; //Soziale Gruppe
-	if (object == 20719696)return DROP; //Physisch-geographisches Objekt
-//	if(object==618123)return DROP; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
-	if (object == 17633526)return DROP; // "class":"Artikel bei Wikinews
-	if (object == 770948)return DROP; //Okres
-//	if(object==2424752)return DROP; //Produkt	Q2424752 ???
-	if (object == 0)return DROP; //
-	if (object == 0)return DROP; //
-	if (object == 0)return DROP; //
-	if (object == 0)return DROP; //
-	if (object == 0)return DROP; //
-	if (object == 0)return DROP; //
-	if (object == 14946396)return DROP;//Einheit", "id":14946396
-	if (object == 11028)return DROP;//Information	Q11028
-	if (object == 246672)return DROP;//, "topic":"Mathematisches Objekt", Zeit !
-	if (object == 6671777)return DROP;//Struktur	Q6671777
-	if (object == 602884)return DROP;//Sozialphänomen	Q602884
-	if (object == 2088357)return DROP;//Ensemble	Q2088357
-	if (object == 9332)return DROP;//Verhalten	Q9332
-	if (object == 937228)return DROP;//937228, "topic":"Eigenschaft
-	if (object == 4373292)return DROP;//4373292, "topic":"Eigenschaft
-	if (object == 309314)return DROP;//"topicid":309314, "topic":"Quantität",
-	if (object == 2091629)return DROP;//"topicid":2091629, "topic":"Magnitude",
-	if (object == 11471)return DROP;//Zeit	Q11471
-	if (object == 186081)return DROP;//Zeitintervall	Q186081
-	if (object == 14204246)return DROP;//Seite im Projektnamensraum	Q14204246
-//	if(object==82799)return DROP;//Name	Q82799
-	if (object == 82042)return DROP;//Wortart	Q82042
-	if (object == 10856962)return DROP;//Anthroponymie	Q10856962
-	if (object == 11618417)return DROP;//LAU	Q11618417
-//	if(object==262166)return DROP;//Gemeinde in Deutschland	262166
-	if (object == 1048835)return DROP;//territoriale
-//	if(object==56061)return DROP;//territoriale skip! -> 
-	if (object == 1084)return DROP;//Substantiv	Q1084
-	if (object == 486972)return DROP;//territoriale
-	if (object == 14757767)return DROP;//Verwaltungseinheit 4. Ebene	Q14757767
-	if (object == 387917)return DROP;//Verwaltungsgliederung Q387917
-	if (object == 2097994)return DROP;//Gemeindebehörde	Q2097994
-	if (object == 1418640)return DROP;//Gebietskörperschaft	Q1418640
-	if (object == 1183543)return DROP;//Gerät	Q1183543
-	if (object == 11023058)return DROP;// Kommunikation
-	if (object == 186408)return DROP;// Zeitpunkt
-	if (object == 1269299)return DROP;// Rechtsform	Q1269299
-	if (object == 1796670)return DROP;// rperschaft	Q1796670
-//	if(object==2996394)return DROP;//	Biologischer Prozess
-//	if(object==1190554)return DROP;// Ereignis
-	if (object == 1914636)return DROP;//Tätigkeit	Q1914636 <=un Technik	Q2695280 BAD
-	if (object == 373065)return DROP;//Angewandte Physik	Q373065
-	if (object == 5962346)return DROP;//, "topic":"Klassifikation",
-	if (object == 58778)return DROP;//=> System	Q58778
-	if (object == 80071)return DROP;// Symbol
-	if (object == 19361238)return DROP;//=x Metaklasse
-	if (object == 35120)return DROP; // Entität
-	if (object == 223557)return DROP; // 	"topicid":223557, "topic":"Körper",
-	if (object == 5127848)return DROP; // Gruppe
-	if (object == 27948)return DROP; // Liste
-	if (object == 827335)return DROP; // Abstrakter Datentyp
-	if (object == 1979154)return DROP; // 	Modell
-	if (object == 386724)return DROP; //	Werk	Q386724	=> Produkt	Q2424752
-	if (object == 28877)return DROP; //	Gut	Q28877	=> Produkt	Q2424752
-	if (object == 7184903)return DROP; //	Abstraktes Objekt
-	if (object == 853614)return DROP; //	 Identifikator
-	if (object == 2221906)return DROP; //		Standort
-	if (object == 9158768)return DROP; //		Speicher
-	return KEEP;
 }
 
 // ONE path! See findAll for all leaves
