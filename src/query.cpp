@@ -1133,6 +1133,7 @@ bool filterWikiType(int object) {
 	// PROBLEM : Give lower priority with competing correct superclass
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 //	if(object<0)return DROP;// wordnet!
+	if (object == 17444171	)return DROP; // 	Modell	Q<= Handymodell	Q19723444
 	if (object == 13406463)return DROP; // Wikimedia-Liste	Q13406463
 	if (object == 4167836)return DROP; // Wikimedia-Kategorie
 	if (object == 160872476)return DROP; // Dataset
