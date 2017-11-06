@@ -1122,10 +1122,13 @@ bool stopAtGoodWiki(int object) {
 //	if (object == 269949)return true;//Highway
 	if (object == 12136)return true;//Krankheit	Q12136
 	if (object == 2057971)return true;//Erkrankung	Q2057971
+	if (object == 76102931)return true;// office
+	if (object == 3332438)return true;//Facharzt	Q3332438
 	if (object == 5)return true;//
 	if (object == 5)return true;//
 	if (object == 5)return true;//
-
+	if (object == 5)return true;//
+	if (object == 5)return true;//
 	return false;
 }
 
