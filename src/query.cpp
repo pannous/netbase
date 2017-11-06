@@ -1116,9 +1116,16 @@ bool stopAtGoodWiki(int object) {
 	if (object == 1183543)return true;// Gerät		2425052=>-1=>
 	if(object==618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
 
+	if (object == 1250599)return true;//City	Q
+	if (object == 34442)return true;//Straße
+	if (object == 1794067)return true;// Place
+//	if (object == 269949)return true;//Highway
+	if (object == 12136)return true;//Krankheit	Q12136
+	if (object == 2057971)return true;//Erkrankung	Q2057971
 	if (object == 5)return true;//
 	if (object == 5)return true;//
 	if (object == 5)return true;//
+
 	return false;
 }
 
@@ -1190,7 +1197,7 @@ bool filterWikiType(int object) {
 	if (object == 770948)return DROP; //Okres
 	if (object == 931447)return DROP; //Verbraucher
 	if (object == 212920)return DROP; // Haushaltsgerät
-	if (object == 0)return DROP; //
+	if (object == 2883141)return DROP; // Amenity	Q
 	if (object == 0)return DROP; //
 	if (object == 0)return DROP; //
 	if (object == 0)return DROP; //
@@ -2284,11 +2291,11 @@ N getClass(N n) {
 	if (!p)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
 	if (!p)p = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
 	if (!p)p = getProperty(n, Type, limit); // Typ Flugzeug
-	if (p==n)p=0;
+	if (p==n || p==Entity|| p&&eq(p->name,n->name))p=0;
 	if (!p)p = getProperty(n, get(-10106), limit);// Tätigkeit
 	if (!p)p = getInferredClass(n, limit);
-	if (!p)p = getProperty(n, Synonym, limit);// Tätigkeit
-	if (!p)p = getProperty(n, Label, limit);// Tätigkeit
+	if (!p)p = getProperty(n, Synonym, limit);
+	if (!p)p = getProperty(n, Label, limit);
 	if (!p and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
 	if (!p) {
