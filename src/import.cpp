@@ -1822,7 +1822,6 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P352"))return DROP; //	UniProt ID
 	if (eq(name, "P536"))return DROP; //	ATP ID
 	if (eq(name, "P652"))return DROP; //	UNII
-	if (eq(name, "P494"))return DROP; //	ICD-10
 	if (eq(name, "P637"))return DROP; //	RefSeq Protein ID
 	if (eq(name, "P705"))return DROP; //	Ensembl Protein ID
 	if (eq(name, "P213"))return DROP;//	 	ISNI
@@ -1841,27 +1840,27 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P691"))return DROP;// NK CR
 	if (eq(name, "P906"))return DROP;// SELIBR
 	if (eq(name, "P1005"))return DROP;// PTBNP
-	if (eq(name, "P949"))return DROP;
-	if (eq(name, "P734"))return DROP;
-	if (eq(name, "P1207"))return DROP;
-	if (eq(name, "P3221"))return DROP;
-	if (eq(name, "P3984"))return DROP;
-	if (eq(name, "P2633"))return DROP;
-	if (eq(name, "P1343"))return DROP;
-	if (eq(name, "P3417"))return DROP;
-	if (eq(name, "P3733"))return DROP;
-	if (eq(name, "P3106"))return DROP;
-	if (eq(name, "P3478"))return DROP;
-	if (eq(name, "P1417"))return DROP;
-	if (eq(name, "P1245"))return DROP;
-	if (eq(name, "P3222"))return DROP;
-	if (eq(name, "P3569"))return DROP;
-	if (eq(name, "P1036"))return DROP;
-	if (eq(name, "P3500"))return DROP;
-	if (eq(name, "P3743"))return DROP;
-	if (eq(name, "P3225"))return DROP;
-	if (eq(name, "P998"))return DROP;
-	if (eq(name, "P227"))return DROP;
+	if (eq(name, "P949"))return DROP;// NLI
+//	if (eq(name, "P734"))return DROP;Familienname
+	if (eq(name, "P1207"))return DROP;// NUKAT-Normdaten
+	if (eq(name, "P3221"))return DROP;// NYT-Themen-ID
+	if (eq(name, "P3984"))return DROP;// Subreddit
+//	if (eq(name, "P2633"))return DROP;// Geographie?
+	if (eq(name, "P1343"))return DROP;// Beschrieben in
+	if (eq(name, "P3417"))return DROP;// Quora-Themenkennung
+	if (eq(name, "P3733"))return DROP;// MOOMA artist ID
+	if (eq(name, "P3106"))return DROP;// Guardian topic ID
+	if (eq(name, "P3478"))return DROP;// Songkick-Künstler-ID
+	if (eq(name, "P1417"))return DROP;// Encyclopædia Britannica Online-ID
+	if (eq(name, "P1245"))return DROP;// Definition in OmegaWiki
+	if (eq(name, "P3222"))return DROP;// Nationalencyklopedin Online ID
+	if (eq(name, "P3569"))return DROP;// Cultureel-Woordenboek-ID
+	if (eq(name, "P1036"))return DROP;// Dewey-Dezimalklassifikation
+	if (eq(name, "P3500"))return DROP;// Ringgold-Identifikator
+//	if (eq(name, "P3743"))return DROP;// ITU/ISO/IEC object identifier  <<<!?
+	if (eq(name, "P3225"))return DROP;// Unternehmensnummer (Japan)
+	if (eq(name, "P998"))return DROP;// Dmoz? Mozilla Directory
+	if (eq(name, "P227"))return DROP;// GND Nationalbibliothek (?)
 	if (eq(name, "P1855"))return DROP;// Wikidata-Eigenschafts-Beispiel
 	if (eq(name, "P244"))return DROP;// lcauth
 //	if(eq(name,"P1263"))return DROP;// Notable Names Database

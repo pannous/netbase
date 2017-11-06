@@ -2266,12 +2266,11 @@ Node *getType(Node *n) {
 
 N getInferredClass(N n, int limit = 1000) {
 	Statement *s = 0;
-	map<Statement *, bool> visited;
 	int lookup = 0;
 	while ((s = nextStatement(n, s))) { // kf predicate!=Any 24.1. REALLY??
 		if (limit and lookup++ >= limit)break;
 		if (s->Object() == n) {
-			if (s->predicate > 0 or s->predicate < -1000)
+			if (0 < s->predicate or s->predicate < -1000)// no internal
 				if (s->predicate != -10031 and s->predicate != -10361)// part
 					return s->Predicate();
 		}
@@ -2281,13 +2280,16 @@ N getInferredClass(N n, int limit = 1000) {
 
 N getClass(N n) {
 	N p = 0;
-	if (!p)p = getProperty(n, SuperClass, 1000);// more specific: Transportflugzeug
-	if (!p)p = getProperty(n, get(-10031), 1000);// 	Ist ein(e) :(
-	if (!p)p = getProperty(n, Type, 1000); // Typ Flugzeug
-	if (!p)p = getProperty(n, get(-10106), 1000);// Tätigkeit
-	if (!p)p = getInferredClass(n, 1000);
-	if (!p)p = getProperty(n, Synonym, 1000);// Tätigkeit
-	if (!p and (n->kind > 0 or n->kind < -1000))
+	int limit=1000;
+	if (!p)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
+	if (!p)p = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
+	if (!p)p = getProperty(n, Type, limit); // Typ Flugzeug
+	if (p==n)p=0;
+	if (!p)p = getProperty(n, get(-10106), limit);// Tätigkeit
+	if (!p)p = getInferredClass(n, limit);
+	if (!p)p = getProperty(n, Synonym, limit);// Tätigkeit
+	if (!p)p = getProperty(n, Label, limit);// Tätigkeit
+	if (!p and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
 	if (!p) {
 //		if(!p)p=getProperty(n,Type,1500);
@@ -2301,6 +2303,9 @@ N getClass(N n) {
 	}
 	return p;
 }
+//N getPredicateTopic(N node) == getInferredClass
+// Node *findPredicateClass(Node *n, int limit) getInferredClass
+
 
 N getTopic(N node) {
 	if (NO_TOPICS)
@@ -2388,7 +2393,6 @@ Node *getProperty(Node *node, cchar *key, int limit) {
 	if (!checkStatement(s))return findProperty(node, key, true, limit);
 	return s->Object();
 }
-
 // see getProperty
 Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 	Statement *s = 0;
