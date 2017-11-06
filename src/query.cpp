@@ -1088,9 +1088,6 @@ NodeVector &all_instances2(Node *type, int recurse, int max, bool includeClasses
 
 
 
-#define DROP true
-#define KEEP false
-
 
 bool stopAtGoodWiki(int object) {
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
@@ -1115,8 +1112,10 @@ bool stopAtGoodWiki(int object) {
 //	if(object==7725634)return true;//Literarisches Werk	Q7725634
 	if (object == 28640)return true;//Beruf
 	if (object == 82799)return true;//Name
-	if (object == 2425052)return true;//  Elektrogerät
-	if (object == 5)return true;//
+//	if (object == 2425052)return true;//  Elektrogerät
+	if (object == 1183543)return true;// Gerät		2425052=>-1=>
+	if(object==618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
+
 	if (object == 5)return true;//
 	if (object == 5)return true;//
 	if (object == 5)return true;//
@@ -1127,6 +1126,9 @@ bool stopAtGoodWiki(N n) {
 	return n and stopAtGoodWiki(n->id);
 }
 
+
+#define DROP true
+#define KEEP false
 bool filterWikiType(int object) {
 	// PROBLEM : Give lower priority with competing correct superclass
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
@@ -1183,12 +1185,10 @@ bool filterWikiType(int object) {
 	if (object == 830077)return DROP; //Subjekt
 	if (object == 874405)return DROP; //Soziale Gruppe
 	if (object == 20719696)return DROP; //Physisch-geographisches Objekt
-//	if(object==618123)return DROP; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
 	if (object == 17633526)return DROP; // "class":"Artikel bei Wikinews
 	if (object == 770948)return DROP; //Okres
-//	if(object==2424752)return DROP; //Produkt	Q2424752 ???
-	if (object == 0)return DROP; //
-	if (object == 0)return DROP; //
+	if (object == 931447)return DROP; //Verbraucher
+	if (object == 212920)return DROP; // Haushaltsgerät
 	if (object == 0)return DROP; //
 	if (object == 0)return DROP; //
 	if (object == 0)return DROP; //
