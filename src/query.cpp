@@ -1124,7 +1124,7 @@ bool stopAtGoodWiki(int object) {
 	if (object == 2057971)return true;//Erkrankung	Q2057971
 	if (object == 76102931)return true;// office
 	if (object == 3332438)return true;//Facharzt	Q3332438
-	if (object == 5)return true;//
+	if (object == 930752)return true;//Medizinisches Fachgebiet	Q930752
 	if (object == 5)return true;//
 	if (object == 5)return true;//
 	if (object == 5)return true;//
@@ -2150,6 +2150,7 @@ NV findEntites(cchar *query0) {
 //			if(!forbidden[ wordhash(start)]){
 //			p(start);
 			N entity = hasWord(start);
+
 			if (!entity and endsWith(start, "s")) { //!germanLabels and
 				mid[-1] = 0; // ^^ Minimum stemming
 				entity = hasWord(start);// abstract OK
@@ -2162,7 +2163,17 @@ NV findEntites(cchar *query0) {
 			}
 			// the United https://www.wikidata.org/wiki/Q7771566
 			// 239790	United				9 statements
-			if (!NO_TOPICS)if (atoi(start))entity = 0;// no numbers hack
+
+
+//			if (!NO_TOPICS)
+			if (atoi(start))
+				if(atoi(start)>1 && atoi(start) < 100000 && strlen(start)==5){
+//					if (!getType(entity)==getThe("Postleitzahl"))
+//						if (getInferredClass(entity)==get(-10281))
+					/*PLZ*/
+				}
+				else entity = 0;// no numbers hack
+
 			if (entity) {
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))

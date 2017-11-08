@@ -1959,6 +1959,7 @@ void addNormLabels() {
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
+	fixCurrent();
 //	importJson("query.json");
 //	importN3("quantum.n3");
 //	save();
@@ -1968,7 +1969,8 @@ void testBrandNewStuff() {
 //	allowWipe();
 //	fixCurrent();
 //	checkWordnet();
-	importWikiData();
+	entity_extraction("25474");
+//	importWikiData();
 //	checkWikiData();
 	int i = 0;
 	while (i++ < 100) {
@@ -1976,7 +1978,6 @@ void testBrandNewStuff() {
 		fflush(stdout);
 	}
 	return;
-	importWikiData();
 	N h = getThe("berlin");
 	p(h);
 	check(h->id == 64);

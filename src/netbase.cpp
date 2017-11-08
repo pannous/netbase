@@ -2736,10 +2736,18 @@ void fixInstances() {
 	}
 }
 
+void fixPostleitzahlen() {
+	N a=get(-10281);
+	Statement* s=0;
+	while ((s=nextStatement(a, s))){
+		addStatement(s->Object(),Type,a);
+	}
+}
+
 void fixCurrent() {
-	context->lastNode =50000000;// as of 11/2017  vs  https://www.wikidata.org/wiki/Q40000000
+//	context->lastNode =50000000;// as of 11/2017  vs  https://www.wikidata.org/wiki/Q40000000
 //	context->lastNode = (int) maxNodes / 2;
-//	fixPostleitzahlen();
+	fixPostleitzahlen();
 //	fixInstances();
 //	fixBrokenStatement();
 //	context->lastNode=1;// RADICAL: fill all empty slots!
@@ -2748,13 +2756,6 @@ void fixCurrent() {
 //	add_force(current_context, 415898, "Telekom", _singleton);
 }
 
-void fixPostleitzahlen() {
-	N a=get(-10281);
-	Statement* s=0;
-	while ((s=nextStatement(a, s))){
-		addStatement(s->Object(),Type,a);
-	}
-}
 
 //	import("billiger.de/TOI_Suggest_Export_Products.csv");
 //	replay();
