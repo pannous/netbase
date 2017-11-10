@@ -472,7 +472,7 @@ Statement *nextStatement(int node, Statement *current) {
 	return nextStatement(get(node), current);
 }
 
-int nextStatement_lookupLimit=10000000;
+int nextStatement_lookupLimit=100000;// TODO!
 Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
 	if (nextStatement_lookupLimit--<0)return null;// per web request todo better
 	if (current == null) return getStatement(n->firstStatement);

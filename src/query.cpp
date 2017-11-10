@@ -260,7 +260,7 @@ NodeVector query(string s, int limit/*=resultLimit*/) {
 	p(("Executing query "));
 	ps(s);
 	Query q = parseQuery(s, limit);
-	lookupLimit = 1000000;// todo: good
+	lookupLimit = 100000;// todo: good
 //  q.queryType=sqlQuery;// njet!
 	NodeVector results = query(q);
 	showNodes(results);
@@ -1201,7 +1201,7 @@ bool filterWikiType(int object) {
 	if (object == 931447)return DROP; //Verbraucher
 	if (object == 212920)return DROP; // Haushaltsgerät
 	if (object == 2883141)return DROP; // Amenity	Q
-	if (object == 0)return DROP; //
+	if (object == 778920)return DROP; //Tourism	Q
 	if (object == 0)return DROP; //
 	if (object == 0)return DROP; //
 	if (object == 14946396)return DROP;//Einheit", "id":14946396
@@ -2307,9 +2307,12 @@ N getClass(N n) {
 	if (!p)p = getProperty(n, Type, limit); // Typ Flugzeug
 	if (p==n || p==Entity|| p&&eq(p->name,n->name))p=0;
 	if (!p)p = getProperty(n, get(-10106), limit);// Tätigkeit
-	if (!p)p = getInferredClass(n, limit);
-	if (!p)p = getProperty(n, Synonym, limit);
-	if (!p)p = getProperty(n, Label, limit);
+	if (!p) {
+		if (!p)p = getProperty(n, Synonym, limit);
+		if (!p)p = getProperty(n, Label, limit);
+		if (!p)p = getInferredClass(n, limit);
+//		else getClass(p);// now Label dager loop
+	}
 	if (!p and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
 	if (!p) {
