@@ -479,16 +479,16 @@ Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
 	if (stopAtInstances and current->Predicate() == Instance) return null;
 	//	if (stopAtInstances and current->Object == n and current->Predicate == Type)return null; PUT TO END!!
 	Statement *neu = null;
-	if (current->Subject() == n and getStatement(current->nextSubjectStatement)!=current)
-		return getStatement(current->nextSubjectStatement);
-	if (current->Predicate() == n and getStatement(current->nextPredicateStatement)!=current)
-		return getStatement(current->nextPredicateStatement);
-	if (current->Object() == n and getStatement(current->nextObjectStatement)!=current)
-		return getStatement(current->nextObjectStatement);
-//	if(current==neu){	// check here?
-//		p("MEGABUG: current==neu");
-//		return null;
-//	}
+	if (current->Subject())
+		neu = getStatement(current->nextSubjectStatement);
+	if (current->Predicate() == n)
+		neu = getStatement(current->nextPredicateStatement);
+	if (current->Object() == n)
+		neu = getStatement(current->nextObjectStatement);
+	if(current==neu){	// check here?
+		p("Cyclic graph current==neu");
+		return null;
+	}
 	return neu;
 }
 
