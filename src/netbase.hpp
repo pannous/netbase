@@ -625,7 +625,7 @@ static int synsetOffset=100000;//
 
 // FREEBASE: 600.000.000 Statements !!!
 // todo: via getenv
-//#define __ECHSE__
+#define __ECHSE__
 
 #if defined(__APPLE__)
 static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!

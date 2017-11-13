@@ -1782,7 +1782,7 @@ void testTopics() {
 	//	N t=getTopic(get(2765216));
 	filterWikiType(3423);
 	N to = getTopic(get(550866));
-	check(eq(to->name, "Dorf"));
+	check(eq(to->name, "Dorf")||eq(to->name,"Kommune"));// 3266850
 	N sackgassendorf = get(177966);
 	N e = getTopic(sackgassendorf);// Sackgassendorf -> Reihendorf -> Dorf OK
 	check(eq(e->name, "Dorf"));
@@ -1960,6 +1960,9 @@ void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
 	fixCurrent();
+	germanLabels=1;
+	if (!eq(get(1)->name,"Universum"))load();
+	testTopics();
 //	importJson("query.json");
 //	importN3("quantum.n3");
 //	save();

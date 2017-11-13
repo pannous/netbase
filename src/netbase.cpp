@@ -1727,12 +1727,13 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 	if (recurse > 0) recurse++;
 	else recurse = maxRecursions;
 	if (recurse > maxRecursions or subject == 0) return 0;
+	if (limit<=0)limit=lookupLimit;
 
 	Statement *s = 0;
 	map<Statement *, bool> visited;
 	int lookup = 0;
 	while ((s = nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
-		if (limit and lookup++ >= limit)break;
+		if (limit and lookup++ > limit)break;
 		if (visited[s]) {// Remove in live mode if all bugs are fixed
 			p("GRAPH ERROR: cyclic statement");
 			p(s);
