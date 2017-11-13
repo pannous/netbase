@@ -1125,7 +1125,7 @@ bool stopAtGoodWiki(int object) {
 	if (object == 76102931)return true;// office
 	if (object == 3332438)return true;//Facharzt	Q3332438
 	if (object == 930752)return true;//Medizinisches Fachgebiet	Q930752
-	if (object == 5)return true;//
+	if (object == 2359810)return true;//Q2359810
 	if (object == 5)return true;//
 	if (object == 5)return true;//
 	if (object == 5)return true;//
