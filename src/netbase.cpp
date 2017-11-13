@@ -486,7 +486,7 @@ Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
 	if (current->Object() == n)
 		neu = getStatement(current->nextObjectStatement);
 	if(current==neu){	// check here?
-		p("Cyclic graph current==neu");
+//		p("Cyclic graph current==neu");
 		return null;
 	}
 	return neu;

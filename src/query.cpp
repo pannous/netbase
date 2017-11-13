@@ -1126,9 +1126,9 @@ bool stopAtGoodWiki(int object) {
 	if (object == 3332438)return true;//Facharzt	Q3332438
 	if (object == 930752)return true;//Medizinisches Fachgebiet	Q930752
 	if (object == 2359810)return true;//Q2359810
+	if (object == 1406904)return true;//Fernbahnhof	Q1406904
 	if (object == 5)return true;//
-	if (object == 5)return true;//
-	if (object == 5)return true;//
+//	if (object == 5)return true;//
 	return false;
 }
 
@@ -1743,7 +1743,7 @@ bool enqueue(Node *current, Node *d, NodeQueue *q, int *enqueued) {
 #define min(x, y) x<y?x:y
 
 Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
-	int *enqueued = (int *) malloc(maxNodes * sizeof(int)); //context->nodeCount * 2
+	int *enqueued = (int *) malloc(maxNodes * sizeof(int)); // > 1GB per thread this can only work if system allocs pages dynamically!
 	int *depths = (int *) malloc(maxNodes * sizeof(int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 	//	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
