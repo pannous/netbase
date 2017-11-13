@@ -105,11 +105,12 @@ char *getStatementTitle(Statement *s, Node *n) {
 	return getText(s->Object());// default
 }
 
-bool LIVE= true;
+bool LIVE = true;
+
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
 	int len = (int) strlen(q0);
-	if (LIVE)lookupLimit=100;
+	if (LIVE)lookupLimit = 100;
 	char *q = editable(q0);
 	if (!checkSanity(q, len)) {//	if(len>MAX_QUERY_LENGTH){ ...
 		p("checkSanity :command OR len>10000");
@@ -433,25 +434,24 @@ int handle(cchar *q0, int conn) {
 			N t = NO_TOPICS ? c : getTopic(node);
 			N ty = getType(node);
 			if (ty == Internal)continue;
-//			if(!c)c=t;
 			if (!t)t = ty;
 			if (t == node)t = ty;
-			if (t and t != Entity and checkNode(t, -1, false, true) and t->name and t->id) {
+			if (t != Entity and checkNode(t, -1, false, true)) {
 				got_topic = true;
 				Writeline(conn, ",\n\t \"topicid\":" + itoa(t->id));
 				Writeline(conn, ", \"topic\":\"" + string(t->name) + "\"");
 			}
-			if (c and checkNode(c, -1, false, true) and c->id != 0 and c != t) {
+			if (c != Entity && checkNode(c, -1, false, true) and c != t) {
 				Writeline(conn, ",\n\t \"classid\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(c->name) + "\"");
 			}
-			if (ty and checkNode(ty, -1, false, true) and ty->id != 0 and c != ty and ty != t) {
+			if (checkNode(ty, -1, false, true) and c != ty and ty != t) {
 				Writeline(conn, ",\n\t \"typeid\":" + itoa(ty->id));
 				Writeline(conn, ", \"type\":\"" + string(ty->name) + "\"");
 			}
-			if (node->name and !empty(node->name)){
-			string seo=generateSEOUrl(node->name);
-			Writeline(conn, ", \"seo\":\"" + seo + "\"");
+			if (node->name and !empty(node->name)) {
+				string seo = generateSEOUrl(node->name);
+				Writeline(conn, ", \"seo\":\"" + seo + "\"");
 			}
 		}
 		if (use_json)
@@ -586,7 +586,7 @@ bool checkSanity(char *q, int len) {
 //		bad=true;
 	}
 	if (q[0] == ':' or q[0] == '!')bad = true;
-	for (int i = 0; i < len and i< MAX_QUERY_LENGTH; i++) {
+	for (int i = 0; i < len and i < MAX_QUERY_LENGTH; i++) {
 		if (q[i] > 127)bad = true;// no illegal chars!
 	}
 	if (bad)
