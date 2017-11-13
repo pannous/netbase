@@ -1742,6 +1742,53 @@ bool enqueue(Node *current, Node *d, NodeQueue *q, int *enqueued) {
 
 #define min(x, y) x<y?x:y
 
+
+Node *getTopicAlgo2(Node *fro) {
+	map<int,bool> enqueued;
+	NodeQueue q;
+	q.push(fro);
+	N furthest = fro;
+	int deepest = 0;
+	// NOT neccessary for anyPath , ...
+	NodeVector instances;
+	if (isAbstract(fro))instances = allInstances(fro);// only in first step! (i.e. sublcasses of abstract)
+
+	for (int i = 0; i < instances.size(); i++) {
+		Node *d = instances[i];
+		enqueued[d->id] = true;
+		q.push(d);
+		pf("instance %d %s\n", d->id, d->name);
+	}
+	Node *current;
+//	NodeSet all;
+	while ((current = q.front())) {
+		if(enqueued[current->id+propertySlots])continue;
+		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
+		if(all.size()>resultLimit)break;
+		if (q.empty())break;
+		q.pop();
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, true /*report*/))continue;
+		if (!current->name or current->name[0] < 'A')continue;//?
+		if (stopAtGoodWiki(current))
+			return current;
+		if (filterWikiType(current->id))break;
+		if (startsWith(current->name, "http"))
+			continue;
+//		all.insert(current);
+		N pa = get(enqueued[current->id + propertySlots]);
+		if (!pa)pa = Unknown;// Error;// Nil;
+		//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
+		if (debug)printf("%s	Q%d	<= %s	Q%d\r\n", current->name, current->id, pa->name, pa->id);
+		if (q.size() < lookupLimit) {// bad (?) : refill after pop()
+//			edgeFilter(current, &q, enqueued); // TODO
+			//		show(more);
+		}
+	}
+	free(enqueued);
+	return furthest;
+}
+
+
 Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
 	int *enqueued = (int *) malloc(maxNodes * sizeof(int)); // > 1GB per thread this can only work if system allocs pages dynamically!
 	int *depths = (int *) malloc(maxNodes * sizeof(int)); //context->nodeCount * 2
@@ -1768,10 +1815,11 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 	}
 	Node *current;
 //	NodeSet all;
-	while ((current = q.front())) {
-		//		if(enqueued[current->id+propertySlots])continue;
-		//		enqueued[current->id+propertySlots]=true;// +propertySlots DANGER HERE!!!
-//		if(all.size()>resultLimit)break;
+	int limit=10000;
+	while ((current = q.front()) && limit-->0) {
+		if(enqueued[current->id+propertySlots])continue;
+		enqueued[current->id+propertySlots]=true;
+		if(all.size()>resultLimit)break;
 		if (q.empty())break;
 		q.pop();
 		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, true /*report*/))continue;
