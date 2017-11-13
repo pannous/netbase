@@ -29,7 +29,6 @@
 //#include "helper.h"
 
 /* Service an HTTP request */
-
 int SERVER_PORT = 8080;
 int MAX_QUERY_LENGTH = 1000;
 //static char server_root[1000] = "/Users/me/";
