@@ -1210,9 +1210,6 @@ Node *getNew(const char *thing, Node *type) {
 }
 
 
-Node *getClass(const char *word, Node *hint) {
-	return getThe(word, hint);
-}
 
 Node *getSingleton(const char *thing, Node *type, bool addType/*true*/) {
 	N there = hasWord(thing);
@@ -2745,7 +2742,24 @@ void fixPostleitzahlen() {
 	}
 }
 
+
+
+void fixICD10() {
+	N a=get(-10494);
+	Statement* s=0;
+//	N typ=getThe("")
+	autoIds= false;
+	while ((s=nextStatement(a, s))){
+		if (s->predicate==-10494 && s->object>0&&s->object<10000)
+			s->object=getThe("Q"+itoa(s->object))->id;
+		if (s->predicate==-10494 && s->object<-10000&&s->object<-20000)
+			s->object=getThe("P"+itoa(s->object))->id;
+//		addStatement(s->Subject(),s->Predicate(),getThe("Q"+itoa(s->object)));
+	}
+}
+
 void fixCurrent() {
+	fixICD10();
 //	context->lastNode =50000000;// as of 11/2017  vs  https://www.wikidata.org/wiki/Q40000000
 //	context->lastNode = (int) maxNodes / 2;
 	fixPostleitzahlen();

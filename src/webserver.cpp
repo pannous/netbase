@@ -110,7 +110,7 @@ bool LIVE = true;
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
 	int len = (int) strlen(q0);
-	if (LIVE)lookupLimit = 100;
+	if (LIVE)lookupLimit = 10000;
 	char *q = editable(q0);
 	if (!checkSanity(q, len)) {//	if(len>MAX_QUERY_LENGTH){ ...
 		p("checkSanity :command OR len>10000");

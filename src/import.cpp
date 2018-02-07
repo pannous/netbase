@@ -1016,7 +1016,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 void importList(const char *file, const char *type) {
 	p("import list start");
 	char line[1000];
-	Node *subject = getClass(type, 0);
+	Node *subject = getThe(type);
 	Node *object;
 	int linecount = 0;
 	FILE *infile = open_file(file);
@@ -2105,7 +2105,7 @@ bool importFacts(const char *file, const char *predicateName = "population") {
 	Node *object;
 	char line[1000];
 	//  char* predicateName=(char*) malloc(100);
-	predicate = getClass(predicateName);
+	predicate = getThe(predicateName);
 	int linecount = 0;
 	FILE *infile = open_file(file);
 	char *objectName = (char *) malloc(100);

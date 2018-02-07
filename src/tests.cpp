@@ -1777,17 +1777,20 @@ void testEntities() {
 }
 
 void testTopics() {
+		N t=getTopic(get(4543));
+		check(!eq(t->name,"Beachvolleyball"));
 
 	//	N t=getTopic(get(1744));
 	//	N t=getTopic(get(2765216));
+
 	filterWikiType(3423);
 	N to = getTopic(get(550866));
 	check(eq(to->name, "Dorf")||eq(to->name,"Kommune"));// 3266850
 	N sackgassendorf = get(177966);
 	N e = getTopic(sackgassendorf);// Sackgassendorf -> Reihendorf -> Dorf OK
 	check(eq(e->name, "Dorf"));
-	N t = getType(sackgassendorf);
-	check(eq(t->name, "Siedlung"));
+	N ta = getType(sackgassendorf);
+	check(eq(ta->name, "Siedlung"));
 	N c = getClass(sackgassendorf);
 	check(eq(c->name, "Reihendorf"));
 	//	N e=getTopic(get(177966));// Sackgassendorf -> Reihendorf -> Dorf OK
@@ -1959,7 +1962,7 @@ void addNormLabels() {
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
-	fixCurrent();
+//	fixCurrent();
 	germanLabels=1;
 	if (!eq(get(1)->name,"Universum"))load();
 	testTopics();

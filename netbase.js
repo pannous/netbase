@@ -299,7 +299,6 @@ function parseResults(results0){
 		lastEntity=entity.name;
 		makeEntity(entity);
 		count=count+1
-		console.log(count)
 		if(inline && count>=1)break
 	}
 	if(count>0) div.style.display="block"// render now!
@@ -309,6 +308,7 @@ function parseResults(results0){
 
 function do_query(_query){
 	try{
+		server=server.replace("/html/","/")
 		if(!_query)_query=query.value
 		else query.value=_query
 		_query=_query.replace(/_/g,"+")

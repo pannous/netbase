@@ -178,9 +178,13 @@ NodeVector runScript(const char *file) {
 // CENTRAL CONSOLE INSTRUCTION PARSING
 NodeVector parse(const char *data0, bool safeMode/*true*/) {
 	if (eq(data0, null)) return OK;
+	bool forbidAutoIds= false;
 
 	context = getContext(current_context);
+	if (data0[0]=='"' || data0[0]=='\'')
+		forbidAutoIds= true;
 	char *data = fixQuotesAndTrim(editable(data0));
+
 	int lenge = (int) strlen(data);
 	if (data[lenge - 1] == '\n') {
 		data[lenge - 1] = 0;
@@ -334,7 +338,7 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 		else importAll();
 		return OK;
 	}
-	autoIds = true;
+	if (!forbidAutoIds) autoIds = true;
 	if (startsWith(data, ":image")) {
 		data = next_word(data);
 		return wrap(getThe(getImage(data)));
@@ -766,16 +770,16 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 	data = replace(data, ' ', '_');
 
 	int i = atoi(data);
-	if (data[0] == 'P' and data[1] <= '9')
+	if (data[0] == 'P' and data[1] <= '9' and !forbidAutoIds)
 		return wrap(get(-atoi(++data) - propertyOffset));// P106 -> -10106
 	if (startsWith(data, ":")) {
-		pf("UNKNOWN COMMAND %s\n", data);
+		pf("UNKNOWN COMMAND %s\n", data)
 	}//showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 //	if(autoIds and i)return wrap(get(i));
 	if (i == 0 and !hasWord(data))return OK;// don't create / dissect here!
-
+	if (forbidAutoIds and !hasWord(data))return OK;
 	Node *a = get(data);
 	if (!isAbstract(a)) {
 		if (i == 0 or !hasWord(a->name)) {

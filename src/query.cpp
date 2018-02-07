@@ -1624,6 +1624,7 @@ NodeVector parentFilter2(Node *subject, NodeQueue *queue, bool backInstances, in
 		//		if(s->Predicate==Type and s->Object==subject)break;// todo PUT TO END TOO!!!
 		bool subjectMatch = (s->Subject() == subject or subject == Any);
 		bool predicateMatch = (s->Predicate() == Type);
+		predicateMatch = predicateMatch or s->predicate == _SuperClass;
 		predicateMatch = predicateMatch or s->predicate == _Is_a_list_of;
 		predicateMatch = predicateMatch or s->predicate == _Is_a;// ist ein :(
 		predicateMatch = predicateMatch or s->predicate == _subclass_of;// Unterklasse von
@@ -1647,10 +1648,13 @@ NodeVector parentFilter2(Node *subject, NodeQueue *queue, bool backInstances, in
 		if (queue) {
 			if (subjectMatch and predicateMatch)
 				enqueue(subject, s->Object(), queue, enqueued);
-			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
+			if (subjectMatchReverse and predicateMatchReverse)
+				enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
-			if (subjectMatch and predicateMatch)all.push_back(s->Object());
-			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
+			if (subjectMatch and predicateMatch)
+				all.push_back(s->Object());
+			if (subjectMatchReverse and predicateMatchReverse)
+				all.push_back(s->Subject());
 		}
 	}
 	if (queue)// already enqueued
@@ -1820,11 +1824,12 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 		if (q.empty())break;
 		q.pop();
 		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, true /*report*/))continue;
-		if(enqueued[current->id+propertySlots])continue;
-		enqueued[current->id+propertySlots]=true;
+//		if(enqueued[current->id+propertySlots])continue;
+//		enqueued[current->id+propertySlots]=true;
 //		if(all.size()>resultLimit)break;
 		if (!current->name or current->name[0] < 'A')continue;//?
-		if (stopAtGoodWiki(current)) return current;
+		if (stopAtGoodWiki(current))
+			return current;
 		if (filterWikiType(current->id))continue;
 		if (startsWith(current->name, "http"))continue;
 
@@ -1835,7 +1840,8 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 		if (!pa)pa = Unknown;// Error;// Nil;
 		//		printf("%d	%s	≈ %d	%s\r\n",current->id,current->name,pa->id,pa->name);
 		if (debug)printf("%s	Q%d	<= %s	Q%d\r\n", current->name, current->id, pa->name, pa->id);
-		if (q.size() < lookupLimit) {// bad (?) : refill after pop()
+		auto size = q.size();
+		if (size < lookupLimit) {// bad (?) : refill after pop()
 			edgeFilter(current, &q, enqueued);
 			//		show(more);
 		}
@@ -2380,11 +2386,11 @@ N getClass(N n) {
 
 
 N getTopic(N node) {
-	if (NO_TOPICS)
-		return getType(node);
+//	if (NO_TOPICS)
+//		return getType(node);
 	N t = getProperty(node, "topic");
 //	if(!t)t=getProperty(node, "Kategorie");
-	if (t and t != node)return t;
+	if (checkNode(t) && !eq(t->name,node->name))return t;
 	return getFurthest(node, topicFilter);
 }
 
