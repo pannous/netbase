@@ -18,10 +18,16 @@ or host as your own graph database, it is very quick to load.
 
 ## Installation
 
+```bash
+git clone https://github.com/pannous/netbase
+cd netbase
+./netbase :help
+```
 
+After you have imported some data (see ./import/ folder),
+start the server via `./netbase :server`
 
-Start the console via `./netbase`
-and get the available commands with :help
+## Summary
 
 Netbase is much more than a hyperfast triple store: it has the [wordnet](http://wordnet.princeton.edu/) ontology built-in.
 Its relations are the back-bone of netbase, so that you can quickly query with synonyms, transitive class hierarchies, part meronyms etc.
