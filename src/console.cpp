@@ -35,12 +35,12 @@ void showHelpMessage() {
 	ps("AVAILABLE COMMANDS:");
 	ps("help :h or ?");
 	ps(":load :l [force]\tfetch the graph from disk or mem");
+	ps(":save :s or :w \tbinary dump");
 	//	ps("load_files :lf");
 	ps(":import :i [<file>|dbpedia|wordnet|images|labels|...]");
 	ps(":export :e (all to csv)");
 	//  ps("print :p");
 	ps(":delete :d <node|statement|id|name>");
-	ps(":save :s or :w");
 	//	ps("save and exit :x");
 	ps(":server");
 	ps(":quit :q");
@@ -51,8 +51,7 @@ void showHelpMessage() {
 	ps("Query data: type words, ids, or queries");
 	ps("Abraham Lincoln");
 	ps("Q5");
-	ps("subclasses of human");
-	ps("entities of human limit 1000");
+	ps("subclasses of human limit 1000");
 	//  ps("all animals that have feathers");
 	ps(":all animals with feathers");
 //	ps("select * from dogs where terrier");
@@ -63,15 +62,12 @@ void showHelpMessage() {
 	ps(":seo loud-as");
 	ps(":entities loud-as");
 	ps("");
-	ps("Modify data:");
 //	ps(":set Gehren.Population to 244797");
 //		ps(":update Gehren.Population set current=244797");
 	ps(":update Gehren set Population=244797");
 	//  ps("delete from Stadt.Gemeindeart where typ=244797");
-	ps(":delete blah (entity)");
-	ps(":delete 1234 (entity-id)");
-	ps(":delete $1234 (statement-id)");
-	ps(":learn Gehren ist Ort");
+	ps(":delete xyz (entity/id/$statement)");
+	ps(":learn Gehren is Ort");
 	ps(":learn 1001 5 2442 (via ids)");
 	//	ps("update city set type=town where population<10000");
 }
@@ -143,7 +139,7 @@ Node *parseProperty(const char *data) {
 void console() {
 	quiet = false;
 	if (germanLabels)printf("\nDeutsch");
-	printf("\nNetbase C++ Version 1.6.0\n");
+	printf("\nNetbase C++ Version 1.6.1\n");
 
 	char *data = (char *) malloc(10000);
 #ifdef signal

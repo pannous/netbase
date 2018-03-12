@@ -1964,8 +1964,8 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	fixCurrent();
 	germanLabels=1;
-	if (!eq(get(1)->name,"Universum"))load();
-	testTopics();
+//	if (!eq(get(1)->name,"Universum"))load();
+//	testTopics();
 //	importJson("query.json");
 //	importN3("quantum.n3");
 //	save();
@@ -1975,7 +1975,8 @@ void testBrandNewStuff() {
 //	allowWipe();
 //	fixCurrent();
 //	checkWordnet();
-	entity_extraction("25474");
+	importAllDE();
+//	entity_extraction("25474");
 //	importWikiData();
 //	checkWikiData();
 	int i = 0;

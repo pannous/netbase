@@ -2718,12 +2718,13 @@ void importWikiData() {
 	context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
 //    importWikiLabels("wikidata/properties.de",true);
 //	if(!eq(get(1)->name,"Universum"))
-	importWikiLabels("wikidata/labels.de.n3");
+//	importWikiLabels("wikidata/labels.de.n3");
+	importWikiLabels("wikidata/latest-truthy.nt.de");//
 //		importWikiLabels("wikidata/labels.csv");
 //		importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
 //	}
 	importN3("wikidata/latest-truthy.nt");
-//	importN3("wikidata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
+//	importN3("wikifdata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
 //    importN3("wikidata/wikidata.n3");
 }
 
