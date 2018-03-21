@@ -2723,7 +2723,8 @@ void importWikiData() {
 //		importWikiLabels("wikidata/labels.csv");
 //		importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
 //	}
-	importN3("wikidata/latest-truthy.nt");
+	importN3("wikidata/latest-truthy.nt.facts");
+//	importN3("wikidata/latest-truthy.nt");
 //	importN3("wikifdata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
 //    importN3("wikidata/wikidata.n3");
 }
