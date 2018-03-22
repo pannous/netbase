@@ -28,7 +28,9 @@ extern bool testing;// don't implicitly init relations
 extern int resultLimit;
 extern int defaultLookupLimit;
 extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-
+extern bool count_nodes_down;
+extern bool out_of_memory;
+//int wikidataLimit=60000000;
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!! TODO!!!
@@ -504,6 +506,7 @@ Statement * nextStatement(int node,Statement* current);
 Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
 extern "C" Statement* getStatement(int id,int context_id=current_context);
 Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
+void newQuery();// reset limits
 
 //NodeVector& all_instances(Node* type, int recurse , int limit = defaultLimit);
 //NodeVector& all_instances(Node* type);
@@ -581,7 +584,7 @@ Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
 void replay();
 //extern "C" C-linkage specified, but returns user-defined type 'NodeVector' (aka 'vector<Node *>') which is incompatible with C
-NodeVector parse(const char* data,bool safeMode=true);// and act -> extern "C" execute
+NodeVector parse(const char *data, bool safeMode, bool console);// and act -> extern "C" execute
 void fixCurrent();
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);

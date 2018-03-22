@@ -44,6 +44,8 @@ Node *abstract_root = 0;
 int *freebaseKey_root = 0;
 int defaultLookupLimit = 1000;
 int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+bool count_nodes_down=true;
+bool out_of_memory= false;
 
 //Node** keyhash_root=0;
 
@@ -472,7 +474,10 @@ Statement *nextStatement(int node, Statement *current) {
 	return nextStatement(get(node), current);
 }
 
-int nextStatement_lookupLimit=100000;// TODO!
+int nextStatement_lookupLimit=1000000;// TODO!
+void newQuery(){
+	nextStatement_lookupLimit=1000000;
+}
 Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
 	if (nextStatement_lookupLimit--<0)return null;// per web request todo better
 	if (current == null) return getStatement(n->firstStatement);
@@ -630,6 +635,8 @@ Node *add(const char *key, const char *nodeName) {
 	return node;
 }
 
+
+
 Node *add(const char *nodeName, int kind, int contextId) { //=node =current_context
 	if (kind < -propertySlots or kind > maxNodes)
 		kind = _abstract;// blueprint messup!
@@ -639,8 +646,18 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	Node *abstract = hasWord(nodeName);
 	Node *node;
 	do {
-		context->lastNode++;// DON't MOVE!
+        if(count_nodes_down) context->lastNode--;
+        else context->lastNode++;// DON't MOVE!
 		node = &(context->nodes[context->lastNode]);
+        if (context->lastNode <60000000 && count_nodes_down){
+            p("lastNode <= wikidata limit. MEMORY FULL!!!");
+            out_of_memory=true;
+            return Error;
+        }
+        if (context->lastNode <=0) {
+            p("lastNode <=0 MEMORY FULL!!!");
+            return Error;
+        }
 		if (context->lastNode >= maxNodes - propertySlots) {
 			pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
 			p("MEMORY FULL!!!");
@@ -2528,12 +2545,12 @@ bool checkParams(int argc, char *argv[], const char *p) {
 	string slash = "/";
 	string equals = "=";
 	for (int i = 1; i <= argc; i++) {
-		if (eq(argv[i], p)) return true;
+		if (startsWith(argv[i], p)) return true;
 //		if (startsWith(argv[i], (slash+p).c_str()))return true;
-		if (eq(argv[i], (colon + p[0]).c_str()))return true; // import
-		if (eq(argv[i], (colon + p).c_str())) return true; // :server
-		if (eq(argv[i], (minus + p).c_str())) return true;
-		if (eq(argv[i], (minus + minus + p).c_str()))return true;
+		if (startsWith(argv[i], (colon + p[0]).c_str()))return true; // import
+		if (startsWith(argv[i], (colon + p).c_str())) return true; // :server
+		if (startsWith(argv[i], (minus + p).c_str())) return true;
+		if (startsWith(argv[i], (minus + minus + p).c_str()))return true;
 	}
 	return false;
 }
@@ -2629,9 +2646,9 @@ void replay() {
 		char *data = line;
 		if (data[strlen(data) - 1] == '\n')data[strlen(data) - 1] = 0;
 		if (data[strlen(data) - 1] == '\r')data[strlen(data) - 1] = 0;
-		if (contains(line, ":del"))parse(line);
-		if (contains(line, ":learn"))parse(line);
-		if (contains(line, ":label"))parse(line);
+		if (contains(line, ":del"))parse(line, false, false);
+		if (contains(line, ":learn"))parse(line, false, false);
+		if (contains(line, ":label"))parse(line, false, false);
 	}
 }
 
@@ -2824,7 +2841,7 @@ int main(int argc, char *argv[]) {
 		printf("Content-Type: text/plain;charset=us-ascii\n\n");
 		printf("got QUERY_STRING %s", data);
 		initSharedMemory();
-		show(parse(data));
+		show(parse(data, false, false));
 		//	start_server();
 	}
 	// load environment variables or fall back to defaults
@@ -2845,19 +2862,20 @@ int main(int argc, char *argv[]) {
 	mkdir("./logs", 0777);
 	//	path=sprintf("%s/data",path);
 
-	// todo REDUNDANT! remove!
+	string a;
+	for (int i = 1 ; i < argc; i++) a = a + argv[i] + " ";
+	cchar *query = a.data();
+
+    // todo REDUNDANT! remove!
 	if (checkParams(argc, argv, "quiet")) quiet = true;
-	if (checkParams(argc, argv, "query") or checkParams(argc, argv, "select")) {
-		quiet = true;
-		initSharedMemory();
-		load();
-//		quiet=false;
-		const char *query = (const char *) cut_to(cut_to(join(argv, argc).data(), "query "), "select");
-		p("query:");
-		p(query);
-		show(parse(query, false));
-		exit(0);
-	}
+    if(query[0]=='/')quiet = true;
+	bool quit=checkParams(argc, argv, "exit")|| checkParams(argc, argv, "quit");
+
+	if (checkParams(argc, argv, "query") or checkParams(argc, argv, "select") or checkParams(argc, argv, "all")) {
+        quiet = true;
+        lookupLimit=10000000;
+        query = cut_to(cut_to(query, "query "), "select");
+    }
 
 
 	germanLabels = true;
@@ -2890,12 +2908,13 @@ int main(int argc, char *argv[]) {
 		//		return 0;
 		//		tests();
 	} else {
-		showHelpMessage();
 		bool _autoIds = autoIds;
 		autoIds = true;
 		// *******************************
-		cchar *query = join(argv, argc).c_str();
-		NodeVector results = parse(query,/*safeMode=*/false); // <<< HERE
+		if(query[0]=='/')
+			return handle(query);
+
+		NodeVector results = parse(query, false, argc<2); // <<< HERE
 		// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 		show(results);
 		autoIds = _autoIds;
@@ -2909,8 +2928,7 @@ int main(int argc, char *argv[]) {
 		start_server(SERVER_PORT);
 		return 0;
 	}
-	if (checkParams(argc, argv, "exit")) exit(0);
-	if (checkParams(argc, argv, "quit")) exit(0);
+	if (quit) exit(0);
 
 	//	testBrandNewStuff();
 	console();

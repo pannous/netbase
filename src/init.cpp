@@ -307,7 +307,7 @@ extern "C" void initSharedMemory(bool relations) {
 	if (relations) {
 		initRelations();
 		if (context->lastNode < 0)
-			context->lastNode = 1;
+			context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
 	}
 }
 
@@ -539,7 +539,7 @@ bool clearMemory() {
 //	memset(abstracts, 0, maxNodes*ahashSize * 2);
 //  context->nodeCount=1000;// 0 = ANY
 		context->nodeCount = 1;// 0 = ANY
-		context->lastNode = 1;
+		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
 		context->nodeNames = name_root;
 		context->statementCount = 1;// 0 = ERROR
 	}
@@ -613,7 +613,7 @@ char *initContext(Context *context) {
 	if (context->nodeCount <= 0)
 		context->nodeCount = 1;
 	if (context->lastNode <= 0)
-		context->lastNode = 1;
+		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
 
 //	px(context);
 //	px(nodes);

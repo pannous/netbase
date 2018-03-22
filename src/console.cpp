@@ -149,7 +149,7 @@ void console() {
 		//		clearAlgorithmHash();
 		getline(data);
 		bool _autoIds = autoIds;
-		NodeVector results = parse(data,/*safeMode=*/false);// safeMode only for web access
+		NodeVector results = parse(data, false, false);// safeMode only for web access
 		if (results.size() == 1)show(results[0]);
 		else show(results);
 		autoIds = _autoIds;
@@ -165,14 +165,14 @@ NodeVector runScript(const char *file) {
 		if (startsWith(line, ":i"))continue;// don't import here!
 		if (startsWith(line, ":s"))continue;// don't
 		if (startsWith(line, ":rh"))continue;// don't loop
-		last = parse(line);
+		last = parse(line, false, false);
 	}
 	fclose(fp);
 	return last;
 }
 
 // CENTRAL CONSOLE INSTRUCTION PARSING
-NodeVector parse(const char *data0, bool safeMode/*true*/) {
+NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (eq(data0, null)) return OK;
 	bool forbidAutoIds= false;
 
@@ -243,14 +243,14 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 			return wrap(n);
 		} else return OK;
 	}
-	if (eq(data, "help") or eq(data, ":help") or eq(data, "?")) {
+	if (eq(data, "help") or eq(data, ":help") or eq(data, "?") or info) {
 		showHelpMessage();
 		//    printf("type exit or word");
 		return OK;
 	}
 	if (eq(data, ":more")) {
 		resultLimit = resultLimit * 2;
-		if (lastCommand) return parse(lastCommand);
+		if (lastCommand) return parse(lastCommand, false, false);
 		else return OK;
 	}
 	if (eq(data, ":x")) {
@@ -766,8 +766,9 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 	data = replace(data, ' ', '_');
 
 	int i = atoi(data);
-	if (data[0] == 'P' and data[1] <= '9' and !forbidAutoIds)
-		return wrap(get(-atoi(++data) - propertyOffset));// P106 -> -10106
+	if (data[0] == 'P' and data[1] <= '9')// and !forbidAutoIds)
+        if(lenge==2)return wrap(get(-atoi(++data)));// bug??
+        else return wrap(get(-atoi(++data) - propertyOffset));// P106 -> -10106
 	if (startsWith(data, ":")) {
 		pf("UNKNOWN COMMAND %s\n", data)
 	}//showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
@@ -801,7 +802,7 @@ NodeVector parse(const char *data0, bool safeMode/*true*/) {
 }
 
 extern "C" Node **execute(const char *data, int *out) {
-	NodeVector result = parse(data, true);
+	NodeVector result = parse(data, true, false);
 	int hits = (int) result.size();
 	if (out) *out = hits;
 	Node **results = (Node **) malloc((1 + hits) * nodeSize);

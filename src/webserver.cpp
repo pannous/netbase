@@ -29,6 +29,7 @@
 //#include "helper.h"
 
 /* Service an HTTP request */
+bool LIVE = true; // lower limits, higher security
 int SERVER_PORT = 8080;
 int MAX_QUERY_LENGTH = 1000;
 //static char server_root[1000] = "/Users/me/";
@@ -105,12 +106,12 @@ char *getStatementTitle(Statement *s, Node *n) {
 	return getText(s->Object());// default
 }
 
-bool LIVE = true;
 
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
 	int len = (int) strlen(q0);
 	if (LIVE)lookupLimit = 10000;
+	newQuery();
 	char *q = editable(q0);
 	if (!checkSanity(q, len)) {//	if(len>MAX_QUERY_LENGTH){ ...
 		p("checkSanity :command OR len>10000");
@@ -334,7 +335,7 @@ int handle(cchar *q0, int conn) {
 	p(q);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	//
-	NodeVector all = parse(q, safeMode); // <<<<<<<< HANDLE QUERY WITH NETBASE!
+	NodeVector all = parse(q, safeMode, false); // <<<<<<<< HANDLE QUERY WITH NETBASE!
 	//
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -496,7 +497,6 @@ int handle(cchar *q0, int conn) {
 					continue;// only important stuff here!
 				// filter statements
 
-				if (s->object == 0)continue;
 //				if(eq(s->Predicate()->name,"Offizielle Website") and !contains(s->Object()->name,"www"))
 //					continue;
 
@@ -518,7 +518,8 @@ int handle(cchar *q0, int conn) {
 //			}
 
 			int good = 0;
-			for (int j = 0; j < statements.size() and j <= resultLimit; j++) {
+			auto statementCount = statements.size();
+			for (int j = 0; j < statementCount and j <= resultLimit; j++) {
 				s = statements.at(j);
 //			while ((s = nextStatement(node, s)) and count++<resultLimit) {
 				if (format == csv and all.size() > 1)break;// entities vs statements
@@ -574,7 +575,7 @@ int handle(cchar *q0, int conn) {
 	//		sprintf(buff,	"<script src='/js/%s'></script>",q0);
 	//		Writeline(conn, buff);
 	//	}
-	pf("Warnings/excluded: %d\n", warnings);
+//	pf("Warnings/excluded: %d\n", warnings);
 	return 0;// 0K
 }
 

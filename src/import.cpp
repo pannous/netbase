@@ -1806,12 +1806,17 @@ bool dropBadSubject(char *name) {
 	return KEEP;
 }
 
+//dropBadPredicate
 bool dropBadPredicate(char *name) {
 	if (!name)return DROP;
 	if (eq(name, ""))return DROP;
 
+
 	//	if(name[0]=='.')return DROP;
 	if (name[0] == '<')name++;
+	int lenge=len(name);
+	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')
+		return DROP; // no IDs
 
 //    if (predicateName[3] == '-' or predicateName[3] == '_' or predicateName[3] == 0) continue;    // <zh-ch, id ...
 //    if (predicateName[2] == '-' or predicateName[2] == '_' or predicateName[2] == 0) continue;    // zh-ch, id ...
@@ -1819,6 +1824,12 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "Name"))return DROP;// Label!?
 	if (eq(name, "dateModified"))return DROP; // eventuell doch später interessant?
 	if (eq(name, "Version"))return DROP;// hmmm
+
+	if (eq(name, "P698"))return DROP; //		1930882 'PubMed-ID' -10
+	if (eq(name, "P932"))return DROP; //	PMCID
+	if (eq(name, "P961"))return DROP; //	IPNI-TaxonName-ID
+	if (eq(name, "P830"))return DROP; //	EOL-ID
+	if (eq(name, "P846"))return DROP; //	GBIF-ID
 	if (eq(name, "P352"))return DROP; //	UniProt ID
 	if (eq(name, "P536"))return DROP; //	ATP ID
 	if (eq(name, "P652"))return DROP; //	UNII
@@ -2703,69 +2714,21 @@ void importTest() {
 	importBilliger();
 	importAmazon();
 	buildSeoIndex();
-//	check(hasNode("ue55h6600"));
-//	importAllDE();
-//	importWikiLabels("wikidata/wikidata-terms.de.nt");
-//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 }
 
 
 void importWikiData() {
-
 	context = getContext(wikidata);
 	autoIds = false;
 	importing = true;
-	context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
-//    importWikiLabels("wikidata/properties.de",true);
-//	if(!eq(get(1)->name,"Universum"))
-//	importWikiLabels("wikidata/labels.de.n3");
+    if(!count_nodes_down)context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
+    if(germanLabels)
 	importWikiLabels("wikidata/latest-truthy.nt.de");//
-//		importWikiLabels("wikidata/labels.csv");
-//		importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
+    importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!
 //	}
 	importN3("wikidata/latest-truthy.nt.facts");
 //	importN3("wikidata/latest-truthy.nt");
 //	importN3("wikifdata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
-//    importN3("wikidata/wikidata.n3");
-}
-
-void importWikiDataALT() {
-	context = getContext(wikidata);
-	useHash = false;
-	autoIds = false;
-	//	useHash=true;
-	importing = true;
-	//	doDissectAbstracts=false; // if MAC
-	//		importLabels("dbpedia_de/labels.csv");
-	//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
-	//	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
-	context->lastNode = (int) maxNodes / 2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
-	if (germanLabels) {
-		importWikiLabels("wikidata/wikidata-properties.nt.gz", true);
-		importWikiLabels("wikidata/wikidata-terms.de.nt");
-		importWikiLabels("wikidata/wikidata-terms.de.nt", false,
-		                 true);// NOW alt labels: don't mess with abstracts before
-		showContext(current_context);
-		//		collectAbstracts(); BREAKS THINGS!
-		//		importLabels("wikidata/wikidata-properties.de.nt");
-		//		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
-	} else {
-		importWikiLabels("wikidata/wikidata-properties.nt.gz", true);
-		importWikiLabels("wikidata/wikidata-terms.en.nt", false);// fill up missing ONLY!
-//		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
-	}
-//	doDissectAbstracts=true;// already? why not
-	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
-	importN3("wikidata/wikidata-taxonomy.nt.gz");
-	importN3("wikidata/wikidata-instances.nt.gz");
-	importN3("wikidata/wikidata-simple-statements.nt.gz");
-	//	importN3("wikidata/wikidata-statements.nt.gz");
-	//	importN3("wikidata/wikidata-sitelinks.nt");
-	if (germanLabels) {// now fill up missing! Not before, otherwise would get useless statements.
-		importWikiLabels("wikidata/wikidata-terms.en.nt", false);
-		importWikiLabels("wikidata/wikidata-terms.en.nt", false, true);
-	}
-	showContext(current_context);
 }
 
 
@@ -2865,8 +2828,6 @@ void importAllDE() {
 		p("importWikiData already done");
 	else
 		importWikiData();
-//	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER FUCKUPS! WITH ENGLISH!
-//	context->nodeCount=context->lastNode;// adjust gaps as counted?
 //	importNames();
 	importGeoDB();
 	importCsv("used_keywords.csv");
@@ -2876,11 +2837,8 @@ void importAllDE() {
 	importCsv("Telekom_Produkt.csv");
 	importCsv("manual_entities.csv");
 
-//	importQuasiris();:
 	replay();
-//	importFacts();
 	importLabels("labels.csv");// todo: why again?
-//	buildSeoIndex();
 	importBilliger();
 	buildSeoIndex();
 	importAmazon();
