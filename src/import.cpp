@@ -2028,8 +2028,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		if (!objectName or objectName[0] == '/' or objectName[1] == '/')
 			continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
 		subject = getEntity(subjectName);//,fixNamespaces); //
-		if(subject && subject->id==567)
-			p("dffdsa");
+//		if(subject && subject->id==567)
+//			p("dffdsa");
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
 		if (subject == object) {
