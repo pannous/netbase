@@ -2830,15 +2830,15 @@ void importAllDE() {
 		importWikiData();
 //	importNames();
 	importGeoDB();
-	importCsv("used_keywords.csv");
-	importCsv("whole_data.csv");
-	importCsv("Telekom_Entitaet.csv");
-	importCsv("Telekom-Produkt.csv");
-	importCsv("Telekom_Produkt.csv");
-	importCsv("manual_entities.csv");
+	importCsv("Telekom/used_keywords.csv");
+	importCsv("Telekom/whole_data.csv");
+	importCsv("Telekom/Telekom_Entitaet.csv");
+	importCsv("Telekom/Telekom-Produkt.csv");
+	importCsv("Telekom/Telekom_Produkt.csv");
+	importCsv("Telekom/manual_entities.csv");
 
 	replay();
-	importLabels("labels.csv");// todo: why again?
+//	importLabels("labels.csv");// todo: why again?
 	importBilliger();
 	buildSeoIndex();
 	importAmazon();
@@ -2869,9 +2869,15 @@ void importAll() {
 //	importWordnet();
 	//	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
-	doDissectAbstracts = true;// already? why not
+	doDissectAbstracts = false; // not live
 //	importGeoDB();
+	if(!eq(get(1)->name,"Universe"))
 	importWikiData();
+	else{
+		importRemaining();
+		return;
+	}
+
 	importNames();
 	importAmazon();
 //	importBilliger();
