@@ -724,6 +724,8 @@ bool addStatementToNode2(Node* node, int statement) {
 
 Statement *
 addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool checkNodes) { //bool checkDuplicate
+	if(subjectId==_error || predicateId==_error || objectId==_error )return 0;
+
 	if (contextId < 0 or subjectId < -propertySlots or predicateId < -propertySlots or objectId < -propertySlots) {
 		p("WARNING contextId<0 or subjectId < -propertySlots or predicateId < -propertySlots or objectId < -propertySlots");
 		return 0;
@@ -798,7 +800,7 @@ Statement *addStatement(Node *subject, Node *predicate, Node *object, bool check
 	if (!checkNode(subject)) return 0;
 	if (!checkNode(object)) return 0;
 	if (!checkNode(predicate)) return 0;
-
+	if(subject->id==_error || predicate->id==_error || object->id==_error )return 0;
 	Statement *s = getStatement(subject->lastStatement);
 	if (s and s->Subject() == subject and s->Predicate() == predicate and s->Object() == object)
 		return s;// quick checkDuplicate!

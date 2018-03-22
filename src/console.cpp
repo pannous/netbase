@@ -742,7 +742,8 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 
 	if (eq(args[0], ":last")) {
 		p(context->lastNode);
-		return wrap(get(context->lastNode));
+        auto last = get(context->lastNode);
+        return last!=Error?wrap(last):OK;
 	}
 	if ((eq(args[0], ":learn") or eq(args[0], ":l") or
 	     eq(args[0], ":!"))) {// eq(args[0], "learn") or args.size() >= 4 and (
