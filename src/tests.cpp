@@ -1964,6 +1964,7 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	fixCurrent();
 	germanLabels=1;
+    importAmazon();
 //	if (!eq(get(1)->name,"Universum"))load();
 //	testTopics();
 //	importJson("query.json");

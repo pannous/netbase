@@ -1,10 +1,11 @@
 //#pragma once
 
-#include <string.h> // strcmp ...
+#include <cstring> // strcmp ...
 #include <cstdlib>
 #include <string>
 #include <map>
-#include <unistd.h> //getcwd
+#include <dirent.h> // list files
+//#include <unistd.h> //getcwd
 
 #ifdef sqlite3
 #include "sqlite3.h"
@@ -61,7 +62,7 @@ bool checkLowMemory() {
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
 	//	if (!free) free=5.5L * GB;// 2 GB + work
-	if (!free) free = 9.0L * GB; // 4 GB + work
+	if (!free) free = static_cast<size_t>(9.0L * GB); // 4 GB + work
 	if (currentSize > free) {
 		p("OUT OF MEMORY!");
 		printf("MEMORY: %zX Peak: %zX FREE: %zX \n", currentSize, peakSize, free);
@@ -122,7 +123,7 @@ int norm_wordnet_id(int synsetid, bool force = false) {
 }
 
 void load_wordnet_synset_map() {
-	if (wordnet_synset_map.size() > 0) return;
+	if (!wordnet_synset_map.empty()) return;
 	char line[1000];
 	FILE *infile = open_file("wordnet/synset_map.txt");
 	int s, id;
@@ -2541,83 +2542,45 @@ void importBilliger() {
 //	importCsv("billiger.de/20170120-TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 }
 
+
+
+int listdir(const char *path) {
+    DIR *dp = opendir(path);
+    if (dp == NULL) { perror("opendir: Path does not exist or could not be read.");return -1; }
+    struct dirent *entry;
+    while ((entry = readdir(dp))) {
+//		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
+	}
+    closedir(dp);
+    return 0;
+}
+
+
 void importAmazon() {
-//	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
-	const char *includedFields =// typ;
-			"title";//,brand,author,artist,subcategorypath1";
-//						"subcategorypath1";
-//	"title,productdescription,asins,brand,author,artist,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1";
-//	"asins,brand,author,artist,title,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,browsenode1,subcategorypath1,subcategorypath2,gender,color,size,price1,availablity1,shipping1url1";
+
+//	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow)
+	const char *includedFields ="title";// typ;
+	//,brand,author,artist,subcategorypath1"; "subcategorypath1"; "title,productdescription,asins,brand,author,artist,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1"; "asins,brand,author,artist,title,imagepathmedium,topcategory,ea
+
+	DIR *dp = opendir("import/amazon");
+	if (dp == NULL) { perror("Path import/amazon does not exist or could not be read.");return; }
+
 	const char *ignoredFields = 0;// rest! productdescription :(
 	const char *in = includedFields;
 	const char *out = ignoredFields;
 	const char *t = "title";
-//		int col=22;//subcategorypath1
 	int col = 6;//title
 	getSingletons = true;
 	autoIds = false;
 
-	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz", getThe("Amazon digital_video product"), ',',
-	          out, in, col, t);
-	importCsv("amazon/de_v3_csv_dvd_retail_delta.base.csv.gz", getThe("Amazon dvd product"), ',', out, in, col, t);
-	if (testing)exit(0);
-	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz", getThe("Amazon apparel product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_beauty_retail_delta.base.csv.gz", getThe("Amazon beauty product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_automotive_retail_delta.base.csv.gz", getThe("Amazon automotive product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_baby_retail_delta.base.csv.gz", getThe("Amazon baby product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_books_retail_delta_part1.base.csv.gz", getThe("Amazon books product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_ce_retail_delta.base.csv.gz", getThe("Amazon ce product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_digital_sw_retail_delta.base.csv.gz", getThe("Amazon digital_sw product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_digital_vg_retail_delta.base.csv.gz", getThe("Amazon digital_vg product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_grocery_retail_delta.base.csv.gz", getThe("Amazon grocery product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_home_improvement_retail_delta.base.csv.gz", getThe("Amazon home_improvement product"),
-	          ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_home_retail_delta.base.csv.gz", getThe("Amazon home product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_hpc_retail_delta.base.csv.gz", getThe("Amazon hpc product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_jewelry_retail_delta.base.csv.gz", getThe("Amazon jewelry product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_kitchen_retail_delta.base.csv.gz", getThe("Amazon kitchen product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_lawn_garden_retail_delta.base.csv.gz", getThe("Amazon lawn_garden product"), ',', out,
-	          in, col, t);
-	importCsv("amazon/de_v3_csv_luggage_retail_delta.base.csv.gz", getThe("Amazon luggage product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_major_appliances_retail_delta.base.csv.gz", getThe("Amazon major_appliances product"),
-	          ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_musical_instruments_retail_delta.base.csv.gz",
-	          getThe("Amazon musical_instruments product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_office_retail_delta.base.csv.gz", getThe("Amazon office product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_pc_retail_delta.base.csv.gz", getThe("Amazon pc product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_personal_care_appliances_retail_delta.base.csv.gz",
-	          getThe("Amazon personal_care_appliances product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_pet_retail_delta.base.csv.gz", getThe("Amazon pet product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_shoes_retail_delta.base.csv.gz", getThe("Amazon shoes product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_software_retail_delta.base.csv.gz", getThe("Amazon software product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_sports_retail_delta.base.csv.gz", getThe("Amazon sports product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_toys_retail_delta.base.csv.gz", getThe("Amazon toys product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_video_games_retail_delta.base.csv.gz", getThe("Amazon video_games product"), ',', out,
-	          in, col, t);
-	importCsv("amazon/de_v3_csv_watches_retail_delta.base.csv.gz", getThe("Amazon watches product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_wine_retail_delta.base.csv.gz", getThe("Amazon wine product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_music_retail_delta.base.csv.gz", getThe("Amazon music product"), ',', out, in, col, t);
-
+	struct dirent *entry;
+	auto type = getThe("Amazon product");
+	while ((entry = readdir(dp))) {
+		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
+	}
+	closedir(dp);
 }
-//
-//void importAmazon(){
-//	importAmazon2("subcategorypath1");
-//}
 
 void importDBPediaEN() {
 	useHash = false;
