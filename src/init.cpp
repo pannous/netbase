@@ -168,6 +168,7 @@ void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *d
 		if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 			semrm(key); // clean and try again
 			if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
+                pf("nodes: %ld\n",maxNodes);
 				perror("share_memory failed!\nSize changed or NOT ENOUGH MEMORY??\n shmget");
 				//			printf("try calling ./clear-shared-memory.sh\n");
 				//			perror(strerror(errno)); <= ^^ redundant !!!

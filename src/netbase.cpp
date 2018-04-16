@@ -649,7 +649,7 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
         if(count_nodes_down) context->lastNode--;
         else context->lastNode++;// DON't MOVE!
 		node = &(context->nodes[context->lastNode]);
-        if (context->lastNode <60000000 && count_nodes_down){
+        if (maxNodes>100*million&& context->lastNode <60000000 && count_nodes_down){
             p("lastNode <= wikidata limit. MEMORY FULL!!!");
             out_of_memory=true;
             return Error;
