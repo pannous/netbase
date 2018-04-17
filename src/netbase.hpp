@@ -29,8 +29,8 @@ extern int resultLimit;
 extern int defaultLookupLimit;
 extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
 extern bool count_nodes_down;
-extern bool out_of_memory;
-//int wikidataLimit=60000000;
+extern bool out_of_memory;// delayed exit()
+extern int wikidata_limit;// =60000000;
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!! TODO!!!
