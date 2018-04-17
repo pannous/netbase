@@ -2234,6 +2234,8 @@ void importAbstracts() {
 int wn_synonym_count = 400000;// pointer autoincrement
 //      ^^^^^^^ aarg !?? compatible with german??
 
+int wikidata_limit= 60000000 ;// (int) maxNodes / 2;
+
 void importGermanLables(bool addLabels = false) {
 	bool modify_english = hasWord("autoeroticism");//english already there
 	char line[1000];
@@ -2691,7 +2693,7 @@ void importWikiData() {
 	context = getContext(wikidata);
 	autoIds = false;
 	importing = true;
-    if(!count_nodes_down)context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
+    if(!count_nodes_down)context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
     if(germanLabels)
 	importWikiLabels("wikidata/latest-truthy.nt.de");//
     importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!

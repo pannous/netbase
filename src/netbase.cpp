@@ -44,9 +44,8 @@ Node *abstract_root = 0;
 int *freebaseKey_root = 0;
 int defaultLookupLimit = 1000;
 int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-bool count_nodes_down=true;
-bool out_of_memory= false;
-
+bool count_nodes_down= false;
+bool out_of_memory= true;
 //Node** keyhash_root=0;
 
 #ifdef USE_SEMANTICS
@@ -636,6 +635,7 @@ Node *add(const char *key, const char *nodeName) {
 }
 
 
+void checkOutOfMemory();
 
 Node *add(const char *nodeName, int kind, int contextId) { //=node =current_context
 	if (kind < -propertySlots or kind > maxNodes)
@@ -649,21 +649,8 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
         if(count_nodes_down) context->lastNode--;
         else context->lastNode++;// DON't MOVE!
 		node = &(context->nodes[context->lastNode]);
-        if (maxNodes>100*million&& context->lastNode <60000000 && count_nodes_down){
-            p("lastNode <= wikidata limit. MEMORY FULL!!!");
-            out_of_memory=true;
-            return Error;
-        }
-        if (context->lastNode <=0) {
-            p("lastNode <=0 MEMORY FULL!!!");
-            return Error;
-        }
-		if (context->lastNode >= maxNodes - propertySlots) {
-			pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
-			p("MEMORY FULL!!!");
-			//		exit(1);
-			return Error;
-		}
+		checkOutOfMemory();
+		if(out_of_memory)return Error;
 	} while (node->id != 0);
 
 	if (abstract and abstract->name) {
@@ -683,6 +670,23 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	//	  why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
 	// kosten : Speicher*2
 	return node;
+}
+
+void checkOutOfMemory() {
+	if (maxNodes>100*million&& context->lastNode <wikidata_limit && count_nodes_down){
+		p("lastNode <= wikidata limit. MEMORY FULL!!!");
+		out_of_memory=true;
+	}
+	if (context->lastNode <=0) {
+		p("lastNode <=0 MEMORY FULL!!!");
+		out_of_memory=true;
+	}
+	if (context->lastNode >= maxNodes - propertySlots) {
+		pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
+		p("MEMORY FULL!!!");
+		out_of_memory=true;
+//					exit(1);
+	}
 }
 
 Node *add_force(int contextId, int id, const char *nodeName, int kind) {
@@ -2778,12 +2782,13 @@ void fixICD10() {
 }
 
 void fixCurrent() {
-	fixICD10();
+//	fixICD10();
 //	context->lastNode =50000000;// as of 11/2017  vs  https://www.wikidata.org/wiki/Q40000000
 //	context->lastNode = (int) maxNodes / 2;
-	fixPostleitzahlen();
+//	fixPostleitzahlen();
 //	fixInstances();
 //	fixBrokenStatement();
+	context->lastNode=wikidata_limit;// fill all empty slots!
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 //	buildSeoIndex();
 //	importRemaining();
