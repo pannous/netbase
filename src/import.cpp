@@ -746,6 +746,8 @@ void fixValues(char **values, int size) {
 }
 
 N addSubword(char *name, N kind) {
+    if(empty(name))
+        return 0;
 	N old = hasWord(name);
 	if (old) {
 		if (old->statementCount < 3)
@@ -842,8 +844,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
 	char **values = (char **) malloc(sizeof(char *) * MAX_ROWS);
 	char lastValue[MAX_CHARS_PER_LINE * 2];
-	char *line00 = 0;// nullptr;
-	char *line0 = 0;// nullptr;
+	char *line00 = 0;// nullptr; free malloc'ed editable line
+	char *line0 = 0;// nullptr; pointer to modified entries
 	map<char *, Node *> valueCache;
 	Node *subject = 0;
 	Node *predicate = 0;
@@ -2559,6 +2561,7 @@ int listdir(const char *path) {
 
 
 void importAmazon() {
+//	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
 
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow)
 	const char *includedFields ="title";// typ;
