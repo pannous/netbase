@@ -5,4 +5,4 @@ void console();
 void showHelpMessage();
 
 extern "C" Node** execute(const char* data,int* hits=0);// and act
-NodeVector parse(const char* data0,bool safeMode/*true*/);
+NodeVector parse(const char *data0, bool safeMode, bool info= false);

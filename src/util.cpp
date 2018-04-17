@@ -303,7 +303,9 @@ bool endsWith(const char *x, const char *y) {
 }
 
 bool startsWith(const char *x, const char *y) {
-	short len = strlen(y);
+    if(!y||!x)
+        return false;
+	int len = strlen(y);
 	if (strlen(x) < len) return false;
 	for (int i = 0; i < len; i++) {
 		if (x[i] != y[i]) return false;
@@ -377,14 +379,6 @@ bool eq(const char *x, const char *y, bool ignoreCase, bool ignoreUnderscore) { 
 //	return c.data();// LOST POINTER!
 //}
 
-string join(char **argv, int argc) {
-	string a;
-	int i = 1;
-	for (; i < argc; i++) {
-		a = a + argv[i] + " ";
-	}
-	return a;
-}
 
 void error(string err) {
 	printf("%s", err.data());

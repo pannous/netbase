@@ -21,7 +21,6 @@ bool assert(bool test, const char* what);
 template<typename T> void empty(vector<T,std::allocator<T> >& v);
 #define cchar const char
 #define po p("ok");
-string join(char** argv,int argc);
 bool eq(const char* x,const char* y,bool ignoreCase = true,bool ignoreUnderscore=true);
 bool eq(string x, const char* y);
 bool eq(string* x, const char* y);

@@ -28,7 +28,9 @@ extern bool testing;// don't implicitly init relations
 extern int resultLimit;
 extern int defaultLookupLimit;
 extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-
+extern bool count_nodes_down;
+extern bool out_of_memory;
+//int wikidataLimit=60000000;
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!! TODO!!!
@@ -504,6 +506,7 @@ Statement * nextStatement(int node,Statement* current);
 Statement* nextStatement(Node* n,Statement* current,bool stopAtInstances=false);
 extern "C" Statement* getStatement(int id,int context_id=current_context);
 Statement* getStatementNr(Node* n, int nr,bool firstInstanceGap=false);
+void newQuery();// reset limits
 
 //NodeVector& all_instances(Node* type, int recurse , int limit = defaultLimit);
 //NodeVector& all_instances(Node* type);
@@ -581,7 +584,7 @@ Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
 void replay();
 //extern "C" C-linkage specified, but returns user-defined type 'NodeVector' (aka 'vector<Node *>') which is incompatible with C
-NodeVector parse(const char* data,bool safeMode=true);// and act -> extern "C" execute
+NodeVector parse(const char *data, bool safeMode, bool console);// and act -> extern "C" execute
 void fixCurrent();
 extern "C" void setKind(int id,int kind);
 extern "C" Node* save(Node* n);
@@ -633,12 +636,12 @@ static long maxStatements = maxNodes*2;// *10 = crude average of Statements per 
 static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
 static long maxStatements = maxNodes*1;// *10 = crude average of Statements per Node (yago:12!!)
 #else
-static long maxNodes = 200*million;
-static long maxStatements = maxNodes*2;
+static long maxNodes = 300*million;
+static long maxStatements = 2*maxNodes;
 #endif
 //static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;
-static int averageNameLength =20;// for amazon! else 20
+static int averageNameLength =10;// for amazon! else 20
 static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;

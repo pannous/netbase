@@ -168,6 +168,7 @@ void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *d
 		if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 			semrm(key); // clean and try again
 			if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
+                pf("nodes: %ld\n",maxNodes);
 				perror("share_memory failed!\nSize changed or NOT ENOUGH MEMORY??\n shmget");
 				//			printf("try calling ./clear-shared-memory.sh\n");
 				//			perror(strerror(errno)); <= ^^ redundant !!!
@@ -307,7 +308,7 @@ extern "C" void initSharedMemory(bool relations) {
 	if (relations) {
 		initRelations();
 		if (context->lastNode < 0)
-			context->lastNode = 1;
+			context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
 	}
 }
 
@@ -539,7 +540,7 @@ bool clearMemory() {
 //	memset(abstracts, 0, maxNodes*ahashSize * 2);
 //  context->nodeCount=1000;// 0 = ANY
 		context->nodeCount = 1;// 0 = ANY
-		context->lastNode = 1;
+		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
 		context->nodeNames = name_root;
 		context->statementCount = 1;// 0 = ERROR
 	}
@@ -613,7 +614,7 @@ char *initContext(Context *context) {
 	if (context->nodeCount <= 0)
 		context->nodeCount = 1;
 	if (context->lastNode <= 0)
-		context->lastNode = 1;
+		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
 
 //	px(context);
 //	px(nodes);

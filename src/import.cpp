@@ -1,10 +1,11 @@
 //#pragma once
 
-#include <string.h> // strcmp ...
+#include <cstring> // strcmp ...
 #include <cstdlib>
 #include <string>
 #include <map>
-#include <unistd.h> //getcwd
+#include <dirent.h> // list files
+//#include <unistd.h> //getcwd
 
 #ifdef sqlite3
 #include "sqlite3.h"
@@ -61,7 +62,7 @@ bool checkLowMemory() {
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
 	//	if (!free) free=5.5L * GB;// 2 GB + work
-	if (!free) free = 9.0L * GB; // 4 GB + work
+	if (!free) free = static_cast<size_t>(9.0L * GB); // 4 GB + work
 	if (currentSize > free) {
 		p("OUT OF MEMORY!");
 		printf("MEMORY: %zX Peak: %zX FREE: %zX \n", currentSize, peakSize, free);
@@ -122,7 +123,7 @@ int norm_wordnet_id(int synsetid, bool force = false) {
 }
 
 void load_wordnet_synset_map() {
-	if (wordnet_synset_map.size() > 0) return;
+	if (!wordnet_synset_map.empty()) return;
 	char line[1000];
 	FILE *infile = open_file("wordnet/synset_map.txt");
 	int s, id;
@@ -1806,12 +1807,17 @@ bool dropBadSubject(char *name) {
 	return KEEP;
 }
 
+//dropBadPredicate
 bool dropBadPredicate(char *name) {
 	if (!name)return DROP;
 	if (eq(name, ""))return DROP;
 
+
 	//	if(name[0]=='.')return DROP;
 	if (name[0] == '<')name++;
+	int lenge=len(name);
+	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')
+		return DROP; // no IDs
 
 //    if (predicateName[3] == '-' or predicateName[3] == '_' or predicateName[3] == 0) continue;    // <zh-ch, id ...
 //    if (predicateName[2] == '-' or predicateName[2] == '_' or predicateName[2] == 0) continue;    // zh-ch, id ...
@@ -1819,6 +1825,12 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "Name"))return DROP;// Label!?
 	if (eq(name, "dateModified"))return DROP; // eventuell doch später interessant?
 	if (eq(name, "Version"))return DROP;// hmmm
+
+	if (eq(name, "P698"))return DROP; //		1930882 'PubMed-ID' -10
+	if (eq(name, "P932"))return DROP; //	PMCID
+	if (eq(name, "P961"))return DROP; //	IPNI-TaxonName-ID
+	if (eq(name, "P830"))return DROP; //	EOL-ID
+	if (eq(name, "P846"))return DROP; //	GBIF-ID
 	if (eq(name, "P352"))return DROP; //	UniProt ID
 	if (eq(name, "P536"))return DROP; //	ATP ID
 	if (eq(name, "P652"))return DROP; //	UNII
@@ -2017,8 +2029,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		if (!objectName or objectName[0] == '/' or objectName[1] == '/')
 			continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
 		subject = getEntity(subjectName);//,fixNamespaces); //
-		if(subject && subject->id==567)
-			p("dffdsa");
+//		if(subject && subject->id==567)
+//			p("dffdsa");
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
 		if (subject == object) {
@@ -2530,83 +2542,48 @@ void importBilliger() {
 //	importCsv("billiger.de/20170120-TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 }
 
+
+
+int listdir(const char *path) {
+    DIR *dp = opendir(path);
+    if (dp == NULL) { perror("opendir: Path does not exist or could not be read.");return -1; }
+    struct dirent *entry;
+    while ((entry = readdir(dp))) {
+//		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
+	}
+    closedir(dp);
+    return 0;
+}
+
+
 void importAmazon() {
-//	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow) 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
-	const char *includedFields =// typ;
-			"title";//,brand,author,artist,subcategorypath1";
-//						"subcategorypath1";
-//	"title,productdescription,asins,brand,author,artist,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1";
-//	"asins,brand,author,artist,title,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,browsenode1,subcategorypath1,subcategorypath2,gender,color,size,price1,availablity1,shipping1url1";
+
+//	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow)
+	const char *includedFields ="title";// typ;
+	//,brand,author,artist,subcategorypath1"; "subcategorypath1"; "title,productdescription,asins,brand,author,artist,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1"; "asins,brand,author,artist,title,imagepathmedium,topcategory,ea
+
+	DIR *dp = opendir("import/amazon");
+	if (dp == NULL) { perror("Path import/amazon does not exist or could not be read.");return; }
+
 	const char *ignoredFields = 0;// rest! productdescription :(
 	const char *in = includedFields;
 	const char *out = ignoredFields;
 	const char *t = "title";
-//		int col=22;//subcategorypath1
 	int col = 6;//title
 	getSingletons = true;
 	autoIds = false;
 
-	importCsv("amazon/de_v3_csv_digital_video_retail_delta.base.csv.gz", getThe("Amazon digital_video product"), ',',
-	          out, in, col, t);
-	importCsv("amazon/de_v3_csv_dvd_retail_delta.base.csv.gz", getThe("Amazon dvd product"), ',', out, in, col, t);
-	if (testing)exit(0);
-	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz", getThe("Amazon apparel product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_beauty_retail_delta.base.csv.gz", getThe("Amazon beauty product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_automotive_retail_delta.base.csv.gz", getThe("Amazon automotive product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_baby_retail_delta.base.csv.gz", getThe("Amazon baby product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_books_retail_delta_part1.base.csv.gz", getThe("Amazon books product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_ce_retail_delta.base.csv.gz", getThe("Amazon ce product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_digital_sw_retail_delta.base.csv.gz", getThe("Amazon digital_sw product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_digital_vg_retail_delta.base.csv.gz", getThe("Amazon digital_vg product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_grocery_retail_delta.base.csv.gz", getThe("Amazon grocery product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_home_improvement_retail_delta.base.csv.gz", getThe("Amazon home_improvement product"),
-	          ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_home_retail_delta.base.csv.gz", getThe("Amazon home product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_hpc_retail_delta.base.csv.gz", getThe("Amazon hpc product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_jewelry_retail_delta.base.csv.gz", getThe("Amazon jewelry product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_kitchen_retail_delta.base.csv.gz", getThe("Amazon kitchen product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_lawn_garden_retail_delta.base.csv.gz", getThe("Amazon lawn_garden product"), ',', out,
-	          in, col, t);
-	importCsv("amazon/de_v3_csv_luggage_retail_delta.base.csv.gz", getThe("Amazon luggage product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_major_appliances_retail_delta.base.csv.gz", getThe("Amazon major_appliances product"),
-	          ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_musical_instruments_retail_delta.base.csv.gz",
-	          getThe("Amazon musical_instruments product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_office_retail_delta.base.csv.gz", getThe("Amazon office product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_pc_retail_delta.base.csv.gz", getThe("Amazon pc product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_personal_care_appliances_retail_delta.base.csv.gz",
-	          getThe("Amazon personal_care_appliances product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_pet_retail_delta.base.csv.gz", getThe("Amazon pet product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_shoes_retail_delta.base.csv.gz", getThe("Amazon shoes product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_software_retail_delta.base.csv.gz", getThe("Amazon software product"), ',', out, in,
-	          col, t);
-	importCsv("amazon/de_v3_csv_sports_retail_delta.base.csv.gz", getThe("Amazon sports product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_toys_retail_delta.base.csv.gz", getThe("Amazon toys product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_video_games_retail_delta.base.csv.gz", getThe("Amazon video_games product"), ',', out,
-	          in, col, t);
-	importCsv("amazon/de_v3_csv_watches_retail_delta.base.csv.gz", getThe("Amazon watches product"), ',', out, in, col,
-	          t);
-	importCsv("amazon/de_v3_csv_wine_retail_delta.base.csv.gz", getThe("Amazon wine product"), ',', out, in, col, t);
-	importCsv("amazon/de_v3_csv_music_retail_delta.base.csv.gz", getThe("Amazon music product"), ',', out, in, col, t);
-
+	struct dirent *entry;
+	auto type = getThe("Amazon product");
+	bool importa=0;
+	while ((entry = readdir(dp))) {
+		if(importa)
+		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
+		if(eq(entry->d_name,"de_v3_csv_ce_mp_delta_part3.csv.gz"))importa=1;
+	}
+	closedir(dp);
 }
-//
-//void importAmazon(){
-//	importAmazon2("subcategorypath1");
-//}
 
 void importDBPediaEN() {
 	useHash = false;
@@ -2703,67 +2680,21 @@ void importTest() {
 	importBilliger();
 	importAmazon();
 	buildSeoIndex();
-//	check(hasNode("ue55h6600"));
-//	importAllDE();
-//	importWikiLabels("wikidata/wikidata-terms.de.nt");
-//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);
 }
 
 
 void importWikiData() {
-
 	context = getContext(wikidata);
 	autoIds = false;
 	importing = true;
-	context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
-//    importWikiLabels("wikidata/properties.de",true);
-//	if(!eq(get(1)->name,"Universum"))
-	importWikiLabels("wikidata/labels.de.n3");
-//		importWikiLabels("wikidata/labels.csv");
-//		importWikiLabels("wikidata/labels.csv",false,true);// altlabels after abstracts are sorted!
+    if(!count_nodes_down)context->lastNode = (int) maxNodes / 2; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
+    if(germanLabels)
+	importWikiLabels("wikidata/latest-truthy.nt.de");//
+    importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!
 //	}
-	importN3("wikidata/latest-truthy.nt");
-//	importN3("wikidata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
-//    importN3("wikidata/wikidata.n3");
-}
-
-void importWikiDataALT() {
-	context = getContext(wikidata);
-	useHash = false;
-	autoIds = false;
-	//	useHash=true;
-	importing = true;
-	//	doDissectAbstracts=false; // if MAC
-	//		importLabels("dbpedia_de/labels.csv");
-	//	importWikiLabels("wikidata/wikidata-terms.en.nt",false);// prefill!
-	//	importWikiLabels("wikidata/wikidata-properties.en.nt",true);
-	context->lastNode = (int) maxNodes / 2;// hack: Reserve the first half of memory for wikidata, the rest for other stuff
-	if (germanLabels) {
-		importWikiLabels("wikidata/wikidata-properties.nt.gz", true);
-		importWikiLabels("wikidata/wikidata-terms.de.nt");
-		importWikiLabels("wikidata/wikidata-terms.de.nt", false,
-		                 true);// NOW alt labels: don't mess with abstracts before
-		showContext(current_context);
-		//		collectAbstracts(); BREAKS THINGS!
-		//		importLabels("wikidata/wikidata-properties.de.nt");
-		//		importLabels("wikidata/wikidata-terms.nt.gz");// OK but SLOOOW!
-	} else {
-		importWikiLabels("wikidata/wikidata-properties.nt.gz", true);
-		importWikiLabels("wikidata/wikidata-terms.en.nt", false);// fill up missing ONLY!
-//		importWikiLabels("wikidata/wikidata-terms.de.nt",false,true);// NOW alt labels: don't mess with abstracts before
-	}
-//	doDissectAbstracts=true;// already? why not
-	//	importN3("wikidata/wikidata-properties.nt.gz");// == labels!
-	importN3("wikidata/wikidata-taxonomy.nt.gz");
-	importN3("wikidata/wikidata-instances.nt.gz");
-	importN3("wikidata/wikidata-simple-statements.nt.gz");
-	//	importN3("wikidata/wikidata-statements.nt.gz");
-	//	importN3("wikidata/wikidata-sitelinks.nt");
-	if (germanLabels) {// now fill up missing! Not before, otherwise would get useless statements.
-		importWikiLabels("wikidata/wikidata-terms.en.nt", false);
-		importWikiLabels("wikidata/wikidata-terms.en.nt", false, true);
-	}
-	showContext(current_context);
+	importN3("wikidata/latest-truthy.nt.facts");
+//	importN3("wikidata/latest-truthy.nt");
+//	importN3("wikifdata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
 }
 
 
@@ -2863,22 +2794,17 @@ void importAllDE() {
 		p("importWikiData already done");
 	else
 		importWikiData();
-//	context->lastNode=1;// RADICAL: fill all empty slots, no gaps! // DANGER FUCKUPS! WITH ENGLISH!
-//	context->nodeCount=context->lastNode;// adjust gaps as counted?
 //	importNames();
 	importGeoDB();
-	importCsv("used_keywords.csv");
-	importCsv("whole_data.csv");
-	importCsv("Telekom_Entitaet.csv");
-	importCsv("Telekom-Produkt.csv");
-	importCsv("Telekom_Produkt.csv");
-	importCsv("manual_entities.csv");
+	importCsv("Telekom/used_keywords.csv");
+	importCsv("Telekom/whole_data.csv");
+	importCsv("Telekom/Telekom_Entitaet.csv");
+	importCsv("Telekom/Telekom-Produkt.csv");
+	importCsv("Telekom/Telekom_Produkt.csv");
+	importCsv("Telekom/manual_entities.csv");
 
-//	importQuasiris();:
 	replay();
-//	importFacts();
-	importLabels("labels.csv");// todo: why again?
-//	buildSeoIndex();
+//	importLabels("labels.csv");// todo: why again?
 	importBilliger();
 	buildSeoIndex();
 	importAmazon();
@@ -2909,9 +2835,15 @@ void importAll() {
 //	importWordnet();
 	//	importCsv("adressen.txt");
 	//	doDissectAbstracts=true;// already? why not
-	doDissectAbstracts = true;// already? why not
+	doDissectAbstracts = false; // not live
 //	importGeoDB();
+	if(!eq(get(1)->name,"Universe"))
 	importWikiData();
+	else{
+		importRemaining();
+		return;
+	}
+
 	importNames();
 	importAmazon();
 //	importBilliger();

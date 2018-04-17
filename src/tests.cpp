@@ -1202,7 +1202,7 @@ void testFacets() {
 
 void testQueryInHandler() {
 	handle(":learn a.b=c");
-	NV cs = parse(":query a.b");
+	NV cs = parse(":query a.b", false, false);
 	show(cs);
 	check(cs[0])
 }
@@ -1606,7 +1606,7 @@ void testInclude() {
 	//  addStatement(a("hamburg"),Type,getThe("city"));
 	//  parse("city include Erhebung");
 	//  parse("city include Erhebung");
-	parse("5136347 include Erhebung");
+	parse("5136347 include Erhebung", false, false);
 
 
 
@@ -1624,7 +1624,7 @@ void testInclude() {
 }
 
 bool assertResult(char *query, char *value0) {
-	NodeVector result = parse(query);
+	NodeVector result = parse(query, false, false);
 	//	cchar* result=query2(query).data();
 	Node *abstract = getAbstract(value0);
 	Node *value = getThe(abstract);
@@ -1762,7 +1762,7 @@ void recursiveTaxonomy() {
 void testEntities() {
 	handle("/json/entities/Elektroinstallateur darmstadt");
 	exit(0);
-	parse(":ee Elektroinstallateur darmstadt");
+	parse(":ee Elektroinstallateur darmstadt", false, false);
 	//	cchar* query="kopfsalat";
 	cchar *query = "Elektroinstallateur darmstadt";
 //	cchar* query="Kaufmann";
@@ -1964,18 +1964,22 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	fixCurrent();
 	germanLabels=1;
-	if (!eq(get(1)->name,"Universum"))load();
-	testTopics();
+    importAmazon();
+//	if (!eq(get(1)->name,"Universum"))load();
+//	testTopics();
 //	importJson("query.json");
 //	importN3("quantum.n3");
 //	save();
 //	char* name="2017-09-27T07:28:28Z";
 //	auto a = std::get_time(string(name), "YYYY-MM-DD-HH-MM-SS");
 //	p(a);
+//    handle("/json/183");
+//    parse("183.Hauptstadt", false);
 //	allowWipe();
 //	fixCurrent();
 //	checkWordnet();
-	entity_extraction("25474");
+	importAllDE();
+//	entity_extraction("25474");
 //	importWikiData();
 //	checkWikiData();
 	int i = 0;
@@ -1997,7 +2001,7 @@ void testBrandNewStuff() {
 //	importAll();
 //	importWikiData();
 //	importGeoDB();
-	show(parse(":predicates Germany"));
+	show(parse(":predicates Germany", false, false));
 //	fixCurrent();
 //	testWordnet();
 ////////////////////////////////////////////////////////////////////

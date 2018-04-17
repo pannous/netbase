@@ -2081,6 +2081,8 @@ NodeVector parseProperties(char *data) {
 		all = findProperties(thing, property);
 	}
 	if (all.size() == 0) all = findProperties(thing, property, true);// INVERSE!!
+	if (all.size() == 0) all = findProperties(thing, concat(property," of"), true);// INVERSE!!
+	if (all.size() == 0) all = findProperties(thing, concat(property," von"), true);// INVERSE!!
 	return all;
 }
 
