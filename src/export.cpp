@@ -4,7 +4,7 @@
 #include "util.hpp"
 #include <sys/stat.h> // mkdir
 
-
+#undef assert
 bool save() {
 	Context *c = getContext(current_context);
 	mkdir((path + "data").c_str(), 0777);

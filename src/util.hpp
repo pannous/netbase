@@ -17,6 +17,7 @@ extern void flush();
 
 
 //#define check(assertion) assert(assertion,#assertion);
+#undef assert
 bool assert(bool test, const char* what);
 template<typename T> void empty(vector<T,std::allocator<T> >& v);
 #define cchar const char

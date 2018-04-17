@@ -737,14 +737,17 @@ void importXml(const char *file, char *nameField, const char *ignoredFields, con
 void fixValues(char **values, int size) {
 	for (int i = 0; i < size; i++) {
 		char *x = values[i];
-		if (x[0] == '"') x++;
+		if (x[0] == '"'){x[0]=0;x++;}
 		int l = len(x);
+		if(!l){values[i] = 0;continue;}
 		if (x[l - 1] == '"') x[l - 1] = 0;
 		values[i] = x;
 	}
 }
 
 N addSubword(char *name, N kind) {
+    if(empty(name))
+        return 0;
 	N old = hasWord(name);
 	if (old) {
 		if (old->statementCount < 3)
@@ -793,7 +796,7 @@ int toll = 0;
 N addSubCategories(char *name, N kind) {
 //	char* d=editable(name);
 	int i = len(name);
-	while (i >= 0) {
+	while (i > 0) {
 		i--;
 		if (name[i] == '/') {
 			name[i] = 0;// cut
@@ -841,7 +844,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 	//	char* line=(char*)malloc(1000);// DOESNT WORK WHY !?! not on stack but why?
 	char **values = (char **) malloc(sizeof(char *) * MAX_ROWS);
 	char lastValue[MAX_CHARS_PER_LINE * 2];
-	char *line0 = 0;// nullptr;
+	char *line00 = 0;// nullptr; free malloc'ed editable line
+	char *line0 = 0;// nullptr; pointer to modified entries
 	map<char *, Node *> valueCache;
 	Node *subject = 0;
 	Node *predicate = 0;
@@ -868,8 +872,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 	int size = 0;// per row ~ Hopefully equal to fieldCount
 	while (readFile(file, &line[0])) {
 		fixNewline(line, false);
-//		free(line0); LEAK, why??: object was probably modified after being freed HOW???
-		line0 = editable(line);
+		if(line00)free(line00);// LEAK OR object was probably modified after being freed HOW???
+		line0 = line00 = editable(line);
 		if (!separator) {
 			separator = guessSeparator(editable(line)); // would kill fieldCount
 		}
@@ -2576,11 +2580,11 @@ void importAmazon() {
 
 	struct dirent *entry;
 	auto type = getThe("Amazon product");
-	bool importa=0;
+//	bool importa=0;
 	while ((entry = readdir(dp))) {
-		if(importa)
+//		if(importa)
 		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
-		if(eq(entry->d_name,"de_v3_csv_ce_mp_delta_part3.csv.gz"))importa=1;
+//		if(eq(entry->d_name,"de_v3_csv_ce_mp_delta_part3.csv.gz"))importa=1;
 	}
 	closedir(dp);
 }

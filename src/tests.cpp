@@ -32,7 +32,7 @@ void checkGeo() {
 	if (hasWord("Canillo")) return;
 	else importGeoDB();
 }
-
+#undef assert
 bool assert(bool test, string what) { // bool nix gut
 	printf("----\n");
 	printf("%s", what.data());
@@ -1964,7 +1964,11 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	fixCurrent();
 	germanLabels=1;
+
+//	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe(""));
+//	return;
     importAmazon();
+	return;
 //	if (!eq(get(1)->name,"Universum"))load();
 //	testTopics();
 //	importJson("query.json");

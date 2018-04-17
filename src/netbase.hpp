@@ -629,10 +629,10 @@ static int synsetOffset=100000;//
 // todo: via getenv
 //#define __ECHSE__
 
-#if defined(__APPLE__)
-static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
-static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
-#elif defined(__ECHSE__)
+//#if defined(__APPLE__)
+//static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
+//static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
+#ifdef __ECHSE__
 static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
 static long maxStatements = maxNodes*1;// *10 = crude average of Statements per Node (yago:12!!)
 #else
