@@ -124,7 +124,7 @@
 				8C89F9B21C4EBE0F006B9FCD /* utf8.hpp */,
 			);
 			name = src;
-			path = ../../cpp/netbase/src;
+			path = src;
 			sourceTree = "<group>";
 		};
 		8C5344B819A5E64C00128D03 = {
