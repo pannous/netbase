@@ -2403,7 +2403,7 @@ Node *getThe(Node *abstract, Node *type) {// first instance, TODO
 	if (getRelation(abstract->name)) // not here! doch
 		return getRelation(abstract->name);
 	if (type < node_root or type > &node_root[maxNodes]) type = 0;// default parameter hickup through JNA
-	if (abstract->value.node and checkNode(abstract->value.node, 0, false, false, false) and
+	if (abstract->value.node and checkNode(abstract->value.node, 0, false, true, false) and
 	    eq(abstract->value.node->name, abstract->name))
 		if (type == 0 or type == Any or type->id == abstract->value.node->kind)
 			return abstract->value.node; // abstract->value.node as cache for THE instance

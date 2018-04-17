@@ -19,7 +19,8 @@
 #include "relations.hpp"
 #include "webserver.hpp" // int handle(char* q,int conn) TEST
 
-// g++ -DNO_READLINE or compile with -lreadline !
+// sudo  apt-get install libreadline-dev
+// g++ -DNO_READLINE or compile with -lreadline  !
 #ifndef NO_READLINE
 #define USE_READLINE
 #include <readline/history.h> // libreadline-dev
