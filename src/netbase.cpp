@@ -635,7 +635,23 @@ Node *add(const char *key, const char *nodeName) {
 }
 
 
-void checkOutOfMemory();
+void checkOutOfMemory() {
+	if (maxNodes>100*million&& context->lastNode <wikidata_limit && count_nodes_down){
+		p("lastNode <= wikidata limit. MEMORY FULL!!!");
+		out_of_memory=true;
+	}
+	if (context->lastNode <=0) {
+		p("lastNode <=0 MEMORY FULL!!!");
+		out_of_memory=true;
+	}
+	if (context->lastNode >= maxNodes - propertySlots) {
+		pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
+		p("MEMORY FULL!!!");
+		out_of_memory=true;
+//					exit(1);
+	}
+}
+
 
 Node *add(const char *nodeName, int kind, int contextId) { //=node =current_context
 	if (kind < -propertySlots or kind > maxNodes)
@@ -672,22 +688,6 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	return node;
 }
 
-void checkOutOfMemory() {
-	if (maxNodes>100*million&& context->lastNode <wikidata_limit && count_nodes_down){
-		p("lastNode <= wikidata limit. MEMORY FULL!!!");
-		out_of_memory=true;
-	}
-	if (context->lastNode <=0) {
-		p("lastNode <=0 MEMORY FULL!!!");
-		out_of_memory=true;
-	}
-	if (context->lastNode >= maxNodes - propertySlots) {
-		pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
-		p("MEMORY FULL!!!");
-		out_of_memory=true;
-//					exit(1);
-	}
-}
 
 Node *add_force(int contextId, int id, const char *nodeName, int kind) {
 	Context *context = getContext(contextId);

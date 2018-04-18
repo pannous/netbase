@@ -2582,11 +2582,8 @@ void importAmazon() {
 
 	struct dirent *entry;
 	auto type = getThe("Amazon product");
-//	bool importa=0;
 	while ((entry = readdir(dp))) {
-//		if(importa)
 		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
-//		if(eq(entry->d_name,"de_v3_csv_ce_mp_delta_part3.csv.gz"))importa=1;
 	}
 	closedir(dp);
 }
