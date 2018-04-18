@@ -45,7 +45,7 @@ int *freebaseKey_root = 0;
 int defaultLookupLimit = 1000;
 int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
 bool count_nodes_down= false;
-bool out_of_memory= true;
+bool out_of_memory= false;
 //Node** keyhash_root=0;
 
 #ifdef USE_SEMANTICS

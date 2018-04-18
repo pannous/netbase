@@ -754,15 +754,10 @@ N addSubword(char *name, N kind) {
 			addStatement(old, Type, kind);
 		return old;
 	}
-//	if(!old){
-	if (eq(name, "Kiel "))
-		p("Kiel ");
 	N n = getSingleton(name, kind, false);
 //		addStatement(n, Type, kind);
 	n->kind = kind->id;// DANGER!
-//		return n;
-//	}
-	return 0;
+	return n;
 }
 
 N addSubword(char *name, int words, N kind) {
@@ -791,8 +786,6 @@ N addSubword(char *name, int words, N kind) {
 	return found;
 }
 
-int toll = 0;
-
 N addSubCategories(char *name, N kind) {
 //	char* d=editable(name);
 	int i = len(name);
@@ -803,10 +796,6 @@ N addSubCategories(char *name, N kind) {
 //			char *kat=name+i+1;
 			N label = addSubword(name, kind);
 //			if(label)break;// known
-			if (!label) {
-				toll++;
-				if (toll % 1000 == 0)printf("\ntoll :%d\n", toll);
-			}
 		}
 	}
 	addSubword(name, kind);
