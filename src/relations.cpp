@@ -258,8 +258,8 @@ void initRelationsDE() {
 	Integer = addRelation(_integer, "Integer");
 	Range = addRelation(_range, "Bereich");
 
-	True = addRelation(_true, "Wahr");
-	False = addRelation(_false, "Falsch");// todo
+//	True = addRelation(_true, "Wahr");
+//	False = addRelation(_false, "Falsch");// todo
 
 
 	From = addRelation(_from, "Von");
@@ -272,7 +272,7 @@ void initRelationsDE() {
 
 void initRelations() {
 //  if(testing){p("testing");return;}
-//  p("initRelations");
+//    p("initRelations");
 	context = getContext(current_context);
 	if (context->currentNameSlot == 0)
 		context->currentNameSlot++;// not 0!
@@ -426,8 +426,8 @@ void initRelations() {
 
 	Range = addRelation(_range, "Range");
 
-	True = addRelation(_true, "True");
-	False = addRelation(_false, "False");// todo
+//	True = addRelation(_true, "True");
+//	False = addRelation(_false, "False");// todo
 
 
 	From = addRelation(_from, "From");

@@ -1964,6 +1964,14 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	fixCurrent();
 	germanLabels=1;
+//	load(1);
+//	importGeoDB();
+	const char *includedFields="name";
+	importCsv("Telekom/ee.csv",getThe("Gegenstand"),0,0,includedFields,5);
+	return;;
+	parse("billiger.de");
+	handle("/json/billiger.de");
+	start_server(8080);
 
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe(""));
 //	return;

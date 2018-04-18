@@ -12,6 +12,7 @@ void importAllYago() ;
 void importAmazon();
 void importWordnet();
 void importGeoDB();
+void importTelekom();
 void importNames();
 void importFreebase();
 void importWikiData();

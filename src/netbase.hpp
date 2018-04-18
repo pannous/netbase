@@ -83,7 +83,7 @@ struct Node;
 //class Node;
 typedef union Value {
     // why not just save values+text in 'name' as string??
-
+  int name;// pointer to context->names
   char* text; // wiki abstracts etc
   void* data; // byte[], same as ^^
   //  char* name;
@@ -100,8 +100,9 @@ typedef union Value {
 	Node* node; // THE ONE in abstracts type --- cycle !---
   Statement* statement; // overhead OK!!! 8 bytes on 64bit machines (Statement too long, pointer OK)
 }Value;
-
+//extern Context* context;
 extern "C" const char* getName(int node);
+char* resolveName(int pointer);
 
 // NEVER USE STRUCTS WITHOUT POINTER!!
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
@@ -111,16 +112,20 @@ extern "C"
 typedef struct Node {
 //  class Node{
   public:
-  int id; //implicit -> redundant
+    int id; //implicit -> redundant
+    char* name;
+
 //  long name; // see value for float etc
-  char* name;//(){return getName(id);}
-  int kind; // abstract,node,person,year, m^2   // via first slot? nah
+//    int namePointer;// harder to debug, just adjust if context->nodeNames != context->nodeNames
+//    char* name(){return context->nodeNames[namePointer]}     char* resolveName(int pointer);
+
+    int kind; // abstract,node,person,year, m^2   // via first slot? nah
   //int context; //implicit  | short context_id or int node_id
   //float rank;
   int statementCount; //explicit, can be made implicit and replaced with iterator
   int firstStatement;
-	int lastStatement;// remove
-  Value value; // for statements, numbers WASTE!!! remove
+  int lastStatement;// remove
+  Value value; // for statements, numbers WASTE!!! remove / merge with name!
 //	bool operator<(const Node *rhs) const {
 //		return statementCount > rhs->statementCount;
 //	}

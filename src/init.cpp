@@ -289,26 +289,25 @@ extern "C" void initSharedMemory(bool relations) {
 //	p("node_root:");
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
 //	p("statement_root:");
-	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root,
-	                                            ((char *) node_root) + node_size);
+	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root, ((char *) node_root) + node_size);
 //	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 	//	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
 
 //  	p("context_root:");
-	context_root = (Context *) share_memory(key + 4, context_size, context_root,
-	                                        ((char *) statement_root) + statement_size);
-
+	context_root = (Context *) share_memory(key + 4, context_size, context_root, ((char *) statement_root) + statement_size);
 	abstracts = (Ahash *) (abstract_root); // reuse or reinit
 	extrahash = (Ahash *) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts = (Context *) context_root;
 	context = getContext(current_context);
 	checkRootContext();
 	if (relations) {
-		initRelations();
+		p(get(_clazz));
+//		if(!checkNode(-9))
+			initRelations();
 		if (context->lastNode < 0)
-			context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
+			context->lastNode = count_nodes_down? (int)maxNodes - propertySlots : wikidata_limit ;
 	}
 }
 
@@ -398,7 +397,7 @@ void load(bool force) {
 	fclose(fp);
 
 	fp = open_binary("statements.bin");
-	fread(c->statements, sizeof(Statement), c->statementCount, fp); //c->statementCount maxStatements
+	fread(c->statements, sizeof(Statement), c->statementCount, fp); // maxStatements
 	fclose(fp);
 
 	fp = open_binary("nodes.bin");

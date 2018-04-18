@@ -592,7 +592,7 @@ int splitStringC(char *line, char **tokens, char separator) {// leeeeak!
 	bool inQuote = false;
 	char *lastgood = line;
 	int j=0;
-	while (j++ < MAX_ROWS) tokens[j]=0;// clear old junk!
+	if(tokens) while (j++ < MAX_ROWS) tokens[j]=0;// clear old junk!
 	while (i < len and row < MAX_ROWS) {
 		char c = line[i];
 		if (c == '"')inQuote = !inQuote;

@@ -1002,8 +1002,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			break;
 		}
 	}
-	p("import csv ok ... lines imported:");
-	p(linecount);
+	pf("import csv ok ... lines imported: %d, nodecount: %d",linecount,nodeCount());
 	autoIds = tmp_autoIds;
 }
 
@@ -2552,6 +2551,7 @@ int listdir(const char *path) {
 
 
 void importAmazon() {
+	doDissectAbstracts=0;
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
 
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow)
@@ -2692,6 +2692,8 @@ void importWikiData() {
 
 void import(const char *type, const char *filename) {
 	importing = true;
+	autoIds= false;
+
 	//  clock_t start;
 	//  double diff;
 	// start = clock();
@@ -2772,6 +2774,17 @@ void import(const char *type, const char *filename) {
 	//  importStatements();
 }
 
+void importTelekom(){
+	importCsv("Telekom/used_keywords.csv");
+	importCsv("Telekom/whole_data.csv");
+	importCsv("Telekom/Telekom_Entitaet.csv");
+	importCsv("Telekom/Telekom-Produkt.csv");
+	importCsv("Telekom/Telekom_Produkt.csv");
+	importCsv("Telekom/manual_entities.csv");
+	importCsv("Telekom/ee.csv",getThe("Gegenstand"),0,0,"name",5);
+}
+
+
 void importAllDE() {
 	importing = true;
 	germanLabels = true;
@@ -2788,18 +2801,13 @@ void importAllDE() {
 		importWikiData();
 //	importNames();
 	importGeoDB();
-	importCsv("Telekom/used_keywords.csv");
-	importCsv("Telekom/whole_data.csv");
-	importCsv("Telekom/Telekom_Entitaet.csv");
-	importCsv("Telekom/Telekom-Produkt.csv");
-	importCsv("Telekom/Telekom_Produkt.csv");
-	importCsv("Telekom/manual_entities.csv");
+	importTelekom();
 
 	replay();
 //	importLabels("labels.csv");// todo: why again?
-	importBilliger();
+//	importBilliger();
 	buildSeoIndex();
-	importAmazon();
+//	importAmazon();
 	//importEntities();
 	//importImagesDE(); deprecated
 	importing = false;

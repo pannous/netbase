@@ -55,7 +55,7 @@ bool useSemantics = false;
 #endif
 
 bool doDissectAbstracts = useSemantics;// ?
-bool storeTypeExplicitly = true;
+bool storeTypeExplicitly = false;
 bool exitOnFailure = true;
 bool autoIds = false;
 bool testing = false;// ;true
@@ -202,7 +202,7 @@ Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool
 		N ab = get(ah->abstract);
 		if (ab == a)
 			return ah; //schon da
-		if (ab and eq(ab->name, name, true)) {
+		if (ab and checkNode(ab,0,0,1) and eq(ab->name, name, true)) {
 			if (overwrite) {
 //				if(ah->abstract>-propertySlots and ah->abstract<maxNodes-propertySlots)
 //					get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
@@ -214,7 +214,7 @@ Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool
 	}
 
 	N ab = ah and ah->abstract ? get(ah->abstract) : 0;
-	if (ab) { //schon was drin
+	if (ab && checkNode(ab,0, false,true)) { //schon was drin
 		if (ab == a)
 			return ah; //schon da
 		if (ab and eq(ab->name, name, true)) {
@@ -228,7 +228,8 @@ Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool
 		ah->next = context->extrahashNr++;
 		ah = getAhash(ah->next);
 	}
-	if (!ah or !checkHash(ah))return 0;
+	if (!ah or !checkHash(ah))
+		return 0;
 	ah->abstract = a->id;
 	return ah;
 }
@@ -383,7 +384,7 @@ char *name(Node *node) {
 
 Context *getContext(int contextId) {
 	if (!multipleContexts) contextId = wordnet; // just one context
-	Context *context = &(contexts[contextId]);
+	context = &(contexts[contextId]);
 	if (context->nodes != null) {// and context->id == contextId) {
 		//		printf("Found context %d: %s\n",context->id,context->name);
 		//		flush();
@@ -531,7 +532,8 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 //	bool report=true;
 	if (node == 0) {
 		bad();
-		if (debug) printf("^"); // p("null node");
+		if (debug)
+			printf("^"); // p("null node");
 		//		p(nodeId);
 		return false;
 	}
@@ -682,7 +684,7 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	if (abstract)
 		addStatement(abstract, Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly and kind > 105) // might cause loop?
-		addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
+		addStatement4(contextId, node->id, _Type, kind, false); // store type explicitly!
 	//	  why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
 	// kosten : Speicher*2
 	return node;
@@ -1329,6 +1331,11 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 	if (found and found->abstract > 0 and (first = get(found->abstract))) {
 		//		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
 		//			return found->abstract;
+		if(first->name > &context->nodeNames[context->currentNameSlot] || first->name<=context->nodeNames){
+//			p("BAD NAME");
+			bad(); // todo
+			return 0;
+		}
 		if (eq(first->name, thingy, true))    // tolower
 			return first;
 		if (seo and first->name) {
@@ -1363,6 +1370,7 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
 			N a = get(found->abstract);
+//			if(!checkNode(a,0,0,1))continue;
 			if (eq(a->name, thingy, true, true))            //teuer? n��, if 1.letter differs
 				return a;
 			if (seo and a->name) {
@@ -2711,6 +2719,7 @@ void buildSeoIndex() {
 	debug = false;
 //	addSeo(get(10506175));
 //	return;
+	N bad=getThe("Amazon product");
 	for (int i = 1; i < maxNodes; i++) {
 		if (i % 10000 == 0) {
 			pf("%d\r", i);
@@ -2718,6 +2727,7 @@ void buildSeoIndex() {
 		}
 		Node *n = get(i);
 		if (!checkNode(n, i, 0, 1, debug) or !n->name)continue;
+		if(n->kind==bad->kind)continue;
 		addSeo(n);
 		stripName(n);
 		//			2/2-Wege Direktgesteuertes Ventil 184684 230 V/AC G 1/2 Muffe Nennweite 8 mm Gehäusematerial Messing Dichtungsma HOW??
@@ -2782,13 +2792,18 @@ void fixICD10() {
 }
 
 void fixCurrent() {
+//	importTelekom();
+//	replay();
+	context->nodeCount=context->lastNode;
+//	importBilliger();
+	buildSeoIndex();
 //	fixICD10();
 //	context->lastNode =50000000;// as of 11/2017  vs  https://www.wikidata.org/wiki/Q40000000
 //	context->lastNode = (int) maxNodes / 2;
 //	fixPostleitzahlen();
 //	fixInstances();
 //	fixBrokenStatement();
-	context->lastNode=wikidata_limit;// fill all empty slots!
+//	context->lastNode=wikidata_limit;// fill all empty slots!
 //	context->lastNode=1;// RADICAL: fill all empty slots!
 //	buildSeoIndex();
 //	importRemaining();
@@ -2936,7 +2951,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	if (quit) exit(0);
-
+	context = getContext();
 	//	testBrandNewStuff();
 	console();
 	//  } catch (std::exception const& ex) {
