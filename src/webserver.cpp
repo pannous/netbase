@@ -1025,7 +1025,7 @@ int Get_Request(int conn, struct ReqInfo *reqinfo) {
 		if (rval < 0) {
 			Error_Quit("Error calling select() in get_request()");
 		} else if (rval == 0) {
-			p(" input not ready after timeout ");
+//			p(" input not ready after timeout "); seems non-severe? happened after 2017 why??
 			return -1;
 		} else {
 			/* We have an input line waiting, so retrieve it */
