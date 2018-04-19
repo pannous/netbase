@@ -867,7 +867,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			separator = guessSeparator(editable(line)); // would kill fieldCount
 		}
 		size = splitStringC(line0, values, separator);
-		if (linecount == 0 && size > 1) {
+		if (linecount == 0 && size >= 1) {
 			fieldCount = size;
 			nameRowNr = getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
