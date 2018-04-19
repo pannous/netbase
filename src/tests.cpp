@@ -1966,8 +1966,10 @@ void testBrandNewStuff() {
 	germanLabels=1;
 //	load(1);
 //	importGeoDB();
-	const char *includedFields="name";
-	importCsv("Telekom/ee.csv",getThe("Gegenstand"),0,0,includedFields,5);
+//	importTelekom();
+//	import("billiger");
+	auto ok=startsWith(":server","debug");
+	p(ok);
 	return;;
 	parse("billiger.de");
 	handle("/json/billiger.de");

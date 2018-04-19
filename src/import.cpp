@@ -1307,7 +1307,8 @@ const char *fixFreebaseName(char *key) {
 	for (int i = l - 1; i > 0; --i)
 		if (key[i] == '.' and key[i - 1] > '9') {// no numbers!
 			key[i] = 0;
-			if (!eq(&key[i + 1], "topic")) return &key[i + 1];
+			if (!eq(&key[i + 1], "topic"))
+				return &key[i + 1];
 		} else if (key[i] == '#') return &key[i + 1];
 	return key;
 }
@@ -2531,7 +2532,7 @@ void importGeoDB() {
  */
 void importBilliger() {
 	//	importCsv("billiger.de/TOI_Suggest_Export_Categories.csv",getThe("billiger.de category")); besser da:
-	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz", getThe("billiger.de product"));
+	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv", getThe("billiger.de product"));
 //	importCsv("billiger.de/TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 //	importCsv("billiger.de/20170120-TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 }
@@ -2775,13 +2776,13 @@ void import(const char *type, const char *filename) {
 }
 
 void importTelekom(){
-	importCsv("Telekom/used_keywords.csv");
+//	importCsv("Telekom/used_keywords.csv");// same:
+	importCsv("Telekom/entities.ee.csv",getThe("Telekom-Entity"),0,0,"name,topic",0);
 	importCsv("Telekom/whole_data.csv");
 	importCsv("Telekom/Telekom_Entitaet.csv");
 	importCsv("Telekom/Telekom-Produkt.csv");
 	importCsv("Telekom/Telekom_Produkt.csv");
 	importCsv("Telekom/manual_entities.csv");
-	importCsv("Telekom/ee.csv",getThe("Gegenstand"),0,0,"name",5);
 }
 
 
