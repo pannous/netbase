@@ -103,6 +103,7 @@ typedef union Value {
 //extern Context* context;
 extern "C" const char* getName(int node);
 char* resolveName(int pointer);
+int nameOffset(char* name);
 
 // NEVER USE STRUCTS WITHOUT POINTER!!
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
@@ -111,9 +112,23 @@ char* resolveName(int pointer);
 extern "C"
 typedef struct Node {
 //  class Node{
+
+
+
   public:
     int id; //implicit -> redundant
-    char* name;
+//    char* name;
+
+    class {
+        int value;
+    public:
+        int & operator = (const int &i) { return value = i; }
+        int & operator = (char* n) { return value = nameOffset(n); }
+//        int & operator = (const char* n) { return value = nameOffset(n); }
+        operator char* () const { return resolveName(value); }
+//        operator string () const { return string(resolveName(value)); }
+    } name;
+
 
 //  long name; // see value for float etc
 //    int namePointer;// harder to debug, just adjust if context->nodeNames != context->nodeNames

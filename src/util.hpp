@@ -140,4 +140,5 @@ int len(char* c);
 int len(cchar* c);
 int wordCount(char* c);
 string generateSEOUrl(string input);
+string generateSEOUrl(char* input) ;
 void error(string err);

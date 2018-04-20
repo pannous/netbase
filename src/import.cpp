@@ -2804,11 +2804,11 @@ void importAllDE() {
 	importGeoDB();
 	importTelekom();
 
-	replay();
 //	importLabels("labels.csv");// todo: why again?
-//	importBilliger();
+	replay();
+	importBilliger();
 	buildSeoIndex();
-//	importAmazon();
+	importAmazon();
 	//importEntities();
 	//importImagesDE(); deprecated
 	importing = false;
@@ -2818,12 +2818,11 @@ void importRemaining() {
 	importing = true;
 	germanLabels = true;
 	autoIds = false;
-	importCsv("Telekom_Entitaet.csv");
-	importCsv("Telekom-Produkt.csv");
-	importCsv("whole_data.csv");
-	importAmazon();
+	importCsv("Telekom/Telekom_Produkt.csv");
+	importCsv("Telekom/manual_entities.csv");
 	importBilliger();
 	buildSeoIndex();
+	importAmazon();
 	importing = false;
 }
 

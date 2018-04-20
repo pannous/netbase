@@ -421,7 +421,7 @@ void showContext(Context *cp) {
 	if (!cp)cp = getContext(current_context);
 	Context c = *cp;
 	printf("Context#%d name:%s\n", c.id, c.name);
-	printf("Pointer nodes:%p\t\tstatements:%p\tchars:%p\n", c.nodes, c.statements, c.nodeNames);
+	printf("Pointer nodes:%p\t\tstatements:%p\tchars:%p\n", c.nodes - propertySlots, c.statements, c.nodeNames);
 	printf("Current nodes:%d\t\tstatements:%d\t\tchars:%ld\n", c.nodeCount, c.statementCount, c.currentNameSlot);
 	printf("Maximum nodes:%ld\t\tstatements:%ld\t\tchars:%ld\n", maxNodes, maxStatements, maxChars);
 	printf("Usage  nodes:%.2f%%\t\t\tstatements:%.2f%%\t\tchars:%.2f%%\n",
@@ -1238,7 +1238,7 @@ Node *getNew(const char *thing, Node *type) {
 
 Node *getSingleton(const char *thing, Node *type, bool addType/*true*/) {
 	N there = hasWord(thing);
-	if (!there) {
+		if (!there) {
 		there = add(thing, _singleton);
 		insertAbstractHash(there);
 		if (type) {
@@ -1610,6 +1610,17 @@ extern "C" const char *getName(int node) {
 	if (!checkNode(node, false, true))return "<ERROR>";//_IN_GET_NAME>";//
 	return get(node)->name;
 }
+
+int nameOffset(char* name){
+	return (int) (name-context->nodeNames);
+}
+
+char* resolveName(int pointer){
+	if(pointer<=0 || pointer >= context->currentNameSlot)
+		return Error->name;
+	return &context->nodeNames[pointer];
+}
+
 
 char *getLabel(Node *n) {
 	Context *context = getContext(current_context);
@@ -2694,7 +2705,7 @@ void addSeo(Node *n0) {
 		n = getAbstract(n->name);
 	if (!checkNode(n, 0, 0, 1, 0) or len(n->name) < 2)return;
 	string see = generateSEOUrl(n->name);
-	if (see == n->name)return;
+	if (see.data() == n->name)return;
 	cchar *seo = see.data();
 	N old = hasWord(seo, true);
 	if (old) {

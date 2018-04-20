@@ -1968,7 +1968,7 @@ void testBrandNewStuff() {
 //	importGeoDB();
 //	importTelekom();
 //	import("billiger");
-	import("Telekom/Telekom-Produkt.csv");
+	importRemaining();
 	auto ok=startsWith(":server","debug");
 	p(ok);
 	return;;

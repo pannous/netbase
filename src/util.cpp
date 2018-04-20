@@ -1034,7 +1034,11 @@ bool replaceAll(std::string &str, const std::string &from, const std::string &to
 	str.replace(start_pos, from.length(), to);
 	return replaceAll(str, from, to);
 }
-
+string generateSEOUrl(char* input) {
+	auto s=string(input);
+	auto ok=generateSEOUrl(s);
+	return ok;
+}
 string generateSEOUrl(string input) {
 //	if (!input)return "";
 	if (input == ("")) {
