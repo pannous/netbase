@@ -11,7 +11,7 @@ def ran():
 url="http://localhost:8080/ee/"
 while 1:
 	# word=ran()+" "+ran()+" "+ran()
-	word=ran()+"+"+ran()+"+"+ran()
+	word=ran()+ran()+"+"+ran()
 	print(word)
-	curl(url+urlencode({'q':word}))
+	# curl(url+urlencode({'q':word}))
 	# curl(url+parse.quote(word))

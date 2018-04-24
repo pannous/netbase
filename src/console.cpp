@@ -568,7 +568,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return OK;
 	}
 	if (startsWith(data, ":replay")) {
-		replay();
+		replay("logs/replay.log");
 		return OK;
 	}
 	if (startsWith(data, ":new")) {

@@ -2804,7 +2804,7 @@ void importAllDE() {
 	importGeoDB();
 	importTelekom();
 
-	replay();
+	replay("logs/replay.log");
 //	importLabels("labels.csv");// todo: why again?
 //	importBilliger();
 	buildSeoIndex();

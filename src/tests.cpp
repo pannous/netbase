@@ -1968,10 +1968,11 @@ void testBrandNewStuff() {
 //	importGeoDB();
 //	importTelekom();
 //	import("billiger");
+	replay("chaos-monkey.py.log");
+	return;
 	import("Telekom/Telekom-Produkt.csv");
 	auto ok=startsWith(":server","debug");
 	p(ok);
-	return;;
 	parse("billiger.de");
 	handle("/json/billiger.de");
 	start_server(8080);

@@ -2652,17 +2652,18 @@ int test2() {
 	return 12345;
 }        // RUBY/ JNA !!
 
-void replay() {
+void replay(const char *file) {
 	char *line = (char *) malloc(MAX_CHARS_PER_LINE);
 //	while(readFile("logs/query.log", line)){
 //	while(readFile("logs/commands.log", line)){
-	while (readFile("logs/replay.log", line)) {
+	while (readFile(file, line)) {
 		char *data = line;
 		if (data[strlen(data) - 1] == '\n')data[strlen(data) - 1] = 0;
 		if (data[strlen(data) - 1] == '\r')data[strlen(data) - 1] = 0;
 		if (contains(line, ":del"))parse(line, false, false);
-		if (contains(line, ":learn"))parse(line, false, false);
-		if (contains(line, ":label"))parse(line, false, false);
+		else if (contains(line, ":learn"))parse(line, false, false);
+		else if (contains(line, ":label"))parse(line, false, false);
+		else handle(concat("/ee/",line));// chaos monkey
 	}
 }
 

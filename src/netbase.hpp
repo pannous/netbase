@@ -587,7 +587,7 @@ void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
-void replay();
+void replay(const char *file);
 //extern "C" C-linkage specified, but returns user-defined type 'NodeVector' (aka 'vector<Node *>') which is incompatible with C
 NodeVector parse(const char *data, bool safeMode, bool console);// and act -> extern "C" execute
 void fixCurrent();

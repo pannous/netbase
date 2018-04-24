@@ -1828,8 +1828,10 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 //		enqueued[current->id+propertySlots]=true;
 //		if(all.size()>resultLimit)break;
 		if (!current->name or current->name[0] < 'A')continue;//?
-		if (stopAtGoodWiki(current))
-			return current;
+		if (stopAtGoodWiki(current)){
+			furthest=current;
+			break; // free() ..
+		}
 		if (filterWikiType(current->id))continue;
 		if (startsWith(current->name, "http"))continue;
 
@@ -2392,7 +2394,7 @@ N getTopic(N node) {
 //		return getType(node);
 	N t = getProperty(node, "topic");
 //	if(!t)t=getProperty(node, "Kategorie");
-	if (checkNode(t) && !eq(t->name,node->name))return t;
+	if (t && checkNode(t) && !eq(t->name,node->name))return t;
 	return getFurthest(node, topicFilter);
 }
 

@@ -437,16 +437,16 @@ int handle(cchar *q0, int conn) {
 			if (ty == Internal)continue;
 			if (!t)t = ty;
 			if (t == node)t = ty;
-			if (t != Entity and checkNode(t, -1, false, true)) {
+			if (t != Entity and t and checkNode(t, -1, false, true)) {
 				got_topic = true;
 				Writeline(conn, ",\n\t \"topicid\":" + itoa(t->id));
 				Writeline(conn, ", \"topic\":\"" + string(t->name) + "\"");
 			}
-			if (c != Entity && checkNode(c, -1, false, true) and c != t) {
+			if (c != Entity and checkNode(c, -1, false, true) and c != t) {
 				Writeline(conn, ",\n\t \"classid\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(c->name) + "\"");
 			}
-			if (checkNode(ty, -1, false, true) and c != ty and ty != t) {
+			if (ty and checkNode(ty, -1, false, true) and c != ty and ty != t) {
 				Writeline(conn, ",\n\t \"typeid\":" + itoa(ty->id));
 				Writeline(conn, ", \"type\":\"" + string(ty->name) + "\"");
 			}
