@@ -287,15 +287,18 @@ int handle(cchar *q0, int conn) {
 		q = q + 4;
 	}
 //	bool sort=false;
+	bool entities= false;
 	if (startsWith(q, "ee/") or startsWith(q, "ee ")) {
 		q[2] = ' ';
-//		q = q + 3;// KEEP for parse command!
+		q = q + 3;// KEEP for parse command!
 		get_topic = true;
+		entities = true;
 	}
 	if (startsWith(q, "entities/")) {
 		q[8] = ' ';
-//		q = q + 9;// KEEP for parse command!
+		q = q + 9;// KEEP for parse command!
 		get_topic = true;
+		entities = true;
 //		verbosity=longer;
 	}
 	if (startsWith(q, "?query=")) {
@@ -322,11 +325,10 @@ int handle(cchar *q0, int conn) {
 		showExcludes = true;
 	}
 	bool safeMode = true;
-	if (startsWith(q, "query/")) {
-		q = q + 6;
-		safeMode = false;// RLLY
-	}
-
+//	if (startsWith(q, "query/")) { // AND ...
+//		q = q + 6;
+//		safeMode = false;// RLLY?
+//	}
 //	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
 //	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
 //	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
@@ -334,9 +336,15 @@ int handle(cchar *q0, int conn) {
 
 	p(q);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//
-	NodeVector all = parse(q, safeMode, false); // <<<<<<<< HANDLE QUERY WITH NETBASE!
-	//
+	NodeVector all;
+	if(!safeMode) // <<<<<<<< HANDLE QUERY WITH NETBASE!
+		all = parse(q, safeMode, false);
+	else{
+		if(entities)
+			all= findEntites(q);
+		else
+			all = wrap(get(q));;
+	}
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	if (contains(q, " limit ")) { strstr(q, " limit ")[0] = 0; }

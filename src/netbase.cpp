@@ -2416,7 +2416,7 @@ Statement *learn(const char *sentence0) {
 //69 (Q30203): year
 //69 (Q713048): natural number
 //void cleanAbstracts(Context* c){
-Node *getThe(Node *abstract, Node *type) {// first instance, TODO
+Node *getThe(Node *abstract, Node *type,bool create /*true!*/) {// first instance, TODO
 	if (!abstract or !abstract->name) return 0;
 	if (abstract->kind == _singleton)return abstract;
 	if (abstract->kind == _entity)return abstract;// hack! first _entity wikidata is best? see importWikiLabels
@@ -2440,10 +2440,12 @@ Node *getThe(Node *abstract, Node *type) {// first instance, TODO
 			abstract->value.node = best;
 			return best;
 		}
-		N first = add(abstract->name, 0); // NO SUCH!! CREATE!?
-		if (!atoi(abstract->name))
-			abstract->value.node = first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
-		return first;
+		if(create){
+			N first = add(abstract->name, 0); // NO SUCH!! CREATE!?
+			if (!atoi(abstract->name))
+				abstract->value.node = first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
+			return first;
+		}return abstract; // or 0 !
 	}
 	if (type->id == _abstract or type->id == _singleton)
 		return getAbstract(abstract->name); // safe

@@ -304,7 +304,7 @@ extern "C" void initSharedMemory(bool relations) {
 	checkRootContext();
 	if (relations) {
 		p(get(_clazz));
-//		if(!checkNode(-9))
+		if(!checkNode(-9))
 			initRelations();
 		if (context->lastNode < 0)
 			context->lastNode = count_nodes_down? (int)maxNodes - propertySlots : wikidata_limit ;

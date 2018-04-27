@@ -778,21 +778,21 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 //	if(autoIds and i)return wrap(get(i));
-	if (i == 0 and !hasWord(data))return OK;// don't create / dissect here!
-	if (forbidAutoIds and !hasWord(data))return OK;
+	if ((i == 0 or forbidAutoIds) and !hasWord(data))
+		return OK;// don't create / dissect here!
 	Node *a = get(data);
 //	if (!isAbstract(a)) {
-		if (i == 0 or !hasWord(a->name)) {
-			//		a->kind=abstractId;// not for singletons AMAZON!
-			insertAbstractHash(a, true);// fix bug! can't be!?
-		} else
-			addStatement(getAbstract(a), Instance, a, true, true);
+//		if (i == 0 or !hasWord(a->name)) {
+//			//		a->kind=abstractId;// not for singletons AMAZON!
+//			insertAbstractHash(a, true);// fix bug! can't be!?
+//		} else
+//			addStatement(getAbstract(a), Instance, a, true, true);
 //	}
 	dissectWord(a, true);  //	if (i == 0) instanceFilter(a), true);
 	//    findWord(context->id, data);
 	if (isAbstract(a) and i == 0) {
 		lookupLimit = resultLimit;
-		N the = getThe(a);
+		N the = getThe(a,0, false);// DONT create!
 		show(the);
 		NV all = instanceFilter(a);
 //		all.push_back(the);

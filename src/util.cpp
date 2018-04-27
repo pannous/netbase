@@ -641,7 +641,13 @@ short normChar(char c) {// 0..36 damn ;)
 	if (c == '\n')return 0;
 	if (c >= '0' and c <= '9') return c - '0' + 26;
 	if (c >= 'a' and c <= 'z') return c - 'a' + 1;// NOT 0!!!
-	if (c >= 'A' and c <= 'Z') return c - 'A' + 1;
+	if (c == -92) return -124;// ä == Ä
+	if (c == -74) return -106;// ö
+	if (c == -68) return -100;// ü
+
+//	if (c == -124) return -92;// ä == Ä
+//	if (c == -106) return -74;// ö
+//	if (c == -100) return -68;// ü
 	if (ignoreNonLatin)
 		return 0;// no chinese etc! why not? (small) problem: €==$ Жабка == Λάδων etc
 	switch (c) {
@@ -673,7 +679,8 @@ short normChar(char c) {// 0..36 damn ;)
 // ./clear-shared-memory.sh After changing anything here!!
 unsigned int wordhash(const char *str) { // unsigned
 	if (!str) return 0;
-	unsigned int c, hash = 5381, hash2 = 7; // long
+	char c;
+	unsigned int hash = 5381, hash2 = 7; // long
 	while ((c = *str++)) {
 		hash2 = hash2 * 31 + (short) (c);
 		int next = normChar(c);//a_b-c==AbC

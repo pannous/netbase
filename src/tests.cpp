@@ -1967,10 +1967,18 @@ void testBrandNewStuff() {
 //	p(getEntity("Verkehrsausscheidungsziffer"));
 //	p(handle("/ee/Verkehrsausscheidungsziffer"));
 //	parse("Portugal.typ", false);
-	check(hasWord("Ölfilter"));
-	showNodes(parse("Ölfilter"));
-	check(hasWord("ölfilter"));
-	showNodes(parse("ölfilter"));
+//	handle("/ee/Ölfilter");
+//	handle("/ee/ölfilter");
+//	showNodes(parse("Ölfilter"));
+//	check(wordhash("Ölfilter")==wordhash("ölfilter"))
+//	check(wordhash("Ä")==wordhash("ä"))
+//	check(wordhash("ü")==wordhash("Ü"))
+//	check(hasWord("Ölfilter"));
+//	check(hasWord("ölfilter"));
+//	check(hasWord("ölfilter"));
+//	showNodes(parse("ölfilter"));
+//	parse(":ee Ölfilter");
+	parse(":ee ölfilter");
 //	parse(":find Ölfilter");
 //	parse(":topic Angela Merkel", false);
 //	parse(":del S6575664");

@@ -467,7 +467,7 @@ unsigned int hash(const char *str); //unsigned
 //unsigned long hash(const char *str); //unsigned
 //Node* getThe(const char* word, Node* type = 0,bool dissect=true);
 //Node* getThe(string thing, Node* type=0,bool dissect=true);
-Node* getThe(Node* abstract, Node* type=0);
+Node* getThe(Node* abstract, Node* type=0, bool create= true);
 extern "C" Node* getThe(const char* word, Node* type = 0);//,bool dissect=false);
 Node* getThe(string thing, Node* type=0);//,bool dissect=false);
 extern "C" Node* getNew(const char* thing, Node* type=0);//, bool dissect=false);
