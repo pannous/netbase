@@ -915,13 +915,13 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 							name[i] = 0;
 							break;
 						}
-				if (cut_billiger) {
-					addSubword(name, 1, type);
-					addSubword(name, 2, type);
-				}
+//				if (cut_billiger) {
+//					addSubword(name, 1, type);
+//					addSubword(name, 2, type);
+//				}
 				addSubword(name, 3, type);
 				addSubword(name, 4, type);
-				addSubword(name, 5, type);
+				addSubword(name, type);// full name, ok if exists
 			}
 
 			if (cut_amazon) {
@@ -1800,7 +1800,7 @@ bool dropBadSubject(char *name) {
 	return KEEP;
 }
 
-//dropBadPredicate
+//dropBadPredicate mapping: P238 == -10238   (p == +10000 * -1)
 bool dropBadPredicate(char *name) {
 	if (!name)return DROP;
 	if (eq(name, ""))return DROP;
@@ -1875,6 +1875,7 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P971"))return DROP;// Category:cu:Earth		Kategorie kombiniert die Themen
 	if (eq(name, "P3911"))return DROP;// STW-ID  // 421 statements not worth it
 	if (eq(name, "P2347"))return DROP;// YSO ID
+	if (eq(name,"P3238"))return DROP; //		Verkehrsausscheidungsziffer
 //	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -1898,6 +1899,7 @@ bool dropRedundantPredicate(char *name) {
 bool dropBadObject(char *name) {
 	if (!name)return DROP;
 	if (eq(name, ""))return DROP;
+	if (eq(name, "P3238"))return DROP; // Verkehrsausscheidungsziffer wtf
 
 	//	if(strstr(name,"Q4167410>"))return DROP;// Wikimedia-Begriffsklärungsseite later | Merge with abstract!
 	return KEEP;
@@ -2156,13 +2158,6 @@ bool importFacts(const char *file, const char *predicateName = "population") {
 	fclose(infile); /* Close the file */
 	p("import facts ok");
 	return true;
-}
-
-
-void importEntities() {
-	getSingletons = false;// desaster!
-	getBest = true;
-	importCsv("couchdb/entities.csv");
 }
 
 
@@ -2681,10 +2676,12 @@ void importWikiData() {
 	autoIds = false;
 	importing = true;
     if(!count_nodes_down)context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
-    if(germanLabels)
-	importWikiLabels("wikidata/latest-truthy.nt.de");//
-    importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!
-//	}
+    if(germanLabels){
+		importWikiLabels("wikidata/latest-truthy.nt.de");
+        importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!
+    } else {
+	    importWikiLabels("wikidata/latest-truthy.nt.en");
+    }
 	importN3("wikidata/latest-truthy.nt.facts");
 //	importN3("wikidata/latest-truthy.nt");
 //	importN3("wikifdata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
@@ -2738,8 +2735,6 @@ void import(const char *type, const char *filename) {
 		//		importWikipedia();
 		//	} else if (eq(type, "topic")) {
 		//		importWikipedia();
-	} else if (eq(type, "entities")) {
-		importEntities();
 	} else if (eq(type, "yago")) {
 		if (eq(filename, "yago")) importAllYago();
 		//		else if (contains(filename, "fact"))
@@ -2803,14 +2798,10 @@ void importAllDE() {
 //	importNames();
 	importGeoDB();
 	importTelekom();
-
+	importBilliger();
 	replay("logs/replay.log");
-//	importLabels("labels.csv");// todo: why again?
-//	importBilliger();
 	buildSeoIndex();
-//	importAmazon();
-	//importEntities();
-	//importImagesDE(); deprecated
+	importAmazon();
 	importing = false;
 }
 

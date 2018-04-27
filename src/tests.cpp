@@ -149,7 +149,7 @@ void testBasics() {
 		//  memset(&c->nodes[initialNodeCount], 0, sizeof (Node) *( maxNodes() - initialNodeCount -1)); //calloc!
 		//  memset(c->statements, 0, sizeof (Statement) * maxStatements() - 1);
 		//  memset(0,c->statements,maxStatementsPerNode)
-		deleteNode(a(test));
+		deleteNode(a(test), false);
 		check(a(test)->statementCount == 0);
 	}
 
@@ -853,8 +853,8 @@ void testValueLogic() {
 	//  deleteStatements(get(271156));
 	//  deleteNode(get(421153));
 	//  deleteNode(the(Booot));
-	deleteNode(a(Booot));
-	deleteNode(a("14.32 meter"));
+	deleteNode(a(Booot), false);
+	deleteNode(a("14.32 meter"), false);
 	ein(Booot);
 	check(eq(Booot->name, "Booot"));
 	NodeVector alle = allInstances(Booot);
@@ -988,8 +988,8 @@ Statement *orStatement(Statement *s1, Statement *s2) {
 }
 
 void testValueQuery() {
-	deleteNode(the(Booot));
-	deleteNode(a(Booot));
+	deleteNode(the(Booot), false);
+	deleteNode(a(Booot), false);
 	das(Booot);
 	Node *m14 = value("", 14, "m");
 	Node *m15 = value("", 15, "m");
@@ -1244,7 +1244,7 @@ void testDelete() {
 	check(P == s->Subject());
 	check(aP->statementCount == statementCount);// the instance was there before
 	show(P);
-	deleteNode(the(Peter));
+	deleteNode(the(Peter), false);
 	check(aP == a(Peter));
 	check(aP->statementCount == statementCount - 1);// instance
 	check(P->firstStatement == 0);
@@ -1962,13 +1962,27 @@ void addNormLabels() {
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
+//	getTopic(get(45));// Portugal
 //	fixCurrent();
+//	p(getEntity("Verkehrsausscheidungsziffer"));
+//	p(handle("/ee/Verkehrsausscheidungsziffer"));
+//	parse("Portugal.typ", false);
+	check(hasWord("Ölfilter"));
+	showNodes(parse("Ölfilter"));
+	check(hasWord("ölfilter"));
+	showNodes(parse("ölfilter"));
+//	parse(":find Ölfilter");
+//	parse(":topic Angela Merkel", false);
+//	parse(":del S6575664");
+//	parse(":ee Verkehrsausscheidungsziffer");
+
 	germanLabels=1;
+//	collectAbstracts();
 //	load(1);
 //	importGeoDB();
 //	importTelekom();
 //	import("billiger");
-	replay("chaos-monkey.py.log");
+//	replay("chaos-monkey.py.log");
 	return;
 	import("Telekom/Telekom-Produkt.csv");
 	auto ok=startsWith(":server","debug");

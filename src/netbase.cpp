@@ -596,7 +596,7 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 
 	if (checkNames and node->name == 0) {// WHY AGAIN??
 		bad();
-		if (report)printf("node->name == 0 %i\n", node->id);
+//		if (report)printf("node->name == 0 %i\n", node->id); // todo
 		return false;
 	}
 	if (checkNames and (node->name >= &context->nodeNames[averageNameLength * maxNodes])) {
@@ -688,6 +688,10 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	//	  why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
 	// kosten : Speicher*2
 	return node;
+}
+
+int getNodeId(long pointer){
+	return (int((long)context->nodes-pointer));
 }
 
 
@@ -1715,6 +1719,9 @@ NodeVector *findWordsByName(int context, const char *word, bool first, bool cont
 		if (good) {
 			all->push_back(n);
 			show(n);
+			Node *abstract = hasWord(word);
+			if(!abstract) // & fix / associate
+				insertAbstractHash(n,true); // or leave to debug!
 			if (first) return all;
 		}
 	}
@@ -1921,12 +1928,13 @@ void deleteStatement(int id) {
 
 // Does NOT delete tautological duplicates!
 void deleteStatement(Statement *s) {
-	if (!checkStatement(s, true, false)) {
-		printf("BAD Statement:");
-		p(s);
-		bad();
-		return;
-	}
+	pf("deleteStatement %d\n",s->id());
+	p(s);
+//	if (!checkStatement(s, true, false)) {
+//		printf("BAD Statement:");
+//		bad();
+//		return;
+//	}
 	removeStatement(s->Subject(), s);
 //	can be very expensive a->is->b 10000000 is Statements :
 //	removeStatement(s->Predicate(), s);// Keep '//' in mind: not real 'bug' if Statement is broken
@@ -1951,18 +1959,18 @@ void deleteWord(const char *data, bool completely) {
 	int id = atoi(data);
 	if (id <= 0) {
 //		deleteNode(getThe(data));
-		deleteNode(get(data));
+		deleteNode(get(data), completely);
 		if (completely) {
 			NodeVector *words = findWordsByName(current_context, data, true, false); //getAbstract(data);
 			for (int i = 0; i < words->size(); i++) {
 				Node *word = words->at(i);
 				pf("deleteNode %s \n", word->name);
-				deleteNode(word); // DANGER!!
+				deleteNode(word, false); // DANGER!!
 			}
 		}
 	}
 	else if (checkNode(&context->nodes[id], id, false, false))
-		deleteNode(&context->nodes[id]);
+		deleteNode(&context->nodes[id], completely);
 	else if (checkStatement(&context->statements[id], false, false))
 		deleteStatement(&context->statements[id]);
 	else ps("No such node or statement: " + string(data));
@@ -1973,18 +1981,18 @@ void deleteWord(string *s) {
 }
 
 void deleteNode(int id) {
-	deleteNode(get(id));
+	deleteNode(get(id), false);
 }
 
-void deleteNode(Node *n) {
+void deleteNode(Node *n, bool deleteChildren) {
 // 2017-02-30 : STILL EVIL! TEST!!
 	if (!checkNode(n)) return;
-	if (n->kind == _abstract) {
+	if (n->kind == _abstract and deleteChildren) {
 		NodeVector nv = instanceFilter(n);
 		for (int i = 0; i < nv.size(); i++) {
-			Node *n = nv[i];
-			if (!isAbstract(n))
-				deleteNode(n);
+			Node *child = nv[i];
+			if (!isAbstract(child) and eq(n->name,child->name))
+				deleteNode(child, false);
 		}
 	} else { //!!
 		N a = getAbstract(n->name);
@@ -2559,12 +2567,12 @@ bool checkParams(int argc, char *argv[], const char *p) {
 	string slash = "/";
 	string equals = "=";
 	for (int i = 1; i <= argc; i++) {
-		if (startsWith(argv[i], p)) return true;
-//		if (startsWith(argv[i], (slash+p).c_str()))return true;
-		if (startsWith(argv[i], (colon + p[0]).c_str()))return true; // import
-		if (startsWith(argv[i], (colon + p).c_str())) return true; // :server
-		if (startsWith(argv[i], (minus + p).c_str())) return true;
-		if (startsWith(argv[i], (minus + minus + p).c_str()))return true;
+		if (eq(argv[i], p)) return true;
+//		if (eq(argv[i], (slash+p).c_str()))return true;
+		if (eq(argv[i], (colon + p[0]).c_str()))return true; // import
+		if (eq(argv[i], (colon + p).c_str())) return true; // :server
+		if (eq(argv[i], (minus + p).c_str())) return true;
+		if (eq(argv[i], (minus + minus + p).c_str()))return true;
 	}
 	return false;
 }
@@ -2924,6 +2932,9 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "load_files")) load(true);
 	else if (checkParams(argc, argv, "debug")) {
 		printf("debugging\n");
+		for (int i = 0; i <argc; ++i) {
+			p(argv[i]);
+		}
 		//    load();
 		//		clean();
 		testBrandNewStuff(); // << PUT ALL HERE!

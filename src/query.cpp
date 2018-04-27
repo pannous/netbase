@@ -1102,6 +1102,8 @@ bool stopAtGoodWiki(int object) {
 	if (object == 215627)return true;//Person	Q215627
 	if (object == 5)return true;//=> Mensch	Q5
 	if (object == 6511271)return true;//Gemeinde	Q6511271
+	if (object == 15284)return true;//Gemeinde	Q15284
+	if (object == 319753)return true;// City	Q319753
 	if (object == 107425)return true;// Landschaft	Q107425
 	if (object == 3266850)return true;//Kommune	Q3266850
 	if (object == 515)return true;//Stadt	Q
@@ -1128,7 +1130,11 @@ bool stopAtGoodWiki(int object) {
 //	if (object == 2359810)return true;//Städte-Klasse wtf
 	if (object == 1406904)return true;//Fernbahnhof	Q1406904
 	if (object == 532)return true;//Dorf	Q532
+	if (object == 309)return true;//Geschichte	Q309
 //	if (object == 5)return true;//
+//	if (object == 5)return true;//
+//	if (object == 5)return true;//
+
 	return false;
 }
 
@@ -1256,6 +1262,11 @@ bool filterWikiType(int object) {
 	if (object == 853614)return DROP; //	 Identifikator
 	if (object == 2221906)return DROP; //		Standort
 	if (object == 9158768)return DROP; //		Speicher
+	if (object == -13238)return DROP; //		Verkehrsausscheidungsziffer
+	if (object == 2516126)return DROP; //		Verkehrsausscheidungsziffer
+	if (object == 60070175)return DROP; //		Verkehrsausscheidungsziffer
+
+
 	return KEEP;
 }
 
@@ -1434,7 +1445,8 @@ NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// ch
 		predicateMatch = predicateMatch or s->predicate == -10910;// Hauptkategorie zum Artikel
 		predicateMatch = predicateMatch or s->predicate == -10373;// Commons-Kategorie
 
-		bool subjectMatchReverse = s->Object() == subject;
+		Node *object = s->Object();
+		bool subjectMatchReverse = object == subject;
 		bool predicateMatchReverse = s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse or (INCLUDE_CLASSES and s->Predicate() == SuperClass);
 		predicateMatchReverse = predicateMatchReverse or (INCLUDE_LABELS and s->Predicate() == Label); // or inverse
@@ -1444,10 +1456,10 @@ NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// ch
 		                                                                                       subject->name));// Frankfurt (Oder)
 
 		if (queue) {
-			if (subjectMatch and predicateMatch)enqueue(subject, s->Object(), queue, enqueued);
+			if (subjectMatch and predicateMatch)enqueue(subject, object, queue, enqueued);
 			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
-			if (subjectMatch and predicateMatch)all.push_back(s->Object());
+			if (subjectMatch and predicateMatch)all.push_back(object);
 			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
 		}
 	}
@@ -2125,7 +2137,10 @@ NV filterCandidates(NV all) {
 		N entity = all[i];
 		if (isAbstract(entity)) {
 			NV more = allInstances(entity);
-			mergeVectors(&all, more);
+			for(N n : more)
+				if(eq(n->name,entity->name))
+					all.push_back(n);
+//			mergeVectors(&all, more);
 		}
 	}
 //	size=(int)all.size();
@@ -2393,9 +2408,12 @@ N getTopic(N node) {
 //	if (NO_TOPICS)
 //		return getType(node);
 	N t = getProperty(node, "topic");
+//	if(!t)t=getProperty(node,-10106);
 //	if(!t)t=getProperty(node, "Kategorie");
 	if (t && checkNode(t) && !eq(t->name,node->name))return t;
-	return getFurthest(node, topicFilter);
+	t = getFurthest(node, topicFilter);
+	if (t && checkNode(t) && !eq(t->name,node->name))return t;
+	return 0;
 }
 
 NV getTopics(N entity) {

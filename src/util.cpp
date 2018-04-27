@@ -532,7 +532,7 @@ vector<string> &splitString(const char *line0, const char *separator) {
 		v.push_back(token);// ok, new string!
 		token = strtok(NULL, separator);
 	}
-	free(line);// ja? NEIN: incorrect checksum for freed object :
+//	free(line);// ja? NEIN: incorrect checksum for freed object :
 	// tokens depend on line NOT being freed
 	return v;
 }

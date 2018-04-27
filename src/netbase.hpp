@@ -108,13 +108,15 @@ char* resolveName(int pointer);
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
 // reduce from 0x20 bytes to name,kind, firstStatement == 0x0b bytes!
 // 1 nit == 4+1 words =20bytes
+int getNodeId(long pointer);
 extern "C"
 typedef struct Node {
 //  class Node{
   public:
     int id; //implicit -> redundant
-    char* name;
+//    int id(){ return getNodeId((long)this);}// implicit
 
+    char* name;
 //  long name; // see value for float etc
 //    int namePointer;// harder to debug, just adjust if context->nodeNames != context->nodeNames
 //    char* name(){return context->nodeNames[namePointer]}     char* resolveName(int pointer);
@@ -534,7 +536,7 @@ Node* last(NodeVector rows);
 //extern "C" Statement* learn(string& data);
 extern "C" Statement* learn(const char* data);
 extern "C" void deleteNode(int id);
-void deleteNode(Node* n);
+void deleteNode(Node *n, bool deleteChildren);
 void deleteStatements(Node* n);
 extern "C" void deleteStatement(int id);
 void deleteStatement(Statement* s);
@@ -572,8 +574,8 @@ extern map <double, short> yetvisitedIsA;
 Ahash* insertAbstractHash(unsigned int hashkey, Node* abstract,bool overwrite=false,bool seo=false); //debug only
 Ahash* insertAbstractHash(Node* abstract,bool overwrite=false);
 
-void deleteWord(string* s);
-void deleteWord(const char* data,bool completely=true);
+//void deleteWord(string* s);
+void deleteWord(const char* data,bool completely=true);// hard to find instances after!
 Node* reify(Statement* s);
 void show(vector<char*>& v);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);

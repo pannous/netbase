@@ -196,8 +196,8 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		lenge--;
 	}
 	if (eq(data0, ""))return OK;
-	if (!isprint(data0[0])) // chinese \0a etc
-		return OK;
+//	if (!isprint(data0[0]) and not umlaut --) // chinese \0a etc
+//		return OK;
 	if (data[0] == '\'')data++;
 	if (data[0] == '!')((char *) data)[0] = ':';// norm!
 	if (data[0] == 'Q' and data[1] <= '9')data++;//Q1325845
@@ -414,11 +414,12 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		debug = true;
 		return OK;
 	}
-	if (startsWith(data, ":d ") or startsWith(data, ":delete ") or startsWith(data, ":del ") or
-	    startsWith(data, ":remove ")) {
+	if (startsWith(data, ":d ") or startsWith(data, ":delete ") or startsWith(data, ":del") or startsWith(data, ":remove ")) {
+		bool completely = contains(data, "all");
 		string d = next_word(data);
 		const char *what = d.data();
-		deleteWord(what, true /*completely*/);
+		if(what[0]=='S')deleteStatement(atoi(++what));
+		else deleteWord(what, completely);
 		return OK;
 	}
 	if (contains(data, ":english") or contains(data, ":en")) {
@@ -780,13 +781,13 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (i == 0 and !hasWord(data))return OK;// don't create / dissect here!
 	if (forbidAutoIds and !hasWord(data))return OK;
 	Node *a = get(data);
-	if (!isAbstract(a)) {
+//	if (!isAbstract(a)) {
 		if (i == 0 or !hasWord(a->name)) {
 			//		a->kind=abstractId;// not for singletons AMAZON!
 			insertAbstractHash(a, true);// fix bug! can't be!?
 		} else
 			addStatement(getAbstract(a), Instance, a, true, true);
-	}
+//	}
 	dissectWord(a, true);  //	if (i == 0) instanceFilter(a), true);
 	//    findWord(context->id, data);
 	if (isAbstract(a) and i == 0) {

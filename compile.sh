@@ -11,7 +11,7 @@ platform=`uname`
 ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
 # options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit cannot specify -o with -c or -S with multiple files
-options="-m64 --debug  -std=c++0x"  #  -std=c++11 once no jserver
+options="-m64 --debug  -std=c++1z"  # 0x = old -std=c++11 once no jserver
 #   -s -std=c++11 for sorting array!
 #  -L$RVM_HOME/usr/lib -I$ruby_include -Ibuild/
 
@@ -30,14 +30,14 @@ options="-m64 --debug  -std=c++0x"  #  -std=c++11 once no jserver
 
 mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
-g++ $options  -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline -lz && ./netbase :exit $@
+g++ $options -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline -lz && ./netbase :exit $@
 
 if [[ $platform == 'Darwin' ]]; then
-	# g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
+	# g++ $options -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
 	cp netbase lib/libNetbase.dylib
 	cp netbase bin/netbase-mac
 else
-	g++ -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -DNO_READLINE -lreadline -lz -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
+	g++ $options -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -DNO_READLINE -lreadline -lz -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
 	cp netbase bin/
 	cp netbase lib/linux/
 	cp netbase lib/linux/libNetbase.a
