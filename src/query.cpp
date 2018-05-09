@@ -2354,8 +2354,8 @@ NV sortTopics(NV topics, N entity) {
 
 extern "C"
 Node *getType(Node *n) {
-	if (NO_TOPICS && n && n->id>76851497)return getProperty(n, get(44335951), 100);// hack!
-	return getProperty(n, Type, 1000);
+//	if (NO_TOPICS && n && n->id>76851497)return getProperty(n, get(44335951), 100);// hack!
+	return getProperty(n, Type, 10);// 10: pushed to top 5/2018
 //	Statement* s=findStatement(n,Type,Any);
 //	if(!checkStatement(s))return 0;// n
 //	return s->Object();

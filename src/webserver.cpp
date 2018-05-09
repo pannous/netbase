@@ -41,21 +41,19 @@ static char netbase_css[100] = "netbase.css";
 static char favicon_ico[100] = "favicon.ico";
 int resultLimit = 200; // != lookuplimit reset with every fork !!
 
-int listener, conn, closing = 0;
 pid_t pid;
-//  socklen_t
+int listener, conn, closing = 0;
 struct sockaddr_in servaddr;
+//  socklen_t
 
-/// true = filter
 vector<char *> excluded;
 vector<char *> included;
 vector<int> excludedIds;
 vector<int> includedIds;
 bool showExcludes = false;
+bool useView=false;// filter excludes and includes
+
 int warnings = 0;
-//static char* excluded=0;
-//static char* excluded2=0;
-//static char* excluded3=0;
 
 enum result_format {
 	xml, js, json, txt, csv, html
@@ -105,6 +103,7 @@ char *getStatementTitle(Statement *s, Node *n) {
 //	if(s->Subject()==n)
 	return getText(s->Object());// default
 }
+
 
 
 /* CENTRAL METHOD to parse and render html request*/
@@ -320,7 +319,7 @@ int handle(cchar *q0, int conn) {
 		q = q + 2;
 	}
 
-	if (hasWord(q)) loadView(q);
+	if (hasWord(q) and useView) loadView(q);
 
 	if (contains(q, "exclude") or contains(q, "include")) {
 		verbosity = normal;
@@ -449,7 +448,9 @@ int handle(cchar *q0, int conn) {
 			if (ty == Internal)continue;
 			if (!t)t = ty;
 			if (t == node)t = ty;
-			if (t != Entity and t and checkNode(t, -1, false, true)) {
+			if (!checkNode(t, -1, false, true)) t = null;
+			if (t and eq(t->name,node->name)) t = null;
+			if (t != Entity and t) {
 				got_topic = true;
 				Writeline(conn, ",\n\t \"topicid\":" + itoa(t->id));
 				Writeline(conn, ", \"topic\":\"" + string(t->name) + "\"");

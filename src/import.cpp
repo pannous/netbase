@@ -30,8 +30,8 @@ cchar *statements_file = "statements.txt";
 cchar *images_file = "images.txt";
 cchar *images_file_de = "images_de.nt";
 
-bool LIGHT_IMPORT= true; // ONLY IMPORT TYPE, CLASS!
-//bool LIGHT_IMPORT= false; // normal import of all wikidata
+//bool LIGHT_IMPORT= true; // ONLY IMPORT TYPE, CLASS!
+bool LIGHT_IMPORT= false; // normal import of all wikidata
 bool singleton_abstracts = false; // false == use normal abstracts until fixed!
 
 bool getSingletons = false;// i.e. Nationalmannschaft
@@ -1459,8 +1459,8 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 		if (!singleton_abstracts) {
 			if(label[0]==' ')label++;
 			Node *abstract = getAbstract(label);
-			if(!eq(abstract->name,label)){
-				bad(); // ' Hydraenidae)'
+			if(!abstract or eq(abstract->name,label)){
+				bad(); // "^^" ' Hydraenidae)'
 			}
 			node->id=id;
 			node->name=abstract->name;

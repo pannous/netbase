@@ -1972,13 +1972,18 @@ void testUmlauts(){
 	check(wordHash("mü")==wordHash("MÜ")); // todo: seo here!
 }
 
+void testImportant(){
+	testInsertForceStart();
+	testAll();// todo!
+}
+
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
-	germanLabels=1;
+//	testImportant();
+	germanLabels=0;
+	importAll();
 //	importN3("wikidata/latest-truthy.nt.facts");
-//	importAllDE();
-	testInsertForceStart();
 //	fixCurrent();
 //	parse("Portugal.typ", false);
 //	collectAbstracts();
