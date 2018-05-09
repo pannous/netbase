@@ -1461,6 +1461,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 			Node *abstract = getAbstract(label);
 			if(!abstract or eq(abstract->name,label)){
 				bad(); // "^^" ' Hydraenidae)'
+				continue;
 			}
 			node->id=id;
 			node->name=abstract->name;
