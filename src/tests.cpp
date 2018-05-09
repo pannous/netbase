@@ -603,8 +603,8 @@ void testInsertForceStart() {
 	addStatement(t, Instance, o, !CHECK_DUPLICATES);
 	addStatement(t, Part, o, !CHECK_DUPLICATES);
 	addStatement(t, Type, o, !CHECK_DUPLICATES);
-	addStatement(t, PartOf, o, !CHECK_DUPLICATES);
 	addStatement(t, Instance, o, false);
+	addStatement(t, PartOf, o, !CHECK_DUPLICATES);
 
 	//	S s=addStatement(t, p, o, false);// warning: addStatementToNode skipped
 	//	addStatement(t, Type, o, false); types up too
