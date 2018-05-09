@@ -348,7 +348,7 @@ Statement *parseSentence(string sentence, bool learn/* = false*/) {
 	//	int limit = 5;
 	sentence = replace_all(sentence, " a ", " ");
 	sentence = replace_all(sentence, " the ", " ");
-	char **matches = (char **) malloc(100);
+	char **matches = (char **) malloc(MAX_ROWS* sizeof(char*));
 	char *data = editable(sentence.data());
 	int count = splitStringC(data, matches, ' ');//matches.size();
 	//	vector<char*> matches = splitString(sentence, " ");
@@ -1835,7 +1835,7 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 	while ((current = q.front()) && limit-->0) {
 		if (q.empty())break;
 		q.pop();
-		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, true /*report*/))continue;
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, false /*report*/))continue;
 //		if(enqueued[current->id+propertySlots])continue;
 //		enqueued[current->id+propertySlots]=true;
 //		if(all.size()>resultLimit)break;
@@ -2069,12 +2069,14 @@ NodeVector parseProperties(char *data) {
 		char **splat = splitStringC(data, ':');
 		thing = splat[1];// can't free no more
 		property = splat[0];
+		free(splat);
 		//		bool inverse=1;
 	} else if (contains(data, ".")) {
 		//			sscanf(data,"%s.%s",thing,property);
 		char **splat = splitStringC(data, '.');
 		thing = splat[0];
 		property = splat[1];
+		free(splat);
 	}
 
 	// OK: opponent+of+barack_obama
@@ -2085,6 +2087,7 @@ NodeVector parseProperties(char *data) {
 		char **splat = splitStringC(data, ' ');// leeeeak!
 		thing = splat[0];
 		property = splat[2];// pointer being freed was not allocated
+		free(splat);
 	}
 
 	pf("does %s have %s?\n", thing, property);
@@ -2157,14 +2160,14 @@ NV filterCandidates(NV all) {
 //N
 map<int, bool> loadBlacklist(bool reload/*=false*/) {
 	N blacklist = getAbstract("entity blacklist");
-	map<int, bool> forbidden; // int: wordhash
+	map<int, bool> forbidden; // int: wordHash
 	// todo
 
 	FILE *infile = open_file("blacklist.csv", false);
 	if (!infile)return forbidden;
 	char line[1000];// Relativ geschwind!
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		forbidden[wordhash(line)] = true;
+		forbidden[wordHash(line)] = true;
 	}
 	if (!reload and blacklist->statementCount > 1000)return forbidden;
 //	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
@@ -2173,8 +2176,8 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 	bool check = blacklist->statementCount > 1000;
 
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (check and forbidden[wordhash(line)])continue;// already loaded
-		forbidden[wordhash(line)] = true;
+		if (check and forbidden[wordHash(line)])continue;// already loaded
+		forbidden[wordHash(line)] = true;
 		//contains(blacklist,line,true/*ignoreCase*/))
 		fixNewline(line);
 		addStatement(blacklist, Part, getAbstract(line), false);
@@ -2205,7 +2208,7 @@ NV findEntites(cchar *query0) {
 //	N forbidden=loadBlacklist();
 	map<int, bool> forbidden = loadBlacklist();
 
-//	if(hasWord(query0) and !forbidden[wordhash(query0)])
+//	if(hasWord(query0) and !forbidden[wordHash(query0)])
 //		all.push_back(getAbstract(query0));// quick
 	int max_words = 6;// max words per entity: 'president of the United States of America' == 7
 	//	int min_chars=4;//
@@ -2220,7 +2223,7 @@ NV findEntites(cchar *query0) {
 		int words = 1;
 		while (mid <= end and words < max_words and mid - start >= min_chars) {
 			mid[0] = 0;// Artificial cut
-//			if(!forbidden[ wordhash(start)]){
+//			if(!forbidden[ wordHash(start)]){
 //			p(start);
 			N entity = hasWord(start);
 
@@ -2250,14 +2253,14 @@ NV findEntites(cchar *query0) {
 			if (entity) {
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
-				if (!forbidden[wordhash(entity->name)]) {
+				if (!forbidden[wordHash(entity->name)]) {
 					all.push_back(entity);
 					if (!isAbstract(entity)) {
 						entity->kind = abstractId;
 						insertAbstractHash(entity, true);// fix bug!
 					}
 					string ename = string(start) + " " + last;
-					if (start != last and !forbidden[wordhash(ename.data())]) {
+					if (start != last and !forbidden[wordHash(ename.data())]) {
 						entity = hasWord(ename.data());
 						if (entity)all.push_back(entity);
 					}

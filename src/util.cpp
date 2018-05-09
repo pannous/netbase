@@ -572,7 +572,7 @@ char *editable(const char *line) {
 		bad();
 		return (char *) "";// or 0?
 	}
-	char *line0 = (char *) malloc(strlen(line) * 2 + 1); //dont free!
+	char *line0 = (char *) malloc(strlen(line) * 2 + 2);// callers duty to manually FREE
 	strcpy(line0, line);
 	return line0;// callers duty to manually FREE if not kept!
 }
@@ -622,7 +622,7 @@ char **splitStringC(const char *line0, char separator) {
 }
 
 char **splitStringC(char *line0, char separator, int maxRows) {
-	char **tokens = (char **) malloc(maxRows);
+	char **tokens = (char **) malloc(MAX_ROWS* sizeof(char*));
 //	memset(tokens,0,maxRows);
 	splitStringC(line0, tokens, separator);// leeeeak!
 	return tokens;
@@ -641,6 +641,7 @@ short normChar(char c) {// 0..36 damn ;)
 	if (c == '\n')return 0;
 	if (c >= '0' and c <= '9') return c - '0' + 26;
 	if (c >= 'a' and c <= 'z') return c - 'a' + 1;// NOT 0!!!
+	if (c >= 'A' and c <= 'Z') return c - 'A' + 1;// NOT 0!!!
 	if (c == -92) return -124;// ä == Ä
 	if (c == -74) return -106;// ö
 	if (c == -68) return -100;// ü
@@ -677,7 +678,7 @@ short normChar(char c) {// 0..36 damn ;)
 //unsigned int hashMod=(int)abstractHashSize / ahashSize;
 
 // ./clear-shared-memory.sh After changing anything here!!
-unsigned int wordhash(const char *str) { // unsigned
+unsigned int wordHash(const char *str) { // unsigned
 	if (!str) return 0;
 	char c;
 	unsigned int hash = 5381, hash2 = 7; // long

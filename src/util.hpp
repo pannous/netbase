@@ -89,7 +89,7 @@ char* downcase(char* x);
 char* tolower(const char* x);
 void fixNewline(char* line,bool limit=0/*0=none*/);
 NodeVector intersect(NodeVector a,NodeVector b);
-unsigned int wordhash(const char *str);
+unsigned int wordHash(const char *str);
 //inline short normChar(char c);
 short normChar(char c);
 string stem(string word);

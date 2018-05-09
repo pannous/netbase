@@ -304,10 +304,10 @@ extern "C" void initSharedMemory(bool relations) {
 	checkRootContext();
 	if (relations) {
 		p(get(_clazz));
-		if(!checkNode(-9))
+//		if(!checkNode(-9) and debug)
 			initRelations();
 		if (context->lastNode < 0)
-			context->lastNode = count_nodes_down? (int)maxNodes - propertySlots : wikidata_limit ;
+			context->lastNode = wikidata_limit ;
 	}
 }
 
@@ -539,7 +539,7 @@ bool clearMemory() {
 //	memset(abstracts, 0, maxNodes*ahashSize * 2);
 //  context->nodeCount=1000;// 0 = ANY
 		context->nodeCount = 1;// 0 = ANY
-		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
+		context->lastNode = 1;
 		context->nodeNames = name_root;
 		context->statementCount = 1;// 0 = ERROR
 	}
@@ -613,7 +613,7 @@ char *initContext(Context *context) {
 	if (context->nodeCount <= 0)
 		context->nodeCount = 1;
 	if (context->lastNode <= 0)
-		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
+		context->lastNode = 1;
 
 //	px(context);
 //	px(nodes);

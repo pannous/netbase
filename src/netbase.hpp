@@ -28,7 +28,6 @@ extern bool testing;// don't implicitly init relations
 extern int resultLimit;
 extern int defaultLookupLimit;
 extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-extern bool count_nodes_down;
 extern bool out_of_memory;// delayed exit()
 extern int wikidata_limit;// =60000000;
 // if test or called from other object
@@ -439,7 +438,7 @@ extern "C" Node* add(const char* nodeName, int kind = /*_node*/ -101, int contex
 //bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
 //bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
 bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
-bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
+bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=false);
 bool addStatementToNode(Node* node, int statementNr,bool force_insert_at_start);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
@@ -627,29 +626,19 @@ static long billion=GB;
 static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-200000-317658 wordnet!
 static int propertyOffset=10000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet abstracts
 static int wordnetOffset=20000;//
-static int synsetOffset=100000;//
-// 200000-317658 for wordnet + other !
+static int synsetOffset=100000;// 200000-317658 for wordnet + other !
 
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
-
-// FREEBASE: 600.000.000 Statements !!!
-// todo: via getenv
-//#define __ECHSE__
-
-//#if defined(__APPLE__)
-//static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
-//static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
-//#ifdef __ECHSE__
-//static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
-//static long maxStatements = maxNodes*1;// *10 = crude average of Statements per Node (yago:12!!)
-//#else
-//static long maxNodes = 256*million;
+/*
+ * Current nodes:261609080         statements:524157200            chars:4149597486
+Maximum nodes:419430400         statements:838860800            chars:8388608000
+Usage  nodes:62.37%                     statements:62.48%               chars:49.47%
+ */
 static long maxNodes = 400*million;
 static long maxStatements = 2*maxNodes;
-//#endif
-//static long abstractHashSize = maxNodes*ahashSize;
+
 static long contextOffset=0x800000;//0x10000;
-static int averageNameLength =10;// for amazon! else 20
+static int averageNameLength =20;// 10 for amazon! else 20 (cheap)
 static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;

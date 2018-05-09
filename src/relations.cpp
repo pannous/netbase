@@ -130,7 +130,7 @@ Node *UsageContext;
 
 Node *addRelation(int id, const char *name, bool transitive = false) {
 	Node *n = add_force(wordnet, id, name, _internal);
-	insertAbstractHash(wordhash(name), n, false, false);// ECHT? TYP ?
+	insertAbstractHash(wordHash(name), n, false, false);// ECHT? TYP ?
 //	if(n->statementCount==0 and id>0)// IT BETTER BE!!!
 //		addStatement4(wordnet, getAbstract(name)->id,_instance,id);// Internal
 //	if(transitive)??? baked into Algorithms, at least four standard relations?
@@ -187,7 +187,7 @@ void initRelationsDE() {
 	addRelation(_DOMAIN, "Domaine");
 	addRelation(_DOMAIN_MEMBER, "Hat");
 	//	 Synonym = Relation(32, "synonym");// -> 21????? See see | tag
-	Type = addRelation(_Type, "Typ");// is_transitive?? // (instance->class) !=SuperClass
+	Type = addRelation(_Type, "Typ");// is_a transitive?? // (instance->class) !=SuperClass
 	Instance = addRelation(_instance, "Instanz", is_transitive);
 
 	Weight = addRelation(_weight, "Gewicht");
@@ -566,7 +566,6 @@ Node *getWikidataRelation(const char *thing) {
 	// e.g. _categorys_main_topic https://www.wikidata.org/wiki/Property:P301
 	if (thing[0] == '<')thing++;
 
-
 	if (eq(thing, "P31")) return Type; // instance of
 //	if (eq(thing, "P18")) return getThe("image");
 	if (eq(thing, "P279")) return SuperClass;
@@ -578,6 +577,7 @@ Node *getWikidataRelation(const char *thing) {
 
 	if (eq(thing, "P1696")) return Antonym;// Opposite;
 	if (eq(thing, "P461")) return Antonym; // AntonymOf == Antonym LOL
+	if (eq(thing, "P2888")) return Synonym; //	-12888 Exakte Übereinstimmung
 
 //	if (eq(thing, "P155")) return Previous; //predecessor
 //	if (eq(thing, "P156")) return Next;// follows

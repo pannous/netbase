@@ -132,7 +132,7 @@ Node *parseProperty(const char *data) {
 	Node *found = has(getThe(thing), getAbstract(property));
 	if (found == 0) found = has(getAbstract(thing), getAbstract(property));
 	if (found == 0) found = getProperty(getThe(thing), property);
-	free(property);
+//	free(property);
 	return found;
 }
 
@@ -183,6 +183,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	char *data = fixQuotesAndTrim(editable(data0));
 
 	int lenge = (int) strlen(data);
+	if(lenge==0)return OK;
 	if (data[lenge - 1] == '\n') {
 		data[lenge - 1] = 0;
 		lenge--;
@@ -587,7 +588,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		autoIds = true;
 		return wrap(getTopic(getThe(data, More)));
 	}
-	if (startsWith(data, ":type") or startsWith(data, ":kind")) {
+	if (startsWith(data, ":typ") or startsWith(data, ":kind")) {
 		data = next_word(data);
 		autoIds = true;
 		N n = getType(getThe(data));
@@ -754,7 +755,10 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 			load(/*,8,*/1);
 			return OK;
 		}
-		NodeVector nv = wrap(learn(what.data())->Subject());
+		Statement *learned = learn(what.data());
+		if(!learned)
+			return OK;// NOT!
+		NodeVector nv = wrap(learned->Subject());
 		FILE *fp = fopen((data_path + "/facts.ssv").data(), "a");
 		if (!fp) {
 			p("NO such file facts.ssv!");

@@ -282,9 +282,11 @@ int handle(cchar *q0, int conn) {
 	}
 //	bool get_topic=false;
 	bool get_topic = true;
+	bool seo = false;
 	if (startsWith(q, "seo/")) {
 		q[3] = ' ';
 		q = q + 4;
+		seo = true;
 	}
 //	bool sort=false;
 	bool entities= false;
@@ -342,6 +344,8 @@ int handle(cchar *q0, int conn) {
 	else{
 		if(entities)
 			all= findEntites(q);
+		else if(seo)
+			all = wrap(getSeo(q));
 		else
 			all = wrap(get(q));;
 	}

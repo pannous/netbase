@@ -68,7 +68,7 @@ NodeVector nodeVectorWrap(Statement* n);
 NodeVector nodeSetToNodeVector(NodeSet& input);
 NodeVector setToVector(NodeSet& input);
 //N loadBlacklist(bool reload=false);
-map<int,bool> loadBlacklist(bool reload=false);// int: wordhash
+map<int,bool> loadBlacklist(bool reload=false);// int: wordHash
 NV findEntites(cchar* query);
 N getClass(N n);
 N getTopic(N n);// highest

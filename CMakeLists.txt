@@ -11,6 +11,11 @@ set (CMAKE_SKIP_RULE_DEPENDENCY TRUE) # incremental build
 find_package( ZLIB REQUIRED )
 include_directories( ${ZLIB_INCLUDE_DIRS} )
 
+# Add -O0 to remove optimizations when using gcc
+IF(CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
 find_path(Readline_ROOT_DIR NAMES include/readline/readline.h)
 find_path(Readline_INCLUDE_DIR NAMES readline/readline.h HINTS ${Readline_ROOT_DIR}/include)

@@ -30,6 +30,10 @@ cchar *statements_file = "statements.txt";
 cchar *images_file = "images.txt";
 cchar *images_file_de = "images_de.nt";
 
+bool LIGHT_IMPORT= true; // ONLY IMPORT TYPE, CLASS!
+//bool LIGHT_IMPORT= false; // normal import of all wikidata
+bool singleton_abstracts = false; // false == use normal abstracts until fixed!
+
 bool getSingletons = false;// i.e. Nationalmannschaft
 bool getBest = false;// i.e. Madonna\Music | Madonna\Church
 bool germanLabels = false;//true;
@@ -748,6 +752,10 @@ void fixValues(char **values, int size) {
 N addSubword(char *name, N kind) {
     if(empty(name))
         return 0;
+	if(endsWith(name," und"))
+		return 0;
+	if(endsWith(name," /"))
+		return 0;
 	N old = hasWord(name);
 	if (old) {
 		if (old->statementCount < 3)
@@ -915,10 +923,11 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 							name[i] = 0;
 							break;
 						}
-//				if (cut_billiger) {
-//					addSubword(name, 1, type);
-//					addSubword(name, 2, type);
-//				}
+				if (cut_billiger) {
+					addSubword(name, 1, type);
+//					if(!contains(name," und "));
+					addSubword(name, 2, type);
+				}
 				addSubword(name, 3, type);
 				addSubword(name, 4, type);
 				addSubword(name, type);// full name, ok if exists
@@ -1244,7 +1253,7 @@ bool importYago(const char *file) {
 			object = getYagoConcept(all[3]);
 			free(all);
 		} else {
-			if (labels and wordhash(objectName) == wordhash(subjectName)) continue;
+			if (labels and wordHash(objectName) == wordHash(subjectName)) continue;
 			if (eq(predicateName, "<hasGeonamesEntityId>")) continue;
 			//			if(eq("<Tommaso_Caudera>",subjectName))
 			//							p(subjectName);// subject==0 bug Disappears when debugging!!!
@@ -1368,8 +1377,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 //		if(contains(line, "Q3521>"))
 //			p(line);
 		//		if(debug)if(linecount>100)break;
-		u8_unescape(line, MAX_CHARS_PER_LINE,
-		            line); // utf8 unicode fix umlauts   not with new labels.csv!! removes 'ä' WTF why?
+		u8_unescape(line, MAX_CHARS_PER_LINE, line); // utf8 unicode fix umlauts   not with new labels.csv!! removes 'ä' WTF why?
 		//		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);
@@ -1443,8 +1451,23 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 //		if(id==2)
 //			p("ERde");
 
-		if (id < maxNodes / 2) {
-			Node *node = &context->nodes[id];
+		if (id > wikidata_limit) {
+			bad();
+			continue;
+		}
+		Node *node = &context->nodes[id];
+		if (!singleton_abstracts) {
+			if(label[0]==' ')label++;
+			Node *abstract = getAbstract(label);
+			if(!eq(abstract->name,label)){
+				bad(); // ' Hydraenidae)'
+			}
+			node->id=id;
+			node->name=abstract->name;
+			node->kind=_entity;
+//			initNode(node,id,abstract->name,_entity,0);
+			addStatement(abstract, Instance, node);
+		} else {
 			if (english and germanLabels and node->name)
 				continue;// Only set labels of entities that don't have a German translation
 			N old = hasWord(label);
@@ -1480,7 +1503,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 				}
 				addStatement(ab, Instance, node, false);
 			}
-		} else bad();// Not enough memory :(
+		}
 	}
 	free(key0);
 	free(label0);
@@ -1805,12 +1828,15 @@ bool dropBadPredicate(char *name) {
 	if (!name)return DROP;
 	if (eq(name, ""))return DROP;
 
-
 	//	if(name[0]=='.')return DROP;
 	if (name[0] == '<')name++;
 	int lenge=len(name);
-	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')
+	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')// ID ...
 		return DROP; // no IDs
+
+	Node *wikidataRelation = getWikidataRelation(name);
+	if(LIGHT_IMPORT)
+		return !wikidataRelation;
 
 //    if (predicateName[3] == '-' or predicateName[3] == '_' or predicateName[3] == 0) continue;    // <zh-ch, id ...
 //    if (predicateName[2] == '-' or predicateName[2] == '_' or predicateName[2] == 0) continue;    // zh-ch, id ...
@@ -1846,11 +1872,11 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P906"))return DROP;// SELIBR
 	if (eq(name, "P1005"))return DROP;// PTBNP
 	if (eq(name, "P949"))return DROP;// NLI
-//	if (eq(name, "P734"))return DROP;Familienname
+//	if (eq(name, "P734"))return DROP; Familienname
 	if (eq(name, "P1207"))return DROP;// NUKAT-Normdaten
 	if (eq(name, "P3221"))return DROP;// NYT-Themen-ID
 	if (eq(name, "P3984"))return DROP;// Subreddit
-//	if (eq(name, "P2633"))return DROP;// Geographie?
+//	if (eq(name, "P2633"))return DROP;// Libyen		Geographie		Geografie Libyens
 	if (eq(name, "P1343"))return DROP;// Beschrieben in
 	if (eq(name, "P3417"))return DROP;// Quora-Themenkennung
 	if (eq(name, "P3733"))return DROP;// MOOMA artist ID
@@ -1862,7 +1888,7 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P3569"))return DROP;// Cultureel-Woordenboek-ID
 	if (eq(name, "P1036"))return DROP;// Dewey-Dezimalklassifikation
 	if (eq(name, "P3500"))return DROP;// Ringgold-Identifikator
-//	if (eq(name, "P3743"))return DROP;// ITU/ISO/IEC object identifier  <<<!?
+	if (eq(name, "P3743"))return DROP;// ITU/ISO/IEC object identifier  <<<!?
 	if (eq(name, "P3225"))return DROP;// Unternehmensnummer (Japan)
 	if (eq(name, "P998"))return DROP;// Dmoz? Mozilla Directory
 	if (eq(name, "P227"))return DROP;// GND Nationalbibliothek (?)
@@ -1876,8 +1902,8 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P3911"))return DROP;// STW-ID  // 421 statements not worth it
 	if (eq(name, "P2347"))return DROP;// YSO ID
 	if (eq(name,"P3238"))return DROP; //		Verkehrsausscheidungsziffer
-//	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
-//	if(eq(name,"P"))return DROP;
+	if(eq(name,"P1946"))return DROP;// -11946 NLI (Irland)
+	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -2014,6 +2040,12 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		}
 		if (dropBadPredicate(predicateName)) {
 			ignored++;
+			if(LIGHT_IMPORT){
+			subject = getEntity(subjectName);
+				if(!checkNode(subject))continue;
+			subject->statementCount++;
+//				we still need statementCount for ranking!
+			}
 			continue;
 		}
 		if (dropBadObject(objectName)) {
@@ -2281,7 +2313,7 @@ void importGermanLables(bool addLabels = false) {
 		wn_labels[id] = german;
 		wn_labels[-id] = german;
 		if (addLabels and strlen(translations) > 2) {// later, when settled (?)
-			char **translationList = (char **) malloc(1000);
+			char **translationList = (char **) malloc(MAX_ROWS* sizeof(char*));
 			char sep = ',';
 			char *translationz = modifyConstChar(translations);
 			translationz = translationz + 1;// cut [ ]
@@ -2675,7 +2707,8 @@ void importWikiData() {
 	context = getContext(wikidata);
 	autoIds = false;
 	importing = true;
-    if(!count_nodes_down)context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
+    context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
+	context->nodeCount=wikidata_limit;// for iteration!
     if(germanLabels){
 		importWikiLabels("wikidata/latest-truthy.nt.de");
         importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!

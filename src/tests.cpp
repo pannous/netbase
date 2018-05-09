@@ -106,8 +106,8 @@ void testBasics() {
 	char b[] = "abc";
 	//you have an element array of characters that you can do what you like with.
 
-	check(wordhash("abc") == wordhash(a));
-	check(wordhash("abc") == wordhash(b));
+	check(wordHash("abc") == wordHash(a));
+	check(wordHash("abc") == wordHash(b));
 	assert(contains("abcd", "bc"), "contains");
 	assert(!contains("abcd", "bd"), "!contains");
 	assert(startsWith("abce", "ab"), "startsWith");
@@ -597,14 +597,20 @@ void testInstancesAtEnd() {
 }
 
 void testInsertForceStart() {
-	Node *t = getThe("testInsertForceStart1");
+	Node *t = getThe("testInsertForceStart5");
 	Node *p = getThe("testInsertForceStartP");
 	Node *o = getThe("testInsertForceStart0");
-	addStatement(t, Type, o, !CHECK_DUPLICATES);
 	addStatement(t, Instance, o, !CHECK_DUPLICATES);
+	addStatement(t, Part, o, !CHECK_DUPLICATES);
+	addStatement(t, Type, o, !CHECK_DUPLICATES);
+	addStatement(t, PartOf, o, !CHECK_DUPLICATES);
+	addStatement(t, Instance, o, false);
+
 	//	S s=addStatement(t, p, o, false);// warning: addStatementToNode skipped
 	//	addStatement(t, Type, o, false); types up too
-	addStatement(t, Instance, o, false);
+	Statement *first = getStatement(t->firstStatement);
+	showStatement(first);
+	check(first->Predicate()==Type);
 	S s = addStatement(t, p, o, false, true);
 	showStatement(s);
 	printf("%d %d\n", t->firstStatement, s->id());
@@ -650,19 +656,19 @@ void testStringLogic2() {
 }
 
 void testHash() {
-	check(wordhash("Stefanie_Zweig") != wordhash("MC_Zwieback"));
-	check(wordhash("Stefanie_Zweig") > 0);
+	check(wordHash("Stefanie_Zweig") != wordHash("MC_Zwieback"));
+	check(wordHash("Stefanie_Zweig") > 0);
 
-	int a = wordhash("Harr");
-	int b = wordhash("Harz");
-	int c = wordhash("Hart");
+	int a = wordHash("Harr");
+	int b = wordHash("Harz");
+	int c = wordHash("Hart");
 	check(a != b != c);
 
 	cchar *thing = "city";
 	Node *city = getAbstract(thing);
 	ps(city->name);
 	check(eq(city->name, "city"));
-	//	insertAbstractHash(wordhash(Circa->name), Domain);
+	//	insertAbstractHash(wordHash(Circa->name), Domain);
 	//	insertAbstractHash(Circa);
 	//#ifdef inlineName
 	//	Node* a2 = getAbstract(Circa->name);
@@ -1959,37 +1965,25 @@ void addNormLabels() {
 
 }
 
+void testUmlauts(){
+	learn("Mæ is mae");
+	learn("Mü is mö");
+	check(isA(the(mü),the(mö)));
+	check(wordHash("mü")==wordHash("MÜ")); // todo: seo here!
+}
+
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
-//	getTopic(get(45));// Portugal
-//	fixCurrent();
-//	p(getEntity("Verkehrsausscheidungsziffer"));
-//	p(handle("/ee/Verkehrsausscheidungsziffer"));
-//	parse("Portugal.typ", false);
-//	handle("/ee/Ölfilter");
-//	handle("/ee/ölfilter");
-//	showNodes(parse("Ölfilter"));
-//	check(wordhash("Ölfilter")==wordhash("ölfilter"))
-//	check(wordhash("Ä")==wordhash("ä"))
-//	check(wordhash("ü")==wordhash("Ü"))
-//	check(hasWord("Ölfilter"));
-//	check(hasWord("ölfilter"));
-//	check(hasWord("ölfilter"));
-//	showNodes(parse("ölfilter"));
-//	parse(":ee Ölfilter");
-	parse(":ee ölfilter");
-//	parse(":find Ölfilter");
-//	parse(":topic Angela Merkel", false);
-//	parse(":del S6575664");
-//	parse(":ee Verkehrsausscheidungsziffer");
-
 	germanLabels=1;
+//	importN3("wikidata/latest-truthy.nt.facts");
+//	importAllDE();
+	testInsertForceStart();
+//	fixCurrent();
+//	parse("Portugal.typ", false);
 //	collectAbstracts();
 //	load(1);
 //	importGeoDB();
-//	importTelekom();
-//	import("billiger");
 //	replay("chaos-monkey.py.log");
 	return;
 	import("Telekom/Telekom-Produkt.csv");
@@ -2049,7 +2043,8 @@ void testBrandNewStuff() {
 //	handle("/html/Ära");
 	exit(0);
 #endif
-} // Continue with shell
+}
+// Continue with shell
 
 
 #undef a
