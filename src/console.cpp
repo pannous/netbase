@@ -309,7 +309,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return OK;
 	}
 	if (eq(data, ":it")) {
-		importTest();
+		testImportWiki();
 		return OK;
 	}
 	if (startsWith(data, ":iwd") or startsWith(data, ":wd")) {

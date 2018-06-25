@@ -16,7 +16,7 @@ void importTelekom();
 void importNames();
 void importFreebase();
 void importWikiData();
-void importTest();// Test new impart features
+void testImportWiki();// Test new impart features
 void importRemaining();// fix
 //void import(const char* file);
 extern "C" void import(const char* type,const char* filename=0);

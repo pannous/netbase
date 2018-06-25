@@ -762,9 +762,11 @@ N addSubword(char *name, N kind) {
 			addStatement(old, Type, kind);
 		return old;
 	}
-	N n = getSingleton(name, kind, false);
+//	N n = getSingleton(name, kind, false); // 15.6. BUG
+//	N n = getThe(name,kind); // 15.6.18: 'workaround' doesn't :(
+	N n = get(name); // 21.6.18: 'workaround'
 //		addStatement(n, Type, kind);
-	n->kind = kind->id;// DANGER!
+//	n->kind = kind->id;// DANGER!
 	return n;
 }
 
@@ -1457,17 +1459,18 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 		}
 		Node *node = &context->nodes[id];
 		if (!singleton_abstracts) {
+			// old simple (expensive) mode: one abstract per word
 			if(label[0]==' ')label++;
 			Node *abstract = getAbstract(label);
-			if(!abstract or eq(abstract->name,label)){
+			if(!abstract or !eq(abstract->name,label)){
 				bad(); // "^^" ' Hydraenidae)'
 				continue;
 			}
 			node->id=id;
 			node->name=abstract->name;
 			node->kind=_entity;
-//			initNode(node,id,abstract->name,_entity,0);
 			addStatement(abstract, Instance, node);
+//			initNode(node,id,abstract->name,_entity,0);
 		} else {
 			if (english and germanLabels and node->name)
 				continue;// Only set labels of entities that don't have a German translation
@@ -1833,7 +1836,7 @@ bool dropBadPredicate(char *name) {
 	if (name[0] == '<')name++;
 	int lenge=len(name);
 	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')// ID ...
-		return DROP; // no IDs
+		return DROP; // no IDs  but:  MusicBrainz-Gebiets-ID via P982
 
 	Node *wikidataRelation = getWikidataRelation(name);
 	if(LIGHT_IMPORT)
@@ -1905,7 +1908,7 @@ bool dropBadPredicate(char *name) {
 	if (eq(name,"P3238"))return DROP; //		Verkehrsausscheidungsziffer
 	if(eq(name,"P1946"))return DROP;// -11946 NLI (Irland)
 	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
-//	if(eq(name,"P"))return DROP;
+	if(eq(name,"P982"))return DROP;// MusicBrainz-Gebiets-ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -2580,6 +2583,8 @@ int listdir(const char *path) {
 
 
 void importAmazon() {
+	printf("importAmazon DISABLED!");
+	return;
 	doDissectAbstracts=0;
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
 
@@ -2695,7 +2700,7 @@ void importAllYago() {
  domain      hasCapital     hasInflation    hasProductionLanguage inLanguage    isPartOf    since
  */
 
-void importTest() {
+void testImportWiki() {
 	context = getContext(wikidata);
 //	replay();
 	importBilliger();
@@ -2740,7 +2745,7 @@ void import(const char *type, const char *filename) {
 	} else if (eq(type, "billiger") or eq(type, "billiger.de")) {
 		importBilliger();
 	} else if (eq(type, "test")) {
-		importTest();
+		testImportWiki();
 	} else if (eq(type, "labels")) {
 		importLabels("labels.csv", false, true, true);
 	} else if (endsWith(type, "csv")) {

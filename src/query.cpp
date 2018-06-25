@@ -2579,6 +2579,11 @@ NodeVector findProperties(const char *n, const char *m, bool allowInverse) {
 
 Node *has(Node *n, Node *m) {
 	clearAlgorithmHash(true);
+	Node *ok = 0;
+	ok=	getProperty(n,m,resultLimit);
+	if(ok)
+		return ok;
+
 	int tmp = resultLimit;
 	resultLimit = 1;
 	NodeVector all = memberPath(n, m);
@@ -2587,32 +2592,31 @@ Node *has(Node *n, Node *m) {
 
 	// how to find paths with property predicates?? so:
 	clearAlgorithmHash();
-	Node *no = 0;
-	if (!no) no = has(n, m, Any); // TODO: test
-	return no; // others already done!!
+	if (!ok) ok = has(n, m, Any); // TODO: test
+//	if(ok)	return ok; // others already done!!
 
 	// deprecated:
 	//	if (m->value.text != 0)// hasloh population:3000
-	//		no = has(n, m, m->value); // TODO: test
+	//		ok = has(n, m, m->value); // TODO: test
 	//  findPath(n,m,hasFilter);// Todo new algoritym
-	if (!no) no = has(n, Part, m);
-	if (!no) no = has(n, Attribute, m);
-	if (!no) no = has(n, Substance, m);
-	if (!no) no = has(n, Member, m);
-	if (!no) no = has(n, UsageContext, m);
-	if (!no) no = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
-	if (!no) no = has(n, get(_MEMBER_DOMAIN_REGION), m);
-	if (!no) no = has(n, get(_MEMBER_DOMAIN_USAGE), m);
+	if (!ok) ok = has(n, Part, m);
+	if (!ok) ok = has(n, Attribute, m);
+	if (!ok) ok = has(n, Substance, m);
+	if (!ok) ok = has(n, Member, m);
+	if (!ok) ok = has(n, UsageContext, m);
+	if (!ok) ok = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
+	if (!ok) ok = has(n, get(_MEMBER_DOMAIN_REGION), m);
+	if (!ok) ok = has(n, get(_MEMBER_DOMAIN_USAGE), m);
 	//inverse
-	if (!no) no = has(m, Owner, n);
-	if (!no) no = has(m, PartOf, n);
-	if (!no) no = has(m, get(_DOMAIN_CATEGORY), n);
-	if (!no) no = has(m, get(_DOMAIN_REGION), n);
-	if (!no) no = has(m, get(_DOMAIN_USAGE), n);
+	if (!ok) ok = has(m, Owner, n);
+	if (!ok) ok = has(m, PartOf, n);
+	if (!ok) ok = has(m, get(_DOMAIN_CATEGORY), n);
+	if (!ok) ok = has(m, get(_DOMAIN_REGION), n);
+	if (!ok) ok = has(m, get(_DOMAIN_USAGE), n);
 
 	//  if(!n)n=has(n,Predicate,m);// TODO!
-	//	if (!no)no = has(save, Any, m); //TODO: really?
-	return no;
+	//	if (!ok)ok = has(save, Any, m); //TODO: really?
+	return ok;
 }
 
 Statement *findRelations(Node *from, Node *to) {

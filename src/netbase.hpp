@@ -15,6 +15,8 @@ extern bool germanLabels;
 extern bool exitOnFailure;
 extern int maxRecursions;
 extern bool debug; //=true;
+extern bool _trace;
+void trace();
 extern bool showAbstract;
 extern bool doDissectAbstracts;
 extern int recursions;
@@ -582,7 +584,7 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 void checkRootContext();
 Node* number(int n);
 extern "C" Node* getProperty(Node* n,const char* s,int limit=0);
-Node* getProperty(Node* node, Node* key,int limit);
+Node* getProperty(Node* node, Node* key,int limit=0);
 Node* getPropertyDummy(const char* id);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
@@ -634,11 +636,11 @@ static int synsetOffset=100000;// 200000-317658 for wordnet + other !
 Maximum nodes:419430400         statements:838860800            chars:8388608000
 Usage  nodes:62.37%                     statements:62.48%               chars:49.47%
  */
-static long maxNodes = 400*million;
-static long maxStatements = 2*maxNodes;
+static long maxNodes = 300*million;
+static long maxStatements = 2*maxNodes;// why suddenly 629145600
 
 static long contextOffset=0x800000;//0x10000;
-static int averageNameLength =20;// 10 for amazon! else 20 (cheap)
+static int averageNameLength =10;// 10 for amazon! else 20 (cheap)
 static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;

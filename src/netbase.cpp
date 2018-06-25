@@ -1757,6 +1757,11 @@ Statement *findStatement(int subject, int predicate, int object, int recurse, bo
 	                     matchName);
 }
 
+bool _trace= false;
+void trace(){
+	_trace=true;
+}
+
 // DO  NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 Statement *findStatement(Node *subject, Node *predicate, Node *object,
                          int recurse, bool semantic, bool symmetric, bool semanticPredicate, bool matchName,
@@ -1770,8 +1775,11 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 	Statement *s = 0;
 	map<Statement *, bool> visited;
 	int lookup = 0;
-	while ((s = nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
+	bool stopAtInstances = false;// predicate != Instance; too Fragile for ordering!
+	while ((s = nextStatement(subject, s, stopAtInstances))) { // kf predicate!=Any 24.1. REALLY??
 		if (limit and lookup++ > limit)break;
+		if(_trace)
+			p(s);
 		if (visited[s]) {// Remove in live mode if all bugs are fixed
 			p("GRAPH ERROR: cyclic statement");
 			p(s);
@@ -1779,14 +1787,8 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 			return 0;
 		}
 		visited[s] = 1;
-//    if(s->id()==4334 or subject->id==4904654) // debug id
-//    p(s);
 		if (!checkStatement(s)) continue;
-		//#ifdef useContext
 		if (s->context == _pattern) continue;
-//    if(predicate==Type and s->predicate!=_Type and visited.size()>100)
-//			return 0;// expect types on top HAS TO BE ORDERED!!
-		//#endif
 
 		//		if(s->Predicate!=Any){
 		if (s->Object() == Adjective and object != Adjective) continue; // bug !!
@@ -1798,24 +1800,17 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 		//		}
 		// ^^ todo
 
-		//		X any X error
-		//		native		derived		native		301562->81->251672
-		//		good		also		good		302044->50->302076
-		//		evil		attribute		evil		226940->60->302081
-		//		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
-
-		//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject == s->Predicate()) {
 //      ps("NO predicate statements!");
-			break;
+			continue;
 		}
 
 		//    if(s->context != current_context)continue;// only queryContext
 #ifdef use_instance_gap
 		if (s->Predicate == subject or i > 1 and s->Predicate == Instance and predicate != Instance or i > 1 and s->Predicate == Type and predicate != Type) {
 	  ps("skipping Predicate/Instance/Kind statements");
-			//      continue;
-			break;// todo : make sure statements are ordered!
+			      continue;
+//			break;// todo : make sure statements are ordered!
 		}
 #endif
 
@@ -1955,7 +1950,9 @@ void deleteWord(const char *data, bool completely) {
 	Context *context = &contexts[current_context];
 	if (data[0] == '$') {
 		pf("deleteStatement %s \n", data + 1);
-		deleteStatement(&context->statements[atoi(data + 1)]);
+		Statement *s = &context->statements[atoi(data + 1)];
+		p(s);
+		deleteStatement(s);
 		return;
 	}
 	pf("deleteWord %s \n", data);
@@ -2124,9 +2121,16 @@ Node *has(Node *n, string predicate, string object, int recurse, bool semantic, 
 Node *
 has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bool symmetric, bool predicatesemantic,
     bool matchName) {
+	Statement *s = findStatement(subject, predicate, object, recurse, semantic, symmetric, predicatesemantic,
+	                             matchName);
+//	if(!s)s=findStatement(subject, predicate, object);
+	if (s != null and s->Subject() == subject) return s->Object(); // a.b=*? return *
+	if (s != null and s->Object() == subject) return s->Subject();
+
 	if (recurse > 0) recurse++;
 	else recurse = maxRecursions - 1;
-	if (recurse > maxRecursions) return 0;
+	if (recurse > maxRecursions)
+		return 0;
 	if (recurse <= 2 and subject->kind == Abstract->id) {
 		NodeVector all = instanceFilter(subject);// need big lookuplimit here? :( todo: filter onthe fly!
 		for (int i = 0; i < all.size(); i++) {
@@ -2147,10 +2151,7 @@ has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bo
 
 	//  if(recurse>maxRecursions/3)semantic = false;
 	//  printf("findStatement(n %d,predicate %d,object %d,recurse %d,semantic %d,symmetric %d)\n",n,predicate,object,recurse,semantic,symmetric);
-	Statement *s = findStatement(subject, predicate, object, recurse, semantic, symmetric, predicatesemantic,
-	                             matchName);
-	if (s != null and s->Subject() == subject) return s->Object(); // a.b=*? return *
-	if (s != null and s->Object() == subject) return s->Subject();
+
 	return 0;
 }
 

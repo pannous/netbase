@@ -131,7 +131,8 @@ void testBasics() {
 	//  assert(!contains("abcd",""),"gr");
 	int testContext = 1;
 	Context *c = getContext(testContext);
-	Node *syn = &c->nodes[(21)];
+	initRelations();
+	Node *syn = &c->nodes[_synonym];
 	show(syn);
 	check(syn == Synonym);
 	p(Synonym->name);
@@ -159,7 +160,8 @@ void testBasics() {
 	Node *test = add("test", noun, 1);
 	check(is != null);
 	p(test);
-	assertEquals(getStatementNr(test, 1)->Subject(), a(test));// 0=='noun'
+	assertEquals(getStatementNr(test, 0)->Subject(), a(test));// 0=='noun'
+//	assertEquals(getStatementNr(test, 1)->Subject(), a(test));// 0=='noun'
 
 	showContext(current_context);
 	//	c->name="Public";
@@ -169,7 +171,7 @@ void testBasics() {
 	//	assert(c->name=="Public","c.name==Public");
 	assert(c->nodeCount >= initialNodeCount + 3, "c.nodes==3"); //3+abstracts
 	assert(eq(name(test), "test"), "name(test)=='test'");
-	assert(eq(c->nodes[initialNodeCount].name, "good"), "c.nodes[1].name==good");
+//	assert(eq(c->nodes[initialNodeCount].name, "good"), "c.nodes[1].name==good");
 	//	p(c->nodes[3].name);
 	//	pi(c->nodes[3].name);
 	//if(!loaded)
@@ -187,14 +189,14 @@ void testBasics() {
 	assert(s->Predicate() == is, "s->predicate==is");
 	assert(s->Object() == good, "s->object==good");
 	p(test);
-	assertEquals(getStatementNr(test, 2)->Subject(), a(test));
+	assertEquals(getStatementNr(test, 1)->Subject(), a(test));
 	p(good);
-	assertEquals(getStatementNr(good, 2)->Subject(), a(good));
+	assertEquals(getStatementNr(good, 0)->Subject(), a(good));
 	assertEquals(getStatementNr(test, 1)->Object(), &c->nodes[(noun)]);
 	assertEquals(getStatementNr(good, 1)->Object(), &c->nodes[(adjective)]);
 	check(getStatementNr(test, 0) == s);// prepended
 	check(getStatementNr(is, 0) == s);
-	check(getStatementNr(good, 0) == s);
+	check(getStatementNr(good, 1) == s);
 	show(test);
 	show(is);
 	show(dead);
@@ -850,9 +852,10 @@ void testInstanceLogic() {
 	Statement *c = getStatementNr(tester, 1);
 	check(c->Predicate() != Instance);
 	c = getStatementNr(tester, 2);
-	check(c->Predicate() != Instance);
+//	check(c->Predicate() != Instance);
 	deleteStatement(s);
 }
+
 
 void testValueLogic() {
 	//  deleteStatements(a(Booot));
@@ -878,13 +881,16 @@ void testValueLogic() {
 	check(m1430->value.number == 14.3);
 
 	Statement *boot_length = addStatement(Booot, a(length), m143);
-	show(Booot);
 	countInstances(m143);
 	show(m143);
-	check(findStatement(Booot, a(length), m143, 1, 1, 1));
-	check(findStatement(Booot, a(length), m143, 0, 0, 0));
 	Statement *boot_length2 = addStatement(Booot, a(length), m143);
 	check(boot_length == boot_length2); // duplicate
+
+	show(Booot);
+	check(Booot->statementCount>=2);
+//	trace();
+	check(findStatement(Booot, a(length), m143, 1, 1, 1));
+	check(findStatement(Booot, a(length), m143, 0, 0, 0));
 
 	show(m14);
 	show(m1433);
@@ -1237,13 +1243,30 @@ void testReification() {
 	//	check(isA(re,_(pattern)));
 }
 
+
 void testDelete() {
+	Statement* s;
+	Node *t = getThe("testDelete");
+	Node *p = getThe("testDelete1");
+	Node *o = getThe("testDelete2");
+	addStatement(t, Instance, o, !CHECK_DUPLICATES);
+	s=addStatement(t, Part, p, !CHECK_DUPLICATES);
+	addStatement(t, Type, o, !CHECK_DUPLICATES);
+	addStatement(t, Instance, o, false);
+	addStatement(t, PartOf, o, !CHECK_DUPLICATES);
+	int statementCount0 = t->statementCount;
+	deleteNode(p->id);
+	check(t->statementCount==statementCount0-1);
+	showNode(t);
+	return;
+
+	// part 2
 	N P = the(Peter);
 	N aP = a(Peter);
 	int statementCount = aP->statementCount;
 //	show(P);
 	show(aP);
-	Statement *s = learn("Peter loves Jule21");
+	s = learn("Peter loves Jule21");
 	check(aP == a(Peter));
 	check(aP != P);
 	check(aP != s->Subject());
@@ -1262,7 +1285,7 @@ void testDelete() {
 	N P2 = the(Peter);
 	check(s != s2);
 	check(P != P2);
-	p(P2);
+	showNode(P2);
 	show(the(Jule));
 }
 
@@ -1319,9 +1342,8 @@ void testPaths() {
 void testCities() {
 	char *line = editable(
 			"geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n");
-	int nr = splitStringC(line, 0, '\t');
+	splitStringC(line, 0, '\t');
 	//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n",0,"\t",true);
-	check(nr > 4);
 	vector<char *> fields;
 	//	int n=getFields(editable(line),fields,'\t');
 	//	check(fields.size()==nr);
@@ -1332,8 +1354,13 @@ void testCities() {
 		importCsv("cities1000.txt", the(city), '\t', ignore);
 	}
 	p(the(Mersing));
-	check(has(the(Mersing), a(population)))
+	N pop=getProperty(the(Mersing), a(population));
+	assertEquals(pop->name,"22007");
+	assertEquals(pop,the(22007));
+	check(findStatement(the(Mersing), a(population),Any));
+	check(findStatement(the(Mersing), a(population), the(22007)));
 	check(has(the(Mersing), a(population), the(22007)))
+	check(has(the(Mersing), a(population)))
 	check(!has(the(Mersing), a(population), the(22008)))
 	check(!has(the(Mersing), value("population", 22008)))
 	//	check(has(the(Mersing),value("population",22007))) todo
@@ -1782,7 +1809,7 @@ void testEntities() {
 //	getTopics(all);
 }
 
-void testTopics() {
+void testWikidataTopics() {
 		N t=getTopic(get(4543));
 		check(!eq(t->name,"Beachvolleyball"));
 
@@ -1816,11 +1843,9 @@ void testTopics() {
 }
 
 void testWikidata() {
-	testTopics();
-//	testEntities();
-	//	testLabelInstances();
-	//	importTest();
-
+	testWikidataTopics();
+	testEntities();
+	testImportWiki();
 }
 
 void testLabelInstances() {
@@ -1829,40 +1854,42 @@ void testLabelInstances() {
 }
 
 
+void testTheSingletons();
+
 extern "C" void testAll() {
 #ifndef __clang_analyzer__
 	context = getContext(0);
 	germanLabels = false; // for tests!
 //	clearMemory();
-	testValueLogic();
+    testBasics();
+	testTheSingletons();
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
 	testStringLogic();
 	testHash();
-	testScanf();
-	testYago();
-	testGeoDB();
-
+	testValueLogic();
 	testInstancesAtEnd();
 	testInsertForceStart();
-	testHash();
-
+	testCities();
+	testQuery();
+	testLabelInstances();
+	testDummyLogic();
 	testReification();
 	testStringLogic2();
 	testOpposite();
+
+	testScanf();
+	testGeoDB();
+	testWikidata();
+//	testYago();
+
 	//  share_memory();
 	//  init();
-
-	//  testBasics();
 	//	clearTestContext();
-	//	testBrandNewStuff();// LOOP!
-	//  testStringLogic2();
-	//  testLogic();// test wordnet intersection
 	germanLabels = false;
 	testImportExport();
 	checkWordnet();
 	checkGeo();    //	testDummyLogic();// too big
 	testInclude();
-
 	// shaky
 	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
 	testFacets();
@@ -1870,18 +1897,26 @@ extern "C" void testAll() {
 	testPaths();
 	testFactLearning();
 	testNameReuse();
-	// OK
-
 	p("ALL TESTS SUCCESSFUL!");
 #endif
 	//  testLoop();
 }
 
+void testTheSingletons() {
+	N a=getThe("bla_typ");
+	N a2=getThe("bla_typ");
+	assertEquals(a,a2);
+	N b=getThe("bla2",a);
+	get("bla2");
+	N b2=getThe("bla2",a);
+	assertEquals(b,b2);
+}
 
+
+// current
 void testBug() {
-	testEntities();
-	handle("json/entities/Elektroinstallateur darmstadt");
-	exit(0);
+	testCities();
+//	testTheSingletons();
 }
 
 
@@ -1973,6 +2008,8 @@ void testUmlauts(){
 }
 
 void testImportant(){
+	testTheSingletons();
+	testBasics();
 	testInsertForceStart();
 	testAll();// todo!
 }
@@ -1980,9 +2017,15 @@ void testImportant(){
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
-//	testImportant();
-	germanLabels=0;
+	testBug();
+	testImportant();
 	importAll();
+	germanLabels=0;
+//	deleteStatement(37823934);
+//	p(get(550866));
+	p(get(67975520));
+
+//	testDelete();
 //	importN3("wikidata/latest-truthy.nt.facts");
 //	fixCurrent();
 //	parse("Portugal.typ", false);
