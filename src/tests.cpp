@@ -1362,8 +1362,8 @@ void testCities() {
 	check(has(the(Mersing), a(population), the(22007)))
 	check(has(the(Mersing), a(population)))
 	check(!has(the(Mersing), a(population), the(22008)))
-	check(!has(the(Mersing), value("population", 22008)))
-	//	check(has(the(Mersing),value("population",22007))) todo
+	check(has(the(Mersing),value("population",22007)))// todo
+//	check(!has(the(Mersing), value("population", 22008)))// todo
 }
 
 void testSplit() {
@@ -1794,7 +1794,6 @@ void recursiveTaxonomy() {
 //	cchar* query="Cloud Amazon Web Services Server";// vs Amazon Web Services ??
 void testEntities() {
 	handle("/json/entities/Elektroinstallateur darmstadt");
-	exit(0);
 	parse(":ee Elektroinstallateur darmstadt", false, false);
 	//	cchar* query="kopfsalat";
 	cchar *query = "Elektroinstallateur darmstadt";
@@ -2017,9 +2016,12 @@ void testImportant(){
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
+	check(true or false and false);
+
+//	check()
+	importAll();
 	testBug();
 	testImportant();
-	importAll();
 	germanLabels=0;
 //	deleteStatement(37823934);
 //	p(get(550866));
@@ -2089,7 +2091,6 @@ void testBrandNewStuff() {
 //	handle("/json/all/query/all/6256");
 //	handle("/html/1");
 //	handle("/html/Ära");
-	exit(0);
 #endif
 }
 // Continue with shell

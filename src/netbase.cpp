@@ -481,8 +481,12 @@ int nextStatement_lookupLimit=1000000;// TODO!
 void newQuery(){
 	nextStatement_lookupLimit=1000000;
 }
+
 Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
-	if (nextStatement_lookupLimit--<0)return null;// per web request todo better
+	if (!importing && nextStatement_lookupLimit--<0){
+		printf("nextStatement lookupLimit reached! Cyclic graph?\r\n");
+		return null;
+	}// per web request todo better
 	if (current == null) return getStatement(n->firstStatement);
 	if (stopAtInstances and current->Predicate() == Instance) return null;
 	//	if (stopAtInstances and current->Object == n and current->Predicate == Type)return null; PUT TO END!!
@@ -1263,11 +1267,6 @@ Node *getThe(const char *thing, Node *type) {//, bool dissect) {
 		bad();
 		return 0;
 	}
-//	if(eq("of Directors",thing))
-//		thing=thing+3;
-//	if(startsWith(thing,"of "))
-//		thing=thing+3;
-//	if(startsWith(thing,"in "))thing=thing+3;
 	if (autoIds and type != Number and isInteger(thing))return get(atoi(thing));// WAH, not here! --
 	Node *rel = getRelation(thing); // not here! doch
 	if (rel)return rel;
@@ -2121,16 +2120,18 @@ Node *has(Node *n, string predicate, string object, int recurse, bool semantic, 
 Node *
 has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bool symmetric, bool predicatesemantic,
     bool matchName) {
+
+	if (recurse > 0) recurse++;
+	else recurse = maxRecursions - 1;
+	if (recurse > maxRecursions)
+		return 0;
+
 	Statement *s = findStatement(subject, predicate, object, recurse, semantic, symmetric, predicatesemantic,
 	                             matchName);
 //	if(!s)s=findStatement(subject, predicate, object);
 	if (s != null and s->Subject() == subject) return s->Object(); // a.b=*? return *
 	if (s != null and s->Object() == subject) return s->Subject();
 
-	if (recurse > 0) recurse++;
-	else recurse = maxRecursions - 1;
-	if (recurse > maxRecursions)
-		return 0;
 	if (recurse <= 2 and subject->kind == Abstract->id) {
 		NodeVector all = instanceFilter(subject);// need big lookuplimit here? :( todo: filter onthe fly!
 		for (int i = 0; i < all.size(); i++) {
@@ -2481,7 +2482,7 @@ Node *getThe(Node *abstract, Node *type,bool create /*true!*/) {// first instanc
 	}
 	if (!best) {
 		best = add(abstract->name, type->id, 0);
-		if (type->id > 0) addStatement(best, Type, type);
+		if (type->id > 0) addStatement(best, Type, type, false);
 		addStatement(abstract, Instance, best, false, true);
 	}
 	return best;

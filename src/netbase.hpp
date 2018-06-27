@@ -26,6 +26,7 @@ extern int current_context;
 extern bool useYetvisitedIsA;
 extern bool autoIds;
 extern bool testing;// don't implicitly init relations
+extern bool importing;
 
 extern int resultLimit;
 extern int defaultLookupLimit;

@@ -759,14 +759,11 @@ N addSubword(char *name, N kind) {
 	N old = hasWord(name);
 	if (old) {
 		if (old->statementCount < 3)
-			addStatement(old, Type, kind);
+			addStatement(old, Type, kind, false);
 		return old;
 	}
-//	N n = getSingleton(name, kind, false); // 15.6. BUG
-//	N n = getThe(name,kind); // 15.6.18: 'workaround' doesn't :(
-	N n = get(name); // 21.6.18: 'workaround'
-//		addStatement(n, Type, kind);
-//	n->kind = kind->id;// DANGER!
+
+	N n = getSingleton(name, kind, false); // 15.6. BUG  nextStatement_lookupLimit … 25.6. 'fixed'
 	return n;
 }
 
@@ -945,7 +942,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			if (cut_billiger) {
 				N marke = getThe(values[1], Marke);
 				getThe(values[3], getThe("billiger.de Kategorie"));
-				if (subject)addStatement(subject, Marke, marke);
+				if (subject)
+					addStatement(subject, Marke, marke,CHECK_DUPLICATES);// ok check here
 //				if(checkNode(m)){// and !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
@@ -1469,7 +1467,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 			node->id=id;
 			node->name=abstract->name;
 			node->kind=_entity;
-			addStatement(abstract, Instance, node);
+			addStatement(abstract, Instance, node, false);
 //			initNode(node,id,abstract->name,_entity,0);
 		} else {
 			if (english and germanLabels and node->name)
