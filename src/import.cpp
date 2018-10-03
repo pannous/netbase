@@ -846,8 +846,9 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 	Node *subject = 0;
 	Node *predicate = 0;
 	Node *object = 0;
+	int typeRow = -1;
 	int linecount = 0;
-	if (!type) {
+	if (!type) { // or via typeRow
 		char *typeName = keep_to(editable(cut_to(cut_to(file, "/"), "/")), ".");
 		type = getThe(typeName);
 		getBest = true;
@@ -883,6 +884,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 				Node *fielt = getThe(field); // Firma		instance		Terror_Firma LOL
 //				dissectWord(fielt);
 				predicates.push_back(fielt);
+				if(eq(field,"topic") or eq(field,"type"))
+					typeRow=i;
 			}
 			++linecount;
 			continue;
@@ -900,6 +903,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			continue;
 		}
 		fixValues(values, size);
+		if(typeRow>=0)
+			type=getThe(values[typeRow]);
 		char *name = values[nameRowNr];
 		if (!name or len(name) == 0) {
 			bad();

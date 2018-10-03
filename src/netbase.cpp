@@ -2847,10 +2847,11 @@ void fixThe() {
 }
 
 void fixCurrent() {
-	context->nodeCount=context->lastNode;
-	context->lastNode=wikidata_limit;// fill all empty slots!
-	p(*findAllWords("Spanien"));
-	fixThe();
+	importCsv("Telekom/entities.ee.csv",0,0,0,"name,topic",0);
+//	context->nodeCount=context->lastNode;
+//	context->lastNode=wikidata_limit;// fill all empty slots!
+//	p(*findAllWords("Spanien"));
+//	fixThe();
 //	fixInstances();
 //	cacheTopic();
 //	replay();

@@ -2018,7 +2018,10 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 	check(true or false and false);
 
+//	handle("/550866");
+	importCsv("Telekom/entities.ee.csv",0,0,0,"name,topic",0);
 //	check()
+	exit(0);
 	importAll();
 	testBug();
 	testImportant();

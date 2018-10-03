@@ -108,6 +108,9 @@ char *getStatementTitle(Statement *s, Node *n) {
 
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
+//	autoIds = false;
+	autoIds = true; // 2.7.18 : for http://sqb:8080/html/550866 !?!
+
 	int len = (int) strlen(q0);
 	if (LIVE)lookupLimit = 10000;
 	newQuery();
@@ -351,7 +354,6 @@ int handle(cchar *q0, int conn) {
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	if (contains(q, " limit ")) { strstr(q, " limit ")[0] = 0; }
-	autoIds = false;
 	int size = (int) all.size();
 	int count = (int) all.size();
 	if (showExcludes) {
