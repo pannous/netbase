@@ -66,7 +66,7 @@ set(SOURCE_FILES
         src/netbase.hpp
         src/query.cpp
         src/query.hpp
-        src/reflection.cpp
+        src/reflection.cxx
         src/reflection.hpp
         src/relations.cpp
         src/relations.hpp

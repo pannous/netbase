@@ -386,6 +386,7 @@ char *name(Node *node) {
 }
 
 Context *getContext(int contextId,bool init) {
+	if(context)return context;
 	if (!multipleContexts) contextId = wordnet; // just one context
 #ifdef WASM
     context=new Context();
