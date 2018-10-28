@@ -177,18 +177,15 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 		return 0;
 	Ahash *ah = getAhash(position);
 	cchar *name = a->name;
-	p("OK2");
 	string retain;
 	if (seo and name) {
 		retain = generateSEOUrl(name);
 		name = retain.data();
 	}
 	if (!checkHash(ah) or !checkNode(a) or !a->name or !strlen(name)) return 0;
-	p("OK3");
 	int i = 0;
 	while (ah and ah->next) {
 		if (i++ > 300 and name[1] != 0) {    // allow 65536 One letter nodes
-			p("OK4");
 			bad();
 			if (badAhashReported[ah])return ah;
 			badAhashReported[ah] = true;
@@ -205,7 +202,6 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 		//			return 0;
 		//		}
 		N ab = get(ah->abstract);
-		p("OK5");
 		if (ab == a)
 			return ah; //schon da
 		if (ab and checkNode(ab,0,0,1) and eq(ab->name, name, true)) {
@@ -220,7 +216,6 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 	}
 
 	N ab = ah and ah->abstract ? get(ah->abstract) : 0;
-	p("OK6");
 	if (ab && checkNode(ab,0, false,true)) { //schon was drin
 		if (ab == a)
 			return ah; //schon da
@@ -396,6 +391,7 @@ Context *getContext(int contextId,bool init) {
 	if(context)return context;
 	if (!multipleContexts) contextId = wordnet; // just one context
 #ifdef WASM
+    p("NEW CONTEXT");
     context=new Context();
 #else
 	context = &(contexts[contextId]);
@@ -519,7 +515,7 @@ Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
 Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId) {
 	Context *context = getContext(contextId);
 	if (!checkNode(node, id, false, false)) {
-		p("OUT OF MEMORY!");
+		p("OUT OF MEMORY");
 		return 0;
 	}
 	if (context->currentNameSlot + 1000 > averageNameLength * maxNodes) {
@@ -557,7 +553,7 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 		return false;
 	}
 #ifdef WASM
-if(nodeId<propertySlots)return false;
+if(nodeId<-propertySlots)return false;
 if(nodeId>maxNodes)return false;
 if(!node)return false;
 if((long)node<=0)return false;
@@ -1664,10 +1660,6 @@ void show(Statement *s) {
 bool show(Node *n, bool showStatements) {        //=true
 	//	if (quiet)return;
 	if (!checkNode(n)) return 0;
-    p("NODE");
-	pf("NODE %p",n);
-	pf("NODE #s %d",n->statementCount);
-	pf("NODE id %d",n->id);
 	if (n->statementCount <= 1) {// x->instance->x
 		//    pf("%d|",n->id);
 		//    return false;// !!! HIDE!!!

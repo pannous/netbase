@@ -6,9 +6,9 @@ EMCC_DEBUG=1
 # "--ignore-dynamic-linking "--embed-file
 
 options="--memoryprofiler --emit-symbol-map --tracing  --profiling --emrun --memory-init-file 1 -v -s ASSERTIONS=1 " 
-options="$options -s TOTAL_MEMORY=0x30000000"
-emcc -w $options -std=c++1z -g4 -O0 -s DEMANGLE_SUPPORT=1 -DWASM -DNO_ZLIB -DNO_READLINE src/*.cpp -o netbase.html
-
-# wasm-gc netbase.wasm # optimize and demangle
+options="$optionsx -s TOTAL_MEMORY=0x30000000"
+emcc -w $options -std=c++1z -g4 -O4 -s DEMANGLE_SUPPORT=1 -DWASM -DNO_ZLIB -DNO_READLINE src/*.cpp -o netbase.html
 
 cat glue.js >> netbase.js
+
+wasm-gc netbase.wasm # optimize and demangle

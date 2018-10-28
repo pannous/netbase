@@ -62,6 +62,9 @@ void normImageTitle(char *title) {// blue_fin => bluefin // what?
 }
 
 bool checkLowMemory() {
+#ifdef WASM
+	return false;
+#endif
 	size_t currentSize = getCurrentRSS(); //
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
