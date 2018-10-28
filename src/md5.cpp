@@ -118,7 +118,7 @@ MD5::MD5() {
 // nifty shortcut ctor, compute MD5 for string and finalize it right away
 MD5::MD5(const std::string &text) {
 	init();
-	updateMd5(text.c_str(), (uint) text.length());
+	updateMd5(text.c_str(), (unsigned int) text.length());
 	finalize();
 }
 

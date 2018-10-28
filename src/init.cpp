@@ -62,7 +62,7 @@ int semrm(key_t key, int id = 0) {
 }
 
 
-#include <execinfo.h>
+// #include <execinfo.h>
 #include "errno.h"
 
 static void full_write(int fd, const char *buf, size_t len) {
@@ -86,6 +86,7 @@ void print_backtrace(void) {
 	char **bt_syms;
 	int i;
 
+#ifdef _EXECINFO_H
 	bt_size = backtrace(bt, 1024);
 	bt_syms = backtrace_symbols(bt, bt_size);
 	full_write(STDERR_FILENO, start, strlen(start));
@@ -96,6 +97,9 @@ void print_backtrace(void) {
 	}
 	full_write(STDERR_FILENO, end, strlen(end));
 	free(bt_syms);
+#else 
+	printf("compile with EXECINFO for backtrace");
+#endif
 }
 
 // silent: in messages:

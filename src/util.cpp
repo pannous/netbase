@@ -11,8 +11,11 @@ using namespace std;
 #include <regex.h>
 
 #include <cstdlib>
+
+#ifndef NO_ZLIB
 #include <zlib.h> // zlib1g-dev
 #include "zlib.h"
+#endif
 #include <unistd.h> //getcwd
 #include <stdio.h> //getcwd
 #include <string.h>
@@ -846,7 +849,7 @@ FILE *open_file(const char *file, bool exitOnFailure/*=true*/) {
 	return infile;
 }
 
-
+#ifndef NO_ZLIB
 z_stream init_gzip_stream(FILE *file, char *out) {// unsigned
 	z_stream strm = {0};
 	strm.zalloc = Z_NULL;
@@ -874,6 +877,9 @@ bool inflate_gzip(FILE *file, z_stream strm, size_t bytes_read) {//,char* out){
 	}
 	return true;// all OK
 }
+#else
+typedef int z_stream;
+#endif
 
 const char *current_file = 0;
 
@@ -893,7 +899,11 @@ bool readFile(FILE *infile, char *line, z_stream strm, bool gzipped) {
 			memset(gzip_out, 0, OUT_CHUNK);
 			memset(line, 0, MAX_CHARS_PER_LINE);
 			size_t bytes_read = fread(gzip_in, sizeof(char), CHUNK, infile);
+			#ifndef NO_ZLIB
 			ok = inflate_gzip(infile, strm, bytes_read);
+			#else
+			printf("GZIP NOT compiled in");
+			#endif
 			strcpy(line, hangover);
 		}
 		if (ok) {
@@ -940,7 +950,11 @@ bool readFile(const char *file, char *line) {
 		current_file = file;
 		infile = open_file(file);
 		gzipped = endsWith(file, ".gz");
+		#ifndef NO_ZLIB
 		if (gzipped)strm = init_gzip_stream(infile, line);
+		#else
+		printf("GZIP NOT compiled in");
+		#endif
 	}
 	bool ok = readFile(infile, line, strm, gzipped);
 	if (!ok)closeFile(file);

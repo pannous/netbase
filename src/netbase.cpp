@@ -167,7 +167,7 @@ Ahash *getAhash(int position) {
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash *, bool> badAhashReported;// debug
-Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool seo/*=false*/) {
+Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false*/, bool seo/*=false*/) {
 	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
 	if (a == 0)
 		return 0;
