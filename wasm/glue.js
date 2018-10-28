@@ -1,6 +1,8 @@
 let SHARED_MEMORY_ROOT=0x20000000//1000000 // todo
-// let ONE_GB=1024*1024*1024 
-let ONE_GB=1000000000
+// let CHUNK=1024*1024*1024 
+// let ONE_GB=1000000000
+let CHUNK=100000000
+
 let SHARED_MEMORY_ROOT_KEY=0x69190
 
 function _semget(segment) {
@@ -17,13 +19,13 @@ function _shmget(segment) {
   if(segment==SHARED_MEMORY_ROOT_KEY)
     return SHARED_MEMORY_ROOT
   else if(segment==SHARED_MEMORY_ROOT_KEY+1)
-    return ONE_GB// SHARED_MEMORY_ROOT+200000000 // todo
+    return CHUNK// SHARED_MEMORY_ROOT+200000000 // todo
   else if(segment==SHARED_MEMORY_ROOT_KEY+2)
-    return ONE_GB+300000000 // todo
+    return CHUNK+300000000 // todo
   else if(segment==SHARED_MEMORY_ROOT_KEY+3)
-    return ONE_GB+ONE_GB//400000000 // todo
+    return CHUNK+CHUNK//400000000 // todo
   else if(segment==SHARED_MEMORY_ROOT_KEY+4)
-    return ONE_GB+500000000 // todo
+    return CHUNK+500000000 // todo
   else console.log("UNKNOWN SHARED_MEMORY_ROOT_KEY",segment)
-    return ONE_GB*3; // todo
+    return CHUNK*3; // todo
 }

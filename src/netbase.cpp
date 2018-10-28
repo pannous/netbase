@@ -173,17 +173,22 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 		return 0;
 	if (a == Error)
 		return 0;
+	if(!checkNode(a))
+		return 0;
 	Ahash *ah = getAhash(position);
 	cchar *name = a->name;
+	p("OK2");
 	string retain;
 	if (seo and name) {
 		retain = generateSEOUrl(name);
 		name = retain.data();
 	}
 	if (!checkHash(ah) or !checkNode(a) or !a->name or !strlen(name)) return 0;
+	p("OK3");
 	int i = 0;
 	while (ah and ah->next) {
 		if (i++ > 300 and name[1] != 0) {    // allow 65536 One letter nodes
+			p("OK4");
 			bad();
 			if (badAhashReported[ah])return ah;
 			badAhashReported[ah] = true;
@@ -200,6 +205,7 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 		//			return 0;
 		//		}
 		N ab = get(ah->abstract);
+		p("OK5");
 		if (ab == a)
 			return ah; //schon da
 		if (ab and checkNode(ab,0,0,1) and eq(ab->name, name, true)) {
@@ -214,6 +220,7 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 	}
 
 	N ab = ah and ah->abstract ? get(ah->abstract) : 0;
+	p("OK6");
 	if (ab && checkNode(ab,0, false,true)) { //schon was drin
 		if (ab == a)
 			return ah; //schon da
@@ -549,6 +556,13 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 		//		p(nodeId);
 		return false;
 	}
+#ifdef WASM
+if(nodeId<propertySlots)return false;
+if(nodeId>maxNodes)return false;
+if(!node)return false;
+if((long)node<=0)return false;
+if((long)node>0x30000000)return false;// todo
+#endif
 //	if(!debug)return true;
 	context = getContext(current_context);
 	void *maxNodePointer = &context->nodes[maxNodes];
@@ -973,9 +987,6 @@ Node *get(char *node) {
 
 //inline
 Node *get(int nodeId) {
-#ifdef WASM
-	nodeId=nodeId+propertyOffset; // Slots
-#endif
 	if (debug and (nodeId < -propertySlots)) { // remove when debugged
 		if (quiet)return Error;
 		bad();
@@ -1653,11 +1664,14 @@ void show(Statement *s) {
 bool show(Node *n, bool showStatements) {        //=true
 	//	if (quiet)return;
 	if (!checkNode(n)) return 0;
+    p("NODE");
+	pf("NODE %p",n);
+	pf("NODE #s %d",n->statementCount);
+	pf("NODE id %d",n->id);
 	if (n->statementCount <= 1) {// x->instance->x
 		//    pf("%d|",n->id);
 		//    return false;// !!! HIDE!!!
 	}
-
 	// Context* c=getContext(n->context);
 	// if(c != null and c->name!=null)
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
@@ -1708,11 +1722,7 @@ Node *showNode(Node *n) {
 Node *showNode(int id) {
 	if(id<=-propertySlots || id>maxNodes)
 		return bad();
-#ifdef WASM
-	if(id<=0)
-		return bad();
-#endif
-	Node *n = &context->nodes[id];
+	Node *n = &getContext()->nodes[id];// &context->nodes[id];
 	if (!checkNode(n, id)) return 0;
 	show(n);
 	return n;

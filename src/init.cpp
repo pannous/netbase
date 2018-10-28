@@ -242,6 +242,9 @@ void initRootContext() {
 }
 
 void checkRootContext() {
+#ifdef WASM
+	return;// only one new Context() ... ok
+#endif
 	Context *rootContext = (Context *) context_root;
 	if (rootContext->nodeCount == 0) {
 		p("STARTING WITH CLEAN MEMORY");
@@ -249,23 +252,10 @@ void checkRootContext() {
 //    clearMemory();
 		return;
 	}
-//	p("USING SHARED MEMORY");
-////	if (rootContext->nodes != (Node*) node_root) {	// &context_root[contextOffset]) {
-//	if (context->nodes != (Node*) node_root) {	// &context_root[contextOffset]) {
-//		p("rootContext->nodes != (Node*) node_root");
-//		pf("%X != %X\n",rootContext->nodes,node_root);
-//		showContext(rootContext);
-//		
-////		context->nodes=rootContext->nodes;	// hack
-//	}
 	if (context->nodeNames != name_root)
 		fixPointers();
 	rootContext->nodes = (Node *) node_root + propertySlots;;
 	rootContext->statements = statement_root;
-//	else if (context->nodes != rootContext->nodes) {
-//		fixPointers();
-//		context->nodes=rootContext->nodes;
-//	}
 }
 
 
