@@ -2,4 +2,8 @@
 # make
 source /opt/emsdk/emsdk_env.sh
 PATH=$PATH:/opt/emsdk/emscripten/1.38.12/
-emcc -w -std=c++1z -g4 -O1 -s DEMANGLE_SUPPORT=1 -DNO_ZLIB -DNO_READLINE src/*.cpp -o netbase.html
+emcc -w -std=c++1z -g4 -O1 -s DEMANGLE_SUPPORT=1 -DWASM -DNO_ZLIB -DNO_READLINE src/*.cpp -o netbase.html
+
+# wasm-gc netbase.wasm # optimize and demangle
+
+cat glue.js >> netbase.js

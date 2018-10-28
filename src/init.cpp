@@ -604,7 +604,7 @@ char *initContext(Context *context) {
 		} while (nodes == 0 or statements == 0);
 //	if (!context_root or virgin_memory) clearMemory();
 //	Statement* oldstatements=context->statements;
-	if (!context)context = getContext(current_context);
+	if (!context)context = getContext(current_context, false);
 	char *oldnodeNames = context->nodeNames;
 //	Node* oldnodes=context->nodes;
 	context->nodes = nodes;

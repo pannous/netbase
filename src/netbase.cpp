@@ -385,9 +385,13 @@ char *name(Node *node) {
 	return node->name;
 }
 
-Context *getContext(int contextId) {
+Context *getContext(int contextId,bool init) {
 	if (!multipleContexts) contextId = wordnet; // just one context
+#ifdef WASM
+    context=new Context();
+#else
 	context = &(contexts[contextId]);
+#endif
 	if (context->nodes != null) {// and context->id == contextId) {
 		//		printf("Found context %d: %s\n",context->id,context->name);
 		//		flush();
@@ -400,7 +404,7 @@ Context *getContext(int contextId) {
 #ifdef statementArrays
 	context->statementArrays = (int*) malloc(maxStatements());
 #endif
-	initContext(context);
+	if(init)initContext(context);
 //	if (contextId == wordnet) context->lastNode=1; //sick hack to reserve first 1000 words!
 //	else context->nodeCount=0;
 //	context->statementCount=1; //1000;
@@ -968,6 +972,9 @@ Node *get(char *node) {
 
 //inline
 Node *get(int nodeId) {
+#ifdef WASM
+	nodeId=nodeId+propertyOffset; // Slots
+#endif
 	if (debug and (nodeId < -propertySlots)) { // remove when debugged
 		if (quiet)return Error;
 		bad();
@@ -1698,6 +1705,12 @@ Node *showNode(Node *n) {
 }
 
 Node *showNode(int id) {
+	if(id<=-propertySlots || id>maxNodes)
+		return bad();
+#ifdef WASM
+	if(id<=0)
+		return bad();
+#endif
 	Node *n = &context->nodes[id];
 	if (!checkNode(n, id)) return 0;
 	show(n);

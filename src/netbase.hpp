@@ -426,7 +426,7 @@ extern "C" Node* getNodeS(int node);
 extern "C" int getId(char* node);
 //extern "C" Node* getNode(char* node);
 
-Context* getContext(int contextId=0/*wordnet*/);
+Context* getContext(int contextId=0/*wordnet*/,bool init=true);
 void showContext(int nr);
 void showContext(Context* cp);
 void showNodes(NodeSet all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false);
@@ -637,9 +637,13 @@ static int synsetOffset=100000;// 200000-317658 for wordnet + other !
 Maximum nodes:419430400         statements:838860800            chars:8388608000
 Usage  nodes:62.37%                     statements:62.48%               chars:49.47%
  */
+#ifdef WASM
+static long maxNodes = 1*million;
+static long maxStatements = 1*maxNodes;
+#else
 static long maxNodes = 300*million;
 static long maxStatements = 2*maxNodes;// why suddenly 629145600
-
+#endif
 static long contextOffset=0x800000;//0x10000;
 static int averageNameLength =10;// 10 for amazon! else 20 (cheap)
 static long maxChars=maxNodes * averageNameLength;
