@@ -121,7 +121,7 @@ void appendFile(const char* fileName,const char* data);
 	else{printf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
 
 #define assertEquals(a,b) printf("TEST %s==%s\n",#a,#b);\
-	if(eq(a,b))p("PASSED\n");else{p(a);p("!=");p(b);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
+	if(eq(a,b))p("PASSED\n");else{p(a);p("!=");p(b);printf("FAILED %s:%d\n",__FILE__,__LINE__);exit(0);}
 
 #define minimum(a,b) (a<b?a:b)
 void printlabels();

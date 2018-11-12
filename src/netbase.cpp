@@ -355,9 +355,10 @@ char *statementString(Statement *s) {
 
 
 bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
+	if (!context)context=getContext();
 	if (s == 0) return false;
-	if (s < contexts[current_context].statements) return false;
-	if (s >= contexts[current_context].statements + maxStatements) return false;
+	if (s < context->statements) return false;
+	if (s >= context->statements + maxStatements) return false;
 	if (!debug)return true;// bad idea!
 	if (s->id() == 0) return false; // !
 	if (checkSPOs or checkNamesOfSPOs) if (s->Subject() == 0 or s->Predicate() == 0 or s->Object() == 0) return false;
