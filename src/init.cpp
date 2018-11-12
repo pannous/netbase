@@ -97,7 +97,7 @@ void print_backtrace(void) {
 	}
 	full_write(STDERR_FILENO, end, strlen(end));
 	free(bt_syms);
-#else 
+#else
 	printf("compile with EXECINFO for backtrace");
 #endif
 }
@@ -172,7 +172,7 @@ void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *d
 		if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 			semrm(key); // clean and try again
 			if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
-                pf("nodes: %ld\n",maxNodes);
+				pf("nodes: %ld\n", maxNodes);
 				perror("share_memory failed!\nSize changed or NOT ENOUGH MEMORY??\n shmget");
 				//			printf("try calling ./clear-shared-memory.sh\n");
 				//			perror(strerror(errno)); <= ^^ redundant !!!
@@ -278,19 +278,27 @@ extern "C" void initSharedMemory(bool relations) {
 	                                      root);// ((char*) context_root) + context_size
 //	p("name_root:");
 	int mega_debug = getenv("MEGA_DEBUG") ? 0x40000 : 0; // objective xcode zombie diagnostics etc
-	name_root = (char *) share_memory(key + 1, name_size, name_root,
-	                                  ((char *) abstract_root) + abstract_size * 2 + mega_debug);
+	english_words = (char *) share_memory(key + 1, name_size / 2, name_root,
+	                                      ((char *) abstract_root) + abstract_size * 2 + mega_debug);
+	german_words = (char *) share_memory(key + 5, name_size / 2, name_root + name_size, name_root + name_size);
+	if (germanLabels)
+		name_root = german_words
+	else name_root = english_words;
+
+
 //	p("node_root:");
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
 //	p("statement_root:");
-	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root, ((char *) node_root) + node_size);
+	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root,
+	                                            ((char *) node_root) + node_size);
 //	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 	//	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
 
 //  	p("context_root:");
-	context_root = (Context *) share_memory(key + 4, context_size, context_root, ((char *) statement_root) + statement_size);
+	context_root = (Context *) share_memory(key + 4, context_size, context_root,
+	                                        ((char *) statement_root) + statement_size);
 	abstracts = (Ahash *) (abstract_root); // reuse or reinit
 	extrahash = (Ahash *) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts = (Context *) context_root;
@@ -299,9 +307,9 @@ extern "C" void initSharedMemory(bool relations) {
 	if (relations) {
 		p(get(_clazz));
 //		if(!checkNode(-9) and debug)
-			initRelations();
+		initRelations();
 		if (context->lastNode < 0)
-			context->lastNode = wikidata_limit ;
+			context->lastNode = wikidata_limit;
 	}
 }
 
