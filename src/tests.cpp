@@ -2026,6 +2026,7 @@ void testBrandNewStuff() {
 //	start_server();
 	importCsv("Telekom/entities.ee.csv",0,0,0,"name,topic",0);
 //	check()
+	exit(0);
 	importAll();
 	testBug();
 	testImportant();
