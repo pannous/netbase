@@ -2,13 +2,14 @@ cd ~/netbase
 #killall -SIGKILL gdb
 #killall -SIGKILL gdb-i386-apple-darwin
 #killall -SIGKILL netbase
+eval `ssh-agent -s`
 ssh-add ~/.ssh/git_key_quasiris
 git pull #|| exit
 ./adjust.sh
 
 platform=`uname`
 
-ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
+# ruby_include=$RVM_HOME/src/ruby-$RUBY_VERSION/include/ruby/
 
 # options="-m64 --debug -c -g -w -MMD -MP" #-MF #64bit cannot specify -o with -c or -S with multiple files
 options="-m64 --debug  -std=c++1z"  # 0x = old -std=c++11 once no jserver
@@ -28,7 +29,7 @@ options="-m64 --debug  -std=c++1z"  # 0x = old -std=c++11 once no jserver
 #g++ $options -MF build/NetbaseJNI.o.d -o build/NetbaseJNI.o src/jni/NetbaseJNI.cpp -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include
 #g++ $options -L/Users/me/.rvm/usr/lib -I$ruby_include  -MF build/NetbaseRuby.o.d -o build/NetbaseRuby.o src/netbase-ruby.cpp
 
-mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
+# mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
 g++ $options -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline -lz && ./netbase :exit $@
 
