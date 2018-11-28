@@ -66,7 +66,7 @@ bool checkLowMemory() {
 	return false;
 #endif
 #ifdef CHECKLOWMEMORY
-	size_t currentSize = getCurrentRSS(); // reflection.hpp cxx 
+	size_t currentSize = getCurrentRSS(); // reflection.hpp cxx
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
 	//	if (!free) free=5.5L * GB;// 2 GB + work

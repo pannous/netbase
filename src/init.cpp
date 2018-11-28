@@ -160,7 +160,7 @@ void detach_shared_memory() {
 
 void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *desired) {
 	if (root) {
-		pf("root_memory already attached! %p", root);
+		pf("root_memory already attached! %p\n", root);
 		return root;
 	}
 	/* make the key: */

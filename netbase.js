@@ -112,22 +112,12 @@ function makeStatement(statement,elem,entity)
 	// if(statement.object.match(/\.png/))addImage(statement.object,div);
 	// if(statement.object.match(/\.jpg/))addImage(statement.object,div);
 	// if(statement.object.match(/\.bmp/))addImage(statement.object,div);
-<<<<<<< HEAD
-	var top = document.createElement("tr");
-  if(++num % 2){
-  top.classList.add('even') //.class="even"
-}  else {
-  top.classList.add('odd') //.class="odd"
-}
-=======
 	var top = document.createElement("tr")
-  if(++num % 2){
+    if(++num % 2){
 	  top.classList.add('even') 
 	}  else {
-  	top.classList.add('odd') 
+  	  top.classList.add('odd')
 	}
-
->>>>>>> ccfacff2e5d9882af0eee86a91402804b945378e
 	if(!inline || statement.sid!=entity.id)
 		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top))
 
