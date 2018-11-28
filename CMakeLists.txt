@@ -85,4 +85,5 @@ set(SOURCE_FILES
 
 add_executable(netbase ${SOURCE_FILES})
 target_link_libraries( netbase ${ZLIB_LIBRARIES} )
-target_link_libraries( netbase ${Readline_LIBRARY} )
+#target_link_libraries( netbase ${Readline_LIBRARY} )
+TARGET_LINK_LIBRARIES( netbase readline ) # => libreadline

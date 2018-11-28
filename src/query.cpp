@@ -263,6 +263,8 @@ NodeVector query(string s, int limit/*=resultLimit*/) {
 	lookupLimit = 100000;// todo: good
 //  q.queryType=sqlQuery;// njet!
 	NodeVector results = query(q);
+	if (results.empty())
+		results = parseProperties(s.data());
 	showNodes(results);
 	return results;
 	//	return evaluate_sql(s, limit);

@@ -2017,9 +2017,15 @@ void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
 	check(true or false and false);
+	show(parseProperties("Kathy Bald.Geburtsdatum"));
+	query("Kathy Bald.Geburtsdatum");
+//	query("Til_Schweiger.Geburtstag");
+//	query("Til_Schweiger.Geburtsdatum");
+
+	exit(0);
 	import("wins.n3");
 	handle("/3");
-	exit(0);
+//	start_server();
 	importCsv("Telekom/entities.ee.csv",0,0,0,"name,topic",0);
 //	check()
 	importAll();

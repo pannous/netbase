@@ -329,10 +329,10 @@ int handle(cchar *q0, int conn) {
 		showExcludes = true;
 	}
 	bool safeMode = true;
-//	if (startsWith(q, "query/")) { // AND ...
-//		q = q + 6;
-//		safeMode = false;// RLLY?
-//	}
+	if (startsWith(q, "query/")) { // AND ...
+		q = q + 6;
+		safeMode = false;// RLLY?
+	}
 //	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
 //	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
 //	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
