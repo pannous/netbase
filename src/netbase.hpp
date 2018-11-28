@@ -645,10 +645,10 @@ static long maxStatements = 1*maxNodes;
 #elif ECHSE
 //static long maxNodes = 1*million;
 //static long maxStatements = 1*maxNodes;
-//static long maxNodes = 209715200;//220*million;// enough
-//static long maxStatements = 471859200;//2*maxNodes;
+static long maxNodes = 209715200;//220*million;// enough
+static long maxStatements = 471859200;//2*maxNodes;
 //Maximum nodes:209715200		statements:471859200		chars:2097152000
-//#else
+#else
 static long maxNodes = 300*million;// Live 11.11.2018
 static long maxStatements = 2*maxNodes;// why suddenly 629145600
 #endif
