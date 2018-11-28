@@ -118,7 +118,8 @@ typedef struct Node {
     int id; //implicit -> redundant
 //    int id(){ return getNodeId((long)this);}// implicit
 
-    char* name;
+	char* name;// best to debug!
+//	char* english;
 //  long name; // see value for float etc
 //    int namePointer;// harder to debug, just adjust if context->nodeNames != context->nodeNames
 //    char* name(){return context->nodeNames[namePointer]}     char* resolveName(int pointer);

@@ -589,7 +589,7 @@ bool isNameField(char *field, char *nameField) {
 }
 
 Node *namify(Node *node, char *name) {
-	node->name = name_root + context->currentNameSlot;
+	node->name = context->nodeNames+ context->currentNameSlot;
 	strcpy(node->name, name); // can be freed now!
 	int l = len(name);
 	context->nodeNames[context->currentNameSlot + l] = 0;
@@ -1363,7 +1363,7 @@ int freebaseKeysConflicts = 0;
 
 map<int, bool> wiki_abstracts;
 
-bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = false) {
+bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/* = false*/) {
 	p("ONLY COMPATIBLE WITH PURE WIKIDATA");
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
 	char *label0 = (char *) malloc(10000);
@@ -1374,6 +1374,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 	char *test;
 	int linecount = 0;
 	bool english = contains(file, ".en.");
+	if(english)germanLabels= false;
 
 	while (readFile(file, &line[0])) {
 		if (++linecount % 10000 == 0) {

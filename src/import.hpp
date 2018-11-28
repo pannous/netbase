@@ -28,6 +28,7 @@ void importJson(const char* file, Node* type=0, const char* ignoredFields=0, con
 //void importXml(const char* facts_file,Context* context=null, const char* ignoredFields=null, const char* includedFields=null);
 void importXml(const char* facts_file, char* nameField=0, const char* ignoredFields=0, const char* includedFields=0);
 bool importN3(const char* file);
+bool importWikiLabels(const char *file, bool properties = false, bool altLabels = false);
 int getFields(char* line, vector<char*>& fields, char separator = 0, int nameRowNr = -1, const char* nameRow = 0);
 char* extractTagName(const char *line);
 char* extractTagValue(char* line);

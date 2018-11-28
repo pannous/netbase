@@ -2019,8 +2019,6 @@ void testBrandNewStuff() {
 	check(true or false and false);
 	show(parseProperties("Kathy Bald.Geburtsdatum"));
 	query("Kathy Bald.Geburtsdatum");
-//	query("Til_Schweiger.Geburtstag");
-//	query("Til_Schweiger.Geburtsdatum");
 
 	exit(0);
 	import("wins.n3");

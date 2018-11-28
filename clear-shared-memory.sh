@@ -9,6 +9,7 @@ sudo ipcrm -M "0x00069192"
 sudo ipcrm -M "0x00069193"
 sudo ipcrm -M "0x00069194"
 sudo ipcrm -M "0x00069195"
+sudo ipcrm -M "0x00069196"
 # sudo ipcrm -M 0x57020303 #netbase
 # sudo ipcrm -M 0x00000000
 

@@ -19,6 +19,7 @@
 #include "init.hpp"
 #include "relations.hpp"
 
+#include "errno.h"
 
 namespace patch {
 	template<typename T>
@@ -52,6 +53,9 @@ union semun {
 	struct seminfo *__buf; /* Buffer fTheor IPC_INFO
 	 (Linux-specific) */
 };
+
+bool file_exists(const char *string);
+
 #endif
 
 int semrm(key_t key, int id = 0) {
@@ -63,7 +67,6 @@ int semrm(key_t key, int id = 0) {
 
 
 // #include <execinfo.h>
-#include "errno.h"
 
 static void full_write(int fd, const char *buf, size_t len) {
 	while (len > 0) {
@@ -157,7 +160,7 @@ void detach_shared_memory() {
 
 void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *desired) {
 	if (root) {
-//		ps("root_memory already attached!");
+		pf("root_memory already attached! %p", root);
 		return root;
 	}
 	/* make the key: */
@@ -277,8 +280,8 @@ extern "C" void initSharedMemory(bool relations) {
 	abstract_root = (Node *) share_memory(key, abstract_size * 2, abstract_root,
 	                                      root);// ((char*) context_root) + context_size
 //	p("name_root:");
-	name_root= (char *) share_memory(key + 1, name_size , name_root, ((char *) abstract_root) + abstract_size * 2 );
-
+	char *desiredAddress = ((char *) abstract_root) + abstract_size * 2;
+	name_root = (char *) share_memory(key + 1, name_size, name_root, desiredAddress);
 
 //	p("node_root:");
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
@@ -299,7 +302,7 @@ extern "C" void initSharedMemory(bool relations) {
 	context = getContext(current_context);
 	checkRootContext();
 	if (relations) {
-		p(get(_clazz));
+//		p(get(_clazz));
 //		if(!checkNode(-9) and debug)
 		initRelations();
 		if (context->lastNode < 0)
@@ -389,7 +392,7 @@ void load(bool force) {
 	}
 
 	fp = open_binary("names.bin");
-	fread(c->nodeNames, sizeof(char), c->currentNameSlot + 100, fp);
+	fread(name_root, sizeof(char),maxChars, fp);
 	fclose(fp);
 
 	fp = open_binary("statements.bin");
@@ -417,6 +420,10 @@ void load(bool force) {
 	showContext(context);
 
 	// cout<<"nanoseconds "<< diff <<'\n';
+}
+
+bool file_exists(const char *fname) {
+	return (access(fname, F_OK) != -1);
 }
 
 void fixPointers() {

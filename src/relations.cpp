@@ -274,6 +274,9 @@ void initRelations() {
 //  if(testing){p("testing");return;}
 //    p("initRelations");
 	context = getContext(current_context);
+	context->nodeNames=name_root;
+	name_root=context->nodeNames;// set to correct language
+
 	if (context->currentNameSlot == 0)
 		context->currentNameSlot++;// not 0!
 	if (germanLabels) {
