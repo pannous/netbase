@@ -65,7 +65,8 @@ bool checkLowMemory() {
 #ifdef WASM
 	return false;
 #endif
-	size_t currentSize = getCurrentRSS(); //
+#ifdef CHECKLOWMEMORY
+	size_t currentSize = getCurrentRSS(); // reflection.hpp cxx 
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
 	//	if (!free) free=5.5L * GB;// 2 GB + work
@@ -75,6 +76,7 @@ bool checkLowMemory() {
 		printf("MEMORY: %zX Peak: %zX FREE: %zX \n", currentSize, peakSize, free);
 		return true;
 	}
+#endif
 	//		 or currentSize*1.2>sizeOfSharedMemory or 
 	if (context->nodeCount + 30000 > maxNodes) {
 		p("OUT OF MEMORY!");
