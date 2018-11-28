@@ -33,6 +33,8 @@ start the server via `./netbase :server`
 
 ## Summary
 
+https://en.wikipedia.org/wiki/List_of_lists_of_lists
+
 Netbase is much more than a hyperfast triple store: It is a semantic inference system which has the [wordnet](http://wordnet.princeton.edu/) ontology built-in. Semantic relations are the back-bone of netbase, so that you can quickly query with synonyms, transitive class hierarchies, part meronyms etc.
 
 Instead of asking about the "names of the daughters of Barack Obama" you could just search for "Obamas kids".

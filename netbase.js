@@ -1,16 +1,16 @@
 // Netbase Graph Viewer :: version 1.2.8
 // © 2010 - 2017 Pannous + Quasiris
 
-var div;// results
-var editMode=false;
-var link_name=true;
-var server="/";//html/"; 
+var div// results
+var editMode=false
+var link_name=true
+var server="/"//html/"; 
 if(document.location.href.match(/file:/))
 	server="http://netbase.pannous.com/"
 else server=document.location.origin+"/html/"
-	// server="http://87.118.71.26:81/" // for quasiris demo
-	// server="http://big.netbase.pannous.com:81/"
-	// server="http://de.netbase.pannous.com:81/"
+// server="http://87.118.71.26:81/" // for quasiris demo
+// server="http://big.netbase.pannous.com:81/"
+// server="http://de.netbase.pannous.com:81/"
 
 var search = window.location.search;
 var inline=false // compact view, embedded
@@ -96,13 +96,13 @@ function editLinks(predicate,statement,elem)
 		makeLink(" ^",clean(document.URL).replace(/html/,"html/short")+"."+statement.predicate,predicate).style=tiny;// filter
 		makeLink(" -",document.URL+" -"+statement.predicate,predicate).style=tiny;// filter
 		makeLink(" +",statement.sid+" include "+statement.predicate,predicate).style=tiny;// filter
-		makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
-		makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
+	makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny// filter
+	makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny// filter
 }
 var num=0;
 function makeStatement(statement,elem,entity)
 {  // if Wikimedia-Kategorie  BREAK!
-  if(filterStatement(statement))return;
+	if(filterStatement(statement))return
 	// if(statement.predicate.match(/Wappen/i))addImage(statement.object,div);
 	// if(statement.predicate.match(/Flagge/i))addImage(statement.object,div);
 	// if(statement.predicate.match(/karte/i))addImage(statement.object,div);
@@ -112,51 +112,61 @@ function makeStatement(statement,elem,entity)
 	// if(statement.object.match(/\.png/))addImage(statement.object,div);
 	// if(statement.object.match(/\.jpg/))addImage(statement.object,div);
 	// if(statement.object.match(/\.bmp/))addImage(statement.object,div);
+<<<<<<< HEAD
 	var top = document.createElement("tr");
   if(++num % 2){
   top.classList.add('even') //.class="even"
 }  else {
   top.classList.add('odd') //.class="odd"
 }
+=======
+	var top = document.createElement("tr")
+  if(++num % 2){
+	  top.classList.add('even') 
+	}  else {
+  	top.classList.add('odd') 
+	}
+
+>>>>>>> ccfacff2e5d9882af0eee86a91402804b945378e
 	if(!inline || statement.sid!=entity.id)
-		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
+		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top))
 
 	predicate=	makeRow(top)
 	if(editMode)editLinks(predicate,statement,elem)
-	makeLink(statement.predicate,server+statement.pid,predicate);
+	makeLink(statement.predicate,server+statement.pid,predicate)
 	if(!inline || statement.oid!=entity.id){
-		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
+		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid
 		if(statement.predicate.match("Koord"))
 			objectUrl="https://www.mapquest.com/latlng/"+statement.object.replace(" ","")
-		var x=makeLink(statement.object,objectUrl,makeRow(top));
+		var x=makeLink(statement.object,objectUrl,makeRow(top))
 	// if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
 	}
-	elem.appendChild(top);
+	elem.appendChild(top)
 }
 
-var imageAdded=false;
-var onerror_handled=0;
+var imageAdded=false
+var onerror_handled=0
 function addImage(image,div){
 	// if(imageAdded)return;
 	console.log(image)
-	if(image.match("/Q"))return;
+	if(image.match("/Q"))return
 	image=image.replace(/ /,"_")
 	image=image.replace(/%20/,"_")
 	var url="https://commons.wikimedia.org/wiki/"
 	if(image.match(/http/))url="" // Already there
 	// image=image.replace(/.150px.*/,"");
 	// image=image.replace("/thumb/","/")
-	var link=document.createElement("a");
+	var link=document.createElement("a")
 	link.href=image.replace("/thumb/","/").replace(/.150px.*/,"").replace(/\.jpg.*/,".jpg")
 	link.target="_blank"
-	img=document.createElement("img");
+	img=document.createElement("img")
 	img.onerror=function() {
-		if(onerror_handled==0){console.log(this.src);this.src=this.src.replace(/.150px.*/,"");}
-		if(onerror_handled==1){;console.log(this.src);this.src=this.src.replace("/thumb/","/");}
-		if(onerror_handled==2){;console.log(this.src);this.src=this.src.replace("/commons/","/en/");}
-		onerror_handled++;;
+		if(onerror_handled==0){console.log(this.src);this.src=this.src.replace(/.150px.*/,"")}
+		if(onerror_handled==1){console.log(this.src);this.src=this.src.replace("/thumb/","/")}
+		if(onerror_handled==2){console.log(this.src);this.src=this.src.replace("/commons/","/en/")}
+		onerror_handled++
 	}
-	img.src=image;
+	img.src=image
 	if(!inline){
 		link.style.float="right"
 		link.style.width="200px"
@@ -164,61 +174,61 @@ function addImage(image,div){
 		img.style.width="200px"
 	}
 	// img.onerror="this.src=''"
-	link.appendChild(img);
-	if(!inline)appendText(image.replace(/.*\//,""),link);
-	div.appendChild(link);
-	imageAdded=true;
+	link.appendChild(img)
+	if(!inline)appendText(image.replace(/.*\//,""),link)
+	div.appendChild(link)
+	imageAdded=true
 }
 
 function makeEntity(entity)
 {
 	// if(entity.topic && entity.topic.startsWith("Wiki"))return; -102046  Wikidata-Eigenschaft show!
-	if(editMode)makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny;
+	if(editMode)makeLink("x",document.URL.replace(/html.*/,"")+"!delete "+entity.id,div).style=tiny
 	makeLink(entity.name.replace("_"," "),server+(link_name?entity.name:entity.id),div).style=nolink+bold+blue+big
 	if(inline)br()
-	if(entity.kind==abstract)appendText("*");
+	if(entity.kind==abstract)appendText("*")
 
-	wiki_img=document.createElement("img");
-	wiki_img.src="http://pannous.net/files/wikipedia.png";
+	wiki_img=document.createElement("img")
+	wiki_img.src="http://pannous.net/files/wikipedia.png"
 	wiki_img.width=20
 	wiki=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
 	wiki.style=nolink+bold+blue+big
 	wiki.target="_blank"
-	wiki.appendChild(wiki_img);
+	wiki.appendChild(wiki_img)
 
-	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ");
+	if(entity.description && entity.kind!=abstract) appendText(" "+entity.description+" ")
 	if(!entity.description && entity.topic)
 		if(!entity.topic.match("Wiki"))
-			 appendText(" "+entity.topic+" ");
+			 appendText(" "+entity.topic+" ")
 	if(!inline){
-	if(entity.id>0 && entity.id<20000000)
+		if(entity.id>0 && entity.id<20000000)
 	    makeLink("Q","https://www.wikidata.org/wiki/Q"+ entity.id,div)
-	if(entity.id<-10000 && entity.id>-110000)
+		if(entity.id<-10000 && entity.id>-110000)
 	    makeLink("P","https://www.wikidata.org/wiki/Property:P"+ ( -10000 - entity.id) ,div)
-	makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
+		makeLink("  "+entity.id,server+entity.id,div).style="font-size:small;"
 	
-	appendText("  statements: "+entity.statementCount,div).style="font-size:small;"
+		appendText("  statements: "+entity.statementCount,div).style="font-size:small;"
 	}
 
 	if(inline)br()
 	if(entity.image && !entity.image.startsWith("Q"))
-		addImage(entity.image,div);
+		addImage(entity.image,div)
 
 	// try{
-		table=append("table",div,"sorted");
-		var count=0
-		for(key in entity.statements){
-			statement=entity.statements[key]
-  		if(filterStatement(statement))continue;
-			makeStatement(statement,table,entity)
-			count++
-			if(inline && count>10)
-				break
-		}
+	table=append("table",div,"sorted")
+	var count=0
+	for(key in entity.statements){
+		statement=entity.statements[key]
+  		if(filterStatement(statement))continue
+		makeStatement(statement,table,entity)
+		count++
+		if(inline && count>10)
+			break
+	}
 	// }catch(x){
 
 	// }	
-	br();
+	br()
 }
 
 function addStyle(file){
@@ -231,46 +241,46 @@ function addStyle(file){
 
 function clean(url){
 	// return url;
-  	url=url.replace("/short/","/");
-	url=url.replace("/long/","/");
-	url=url.replace("/verbose/","/");
-	url=url.replace("/all/","/");
-	url=url.replace("/showview/","/");
-	url=url.replace(/.limit.\d+/,"");	
+  	url=url.replace("/short/","/")
+	url=url.replace("/long/","/")
+	url=url.replace("/verbose/","/")
+	url=url.replace("/all/","/")
+	url=url.replace("/showview/","/")
+	url=url.replace(/.limit.\d+/,"")	
 	// url=url.replace("//","/");
-	return url;
+	return url
 }
 
 function capitalize(string) {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+	return string.charAt(0).toUpperCase() + string.slice(1)
 }
 
 function show_footer(){
-	var matched=decodeURI(document.URL).match(/limit.(\d*)/);
+	var matched=decodeURI(document.URL).match(/limit.(\d*)/)
 	var limit=matched?matched[1]:200
 	div=div.appendChild(document.createElement("small"))
 	if((""+url).match(" -"))
-		makeLink(" MORE |",clean(url).replace("-","limit "+limit*2+" -"));
+		makeLink(" MORE |",clean(url).replace("-","limit "+limit*2+" -"))
 	else
-		makeLink(" MORE |",clean(url)+" limit "+limit*2);
+		makeLink(" MORE |",clean(url)+" limit "+limit*2)
 	if(url.match(/limit/))
-		makeLink(" LESS ",clean(url)+" limit "+limit/2);
+		makeLink(" LESS ",clean(url)+" limit "+limit/2)
 	else
-		makeLink(" LESS ",clean(url).replace("/html","/html/short"));
-	br();
-	if(!url.match("/html"))url=url.replace(".com/",".com/html/").replace(".de/",".de/html/").replace("81/","81/html/");
-	makeLink(" TSV |",url.replace("/html","/csv"));
-	makeLink(" JSON |",url.replace("/html","/json"));
-	makeLink(" XML |",url.replace("/html","/xml"));
-	makeLink(" TXT ",url.replace("/html","/txt"));
-	br();
-	makeLink(" Entity |",clean(url).replace("/html","/json/entities").replace("/ee","/"));// :filtered
-	makeLink(" Normal |",clean(url).replace("/html","/html/verbose"));// :filtered
-	makeLink(" Summary |",clean(url).replace("/html","/html/short"));// entity name + id
-	makeLink(" ALL |",clean(url).replace("/html","/html/all"));
-	makeLink(" VIEW ",clean(url).replace("/html","/html/showview"));///INCLUDES
-	br();
-	br();
+		makeLink(" LESS ",clean(url).replace("/html","/html/short"))
+	br()
+	if(!url.match("/html"))url=url.replace(".com/",".com/html/").replace(".de/",".de/html/").replace("81/","81/html/")
+	makeLink(" TSV |",url.replace("/html","/csv"))
+	makeLink(" JSON |",url.replace("/html","/json"))
+	makeLink(" XML |",url.replace("/html","/xml"))
+	makeLink(" TXT ",url.replace("/html","/txt"))
+	br()
+	makeLink(" Entity |",clean(url).replace("/html","/json/entities").replace("/ee","/"))// :filtered
+	makeLink(" Normal |",clean(url).replace("/html","/html/verbose"))// :filtered
+	makeLink(" Summary |",clean(url).replace("/html","/html/short"))// entity name + id
+	makeLink(" ALL |",clean(url).replace("/html","/html/all"))
+	makeLink(" VIEW ",clean(url).replace("/html","/html/showview"))///INCLUDES
+	br()
+	br()
 	// footer=document.body
 	// br(footer);
 	// makeLink("© 2010-2016 Pannous.com","http://pannous.com",footer)
@@ -278,17 +288,7 @@ function show_footer(){
 }
 
 function parseResults(results0){
-	if(results0)results=results0;
-	if (typeof results == 'undefined'){console.log("NO results (yet?)!");return;}
-	// var results set via jsonp:
-	// <script src="http://netbase.pannous.com/js/verbose/gehren"></script>
-	div=document.getElementById("netbase_results");
-	div.innerHTML="" //clear
-	div.style="display: none;"// don't render yet
-	url=document.URL.replace(/%20/g," ")
-	addStyle("http://files.pannous.net/styles/table.css")
-	if(!inline)addStyle(server+"/netbase.css")
-	var title=results['query']||decodeURIComponent(url.replace(/.*\//,"")).replace(/\+/g," ").replace(/limit.*/,"");
+	if(results0)results=results0
 	// title=title.replace(":"," : ").replace("."," . ")
 	title=capitalize(title)
 	document.title=title;

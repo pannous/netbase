@@ -30,6 +30,10 @@ cchar *statements_file = "statements.txt";
 cchar *images_file = "images.txt";
 cchar *images_file_de = "images_de.nt";
 
+//bool LIGHT_IMPORT= true; // ONLY IMPORT TYPE, CLASS!
+bool LIGHT_IMPORT= false; // normal import of all wikidata
+bool singleton_abstracts = false; // false == use normal abstracts until fixed!
+
 bool getSingletons = false;// i.e. Nationalmannschaft
 bool getBest = false;// i.e. Madonna\Music | Madonna\Church
 bool germanLabels = false;//true;
@@ -58,6 +62,9 @@ void normImageTitle(char *title) {// blue_fin => bluefin // what?
 }
 
 bool checkLowMemory() {
+#ifdef WASM
+	return false;
+#endif
 	size_t currentSize = getCurrentRSS(); //
 	size_t peakSize = getPeakRSS();
 	size_t free = getFreeSystemMemory();
@@ -748,21 +755,19 @@ void fixValues(char **values, int size) {
 N addSubword(char *name, N kind) {
     if(empty(name))
         return 0;
+	if(endsWith(name," und"))
+		return 0;
+	if(endsWith(name," /"))
+		return 0;
 	N old = hasWord(name);
 	if (old) {
 		if (old->statementCount < 3)
-			addStatement(old, Type, kind);
+			addStatement(old, Type, kind, false);
 		return old;
 	}
-//	if(!old){
-	if (eq(name, "Kiel "))
-		p("Kiel ");
-	N n = getSingleton(name, kind, false);
-//		addStatement(n, Type, kind);
-	n->kind = kind->id;// DANGER!
-//		return n;
-//	}
-	return 0;
+
+	N n = getSingleton(name, kind, false); // 15.6. BUG  nextStatement_lookupLimit … 25.6. 'fixed'
+	return n;
 }
 
 N addSubword(char *name, int words, N kind) {
@@ -791,8 +796,6 @@ N addSubword(char *name, int words, N kind) {
 	return found;
 }
 
-int toll = 0;
-
 N addSubCategories(char *name, N kind) {
 //	char* d=editable(name);
 	int i = len(name);
@@ -803,10 +806,6 @@ N addSubCategories(char *name, N kind) {
 //			char *kat=name+i+1;
 			N label = addSubword(name, kind);
 //			if(label)break;// known
-			if (!label) {
-				toll++;
-				if (toll % 1000 == 0)printf("\ntoll :%d\n", toll);
-			}
 		}
 	}
 	addSubword(name, kind);
@@ -850,8 +849,9 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 	Node *subject = 0;
 	Node *predicate = 0;
 	Node *object = 0;
+	int typeRow = -1;
 	int linecount = 0;
-	if (!type) {
+	if (!type) { // or via typeRow
 		char *typeName = keep_to(editable(cut_to(cut_to(file, "/"), "/")), ".");
 		type = getThe(typeName);
 		getBest = true;
@@ -878,7 +878,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			separator = guessSeparator(editable(line)); // would kill fieldCount
 		}
 		size = splitStringC(line0, values, separator);
-		if (linecount == 0 && size > 1) {
+		if (linecount == 0 && size >= 1) {
 			fieldCount = size;
 			nameRowNr = getNameRow(values, nameRowNr, nameRow);
 			fixValues(values, fieldCount);
@@ -887,6 +887,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 				Node *fielt = getThe(field); // Firma		instance		Terror_Firma LOL
 //				dissectWord(fielt);
 				predicates.push_back(fielt);
+				if(eq(field,"topic") or eq(field,"type"))
+					typeRow=i;
 			}
 			++linecount;
 			continue;
@@ -904,6 +906,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			continue;
 		}
 		fixValues(values, size);
+		if(typeRow>=0)
+			type=getThe(values[typeRow]);
 		char *name = values[nameRowNr];
 		if (!name or len(name) == 0) {
 			bad();
@@ -928,11 +932,12 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 						}
 				if (cut_billiger) {
 					addSubword(name, 1, type);
+//					if(!contains(name," und "));
 					addSubword(name, 2, type);
 				}
 				addSubword(name, 3, type);
 				addSubword(name, 4, type);
-				addSubword(name, 5, type);
+				addSubword(name, type);// full name, ok if exists
 			}
 
 			if (cut_amazon) {
@@ -945,7 +950,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			if (cut_billiger) {
 				N marke = getThe(values[1], Marke);
 				getThe(values[3], getThe("billiger.de Kategorie"));
-				if (subject)addStatement(subject, Marke, marke);
+				if (subject)
+					addStatement(subject, Marke, marke,CHECK_DUPLICATES);// ok check here
 //				if(checkNode(m)){// and !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
@@ -1013,8 +1019,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			break;
 		}
 	}
-	p("import csv ok ... lines imported:");
-	p(linecount);
+	pf("import csv ok ... lines imported: %d, nodecount: %d",linecount,nodeCount());
 	autoIds = tmp_autoIds;
 }
 
@@ -1256,7 +1261,7 @@ bool importYago(const char *file) {
 			object = getYagoConcept(all[3]);
 			free(all);
 		} else {
-			if (labels and wordhash(objectName) == wordhash(subjectName)) continue;
+			if (labels and wordHash(objectName) == wordHash(subjectName)) continue;
 			if (eq(predicateName, "<hasGeonamesEntityId>")) continue;
 			//			if(eq("<Tommaso_Caudera>",subjectName))
 			//							p(subjectName);// subject==0 bug Disappears when debugging!!!
@@ -1319,7 +1324,8 @@ const char *fixFreebaseName(char *key) {
 	for (int i = l - 1; i > 0; --i)
 		if (key[i] == '.' and key[i - 1] > '9') {// no numbers!
 			key[i] = 0;
-			if (!eq(&key[i + 1], "topic")) return &key[i + 1];
+			if (!eq(&key[i + 1], "topic"))
+				return &key[i + 1];
 		} else if (key[i] == '#') return &key[i + 1];
 	return key;
 }
@@ -1379,8 +1385,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 //		if(contains(line, "Q3521>"))
 //			p(line);
 		//		if(debug)if(linecount>100)break;
-		u8_unescape(line, MAX_CHARS_PER_LINE,
-		            line); // utf8 unicode fix umlauts   not with new labels.csv!! removes 'ä' WTF why?
+		u8_unescape(line, MAX_CHARS_PER_LINE, line); // utf8 unicode fix umlauts   not with new labels.csv!! removes 'ä' WTF why?
 		//		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);
@@ -1454,8 +1459,25 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 //		if(id==2)
 //			p("ERde");
 
-		if (id < maxNodes / 2) {
-			Node *node = &context->nodes[id];
+		if (id > wikidata_limit) {
+			bad();
+			continue;
+		}
+		Node *node = &context->nodes[id];
+		if (!singleton_abstracts) {
+			// old simple (expensive) mode: one abstract per word
+			if(label[0]==' ')label++;
+			Node *abstract = getAbstract(label);
+			if(!abstract or !eq(abstract->name,label)){
+				bad(); // "^^" ' Hydraenidae)'
+				continue;
+			}
+			node->id=id;
+			node->name=abstract->name;
+			node->kind=_entity;
+			addStatement(abstract, Instance, node, false);
+//			initNode(node,id,abstract->name,_entity,0);
+		} else {
 			if (english and germanLabels and node->name)
 				continue;// Only set labels of entities that don't have a German translation
 			N old = hasWord(label);
@@ -1491,7 +1513,7 @@ bool importWikiLabels(cchar *file, bool properties = false, bool altLabels = fal
 				}
 				addStatement(ab, Instance, node, false);
 			}
-		} else bad();// Not enough memory :(
+		}
 	}
 	free(key0);
 	free(label0);
@@ -1811,17 +1833,20 @@ bool dropBadSubject(char *name) {
 	return KEEP;
 }
 
-//dropBadPredicate
+//dropBadPredicate mapping: P238 == -10238   (p == +10000 * -1)
 bool dropBadPredicate(char *name) {
 	if (!name)return DROP;
 	if (eq(name, ""))return DROP;
 
-
 	//	if(name[0]=='.')return DROP;
 	if (name[0] == '<')name++;
 	int lenge=len(name);
-	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')
-		return DROP; // no IDs
+	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')// ID ...
+		return DROP; // no IDs  but:  MusicBrainz-Gebiets-ID via P982
+
+	Node *wikidataRelation = getWikidataRelation(name);
+	if(LIGHT_IMPORT)
+		return !wikidataRelation;
 
 //    if (predicateName[3] == '-' or predicateName[3] == '_' or predicateName[3] == 0) continue;    // <zh-ch, id ...
 //    if (predicateName[2] == '-' or predicateName[2] == '_' or predicateName[2] == 0) continue;    // zh-ch, id ...
@@ -1857,11 +1882,11 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P906"))return DROP;// SELIBR
 	if (eq(name, "P1005"))return DROP;// PTBNP
 	if (eq(name, "P949"))return DROP;// NLI
-//	if (eq(name, "P734"))return DROP;Familienname
+//	if (eq(name, "P734"))return DROP; Familienname
 	if (eq(name, "P1207"))return DROP;// NUKAT-Normdaten
 	if (eq(name, "P3221"))return DROP;// NYT-Themen-ID
 	if (eq(name, "P3984"))return DROP;// Subreddit
-//	if (eq(name, "P2633"))return DROP;// Geographie?
+//	if (eq(name, "P2633"))return DROP;// Libyen		Geographie		Geografie Libyens
 	if (eq(name, "P1343"))return DROP;// Beschrieben in
 	if (eq(name, "P3417"))return DROP;// Quora-Themenkennung
 	if (eq(name, "P3733"))return DROP;// MOOMA artist ID
@@ -1873,7 +1898,7 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P3569"))return DROP;// Cultureel-Woordenboek-ID
 	if (eq(name, "P1036"))return DROP;// Dewey-Dezimalklassifikation
 	if (eq(name, "P3500"))return DROP;// Ringgold-Identifikator
-//	if (eq(name, "P3743"))return DROP;// ITU/ISO/IEC object identifier  <<<!?
+	if (eq(name, "P3743"))return DROP;// ITU/ISO/IEC object identifier  <<<!?
 	if (eq(name, "P3225"))return DROP;// Unternehmensnummer (Japan)
 	if (eq(name, "P998"))return DROP;// Dmoz? Mozilla Directory
 	if (eq(name, "P227"))return DROP;// GND Nationalbibliothek (?)
@@ -1886,9 +1911,10 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P971"))return DROP;// Category:cu:Earth		Kategorie kombiniert die Themen
 	if (eq(name, "P3911"))return DROP;// STW-ID  // 421 statements not worth it
 	if (eq(name, "P2347"))return DROP;// YSO ID
-//	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
-//	if(eq(name,"P"))return DROP;
-//	if(eq(name,"P"))return DROP;
+	if (eq(name,"P3238"))return DROP; //		Verkehrsausscheidungsziffer
+	if(eq(name,"P1946"))return DROP;// -11946 NLI (Irland)
+	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
+	if(eq(name,"P982"))return DROP;// MusicBrainz-Gebiets-ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -1909,6 +1935,7 @@ bool dropRedundantPredicate(char *name) {
 bool dropBadObject(char *name) {
 	if (!name)return DROP;
 	if (eq(name, ""))return DROP;
+	if (eq(name, "P3238"))return DROP; // Verkehrsausscheidungsziffer wtf
 
 	//	if(strstr(name,"Q4167410>"))return DROP;// Wikimedia-Begriffsklärungsseite later | Merge with abstract!
 	return KEEP;
@@ -2023,6 +2050,12 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		}
 		if (dropBadPredicate(predicateName)) {
 			ignored++;
+			if(LIGHT_IMPORT){
+			subject = getEntity(subjectName);
+				if(!checkNode(subject))continue;
+			subject->statementCount++;
+//				we still need statementCount for ranking!
+			}
 			continue;
 		}
 		if (dropBadObject(objectName)) {
@@ -2170,13 +2203,6 @@ bool importFacts(const char *file, const char *predicateName = "population") {
 }
 
 
-void importEntities() {
-	getSingletons = false;// desaster!
-	getBest = true;
-	importCsv("couchdb/entities.csv");
-}
-
-
 void importNames() {
 	addStatement(all(firstname), are, the(name));
 	addStatement(all(firstname), Synonym, the(first
@@ -2297,7 +2323,7 @@ void importGermanLables(bool addLabels = false) {
 		wn_labels[id] = german;
 		wn_labels[-id] = german;
 		if (addLabels and strlen(translations) > 2) {// later, when settled (?)
-			char **translationList = (char **) malloc(1000);
+			char **translationList = (char **) malloc(MAX_ROWS* sizeof(char*));
 			char sep = ',';
 			char *translationz = modifyConstChar(translations);
 			translationz = translationz + 1;// cut [ ]
@@ -2543,7 +2569,7 @@ void importGeoDB() {
  */
 void importBilliger() {
 	//	importCsv("billiger.de/TOI_Suggest_Export_Categories.csv",getThe("billiger.de category")); besser da:
-	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv.gz", getThe("billiger.de product"));
+	importCsv("billiger.de/CURRENT-TOI_Suggest_Export_Products.csv", getThe("billiger.de product"));
 //	importCsv("billiger.de/TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 //	importCsv("billiger.de/20170120-TOI_Suggest_Export_Products.csv",getThe("billiger.de product"));
 }
@@ -2563,6 +2589,9 @@ int listdir(const char *path) {
 
 
 void importAmazon() {
+	printf("importAmazon DISABLED!");
+	return;
+	doDissectAbstracts=0;
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
 
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow)
@@ -2582,11 +2611,8 @@ void importAmazon() {
 
 	struct dirent *entry;
 	auto type = getThe("Amazon product");
-//	bool importa=0;
 	while ((entry = readdir(dp))) {
-//		if(importa)
 		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
-//		if(eq(entry->d_name,"de_v3_csv_ce_mp_delta_part3.csv.gz"))importa=1;
 	}
 	closedir(dp);
 }
@@ -2680,7 +2706,7 @@ void importAllYago() {
  domain      hasCapital     hasInflation    hasProductionLanguage inLanguage    isPartOf    since
  */
 
-void importTest() {
+void testImportWiki() {
 	context = getContext(wikidata);
 //	replay();
 	importBilliger();
@@ -2693,11 +2719,14 @@ void importWikiData() {
 	context = getContext(wikidata);
 	autoIds = false;
 	importing = true;
-    if(!count_nodes_down)context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
-    if(germanLabels)
-	importWikiLabels("wikidata/latest-truthy.nt.de");//
-    importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!
-//	}
+    context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
+	context->nodeCount=wikidata_limit;// for iteration!
+    if(germanLabels){
+		importWikiLabels("wikidata/latest-truthy.nt.de");
+        importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!
+    } else {
+	    importWikiLabels("wikidata/latest-truthy.nt.en");
+    }
 	importN3("wikidata/latest-truthy.nt.facts");
 //	importN3("wikidata/latest-truthy.nt");
 //	importN3("wikifdata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
@@ -2706,6 +2735,8 @@ void importWikiData() {
 
 void import(const char *type, const char *filename) {
 	importing = true;
+	autoIds= false;
+
 	//  clock_t start;
 	//  double diff;
 	// start = clock();
@@ -2720,7 +2751,7 @@ void import(const char *type, const char *filename) {
 	} else if (eq(type, "billiger") or eq(type, "billiger.de")) {
 		importBilliger();
 	} else if (eq(type, "test")) {
-		importTest();
+		testImportWiki();
 	} else if (eq(type, "labels")) {
 		importLabels("labels.csv", false, true, true);
 	} else if (endsWith(type, "csv")) {
@@ -2749,8 +2780,6 @@ void import(const char *type, const char *filename) {
 		//		importWikipedia();
 		//	} else if (eq(type, "topic")) {
 		//		importWikipedia();
-	} else if (eq(type, "entities")) {
-		importEntities();
 	} else if (eq(type, "yago")) {
 		if (eq(filename, "yago")) importAllYago();
 		//		else if (contains(filename, "fact"))
@@ -2786,6 +2815,17 @@ void import(const char *type, const char *filename) {
 	//  importStatements();
 }
 
+void importTelekom(){
+//	importCsv("Telekom/used_keywords.csv");// same:
+	importCsv("Telekom/entities.ee.csv",getThe("Telekom-Entity"),0,0,"name,topic",0);
+	importCsv("Telekom/whole_data.csv");
+	importCsv("Telekom/Telekom_Entitaet.csv");
+	importCsv("Telekom/Telekom-Produkt.csv");
+	importCsv("Telekom/Telekom_Produkt.csv");
+	importCsv("Telekom/manual_entities.csv");
+}
+
+
 void importAllDE() {
 	importing = true;
 	germanLabels = true;
@@ -2802,20 +2842,11 @@ void importAllDE() {
 		importWikiData();
 //	importNames();
 	importGeoDB();
-	importCsv("Telekom/used_keywords.csv");
-	importCsv("Telekom/whole_data.csv");
-	importCsv("Telekom/Telekom_Entitaet.csv");
-	importCsv("Telekom/Telekom-Produkt.csv");
-	importCsv("Telekom/Telekom_Produkt.csv");
-	importCsv("Telekom/manual_entities.csv");
-
-	replay();
-//	importLabels("labels.csv");// todo: why again?
+	importTelekom();
 	importBilliger();
+	replay("logs/replay.log");
 	buildSeoIndex();
 	importAmazon();
-	//importEntities();
-	//importImagesDE(); deprecated
 	importing = false;
 }
 

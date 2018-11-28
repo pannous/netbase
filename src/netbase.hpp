@@ -15,6 +15,8 @@ extern bool germanLabels;
 extern bool exitOnFailure;
 extern int maxRecursions;
 extern bool debug; //=true;
+extern bool _trace;
+void trace();
 extern bool showAbstract;
 extern bool doDissectAbstracts;
 extern int recursions;
@@ -24,11 +26,11 @@ extern int current_context;
 extern bool useYetvisitedIsA;
 extern bool autoIds;
 extern bool testing;// don't implicitly init relations
+extern bool importing;
 
 extern int resultLimit;
 extern int defaultLookupLimit;
 extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
-extern bool count_nodes_down;
 extern bool out_of_memory;// delayed exit()
 extern int wikidata_limit;// =60000000;
 // if test or called from other object
@@ -83,7 +85,7 @@ struct Node;
 //class Node;
 typedef union Value {
     // why not just save values+text in 'name' as string??
-
+  int name;// pointer to context->names
   char* text; // wiki abstracts etc
   void* data; // byte[], same as ^^
   //  char* name;
@@ -100,27 +102,34 @@ typedef union Value {
 	Node* node; // THE ONE in abstracts type --- cycle !---
   Statement* statement; // overhead OK!!! 8 bytes on 64bit machines (Statement too long, pointer OK)
 }Value;
-
+//extern Context* context;
 extern "C" const char* getName(int node);
+char* resolveName(int pointer);
 
 // NEVER USE STRUCTS WITHOUT POINTER!!
 // only pointers will edit real data! otherwise you just recieve (and manipulate) a copy of a struct (when assigning s=structs[i])!
 // reduce from 0x20 bytes to name,kind, firstStatement == 0x0b bytes!
 // 1 nit == 4+1 words =20bytes
+int getNodeId(long pointer);
 extern "C"
 typedef struct Node {
 //  class Node{
   public:
-  int id; //implicit -> redundant
+    int id; //implicit -> redundant
+//    int id(){ return getNodeId((long)this);}// implicit
+
+    char* name;
 //  long name; // see value for float etc
-  char* name;//(){return getName(id);}
-  int kind; // abstract,node,person,year, m^2   // via first slot? nah
+//    int namePointer;// harder to debug, just adjust if context->nodeNames != context->nodeNames
+//    char* name(){return context->nodeNames[namePointer]}     char* resolveName(int pointer);
+
+    int kind; // abstract,node,person,year, m^2   // via first slot? nah
   //int context; //implicit  | short context_id or int node_id
   //float rank;
   int statementCount; //explicit, can be made implicit and replaced with iterator
   int firstStatement;
-	int lastStatement;// remove
-  Value value; // for statements, numbers WASTE!!! remove
+  int lastStatement;// remove
+  Value value; // for statements, numbers WASTE!!! remove / merge with name!
 //	bool operator<(const Node *rhs) const {
 //		return statementCount > rhs->statementCount;
 //	}
@@ -417,7 +426,7 @@ extern "C" Node* getNodeS(int node);
 extern "C" int getId(char* node);
 //extern "C" Node* getNode(char* node);
 
-Context* getContext(int contextId=0/*wordnet*/);
+Context* getContext(int contextId=0/*wordnet*/,bool init=true);
 void showContext(int nr);
 void showContext(Context* cp);
 void showNodes(NodeSet all, bool showStatements = false,bool showRelation=false,bool showAbstracts=false);
@@ -432,7 +441,7 @@ extern "C" Node* add(const char* nodeName, int kind = /*_node*/ -101, int contex
 //bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false);
 //bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false);
 bool checkNode(int nodeId, bool checkStatements= false, bool checkNames = false,bool report=true);
-bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=true);
+bool checkNode(Node* node, int nodeId = -1, bool checkStatements = false, bool checkNames = false,bool report=false);
 bool addStatementToNode(Node* node, int statementNr,bool force_insert_at_start);
 bool addStatementToNodeDirect(Node* node, int statementNr);
 bool addStatementToNodeWithInstanceGap(Node* node, int statementNr);
@@ -460,7 +469,7 @@ unsigned int hash(const char *str); //unsigned
 //unsigned long hash(const char *str); //unsigned
 //Node* getThe(const char* word, Node* type = 0,bool dissect=true);
 //Node* getThe(string thing, Node* type=0,bool dissect=true);
-Node* getThe(Node* abstract, Node* type=0);
+Node* getThe(Node* abstract, Node* type=0, bool create= true);
 extern "C" Node* getThe(const char* word, Node* type = 0);//,bool dissect=false);
 Node* getThe(string thing, Node* type=0);//,bool dissect=false);
 extern "C" Node* getNew(const char* thing, Node* type=0);//, bool dissect=false);
@@ -529,7 +538,7 @@ Node* last(NodeVector rows);
 //extern "C" Statement* learn(string& data);
 extern "C" Statement* learn(const char* data);
 extern "C" void deleteNode(int id);
-void deleteNode(Node* n);
+void deleteNode(Node *n, bool deleteChildren);
 void deleteStatements(Node* n);
 extern "C" void deleteStatement(int id);
 void deleteStatement(Statement* s);
@@ -567,8 +576,8 @@ extern map <double, short> yetvisitedIsA;
 Ahash* insertAbstractHash(unsigned int hashkey, Node* abstract,bool overwrite=false,bool seo=false); //debug only
 Ahash* insertAbstractHash(Node* abstract,bool overwrite=false);
 
-void deleteWord(string* s);
-void deleteWord(const char* data,bool completely=true);
+//void deleteWord(string* s);
+void deleteWord(const char* data,bool completely=true);// hard to find instances after!
 Node* reify(Statement* s);
 void show(vector<char*>& v);
 bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=false);
@@ -576,13 +585,13 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 void checkRootContext();
 Node* number(int n);
 extern "C" Node* getProperty(Node* n,const char* s,int limit=0);
-Node* getProperty(Node* node, Node* key,int limit);
+Node* getProperty(Node* node, Node* key,int limit=0);
 Node* getPropertyDummy(const char* id);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
-void replay();
+void replay(const char *file);
 //extern "C" C-linkage specified, but returns user-defined type 'NodeVector' (aka 'vector<Node *>') which is incompatible with C
 NodeVector parse(const char *data, bool safeMode, bool console);// and act -> extern "C" execute
 void fixCurrent();
@@ -600,6 +609,8 @@ extern Context* context_root; // else: void value not ignored as it ought to be
 extern Node* abstract_root;
 extern Node* node_root;
 extern char* name_root;
+//extern char* english_words;// nonesense, just load whole /data/ with correct abstracts and nodes...
+
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
 Node* bad();//string="");
@@ -620,28 +631,29 @@ static long billion=GB;
 static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-200000-317658 wordnet!
 static int propertyOffset=10000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet abstracts
 static int wordnetOffset=20000;//
-static int synsetOffset=100000;//
-// 200000-317658 for wordnet + other !
+static int synsetOffset=100000;// 200000-317658 for wordnet + other !
 
 //# sudo sysctl -w kern.sysv.shmmax=2147483648 # => 2GB !!
-
-// FREEBASE: 600.000.000 Statements !!!
-// todo: via getenv
-//#define __ECHSE__
-
-//#if defined(__APPLE__)
-//static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
-//static long maxStatements = maxNodes*2;// *10 = crude average of Statements per Node (yago:12!!)
-#ifdef __ECHSE__
-static long maxNodes=/*max 32bit=4GB!*/ 100 * million;// long would need a new structure!!
-static long maxStatements = maxNodes*1;// *10 = crude average of Statements per Node (yago:12!!)
+/*
+ * Current nodes:261609080         statements:524157200            chars:4149597486
+Maximum nodes:419430400         statements:838860800            chars:8388608000
+Usage  nodes:62.37%                     statements:62.48%               chars:49.47%
+ */
+#ifdef WASM
+static long maxNodes = 1*million;
+static long maxStatements = 1*maxNodes;
+#elif ECHSE
+//static long maxNodes = 1*million;
+//static long maxStatements = 1*maxNodes;
+static long maxNodes = 209715200;//220*million;// enough
+static long maxStatements = 471859200;//2*maxNodes;
+//Maximum nodes:209715200		statements:471859200		chars:2097152000
 #else
-static long maxNodes = 300*million;
-static long maxStatements = 2*maxNodes;
+static long maxNodes = 300*million;// Live 11.11.2018
+static long maxStatements = 2*maxNodes;// why suddenly 629145600
 #endif
-//static long abstractHashSize = maxNodes*ahashSize;
 static long contextOffset=0x800000;//0x10000;
-static int averageNameLength =10;// for amazon! else 20
+static int averageNameLength =10;// 10 for amazon! else 20 (cheap)
 static long maxChars=maxNodes * averageNameLength;
 static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
 static long sizeOfSharedMemory =contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;

@@ -3,6 +3,8 @@ project(netbase)
 
 set(CMAKE_CXX_STANDARD 11)
 
+set(CMAKE_VERBOSE_MAKEFILE on)
+
 #set(CMAKE_CXX_FLAGS_RELEASE "/INCREMENTAL:YES ${CMAKE_CXX_FLAGS_RELEASE}")
 
 set (CMAKE_SKIP_RULE_DEPENDENCY TRUE) # incremental build
@@ -11,6 +13,11 @@ set (CMAKE_SKIP_RULE_DEPENDENCY TRUE) # incremental build
 find_package( ZLIB REQUIRED )
 include_directories( ${ZLIB_INCLUDE_DIRS} )
 
+# Add -O0 to remove optimizations when using gcc
+IF(CMAKE_COMPILER_IS_GNUCC)
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0")
+    set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -O0")
+ENDIF(CMAKE_COMPILER_IS_GNUCC)
 
 find_path(Readline_ROOT_DIR NAMES include/readline/readline.h)
 find_path(Readline_INCLUDE_DIR NAMES readline/readline.h HINTS ${Readline_ROOT_DIR}/include)
@@ -39,6 +46,10 @@ include_directories( ${Readline_INCLUDE_DIR} )
 set(CMAKE_C_FLAGS "-lreadline -lz -Wno-write-strings ")
 set(CMAKE_CXX_FLAGS "-lreadline -lz -Wno-write-strings  ${CMAKE_CXX_FLAGS}")
 
+if(ECHSE)
+ set(CMAKE_CXX_FLAGS "-DECHSE ${CMAKE_CXX_FLAGS}")
+endif()
+
 set(SOURCE_FILES
         src/utf8.cpp
         src/utf8.hpp
@@ -59,7 +70,7 @@ set(SOURCE_FILES
         src/netbase.hpp
         src/query.cpp
         src/query.hpp
-        src/reflection.cpp
+        src/reflection.cxx
         src/reflection.hpp
         src/relations.cpp
         src/relations.hpp
@@ -74,4 +85,5 @@ set(SOURCE_FILES
 
 add_executable(netbase ${SOURCE_FILES})
 target_link_libraries( netbase ${ZLIB_LIBRARIES} )
-target_link_libraries( netbase ${Readline_LIBRARY} )
+#target_link_libraries( netbase ${Readline_LIBRARY} )
+TARGET_LINK_LIBRARIES( netbase readline ) # => libreadline

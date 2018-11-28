@@ -41,21 +41,19 @@ static char netbase_css[100] = "netbase.css";
 static char favicon_ico[100] = "favicon.ico";
 int resultLimit = 200; // != lookuplimit reset with every fork !!
 
-int listener, conn, closing = 0;
 pid_t pid;
-//  socklen_t
+int listener, conn, closing = 0;
 struct sockaddr_in servaddr;
+//  socklen_t
 
-/// true = filter
 vector<char *> excluded;
 vector<char *> included;
 vector<int> excludedIds;
 vector<int> includedIds;
 bool showExcludes = false;
+bool useView=false;// filter excludes and includes
+
 int warnings = 0;
-//static char* excluded=0;
-//static char* excluded2=0;
-//static char* excluded3=0;
 
 enum result_format {
 	xml, js, json, txt, csv, html
@@ -107,8 +105,12 @@ char *getStatementTitle(Statement *s, Node *n) {
 }
 
 
+
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
+//	autoIds = false;
+	autoIds = true; // 2.7.18 : for http://sqb:8080/html/550866 !?!
+
 	int len = (int) strlen(q0);
 	if (LIVE)lookupLimit = 10000;
 	newQuery();
@@ -282,20 +284,25 @@ int handle(cchar *q0, int conn) {
 	}
 //	bool get_topic=false;
 	bool get_topic = true;
+	bool seo = false;
 	if (startsWith(q, "seo/")) {
 		q[3] = ' ';
 		q = q + 4;
+		seo = true;
 	}
 //	bool sort=false;
+	bool entities= false;
 	if (startsWith(q, "ee/") or startsWith(q, "ee ")) {
 		q[2] = ' ';
-//		q = q + 3;// KEEP for parse command!
+		q = q + 3;// KEEP for parse command!
 		get_topic = true;
+		entities = true;
 	}
 	if (startsWith(q, "entities/")) {
 		q[8] = ' ';
-//		q = q + 9;// KEEP for parse command!
+		q = q + 9;// KEEP for parse command!
 		get_topic = true;
+		entities = true;
 //		verbosity=longer;
 	}
 	if (startsWith(q, "?query=")) {
@@ -315,18 +322,17 @@ int handle(cchar *q0, int conn) {
 		q = q + 2;
 	}
 
-	if (hasWord(q)) loadView(q);
+	if (hasWord(q) and useView) loadView(q);
 
 	if (contains(q, "exclude") or contains(q, "include")) {
 		verbosity = normal;
 		showExcludes = true;
 	}
 	bool safeMode = true;
-	if (startsWith(q, "query/")) {
+	if (startsWith(q, "query/")) { // AND ...
 		q = q + 6;
-		safeMode = false;// RLLY
+		safeMode = false;// RLLY?
 	}
-
 //	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
 //	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
 //	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
@@ -334,13 +340,20 @@ int handle(cchar *q0, int conn) {
 
 	p(q);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//
-	NodeVector all = parse(q, safeMode, false); // <<<<<<<< HANDLE QUERY WITH NETBASE!
-	//
+	NodeVector all;
+	if(!safeMode) // <<<<<<<< HANDLE QUERY WITH NETBASE!
+		all = parse(q, safeMode, false);
+	else{
+		if(entities)
+			all= findEntites(q);
+		else if(seo)
+			all = wrap(getSeo(q));
+		else
+			all = wrap(get(q));;
+	}
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	if (contains(q, " limit ")) { strstr(q, " limit ")[0] = 0; }
-	autoIds = false;
 	int size = (int) all.size();
 	int count = (int) all.size();
 	if (showExcludes) {
@@ -437,18 +450,20 @@ int handle(cchar *q0, int conn) {
 			if (ty == Internal)continue;
 			if (!t)t = ty;
 			if (t == node)t = ty;
-			if (t != Entity and checkNode(t, -1, false, true)) {
+			if (!checkNode(t, -1, false, true)) t = null;
+			if (t and eq(t->name,node->name)) t = null;
+			if (t != Entity and t) {
 				got_topic = true;
 				Writeline(conn, ",\n\t \"topicid\":" + itoa(t->id));
-				Writeline(conn, ", \"topic\":\"" + string(t->name) + "\"");
+				Writeline(conn, ", \"topic\":\"" + string(fixName(t->name)) + "\"");
 			}
-			if (c != Entity && checkNode(c, -1, false, true) and c != t) {
+			if (c != Entity and checkNode(c, -1, false, true) and c != t) {
 				Writeline(conn, ",\n\t \"classid\":" + itoa(c->id));
-				Writeline(conn, ", \"class\":\"" + string(c->name) + "\"");
+				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");
 			}
-			if (checkNode(ty, -1, false, true) and c != ty and ty != t) {
+			if (ty and checkNode(ty, -1, false, true) and c != ty and ty != t) {
 				Writeline(conn, ",\n\t \"typeid\":" + itoa(ty->id));
-				Writeline(conn, ", \"type\":\"" + string(ty->name) + "\"");
+				Writeline(conn, ", \"type\":\"" + string(fixName(ty->name)) + "\"");
 			}
 			if (node->name and !empty(node->name)) {
 				string seo = generateSEOUrl(node->name);
@@ -1025,7 +1040,7 @@ int Get_Request(int conn, struct ReqInfo *reqinfo) {
 		if (rval < 0) {
 			Error_Quit("Error calling select() in get_request()");
 		} else if (rval == 0) {
-			p(" input not ready after timeout ");
+//			p(" input not ready after timeout "); seems non-severe? happened after 2017 why??
 			return -1;
 		} else {
 			/* We have an input line waiting, so retrieve it */

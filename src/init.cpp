@@ -62,7 +62,7 @@ int semrm(key_t key, int id = 0) {
 }
 
 
-#include <execinfo.h>
+// #include <execinfo.h>
 #include "errno.h"
 
 static void full_write(int fd, const char *buf, size_t len) {
@@ -86,6 +86,7 @@ void print_backtrace(void) {
 	char **bt_syms;
 	int i;
 
+#ifdef _EXECINFO_H
 	bt_size = backtrace(bt, 1024);
 	bt_syms = backtrace_symbols(bt, bt_size);
 	full_write(STDERR_FILENO, start, strlen(start));
@@ -96,6 +97,9 @@ void print_backtrace(void) {
 	}
 	full_write(STDERR_FILENO, end, strlen(end));
 	free(bt_syms);
+#else
+	printf("compile with EXECINFO for backtrace");
+#endif
 }
 
 // silent: in messages:
@@ -168,7 +172,7 @@ void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *d
 		if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
 			semrm(key); // clean and try again
 			if ((shmid = shmget(key, sizeOfSharedMemory, READ_WRITE | IPC_CREAT)) == -1) {
-                pf("nodes: %ld\n",maxNodes);
+				pf("nodes: %ld\n", maxNodes);
 				perror("share_memory failed!\nSize changed or NOT ENOUGH MEMORY??\n shmget");
 				//			printf("try calling ./clear-shared-memory.sh\n");
 				//			perror(strerror(errno)); <= ^^ redundant !!!
@@ -238,6 +242,9 @@ void initRootContext() {
 }
 
 void checkRootContext() {
+#ifdef WASM
+	return;// only one new Context() ... ok
+#endif
 	Context *rootContext = (Context *) context_root;
 	if (rootContext->nodeCount == 0) {
 		p("STARTING WITH CLEAN MEMORY");
@@ -245,23 +252,10 @@ void checkRootContext() {
 //    clearMemory();
 		return;
 	}
-//	p("USING SHARED MEMORY");
-////	if (rootContext->nodes != (Node*) node_root) {	// &context_root[contextOffset]) {
-//	if (context->nodes != (Node*) node_root) {	// &context_root[contextOffset]) {
-//		p("rootContext->nodes != (Node*) node_root");
-//		pf("%X != %X\n",rootContext->nodes,node_root);
-//		showContext(rootContext);
-//		
-////		context->nodes=rootContext->nodes;	// hack
-//	}
 	if (context->nodeNames != name_root)
 		fixPointers();
 	rootContext->nodes = (Node *) node_root + propertySlots;;
 	rootContext->statements = statement_root;
-//	else if (context->nodes != rootContext->nodes) {
-//		fixPointers();
-//		context->nodes=rootContext->nodes;
-//	}
 }
 
 
@@ -283,9 +277,9 @@ extern "C" void initSharedMemory(bool relations) {
 	abstract_root = (Node *) share_memory(key, abstract_size * 2, abstract_root,
 	                                      root);// ((char*) context_root) + context_size
 //	p("name_root:");
-	int mega_debug = getenv("MEGA_DEBUG") ? 0x40000 : 0; // objective xcode zombie diagnostics etc
-	name_root = (char *) share_memory(key + 1, name_size, name_root,
-	                                  ((char *) abstract_root) + abstract_size * 2 + mega_debug);
+	name_root= (char *) share_memory(key + 1, name_size , name_root, ((char *) abstract_root) + abstract_size * 2 );
+
+
 //	p("node_root:");
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
 //	p("statement_root:");
@@ -299,16 +293,17 @@ extern "C" void initSharedMemory(bool relations) {
 //  	p("context_root:");
 	context_root = (Context *) share_memory(key + 4, context_size, context_root,
 	                                        ((char *) statement_root) + statement_size);
-
 	abstracts = (Ahash *) (abstract_root); // reuse or reinit
 	extrahash = (Ahash *) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts = (Context *) context_root;
 	context = getContext(current_context);
 	checkRootContext();
 	if (relations) {
+		p(get(_clazz));
+//		if(!checkNode(-9) and debug)
 		initRelations();
 		if (context->lastNode < 0)
-			context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
+			context->lastNode = wikidata_limit;
 	}
 }
 
@@ -398,7 +393,7 @@ void load(bool force) {
 	fclose(fp);
 
 	fp = open_binary("statements.bin");
-	fread(c->statements, sizeof(Statement), c->statementCount, fp); //c->statementCount maxStatements
+	fread(c->statements, sizeof(Statement), c->statementCount, fp); // maxStatements
 	fclose(fp);
 
 	fp = open_binary("nodes.bin");
@@ -540,7 +535,7 @@ bool clearMemory() {
 //	memset(abstracts, 0, maxNodes*ahashSize * 2);
 //  context->nodeCount=1000;// 0 = ANY
 		context->nodeCount = 1;// 0 = ANY
-		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
+		context->lastNode = 1;
 		context->nodeNames = name_root;
 		context->statementCount = 1;// 0 = ERROR
 	}
@@ -601,7 +596,7 @@ char *initContext(Context *context) {
 		} while (nodes == 0 or statements == 0);
 //	if (!context_root or virgin_memory) clearMemory();
 //	Statement* oldstatements=context->statements;
-	if (!context)context = getContext(current_context);
+	if (!context)context = getContext(current_context, false);
 	char *oldnodeNames = context->nodeNames;
 //	Node* oldnodes=context->nodes;
 	context->nodes = nodes;
@@ -614,7 +609,7 @@ char *initContext(Context *context) {
 	if (context->nodeCount <= 0)
 		context->nodeCount = 1;
 	if (context->lastNode <= 0)
-		context->lastNode = count_nodes_down? (int)maxNodes - propertySlots :1 ;
+		context->lastNode = 1;
 
 //	px(context);
 //	px(nodes);

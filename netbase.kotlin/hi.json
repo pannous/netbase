@@ -1,0 +1,11 @@
+{"query":"hi", "count":"1","results":[
+  {"name":"Hi", "id":60238237, "statementCount":6, "description":"",
+	 "typeid":60238237, "type":"Hi", "seo":"hi", "kind":-102,
+	 "statements":[
+   { "id":6289900, "subject":"Hi", "predicate":"Instanz", "object":"Hi (Mensch)", "sid":60238237, "pid":-4, "oid":15815525},
+   { "id":3846652, "subject":"Hi", "predicate":"Instanz", "object":"", "sid":60238237, "pid":-4, "oid":26005770},
+   { "id":2744202, "subject":"Hi", "predicate":"Instanz", "object":"", "sid":60238237, "pid":-4, "oid":368918},
+   { "id":1379528, "subject":"Hi", "predicate":"Instanz", "object":"Hi", "sid":60238237, "pid":-4, "oid":224000},
+   { "id":860103, "subject":"Hi", "predicate":"Instanz", "object":"", "sid":60238237, "pid":-4, "oid":15427790},
+   { "id":246029, "subject":"Hi", "predicate":"Instanz", "object":"°&¤", "sid":60238237, "pid":-4, "oid":1828412}]}
+]}

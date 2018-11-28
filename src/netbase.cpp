@@ -45,7 +45,7 @@ int *freebaseKey_root = 0;
 int defaultLookupLimit = 1000;
 int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
 bool count_nodes_down= false;
-bool out_of_memory= true;
+bool out_of_memory= false;
 //Node** keyhash_root=0;
 
 #ifdef USE_SEMANTICS
@@ -55,7 +55,7 @@ bool useSemantics = false;
 #endif
 
 bool doDissectAbstracts = useSemantics;// ?
-bool storeTypeExplicitly = true;
+bool storeTypeExplicitly = false;
 bool exitOnFailure = true;
 bool autoIds = false;
 bool testing = false;// ;true
@@ -167,11 +167,13 @@ Ahash *getAhash(int position) {
 // ./clear-shared-memory.sh After changing anything here!!
 //int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash *, bool> badAhashReported;// debug
-Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool seo/*=false*/) {
+Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false*/, bool seo/*=false*/) {
 	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
 	if (a == 0)
 		return 0;
 	if (a == Error)
+		return 0;
+	if(!checkNode(a))
 		return 0;
 	Ahash *ah = getAhash(position);
 	cchar *name = a->name;
@@ -202,7 +204,7 @@ Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool
 		N ab = get(ah->abstract);
 		if (ab == a)
 			return ah; //schon da
-		if (ab and eq(ab->name, name, true)) {
+		if (ab and checkNode(ab,0,0,1) and eq(ab->name, name, true)) {
 			if (overwrite) {
 //				if(ah->abstract>-propertySlots and ah->abstract<maxNodes-propertySlots)
 //					get(ah->abstract)->kind=_entity;// 'free' old abstract BREAKS:(
@@ -214,7 +216,7 @@ Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool
 	}
 
 	N ab = ah and ah->abstract ? get(ah->abstract) : 0;
-	if (ab) { //schon was drin
+	if (ab && checkNode(ab,0, false,true)) { //schon was drin
 		if (ab == a)
 			return ah; //schon da
 		if (ab and eq(ab->name, name, true)) {
@@ -228,13 +230,14 @@ Ahash *insertAbstractHash(uint position, Node *a, bool overwrite/*=false*/, bool
 		ah->next = context->extrahashNr++;
 		ah = getAhash(ah->next);
 	}
-	if (!ah or !checkHash(ah))return 0;
+	if (!ah or !checkHash(ah))
+		return 0;
 	ah->abstract = a->id;
 	return ah;
 }
 
 Ahash *insertAbstractHash(Node *a, bool overwrite/*=false*/) {
-	return insertAbstractHash(wordhash(a->name), a, overwrite);
+	return insertAbstractHash(wordHash(a->name), a, overwrite);
 }
 
 inline bool eq(Statement *s, Statement *s2) {
@@ -282,11 +285,14 @@ bool addStatementToNode(Node *node, int statementId, bool insert_at_start = fals
 #endif
 		Statement *to_insert = &context->statements[statementId];
 		//		if (to_insert->Predicate == Instance and to_insert->Subject == node or to_insert->Predicate == Type and to_insert->Object == node) {
-		bool push_back = to_insert->subject != node->id;
-		push_back = push_back or to_insert->Predicate() == Instance;
-		push_back = push_back or (to_insert->Predicate() == Type and to_insert->Object() == node);
-		push_back = push_back or to_insert->Predicate() == node;
-		// why is that important? to skip 100000 instances (cities) when accessing abstract properties
+		Node *predicate = to_insert->Predicate();
+		insert_at_start = insert_at_start or predicate == Type and to_insert->subject == node->id;
+		insert_at_start = insert_at_start or predicate == SuperClass and to_insert->subject == node->id;
+		bool push_back = !insert_at_start;// default for all ~
+		push_back = push_back or to_insert->subject != node->id;
+		push_back = push_back or predicate == Instance;
+		push_back = push_back or predicate == Type and to_insert->Object() == node;// 10^6 type animal
+		push_back = push_back or predicate == node;
 		if (insert_at_start)push_back = false;// force
 		if (push_back) { // ALL!
 			Statement *add_here = &context->statements[node->lastStatement];
@@ -349,9 +355,10 @@ char *statementString(Statement *s) {
 
 
 bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
+	if (!context)context=getContext();
 	if (s == 0) return false;
-	if (s < contexts[current_context].statements) return false;
-	if (s >= contexts[current_context].statements + maxStatements) return false;
+	if (s < context->statements) return false;
+	if (s >= context->statements + maxStatements) return false;
 	if (!debug)return true;// bad idea!
 	if (s->id() == 0) return false; // !
 	if (checkSPOs or checkNamesOfSPOs) if (s->Subject() == 0 or s->Predicate() == 0 or s->Object() == 0) return false;
@@ -381,9 +388,15 @@ char *name(Node *node) {
 	return node->name;
 }
 
-Context *getContext(int contextId) {
+Context *getContext(int contextId,bool init) {
+	if(context)return context;
 	if (!multipleContexts) contextId = wordnet; // just one context
-	Context *context = &(contexts[contextId]);
+#ifdef WASM
+    p("NEW CONTEXT");
+    context=new Context();
+#else
+	context = &(contexts[contextId]);
+#endif
 	if (context->nodes != null) {// and context->id == contextId) {
 		//		printf("Found context %d: %s\n",context->id,context->name);
 		//		flush();
@@ -396,7 +409,7 @@ Context *getContext(int contextId) {
 #ifdef statementArrays
 	context->statementArrays = (int*) malloc(maxStatements());
 #endif
-	initContext(context);
+	if(init)initContext(context);
 //	if (contextId == wordnet) context->lastNode=1; //sick hack to reserve first 1000 words!
 //	else context->nodeCount=0;
 //	context->statementCount=1; //1000;
@@ -477,8 +490,12 @@ int nextStatement_lookupLimit=1000000;// TODO!
 void newQuery(){
 	nextStatement_lookupLimit=1000000;
 }
+
 Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
-	if (nextStatement_lookupLimit--<0)return null;// per web request todo better
+	if (!importing && nextStatement_lookupLimit--<0){
+		printf("nextStatement lookupLimit reached! Cyclic graph?\r\n");
+		return null;
+	}// per web request todo better
 	if (current == null) return getStatement(n->firstStatement);
 	if (stopAtInstances and current->Predicate() == Instance) return null;
 	//	if (stopAtInstances and current->Object == n and current->Predicate == Type)return null; PUT TO END!!
@@ -499,7 +516,7 @@ Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
 Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId) {
 	Context *context = getContext(contextId);
 	if (!checkNode(node, id, false, false)) {
-		p("OUT OF MEMORY!");
+		p("OUT OF MEMORY");
 		return 0;
 	}
 	if (context->currentNameSlot + 1000 > averageNameLength * maxNodes) {
@@ -531,10 +548,18 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 //	bool report=true;
 	if (node == 0) {
 		bad();
-		if (debug) printf("^"); // p("null node");
+		if (debug)
+			printf("^"); // p("null node");
 		//		p(nodeId);
 		return false;
 	}
+#ifdef WASM
+if(nodeId<-propertySlots)return false;
+if(nodeId>maxNodes)return false;
+if(!node)return false;
+if((long)node<=0)return false;
+if((long)node>0x30000000)return false;// todo
+#endif
 //	if(!debug)return true;
 	context = getContext(current_context);
 	void *maxNodePointer = &context->nodes[maxNodes];
@@ -594,7 +619,7 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 
 	if (checkNames and node->name == 0) {// WHY AGAIN??
 		bad();
-		if (report)printf("node->name == 0 %i\n", node->id);
+//		if (report)printf("node->name == 0 %i\n", node->id); // todo
 		return false;
 	}
 	if (checkNames and (node->name >= &context->nodeNames[averageNameLength * maxNodes])) {
@@ -630,12 +655,24 @@ bool checkNode(int nodeId, bool checkStatements, bool checkNames, bool report) {
 
 Node *add(const char *key, const char *nodeName) {
 	N node = add(nodeName);
-	insertAbstractHash(wordhash(key), node);
+	insertAbstractHash(wordHash(key), node);
 	return node;
 }
 
 
-void checkOutOfMemory();
+void checkOutOfMemory() {
+	if (context->lastNode <=0) {
+		p("lastNode <=0 MEMORY FULL!!!");
+		out_of_memory=true;
+	}
+	if (context->lastNode >= maxNodes - propertySlots) {
+		pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
+		p("MEMORY FULL!!!");
+		out_of_memory=true;
+//					exit(1);
+	}
+}
+
 
 Node *add(const char *nodeName, int kind, int contextId) { //=node =current_context
 	if (kind < -propertySlots or kind > maxNodes)
@@ -646,8 +683,7 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	Node *abstract = hasWord(nodeName);
 	Node *node;
 	do {
-        if(count_nodes_down) context->lastNode--;
-        else context->lastNode++;// DON't MOVE!
+        context->lastNode++;// DON't MOVE!
 		node = &(context->nodes[context->lastNode]);
 		checkOutOfMemory();
 		if(out_of_memory)return Error;
@@ -666,28 +702,16 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	if (abstract)
 		addStatement(abstract, Instance, node, false);// done in initNode//setLabel !
 	if (storeTypeExplicitly and kind > 105) // might cause loop?
-		addStatement4(contextId, node->id, Type->id, kind, false); // store type explicitly!
+		addStatement4(contextId, node->id, _Type, kind, false); // store type explicitly!
 	//	  why? damit alle Instanzen etc 'gecached' sind und algorithmen einfacher. Beth(kind:person).
 	// kosten : Speicher*2
 	return node;
 }
 
-void checkOutOfMemory() {
-	if (maxNodes>100*million&& context->lastNode <wikidata_limit && count_nodes_down){
-		p("lastNode <= wikidata limit. MEMORY FULL!!!");
-		out_of_memory=true;
-	}
-	if (context->lastNode <=0) {
-		p("lastNode <=0 MEMORY FULL!!!");
-		out_of_memory=true;
-	}
-	if (context->lastNode >= maxNodes - propertySlots) {
-		pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
-		p("MEMORY FULL!!!");
-		out_of_memory=true;
-//					exit(1);
-	}
+int getNodeId(long pointer){
+	return (int((long)context->nodes-pointer));
 }
+
 
 Node *add_force(int contextId, int id, const char *nodeName, int kind) {
 	Context *context = getContext(contextId);
@@ -839,8 +863,9 @@ Statement *addStatement(Node *subject, Node *predicate, Node *object, bool check
 	statement->subject = subject->id;
 	statement->predicate = predicate->id;
 	statement->object = object->id;
-
-	bool ok = addStatementToNode(subject, id, force_insert_at_start);
+//	if(force_insert_at_start)
+	bool ok;
+	ok = addStatementToNode(subject, id, force_insert_at_start);
 	ok = addStatementToNode(predicate, id) and ok;
 	ok = addStatementToNode(object, id) and ok;
 	if (!ok)bad();
@@ -1258,11 +1283,6 @@ Node *getThe(const char *thing, Node *type) {//, bool dissect) {
 		bad();
 		return 0;
 	}
-//	if(eq("of Directors",thing))
-//		thing=thing+3;
-//	if(startsWith(thing,"of "))
-//		thing=thing+3;
-//	if(startsWith(thing,"in "))thing=thing+3;
 	if (autoIds and type != Number and isInteger(thing))return get(atoi(thing));// WAH, not here! --
 	Node *rel = getRelation(thing); // not here! doch
 	if (rel)return rel;
@@ -1322,13 +1342,18 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 	//	if (thingy[0] == ' ' or thingy[0] == '_' or thingy[0] == '"') // get rid of "'" leading spaces etc!
 	//  char* fixed=editable(thingy); // free!!!
 	//	thingy=(const char*) fixQuotesAndTrim(fixed);// NOT HERE!
-	int h = wordhash(thingy);
+	int h = wordHash(thingy);
 	long pos = abs(h) % maxNodes;
 	Ahash *found = &abstracts[pos]; // TODO: abstract=first word!!! (with new 'next' ptr!)
 	Node *first = 0;
 	if (found and found->abstract > 0 and (first = get(found->abstract))) {
 		//		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
 		//			return found->abstract;
+		if(first->name > &context->nodeNames[context->currentNameSlot] || first->name<=context->nodeNames){
+//			p("BAD NAME");
+			bad(); // todo
+			return 0;
+		}
 		if (eq(first->name, thingy, true))    // tolower
 			return first;
 		if (seo and first->name) {
@@ -1363,6 +1388,7 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
 			N a = get(found->abstract);
+//			if(!checkNode(a,0,0,1))continue;
 			if (eq(a->name, thingy, true, true))            //teuer? n��, if 1.letter differs
 				return a;
 			if (seo and a->name) {
@@ -1533,8 +1559,8 @@ Node *getAbstract(const char *thing) {            // AND CREATE! use hasWord for
 		//		throw "out of memory exception";
 		return 0;
 	}
-	Ahash *ok = insertAbstractHash(wordhash(thing), abstract);
-	//	if (ok == 0) insertAbstractHash(wordhash(thing), abstract);		// debug
+	Ahash *ok = insertAbstractHash(wordHash(thing), abstract);
+	//	if (ok == 0) insertAbstractHash(wordHash(thing), abstract);		// debug
 	if (ok == 0)return Error;// full!
 	if (doDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, ".")))
 		dissectParent(abstract);// later! else MESS!?
@@ -1639,7 +1665,6 @@ bool show(Node *n, bool showStatements) {        //=true
 		//    pf("%d|",n->id);
 		//    return false;// !!! HIDE!!!
 	}
-
 	// Context* c=getContext(n->context);
 	// if(c != null and c->name!=null)
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
@@ -1688,7 +1713,9 @@ Node *showNode(Node *n) {
 }
 
 Node *showNode(int id) {
-	Node *n = &context->nodes[id];
+	if(id<=-propertySlots || id>maxNodes)
+		return bad();
+	Node *n = &getContext()->nodes[id];// &context->nodes[id];
 	if (!checkNode(n, id)) return 0;
 	show(n);
 	return n;
@@ -1703,10 +1730,17 @@ NodeVector *findWordsByName(int context, const char *word, bool first, bool cont
 		Node *n = &c->nodes[i];
 		if (n->id == 0 or !checkNode(n, i, true, false)) continue;
 		bool good = eq(n->name, word, true);
-		if (containsWord)good = good or contains(n->name, word, true);// 1000000000*100 comparisons!?!
+		if (containsWord)
+			good = good or contains(n->name, word, true);// 1000000000*100 comparisons!?!
 		if (good) {
 			all->push_back(n);
 			show(n);
+			Node *abstract = hasWord(word);
+			if(!abstract) // & fix / associate
+				insertAbstractHash(n,true); // or leave to debug!
+			else
+				if(eq(abstract->name,n->name))
+					addStatement(abstract,Instance,n,true);
 			if (first) return all;
 		}
 	}
@@ -1739,6 +1773,11 @@ Statement *findStatement(int subject, int predicate, int object, int recurse, bo
 	                     matchName);
 }
 
+bool _trace= false;
+void trace(){
+	_trace=true;
+}
+
 // DO  NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 Statement *findStatement(Node *subject, Node *predicate, Node *object,
                          int recurse, bool semantic, bool symmetric, bool semanticPredicate, bool matchName,
@@ -1752,8 +1791,11 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 	Statement *s = 0;
 	map<Statement *, bool> visited;
 	int lookup = 0;
-	while ((s = nextStatement(subject, s, predicate != Instance))) { // kf predicate!=Any 24.1. REALLY??
+	bool stopAtInstances = false;// predicate != Instance; too Fragile for ordering!
+	while ((s = nextStatement(subject, s, stopAtInstances))) { // kf predicate!=Any 24.1. REALLY??
 		if (limit and lookup++ > limit)break;
+		if(_trace)
+			p(s);
 		if (visited[s]) {// Remove in live mode if all bugs are fixed
 			p("GRAPH ERROR: cyclic statement");
 			p(s);
@@ -1761,14 +1803,8 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 			return 0;
 		}
 		visited[s] = 1;
-//    if(s->id()==4334 or subject->id==4904654) // debug id
-//    p(s);
 		if (!checkStatement(s)) continue;
-		//#ifdef useContext
 		if (s->context == _pattern) continue;
-//    if(predicate==Type and s->predicate!=_Type and visited.size()>100)
-//			return 0;// expect types on top HAS TO BE ORDERED!!
-		//#endif
 
 		//		if(s->Predicate!=Any){
 		if (s->Object() == Adjective and object != Adjective) continue; // bug !!
@@ -1780,24 +1816,17 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 		//		}
 		// ^^ todo
 
-		//		X any X error
-		//		native		derived		native		301562->81->251672
-		//		good		also		good		302044->50->302076
-		//		evil		attribute		evil		226940->60->302081
-		//		showStatement(s); // to reveal 'bad' runs (first+name) ... !!!
-
-		//		if (s->Object->id < 100)continue; // adverb,noun,etc bug !!
 		if (subject == s->Predicate()) {
 //      ps("NO predicate statements!");
-			break;
+			continue;
 		}
 
 		//    if(s->context != current_context)continue;// only queryContext
 #ifdef use_instance_gap
 		if (s->Predicate == subject or i > 1 and s->Predicate == Instance and predicate != Instance or i > 1 and s->Predicate == Type and predicate != Type) {
 	  ps("skipping Predicate/Instance/Kind statements");
-			//      continue;
-			break;// todo : make sure statements are ordered!
+			      continue;
+//			break;// todo : make sure statements are ordered!
 		}
 #endif
 
@@ -1913,12 +1942,13 @@ void deleteStatement(int id) {
 
 // Does NOT delete tautological duplicates!
 void deleteStatement(Statement *s) {
-	if (!checkStatement(s, true, false)) {
-		printf("BAD Statement:");
-		p(s);
-		bad();
-		return;
-	}
+	pf("deleteStatement %d\n",s->id());
+	p(s);
+//	if (!checkStatement(s, true, false)) {
+//		printf("BAD Statement:");
+//		bad();
+//		return;
+//	}
 	removeStatement(s->Subject(), s);
 //	can be very expensive a->is->b 10000000 is Statements :
 //	removeStatement(s->Predicate(), s);// Keep '//' in mind: not real 'bug' if Statement is broken
@@ -1936,25 +1966,27 @@ void deleteWord(const char *data, bool completely) {
 	Context *context = &contexts[current_context];
 	if (data[0] == '$') {
 		pf("deleteStatement %s \n", data + 1);
-		deleteStatement(&context->statements[atoi(data + 1)]);
+		Statement *s = &context->statements[atoi(data + 1)];
+		p(s);
+		deleteStatement(s);
 		return;
 	}
 	pf("deleteWord %s \n", data);
 	int id = atoi(data);
 	if (id <= 0) {
 //		deleteNode(getThe(data));
-		deleteNode(get(data));
+		deleteNode(get(data), completely);
 		if (completely) {
 			NodeVector *words = findWordsByName(current_context, data, true, false); //getAbstract(data);
 			for (int i = 0; i < words->size(); i++) {
 				Node *word = words->at(i);
 				pf("deleteNode %s \n", word->name);
-				deleteNode(word); // DANGER!!
+				deleteNode(word, false); // DANGER!!
 			}
 		}
 	}
 	else if (checkNode(&context->nodes[id], id, false, false))
-		deleteNode(&context->nodes[id]);
+		deleteNode(&context->nodes[id], completely);
 	else if (checkStatement(&context->statements[id], false, false))
 		deleteStatement(&context->statements[id]);
 	else ps("No such node or statement: " + string(data));
@@ -1965,18 +1997,18 @@ void deleteWord(string *s) {
 }
 
 void deleteNode(int id) {
-	deleteNode(get(id));
+	deleteNode(get(id), false);
 }
 
-void deleteNode(Node *n) {
+void deleteNode(Node *n, bool deleteChildren) {
 // 2017-02-30 : STILL EVIL! TEST!!
 	if (!checkNode(n)) return;
-	if (n->kind == _abstract) {
+	if (n->kind == _abstract and deleteChildren) {
 		NodeVector nv = instanceFilter(n);
 		for (int i = 0; i < nv.size(); i++) {
-			Node *n = nv[i];
-			if (!isAbstract(n))
-				deleteNode(n);
+			Node *child = nv[i];
+			if (!isAbstract(child) and eq(n->name,child->name))
+				deleteNode(child, false);
 		}
 	} else { //!!
 		N a = getAbstract(n->name);
@@ -2105,9 +2137,18 @@ Node *has(Node *n, string predicate, string object, int recurse, bool semantic, 
 Node *
 has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bool symmetric, bool predicatesemantic,
     bool matchName) {
+
 	if (recurse > 0) recurse++;
 	else recurse = maxRecursions - 1;
-	if (recurse > maxRecursions) return 0;
+	if (recurse > maxRecursions)
+		return 0;
+
+	Statement *s = findStatement(subject, predicate, object, recurse, semantic, symmetric, predicatesemantic,
+	                             matchName);
+//	if(!s)s=findStatement(subject, predicate, object);
+	if (s != null and s->Subject() == subject) return s->Object(); // a.b=*? return *
+	if (s != null and s->Object() == subject) return s->Subject();
+
 	if (recurse <= 2 and subject->kind == Abstract->id) {
 		NodeVector all = instanceFilter(subject);// need big lookuplimit here? :( todo: filter onthe fly!
 		for (int i = 0; i < all.size(); i++) {
@@ -2128,10 +2169,7 @@ has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bo
 
 	//  if(recurse>maxRecursions/3)semantic = false;
 	//  printf("findStatement(n %d,predicate %d,object %d,recurse %d,semantic %d,symmetric %d)\n",n,predicate,object,recurse,semantic,symmetric);
-	Statement *s = findStatement(subject, predicate, object, recurse, semantic, symmetric, predicatesemantic,
-	                             matchName);
-	if (s != null and s->Subject() == subject) return s->Object(); // a.b=*? return *
-	if (s != null and s->Object() == subject) return s->Subject();
+
 	return 0;
 }
 
@@ -2298,7 +2336,7 @@ Node *last(NodeVector rows) {
 void initUnits() {
 	//  printf("Abstracts %p\n", abstracts);
 	printf("Abstracts %p\n", abstracts);
-	Ahash *ah = &abstracts[wordhash("meter") % maxNodes];//???;
+	Ahash *ah = &abstracts[wordHash("meter") % maxNodes];//???;
 	if (ah < abstracts or ah > extrahash /**2*/) {
 		ps("abstracts kaputt");
 		//		collectAbstracts();
@@ -2319,7 +2357,6 @@ void initUnits() {
 Statement *error_statement = 0;
 
 // SAME as evaluate!!
-void fixPostleitzahlen();
 
 extern "C"
 //Statement * learn(string& sentence0) {
@@ -2400,7 +2437,7 @@ Statement *learn(const char *sentence0) {
 //69 (Q30203): year
 //69 (Q713048): natural number
 //void cleanAbstracts(Context* c){
-Node *getThe(Node *abstract, Node *type) {// first instance, TODO
+Node *getThe(Node *abstract, Node *type,bool create /*true!*/) {// first instance, TODO
 	if (!abstract or !abstract->name) return 0;
 	if (abstract->kind == _singleton)return abstract;
 	if (abstract->kind == _entity)return abstract;// hack! first _entity wikidata is best? see importWikiLabels
@@ -2424,10 +2461,12 @@ Node *getThe(Node *abstract, Node *type) {// first instance, TODO
 			abstract->value.node = best;
 			return best;
 		}
-		N first = add(abstract->name, 0); // NO SUCH!! CREATE!?
-		if (!atoi(abstract->name))
-			abstract->value.node = first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
-		return first;
+		if(create){
+			N first = add(abstract->name, 0); // NO SUCH!! CREATE!?
+			if (!atoi(abstract->name))
+				abstract->value.node = first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
+			return first;
+		}return abstract; // or 0 !
 	}
 	if (type->id == _abstract or type->id == _singleton)
 		return getAbstract(abstract->name); // safe
@@ -2460,7 +2499,7 @@ Node *getThe(Node *abstract, Node *type) {// first instance, TODO
 	}
 	if (!best) {
 		best = add(abstract->name, type->id, 0);
-		if (type->id > 0) addStatement(best, Type, type);
+		if (type->id > 0) addStatement(best, Type, type, false);
 		addStatement(abstract, Instance, best, false, true);
 	}
 	return best;
@@ -2517,6 +2556,8 @@ void setLabel(Node *n, cchar *label, bool addInstance, bool renameInstances) {
 	if (hasName and strlen(n->name) >= len) {// reuse! NOT when sharing char*s !!
 		strcpy(n->name, label);
 		n->name[len] = 0;
+	} else if(label >= c->nodeNames && label < &c->nodeNames[c->currentNameSlot]){
+		n->name= const_cast<char *>(label);
 	} else {
 		strcpy(newLabel, label);
 		int len = (int) strlen(label);
@@ -2531,7 +2572,7 @@ void setLabel(Node *n, cchar *label, bool addInstance, bool renameInstances) {
 		for (int i = 0; i < all.size(); i++)
 			setLabel(all[i], label, false);
 		if (!hasWord(label))
-			insertAbstractHash(n);
+			insertAbstractHash(n);// not here!
 		//    else
 		//      mergeNode(getAbstract(label),n);
 	} else {
@@ -2551,12 +2592,12 @@ bool checkParams(int argc, char *argv[], const char *p) {
 	string slash = "/";
 	string equals = "=";
 	for (int i = 1; i <= argc; i++) {
-		if (startsWith(argv[i], p)) return true;
-//		if (startsWith(argv[i], (slash+p).c_str()))return true;
-		if (startsWith(argv[i], (colon + p[0]).c_str()))return true; // import
-		if (startsWith(argv[i], (colon + p).c_str())) return true; // :server
-		if (startsWith(argv[i], (minus + p).c_str())) return true;
-		if (startsWith(argv[i], (minus + minus + p).c_str()))return true;
+		if (eq(argv[i], p)) return true;
+//		if (eq(argv[i], (slash+p).c_str()))return true;
+		if (eq(argv[i], (colon + p[0]).c_str()))return true; // import
+		if (eq(argv[i], (colon + p).c_str())) return true; // :server
+		if (eq(argv[i], (minus + p).c_str())) return true;
+		if (eq(argv[i], (minus + minus + p).c_str()))return true;
 	}
 	return false;
 }
@@ -2644,17 +2685,18 @@ int test2() {
 	return 12345;
 }        // RUBY/ JNA !!
 
-void replay() {
+void replay(const char *file) {
 	char *line = (char *) malloc(MAX_CHARS_PER_LINE);
 //	while(readFile("logs/query.log", line)){
 //	while(readFile("logs/commands.log", line)){
-	while (readFile("logs/replay.log", line)) {
+	while (readFile(file, line)) {
 		char *data = line;
 		if (data[strlen(data) - 1] == '\n')data[strlen(data) - 1] = 0;
 		if (data[strlen(data) - 1] == '\r')data[strlen(data) - 1] = 0;
 		if (contains(line, ":del"))parse(line, false, false);
-		if (contains(line, ":learn"))parse(line, false, false);
-		if (contains(line, ":label"))parse(line, false, false);
+		else if (contains(line, ":learn"))parse(line, false, false);
+		else if (contains(line, ":label"))parse(line, false, false);
+		else handle(concat("/ee/",line));// chaos monkey
 	}
 }
 
@@ -2693,14 +2735,14 @@ void addSeo(Node *n0) {
 		if (old->statementCount >= n0->statementCount)return;// ok
 		if (old == n)return;// ok, abstract
 		if (debug)pf("addSeo FORCE %s	->	%s\n", n->name, seo);
-		insertAbstractHash(wordhash(seo), n, true, true);
+		insertAbstractHash(wordHash(seo), n, true, true);
 		return;
 	}
 //	N ss=getAbstract(seo);
 //	addStatement(n, Label, ss);
 //	pf("addSeo %s	->	%s\n",n->name,seo);
-//	insertAbstractHash(wordhash(seo),n,false,false);// old writing? makes no sense
-	insertAbstractHash(wordhash(seo), n, false, true);
+//	insertAbstractHash(wordHash(seo),n,false,false);// old writing? makes no sense
+	insertAbstractHash(wordHash(seo), n, false, true);
 }
 
 // :build-seo
@@ -2711,6 +2753,7 @@ void buildSeoIndex() {
 	debug = false;
 //	addSeo(get(10506175));
 //	return;
+	N bad=getThe("Amazon product");
 	for (int i = 1; i < maxNodes; i++) {
 		if (i % 10000 == 0) {
 			pf("%d\r", i);
@@ -2718,6 +2761,7 @@ void buildSeoIndex() {
 		}
 		Node *n = get(i);
 		if (!checkNode(n, i, 0, 1, debug) or !n->name)continue;
+		if(n->kind==bad->kind)continue;
 		addSeo(n);
 		stripName(n);
 		//			2/2-Wege Direktgesteuertes Ventil 184684 230 V/AC G 1/2 Muffe Nennweite 8 mm Gehäusematerial Messing Dichtungsma HOW??
@@ -2749,11 +2793,12 @@ void fixInstances() {
 		N a = getAbstract(n);
 		if (a == n)continue;
 		if (isAbstract(n)) {
-			n->kind = _entity;// was singleton!
-//			bad();
-//			p(i);
+//			n->kind = _entity;// was singleton!
+			n->kind = _abstract;
+			continue;
 		}
-		addStatement(a, Instance, n, true, true);
+		else
+			addStatement(a, Instance, n, true, true);
 	}
 }
 
@@ -2781,16 +2826,58 @@ void fixICD10() {
 	}
 }
 
+void cacheTopic() {
+	autoIds = false;
+	Node *topic = getThe("topic");
+	int already = 0;
+	for (int i = 1; i < maxNodes - propertySlots; i++) {
+		if(i%100000==0 or already%10000==0)pf("%d\t%d\r",i,already);
+		if (!checkNode(i))continue;
+		N n = get(i);
+		if(n->kind>0)already++;
+		if (isAbstract(n))continue;
+		if (empty(n->name))continue;
+		N top = getTopic(n);
+		if(top == n || !checkNode(top)||eq(n->name,top->name))
+			top=getClass(n);
+		if(top == n || !checkNode(top)||eq(n->name,top->name))
+			continue;
+		addStatement(n, topic, top, true, true);
+	}
+}
+
+
+void fixThe() {
+	int already=0;
+	for (int i = 1; i < maxNodes - propertySlots; i++) {
+		if(i%100000==0)pf("%d\t%d\r",i,already);
+		if (!checkNode(i))continue;
+		N n = get(i);
+		if (isAbstract(n))continue;
+		if (empty(n->name))continue;
+		if(checkNode(n->value.node)){
+			already++;
+			continue;
+		}
+		getAbstract(n)->value.node=n;
+	}
+}
+
 void fixCurrent() {
-//	fixICD10();
-//	context->lastNode =50000000;// as of 11/2017  vs  https://www.wikidata.org/wiki/Q40000000
-//	context->lastNode = (int) maxNodes / 2;
-//	fixPostleitzahlen();
+	importCsv("Telekom/entities.ee.csv",0,0,0,"name,topic",0);
+//	context->nodeCount=context->lastNode;
+//	context->lastNode=wikidata_limit;// fill all empty slots!
+//	p(*findAllWords("Spanien"));
+//	fixThe();
 //	fixInstances();
-//	fixBrokenStatement();
-	context->lastNode=wikidata_limit;// fill all empty slots!
-//	context->lastNode=1;// RADICAL: fill all empty slots!
+//	cacheTopic();
+//	replay();
+//	importBilliger();
 //	buildSeoIndex();
+//	context->lastNode=1;// RADICAL: fill all empty slots!
+//	context->lastNode =60000000;// as of 5/2018  vs  https://www.wikidata.org/wiki/Q50000000
+//	context->lastNode = (int) maxNodes / 2;
+//	fixBrokenStatement();
 //	importRemaining();
 //	add_force(current_context, 415898, "Telekom", _singleton);
 }
@@ -2908,6 +2995,9 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "load_files")) load(true);
 	else if (checkParams(argc, argv, "debug")) {
 		printf("debugging\n");
+		for (int i = 0; i <argc; ++i) {
+			p(argv[i]);
+		}
 		//    load();
 		//		clean();
 		testBrandNewStuff(); // << PUT ALL HERE!
@@ -2936,7 +3026,7 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 	if (quit) exit(0);
-
+	context = getContext();
 	//	testBrandNewStuff();
 	console();
 	//  } catch (std::exception const& ex) {

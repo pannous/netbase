@@ -3,7 +3,7 @@
 	url = https://github.com/pannous/node-netbase/
 	branch = master
 
-[submodule "netbase-python"]
-	path = netbase-python
-	url = https://github.com/pannous/netbase-python
-	branch = master
+# [submodule "netbase-python"]
+# 	path = netbase-python
+# 	url = https://github.com/pannous/netbase-python
+# 	branch = master

@@ -263,6 +263,8 @@ NodeVector query(string s, int limit/*=resultLimit*/) {
 	lookupLimit = 100000;// todo: good
 //  q.queryType=sqlQuery;// njet!
 	NodeVector results = query(q);
+	if (results.empty())
+		results = parseProperties(s.data());
 	showNodes(results);
 	return results;
 	//	return evaluate_sql(s, limit);
@@ -348,7 +350,7 @@ Statement *parseSentence(string sentence, bool learn/* = false*/) {
 	//	int limit = 5;
 	sentence = replace_all(sentence, " a ", " ");
 	sentence = replace_all(sentence, " the ", " ");
-	char **matches = (char **) malloc(100);
+	char **matches = (char **) malloc(MAX_ROWS* sizeof(char*));
 	char *data = editable(sentence.data());
 	int count = splitStringC(data, matches, ' ');//matches.size();
 	//	vector<char*> matches = splitString(sentence, " ");
@@ -1102,6 +1104,8 @@ bool stopAtGoodWiki(int object) {
 	if (object == 215627)return true;//Person	Q215627
 	if (object == 5)return true;//=> Mensch	Q5
 	if (object == 6511271)return true;//Gemeinde	Q6511271
+	if (object == 15284)return true;//Gemeinde	Q15284
+	if (object == 319753)return true;// City	Q319753
 	if (object == 107425)return true;// Landschaft	Q107425
 	if (object == 3266850)return true;//Kommune	Q3266850
 	if (object == 515)return true;//Stadt	Q
@@ -1128,7 +1132,11 @@ bool stopAtGoodWiki(int object) {
 //	if (object == 2359810)return true;//Städte-Klasse wtf
 	if (object == 1406904)return true;//Fernbahnhof	Q1406904
 	if (object == 532)return true;//Dorf	Q532
+	if (object == 309)return true;//Geschichte	Q309
 //	if (object == 5)return true;//
+//	if (object == 5)return true;//
+//	if (object == 5)return true;//
+
 	return false;
 }
 
@@ -1256,6 +1264,11 @@ bool filterWikiType(int object) {
 	if (object == 853614)return DROP; //	 Identifikator
 	if (object == 2221906)return DROP; //		Standort
 	if (object == 9158768)return DROP; //		Speicher
+	if (object == -13238)return DROP; //		Verkehrsausscheidungsziffer
+	if (object == 2516126)return DROP; //		Verkehrsausscheidungsziffer
+	if (object == 60070175)return DROP; //		Verkehrsausscheidungsziffer
+
+
 	return KEEP;
 }
 
@@ -1434,7 +1447,8 @@ NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// ch
 		predicateMatch = predicateMatch or s->predicate == -10910;// Hauptkategorie zum Artikel
 		predicateMatch = predicateMatch or s->predicate == -10373;// Commons-Kategorie
 
-		bool subjectMatchReverse = s->Object() == subject;
+		Node *object = s->Object();
+		bool subjectMatchReverse = object == subject;
 		bool predicateMatchReverse = s->Predicate() == Type;
 		predicateMatchReverse = predicateMatchReverse or (INCLUDE_CLASSES and s->Predicate() == SuperClass);
 		predicateMatchReverse = predicateMatchReverse or (INCLUDE_LABELS and s->Predicate() == Label); // or inverse
@@ -1444,10 +1458,10 @@ NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// ch
 		                                                                                       subject->name));// Frankfurt (Oder)
 
 		if (queue) {
-			if (subjectMatch and predicateMatch)enqueue(subject, s->Object(), queue, enqueued);
+			if (subjectMatch and predicateMatch)enqueue(subject, object, queue, enqueued);
 			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
 		} else {
-			if (subjectMatch and predicateMatch)all.push_back(s->Object());
+			if (subjectMatch and predicateMatch)all.push_back(object);
 			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
 		}
 	}
@@ -1823,13 +1837,15 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 	while ((current = q.front()) && limit-->0) {
 		if (q.empty())break;
 		q.pop();
-		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, true /*report*/))continue;
+		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, false /*report*/))continue;
 //		if(enqueued[current->id+propertySlots])continue;
 //		enqueued[current->id+propertySlots]=true;
 //		if(all.size()>resultLimit)break;
 		if (!current->name or current->name[0] < 'A')continue;//?
-		if (stopAtGoodWiki(current))
-			return current;
+		if (stopAtGoodWiki(current)){
+			furthest=current;
+			break; // free() ..
+		}
 		if (filterWikiType(current->id))continue;
 		if (startsWith(current->name, "http"))continue;
 
@@ -2055,12 +2071,14 @@ NodeVector parseProperties(char *data) {
 		char **splat = splitStringC(data, ':');
 		thing = splat[1];// can't free no more
 		property = splat[0];
+		free(splat);
 		//		bool inverse=1;
 	} else if (contains(data, ".")) {
 		//			sscanf(data,"%s.%s",thing,property);
 		char **splat = splitStringC(data, '.');
 		thing = splat[0];
 		property = splat[1];
+		free(splat);
 	}
 
 	// OK: opponent+of+barack_obama
@@ -2071,6 +2089,7 @@ NodeVector parseProperties(char *data) {
 		char **splat = splitStringC(data, ' ');// leeeeak!
 		thing = splat[0];
 		property = splat[2];// pointer being freed was not allocated
+		free(splat);
 	}
 
 	pf("does %s have %s?\n", thing, property);
@@ -2123,7 +2142,10 @@ NV filterCandidates(NV all) {
 		N entity = all[i];
 		if (isAbstract(entity)) {
 			NV more = allInstances(entity);
-			mergeVectors(&all, more);
+			for(N n : more)
+				if(eq(n->name,entity->name))
+					all.push_back(n);
+//			mergeVectors(&all, more);
 		}
 	}
 //	size=(int)all.size();
@@ -2140,14 +2162,14 @@ NV filterCandidates(NV all) {
 //N
 map<int, bool> loadBlacklist(bool reload/*=false*/) {
 	N blacklist = getAbstract("entity blacklist");
-	map<int, bool> forbidden; // int: wordhash
+	map<int, bool> forbidden; // int: wordHash
 	// todo
 
 	FILE *infile = open_file("blacklist.csv", false);
 	if (!infile)return forbidden;
 	char line[1000];// Relativ geschwind!
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		forbidden[wordhash(line)] = true;
+		forbidden[wordHash(line)] = true;
 	}
 	if (!reload and blacklist->statementCount > 1000)return forbidden;
 //	static vector<cchar*> forbidden;// Reloaded in every query ... how to avoid?
@@ -2156,8 +2178,8 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 	bool check = blacklist->statementCount > 1000;
 
 	while (fgets(line, sizeof(line), infile) != NULL) {
-		if (check and forbidden[wordhash(line)])continue;// already loaded
-		forbidden[wordhash(line)] = true;
+		if (check and forbidden[wordHash(line)])continue;// already loaded
+		forbidden[wordHash(line)] = true;
 		//contains(blacklist,line,true/*ignoreCase*/))
 		fixNewline(line);
 		addStatement(blacklist, Part, getAbstract(line), false);
@@ -2188,7 +2210,7 @@ NV findEntites(cchar *query0) {
 //	N forbidden=loadBlacklist();
 	map<int, bool> forbidden = loadBlacklist();
 
-//	if(hasWord(query0) and !forbidden[wordhash(query0)])
+//	if(hasWord(query0) and !forbidden[wordHash(query0)])
 //		all.push_back(getAbstract(query0));// quick
 	int max_words = 6;// max words per entity: 'president of the United States of America' == 7
 	//	int min_chars=4;//
@@ -2203,7 +2225,7 @@ NV findEntites(cchar *query0) {
 		int words = 1;
 		while (mid <= end and words < max_words and mid - start >= min_chars) {
 			mid[0] = 0;// Artificial cut
-//			if(!forbidden[ wordhash(start)]){
+//			if(!forbidden[ wordHash(start)]){
 //			p(start);
 			N entity = hasWord(start);
 
@@ -2233,14 +2255,14 @@ NV findEntites(cchar *query0) {
 			if (entity) {
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
-				if (!forbidden[wordhash(entity->name)]) {
+				if (!forbidden[wordHash(entity->name)]) {
 					all.push_back(entity);
 					if (!isAbstract(entity)) {
 						entity->kind = abstractId;
 						insertAbstractHash(entity, true);// fix bug!
 					}
 					string ename = string(start) + " " + last;
-					if (start != last and !forbidden[wordhash(ename.data())]) {
+					if (start != last and !forbidden[wordHash(ename.data())]) {
 						entity = hasWord(ename.data());
 						if (entity)all.push_back(entity);
 					}
@@ -2334,8 +2356,8 @@ NV sortTopics(NV topics, N entity) {
 
 extern "C"
 Node *getType(Node *n) {
-	if (NO_TOPICS && n && n->id>76851497)return getProperty(n, get(44335951), 100);// hack!
-	return getProperty(n, Type, 1000);
+//	if (NO_TOPICS && n && n->id>76851497)return getProperty(n, get(44335951), 100);// hack!
+	return getProperty(n, Type, 10);// 10: pushed to top 5/2018
 //	Statement* s=findStatement(n,Type,Any);
 //	if(!checkStatement(s))return 0;// n
 //	return s->Object();
@@ -2391,9 +2413,12 @@ N getTopic(N node) {
 //	if (NO_TOPICS)
 //		return getType(node);
 	N t = getProperty(node, "topic");
+//	if(!t)t=getProperty(node,-10106);
 //	if(!t)t=getProperty(node, "Kategorie");
-	if (checkNode(t) && !eq(t->name,node->name))return t;
-	return getFurthest(node, topicFilter);
+	if (t && checkNode(t) && !eq(t->name,node->name))return t;
+	t = getFurthest(node, topicFilter);
+	if (t && checkNode(t) && !eq(t->name,node->name))return t;
+	return 0;
 }
 
 NV getTopics(N entity) {
@@ -2556,6 +2581,11 @@ NodeVector findProperties(const char *n, const char *m, bool allowInverse) {
 
 Node *has(Node *n, Node *m) {
 	clearAlgorithmHash(true);
+	Node *ok = 0;
+	ok=	getProperty(n,m,resultLimit);
+	if(ok)
+		return ok;
+
 	int tmp = resultLimit;
 	resultLimit = 1;
 	NodeVector all = memberPath(n, m);
@@ -2564,32 +2594,31 @@ Node *has(Node *n, Node *m) {
 
 	// how to find paths with property predicates?? so:
 	clearAlgorithmHash();
-	Node *no = 0;
-	if (!no) no = has(n, m, Any); // TODO: test
-	return no; // others already done!!
+	if (!ok) ok = has(n, m, Any); // TODO: test
+//	if(ok)	return ok; // others already done!!
 
 	// deprecated:
 	//	if (m->value.text != 0)// hasloh population:3000
-	//		no = has(n, m, m->value); // TODO: test
+	//		ok = has(n, m, m->value); // TODO: test
 	//  findPath(n,m,hasFilter);// Todo new algoritym
-	if (!no) no = has(n, Part, m);
-	if (!no) no = has(n, Attribute, m);
-	if (!no) no = has(n, Substance, m);
-	if (!no) no = has(n, Member, m);
-	if (!no) no = has(n, UsageContext, m);
-	if (!no) no = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
-	if (!no) no = has(n, get(_MEMBER_DOMAIN_REGION), m);
-	if (!no) no = has(n, get(_MEMBER_DOMAIN_USAGE), m);
+	if (!ok) ok = has(n, Part, m);
+	if (!ok) ok = has(n, Attribute, m);
+	if (!ok) ok = has(n, Substance, m);
+	if (!ok) ok = has(n, Member, m);
+	if (!ok) ok = has(n, UsageContext, m);
+	if (!ok) ok = has(n, get(_MEMBER_DOMAIN_CATEGORY), m);
+	if (!ok) ok = has(n, get(_MEMBER_DOMAIN_REGION), m);
+	if (!ok) ok = has(n, get(_MEMBER_DOMAIN_USAGE), m);
 	//inverse
-	if (!no) no = has(m, Owner, n);
-	if (!no) no = has(m, PartOf, n);
-	if (!no) no = has(m, get(_DOMAIN_CATEGORY), n);
-	if (!no) no = has(m, get(_DOMAIN_REGION), n);
-	if (!no) no = has(m, get(_DOMAIN_USAGE), n);
+	if (!ok) ok = has(m, Owner, n);
+	if (!ok) ok = has(m, PartOf, n);
+	if (!ok) ok = has(m, get(_DOMAIN_CATEGORY), n);
+	if (!ok) ok = has(m, get(_DOMAIN_REGION), n);
+	if (!ok) ok = has(m, get(_DOMAIN_USAGE), n);
 
 	//  if(!n)n=has(n,Predicate,m);// TODO!
-	//	if (!no)no = has(save, Any, m); //TODO: really?
-	return no;
+	//	if (!ok)ok = has(save, Any, m); //TODO: really?
+	return ok;
 }
 
 Statement *findRelations(Node *from, Node *to) {

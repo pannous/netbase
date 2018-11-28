@@ -132,7 +132,7 @@ Node *parseProperty(const char *data) {
 	Node *found = has(getThe(thing), getAbstract(property));
 	if (found == 0) found = has(getAbstract(thing), getAbstract(property));
 	if (found == 0) found = getProperty(getThe(thing), property);
-	free(property);
+//	free(property);
 	return found;
 }
 
@@ -183,6 +183,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	char *data = fixQuotesAndTrim(editable(data0));
 
 	int lenge = (int) strlen(data);
+	if(lenge==0)return OK;
 	if (data[lenge - 1] == '\n') {
 		data[lenge - 1] = 0;
 		lenge--;
@@ -196,8 +197,8 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		lenge--;
 	}
 	if (eq(data0, ""))return OK;
-	if (!isprint(data0[0])) // chinese \0a etc
-		return OK;
+//	if (!isprint(data0[0]) and not umlaut --) // chinese \0a etc
+//		return OK;
 	if (data[0] == '\'')data++;
 	if (data[0] == '!')((char *) data)[0] = ':';// norm!
 	if (data[0] == 'Q' and data[1] <= '9')data++;//Q1325845
@@ -211,7 +212,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	clearAlgorithmHash(true); // maybe messed up
 
 	// special server requests first:
-	if (contains(data, "limit") or contains(data, ":limit")) {
+	if (contains(data, "limit") or contains(data, ":limit", true)) {
 		char *limit = (char *) strstr(data, "limit");
 		sscanf(limit, "limit %d", &resultLimit);
 		pf("LIMIT SET TO %d\n", resultLimit);// quiet bug
@@ -308,7 +309,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return OK;
 	}
 	if (eq(data, ":it")) {
-		importTest();
+		testImportWiki();
 		return OK;
 	}
 	if (startsWith(data, ":iwd") or startsWith(data, ":wd")) {
@@ -414,11 +415,12 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		debug = true;
 		return OK;
 	}
-	if (startsWith(data, ":d ") or startsWith(data, ":delete ") or startsWith(data, ":del ") or
-	    startsWith(data, ":remove ")) {
+	if (startsWith(data, ":d ") or startsWith(data, ":delete ") or startsWith(data, ":del") or startsWith(data, ":remove ")) {
+		bool completely = contains(data, "all");
 		string d = next_word(data);
 		const char *what = d.data();
-		deleteWord(what, true /*completely*/);
+		if(what[0]=='S')deleteStatement(atoi(++what));
+		else deleteWord(what, completely);
 		return OK;
 	}
 	if (contains(data, ":english") or contains(data, ":en")) {
@@ -568,7 +570,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return OK;
 	}
 	if (startsWith(data, ":replay")) {
-		replay();
+		replay("logs/replay.log");
 		return OK;
 	}
 	if (startsWith(data, ":new")) {
@@ -586,7 +588,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		autoIds = true;
 		return wrap(getTopic(getThe(data, More)));
 	}
-	if (startsWith(data, ":type") or startsWith(data, ":kind")) {
+	if (startsWith(data, ":typ") or startsWith(data, ":kind")) {
 		data = next_word(data);
 		autoIds = true;
 		N n = getType(getThe(data));
@@ -753,7 +755,10 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 			load(/*,8,*/1);
 			return OK;
 		}
-		NodeVector nv = wrap(learn(what.data())->Subject());
+		Statement *learned = learn(what.data());
+		if(!learned)
+			return OK;// NOT!
+		NodeVector nv = wrap(learned->Subject());
 		FILE *fp = fopen((data_path + "/facts.ssv").data(), "a");
 		if (!fp) {
 			p("NO such file facts.ssv!");
@@ -777,21 +782,21 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 //	if(autoIds and i)return wrap(get(i));
-	if (i == 0 and !hasWord(data))return OK;// don't create / dissect here!
-	if (forbidAutoIds and !hasWord(data))return OK;
+	if ((i == 0 or forbidAutoIds) and !hasWord(data))
+		return OK;// don't create / dissect here!
 	Node *a = get(data);
-	if (!isAbstract(a)) {
-		if (i == 0 or !hasWord(a->name)) {
-			//		a->kind=abstractId;// not for singletons AMAZON!
-			insertAbstractHash(a, true);// fix bug! can't be!?
-		} else
-			addStatement(getAbstract(a), Instance, a, true, true);
-	}
+//	if (!isAbstract(a)) {
+//		if (i == 0 or !hasWord(a->name)) {
+//			//		a->kind=abstractId;// not for singletons AMAZON!
+//			insertAbstractHash(a, true);// fix bug! can't be!?
+//		} else
+//			addStatement(getAbstract(a), Instance, a, true, true);
+//	}
 	dissectWord(a, true);  //	if (i == 0) instanceFilter(a), true);
 	//    findWord(context->id, data);
 	if (isAbstract(a) and i == 0) {
 		lookupLimit = resultLimit;
-		N the = getThe(a);
+		N the = getThe(a,0, false);// DONT create!
 		show(the);
 		NV all = instanceFilter(a);
 //		all.push_back(the);

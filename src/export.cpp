@@ -21,10 +21,7 @@ bool save() {
 	p("saving nodes.bin");
 	fp = fopen((data_path + "nodes.bin").data(), "wb");
 //	fwrite(c->nodes-propertySlots, sizeof (Node), maxNodes, fp);
-	if(count_nodes_down)
-		fwrite(c->nodes - propertySlots, sizeof(Node), maxNodes-propertySlots, fp);// all :(
-	else
-		fwrite(c->nodes - propertySlots, sizeof(Node), max(c->nodeCount, c->lastNode), fp);
+	fwrite(c->nodes - propertySlots, sizeof(Node), max(c->nodeCount, c->lastNode), fp);
 
 //	fwrite(c->nodes-propertySlots, sizeof (Node), findLastNode(), fp);// or fix nodeCount / lastNode
 //	fwrite(c->nodes-propertySlots, sizeof (Node), c->lastNode, fp);
