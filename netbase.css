@@ -29,3 +29,35 @@ form{
 	margin: 5px;
 }
 
+table.sorted {
+    font-family: "Lucida Sans Unicode", sans-serif;
+    border-collapse: collapse;
+    border-width: 3px;
+    border-spacing: 1px;
+    border-style: double;
+    border-color: lightsteelblue;
+}
+
+table.sorted th {
+    border-width: 1px ;
+    padding: 2px;
+    border-style: ridge;
+    border-color: gray;
+    background-color: rgb( 255, 255, 240 );
+}
+
+table.sorted td {
+    border-width: 1px;
+    padding: 2px;
+    border-style: dotted;
+    border-color: gray;
+}
+
+table.sorted tr.odd {
+    background-color: aliceblue;
+}
+
+table.sorted tr.even {
+    background-color: white;
+}
+

@@ -1,5 +1,5 @@
 # echo killall -SIGKILL netbase
-make -j8
+#make -j8
 if [ $APPLE ] 
 then
   open http://localhost:8181/html/1

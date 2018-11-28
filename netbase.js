@@ -99,7 +99,7 @@ function editLinks(predicate,statement,elem)
 		makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
 		makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
 }
-	
+var num=0;
 function makeStatement(statement,elem,entity)
 {  // if Wikimedia-Kategorie  BREAK!
   if(filterStatement(statement))return;
@@ -113,6 +113,11 @@ function makeStatement(statement,elem,entity)
 	// if(statement.object.match(/\.jpg/))addImage(statement.object,div);
 	// if(statement.object.match(/\.bmp/))addImage(statement.object,div);
 	var top = document.createElement("tr");
+  if(++num % 2){
+  top.classList.add('even') //.class="even"
+}  else {
+  top.classList.add('odd') //.class="odd"
+}
 	if(!inline || statement.sid!=entity.id)
 		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
 
