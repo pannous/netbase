@@ -274,6 +274,15 @@ int handle(cchar *q0, int conn) {
 		Writeline(conn, itoa(context->nodeCount).data());
 		return 0;
 	}
+	if (contains(q, " limit ")) {
+		char *limit = (char *) strstr(q, "limit");
+		sscanf(limit, "limit %d", &resultLimit);
+		pf("LIMIT SET TO %d\n", resultLimit);// quiet bug
+		lookupLimit = resultLimit * 10;//todo
+		if (limit > q) *(limit - 1) = 0;
+		*limit = 0;
+		//		if(len<2)return OK;
+	}
 
 	if (startsWith(q, "all/")) {
 		cut_to(q, " +");
