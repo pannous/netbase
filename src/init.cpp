@@ -277,13 +277,7 @@ extern "C" void initSharedMemory(bool relations) {
 	abstract_root = (Node *) share_memory(key, abstract_size * 2, abstract_root,
 	                                      root);// ((char*) context_root) + context_size
 //	p("name_root:");
-	int mega_debug = getenv("MEGA_DEBUG") ? 0x40000 : 0; // objective xcode zombie diagnostics etc
-	english_words = (char *) share_memory(key + 1, name_size / 2, name_root,
-	                                      ((char *) abstract_root) + abstract_size * 2 + mega_debug);
-	german_words = (char *) share_memory(key + 5, name_size / 2, name_root + name_size, name_root + name_size);
-	if (germanLabels)
-		name_root = german_words
-	else name_root = english_words;
+	name_root= (char *) share_memory(key + 1, name_size , name_root, ((char *) abstract_root) + abstract_size * 2 );
 
 
 //	p("node_root:");

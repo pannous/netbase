@@ -212,7 +212,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	clearAlgorithmHash(true); // maybe messed up
 
 	// special server requests first:
-	if (contains(data, "limit") or contains(data, ":limit")) {
+	if (contains(data, "limit") or contains(data, ":limit", true)) {
 		char *limit = (char *) strstr(data, "limit");
 		sscanf(limit, "limit %d", &resultLimit);
 		pf("LIMIT SET TO %d\n", resultLimit);// quiet bug

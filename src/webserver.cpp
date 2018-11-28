@@ -455,15 +455,15 @@ int handle(cchar *q0, int conn) {
 			if (t != Entity and t) {
 				got_topic = true;
 				Writeline(conn, ",\n\t \"topicid\":" + itoa(t->id));
-				Writeline(conn, ", \"topic\":\"" + string(t->name) + "\"");
+				Writeline(conn, ", \"topic\":\"" + string(fixName(t->name)) + "\"");
 			}
 			if (c != Entity and checkNode(c, -1, false, true) and c != t) {
 				Writeline(conn, ",\n\t \"classid\":" + itoa(c->id));
-				Writeline(conn, ", \"class\":\"" + string(c->name) + "\"");
+				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");
 			}
 			if (ty and checkNode(ty, -1, false, true) and c != ty and ty != t) {
 				Writeline(conn, ",\n\t \"typeid\":" + itoa(ty->id));
-				Writeline(conn, ", \"type\":\"" + string(ty->name) + "\"");
+				Writeline(conn, ", \"type\":\"" + string(fixName(ty->name)) + "\"");
 			}
 			if (node->name and !empty(node->name)) {
 				string seo = generateSEOUrl(node->name);
