@@ -611,6 +611,7 @@ extern Node* abstract_root;
 extern Node* node_root;
 extern char* name_root;
 //extern char* english_words;// nonesense, just load whole /data/ with correct abstracts and nodes...
+
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
 Node* bad();//string="");
