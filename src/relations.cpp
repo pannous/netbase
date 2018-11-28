@@ -274,7 +274,15 @@ void initRelations() {
 //  if(testing){p("testing");return;}
 //    p("initRelations");
 	context = getContext(current_context);
+<<<<<<< Updated upstream
 	context->nodeNames=name_root;
+=======
+
+	if(germanLabels)
+		context->nodeNames=german_words;
+	else
+		context->nodeNames=english_words;
+>>>>>>> Stashed changes
 	name_root=context->nodeNames;// set to correct language
 
 	if (context->currentNameSlot == 0)
