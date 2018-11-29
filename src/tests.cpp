@@ -5,11 +5,9 @@
 
 #include "netbase.hpp"
 #include "import.hpp"
-#include "export.hpp"
 #include "util.hpp"
 #include "relations.hpp"
 #include "query.hpp"
-#include "init.hpp"
 #include "console.hpp"
 #include "webserver.hpp"
 //#define assert(cond) ((cond)?(0): (fprintf (stderr,"FAILED: \ %s, file %s, line %d \n",#cond,__FILE__,__LINE__), abort()))
@@ -32,7 +30,9 @@ void checkGeo() {
 	if (hasWord("Canillo")) return;
 	else importGeoDB();
 }
+
 #undef assert
+
 bool assert(bool test, string what) { // bool nix gut
 	printf("----\n");
 	printf("%s", what.data());
@@ -146,10 +146,13 @@ void testBasics() {
 	int initialStatementCount = (int) c->statementCount;
 	c->nodeCount = initialNodeCount; // reset for tests! dont save!
 	c->statementCount = initialStatementCount;
-	if (a(test)->statementCount > 0) {
+	Node *aTest = a(test);
+	check(hasNode("test"));
+	if (aTest->statementCount > 0) {
 		//  memset(&c->nodes[initialNodeCount], 0, sizeof (Node) *( maxNodes() - initialNodeCount -1)); //calloc!
 		//  memset(c->statements, 0, sizeof (Statement) * maxStatements() - 1);
 		//  memset(0,c->statements,maxStatementsPerNode)
+		p("deleteNode(a(test))");
 		deleteNode(a(test), false);
 		check(a(test)->statementCount == 0);
 	}
@@ -158,9 +161,14 @@ void testBasics() {
 	Node *good = add("good", adjective, 1);
 	Node *is = add("is", verb, 1);
 	Node *test = add("test", noun, 1);
+	addStatement(test, is, a(test));
 	check(is != null);
+	check(test->statementCount >= 1);
 	p(test);
-	assertEquals(getStatementNr(test, 0)->Subject(), a(test));// 0=='noun'
+	Statement *pStatement = getStatementNr(test, 0);
+	assert(pStatement, "has Statement");
+	assertEquals(pStatement->Subject(), a(test));// 0=='noun'
+//	check(pStatement == s);// prepended
 //	assertEquals(getStatementNr(test, 1)->Subject(), a(test));// 0=='noun'
 
 	showContext(current_context);
@@ -181,22 +189,25 @@ void testBasics() {
 	Node *dead = &c->nodes[999];
 	// Statement* s=addStatement4(c.id, test->id,is->id,good->id);
 	int statementCount = c->statementCount;
-	Statement *s = addStatement(test, is, good, false, true);
+	Statement *testIsGood = addStatement(test, is, good, false, true);
 	p(c->statementCount);
-	assert(c->statementCount == statementCount + 1, "c.statementCount==1");// if not yet there
-	assert(s->subject == test->id, "s->subject==test->id");
-	assert(s->Subject() == test, "s->Subject==test");
-	assert(s->Predicate() == is, "s->predicate==is");
-	assert(s->Object() == good, "s->object==good");
+	check(c->statementCount == statementCount + 1);// if not yet there
+	check(testIsGood->subject == test->id);
+	check(testIsGood->Subject() == test);
+	check(testIsGood->Predicate() == is);
+	check(testIsGood->Object() == good);
 	p(test);
-	assertEquals(getStatementNr(test, 1)->Subject(), a(test));
+	check(getStatementNr(test, 1)->Subject() == a(test));
 	p(good);
-	assertEquals(getStatementNr(good, 0)->Subject(), a(good));
-	assertEquals(getStatementNr(test, 1)->Object(), &c->nodes[(noun)]);
-	assertEquals(getStatementNr(good, 1)->Object(), &c->nodes[(adjective)]);
-	check(getStatementNr(test, 0) == s);// prepended
-	check(getStatementNr(is, 0) == s);
-	check(getStatementNr(good, 1) == s);
+	check(getStatementNr(good, 0)->Subject() == a(good));
+	bool explicitlyAddKindAsStatement = 0;
+	if (explicitlyAddKindAsStatement) {
+		check(getStatementNr(test, 1)->Object() == &c->nodes[(noun)]);
+		check(getStatementNr(good, 1)->Object() == &c->nodes[(adjective)]);
+	}
+	p(is);
+//	check(getStatementNr(is, 2) == testIsGood);
+	check(getStatementNr(good, 1) == testIsGood);
 	show(test);
 	show(is);
 	show(dead);
@@ -612,12 +623,14 @@ void testInsertForceStart() {
 	//	addStatement(t, Type, o, false); types up too
 	Statement *first = getStatement(t->firstStatement);
 	showStatement(first);
-	check(first->Predicate()==Type);
-	S s = addStatement(t, p, o, false, true);
-	showStatement(s);
-	printf("%d %d\n", t->firstStatement, s->id());
+	check(first->Predicate() == Type);
+	S s = addStatement(t, p, o, false, true);// checkDuplicate, bool force_insert_at_start
 	show(t);
-	printf("%p %p\n", getStatement(t->firstStatement), s);
+	showStatement(s);
+	first = getStatement(t->firstStatement);// new first
+	showStatement(first);
+	printf("%d %d\n", t->firstStatement, s->id());
+	printf("%p %p\n", first, s);
 	check(t->firstStatement == s->id());
 }
 
@@ -887,7 +900,7 @@ void testValueLogic() {
 	check(boot_length == boot_length2); // duplicate
 
 	show(Booot);
-	check(Booot->statementCount>=2);
+	check(Booot->statementCount >= 2);
 //	trace();
 	check(findStatement(Booot, a(length), m143, 1, 1, 1));
 	check(findStatement(Booot, a(length), m143, 0, 0, 0));
@@ -952,9 +965,11 @@ void testValueLogic() {
 	S nos = findStatement(kind, SuperClass, length, 1, 1, false);
 	showStatement(nos);
 	check(!findStatement(kind, SuperClass, length, 1, 1, false));
+	newQuery();
 	check(!has(kind, SuperClass, length, 1, 1, false));
 	check(!isA4(kind, length, true, true));
 	//  show(m143);
+	newQuery();
 	Statement *s = findStatement(Booot, a(length), Any);
 	check(checkStatement(s));
 	Node *n2 = s->Object();
@@ -1231,6 +1246,10 @@ void testQuery() {
 	//	testQueryMore();
 }
 
+void testWins() {
+
+}
+
 //#define sn showNode
 
 void testReification() {
@@ -1245,18 +1264,18 @@ void testReification() {
 
 
 void testDelete() {
-	Statement* s;
+	Statement *s;
 	Node *t = getThe("testDelete");
 	Node *p = getThe("testDelete1");
 	Node *o = getThe("testDelete2");
 	addStatement(t, Instance, o, !CHECK_DUPLICATES);
-	s=addStatement(t, Part, p, !CHECK_DUPLICATES);
+	s = addStatement(t, Part, p, !CHECK_DUPLICATES);
 	addStatement(t, Type, o, !CHECK_DUPLICATES);
 	addStatement(t, Instance, o, false);
 	addStatement(t, PartOf, o, !CHECK_DUPLICATES);
 	int statementCount0 = t->statementCount;
 	deleteNode(p->id);
-	check(t->statementCount==statementCount0-1);
+	check(t->statementCount == statementCount0 - 1);
 	showNode(t);
 	return;
 
@@ -1350,19 +1369,19 @@ void testCities() {
 //	clearMemory();
 	if (!hasWord("Mersing")) {
 		cchar *ignore =
-		"alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
+				"alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
 		importCsv("cities1000.txt", the(city), '\t', ignore);
 	}
 	p(the(Mersing));
-	N pop=getProperty(the(Mersing), a(population));
-	assertEquals(pop->name,"22007");
-	assertEquals(pop,the(22007));
-	check(findStatement(the(Mersing), a(population),Any));
+	N pop = getProperty(the(Mersing), a(population));
+	assertEquals(pop->name, "22007");
+	assertEquals(pop, the(22007));
+	check(findStatement(the(Mersing), a(population), Any));
 	check(findStatement(the(Mersing), a(population), the(22007)));
 	check(has(the(Mersing), a(population), the(22007)))
 	check(has(the(Mersing), a(population)))
 	check(!has(the(Mersing), a(population), the(22008)))
-	check(has(the(Mersing),value("population",22007)))// todo
+	check(has(the(Mersing), value("population", 22007)))// todo
 //	check(!has(the(Mersing), value("population", 22008)))// todo
 }
 
@@ -1809,15 +1828,15 @@ void testEntities() {
 }
 
 void testWikidataTopics() {
-		N t=getTopic(get(4543));
-		check(!eq(t->name,"Beachvolleyball"));
+	N t = getTopic(get(4543));
+	check(!eq(t->name, "Beachvolleyball"));
 
 	//	N t=getTopic(get(1744));
 	//	N t=getTopic(get(2765216));
 
 	filterWikiType(3423);
 	N to = getTopic(get(550866));
-	check(eq(to->name, "Dorf")||eq(to->name,"Kommune"));// 3266850
+	check(eq(to->name, "Dorf") || eq(to->name, "Kommune"));// 3266850
 	N sackgassendorf = get(177966);
 	N e = getTopic(sackgassendorf);// Sackgassendorf -> Reihendorf -> Dorf OK
 	check(eq(e->name, "Dorf"));
@@ -1860,7 +1879,7 @@ extern "C" void testAll() {
 	context = getContext(0);
 	germanLabels = false; // for tests!
 //	clearMemory();
-    testBasics();
+	testBasics();
 	testTheSingletons();
 	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
 	testStringLogic();
@@ -1870,6 +1889,7 @@ extern "C" void testAll() {
 	testInsertForceStart();
 	testCities();
 	testQuery();
+	testWins();
 	testLabelInstances();
 	testDummyLogic();
 	testReification();
@@ -1902,13 +1922,13 @@ extern "C" void testAll() {
 }
 
 void testTheSingletons() {
-	N a=getThe("bla_typ");
-	N a2=getThe("bla_typ");
-	assertEquals(a,a2);
-	N b=getThe("bla2",a);
+	N a = getThe("bla_typ");
+	N a2 = getThe("bla_typ");
+	assertEquals(a, a2);
+	N b = getThe("bla2", a);
 	get("bla2");
-	N b2=getThe("bla2",a);
-	assertEquals(b,b2);
+	N b2 = getThe("bla2", a);
+	assertEquals(b, b2);
 }
 
 
@@ -1999,14 +2019,14 @@ void addNormLabels() {
 
 }
 
-void testUmlauts(){
+void testUmlauts() {
 	learn("Mæ is mae");
 	learn("Mü is mö");
-	check(isA(the(mü),the(mö)));
-	check(wordHash("mü")==wordHash("MÜ")); // todo: seo here!
+	check(isA(the(mü), the(mö)));
+	check(wordHash("mü") == wordHash("MÜ")); // todo: seo here!
 }
 
-void testImportant(){
+void testImportant() {
 	testTheSingletons();
 	testBasics();
 	testInsertForceStart();
@@ -2016,88 +2036,10 @@ void testImportant(){
 void testBrandNewStuff() {
 #ifndef __clang_analyzer__
 	p("Test Brand New Stuff");
-	check(true or false and false);
-	show(parseProperties("Kathy Bald.Geburtsdatum"));
-	query("Kathy Bald.Geburtsdatum");
-
-	exit(0);
-	import("wins.n3");
-	handle("/3");
-//	start_server();
-	importCsv("Telekom/entities.ee.csv",0,0,0,"name,topic",0);
-//	check()
-	exit(0);
-	importAll();
-	testBug();
-	testImportant();
-	germanLabels=0;
-//	deleteStatement(37823934);
-//	p(get(550866));
-	p(get(67975520));
-
-//	testDelete();
-//	importN3("wikidata/latest-truthy.nt.facts");
-//	fixCurrent();
-//	parse("Portugal.typ", false);
-//	collectAbstracts();
-//	load(1);
-//	importGeoDB();
-//	replay("chaos-monkey.py.log");
-	return;
-	import("Telekom/Telekom-Produkt.csv");
-	auto ok=startsWith(":server","debug");
-	p(ok);
-	parse("billiger.de");
-	handle("/json/billiger.de");
-	start_server(8080);
-
-//	importCsv("amazon/de_v3_csv_apparel_retail_delta.base.csv.gz",getThe(""));
-//	return;
-    importAmazon();
-	return;
-//	if (!eq(get(1)->name,"Universum"))load();
-//	testTopics();
-//	importJson("query.json");
-//	importN3("quantum.n3");
-//	save();
-//	char* name="2017-09-27T07:28:28Z";
-//	auto a = std::get_time(string(name), "YYYY-MM-DD-HH-MM-SS");
-//	p(a);
-//    handle("/json/183");
-//    parse("183.Hauptstadt", false);
-//	allowWipe();
-//	fixCurrent();
-//	checkWordnet();
-	importAllDE();
-//	entity_extraction("25474");
-//	importWikiData();
-//	checkWikiData();
-	int i = 0;
-	while (i++ < 100) {
-		printf("\r%d", i);
-		fflush(stdout);
-	}
-	return;
-	N h = getThe("berlin");
-	p(h);
-	check(h->id == 64);
-	context = getContext(current_context);
-	quiet = false;
-	debug = true;
-	germanLabels = true;
-//	germanLabels=false;
-//	checkWordnet();// ->	importWordnet();
-//	importCsv("Telekom-Shop-Produkt.csv");
-//	importAll();
-//	importWikiData();
-//	importGeoDB();
-	show(parse(":predicates Germany", false, false));
-//	fixCurrent();
-//	testWordnet();
+	testAll();
 ////////////////////////////////////////////////////////////////////
 	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
-//	handle("/html/1");
 //	handle("/html/Ära");
 #endif
 }

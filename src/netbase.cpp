@@ -186,7 +186,7 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 	}
 	if (!checkHash(ah) or !checkNode(a) or !a->name or !strlen(name)) return 0;
 	int i = 0;
-	while (ah and ah->next) {
+	while (ah and ah->next) {// check existing
 		if (i++ > 300 and name[1] != 0) {    // allow 65536 One letter nodes
 			bad();
 			if (badAhashReported[ah])return ah;
@@ -204,6 +204,10 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 		//			return 0;
 		//		}
 		N ab = get(ah->abstract);
+		if(ab->id==0){
+			ah->abstract=a->id; // fix first deleted
+			return ah;
+		}
 		if (ab == a)
 			return ah; //schon da
 		if (ab and checkNode(ab,0,0,1) and eq(ab->name, name, true)) {
@@ -488,8 +492,10 @@ Statement *nextStatement(int node, Statement *current) {
 	return nextStatement(get(node), current);
 }
 
+map<int,bool> lookedUpStatements;
 int nextStatement_lookupLimit=1000000;// TODO!
 void newQuery(){
+	lookedUpStatements.empty();
 	nextStatement_lookupLimit=1000000;
 }
 
@@ -543,6 +549,8 @@ Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId
 #ifdef inlineStatements
 	node->statements = 0; //nextFreeStatementSlot(context,0);
 #endif
+//	if(node->kind==_abstract)// done in getAbstract
+//		insertAbstractHash(node, true);// overwrite? sure??
 	return node;
 }
 
@@ -683,6 +691,8 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	if (!nodeName) return 0;
 #endif
 	Node *abstract = hasWord(nodeName);
+	if (abstract and kind == _abstract)
+		return abstract;
 	Node *node;
 	do {
         context->lastNode++;// DON't MOVE!
@@ -691,7 +701,7 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 		if(out_of_memory)return Error;
 	} while (node->id != 0);
 
-	if (abstract and abstract->name) {
+	if (abstract) {
 		if (eq(nodeName, abstract->name)) {
 			node->name = abstract->name;// save memory
 //			nodeName=abstract->name;// wofür?
@@ -851,6 +861,7 @@ Statement *addStatement(Node *subject, Node *predicate, Node *object, bool check
 
 	int id = context->statementCount;
 	Statement *statement = &context->statements[id]; // union of statement, node??? nee // 3 mal f�����r 3 contexts !!!
+//	check(statement->id()==id);
 	//	statement->id=context->statementCount;
 #ifdef useContext
 	statement->context=current_context; //todo!!
@@ -865,6 +876,7 @@ Statement *addStatement(Node *subject, Node *predicate, Node *object, bool check
 	statement->subject = subject->id;
 	statement->predicate = predicate->id;
 	statement->object = object->id;
+
 //	if(force_insert_at_start)
 	bool ok;
 	ok = addStatementToNode(subject, id, force_insert_at_start);
@@ -1352,7 +1364,7 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 		//		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
 		//			return found->abstract;
 		if(first->name > &context->nodeNames[context->currentNameSlot] || first->name<=context->nodeNames){
-//			p("BAD NAME");
+//			p("BAD NAME");// deleted
 			bad(); // todo
 			return 0;
 		}
@@ -1563,7 +1575,7 @@ Node *getAbstract(const char *thing) {            // AND CREATE! use hasWord for
 	}
 	Ahash *ok = insertAbstractHash(wordHash(thing), abstract);
 	//	if (ok == 0) insertAbstractHash(wordHash(thing), abstract);		// debug
-	if (ok == 0)return Error;// full!
+	if (ok == 0){bad();return Error;}// full!
 	if (doDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, ".")))
 		dissectParent(abstract);// later! else MESS!?
 	//	else dissectAbstracts(am Ende)
@@ -2311,7 +2323,7 @@ NodeVector showNodes(NodeVector all, bool showStatements, bool showRelation, boo
 //NodeVector match_all(string data){
 //}
 int getStatementId(long pointer) {
-	return (int) (pointer - (long) statement_root) / sizeof(Statement);
+	return (int) ((pointer - (long) statement_root) / sizeof(Statement));
 }
 //NodeVector find_english(string& data) {
 //}
