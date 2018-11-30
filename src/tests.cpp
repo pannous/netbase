@@ -1906,7 +1906,11 @@ void testSynonyms(){
 	check(normedEntity == the(Einwohnerzahl));
 	Node *normedEntity2 = normEntity(the(Einwohner));
 	check(normedEntity2 == the(Population));
-//	check(eq(parseProperties("Gehren.Population")[0],the(3703)));
+	const NodeVector pop = query("Gehren.Population");
+//	const NodeVector pop = parse("Gehren.Population", false, true);
+	check(eq(pop[0], the(3703)));
+	check(eq(parse("Gehren.Population", false)[0],the(3703)));
+	check(eq(parse("Gehren.Einwohner", false)[0],the(3703)));
 
 //	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
 //	check(eq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703)));

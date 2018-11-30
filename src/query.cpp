@@ -264,6 +264,8 @@ NodeVector query(string s, int limit/*=resultLimit*/) {
 	NodeVector results = query(q);
 	if (results.empty())
 		results = parseProperties(s.data());
+//	if (results.empty())
+//		results = query(s.data());
 	showNodes(results);
 	return results;
 	//	return evaluate_sql(s, limit);
@@ -2053,6 +2055,7 @@ NodeVector update(cchar *query) {
 
 
 NodeVector parseProperties(char *data) {
+	// todo: simple property for web!
 	char *thing = 0;//=(char *) malloc(1000);
 	char *property = 0;//=(char *) malloc(1000);
 	thing = strstr(data, " of ");
@@ -2101,6 +2104,7 @@ NodeVector parseProperties(char *data) {
 	if (all.size() == 0) all = findProperties(thing, property, true);// INVERSE!!
 	if (all.size() == 0) all = findProperties(thing, concat(property," of"), true);// INVERSE!!
 	if (all.size() == 0) all = findProperties(thing, concat(property," von"), true);// INVERSE!!
+	if (all.size() == 0) all = wrap(findProperty(getAbstract(thing), property));// INVERSE!!
 	return all;
 }
 
@@ -2496,7 +2500,6 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
 //		if (isA4(s->Predicate(),m)) {found=s; break;};// too expensive!
 	}
 	if(found){
-		p(found);
 		if(found->Subject()==node)
 			return found->Object();
 		return found->Subject();

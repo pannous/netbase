@@ -245,7 +245,9 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 			return wrap(n);
 		} else return OK;
 	}
-	if (eq(data, "help") or eq(data, ":help") or eq(data, "?") or info) {
+	if(info)
+		p("Type :help for command list");//showHelpMessage();
+	if (eq(data, "help") or eq(data, ":help") or eq(data, "?")) {
 		showHelpMessage();
 		//    printf("type exit or word");
 		return OK;
@@ -731,6 +733,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 
 		if ((args.size() > 2 and eq(args[1], "of")) or contains(data, " of ") or contains(data, " by ") or
 		    (contains(data, "."))) {
+			return query(data);
 			// or (contains(data, ":")) and !contains(data, " "))) {
 			if (!contains(data, "="))
 				return parseProperties(data);
