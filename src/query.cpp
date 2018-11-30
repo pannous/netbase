@@ -2521,6 +2521,8 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
 Node *normEntity(Node* node) {
 	if (node->id < 0)
 		return node;
+	if (eq(node->name, "topic", true))
+		return node;
 	N found = findProperty(node, Label, true, 1000);// Label sure at beginning??
 	if(!found)found = findProperty(node, Synonym, true, 1000);// Label sure at beginning??
 	return found;
