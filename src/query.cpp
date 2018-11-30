@@ -2485,22 +2485,20 @@ Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 // see getProperty
 Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
 	Statement *s = 0;
+	Statement *found=0;
 	Node* normed = normEntity(key);
 	while ((s = nextStatement(node, s)) and limit-->0) {
 		Node *pred = s->Predicate();
-		if (pred == key and s->Subject()==node) {
-			return s->Object();
-		}
-		if (pred == normed and s->Subject()==node) {
-			return s->Object();
-		}
-//		if (isA4(s->Predicate(),m)) {// too expensive!
-//			return s->Object();
-//		}
-		if (allowInverse and (pred == invert(key) || pred == invert(normed))) {
-			if(s->Subject()==node)return s->Object();
-			return s->Subject();
-		}
+		if (pred == key ){found=s; break;}
+		if (pred == normed) {found=s; break;}
+		if (allowInverse and (pred == invert(key) || pred == invert(normed))){found=s; break;}
+//		if (isA4(s->Predicate(),m)) {found=s; break;};// too expensive!
+	}
+	if(found){
+		p(found);
+		if(found->Subject()==node)
+			return found->Object();
+		return found->Subject();
 	}
 	if(isAbstract(node)){//} or getThe(node)==node) {
 		NV all = instanceFilter(node);

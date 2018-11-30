@@ -1902,17 +1902,23 @@ void testSynonyms(){
 	learn("Population Synonym Einwohner");
 	learn("Einwohner Synonym Population");
 	learn("Postleitzahl Label PLZ");
-
+	Node *normedEntity = normEntity(the(Population));
+	check(normedEntity == the(Einwohnerzahl));
+	Node *normedEntity2 = normEntity(the(Einwohner));
+	check(normedEntity2 == the(Population));
 //	check(eq(parseProperties("Gehren.Population")[0],the(3703)));
 
+//	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
+//	check(eq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703)));
 	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
-	check(eq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703)));
-	check(eq(getProperty(a(Gehren),the(Einwohner)),the(3703)));
-	check(eq(findProperty(the(Gehren),the(Population)),the(3703)));
-	check(eq(getProperty(the(Gehren),the(Einwohner)),the(3703)));
+	check(eq(findProperty(a(Gehren),the(Einwohner)),the(3703)));
+//	check(eq(getProperty(a(Gehren),the(Einwohner)),the(3703)));
+
+//	check(eq(findProperty(the(Gehren),the(Population)),the(3703)));
+//	check(eq(getProperty(the(Gehren),the(Einwohner)),the(3703)));
 //	check(eq(has(the(Gehren),the(Population)),the(3703)));
-	check(has(the(Gehren), the(Population)));
-	check(has(the(Gehren), the(Einwohner)));
+//	check(has(the(Gehren), the(Population)));
+//	check(has(the(Gehren), the(Einwohner)));
 
 	check(eq(findProperty(the(Gehren),the(PLZ)),the(98708)));
 	check(eq(getProperty(the(Gehren),the(PLZ)),the(98708)));
