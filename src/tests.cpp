@@ -2080,9 +2080,9 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 	testSynonyms();
 	testAll();
+	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 ////////////////////////////////////////////////////////////////////
 //	handle("/json/all/query/all/6256");
-//	handle("/html/Ära");
 }
 // Continue with shell
 

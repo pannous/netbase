@@ -440,6 +440,7 @@ void initRelations() {
 }
 
 Node *invert(Node *relation) {
+	if (relation == 0)return Error;
 	if (relation == Synonym)return Synonym;
 	if (relation == Label)return Label;
 	if (relation == Unknown)return Unknown;
