@@ -129,9 +129,9 @@ Node *parseProperty(const char *data) {
 	}
 //	if(eq(property,"predicates"))return wrap(getPredicates(getThe(thing));
 	pf("does %s have a %s?\n", thing, property);
-	Node *found = has(getThe(thing), getAbstract(property));
+	Node *found = getProperty(getThe(thing), property);
+	if (found == 0) found = has(getThe(thing), getAbstract(property));
 	if (found == 0) found = has(getAbstract(thing), getAbstract(property));
-	if (found == 0) found = getProperty(getThe(thing), property);
 //	free(property);
 	return found;
 }
@@ -690,6 +690,9 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		QUESTIONS = true;
 	}
 
+	if (eq(args[0], ":norm")) {
+		return wrap(normEntity(getThe(next_word(data))));
+	}
 	if (eq(args[0], "the") or eq(args[0], ":the") or eq(args[0], "my")) {
 		autoIds= false;// :the 25474
 		N da = getThe(next_word(data), More);

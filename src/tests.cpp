@@ -1898,10 +1898,29 @@ void collectTopics() {
 
 void testSynonyms(){
 
+	learn("Population Synonym Einwohnerzahl");
 	learn("Population Synonym Einwohner");
+	learn("Einwohner Synonym Population");
 	learn("Postleitzahl Label PLZ");
+
+//	check(eq(parseProperties("Gehren.Population")[0],the(3703)));
+
+	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
+	check(eq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703)));
+	check(eq(getProperty(a(Gehren),the(Einwohner)),the(3703)));
+	check(eq(findProperty(the(Gehren),the(Population)),the(3703)));
+	check(eq(getProperty(the(Gehren),the(Einwohner)),the(3703)));
+//	check(eq(has(the(Gehren),the(Population)),the(3703)));
+	check(has(the(Gehren), the(Population)));
+	check(has(the(Gehren), the(Einwohner)));
+
+	check(eq(findProperty(the(Gehren),the(PLZ)),the(98708)));
+	check(eq(getProperty(the(Gehren),the(PLZ)),the(98708)));
 	check(isA(the(Population), the(Einwohner)));
 	check(isA(the(Postleitzahl), the(PLZ)));
+	check(eq(getProperty(the(Gehren),the(Postleitzahl)),the(98708)));
+	check(has(the(Gehren), the(Postleitzahl)));
+	check(has(the(Gehren), the(PLZ)));
 
 	check(yetvisitedIsA[1]==0);
 	check(isA(the(Postleitzahl), the(PLZ)));
@@ -1910,10 +1929,7 @@ void testSynonyms(){
 	check(has(the(Gehren), the(PLZ)));
 //	parse(":is Population Einwohner");
 //	parse(":has Gehren Einwohner");
-	check(has(the(Gehren), the(Population)));
-	check(has(the(Gehren), the(Einwohner)));
-	check(has(the(Gehren), the(Postleitzahl)));
-	check(has(the(Gehren), the(PLZ)));
+
 }
 
 void testMarkedNodes() {

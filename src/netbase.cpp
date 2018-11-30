@@ -46,6 +46,8 @@ Node *abstract_root = 0;
 int *freebaseKey_root = 0;
 int defaultLookupLimit = 1000;
 int lookupLimit = 1000;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+int typeLimit = 1000;// internal relations
+int queryLimit = 10000000;
 bool count_nodes_down= false;
 bool out_of_memory= false;
 //Node** keyhash_root=0;
@@ -115,8 +117,8 @@ void flush() {
 //map<string,int> reasons;
 //string last_reason="";
 //void bad(string reason) {
-Node *bad() {
-//	if(reason!="")reasons[reason]=(reasons[reason]||0)+1;
+Node *bad(char* reason) {
+//	if(reason!=0)reasons[reason]=(reasons[reason]||0)+1;
 	badCount++;
 	return Error;
 }
@@ -501,7 +503,7 @@ void newQuery(){
 
 Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
 	if (!importing && nextStatement_lookupLimit--<0){
-		printf("nextStatement lookupLimit reached! Cyclic graph?\r\n");
+		bad("nextStatement lookupLimit reached! Cyclic graph?\r\n");
 		return null;
 	}// per web request todo better
 	if (current == null) return getStatement(n->firstStatement);
@@ -849,19 +851,17 @@ Statement *addStatement(Node *subject, Node *predicate, Node *object, bool check
 		Statement *old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
 		if (old) return old; // showStatement(old)
 	}
-	// pi(context.nodes);// == &context.nodes[0] !!
 
-	//	if(isAbstract(object) and ( predicate==Type or predicate==SuperClass))
-	//		object=getThe(object);
-	if (subject == object and predicate->id < 1000) return 0;
+	if (subject == object and predicate->id < 1000) return 0;// such loops not allowed
 
+	if(predicate->id<0 && predicate!=Instance)
+		force_insert_at_start= true;// !
 	//	Statement* last_statement=&context->statements[context->statementCount-1];
 	//	if(context->statementCount>1000 and last_statement->Subject=subject and last_statement->Predicate=predicate and last_statement->Object=object)
 	//		return last_statement;// direct duplicate!
 
 	int id = context->statementCount;
-	Statement *statement = &context->statements[id]; // union of statement, node??? nee // 3 mal f�����r 3 contexts !!!
-//	check(statement->id()==id);
+	Statement *statement = &context->statements[id];
 	//	statement->id=context->statementCount;
 #ifdef useContext
 	statement->context=current_context; //todo!!
@@ -882,18 +882,7 @@ Statement *addStatement(Node *subject, Node *predicate, Node *object, bool check
 	ok = addStatementToNode(subject, id, force_insert_at_start);
 	ok = addStatementToNode(predicate, id) and ok;
 	ok = addStatementToNode(object, id) and ok;
-	if (!ok)bad();
-//  if(!ok)p("warning: addStatementToNode skipped ");// probably quick duplicate check
-
-	//	subject->statements[subject->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
-	//	subject->statementCount++;
-	//	predicate->statements[predicate->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
-	//	predicate->statementCount++;
-	//  object->statements[object->statementCount]=context->statementCount;//? nodeCount;//!! #statement dummy nodes ?? hmm --
-	//	object->statementCount++;
-	// pi(context->statementCount);
-	// context->nodeCount++;
-
+	if (!ok)bad("warning: addStatementToNode skipped ");// probably quick duplicate check
 	context->statementCount++;
 	return statement;
 }
@@ -1800,7 +1789,7 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 	if (recurse > 0) recurse++;
 	else recurse = maxRecursions;
 	if (recurse > maxRecursions or subject == 0) return 0;
-	if (limit<=0)limit=lookupLimit;
+	if (limit<=0)limit=queryLimit;
 
 	Statement *s = 0;
 	map<Statement *, bool> visited;
@@ -2187,14 +2176,13 @@ has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bo
 	return 0;
 }
 
-Node *isEqual(Node *subject, Node *object) {
-
-	if (!isA4(subject, object)) return 0;
-	//  if (isA4(subject, object))return subject;
-	//  if(subject->kind==object->kind)
+bool isEqual(Node *subject, Node *object) {
+	if(!subject and !object)return true;
+	if(!subject or !object)return false;
 	if (subject->value.number == object->value.number) return subject;
 	if (atof(subject->name) > 0 and atof(subject->name) == atof(object->name)) return subject;
-
+	if (isA4(subject, object))
+		return subject;
 	return 0;
 }
 
@@ -2243,7 +2231,7 @@ Node *has(Node *subject, Statement *match, int recurse, bool semantic, bool symm
 	//has(subject, match->Subject);
 	//  if (!property_value)property_value = has(subject, match->Subject);// second try expensive!
 	if (!property_value) return 0;
-	if (match->Predicate() == Equals) return isEqual(property_value, match->Object());
+	if (match->Predicate() == Equals) return isEqual(property_value, match->Object())?Equals:0;
 	else if (match->Predicate() == Greater) return isGreater(property_value, match->Object());
 	else if (match->Predicate() == Less) return isLess(property_value, match->Object());
 	else if (match->Predicate() == Circa) return isAproxymately(property_value, match->Object());
@@ -2994,7 +2982,7 @@ int main(int argc, char *argv[]) {
 
 	if (checkParams(argc, argv, "query") or checkParams(argc, argv, "select") or checkParams(argc, argv, "all")) {
         quiet = true;
-        lookupLimit=10000000;
+        lookupLimit=queryLimit;
         query = cut_to(cut_to(query, "query "), "select");
     }
 

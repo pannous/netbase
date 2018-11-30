@@ -440,6 +440,8 @@ void initRelations() {
 }
 
 Node *invert(Node *relation) {
+	if (relation == Synonym)return Synonym;
+	if (relation == Label)return Label;
 	if (relation == Unknown)return Unknown;
 	if (relation == Antonym)return Antonym;
 	if (relation == Parent)return SubClass; //?Instance;
@@ -452,7 +454,6 @@ Node *invert(Node *relation) {
 	if (relation == Part)return PartOf;
 	if (relation == PartOf)return Part;
 	if (relation == Substance)return PartOf; //?
-	if (relation == Synonym)return Synonym;
 	//if(relation==Weight)return ??;
 	if (relation == Type)return Instance;
 	if (relation == Instance)return Type;

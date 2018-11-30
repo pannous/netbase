@@ -260,7 +260,6 @@ NodeVector query(string s, int limit/*=resultLimit*/) {
 	p(("Executing query "));
 	ps(s);
 	Query q = parseQuery(s, limit);
-	lookupLimit = 100000;// todo: good
 //  q.queryType=sqlQuery;// njet!
 	NodeVector results = query(q);
 	if (results.empty())
@@ -1441,7 +1440,7 @@ NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// ch
 	NodeVector all;
 	int i = 0;
 	Statement *s = 0;
-	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
+	while (i++ < typeLimit and (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject or subject == Any);
 		bool predicateMatch = (s->Predicate() == Instance) or (INCLUDE_CLASSES and s->Predicate() == SubClass);
 		predicateMatch = predicateMatch or s->predicate == -10301;// Hauptartikel in der Kategorie
@@ -1474,7 +1473,7 @@ NodeVector childFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 	NodeVector all;
 	int i = 0;
 	Statement *s = 0;
-	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
+	while (i++ < queryLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject or subject == Any) and !eq(s->Object()->name, "◊");;
 		bool predicateMatch = (s->Predicate() == SubClass);
 		predicateMatch = predicateMatch or (s->Predicate() == Instance);
@@ -1506,7 +1505,7 @@ NodeVector subclassFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 	NodeVector all;
 	int i = 0;
 	Statement *s = 0;
-	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {// true !!!!
+	while (i++ < typeLimit and (s = nextStatement(subject, s, false))) {// true !!!!
 		bool subjectMatch = (s->Subject() == subject or subject == Any) and !eq(s->Object()->name, "◊");;
 		bool predicateMatch = (s->Predicate() == SubClass);
 
@@ -1532,7 +1531,7 @@ NodeVector relationsFilter(Node *subject, NodeQueue *queue) {//, int max) {
 //  vector<int> relations;
 	int i = 0;
 	Statement *s = 0;
-	while (i++ < lookupLimit * 2 and (s = nextStatement(subject, s, false))) {
+	while (i++ < queryLimit and (s = nextStatement(subject, s, false))) {
 		if (!contains(all, s->Predicate()))
 			all.push_back(s->Predicate());
 	}
@@ -2054,7 +2053,6 @@ NodeVector update(cchar *query) {
 
 
 NodeVector parseProperties(char *data) {
-	lookupLimit = 10000;
 	char *thing = 0;//=(char *) malloc(1000);
 	char *property = 0;//=(char *) malloc(1000);
 	thing = strstr(data, " of ");
@@ -2465,27 +2463,53 @@ NV showTopics(NV entities) {
 	return all;
 }
 
-Node *normEntity(Node* node);
-
 
 // see getProperty
-Node *findProperty(Node *n, Node *m, bool allowInverse, int limit) {
+Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 	Statement *s = 0;
 	int count = 0;
-	Node* normed = normEntity(m);
 	while ((s = nextStatement(n, s))) {
 		if (limit and count++ > limit)break;
-		if (s->Predicate() == m) {
+		bool matches = eq(s->Predicate()->name, m, true);
+		matches = matches or (allowInverse and contains(s->Predicate()->name, m));
+		if (matches) {
+			if (eq(s->Object(), n))
+				return s->Subject();
+			if (eq(s->Subject(), n))
+				return s->Object();
+		}
+	}
+	return findProperty(n,getThe(m),allowInverse,limit);
+}
+
+// see getProperty
+Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
+	Statement *s = 0;
+	Node* normed = normEntity(key);
+	while ((s = nextStatement(node, s)) and limit-->0) {
+		Node *pred = s->Predicate();
+		if (pred == key and s->Subject()==node) {
 			return s->Object();
 		}
-		if (s->Predicate() == normed) {
+		if (pred == normed and s->Subject()==node) {
 			return s->Object();
 		}
 //		if (isA4(s->Predicate(),m)) {// too expensive!
 //			return s->Object();
 //		}
-		if (allowInverse and s->Predicate() == invert(m)) {
+		if (allowInverse and (pred == invert(key) || pred == invert(normed))) {
+			if(s->Subject()==node)return s->Object();
 			return s->Subject();
+		}
+	}
+	if(isAbstract(node)){//} or getThe(node)==node) {
+		NV all = instanceFilter(node);
+		all.push_back(node);
+		for (int i = 0; i < all.size(); i++) {
+			Node *instance = all[i];
+			if(instance==node)continue;
+			N ok = findProperty(instance, key, allowInverse, limit);
+			if (ok)return ok;
 		}
 	}
 	return 0;
@@ -2507,9 +2531,9 @@ Node *getProperty(Node *node, Node *key, int limit) {
 		N normed = normEntity(key);
 		if (normed != key)
 			s = findStatement(node, normed, Any, 0, 0, 0, true, limit);
-		else
-			return findProperty(node, key, true, limit);
 	}
+	if (!checkStatement(s))
+			return findProperty(node, key, true, limit);
 	return s->Object() == node ? s->Subject() : s->Object();// inverse
 }
 
@@ -2522,23 +2546,6 @@ Node *getProperty(Node *node, cchar *key, int limit) {
 	//findStatement(node, getAbstract(key), Any); // todo? egal
 	if (!checkStatement(s))return findProperty(node, key, true, limit);
 	return s->Object();
-}
-// see getProperty
-Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
-	Statement *s = 0;
-	int count = 0;
-	while ((s = nextStatement(n, s))) {
-		if (limit and count++ > limit)break;
-		bool matches = eq(s->Predicate()->name, m, true);
-		matches = matches or (allowInverse and contains(s->Predicate()->name, m));
-		if (matches) {
-			if (eq(s->Object(), n))
-				return s->Subject();
-			if (eq(s->Subject(), n))
-				return s->Object();
-		}
-	}
-	return 0;
 }
 
 NodeVector findProperties(Node *n, const char *m, bool allowInverse/*=true*/) {

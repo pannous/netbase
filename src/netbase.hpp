@@ -30,7 +30,9 @@ extern bool importing;
 
 extern int resultLimit;
 extern int defaultLookupLimit;
-extern int lookupLimit;// set per query :( todo : param! todo: filter while iterating 1000000 cities!!
+extern int lookupLimit;// 1000
+extern int typeLimit;// 1000
+extern int queryLimit;// 10000000
 extern bool out_of_memory;// delayed exit()
 extern int wikidata_limit;// =60000000;
 // if test or called from other object
@@ -544,7 +546,7 @@ void deleteStatements(Node* n);
 extern "C" void deleteStatement(int id);
 void deleteStatement(Statement* s);
 int countInstances(Node* n);
-Node* isEqual(Node* subject, Node* object);
+bool isEqual(Node* subject, Node* object);
 Node* isGreater(Node* subject, Node* object);
 Node* isLess(Node* subject, Node* object);
 Node* isAproxymately(Node* subject, Node* object);
@@ -585,9 +587,6 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 //bool checkStatement(Statement *s);
 void checkRootContext();
 Node* number(int n);
-extern "C" Node* getProperty(Node* n,const char* s,int limit=0);
-Node* getProperty(Node* node, Node* key,int limit=0);
-Node* getPropertyDummy(const char* id);
 void dissectParent(Node* subject,bool checkDuplicates=false);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
@@ -614,7 +613,7 @@ extern char* name_root;
 
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 //extern Node** keyhash_root;
-Node* bad();//string="");
+Node* bad(char* message=0);//string="");
 void show(NodeSet& all);
 void addSeo(Node* n);
 Node *getSeo(const char* thingy);

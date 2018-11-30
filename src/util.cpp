@@ -393,7 +393,9 @@ bool eq(int a, int b) {
 	return a == b;// for assertEquals
 }
 
-Node *eq(Node *x, Node *y) {
+bool eq(Node *x, Node *y) {
+	if(!x and !y)return true;
+	if(!x or !y)return false;
 	return isEqual(x, y);
 }
 

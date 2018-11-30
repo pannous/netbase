@@ -26,7 +26,7 @@ bool eq(const char* x,const char* y,bool ignoreCase = true,bool ignoreUnderscore
 bool eq(string x, const char* y);
 bool eq(string* x, const char* y);
 bool eq(int a,int b);
-Node* eq(Node* x, Node* y);
+bool eq(Node* x, Node* y);
 bool startsWith(const char* x,const char* y);
 bool startsWith(string* x,const char* y);
 bool endsWith(const char* x, const char* y);

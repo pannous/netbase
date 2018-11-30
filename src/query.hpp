@@ -80,8 +80,14 @@ NodeVector parentPath(Node* from, Node* to);
 NodeVector memberPath(Node* from, Node* to);
 void sortNodes(NodeVector& all);
 
-Node* findRelation(Node* from, Node* to);
+
+extern "C"
+Node* getProperty(Node* n,const char* s,int limit=0);
+Node* getProperty(Node* node, Node* key,int limit=0);// todo: redundant:
 Node* findProperty(Node* n , const char* m,bool allowInverse=true,int limit=0);
+Node *findProperty(Node *node, Node *key, bool allowInverse=true, int limit=queryLimit);
+Node* findRelation(Node* from, Node* to);
+Node* getPropertyDummy(const char* id);
 NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
 NodeVector findProperties(Node* n, const char* m,bool allowInverse=true);
 NodeVector findProperties(Node* n , Node* m,bool allowInverse=true);
@@ -104,4 +110,6 @@ bool isA(Node* fro, Node* to);
 bool filterWikiType(int object);
 Statement * findRelations(Node* from, Node * to);
 Statement* parseSentence(string sentence, bool learn = false);
+Node *normEntity(Node* node);
+
 #endif	/* QUERY_H */
