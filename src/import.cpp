@@ -2563,6 +2563,8 @@ void importWordnet2() {
 void importGeoDB() {
 	importCsv("cities1000.txt", getThe("city"), '\t', "alternatenames,modificationdate,geonameid",
 	          "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
+//	cchar *ignore =
+//			"alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
 }
 
 /*

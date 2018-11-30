@@ -176,7 +176,7 @@ NodeVector runScript(const char *file) {
 NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (eq(data0, null)) return OK;
 	bool forbidAutoIds= false;
-
+	newQuery();
 	context = getContext(current_context);
 	if (data0[0]=='"' || data0[0]=='\'')
 		forbidAutoIds= true;
@@ -691,6 +691,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 
 	if (eq(args[0], "the") or eq(args[0], ":the") or eq(args[0], "my")) {
+		autoIds= false;// :the 25474
 		N da = getThe(next_word(data), More);
 		return wrap(da);
 	}

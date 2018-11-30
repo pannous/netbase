@@ -1627,11 +1627,11 @@ void showStatement(Statement *s) {
 		//    if(s->Object->value.number)
 		//      printf("%d\t%s\t\t%s\t\t%g %s\t%d\t%d\t%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->value.number,s->Object->name, s->subject, s->predicate, s->object);
 		//    else
-		printf("<%d>\t%s\t\t%s\t\t%s\t\t%d=>%d=>%d\n", s->id(), s->Subject()->name, s->Predicate()->name,
+		printf("$%d :\t%s\t\t%s\t\t%s\t\t%d⇛%d⇛%d\n", s->id(), s->Subject()->name, s->Predicate()->name,
 		       s->Object()->name, s->subject, s->predicate,
 		       s->object);
 
-	else printf("#%d %d->%d->%d [%p]\n", s->id(), s->subject, s->predicate, s->object, s);
+	else printf("$%d %d->%d->%d [%p]\n", s->id(), s->subject, s->predicate, s->object, s);
 	flush();
 	// printf("%s->%s->%s\n",s->Subject->name,s->Predicate->name,s->Object->name);
 
@@ -2381,10 +2381,10 @@ Statement *learn(const char *sentence0) {
 	string sentence = sentence0;
 	ps("Learning " + sentence);
 	Statement *s;
-	if (!contains(sentence, "="))
-		s = parseSentence(sentence, true);
-	else
+	if (contains(sentence, "="))
 		s = evaluate(sentence, true);
+	else
+		s = parseSentence(sentence, true);
 	if (checkStatement(s)) {
 		showStatement(s);
 		return s;
@@ -2466,7 +2466,8 @@ Node *getThe(Node *abstract, Node *type,bool create /*true!*/) {// first instanc
 		// CAREFUL: ONLY ALLOW INSTANCES FOR ABSTRACTS!!!
 		Statement *s = 0;
 		Node *best = 0;
-		while ((s = nextStatement(abstract, s)))
+		int lookups=1000;// instance relation must be at beginning!
+		while ((s = nextStatement(abstract, s))and lookups-->0)
 			if (s->Predicate() == Instance and s->object != 0) {        // CAN NOT ASSUME RIGHT ORDER!
 				if (!best || best->statementCount < s->Object()->statementCount)
 					best = s->Object();
@@ -2524,13 +2525,25 @@ bool isA(Node *fro, Node *to) {
 //	show(fro);
 //	show(to);
 	if (isA4(fro, to, 0, 0)) return true;
-
+	newQuery();
 	Statement *s = 0;
-	while ((s = nextStatement(fro, s)))// 'quick' check
+	while ((s = nextStatement(fro, s))) {// 'quick' check
 		if (s->Object() == fro and isA4(s->Predicate(), to))
 			return true;// x.son=milan => milan is_a son
-
-	return findPath(fro, to, parentFilter).empty() == false;
+		if (s->Subject() == fro and s->Object() == to) {
+			if (s->Predicate() == SuperClass)return true;
+			if (s->Predicate() == Type)return true;
+			if (s->Predicate() == Instance)return true;
+			if (s->Predicate() == Synonym)return true;
+		}
+		if (s->Subject() == to and s->Object() == fro) {
+			if (s->Predicate() == SubClass)return true;
+			if (s->Predicate() == Type)return true;
+			if (s->Predicate() == Instance)return true;
+			if (s->Predicate() == Synonym)return true;
+		}
+	}
+	return !findPath(fro, to, parentFilter).empty();
 }
 
 // all mountains higher than Krakatao

@@ -236,8 +236,6 @@ void testGeoDB() {
 	//  if(nodeCount()<100000)
 	if (!hasNode("Gehren"))
 		importGeoDB();
-	//    execute("import ./import/cities1000.txt");
-	//    :import cities1000.txt
 
 	defaultLookupLimit = 100000;
 	das(Gehren);
@@ -1063,9 +1061,7 @@ void testValueQuery() {
 
 void testPropertyQuery() {
 	if (!hasWord("Sheberghan"))
-		importCsv("/Users/me/data/base/geo/geonames/cities1000.txt", getThe("city"), '\t',
-		          "alternatenames,modificationdate,geonameid",
-		          "latitude,longitude,population,elevation,countrycode", 2, "asciiname");
+		importGeoDB();
 
 	//	show(the(Sheberghan));
 	//  check(has(the(Sheberghan),the(population),the(55641)));// ?
@@ -1359,23 +1355,17 @@ void testPaths() {
 }
 
 void testCities() {
-	char *line = editable(
-			"geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n");
-	splitStringC(line, 0, '\t');
-	//	int nr=splitStringC("geonameid\tname\tasciiname\talternatenames\tlatitude\tlongitude\tfeatureclass\tfeaturecode\tcountrycode\tcc2\tadmin1code\tadmin2code\tadmin3code\tadmin4code\tpopulation\televation\tgtopo30\ttimezone\tmodificationdate\\n",0,"\t",true);
-	vector<char *> fields;
-	//	int n=getFields(editable(line),fields,'\t');
-	//	check(fields.size()==nr);
 //	clearMemory();
 	if (!hasWord("Mersing")) {
-		cchar *ignore =
-				"alternatenames,featureclass,featurecode,cc2,admin1code,admin2code,admin3code,admin4code,gtopo30,timezone,modificationdate";
-		importCsv("cities1000.txt", the(city), '\t', ignore);
+		importGeoDB();
 	}
+	NV ns=query("Mersing.population");
+//	check(len<Node*>(ns) > 0);
+	check(ns.size() > 0);
 	p(the(Mersing));
 	N pop = getProperty(the(Mersing), a(population));
-	assertEquals(pop->name, "22007");
-	assertEquals(pop, the(22007));
+	check(pop == the(22007));
+	check(eq(pop->name ,"22007"));
 	check(findStatement(the(Mersing), a(population), Any));
 	check(findStatement(the(Mersing), a(population), the(22007)));
 	check(has(the(Mersing), a(population), the(22007)))
@@ -1874,53 +1864,6 @@ void testLabelInstances() {
 
 void testTheSingletons();
 
-extern "C" void testAll() {
-#ifndef __clang_analyzer__
-	context = getContext(0);
-	germanLabels = false; // for tests!
-//	clearMemory();
-	testBasics();
-	testTheSingletons();
-	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
-	testStringLogic();
-	testHash();
-	testValueLogic();
-	testInstancesAtEnd();
-	testInsertForceStart();
-	testCities();
-	testQuery();
-	testWins();
-	testLabelInstances();
-	testDummyLogic();
-	testReification();
-	testStringLogic2();
-	testOpposite();
-
-	testScanf();
-	testGeoDB();
-	testWikidata();
-//	testYago();
-
-	//  share_memory();
-	//  init();
-	//	clearTestContext();
-	germanLabels = false;
-	testImportExport();
-	checkWordnet();
-	checkGeo();    //	testDummyLogic();// too big
-	testInclude();
-	// shaky
-	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
-	testFacets();
-	testQuery();
-	testPaths();
-	testFactLearning();
-	testNameReuse();
-	p("ALL TESTS SUCCESSFUL!");
-#endif
-	//  testLoop();
-}
-
 void testTheSingletons() {
 	N a = getThe("bla_typ");
 	N a2 = getThe("bla_typ");
@@ -1951,6 +1894,26 @@ void collectTopics() {
 		if (t == n)continue;
 		p(t->name);
 	}
+}
+
+void testSynonyms(){
+
+	learn("Population Synonym Einwohner");
+	learn("Postleitzahl Label PLZ");
+	check(isA(the(Population), the(Einwohner)));
+	check(isA(the(Postleitzahl), the(PLZ)));
+
+	check(yetvisitedIsA[1]==0);
+	check(isA(the(Postleitzahl), the(PLZ)));
+//	check(yetvisitedIsA[the(Postleitzahl)->id+the(PLZ)->id*billion]);
+	p(has(the(Gehren), the(PLZ)));
+	check(has(the(Gehren), the(PLZ)));
+//	parse(":is Population Einwohner");
+//	parse(":has Gehren Einwohner");
+	check(has(the(Gehren), the(Population)));
+	check(has(the(Gehren), the(Einwohner)));
+	check(has(the(Gehren), the(Postleitzahl)));
+	check(has(the(Gehren), the(PLZ)));
 }
 
 void testMarkedNodes() {
@@ -2026,6 +1989,57 @@ void testUmlauts() {
 	check(wordHash("mü") == wordHash("MÜ")); // todo: seo here!
 }
 
+
+extern "C" void testAll() {
+#ifndef __clang_analyzer__
+	context = getContext(0);
+	germanLabels = false; // for tests!
+//	clearMemory();
+	testBasics();
+	testUmlauts();
+	testTheSingletons();
+	testInstanceLogic(); // needs addStatementToNodeWithInstanceGap
+	testStringLogic();
+	testHash();
+	testValueLogic();
+	testInstancesAtEnd();
+	testInsertForceStart();
+	testCities();
+	testSynonyms();
+	testQuery();
+	testWins();
+	testLabelInstances();
+	testDummyLogic();
+	testReification();
+	testStringLogic2();
+	testOpposite();
+
+	testScanf();
+	testGeoDB();
+	testWikidata();
+//	testYago();
+
+	//  share_memory();
+	//  init();
+	//	clearTestContext();
+	germanLabels = false;
+	testImportExport();
+	checkWordnet();
+	checkGeo();    //	testDummyLogic();// too big
+	testInclude();
+	// shaky
+	testWordnet(); // PASSES if not Interfering with Yago!!!! Todo : stay in context first!!
+	testFacets();
+	testQuery();
+	testPaths();
+	testFactLearning();
+	testNameReuse();
+	p("ALL TESTS SUCCESSFUL!");
+#endif
+	//  testLoop();
+}
+
+
 void testImportant() {
 	testTheSingletons();
 	testBasics();
@@ -2034,14 +2048,15 @@ void testImportant() {
 }
 
 void testBrandNewStuff() {
-#ifndef __clang_analyzer__
+	#ifdef __clang_analyzer__
+		return; // no tests when profiling
+    #endif
 	p("Test Brand New Stuff");
+	testSynonyms();
 	testAll();
 ////////////////////////////////////////////////////////////////////
-	//	buildSeoIndex();
 //	handle("/json/all/query/all/6256");
 //	handle("/html/Ära");
-#endif
 }
 // Continue with shell
 

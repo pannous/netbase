@@ -570,7 +570,7 @@ Node* add_force(int contextId, int id, const char* nodeName, int kind);
 extern Ahash* abstracts; // Node name hash
 extern Ahash* extrahash; // for hashes that are not unique, increasing!!!
 extern map < Node*, bool> yetvisited;
-extern map <double, short> yetvisitedIsA;
+extern map <double, short> yetvisitedIsA;// very memory expensive??
 //Ahash* getAbstractHash(int hashkey);
 //Node* getAbstractHash(const char* word);
 //Ahash* insertAbstractHash(long hashkey, Node* abstract); //debug only

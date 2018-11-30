@@ -259,10 +259,17 @@ function show_footer(){
 		makeLink(" LESS ",clean(url).replace("/html","/html/short"));
 	br();
 	if(!url.match("/html"))url=url.replace(".com/",".com/html/").replace(".de/",".de/html/").replace("81/","81/html/");
-	makeLink(" TSV |",url.replace("/html","/csv"));
-	makeLink(" JSON |",url.replace("/html","/json"));
-	makeLink(" XML |",url.replace("/html","/xml"));
-	makeLink(" TXT ",url.replace("/html","/txt"));
+    if(!url.match("/html")){
+		makeLink(" TSV |",url.replace("/html","/csv"));
+		makeLink(" JSON |",url.replace("/html","/json"));
+		makeLink(" XML |",url.replace("/html","/xml"));
+		makeLink(" TXT ",url.replace("/html","/txt"));
+	}else {
+        makeLink(" TSV |",url.replace("8080/","8080/csv"));
+        makeLink(" JSON |",url.replace("8080/","8080/json"));
+        makeLink(" XML |",url.replace("8080/","8080/xml"));
+        makeLink(" TXT ",url.replace("8080/","8080/txt"));
+	}
 	br();
 	makeLink(" Entity |",clean(url).replace("/html","/json/entities").replace("/ee","/"));// :filtered
 	makeLink(" Normal |",clean(url).replace("/html","/html/verbose"));// :filtered

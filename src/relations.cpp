@@ -503,6 +503,10 @@ Node *getRelation(const char *thing) {
 	if (thing[0] == '#') thing++;
 	if (eq(thing, "altLabel"))return Label;
 	if (eq(thing, "name"))return Label;
+	if (eq(thing, "lable"))return Label;
+	if (eq(thing, "Lable"))return Label;
+	if (eq(thing, "label"))return Label;
+	if (eq(thing, "Label"))return Label;
 	if (eq(thing, "Name"))return Label;
 	if (eq(thing, "prefLabel"))
 		return 0;// ignore!
@@ -557,7 +561,7 @@ Node *getRelation(const char *thing) {
 	if (eq(thing, "Typ")) return Type;
 	if (eq(thing, "Art")) return Type;
 	if (eq(thing, "sameAs")) return Synonym; // instance of
-
+	if (eq(thing, "Synonym")) return Synonym; // instance of
 	if (eq(thing, "subclass of")) return SuperClass;
 	if (eq(thing, "subClassOf")) return SuperClass;
 	return 0;// no relation

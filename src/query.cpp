@@ -363,7 +363,8 @@ Statement *parseSentence(string sentence, bool learn/* = false*/) {
 	replaceChar(matches[0], '_', ' ');
 	replaceChar(matches[2], '_', ' ');
 	Node *subject = getThe(matches[0]);
-	Node *predicate = getThe(matches[1]);// getRelation(matches[1]) or
+	Node *predicate = getRelation(matches[1]);
+	if(!predicate)predicate = getThe(matches[1]);
 	Node *object;
 	if (predicate == Instance) {
 		if (atoi(matches[2]))object = get(atoi(matches[2]));
@@ -2464,16 +2465,25 @@ NV showTopics(NV entities) {
 	return all;
 }
 
+Node *normEntity(Node* node);
+
 
 // see getProperty
 Node *findProperty(Node *n, Node *m, bool allowInverse, int limit) {
 	Statement *s = 0;
 	int count = 0;
+	Node* normed = normEntity(m);
 	while ((s = nextStatement(n, s))) {
 		if (limit and count++ > limit)break;
 		if (s->Predicate() == m) {
 			return s->Object();
 		}
+		if (s->Predicate() == normed) {
+			return s->Object();
+		}
+//		if (isA4(s->Predicate(),m)) {// too expensive!
+//			return s->Object();
+//		}
 		if (allowInverse and s->Predicate() == invert(m)) {
 			return s->Subject();
 		}
@@ -2481,10 +2491,25 @@ Node *findProperty(Node *n, Node *m, bool allowInverse, int limit) {
 	return 0;
 }
 
+
+Node *normEntity(Node* node) {
+	if (node->id < 0)
+		return node;
+	N found = findProperty(node, Label, true, 1000);// Label sure at beginning??
+	if(!found)found = findProperty(node, Synonym, true, 1000);// Label sure at beginning??
+	return found;
+}
+
 // see findProperty
 Node *getProperty(Node *node, Node *key, int limit) {
 	S s = findStatement(node, key, Any, 0, 0, 0, true, limit);
-	if (!checkStatement(s))return findProperty(node, key, true, limit);
+	if (!checkStatement(s)) {
+		N normed = normEntity(key);
+		if (normed != key)
+			s = findStatement(node, normed, Any, 0, 0, 0, true, limit);
+		else
+			return findProperty(node, key, true, limit);
+	}
 	return s->Object() == node ? s->Subject() : s->Object();// inverse
 }
 
@@ -2583,8 +2608,7 @@ Node *has(Node *n, Node *m) {
 	clearAlgorithmHash(true);
 	Node *ok = 0;
 	ok=	getProperty(n,m,resultLimit);
-	if(ok)
-		return ok;
+	if(ok) return ok;
 
 	int tmp = resultLimit;
 	resultLimit = 1;
@@ -2695,13 +2719,13 @@ bool isA4(Node *n, Node *match, int recurse, bool semantic, bool matchName) {
 	if (n->id == match->id) return true; // how so??? "Type" overwritten by "kind" !!!!
 	if (isAbstract(match))matchName = true;
 	if (matchName and eq(n->name, match->name, true)) return true;// only sometimes !!!
-	long badHash = n->id + match->id * 10000000;
-	if (useYetvisitedIsA) {
-		if (yetvisitedIsA[badHash] == -1) return false;
-		if (yetvisitedIsA[badHash] == 1) return true;
+	long hashy = n->id + match->id * billion;
+	bool useHash=useYetvisitedIsA;// careful: memory explosion
+	if (useHash) {
+		if (yetvisitedIsA[hashy] == -1) return false;
+		if (yetvisitedIsA[hashy] == 1) return true;
+//		if (yetvisitedIsA[hashy] == 0) ... :
 	}
-	//    else if (yetvisitedIsA[n]==null)yetvisitedIsA[n]=true;
-	//    else yetvisitedIsA[n]++;
 
 	if (recurse > 0) recurse++;
 	//  else recurse=maxRecursions;
@@ -2724,43 +2748,43 @@ bool isA4(Node *n, Node *match, int recurse, bool semantic, bool matchName) {
 	// todo:semantic true (level1)
 	bool quickCheckSynonym = recurse == maxRecursions; // todo !?!??!
 	if (quickCheckSynonym and findStatement(n, Synonym, match, false, false, true)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 
 	bool semantic2 = semantic and recurse > 5; // and ... ?;
 
 	if (semantic and findStatement(n, Synonym, match, recurse, semantic2, true)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	//  if(semantic and has(n,Plural,match,false,false,true))return true;
 	if (semantic and has(n, SuperClass, match, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(n, Type, match, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(match, Instance, n, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(match, SubClass, n, recurse, semantic2, false)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(n, Label, match, false, false, false)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and recurse > 0 and findStatement(n, Plural, match, maxRecursions - 1, semantic2)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	} //(n,Plural,match,0,true,true))return true;
 	if (semantic and recurse > 0 and findStatement(match, Plural, n, maxRecursions - 1, semantic2)) {
-		yetvisitedIsA[badHash] = true;
+		if(useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	} //(n,Plural,match,0,true,true))return true;
 
@@ -2773,13 +2797,13 @@ bool isA4(Node *n, Node *match, int recurse, bool semantic, bool matchName) {
 			visited[s] = 1;
 			if (s->Predicate() == Instance)
 				if (recurse and isA4(s->Object(), match, recurse, semantic)) {
-					yetvisitedIsA[badHash] = true;
+					if(useHash)yetvisitedIsA[hashy] = true;
 					return true;
 				}
 		}
 	}
-	if (useYetvisitedIsA)
-		yetvisitedIsA[badHash] = -1;
+	if (useHash)
+		yetvisitedIsA[hashy] = -1;
 
 	return false;
 }

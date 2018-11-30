@@ -110,7 +110,7 @@ char *getStatementTitle(Statement *s, Node *n) {
 int handle(cchar *q0, int conn) {
 //	autoIds = false;
 	autoIds = true; // 2.7.18 : for http://sqb:8080/html/550866 !?!
-
+	newQuery();
 	int len = (int) strlen(q0);
 	if (LIVE)lookupLimit = 10000;
 	newQuery();

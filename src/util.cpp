@@ -361,6 +361,7 @@ bool is_out_of_bounds(cchar *pointer) {
 	return (write(nullfd, pointer, 1) < 0);
 }
 
+//inline
 bool eq(const char *x, const char *y, bool ignoreCase, bool ignoreUnderscore) { //
 	if (!x and !y) return true; //danger better: undefined?
 	if (!x or !y) return false; //danger better: undefined?
@@ -1043,7 +1044,6 @@ bool empty(cchar *c) {
 
 int len(char *c) { return !c ? 0 : (int) strlen(c); }// python style
 int len(cchar *c) { return !c ? 0 : (int) strlen(c); }// python style
-
 
 //
 //
