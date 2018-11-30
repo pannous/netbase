@@ -1910,9 +1910,9 @@ void testSynonyms(){
 
 //	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
 //	check(eq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703)));
-	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
-	check(eq(findProperty(a(Gehren),the(Einwohner)),the(3703)));
-//	check(eq(getProperty(a(Gehren),the(Einwohner)),the(3703)));
+//	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
+//	check(eq(findProperty(a(Gehren),the(Einwohner)),the(3703)));
+	check(eq(getProperty(a(Gehren),the(Einwohner)),the(3703)));
 
 //	check(eq(findProperty(the(Gehren),the(Population)),the(3703)));
 //	check(eq(getProperty(the(Gehren),the(Einwohner)),the(3703)));

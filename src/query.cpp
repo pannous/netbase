@@ -2484,6 +2484,7 @@ Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 
 // see getProperty
 Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
+	if (limit<=0)limit=queryLimit;
 	Statement *s = 0;
 	Statement *found=0;
 	Node* normed = normEntity(key);
