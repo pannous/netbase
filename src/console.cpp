@@ -731,6 +731,11 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		if (contains(data, "who ")) return query(data);
 
 
+
+		if (contains(data, ".")) {
+			return wrap(parseProperty(data));
+		}
+
 		if ((args.size() > 2 and eq(args[1], "of")) or contains(data, " of ") or contains(data, " by ") or
 		    (contains(data, "."))) {
 			return query(data);
@@ -766,6 +771,8 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		if(!learned)
 			return OK;// NOT!
 		NodeVector nv = wrap(learned->Subject());
+
+		// append to facts log
 		FILE *fp = fopen((data_path + "/facts.ssv").data(), "a");
 		if (!fp) {
 			p("NO such file facts.ssv!");

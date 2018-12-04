@@ -2820,6 +2820,10 @@ void import(const char *type, const char *filename) {
 	//  importStatements();
 }
 
+void importCustomFacts(){
+	import("facts.n3");
+}
+
 void importTelekom(){
 //	importCsv("Telekom/used_keywords.csv");// same:
 	importCsv("Telekom/entities.ee.csv",getThe("Telekom-Entity"),0,0,"name,topic",0);
@@ -2871,6 +2875,7 @@ void importRemaining() {
 void importAll() {
 	importing = true;
 	autoIds = false;
+	importCustomFacts();
 	if (germanLabels)
 		return importAllDE();
 	p("importAll ENGLISH");
