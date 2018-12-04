@@ -99,27 +99,27 @@ function editLinks(predicate,statement,elem)
 		makeLink(" --",statement.sid+" exclude "+statement.predicate,predicate).style=tiny;// filter
 		makeLink(" -!","exclude "+statement.predicate,predicate).style=tiny;// filter
 }
+
+
+function fixName(name){
+	name=name.replace("_"," ")
+	name=name.replace(/%20/g," ")
+	return name
+}
+
 var num=0;
+
 function makeStatement(statement,elem,entity)
 {  // if Wikimedia-Kategorie  BREAK!
   if(filterStatement(statement))return;
-	// if(statement.predicate.match(/Wappen/i))addImage(statement.object,div);
-	// if(statement.predicate.match(/Flagge/i))addImage(statement.object,div);
-	// if(statement.predicate.match(/karte/i))addImage(statement.object,div);
-	// if(statement.predicate.match(/image/))addImage(statement.object,div);
-	// if(statement.predicate.match(/bild/i))addImage(statement.object,div);
-	// if(statement.object.match(/\.svg/))addImage(statement.object,div);
-	// if(statement.object.match(/\.png/))addImage(statement.object,div);
-	// if(statement.object.match(/\.jpg/))addImage(statement.object,div);
-	// if(statement.object.match(/\.bmp/))addImage(statement.object,div);
 	var top = document.createElement("tr");
   if(++num % 2){
-  top.classList.add('even') //.class="even"
-}  else {
-  top.classList.add('odd') //.class="odd"
-}
+  	top.classList.add('even') //.class="even"
+	}  else {
+  	top.classList.add('odd') //.class="odd"
+	}
 	if(!inline || statement.sid!=entity.id)
-		makeLink(statement.subject.replace("_"," "),server+statement.sid,makeRow(top));
+		makeLink(fixName(statement.subject),server+statement.sid,makeRow(top));
 
 	predicate=	makeRow(top)
 	if(editMode)editLinks(predicate,statement,elem)
@@ -128,8 +128,9 @@ function makeStatement(statement,elem,entity)
 		var objectUrl=statement.object.startsWith("http")?statement.object:server+statement.oid;
 		if(statement.predicate.match("Koord"))
 			objectUrl="https://www.mapquest.com/latlng/"+statement.object.replace(" ","")
-		var x=makeLink(statement.object,objectUrl,makeRow(top));
-	// if(editMode)makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
+
+		var x=makeLink(fixName(statement.object), objectUrl, makeRow(top));
+	  if(editMode) makeLink(" ^",server+ statement.predicate+":"+statement.object,x).style=tiny;// filter
 	}
 	elem.appendChild(top);
 }

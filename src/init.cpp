@@ -680,7 +680,14 @@ bool isTrue(char* c){
 	return eq(c, "true")||eq(c, "1")||eq(c, "yes");
 }
 
+
+long maxChars = 1*million;
+long maxNodes = 1*million;
+long maxStatements = 1*maxNodes;
+long sizeOfSharedMemory = 0; // overwrite here:
+
 void loadConfig() {// char* args
+
 	// load netbase.config environment variables or fall back to defaults
 	if (getConfig("SERVER_PORT"))SERVER_PORT = atoi(getConfig("SERVER_PORT"));
 	if (getConfig("resultLimit"))resultLimit = atoi(getConfig("resultLimit"));
@@ -699,5 +706,7 @@ void loadConfig() {// char* args
 			maxChars = maxNodes * averageNameLength;
 	}
 	defaultLookupLimit = lookupLimit;
+	maxChars = maxNodes * averageNameLength;
+	sizeOfSharedMemory = contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
 }
 

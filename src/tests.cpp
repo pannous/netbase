@@ -10,6 +10,8 @@
 #include "query.hpp"
 #include "console.hpp"
 #include "webserver.hpp"
+#include "init.hpp"
+
 //#define assert(cond) ((cond)?(0): (fprintf (stderr,"FAILED: \ %s, file %s, line %d \n",#cond,__FILE__,__LINE__), abort()))
 
 #define a(word) getAbstract(#word)
