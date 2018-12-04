@@ -2360,6 +2360,8 @@ Statement *error_statement = 0;
 
 // SAME as evaluate!!
 
+void loadConfig();
+
 extern "C"
 //Statement * learn(string& sentence0) {
 Statement *learn(const char *sentence0) {
@@ -2956,12 +2958,8 @@ int main(int argc, char *argv[]) {
 		show(parse(data, false, false));
 		//	start_server();
 	}
-	// load environment variables or fall back to defaults
-	if (getenv("SERVER_PORT"))SERVER_PORT = atoi(getenv("SERVER_PORT"));
-	if (getenv("resultLimit"))resultLimit = atoi(getenv("resultLimit"));
-	if (getenv("lookupLimit"))lookupLimit = atoi(getenv("lookupLimit"));
-	defaultLookupLimit = lookupLimit;
 
+	loadConfig();
 	//	signal(SIGSEGV, handler); // only when fully debugged!
 	//	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
 	//  setjmp(loop_context);
@@ -2991,13 +2989,11 @@ int main(int argc, char *argv[]) {
 
 
 	germanLabels = true;
-	//  import();
+
 	initSharedMemory(); // <<<
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
 	if (checkParams(argc, argv, "de"))germanLabels = true;
-
-
 	if (checkParams(argc, argv, "import")) {
 		if (checkParams(argc, argv, "all") or argc < 2)
 			importAll();
@@ -3009,19 +3005,13 @@ int main(int argc, char *argv[]) {
 	printf("Warnings: %d\n", badCount);
 	showContext(0);
 
-//	bool FORCE_DEBUG=true;// profile hack
 	if (checkParams(argc, argv, "load_files")) load(true);
 	else if (checkParams(argc, argv, "debug")) {
 		printf("debugging\n");
 		for (int i = 0; i <argc; ++i) {
 			p(argv[i]);
 		}
-		//    load();
-		//		clean();
 		testBrandNewStuff(); // << PUT ALL HERE!
-		//		start_server();
-		//		return 0;
-		//		tests();
 	} else {
 		bool _autoIds = autoIds;
 		autoIds = true;
@@ -3045,9 +3035,7 @@ int main(int argc, char *argv[]) {
 	}
 	if (quit) exit(0);
 	context = getContext();
-	//	testBrandNewStuff();
 	console();
 	//  } catch (std::exception const& ex) {
 }
 // _MAIN_ ^^^
-

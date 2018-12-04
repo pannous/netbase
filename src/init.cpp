@@ -18,6 +18,7 @@
 #include "netbase.hpp"
 #include "init.hpp"
 #include "relations.hpp"
+#include "webserver.hpp"
 
 #include "errno.h"
 
@@ -651,3 +652,52 @@ void __attribute__((constructor)) my_init(void) {
 extern "C" void allowWipe() {
 	_allowWipe = true;
 }
+
+
+extern char *getConfig (const char *name){
+	if(file_exists("netbase.config")) {
+		FILE *infile = open_file("netbase.config");
+		char line[1000];
+//		char* key=(char*)malloc(1000);
+//		char* value=(char*)malloc(1000);
+		while (fgets(line, sizeof(line), infile) != NULL) {
+			if(line[0]=='#')continue;
+			fixNewline(line);
+			char* key=line;
+			char* value=index(line, '=');
+			if(!value)continue;
+			value[0]=0;value++;
+//			int ok=sscanf(line, "%[^=]s=%s", key, value);// fuck c!
+			if (eq(key, name))
+				return value;
+		}
+		pf("PROPERTY MISSING IN netbase.config : %s",name)
+	}
+	return getenv(name);
+}
+
+bool isTrue(char* c){
+	return eq(c, "true")||eq(c, "1")||eq(c, "yes");
+}
+
+void loadConfig() {// char* args
+	// load netbase.config environment variables or fall back to defaults
+	if (getConfig("SERVER_PORT"))SERVER_PORT = atoi(getConfig("SERVER_PORT"));
+	if (getConfig("resultLimit"))resultLimit = atoi(getConfig("resultLimit"));
+	if (getConfig("lookupLimit"))lookupLimit = atoi(getConfig("lookupLimit"));
+	if (getConfig("germanLabels"))germanLabels= isTrue(getConfig("germanLabels"));
+	if (getConfig("maxNodes")){
+		maxNodes= atoi(getConfig("maxNodes"));
+		if(maxNodes<10000)maxNodes=maxNodes*million;
+		if (getConfig("maxStatements"))
+			maxStatements = atoi(getConfig("maxStatements"));
+		else
+			maxStatements = maxNodes*2;
+		if (getConfig("maxChars"))
+			maxChars = atoi(getConfig("maxChars"));
+		else
+			maxChars = maxNodes * averageNameLength;
+	}
+	defaultLookupLimit = lookupLimit;
+}
+
