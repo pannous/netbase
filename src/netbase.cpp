@@ -2650,13 +2650,16 @@ string getImage(cchar *a, int size, bool thumb) {
 string getImage(Node *a, int size, bool thumb) {
 	if (!a or !checkNode(a))return 0;
 	Node *i = 0;
-	if (!i)i = findProperty(a, "image", true, 1000);// Amazon
-	if (!i)i = findProperty(a, "wiki_image", false, 100);
-	if (!i)i = findProperty(a, "product_image_url", false, 20);
-	if (!i)i = findProperty(a, "Bild", false, 100);// P18 !
-	if (!i)i = findProperty(a, "Wappen", false, 100);
-	if (!i)i = findProperty(a, "Positionskarte", false, 100);
-	if (!i)i = findProperty(a, "Lagekarte", false, 100);
+	if (!i)i = findProperty(a, get(-10018), true, 1000);
+
+//	TOO EXPENSIVE:
+//	if (!i)i = findProperty(a, "image", true, 1000);// Amazon
+//	if (!i)i = findProperty(a, "wiki_image", false, 100);
+//	if (!i)i = findProperty(a, "product_image_url", false, 20);
+//	if (!i)i = findProperty(a, "Bild", false, 100);// P18 !
+//	if (!i)i = findProperty(a, "Wappen", false, 100);
+//	if (!i)i = findProperty(a, "Positionskarte", false, 100);
+//	if (!i)i = findProperty(a, "Lagekarte", false, 100);
 //Flagge (Abbildung)
 	// *.svg , jpg, bmp, jpeg , png !!! TODO
 //	Wikivoyage-Banner

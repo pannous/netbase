@@ -1243,7 +1243,19 @@ void testQuery() {
 }
 
 void testWins() {
+	germanLabels=1;
+//	findProperty()
 
+	const char *iphoneX = "Apple_iPhone_X_256_GB_silber";
+	N iPhoneX=getThe(iphoneX);
+	Node *zoom = findProperty(iPhoneX, "zoom");
+	check(zoom and zoom->value.number==6);
+	
+	if(!hasNode(iphoneX))
+		import("wins.n3");
+	Query aquery = parseQuery("iphone > 3 gb");
+	NV results=query(aquery);
+	check(results.size()>0);
 }
 
 //#define sn showNode
@@ -1877,7 +1889,9 @@ void testTheSingletons() {
 
 // current
 void testBug() {
-	testCities();
+	handle("Gehren");
+	exit(0);
+//	testCities();
 //	testTheSingletons();
 }
 
@@ -2015,6 +2029,9 @@ void testUmlauts() {
 	check(wordHash("mü") == wordHash("MÜ")); // todo: seo here!
 }
 
+void testServer(){
+	start_server(8080);
+}
 
 extern "C" void testAll() {
 #ifndef __clang_analyzer__
@@ -2078,7 +2095,10 @@ void testBrandNewStuff() {
 		return; // no tests when profiling
     #endif
 	p("Test Brand New Stuff");
+	testBug();
+	testWins();
 	testSynonyms();
+	testServer();
 	testAll();
 	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 ////////////////////////////////////////////////////////////////////

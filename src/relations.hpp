@@ -40,6 +40,7 @@ extern Node* Comment;
 extern Node* Description;
 
 extern Node* Category;
+extern Node* Topic;
 extern Node* SubContext;
 extern Node* SuperContext;
 extern Node* Domain;
@@ -125,6 +126,7 @@ extern Context* Wordnet;
 
 static const int wordnet = 0;// 303; //context==Class??  TODO!
 static const int wikidata = 0;// for now
+
 // DANGER!!
 static const int _property = -98;
 static const int _singleton = -99;
@@ -201,13 +203,18 @@ static const int _sense = -660;// why? ;)
 static const int _error= -666;//-1 = -evil in itself;//
 static const int _ignore= -777;
 static const int _missing= -999;
-static const int _any=0;// !!!
 static const int _unknown=0;
+static const int _any=0;// -50? !!!
+static const int _unrelated=0;
+static const int _null = 0;// ok as value?
+static const int _false = 0;// ok as value? todo ^^
+static const int _true = 1;// >0 ok, not a 'Relation' todo: Universe
+
 static const int _see= -50,//50 _see_also, -40 similar
 	_Hypernym = -1,// ~
 	_SuperClass= -1,//SuperClass bugs=>ARE=>animals
 	_hyponym = -2,
-	_SubClass= -2,//SubClass	animals=>i.e.=>bugs (turn around!)
+	_SubClass= -2,//SubClass	animals=>e.g.=>bugs (turn around!)
 	_Type= -3,
 	_instance= -4,
 	_ENTAILMENT= -21,// implies VS SYNONYM !!
@@ -286,11 +293,14 @@ _subclass_of=-10279,// MAP EARLIER!!
 _commons_category=-10373,
 _categorys_main_topic=-10301,
 _topics_main_category=-10910,
+_topic=-10910,
 _Is_a_list_of=-10360;
 
 void initRelations();
 Node * getRelation(const char* thing);
 Node * getWikidataRelation(const char* thing);
 Node* invert(Node* relation);
+void addSynonyms();
+void addSynonymsDE();
 #endif	/* RELATIONS_HPP */
 

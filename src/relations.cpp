@@ -45,7 +45,8 @@ Node *Labeled; // labeledAE / labelledBE adj.
 //Node* LabeledNode;
 Node *Comment;// or as text value
 Node *Description;// or as text value
-Node *Category;
+Node *Category;// same:?
+Node *Topic;
 Node *SubContext;
 Node *SuperContext;
 
@@ -128,6 +129,8 @@ Node *EndsWith;
 Node *UsageContext;
 
 
+void addLabel(Node *relation, const char lable[5]);
+
 Node *addRelation(int id, const char *name, bool transitive = false) {
 	Node *n = add_force(wordnet, id, name, _internal);
 	insertAbstractHash(wordHash(name), n, false, false);// ECHT? TYP ?
@@ -199,6 +202,7 @@ void initRelationsDE() {
 	Similar = addRelation(_similar, "aehnlich");// hypernym?? no synonym
 //	See = 	addRelation(_see_also, "auch");// hypernym??
 	Category = addRelation(_category, "Kategorie"); // tag
+	Topic = addRelation(_topic, "Topic");// todo Deutsch!
 	SubContext = addRelation(_subcontext, "Subcontext"); // tag
 	SuperContext = addRelation(_supercontext, "Supercontext"); //
 	Comment = addRelation(_comment, "Kommentar");
@@ -267,6 +271,7 @@ void initRelationsDE() {
 	To = addRelation(_to, "Bis");// VS NACH!!
 	Next = addRelation(_next, "Next");
 	Previous = addRelation(_previous, "Previous");
+	addSynonymsDE();
 }
 
 
@@ -355,6 +360,7 @@ void initRelations() {
 
 	//	Labels = addRelation(40, "Label");//??
 	//	LabeledNode = addRelation(41, "LabeledNode");// ?? ugly!!
+	Topic = addRelation(_topic, "topic");// same as: ?
 	Category = addRelation(_category, "category"); // tag
 	SubContext = addRelation(_subcontext, "subcontext"); // tag
 	SuperContext = addRelation(_supercontext, "supercontext"); //
@@ -411,7 +417,7 @@ void initRelations() {
 	Between = addRelation(_Between, "Between");
 	Circa = addRelation(_Circa, "Circa");
 	Much = addRelation(_Much, "much");
-	Little = addRelation(_Little, "little");
+	Little = addRelation(_Little, "little");// vs less!
 	Very = addRelation(_Very, "very");
 	Contains = addRelation(_Contains, "Contains");
 	StartsWith = addRelation(_StartsWith, "starts with");
@@ -430,14 +436,69 @@ void initRelations() {
 	Range = addRelation(_range, "Range");
 
 //	True = addRelation(_true, "True");
-//	False = addRelation(_false, "False");// todo
-
+//	False = addRelation(_false, "False");// todo 0 'see'
 
 	From = addRelation(_from, "From");
 	To = addRelation(_to, "To");
 	Next = addRelation(_next, "Next");
 	Previous = addRelation(_previous, "Previous");
+
+	addSynonyms();
 }
+
+
+void addLabel(Node *relation, const char* lable) {
+//	if(lable[0]<'a')lable[0] += ('A' - 'a');// make upper case
+	addStatement(relation, Label, getThe(lable));
+}
+
+
+void addSynonymsDE(){
+
+//	>
+	addLabel(Greater, "mehr");
+	addLabel(Greater, "höher");
+	addLabel(Greater, "hoeher");
+	addLabel(Greater, "größer");
+	addLabel(Greater, "groesser");
+	addLabel(Greater, "groeßer");
+	addLabel(Greater, "grösser");
+
+//	<
+	addLabel(Smaller, "kleiner");
+	addLabel(Smaller, "weniger");
+	addLabel(Smaller, "geringer");
+
+//	=
+	addLabel(Equals, "gleich");
+	addLabel(Equals, "genau");
+	addLabel(Equals, "exakt");
+
+//	~
+	addLabel(Circa, "etwa");
+	addLabel(Circa, "ungefähr");
+	addLabel(Circa, "ungefaehr");
+//	addLabel(Circa, "ziemlich");
+//	addLabel(Circa, "plusminus");
+//	addLabel(Circa, "plus minus");
+	addLabel(Circa, "mehr oder weniger");
+}
+
+
+void addSynonyms(){
+	if(germanLabels)
+		addSynonymsDE();
+	addLabel(Greater, "larger");
+	addLabel(Greater, "taller");
+	addLabel(Greater, "higher");
+	addLabel(Greater, "bigger");
+	addLabel(Less, "little");// vs much!
+	addLabel(Less, "smaller");
+	addLabel(Less, "inferior");
+}
+
+
+
 
 Node *invert(Node *relation) {
 	if (relation == 0)return Error;
@@ -512,6 +573,12 @@ Node *getRelation(const char *thing) {
 	if (eq(thing, "Name"))return Label;
 	if (eq(thing, "prefLabel"))
 		return 0;// ignore!
+
+
+	if (eq(thing, "Image"))return get(-10018);
+	if (eq(thing, "Bild"))return get(-10018);
+
+	if (eq(thing, "Topic"))return Topic;
 
 	if (eq(thing, "Item"))
 		return Entity;// <http://www.wikidata.org/entity/Q9486626> <#type> <http://www.wikidata.org/ontology#Item> .

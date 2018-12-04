@@ -256,6 +256,8 @@ string renderResults(Query &q) {
 	return buffer.str();
 }
 
+// query {phone (size: "256GB") {name } }
+
 NodeVector query(string s, int limit/*=resultLimit*/) {
 	p(("Executing query "));
 	ps(s);
@@ -2382,7 +2384,7 @@ N getInferredClass(N n, int limit = 1000) {
 
 N getClass(N n) {
 	N p = 0;
-	int limit=1000;
+	int limit=100;
 	if (!p)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
 	if (!p)p = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
 	if (!p)p = getProperty(n, Type, limit); // Typ Flugzeug
@@ -2472,10 +2474,10 @@ NV showTopics(NV entities) {
 Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 	Statement *s = 0;
 	int count = 0;
-	while ((s = nextStatement(n, s))) {
+	while ((s = nextStatement(n, s)) and count < n->statementCount) {
 		if (limit and count++ > limit)break;
 		bool matches = eq(s->Predicate()->name, m, true);
-		matches = matches or (allowInverse and contains(s->Predicate()->name, m));
+		matches = matches or (allowInverse and contains(s->Predicate()->name, m, true));
 		if (matches) {
 			if (eq(s->Object(), n))
 				return s->Subject();
@@ -2504,7 +2506,7 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
 			return found->Object();
 		return found->Subject();
 	}
-	if(isAbstract(node)){//} or getThe(node)==node) {
+	if(isAbstract(node) and (key->id > 0 or key->id < -11000)){//} or getThe(node)==node) {
 		NV all = instanceFilter(node);
 		all.push_back(node);
 		for (int i = 0; i < all.size(); i++) {
@@ -2521,7 +2523,7 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
 Node *normEntity(Node* node) {
 	if (node->id < 0)
 		return node;
-	if (eq(node->name, "topic", true))
+	if (eq(node->name, "Topic", true))
 		return node;
 	N found = findProperty(node, Label, true, 1000);// Label sure at beginning??
 	if(!found)found = findProperty(node, Synonym, true, 1000);// Label sure at beginning??
