@@ -1391,7 +1391,7 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
 			//				return found->abstract;
 			N a = get(found->abstract);
-			if(!checkNode(a,0,0,1))continue;
+			if(!checkNode(a,0,0,1))continue;// check name
 			if (eq(a->name, thingy, true, true))            //teuer? n��, if 1.letter differs
 				return a;
 			if (seo and a->name) {
