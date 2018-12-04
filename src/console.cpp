@@ -136,11 +136,10 @@ Node *parseProperty(const char *data) {
 	return found;
 }
 
-
 void console() {
 	quiet = false;
 	if (germanLabels)printf("\nDeutsch");
-	printf("\nNetbase C++ Version 1.6.2\n");
+	printf("\nNetbase C++ Version %s\n",version);
 
 	char *data = (char *) malloc(10000);
 #ifdef signal
@@ -358,7 +357,6 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		char *limit = (char *) strstr(data, "lookup");
 		sscanf(limit, "lookup %d", &lookupLimit);
 		pf("LOOKUP LIMIT SET TO %d\n", lookupLimit);
-		defaultLookupLimit = lookupLimit;
 		if (limit > data) *(limit - 1) = 0;
 		*limit = 0;
 		if (lenge < 2)return OK;

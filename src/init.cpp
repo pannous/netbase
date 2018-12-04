@@ -682,8 +682,8 @@ bool isTrue(char* c){
 
 
 long maxChars = 1*million;
-long maxNodes = 1*million;
-long maxStatements = 1*maxNodes;
+long maxNodes = 1*million;//  300*million;// Live 11.11.2018
+long maxStatements = 2*maxNodes;
 long sizeOfSharedMemory = 0; // overwrite here:
 
 void loadConfig() {// char* args
@@ -705,7 +705,6 @@ void loadConfig() {// char* args
 		else
 			maxChars = maxNodes * averageNameLength;
 	}
-	defaultLookupLimit = lookupLimit;
 	maxChars = maxNodes * averageNameLength;
 	sizeOfSharedMemory = contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
 }

@@ -239,7 +239,6 @@ void testGeoDB() {
 	if (!hasNode("Gehren"))
 		importGeoDB();
 
-	defaultLookupLimit = 100000;
 	das(Gehren);
 	show((Gehren));
 	N latitude = getProperty(Gehren, "Latitude");//Gehren.Latitude
@@ -1109,7 +1108,7 @@ void testComparisonQuery() {
 	check(nv.size() > 10);
 	check(atoi(getProperty(nv[0], "population")->name) > 1300);
 
-	q.instances = all_instances(the(city), true, defaultLookupLimit, false); // again??
+	q.instances = all_instances(the(city), true, lookupLimit, false); // again??
 	q.limit = 10;
 	//	check(q.instances.size() >= defaultLookupLimit);
 	p(q.instances.size());

@@ -1,5 +1,7 @@
+static char* /*increase-package-version.py*/
+version="1.6.4";
+
 #pragma once
-#define _FILE_OFFSET_BITS 64
 #include <stdio.h>
 #include <string>
 #include <sstream>
@@ -8,12 +10,13 @@
 #include <vector>
 #include <set> // faster vector!
 #include <queue>
+
 using namespace std;
+
 extern bool NO_TOPICS;
 extern bool useSemantics;
 extern bool germanLabels;
 extern bool exitOnFailure;
-extern int maxRecursions;
 extern bool debug; //=true;
 extern bool _trace;
 void trace();
@@ -24,15 +27,17 @@ extern int badCount;
 extern int runs; // algorithm metrics
 extern int current_context;
 extern bool useYetvisitedIsA;
-extern bool autoIds;
-extern bool testing;// don't implicitly init relations
-extern bool importing;
+extern bool autoIds; // parse '1' as https://www.wikidata.org/wiki/Q1 (Universe)
+extern bool testing; // don't implicitly init relations
+extern bool importing; // performance state
 
-extern int resultLimit;
-extern int defaultLookupLimit;
+extern int resultLimit;// 10
 extern int lookupLimit;// 1000
 extern int typeLimit;// 1000
 extern int queryLimit;// 10000000
+extern int defaultLookupLimit;
+extern int maxRecursions;
+
 extern bool out_of_memory;// delayed exit()
 extern int wikidata_limit;// =60000000;
 // if test or called from other object
@@ -609,16 +614,15 @@ extern Context* context_root; // else: void value not ignored as it ought to be
 extern Node* abstract_root;
 extern Node* node_root;
 extern char* name_root;
-//extern char* english_words;// nonesense, just load whole /data/ with correct abstracts and nodes...
+//extern char* english_words;// nonsense, just load whole data/ dir with correct abstracts and nodes...
 
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
-//extern Node** keyhash_root;
+
 Node* bad(char* message=0);//string="");
 void show(NodeSet& all);
 void addSeo(Node* n);
 Node *getSeo(const char* thingy);
-//extern
-//#pragma warnings_off
+void buildSeoIndex();
 
 static int nodeSize=sizeof(Node);// 40
 static int statementSize=sizeof(Statement);// 26 after refactor !! // was 56!!
@@ -672,5 +676,3 @@ extern long sizeOfSharedMemory;
 
 #endif
 
-
-void buildSeoIndex();
