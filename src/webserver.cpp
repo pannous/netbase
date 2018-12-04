@@ -563,8 +563,8 @@ int handle(cchar *q0, int conn) {
 				if (s->Predicate() == Instance) {
 					N type = getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);
 					if (checkNode(type, -1, false, true) and type->id != _entity and !contains(objectName, type->name))
-//						objectName=(char*)(concat(concat(objectName, ": "),type->name));
-						objectName = (char *) (string(objectName) + " (" + type->name + ")").data();
+						objectName=(char*)(concat(concat(objectName, ": "),type->name));
+//						objectName = (char *) BUG!!!?? (string(objectName) + " (" + type->name + ")").data();
 				}
 				if (!objectName) {
 					p("PROBLEM WITH");

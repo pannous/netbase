@@ -1889,7 +1889,7 @@ void testTheSingletons() {
 
 // current
 void testBug() {
-	handle("Gehren");
+	handle("/all/Gehren");
 	exit(0);
 //	testCities();
 //	testTheSingletons();
