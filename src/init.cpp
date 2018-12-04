@@ -671,7 +671,7 @@ extern char *getConfig (const char *name){
 			if (eq(key, name))
 				return value;
 		}
-		pf("PROPERTY MISSING IN netbase.config : %s",name)
+//		pf("PROPERTY MISSING IN netbase.config : %s\n",name)
 	}
 	return getenv(name);
 }

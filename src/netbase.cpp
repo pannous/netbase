@@ -2567,9 +2567,8 @@ void setLabel(Node *n, cchar *label, bool addInstance, bool renameInstances) {
 	char *newLabel = name_root + c->currentNameSlot;
 //  if(!n->name or !strlen(n->name)) n->name=newLabel;// prepare to write
 //  else
-	bool hasName = n->name and n->name >= c->nodeNames;
+	bool hasName = n->name and n->name >= c->nodeNames and n->name < c->nodeNames+maxChars;
 	if (hasName and eq(n->name, label, false))return;
-
 	if (hasName and strlen(n->name) >= len) {// reuse! NOT when sharing char*s !!
 		strcpy(n->name, label);
 		n->name[len] = 0;
