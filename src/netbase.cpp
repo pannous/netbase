@@ -504,6 +504,10 @@ void newQuery(){
 }
 
 Statement *nextStatement(Node *n, Statement *current, bool stopAtInstances) {
+	if(!n){
+		bad("No Node given!");
+		return 0;
+	}
 	if (!importing && nextStatement_lookupLimit--<0){
 		bad("nextStatement lookupLimit reached! Cyclic graph?\r\n");
 		return null;

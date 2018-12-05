@@ -105,6 +105,48 @@ char *getStatementTitle(Statement *s, Node *n) {
 }
 
 
+deque<Statement *> sortStatements(Node *node, bool use_topic) {
+	newQuery();
+	deque<Statement *> statements;
+	int count=0;
+	Statement *s=0;
+	while ((s = nextStatement(node, s)) and count++ < lookupLimit) {// resultLimit
+		if (!checkStatement(s)) {
+			p("!checkStatement(s)");
+			bad();
+			show(s);
+			break;
+		}
+//				if (!checkStatement(s))continue;// DANGER!
+//				if(!got_topic and ( s->predicate==_Type or s->predicate==_SuperClass)){
+//					addStatementToNode(node, s->id(), true);// next time
+//				}
+		//
+		if (use_topic and verbosity != verbose and verbosity != alle and verbosity != normal and
+		    (s->predicate > 100 or s->predicate < -100))
+			continue;// only important stuff here!
+		// filter statements
+
+//				if(eq(s->Predicate()->name,"Offizielle Website") and !contains(s->Object()->name,"www"))
+//					continue;
+
+		if (s->predicate == _derives or s->predicate == _derived) {// cognet
+			statements.push_front(s);
+			p("_derives!");
+		} else if (s->subject == node->id and s->predicate != 4)//_instance
+			statements.push_front(s);
+		else statements.push_back(s);
+	}
+//			if(get_topic and verbosity!=shorter){
+//				NV topics=getTopics(node);
+//				N s=topics[0];
+//				for (int j = 0; j < topics.size() and j<=resultLimit; j++) {
+//					N s=topics[j];
+//					Temporary statement (node,topic,s)
+//					statements.push_front(s);
+//				}
+//			}
+}
 
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
@@ -502,51 +544,15 @@ int handle(cchar *q0, int conn) {
 			//      Writeline(",image:\""+getImage(node->name)+"\"");
 			if (use_json)Writeline(conn, ",\n\t \"statements\":[\n");
 
-			sortStatements();
-			deque<Statement *> statements;// sort
-			newQuery();
-			while ((s = nextStatement(node, s)) and count++ < lookupLimit) {// resultLimit
-				if (!checkStatement(s)) {
-					p("!checkStatement(s)");
-					bad();
-					show(s);
-					break;
-				}
-//				if (!checkStatement(s))continue;// DANGER!
-//				if(!got_topic and ( s->predicate==_Type or s->predicate==_SuperClass)){
-//					addStatementToNode(node, s->id(), true);// next time
-//				}
-				//
-				if (get_topic and !got_topic and verbosity != verbose and verbosity != alle and verbosity != normal and
-				    (s->predicate > 100 or s->predicate < -100))
-					continue;// only important stuff here!
-				// filter statements
-
-//				if(eq(s->Predicate()->name,"Offizielle Website") and !contains(s->Object()->name,"www"))
-//					continue;
-
-				if (s->predicate == _derives or s->predicate == _derived) {// cognet
-					statements.push_front(s);
-					p("_derives!");
-				} else if (s->subject == node->id and s->predicate != 4)//_instance
-					statements.push_front(s);
-				else statements.push_back(s);
-			}
-//			if(get_topic and verbosity!=shorter){
-//				NV topics=getTopics(node);
-//				N s=topics[0];
-//				for (int j = 0; j < topics.size() and j<=resultLimit; j++) {
-//					N s=topics[j];
-//					Temporary statement (node,topic,s)
-//					statements.push_front(s);
-//				}
-//			}
+			
+			deque<Statement *> statements= sortStatements(node, get_topic and !got_topic);// sort
+			
 
 			int good = 0;
 			auto statementCount = statements.size();
 //			for (int j = 0; j < statementCount and j <= resultLimit; j++) {
 //				s = statements.at(j); use sortedAndFiltered
-			while ((s = nextStatement(node, s)) and count++<resultLimit) {
+			while ((s = nextStatement(node, s)) and count++<resultLimit) { // unfiltered
 				if (format == csv and all.size() > 1)break;// entities vs statements
 				p(s);
 				if (verbosity != alle and checkHideStatement(s)) {
