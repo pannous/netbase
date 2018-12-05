@@ -502,7 +502,7 @@ int handle(cchar *q0, int conn) {
 			//      Writeline(",image:\""+getImage(node->name)+"\"");
 			if (use_json)Writeline(conn, ",\n\t \"statements\":[\n");
 
-//			sortStatements(
+			sortStatements();
 			deque<Statement *> statements;// sort
 			newQuery();
 			while ((s = nextStatement(node, s)) and count++ < lookupLimit) {// resultLimit
@@ -544,9 +544,9 @@ int handle(cchar *q0, int conn) {
 
 			int good = 0;
 			auto statementCount = statements.size();
-			for (int j = 0; j < statementCount and j <= resultLimit; j++) {
-				s = statements.at(j);
-//			while ((s = nextStatement(node, s)) and count++<resultLimit) {
+//			for (int j = 0; j < statementCount and j <= resultLimit; j++) {
+//				s = statements.at(j); use sortedAndFiltered
+			while ((s = nextStatement(node, s)) and count++<resultLimit) {
 				if (format == csv and all.size() > 1)break;// entities vs statements
 				p(s);
 				if (verbosity != alle and checkHideStatement(s)) {
