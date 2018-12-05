@@ -2185,7 +2185,7 @@ has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bo
 bool isEqual(Node *subject, Node *object) {
 	if(!subject and !object)return true;
 	if(!subject or !object)return false;
-	if (subject->value.number == object->value.number) return subject;
+	if (subject->value.number and subject->value.number == object->value.number) return subject;
 	if (atof(subject->name) > 0 and atof(subject->name) == atof(object->name)) return subject;
 	if (isA4(subject, object))
 		return subject;
@@ -2657,16 +2657,16 @@ string getImage(cchar *a, int size, bool thumb) {
 string getImage(Node *a, int size, bool thumb) {
 	if (!a or !checkNode(a))return 0;
 	Node *i = 0;
-	if (!i)i = findProperty(a, get(-10018), true, 1000);
+	if (!i)i = findProperty(a, get(-10018), true, 10000);// todo: insert at top!
 
 //	TOO EXPENSIVE:
-//	if (!i)i = findProperty(a, "image", true, 1000);// Amazon
-//	if (!i)i = findProperty(a, "wiki_image", false, 100);
-//	if (!i)i = findProperty(a, "product_image_url", false, 20);
-//	if (!i)i = findProperty(a, "Bild", false, 100);// P18 !
-//	if (!i)i = findProperty(a, "Wappen", false, 100);
-//	if (!i)i = findProperty(a, "Positionskarte", false, 100);
-//	if (!i)i = findProperty(a, "Lagekarte", false, 100);
+	if (!i)i = findProperty(a, "image", true, 1000);// Amazon
+	if (!i)i = findProperty(a, "Bild", false, 1000);// P18 !
+	if (!i)i = findProperty(a, "wiki_image", false, 100);
+	if (!i)i = findProperty(a, "product_image_url", false, 20);
+	if (!i)i = findProperty(a, "Wappen", false, 100);
+	if (!i)i = findProperty(a, "Positionskarte", false, 100);
+	if (!i)i = findProperty(a, "Lagekarte", false, 100);
 //Flagge (Abbildung)
 	// *.svg , jpg, bmp, jpeg , png !!! TODO
 //	Wikivoyage-Banner

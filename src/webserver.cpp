@@ -554,7 +554,7 @@ int handle(cchar *q0, int conn) {
 //				s = statements.at(j); use sortedAndFiltered
 			while ((s = nextStatement(node, s)) and count++<resultLimit) { // unfiltered
 				if (format == csv and all.size() > 1)break;// entities vs statements
-				p(s);
+				if(debug)p(s);
 				if (verbosity != alle and checkHideStatement(s)) {
 					warnings++;
 					continue;

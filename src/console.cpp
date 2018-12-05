@@ -111,7 +111,7 @@ NodeSet getPredicates(Node *n) {
 	return predicates;
 }
 
-Node *parseProperty(const char *data) {
+Node *parseProperty(const char *data, bool deepSearch) {
 	char *thing = (char *) malloc(1000);
 	char *property = (char *) malloc(1000);
 	if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
@@ -130,8 +130,8 @@ Node *parseProperty(const char *data) {
 //	if(eq(property,"predicates"))return wrap(getPredicates(getThe(thing));
 	pf("does %s have a %s?\n", thing, property);
 	Node *found = getProperty(getThe(thing), property);
-	if (found == 0) found = has(getThe(thing), getAbstract(property));
-	if (found == 0) found = has(getAbstract(thing), getAbstract(property));
+	if (found == 0 and deepSearch) found = has(getThe(thing), getAbstract(property));
+	if (found == 0 and deepSearch) found = has(getAbstract(thing), getAbstract(property));
 //	free(property);
 	return found;
 }
@@ -731,7 +731,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 
 
 		if (contains(data, ".")) {
-			return wrap(parseProperty(data));
+			return wrap(parseProperty(data, false));
 		}
 
 		if ((args.size() > 2 and eq(args[1], "of")) or contains(data, " of ") or contains(data, " by ") or

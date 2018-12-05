@@ -2550,7 +2550,8 @@ Node *getProperty(Node *node, cchar *key, int limit) {
 	// int recurse = false, bool semantic = useSemantics, bool symmetric = false,bool semanticPredicate=useSemantics, bool matchName=false,int limit=lookupLimit
 	S s = findStatement(node, getThe(key), Any, 0, 0, 0, true, limit);
 	//findStatement(node, getAbstract(key), Any); // todo? egal
-	if (!checkStatement(s))return findProperty(node, key, true, limit);
+	if (!checkStatement(s))
+		return findProperty(node, key, true, limit);
 	return s->Object();
 }
 

@@ -1890,9 +1890,9 @@ void testTheSingletons() {
 
 // current
 void testBug() {
-//	parseProperty("Gehren.Adresse");
-//	handle("/query/Gehren.Adresse");
-	handle("/all/36");
+//	parseProperty("213.bild");
+//	handle("/query/213.bild");
+	handle("/all/213");
 	exit(0);
 //	testCities();
 //	testTheSingletons();
