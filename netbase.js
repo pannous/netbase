@@ -144,6 +144,24 @@ function makeStatement(statement,elem,entity)
 	elem.appendChild(top);
 }
 
+function require(url) {
+        var script = document.createElement("script");  // create a script DOM node
+        script.src = url;  // set its src to the provided URL
+        document.head.appendChild(script);  // add it to the end of the head section of the page (could change 'head' to 'body' to add it to the end of the body section instead)
+}
+
+function formatImage(name, size, thumb) {
+    if (name.indexOf("http")===0)return name;
+    name=name.replace( /%20/g, "_");
+    name=name.replace( /\s/g, "_");
+    require('http://pajhome.org.uk/crypt/md5/2.2/md5-min.js')
+    var hash = md5(name);// undefined reference? make clear ! why??
+    var base = "http://upload.wikimedia.org/wikipedia/commons/";
+    if (!thumb) return base + hash[0] + "/" + hash[0] + hash[1] + "/" + name;
+    return base + "thumb/" + hash[0] + "/" + hash[0] + hash[1] + "/" + name + "/" + size + "px-" + name;
+}
+
+
 var imageAdded=false;
 var onerror_handled=0;
 function addImage(image,div){
@@ -153,12 +171,14 @@ function addImage(image,div){
 	image=image.replace(/ /,"_")
 	image=image.replace(/%20/,"_")
 	var url="https://commons.wikimedia.org/wiki/"
-	if(image.match(/http/))url="" // Already there
+	if(!image.match(/http/)){
+        image = url + image;
+    } // Already there
 	// image=image.replace(/.150px.*/,"");
 	// image=image.replace("/thumb/","/")
 	var link=document.createElement("a");
 	link.href=image.replace("/thumb/","/").replace(/.150px.*/,"").replace(/\.jpg.*/,".jpg")
-	link.target="_blank"
+	link.target="_blank";
 	img=document.createElement("img");
 	img.onerror=function() {
 		if(onerror_handled==0){console.log(this.src);this.src=this.src.replace(/.150px.*/,"");}
