@@ -553,8 +553,11 @@ Node *invert(Node *relation) {
 	if (relation == Less)return Greater;
 	if (relation == Much)return Little;
 	if (relation == Little)return Much;
-	if (has(relation, Antonym, Any, false, false, false, false))
-		return has(relation, Antonym);
+
+//	todo: Expensive (at least cache at start of statements)
+//	if (has(relation, Antonym, Any, false, false, false, false))
+//		return has(relation, Antonym);
+
 //	if(contains(relation->name," of "))return getThe(cut_to(relation->name, " of "));
 	else return Unknown;// null; //! or relation .name + "OF" ? weight => weight OF
 }

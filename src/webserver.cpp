@@ -504,6 +504,7 @@ int handle(cchar *q0, int conn) {
 
 //			sortStatements(
 			deque<Statement *> statements;// sort
+			newQuery();
 			while ((s = nextStatement(node, s)) and count++ < lookupLimit) {// resultLimit
 				if (!checkStatement(s)) {
 					p("!checkStatement(s)");

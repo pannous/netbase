@@ -1891,8 +1891,8 @@ void testTheSingletons() {
 // current
 void testBug() {
 //	parseProperty("Gehren.Adresse");
-	handle("/query/Gehren.Adresse");
-//	handle("/all/Gehren");
+//	handle("/query/Gehren.Adresse");
+	handle("/all/36");
 	exit(0);
 //	testCities();
 //	testTheSingletons();

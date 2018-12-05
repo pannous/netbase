@@ -502,7 +502,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 //    return wrap(get("included"));
 //  }
 
-	if (eq(args[0], ":handle")) {
+	if (eq(args[0], ":handle") or eq(args[0], ":h")) {
 		if (args.size() >= 2) {
 			string what = next_word(data);
 			handle(what.c_str());// like server (debug)
