@@ -2148,7 +2148,8 @@ void testImportant() {
 
 
 void testBug() {// current
-	handle("short/json/ee/hat+das+apple+iphone+x+gesichtserkennung");
+//	handle("short/json/ee/hat+das+apple+iphone+x+gesichtserkennung");
+	handle("json/short/query/Apple+iPhone+X.Ean");
 	exit(0);
 }
 
@@ -2158,7 +2159,7 @@ void testBrandNewStuff() {
 		return; // no tests when profiling
     #endif
 	p("Test Brand New Stuff");
-//	testBug();
+	testBug();
 //	import("wins.n3");
 //	import("DiAS.n3");
 	testWins();

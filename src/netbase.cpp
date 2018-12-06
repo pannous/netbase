@@ -129,6 +129,7 @@ Node *bad(char* reason) {
 }
 
 bool isAbstract(Node *object) {
+	if(!object)return false;
 	return object->kind == _abstract or object->kind == _singleton;// or object->kind ==0;// 0 WTF how?
 }
 
