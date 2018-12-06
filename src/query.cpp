@@ -2503,14 +2503,17 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 //			break;
 //		}
 		if (pred == key) {
+//			if(eq(s->Subject()->name,s->Object()->name))continue;
 			found = s;
 			break;
 		}
 		if (pred == normed) {
+//			if(eq(s->Subject()->name,s->Object()->name))continue;
 			found = s;
 			break;
 		}
 		if (allowInverse and (pred == invert(key) || pred == invert(normed))) {
+//			if(eq(s->Subject()->name,s->Object()->name))continue;
 			found = s;
 			break;
 		}

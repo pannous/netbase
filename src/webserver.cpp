@@ -489,7 +489,18 @@ int handle(cchar *q0, int conn) {
 //		}
 		good++;
 		if (use_json)if (good > 1)Writeline(conn, "},\n");
-		sprintf(buff, entity_format, fixName(node->name), node->id, node->statementCount, text);
+
+		cchar *name = fixName(node->name);
+
+		N kind=get(node->kind);
+		if(kind and checkNode(kind)){
+			if(eq(kind->name,"Gram")) name = concat(name, "g");// ...
+			if(eq(kind->name,"Fach")) name = concat(name, " Fach");// ... zoom
+			if(eq(kind->name,"megapixel")) name = concat(name, " Megapixel");// ...
+
+		}
+
+		sprintf(buff, entity_format, name, node->id, node->statementCount, text);
 		Writeline(conn, buff);
 //    if(verbosity != alle and !get_topic)
 //			loadView(node);

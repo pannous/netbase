@@ -1280,14 +1280,7 @@ void testWinsOK(){
 	check(findProperty(a(Apple_iPhone_X),the(farbe)))
 //	check(findProperty(the(Apple_iPhone_X),a(farbe)))
 //	check(findProperty(a(Apple_iPhone_X),a(farbe)))
-}
 
-void testWins() {
-	germanLabels=1;
-	autoDissectAbstracts=true;
-	if(!hasNode("Apple_iPhone_X"))
-		import("wins.n3");
-//	testWinsOK();
 
 	check(parseProperty("Apple_iPhone_X_256_GB_silber.ean"))
 	check(findProperty(the(Apple_iPhone_X_256_GB_silber),the(ean)))
@@ -1296,7 +1289,27 @@ void testWins() {
 //	check(findProperty(the(Apple_iPhone_X),the(Ean)))
 
 	newQuery();
-	check(parseProperty("Apple_iPhone_X.Ean"));
+//	check(parseProperty("Apple_iPhone_X.Ean"));
+
+}
+
+void testWins() {
+	germanLabels=1;
+	autoDissectAbstracts=true;
+	if(!hasNode("Apple_iPhone_X"))
+		import("wins.n3");
+//	testWinsOK();
+//	check(findProperty(a(Apple_iPhone_X),the(Ean)));
+	N breite=normEntity(getThe("breite"));
+	check(!eq(breite->name,"breite"))
+	check(parseProperty("iPhone+X+256+GB+silber.Abmessungen"));
+	check(parseProperty("iPhone+X+256+GB+silber.breite"));
+	check(parseProperty("iphone+x.breite"));
+	check(parseProperty("breite.iphone+x"));
+
+//	check(parseProperty("Apple_iPhone_X.farbe"));
+//	check(parseProperty("iPhone+X+256+GB+silber.farbe"));
+	check(parseProperty("Farbe.iPhone+X+256+GB+silber"));
 
 
 
@@ -1306,19 +1319,15 @@ void testWins() {
 //	Node *Ean = findProperty(ean, Label);
 	Node *Ean = findProperty(EAN, Label);
 	check(Ean);
-	p(Ean);
+		p(Ean);
 	check(ean==Ean)
 //	check(ean==the(EAN));
 
-
-
-
-
 //	Query aquery = parseQuery("iphone > 3 gb");
 //	NV results=query(aquery);
-//	check(results.size()>0);
+	//	check(results.size()>0);
 
-	testWinsOK();
+//	testWinsOK();
 }
 
 //#define sn showNode
@@ -2148,8 +2157,9 @@ void testImportant() {
 
 
 void testBug() {// current
+	ee("welche+sprachen+iphone+x");
 //	handle("short/json/ee/hat+das+apple+iphone+x+gesichtserkennung");
-	handle("json/short/query/Apple+iPhone+X.Ean");
+//	handle("json/short/query/Apple+iPhone+X.Ean");
 	exit(0);
 }
 
