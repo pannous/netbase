@@ -58,7 +58,7 @@ bool useSemantics=true;
 bool useSemantics = false;
 #endif
 
-bool doDissectAbstracts = useSemantics;// ?
+bool autoDissectAbstracts = useSemantics;// ?
 bool storeTypeExplicitly = false;
 bool exitOnFailure = true;
 bool autoIds = false;
@@ -1149,6 +1149,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(clazz, Instance, word, true);
 		//    addStatement(clazz, Member, word, true);
 		addStatement(subject, Instance, clazz, true);
+		addStatement(subject, Label, word, true);
 		//	  return;
 		str = word->name;
 		//    subject=word;
@@ -1574,7 +1575,7 @@ Node *getAbstract(const char *thing) {            // AND CREATE! use hasWord for
 	Ahash *ok = insertAbstractHash(wordHash(thing), abstract);
 	//	if (ok == 0) insertAbstractHash(wordHash(thing), abstract);		// debug
 	if (ok == 0){bad();return Error;}// full!
-	if (doDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, ".")))
+	if (autoDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, ".")))
 		dissectParent(abstract);// later! else MESS!?
 	//	else dissectAbstracts(am Ende)
 	//	collectAbstractInstances(abstract am Ende);

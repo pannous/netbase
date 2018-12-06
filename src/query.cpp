@@ -2,9 +2,7 @@
 #include "util.hpp"
 #include "query.hpp"
 #include "relations.hpp"
-#include "init.hpp"
 
-#include <cstdlib>
 #include <string.h>
 #include <algorithm> // std:reverse std:sort
 //#include <multimap> // to sort map
@@ -353,7 +351,7 @@ Statement *parseSentence(string sentence, bool learn/* = false*/) {
 	//	int limit = 5;
 	sentence = replace_all(sentence, " a ", " ");
 	sentence = replace_all(sentence, " the ", " ");
-	char **matches = (char **) malloc(MAX_ROWS* sizeof(char*));
+	char **matches = (char **) malloc(MAX_ROWS * sizeof(char *));
 	char *data = editable(sentence.data());
 	int count = splitStringC(data, matches, ' ');//matches.size();
 	//	vector<char*> matches = splitString(sentence, " ");
@@ -367,7 +365,7 @@ Statement *parseSentence(string sentence, bool learn/* = false*/) {
 	replaceChar(matches[2], '_', ' ');
 	Node *subject = getThe(matches[0]);
 	Node *predicate = getRelation(matches[1]);
-	if(!predicate)predicate = getThe(matches[1]);
+	if (!predicate)predicate = getThe(matches[1]);
 	Node *object;
 	if (predicate == Instance) {
 		if (atoi(matches[2]))object = get(atoi(matches[2]));
@@ -1093,8 +1091,6 @@ NodeVector &all_instances2(Node *type, int recurse, int max, bool includeClasses
 }
 
 
-
-
 bool stopAtGoodWiki(int object) {
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
 	if (object == 6256)return true;// Land	Q6256
@@ -1124,7 +1120,7 @@ bool stopAtGoodWiki(int object) {
 	if (object == 82799)return true;//Name
 //	if (object == 2425052)return true;//  Elektrogerät
 	if (object == 1183543)return true;// Gerät		2425052=>-1=>
-	if(object==618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
+	if (object == 618123)return true; // Geographisches Objekt GUT! << Gebirgszug, Gewässer, Meer ...
 
 	if (object == 1250599)return true;//City	Q
 	if (object == 34442)return true;//Straße
@@ -1153,11 +1149,12 @@ bool stopAtGoodWiki(N n) {
 
 #define DROP true
 #define KEEP false
+
 bool filterWikiType(int object) {
 	// PROBLEM : Give lower priority with competing correct superclass
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 //	if(object<0)return DROP;// wordnet!
-	if (object == 17444171	)return DROP; // 	Modell	Q<= Handymodell	Q19723444
+	if (object == 17444171)return DROP; // 	Modell	Q<= Handymodell	Q19723444
 	if (object == 13406463)return DROP; // Wikimedia-Liste	Q13406463
 	if (object == 4167836)return DROP; // Wikimedia-Kategorie
 	if (object == 160872476)return DROP; // Dataset
@@ -1814,7 +1811,8 @@ bool enqueue(Node *current, Node *d, NodeQueue *q, int *enqueued) {
 
 
 Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
-	int *enqueued = (int *) malloc(maxNodes * sizeof(int)); // > 1GB per thread this can only work if system allocs pages dynamically!
+	int *enqueued = (int *) malloc(
+			maxNodes * sizeof(int)); // > 1GB per thread this can only work if system allocs pages dynamically!
 	int *depths = (int *) malloc(maxNodes * sizeof(int)); //context->nodeCount * 2
 	if (enqueued == 0) throw "out of memory for findPath";
 	//	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
@@ -1839,8 +1837,8 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 	}
 	Node *current;
 //	NodeSet all;
-	int limit=10000;
-	while ((current = q.front()) && limit-->0) {
+	int limit = 10000;
+	while ((current = q.front()) && limit-- > 0) {
 		if (q.empty())break;
 		q.pop();
 		if (!checkNode(current, 0, true /*checkStatements*/, true /*checkNames*/, false /*report*/))continue;
@@ -1848,8 +1846,8 @@ Node *getFurthest(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)
 //		enqueued[current->id+propertySlots]=true;
 //		if(all.size()>resultLimit)break;
 		if (!current->name or current->name[0] < 'A')continue;//?
-		if (stopAtGoodWiki(current)){
-			furthest=current;
+		if (stopAtGoodWiki(current)) {
+			furthest = current;
 			break; // free() ..
 		}
 		if (filterWikiType(current->id))continue;
@@ -2106,8 +2104,8 @@ NodeVector parseProperties(char *data) {
 		all = findProperties(thing, property);
 	}
 	if (all.size() == 0) all = findProperties(thing, property, true);// INVERSE!!
-	if (all.size() == 0) all = findProperties(thing, concat(property," of"), true);// INVERSE!!
-	if (all.size() == 0) all = findProperties(thing, concat(property," von"), true);// INVERSE!!
+	if (all.size() == 0) all = findProperties(thing, concat(property, " of"), true);// INVERSE!!
+	if (all.size() == 0) all = findProperties(thing, concat(property, " von"), true);// INVERSE!!
 	if (all.size() == 0) all = wrap(findProperty(getAbstract(thing), property));// INVERSE!!
 	return all;
 }
@@ -2149,8 +2147,8 @@ NV filterCandidates(NV all) {
 		N entity = all[i];
 		if (isAbstract(entity)) {
 			NV more = allInstances(entity);
-			for(N n : more)
-				if(eq(n->name,entity->name))
+			for (N n : more)
+				if (eq(n->name, entity->name))
 					all.push_back(n);
 //			mergeVectors(&all, more);
 		}
@@ -2200,7 +2198,7 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(cchar *query0) {
-	autoIds= false;
+	autoIds = false;
 	char *query = modifyConstChar(query0);
 	query = replaceChar(query, '+', ' ');
 	query = replaceChar(query, '.', ' ');
@@ -2252,12 +2250,11 @@ NV findEntites(cchar *query0) {
 
 //			if (!NO_TOPICS)
 			if (atoi(start))
-				if(atoi(start)>1 && atoi(start) < 100000 && strlen(start)==5){
+				if (atoi(start) > 1 && atoi(start) < 100000 && strlen(start) == 5) {
 //					if (!getType(entity)==getThe("Postleitzahl"))
 //						if (getInferredClass(entity)==get(-10281))
 					/*PLZ*/
-				}
-				else entity = 0;// no numbers hack
+				} else entity = 0;// no numbers hack
 
 			if (entity) {
 				//				p(entity);
@@ -2386,11 +2383,11 @@ N getInferredClass(N n, int limit = 1000) {
 
 N getClass(N n, bool walkLabel) {
 	N p = 0;
-	int limit=100;
+	int limit = 100;
 	if (!p)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
 	if (!p)p = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
 	if (!p)p = getProperty(n, Type, limit); // Typ Flugzeug
-	if (p==n || p==Entity|| p&&eq(p->name,n->name))p=0;
+	if (p == n || p == Entity || p && eq(p->name, n->name))p = 0;
 	if (!p)p = getProperty(n, get(-10106), limit);// Tätigkeit
 	if (!p and walkLabel) {
 		if (!p)p = getProperty(n, Synonym, limit);
@@ -2422,9 +2419,9 @@ N getTopic(N node) {
 	N t = getProperty(node, "topic");
 //	if(!t)t=getProperty(node,-10106);
 //	if(!t)t=getProperty(node, "Kategorie");
-	if (t && checkNode(t) && !eq(t->name,node->name))return t;
+	if (t && checkNode(t) && !eq(t->name, node->name))return t;
 	t = getFurthest(node, topicFilter);
-	if (t && checkNode(t) && !eq(t->name,node->name))return t;
+	if (t && checkNode(t) && !eq(t->name, node->name))return t;
 	return 0;
 }
 
@@ -2487,54 +2484,71 @@ Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 				return s->Object();
 		}
 	}
-	N found=findProperty(n,getThe(m),allowInverse,limit);
-	if(!found){
-		N normed = normEntity(n);
-		if(normed!=n and checkNode(normed))
-			found = findProperty(normed, getThe(m), allowInverse, limit);
-	}
+	N found = findProperty(n, getThe(m), allowInverse, limit);
 	return found;
 }
 
 // see getProperty
 Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
-	if (limit<=0)limit=queryLimit;
+	if (limit < 0)return null;
+	if (limit == 0)limit = queryLimit;
 	Statement *s = 0;
-	Statement *found=0;
-	Node* normed = normEntity(key);
-	while ((s = nextStatement(node, s)) and limit-->0) {
+	Statement *found = 0;
+	Node *normed = normEntity(key);
+	while ((s = nextStatement(node, s)) and limit-- > 0) {
 		Node *pred = s->Predicate();
-		if (pred == key ){found=s; break;}
-		if (pred == normed) {found=s; break;}
-		if (allowInverse and (pred == invert(key) || pred == invert(normed))){found=s; break;}
+		if (pred == key) {
+			found = s;
+			break;
+		}
+		if (pred == normed) {
+			found = s;
+			break;
+		}
+		if (allowInverse and (pred == invert(key) || pred == invert(normed))) {
+			found = s;
+			break;
+		}
 //		if (isA4(s->Predicate(),m)) {found=s; break;};// too expensive!
 	}
-	if(found){
-		if(found->Subject()==node)
+	if (found) {
+		if (found->Subject() == node)
 			return found->Object();
 		return found->Subject();
 	}
-	if(isAbstract(node) and (key->id > 0 or key->id < -11000)){//} or getThe(node)==node) {
+	if (isAbstract(node) and (key->id > 0 or key->id < -11000)) {//} or getThe(node)==node) {
 		NV all = instanceFilter(node);
 		all.push_back(node);
 		for (int i = 0; i < all.size(); i++) {
 			Node *instance = all[i];
-			if(instance==node)continue;
+			if (instance == node)continue;
 			N ok = findProperty(instance, key, allowInverse, limit);
+			if (ok)return ok;
+		}
+	}
+
+	if (!found) {
+		N normed = normEntity(node);
+		if (normed != node and checkNode(normed)) {
+			N ok = findProperty(normed, key, allowInverse, limit);
 			if (ok)return ok;
 		}
 	}
 	return 0;
 }
 
+map<Node *, Node *> normed;
 
-Node *normEntity(Node* node) {
+Node *normEntity(Node *node) {
 	if (node->id < 0)
 		return node;
+	if (normed[node])
+		return normed[node];
 	if (eq(node->name, "Topic", true))
 		return node;
 	N found = findProperty(node, Label, true, 1000);// Label sure at beginning??
-	if(!found)found = findProperty(node, Synonym, true, 1000);// Label sure at beginning??
+	if (!found)found = findProperty(node, Synonym, true, 1000);// Label sure at beginning??
+	if (found)normed[node] = found;
 	return found;
 }
 
@@ -2547,7 +2561,7 @@ Node *getProperty(Node *node, Node *key, int limit) {
 			s = findStatement(node, normed, Any, 0, 0, 0, true, limit);
 	}
 	if (!checkStatement(s))
-			return findProperty(node, key, true, limit);
+		return findProperty(node, key, true, limit);
 	return s->Object() == node ? s->Subject() : s->Object();// inverse
 }
 
@@ -2629,8 +2643,8 @@ NodeVector findProperties(const char *n, const char *m, bool allowInverse) {
 Node *has(Node *n, Node *m) {
 	clearAlgorithmHash(true);
 	Node *ok = 0;
-	ok=	getProperty(n,m,resultLimit);
-	if(ok) return ok;
+	ok = getProperty(n, m, resultLimit);
+	if (ok) return ok;
 
 	int tmp = resultLimit;
 	resultLimit = 1;
@@ -2742,7 +2756,7 @@ bool isA4(Node *n, Node *match, int recurse, bool semantic, bool matchName) {
 	if (isAbstract(match))matchName = true;
 	if (matchName and eq(n->name, match->name, true)) return true;// only sometimes !!!
 	long hashy = n->id + match->id * billion;
-	bool useHash=useYetvisitedIsA;// careful: memory explosion
+	bool useHash = useYetvisitedIsA;// careful: memory explosion
 	if (useHash) {
 		if (yetvisitedIsA[hashy] == -1) return false;
 		if (yetvisitedIsA[hashy] == 1) return true;
@@ -2770,43 +2784,43 @@ bool isA4(Node *n, Node *match, int recurse, bool semantic, bool matchName) {
 	// todo:semantic true (level1)
 	bool quickCheckSynonym = recurse == maxRecursions; // todo !?!??!
 	if (quickCheckSynonym and findStatement(n, Synonym, match, false, false, true)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 
 	bool semantic2 = semantic and recurse > 5; // and ... ?;
 
 	if (semantic and findStatement(n, Synonym, match, recurse, semantic2, true)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	//  if(semantic and has(n,Plural,match,false,false,true))return true;
 	if (semantic and has(n, SuperClass, match, recurse, semantic2, false)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(n, Type, match, recurse, semantic2, false)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(match, Instance, n, recurse, semantic2, false)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(match, SubClass, n, recurse, semantic2, false)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and has(n, Label, match, false, false, false)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	}
 	if (semantic and recurse > 0 and findStatement(n, Plural, match, maxRecursions - 1, semantic2)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	} //(n,Plural,match,0,true,true))return true;
 	if (semantic and recurse > 0 and findStatement(match, Plural, n, maxRecursions - 1, semantic2)) {
-		if(useHash)yetvisitedIsA[hashy] = true;
+		if (useHash)yetvisitedIsA[hashy] = true;
 		return true;
 	} //(n,Plural,match,0,true,true))return true;
 
@@ -2819,7 +2833,7 @@ bool isA4(Node *n, Node *match, int recurse, bool semantic, bool matchName) {
 			visited[s] = 1;
 			if (s->Predicate() == Instance)
 				if (recurse and isA4(s->Object(), match, recurse, semantic)) {
-					if(useHash)yetvisitedIsA[hashy] = true;
+					if (useHash)yetvisitedIsA[hashy] = true;
 					return true;
 				}
 		}

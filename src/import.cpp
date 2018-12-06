@@ -2184,7 +2184,8 @@ bool importFacts(const char *file, const char *predicateName = "population") {
 
 		subject = getAbstract(subjectName); //
 		object = getAbstract(objectName);
-		dissectWord(subject);
+		if(autoDissectAbstracts)
+		 dissectWord(subject);
 		Statement *s = 0;
 		if (contains(objectName, subjectName, true))
 			s = addStatement(subject, Member, object, !CHECK_DUPLICATES); // todo: id
@@ -2239,7 +2240,7 @@ void importAbstracts() {
 	//	char* name=(char*) malloc(1000);
 	int linecount = 0;
 	int id;
-	doDissectAbstracts = false;
+	autoDissectAbstracts = false;
 	//	memset(abstracts, 0, abstractHashSize * 2);
 	FILE *infile = open_file("wordnet/abstracts.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -2596,7 +2597,7 @@ int listdir(const char *path) {
 void importAmazon() {
 	printf("importAmazon DISABLED!");
 	return;
-	doDissectAbstracts=0;
+	autoDissectAbstracts=0;
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
 
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow)
@@ -2842,8 +2843,8 @@ void importAllDE() {
 	p("importAll GERMAN");
 //	importLabels("labels.csv");
 //	importWordnet();
-	//	doDissectAbstracts=true;// already? why not
-	doDissectAbstracts = false;//MESSES TOO MUCH! why?
+	//	autoDissectAbstracts=true;// already? why not
+	autoDissectAbstracts = false;//MESSES TOO MUCH! why?
 	//	importDBPediaDE();
 	if (eq(get(1)->name,"Universum"))
 		p("importWikiData already done");
@@ -2881,8 +2882,8 @@ void importAll() {
 	p("importAll ENGLISH");
 //	importWordnet();
 	//	importCsv("adressen.txt");
-	//	doDissectAbstracts=true;// already? why not
-	doDissectAbstracts = false; // not live
+	//	autoDissectAbstracts=true;// already? why not
+	autoDissectAbstracts = false; // not live
 //	importGeoDB();
 	if(!eq(get(1)->name,"Universe"))
 	importWikiData();

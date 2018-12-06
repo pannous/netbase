@@ -21,7 +21,7 @@ extern bool debug; //=true;
 extern bool _trace;
 void trace();
 extern bool showAbstract;
-extern bool doDissectAbstracts;
+extern bool autoDissectAbstracts;
 extern int recursions;
 extern int badCount;
 extern int runs; // algorithm metrics

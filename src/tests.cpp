@@ -16,6 +16,7 @@
 
 #define a(word) getAbstract(#word)
 #define _(w) getThe(#w)
+//#define the(w) getThe(#w) netbase.hpp
 
 void checkWordnet() {
 	if (hasWord("effloresce")) return;
@@ -49,7 +50,7 @@ bool assert(bool test, string what) { // bool nix gut
 
 
 void testNameReuse() {
-	N ab = getAbstract("TEST");
+	N ab = a(TEST);
 	check(hasWord("TEST"));
 	N h = hasWord("TEST");
 	check(h == ab);
@@ -219,8 +220,8 @@ void testBasics() {
 	assert(c->statementCount == statementCount, "c.statementCount==1");
 
 	//#ifdef inlineName // todo!
-	//	Node* instance=getThe("instance");
-	//	Node* instance2=getThe("instance");
+	//	Node* instance=the(instance);
+	//	Node* instance2=the(instance);
 	//	assert(instance == instance2, "instance==instance2"); // it failes when strings are lost
 	//#endif
 	// todo: Important! keep Context string pool in other .cpp object files!!!!!
@@ -247,7 +248,7 @@ void testGeoDB() {
 	p(latitude->value.number);
 	check(latitude->value.number == 50.65);
 	NV all;
-	N city = getThe("city");
+	N city = the(city);
 	p(city);
 	NodeVector cities = all_instances(city, 2);
 	check(cities.size() > 10);
@@ -263,9 +264,9 @@ void testGeoDB() {
 	check(all.size() > 0);
 	N elevation = getProperty(all[0], "Elevation");
 	p(elevation);
-	N e141 = getThe("141");
+	N e141 = the(141);
 	p(e141->value.number);
-	check(getThe("141")->value.number == 141.)
+	check(the(141)->value.number == 141.)
 	check(elevation->value.number == 141.);
 	//	check(e141==elevation);// Stored in ABSTRACT!
 	all = query("city where latitude=50.65");// todo: filter backwards!! 50.65<-latitude<-[city?] !
@@ -310,18 +311,18 @@ void testDummyLogic() {
 	//  Node* cute = add("cute", adjective);
 	//  Node* people = add("people", noun);
 	//	}else{
-	Node *testDummy = getThe("testDummy");
-	Node *size = getThe("size");
-	Node *funny = getThe("funny");
-	Node *eleven = getThe("11");
+	Node *testDummy = the(testDummy);
+	Node *size = the(size);
+	Node *funny = the(funny);
+	Node *eleven = the(11);
 	Node *testDummy2 = add("testDummy");
-	Node *beth = getThe("Beth");
-	Node *CEO = getThe("CEO");
-	Node *manager = getThe("manager");
-	Node *karsten = getThe("karsten");
+	Node *beth = the(Beth);
+	Node *CEO = the(CEO);
+	Node *manager = the(manager);
+	Node *karsten = the(karsten);
 	Node *is = Type; // Kind;// add("is",verb);
-	Node *cute = getThe("cute");
-	Node *people = getThe("people");
+	Node *cute = the(cute);
+	Node *people = the(people);
 	//	}
 
 	learn("testDummy.funny");
@@ -390,10 +391,10 @@ void testDummyLogic() {
 	clearAlgorithmHash();
 	NodeVector testDummys = allInstances(testDummy);
 	check(contains(testDummys, testDummy));
-	//	check(getThe("testDummy")==testDummy);
-	//	testDummys=all_instances(getThe("testDummy"));
+	//	check(the(testDummy)==testDummy);
+	//	testDummys=all_instances(the(testDummy));
 	//	check(contains(testDummys,testDummy));
-	testDummys = allInstances(getAbstract("testDummy"));
+	testDummys = allInstances(a(testDummy));
 	check(contains(testDummys, testDummy));
 	NodeVector funnys = filter(testDummys, "funny");
 	check(contains(testDummys, testDummy));
@@ -546,7 +547,7 @@ void testWordnet() {
 //	check(isA(the(duck), the(bird)));// yeah: the! main concept
 //	clearAlgorithmHash();
 	//todo:
-	assert(isA(getAbstract("duck"), getAbstract("bird")), "duck isA bird"); // yuhu! 2010-02-07
+	assert(isA(a(duck), a(bird)), "duck isA bird"); // yuhu! 2010-02-07
 	clearAlgorithmHash();
 //	return;
 	//	assert(has("duck", "beak"), "has(duck,beak)");// 241531	duck	flesh of a duck  confusion?
@@ -560,7 +561,7 @@ void testWordnet() {
 
 	addStatement(the(feather), Plural, the(feathers));
 	assert(has(get("duck"), get("feathers")), "has(duck,feathers)");
-	//  assert(contains(all_instances(getAbstract("bird")), getThe("sea_duck")), "bird has instance duck");
+	//  assert(contains(all_instances(a(bird)), the(sea_duck)), "bird has instance duck");
 
 	// int i=0;
 	// for(i=0;i<1000;i++)show(&contexts[100].nodes[i]);
@@ -583,7 +584,7 @@ void testStringLogic() {
 	Node *Schlacht_von_Kleverhamm = getThe(editable("Schlacht_von_Kleverhamm"));
 	//  die(Schlacht_von_Kleverhamm);
 	eine(Schlacht);
-	Node *Kleverhamm = getThe("Kleverhamm");
+	Node *Kleverhamm = the(Kleverhamm);
 	dissectWord(Schlacht_von_Kleverhamm);
 	show(Schlacht_von_Kleverhamm);
 	show(Kleverhamm);
@@ -592,9 +593,9 @@ void testStringLogic() {
 }
 
 void testInstancesAtEnd() {
-	Node *t = getThe("testInstancesAtEnd1");
-	Node *p = getThe("testInstancesAtEndP");
-	Node *o = getThe("testInstancesAtEndO");
+	Node *t = the(testInstancesAtEnd1);
+	Node *p = the(testInstancesAtEndP);
+	Node *o = the(testInstancesAtEndO);
 	addStatement(t, Type, o, !CHECK_DUPLICATES);
 	addStatement(t, Instance, o, !CHECK_DUPLICATES);
 	//	S s=addStatement(t, p, o, true);
@@ -609,9 +610,9 @@ void testInstancesAtEnd() {
 }
 
 void testInsertForceStart() {
-	Node *t = getThe("testInsertForceStart5");
-	Node *p = getThe("testInsertForceStartP");
-	Node *o = getThe("testInsertForceStart0");
+	Node *t = the(testInsertForceStart5);
+	Node *p = the(testInsertForceStartP);
+	Node *o = the(testInsertForceStart0);
 	addStatement(t, Instance, o, !CHECK_DUPLICATES);
 	addStatement(t, Part, o, !CHECK_DUPLICATES);
 	addStatement(t, Type, o, !CHECK_DUPLICATES);
@@ -640,13 +641,13 @@ void testStringLogic2() {
 	Node *Schlacht_bei_Guinegate2 = getThe(editable("Guinegate_(14791),_Schlacht_bei")); // intellij display bug!
 	p(Schlacht_bei_Guinegate2);
 	//  deleteNode(Schlacht_bei_Guinegate);
-	//  Schlacht_bei_Guinegate=getThe("Guinegate_(1479),_Schlacht_bei");
+	//  Schlacht_bei_Guinegate=the(Guinegate_(1479),_Schlacht_bei);
 	Node *Schlacht_bei_Guinegate = getThe(editable("Schlacht_bei_Guinegate_(14791)"));
 	//	deleteNode(Schlacht_bei_Guinegate);
-	//	Schlacht_bei_Guinegate=getThe("Schlacht_bei_Guinegate_(1479)");
+	//	Schlacht_bei_Guinegate=the(Schlacht_bei_Guinegate_(1479));
 	dissectWord(Schlacht_bei_Guinegate);
 	check(isA(Schlacht_bei_Guinegate, Schlacht));
-	check(eq(getThe("near")->name, "near"));
+	check(eq(the(near)->name, "near"));
 	show(Schlacht_bei_Guinegate);
 	check(findStatement(Schlacht_bei_Guinegate, a(near), a(Guinegate)));
 	NV all = instanceFilter(a(Guinegate));
@@ -656,7 +657,7 @@ void testStringLogic2() {
 	check(has(Schlacht_bei_Guinegate, _(near), the(Guinegate)));
 	// TODO !!!
 	//  check(has(a(Schlacht_bei_Guinegate), _(near), a(Guinegate)));
-	Node *Armagnac_Weinbrand = getThe("Armagnac_(Weinbrand)");
+	Node *Armagnac_Weinbrand = the(Armagnac_(Weinbrand));
 	dissectWord(Armagnac_Weinbrand);
 	show(Armagnac_Weinbrand);
 	check(isA(word(Armagnac), word(Weinbrand)));
@@ -696,7 +697,7 @@ void testImportContacts() {
 			      Neumann));
 	check(the(Alexandra_Neumann) == the(Alexandra
 			      Neumann));
-	N plz = getAbstract("Postleitzahl (privat)");
+	N plz = a(Postleitzahl (privat));
 	dissectWord(plz);
 	check(isA(plz, a(Postleitzahl)));
 
@@ -776,8 +777,8 @@ void testImportExport() {
 	check(isA(a(Ahney), a(name)));
 	clearAlgorithmHash();
 
-	show(getAbstract("Zilla")); //51566;
-	show(getThe("Zilla"));
+	show(a(Zilla)); //51566;
+	show(the(Zilla));
 	check(isA(a(Zilla), _(female
 			      firstname)));
 	clearAlgorithmHash();
@@ -811,8 +812,8 @@ void testImportExport() {
 }
 
 void testImages() {
-	getThe("alabama");
-	getThe("Alabama");
+	the(alabama);
+	the(Alabama);
 	if (getImage("alabama") == "" or getImage("Alabama") == "") {
 //		clearMemory();
 //		importAll();
@@ -821,7 +822,7 @@ void testImages() {
 	}
 	p(getImage("Alabama"));
 	p(getImage("alabama"));
-	show(getThe("alabama"));
+	show(the(alabama));
 	//  check(getImage("wiki_image")=="");//todo!
 	check(getImage("alabama") != "");
 	check(getImage("Alabama") != "");
@@ -851,7 +852,7 @@ void testInstanceLogic() {
 //	deleteNode(test3);// STILL EVIL!
 //	deleteNode(test4);
 	//	exit(0);//test make!!
-	//  Node* aBaum=getAbstract("Baum");
+	//  Node* aBaum=a(Baum);
 	//	deleteWord("tester",true);
 	ein(tester);
 	show(tester);
@@ -1021,8 +1022,8 @@ void testValueQuery() {
 	Node *m15 = value("", 15, "m");
 	Node *m143 = value("14.320", 14.32, "meter");
 	show(Booot);
-	check(isA4(m14, getThe("14 m")));
-	//  check(isA4(m14, getThe("14 meter")));
+	check(isA4(m14, the(14 m)));
+	//  check(isA4(m14, the(14 meter)));
 	addStatement(Booot, a(length), m143);
 	check(findStatement(Booot, a(length), m143));
 	Query q;
@@ -1246,16 +1247,16 @@ void testQuery() {
 void testWinsOK(){
 	const char *iphoneX = "Apple_iPhone_X_256_GB_silber";
 	N iPhoneX=getThe(iphoneX);
-	check(getThe("iphone_se")->statementCount>10);
-	check(getAbstract("iphone+se")==getAbstract("iphone_se"))
-	getAbstract("iphone+se")->value.node = 0;// reset 'The' WTF bug<<<<
-	check(getThe("iphone+se")->statementCount>10);
+	check(the(iphone_se)->statementCount>10);
+	check(a(iphone+se)==a(iphone_se))
+	a(iphone+se)->value.node = 0;// reset 'The' WTF bug<<<<
+	check(the(iphone+se)->statementCount>10);
 	check(parseProperty("iphone+se.vorgänger"));
 
 	check(parseProperty("Apple_iPhone_X_256_GB_silber.farbe"));
 
 	N aClass = getClass(getThe("tx_tcwins_keyfacts_rel-uid-10941"));
-	N aClass1 = getClass(getThe("DSL-RAM"));
+	N aClass1 = getClass(the(DSL-RAM));
 	check(aClass==aClass1);
 	check(aClass!=Abstract);
 	check(aClass==Attribute);
@@ -1270,18 +1271,42 @@ void testWinsOK(){
 
 	Node *zoom = findProperty(iPhoneX, "zoom");
 	check(zoom and zoom->value.number==6);
+
+	check(parseProperty("iPhone_X.farbe"));
 }
 
 void testWins() {
 	germanLabels=1;
+	autoDissectAbstracts=true;
+	check(parseProperty("Apple_iPhone_X.farbe"));
+	check(findProperty(the(Apple_iPhone_X),the(farbe)))
+	check(findProperty(a(Apple_iPhone_X),the(farbe)))
+//	check(findProperty(the(Apple_iPhone_X),a(farbe)))
+//	check(findProperty(a(Apple_iPhone_X),a(farbe)))
+	check(parseProperty("Apple_iPhone_X.Ean"));
+
+
+
+	Node *ean = a(EAN_(European_Article_Number));
+	dissectWord(ean);
+	Node *EAN = the(EAN);
+//	Node *Ean = findProperty(ean, Label);
+	Node *Ean = findProperty(EAN, Label);
+	check(Ean);
+	p(Ean);
+	check(ean==Ean)
+//	check(ean==the(EAN));
+
 	const char *iphoneX = "Apple_iPhone_X_256_GB_silber";
+
 	N iPhoneX=getThe(iphoneX);
+	dissectWord(getAbstract(iphoneX), true);
+	
 	if(!hasNode(iphoneX))
 		import("wins.n3");
 //	testWinsOK();
 
 
-	check(parseProperty("iPhone_X.farbe"));
 
 
 
@@ -1307,9 +1332,9 @@ void testReification() {
 
 void testDelete() {
 	Statement *s;
-	Node *t = getThe("testDelete");
-	Node *p = getThe("testDelete1");
-	Node *o = getThe("testDelete2");
+	Node *t = the(testDelete);
+	Node *p = the(testDelete1);
+	Node *o = the(testDelete2);
 	addStatement(t, Instance, o, !CHECK_DUPLICATES);
 	s = addStatement(t, Part, p, !CHECK_DUPLICATES);
 	addStatement(t, Type, o, !CHECK_DUPLICATES);
@@ -1444,13 +1469,13 @@ void testOpposite() {
 	//	check(!isA(,a(derived)));
 
 	p(Antonym);
-	check(getThe("antonym") == Antonym);
-	Node *anto = getThe("Antonym");
+	check(the(antonym) == Antonym);
+	Node *anto = the(Antonym);
 	check(anto == Antonym);
 	checkWordnet();
-	Node *opposite0 = getAbstract("opposite");
+	Node *opposite0 = a(opposite);
 	Node *the_opposite0 = getThe(opposite0);
-	Node *the_opposite0a = getThe("opposite");
+	Node *the_opposite0a = the(opposite);
 	check(the_opposite0a == the_opposite0);
 	Node *the_opposite0b = getThe(the_opposite0);
 	p(the_opposite0);
@@ -1459,8 +1484,8 @@ void testOpposite() {
 	Node *the_opposite0c = getThe(opposite0);
 	check(the_opposite0c == the_opposite0);
 	//	checkWordnet();// messes with abstract !!!
-	Node *opposite = getAbstract("opposite");
-	Node *the_opposite = getThe("opposite");
+	Node *opposite = a(opposite);
+	Node *the_opposite = the(opposite);
 	Node *the_oppositea = getThe(opposite);
 	Node *the_oppositeb = getThe(the_opposite);
 	p(opposite);
@@ -1476,8 +1501,8 @@ void testOpposite() {
 
 	Node *property = the_opposite;
 	Node *propertyA = opposite;
-	Node *node = getThe("good");
-	Node *nodeA = getAbstract("good");
+	Node *node = the(good);
+	Node *nodeA = a(good);
 	clearAlgorithmHash();
 	findStatement(node, property, Any, 3, true, 0, true);
 	has(node, property);
@@ -1491,11 +1516,11 @@ void testOpposite() {
 	//		s=addStatement(opposite,Synonym,Antonym,false);
 	//		s=addStatement(the_opposite,Synonym,Antonym,false);
 
-	//	p(getThe("antonym"));
-	//	check(getThe("antonym")==Antonym); no, wordnet now!!
+	//	p(the(antonym));
+	//	check(the(antonym)==Antonym); no, wordnet now!!
 
-	//	check(getAbstract("Synonym")==Synonym); NAH
-	//	check(getAbstract("synonym")==Synonym); NAH
+	//	check(a(Synonym)==Synonym); NAH
+	//	check(a(synonym)==Synonym); NAH
 
 	clearAlgorithmHash(true);
 	p(opposite);
@@ -1558,7 +1583,7 @@ void testYago() {
 void testFreebase() {
 	N m = getThe("Madonna", More);
 	check(m->statementCount > 100);
-	m = getThe(getAbstract("Madonna"), More);
+	m = getThe(a(Madonna), More);
 	check(m->statementCount > 100);
 	NV all = findProperties("Carlos Barbot", "type");
 	check(all.size() > 0);
@@ -1639,7 +1664,7 @@ void old_to_remove() {
 	//  import("linkedin_connections_export_microsoft_outlook.csv");
 	//  tests();
 	//  fixNames();
-	//  check(getAbstract("Tom-Hartley")==getAbstract("Tom Hartley"));
+	//  check(a(Tom-Hartley)==a(Tom Hartley));
 	//  importAll();
 	//  import("yago","yagoLabels.tsv");
 	//  showNodes(parse("all 42650559"));
@@ -1660,12 +1685,12 @@ void old_to_remove() {
 	//  importFreebase();// needs /Volumes/Data/BIG/ !
 	//  	import("yago");
 	//  check(hasWord("Tom_Hartley"));
-	//  N a=  getAbstract("Tom_Hartley");
-	//  N b=  getThe("Tom_Hartley");
-	//  N a1=  getAbstract("Tom Hartley");
-	//  N b1=  getThe("Tom Hartley");
-	//  N a2=  getAbstract("Tom_Hartley");
-	//  N b2=  getThe("Tom_Hartley");
+	//  N a=  a(Tom_Hartley);
+	//  N b=  the(Tom_Hartley);
+	//  N a1=  a(Tom Hartley);
+	//  N b1=  the(Tom Hartley);
+	//  N a2=  a(Tom_Hartley);
+	//  N b2=  the(Tom_Hartley);
 	//  check(a==a2);
 	//    check(b==b2);
 	//  importAll();
@@ -1690,8 +1715,8 @@ void testInclude() {
 	//  parse("learn 5463914 type 2000586");
 	//  parse("include hamburg Bundesland");
 
-	//  addStatement(getThe("hamburg"),Type,getThe("city"));
-	//  addStatement(a("hamburg"),Type,getThe("city"));
+	//  addStatement(the(hamburg),Type,the(city));
+	//  addStatement(a("hamburg"),Type,the(city));
 	//  parse("city include Erhebung");
 	//  parse("city include Erhebung");
 	parse("5136347 include Erhebung", false, false);
@@ -1722,10 +1747,10 @@ bool assertResult(char *query, char *value0) {
 }
 
 void flattenGeographischeKoordinaten() {
-	N n = getThe("Geographische Koordinaten");
+	N n = the(Geographische Koordinaten);
 	if (isAbstract(n))n = get(-10625);
-	N b = getThe("Breitengrad");
-	N l = getThe("Längengrad");
+	N b = the(Breitengrad);
+	N l = the(Längengrad);
 	Statement *s = 0;
 	while ((s = nextStatement(n->id, s))) {
 		if (s->predicate == n->id) {
@@ -1903,7 +1928,7 @@ void testWikidata() {
 }
 
 void testLabelInstances() {
-	NV all = allInstances(getAbstract("amazon"));
+	NV all = allInstances(a(amazon));
 	check(contains(all, get(3884)));
 }
 
@@ -1911,8 +1936,8 @@ void testLabelInstances() {
 void testTheSingletons();
 
 void testTheSingletons() {
-	N a = getThe("bla_typ");
-	N a2 = getThe("bla_typ");
+	N a = the(bla_typ);
+	N a2 = the(bla_typ);
 	assertEquals(a, a2);
 	N b = getThe("bla2", a);
 	get("bla2");
@@ -1982,7 +2007,7 @@ void testSynonyms(){
 }
 
 void testMarkedNodes() {
-	Node n = *getThe("TEST123");
+	Node n = *the(TEST123);
 	addStatement4(0, n.id, _see, 1234);
 	Node marked = *get(1234);
 	check(marked.kind != 0)
@@ -2129,7 +2154,7 @@ void testBrandNewStuff() {
 		return; // no tests when profiling
     #endif
 	p("Test Brand New Stuff");
-	testBug();
+//	testBug();
 //	import("wins.n3");
 //	import("DiAS.n3");
 	testWins();
