@@ -1099,7 +1099,9 @@ bool stopAtGoodWiki(int object) {
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
 	if (object == 6256)return true;// Land	Q6256
 	if (object == 571)return true;//Buch
+	if (object == 22645)return true;//  Smartphone
 	if (object == 2424752)return true;//	Produkt
+	if (object == 167270)return true;//	Marke
 	if (object == 7275)return true;//Staat
 	if (object == 43229)return true;//Organisation	Q43229
 //	if(object==15324)return true;//Gewässer	Q15324
@@ -2096,7 +2098,7 @@ NodeVector parseProperties(char *data) {
 		free(splat);
 	}
 
-	pf("does %s have %s?\n", thing, property);
+	pf("Does %s have %s?\n", thing, property);
 	NodeVector all = findProperties(thing, property, false);
 	if (all.size() == 0 and property[strlen(property) - 1] == 's') {
 		property[strlen(property) -
@@ -2382,7 +2384,7 @@ N getInferredClass(N n, int limit = 1000) {
 	return 0;
 }
 
-N getClass(N n) {
+N getClass(N n, bool walkLabel) {
 	N p = 0;
 	int limit=100;
 	if (!p)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
@@ -2390,11 +2392,11 @@ N getClass(N n) {
 	if (!p)p = getProperty(n, Type, limit); // Typ Flugzeug
 	if (p==n || p==Entity|| p&&eq(p->name,n->name))p=0;
 	if (!p)p = getProperty(n, get(-10106), limit);// Tätigkeit
-	if (!p) {
+	if (!p and walkLabel) {
 		if (!p)p = getProperty(n, Synonym, limit);
 		if (!p)p = getProperty(n, Label, limit);
 		if (!p)p = getInferredClass(n, limit);
-//		else getClass(p);// now Label dager loop
+		else return getClass(p, false);// now Label danger loop
 	}
 	if (!p and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
@@ -2485,7 +2487,13 @@ Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 				return s->Object();
 		}
 	}
-	return findProperty(n,getThe(m),allowInverse,limit);
+	N found=findProperty(n,getThe(m),allowInverse,limit);
+	if(!found){
+		N normed = normEntity(n);
+		if(normed!=n)
+			found = findProperty(normed, getThe(m), allowInverse, limit);
+	}
+	return found;
 }
 
 // see getProperty

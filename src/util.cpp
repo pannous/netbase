@@ -670,6 +670,9 @@ short normChar(char c) {// 0..36 damn ;)
 		case '_':
 			return 0;
 			break;
+		case '+':
+			return 0;
+			break;
 		case ' ':
 			return 0;
 			break;

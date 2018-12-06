@@ -492,9 +492,14 @@ void addSynonyms(){
 	addLabel(Greater, "taller");
 	addLabel(Greater, "higher");
 	addLabel(Greater, "bigger");
+
 	addLabel(Less, "little");// vs much!
 	addLabel(Less, "smaller");
 	addLabel(Less, "inferior");
+
+	addLabel(Synonym, "redirect");// old ids:
+	//  https://www.wikidata.org/w/index.php?title=Q9931158&redirect=no
+	//	$18958860 :	(null)		Synonym		Tschechien		9931158⇛-32⇛7097189
 }
 
 
@@ -577,6 +582,10 @@ Node *getRelation(const char *thing) {
 	if (eq(thing, "prefLabel"))
 		return 0;// ignore!
 
+
+
+	if (eq(thing, "attribute")) return Property;
+	if (eq(thing, "Property")) return Property;
 
 	if (eq(thing, "Image"))return get(-10018);
 	if (eq(thing, "Bild"))return get(-10018);

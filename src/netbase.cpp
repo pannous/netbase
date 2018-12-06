@@ -119,7 +119,10 @@ void flush() {
 //void bad(string reason) {
 Node *bad(char* reason) {
 	if(debug and reason)
-		printf("%s",reason);
+		printf("%s\n",reason);
+	else
+		printf(".");// no reason
+
 //	if(reason!=0)reasons[reason]=(reasons[reason]||0)+1;
 	badCount++;
 	return Error;

@@ -1243,20 +1243,53 @@ void testQuery() {
 	//	testQueryMore();
 }
 
-void testWins() {
-	germanLabels=1;
-//	findProperty()
-
+void testWinsOK(){
 	const char *iphoneX = "Apple_iPhone_X_256_GB_silber";
 	N iPhoneX=getThe(iphoneX);
+	check(getThe("iphone_se")->statementCount>10);
+	check(getAbstract("iphone+se")==getAbstract("iphone_se"))
+	getAbstract("iphone+se")->value.node = 0;// reset 'The' WTF bug<<<<
+	check(getThe("iphone+se")->statementCount>10);
+	check(parseProperty("iphone+se.vorgänger"));
+
+	check(parseProperty("Apple_iPhone_X_256_GB_silber.farbe"));
+
+	N aClass = getClass(getThe("tx_tcwins_keyfacts_rel-uid-10941"));
+	N aClass1 = getClass(getThe("DSL-RAM"));
+	check(aClass==aClass1);
+	check(aClass!=Abstract);
+	check(aClass==Attribute);
+	parse(":class DSL-RAM");
+
+	N found=parseProperty("vorgänger.iphone+se");
+	check(parseProperty("vorgänger.iphone+se"));
+
+//	handle("/short/query/iphone+se.vorgänger");
+//	handle("/short/query/vorgänger.iphone+se");
+//	findProperty("vorgänger.iphone+se")
+
 	Node *zoom = findProperty(iPhoneX, "zoom");
 	check(zoom and zoom->value.number==6);
-	
+}
+
+void testWins() {
+	germanLabels=1;
+	const char *iphoneX = "Apple_iPhone_X_256_GB_silber";
+	N iPhoneX=getThe(iphoneX);
 	if(!hasNode(iphoneX))
 		import("wins.n3");
-	Query aquery = parseQuery("iphone > 3 gb");
-	NV results=query(aquery);
-	check(results.size()>0);
+//	testWinsOK();
+
+
+	check(parseProperty("iPhone_X.farbe"));
+
+
+
+//	Query aquery = parseQuery("iphone > 3 gb");
+//	NV results=query(aquery);
+//	check(results.size()>0);
+
+	testWinsOK();
 }
 
 //#define sn showNode
@@ -2098,8 +2131,11 @@ void testBrandNewStuff() {
 		return; // no tests when profiling
     #endif
 	p("Test Brand New Stuff");
-	testBug();
+//	import("wins.n3");
+//	import("DiAS.n3");
 	testWins();
+	exit(0);
+	testBug();
 	testSynonyms();
 	testServer();
 	testAll();

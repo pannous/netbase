@@ -2074,7 +2074,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
 		if (subject == object) {
-			bad();// no cyclic statements!
+			bad("no cyclic statements");
 			continue;
 		}
 		if (predicate == Label || predicate == Description)
@@ -2087,11 +2087,11 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 			continue;
 		}
 		if (!subject or !predicate or !object) {
-			bad();
+			bad("!subject or !predicate or !object");
 			continue;
 		}
 		if (!subject->id or !predicate->id or !object->id) {
-			bad();
+			bad("!subject->id or !predicate->id or !object->id");
 			continue;
 		}
 //		if (!subject->name or !object->name ){ ignored++;continue;}// only german!

@@ -112,6 +112,7 @@ NodeSet getPredicates(Node *n) {
 }
 
 Node *parseProperty(const char *data, bool deepSearch) {
+	newQuery();
 	char *thing = (char *) malloc(1000);
 	char *property = (char *) malloc(1000);
 	if (contains(data, " of ")) sscanf(data, "%s of %s", property, thing);
@@ -130,6 +131,7 @@ Node *parseProperty(const char *data, bool deepSearch) {
 //	if(eq(property,"predicates"))return wrap(getPredicates(getThe(thing));
 	pf("does %s have a %s?\n", thing, property);
 	Node *found = getProperty(getThe(thing), property);
+	if (found == 0)found = getProperty(getThe(property),thing);// REVERSE (IF WEB??)
 	if (found == 0 and deepSearch) found = has(getThe(thing), getAbstract(property));
 	if (found == 0 and deepSearch) found = has(getAbstract(thing), getAbstract(property));
 //	free(property);
@@ -598,7 +600,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (startsWith(data, ":class")) {
 		data = next_word(data);
 		autoIds = true;
-		return wrap(getClass(get(data)));
+		return wrap(getClass(getThe(data)));
 	}
 
 	if (startsWith(data, ":abstract") or startsWith(data, ":ab") or startsWith(data, ":a")) {
