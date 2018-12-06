@@ -1921,17 +1921,6 @@ void testTheSingletons() {
 }
 
 
-// current
-void testBug() {
-//	parseProperty("213.bild");
-//	handle("/query/213.bild");
-	handle("/all/213");
-	exit(0);
-//	testCities();
-//	testTheSingletons();
-}
-
-
 void collectTopics() {
 	debug = false;
 	for (int i = 1; i < (int) nodeCount(); i++) {
@@ -2126,16 +2115,25 @@ void testImportant() {
 	testAll();// todo!
 }
 
+
+
+
+void testBug() {// current
+	handle("short/json/ee/hat+das+apple+iphone+x+gesichtserkennung");
+	exit(0);
+}
+
+
 void testBrandNewStuff() {
 	#ifdef __clang_analyzer__
 		return; // no tests when profiling
     #endif
 	p("Test Brand New Stuff");
+	testBug();
 //	import("wins.n3");
 //	import("DiAS.n3");
 	testWins();
 	exit(0);
-	testBug();
 	testSynonyms();
 	testServer();
 	testAll();

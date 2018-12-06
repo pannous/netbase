@@ -2490,7 +2490,7 @@ Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 	N found=findProperty(n,getThe(m),allowInverse,limit);
 	if(!found){
 		N normed = normEntity(n);
-		if(normed!=n)
+		if(normed!=n and checkNode(normed))
 			found = findProperty(normed, getThe(m), allowInverse, limit);
 	}
 	return found;
