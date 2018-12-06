@@ -1273,16 +1273,29 @@ void testWinsOK(){
 	check(zoom and zoom->value.number==6);
 
 	check(parseProperty("iPhone_X.farbe"));
-}
 
-void testWins() {
-	germanLabels=1;
-	autoDissectAbstracts=true;
+
 	check(parseProperty("Apple_iPhone_X.farbe"));
 	check(findProperty(the(Apple_iPhone_X),the(farbe)))
 	check(findProperty(a(Apple_iPhone_X),the(farbe)))
 //	check(findProperty(the(Apple_iPhone_X),a(farbe)))
 //	check(findProperty(a(Apple_iPhone_X),a(farbe)))
+}
+
+void testWins() {
+	germanLabels=1;
+	autoDissectAbstracts=true;
+	if(!hasNode("Apple_iPhone_X"))
+		import("wins.n3");
+//	testWinsOK();
+
+	check(parseProperty("Apple_iPhone_X_256_GB_silber.ean"))
+	check(findProperty(the(Apple_iPhone_X_256_GB_silber),the(ean)))
+	check(findProperty(a(Apple_iPhone_X_256_GB_silber),the(Ean)))
+	check(findProperty(a(Apple_iPhone_X),the(Ean)))
+//	check(findProperty(the(Apple_iPhone_X),the(Ean)))
+
+	newQuery();
 	check(parseProperty("Apple_iPhone_X.Ean"));
 
 
@@ -1296,15 +1309,6 @@ void testWins() {
 	p(Ean);
 	check(ean==Ean)
 //	check(ean==the(EAN));
-
-	const char *iphoneX = "Apple_iPhone_X_256_GB_silber";
-
-	N iPhoneX=getThe(iphoneX);
-	dissectWord(getAbstract(iphoneX), true);
-	
-	if(!hasNode(iphoneX))
-		import("wins.n3");
-//	testWinsOK();
 
 
 

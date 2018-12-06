@@ -2489,7 +2489,7 @@ Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 }
 
 // see getProperty
-Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
+Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool deep) {
 	if (limit < 0)return null;
 	if (limit == 0)limit = queryLimit;
 	Statement *s = 0;
@@ -2497,6 +2497,10 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
 	Node *normed = normEntity(key);
 	while ((s = nextStatement(node, s)) and limit-- > 0) {
 		Node *pred = s->Predicate();
+//		if (deep and contains(pred->name,key->name)) {// stupid and expensive
+//			found = s;
+//			break;
+//		}
 		if (pred == key) {
 			found = s;
 			break;
@@ -2516,21 +2520,27 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit) {
 			return found->Object();
 		return found->Subject();
 	}
-	if (isAbstract(node) and (key->id > 0 or key->id < -11000)) {//} or getThe(node)==node) {
+	if (isAbstract(node) and deep and (key->id > 0 or key->id < -10000)) {//} or getThe(node)==node) {
 		NV all = instanceFilter(node);
 		all.push_back(node);
 		for (int i = 0; i < all.size(); i++) {
 			Node *instance = all[i];
 			if (instance == node)continue;
-			N ok = findProperty(instance, key, allowInverse, limit);
+			if(isAbstract(instance))
+				continue;// how?
+			N ok = findProperty(instance, key, allowInverse, limit, deep);
 			if (ok)return ok;
 		}
 	}
 
-	if (!found) {
-		N normed = normEntity(node);
-		if (normed != node and checkNode(normed)) {
-			N ok = findProperty(normed, key, allowInverse, limit);
+	if (!found and deep) {
+		N normee = normEntity(node);
+		if (normee != node and checkNode(normed)) {
+			N ok = findProperty(normee, key, allowInverse, limit, false);
+			if(getThe(normed)!=normed){
+			if(!ok)ok = findProperty(node, getThe(normed), allowInverse, limit, false);
+			if(!ok)ok = findProperty(normee, getThe(normed), allowInverse, limit, false);
+			}
 			if (ok)return ok;
 		}
 	}
@@ -2546,8 +2556,8 @@ Node *normEntity(Node *node) {
 		return normed[node];
 	if (eq(node->name, "Topic", true))
 		return node;
-	N found = findProperty(node, Label, true, 1000);// Label sure at beginning??
-	if (!found)found = findProperty(node, Synonym, true, 1000);// Label sure at beginning??
+	N found = findProperty(node, Label, true, 1000, false);// Label sure at beginning??
+	if (!found)found = findProperty(node, Synonym, true, 1000, false);// Label sure at beginning??
 	if (found)normed[node] = found;
 	return found;
 }

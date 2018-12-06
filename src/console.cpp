@@ -131,7 +131,8 @@ Node *parseProperty(const char *data, bool deepSearch) {
 //	if(eq(property,"predicates"))return wrap(getPredicates(getThe(thing));
 	pf("does %s have a %s?\n", thing, property);
 	Node *found = getProperty(getThe(thing), property);
-	if (found == 0)found = getProperty(getThe(property),thing);// REVERSE (IF WEB??)
+	if (found == 0)
+		found = getProperty(getThe(property),thing);// REVERSE (IF WEB??)
 	if (found == 0 and deepSearch) found = has(getThe(thing), getAbstract(property));
 	if (found == 0 and deepSearch) found = has(getAbstract(thing), getAbstract(property));
 //	free(property);
