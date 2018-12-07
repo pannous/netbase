@@ -1797,7 +1797,7 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
                          int recurse, bool semantic, bool symmetric, bool semanticPredicate, bool matchName,
                          int limit) {
 	// DO  NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
-	if(!predicate)predicate=Any;// 12/2018  ... or return 0?
+	if(!predicate)return 0;//predicate=Any;// 12/2018  ... or return 0?
 	if (recurse > 0) recurse++;
 	else recurse = maxRecursions;
 	if (recurse > maxRecursions or subject == 0) return 0;
