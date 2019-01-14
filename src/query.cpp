@@ -2196,6 +2196,50 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 //	return blacklist;
 }
 
+NV findAnswers(cchar *query0) {
+	NV all = findEntites(query0);
+
+
+	for (auto &entity: all) { // remove abstracts ... Rlly?
+		if (isAbstract(entity)) {
+			all.erase(std::remove(all.begin(), all.end(), entity), all.end());
+		}
+	}
+
+	for (auto &entity: all) {
+//		if(isAbstract(entity))
+		for (auto &property: all) {
+			if (eq(property, entity))continue;
+			if (eq(property->name, entity->name))continue;
+			Node *found = findProperty(entity, property);
+			if (!found) found = findProperty(normEntity(entity), normEntity(property));
+			if (found) {
+				cchar *propertyName = concat(concat(entity->name, "."), property->name);
+
+				N prop = getThe(propertyName);
+				addStatement(prop, Equals, found);
+				if (!contains(all, found))all.push_back(found);
+				if (!contains(all, prop))all.push_back(prop);
+
+				if (checkNode(normEntity(entity)) and checkNode(normEntity(property))) {
+					cchar *normedName = concat(concat(normEntity(entity)->name, "."), normEntity(property)->name);
+					N prop2 = getThe(normedName);
+					addStatement(prop2, Equals, found);// normEntity(found)
+					if (!contains(all, prop2))all.push_back(prop2);
+					addStatement(prop, getThe("Normed"), prop2);
+				}
+
+			}
+		}
+	}
+	p("found entities:");
+	unsigned long size = all.size();
+	p(size);
+
+//	for_each()
+	return all;
+}
+
 // Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(cchar *query0) {
 	autoIds = false;
@@ -2530,7 +2574,7 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 		for (int i = 0; i < all.size(); i++) {
 			Node *instance = all[i];
 			if (instance == node)continue;
-			if(isAbstract(instance))
+			if (isAbstract(instance))
 				continue;// how?
 			N ok = findProperty(instance, key, allowInverse, limit, deep);
 			if (ok)return ok;
@@ -2541,9 +2585,9 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 		N normee = normEntity(node);
 		if (normee != node and checkNode(normed)) {
 			N ok = findProperty(normee, key, allowInverse, limit, false);
-			if(getThe(normed)!=normed){
-			if(!ok)ok = findProperty(node, getThe(normed), allowInverse, limit, false);
-			if(!ok)ok = findProperty(normee, getThe(normed), allowInverse, limit, false);
+			if (getThe(normed) != normed) {
+				if (!ok)ok = findProperty(node, getThe(normed), allowInverse, limit, false);
+				if (!ok)ok = findProperty(normee, getThe(normed), allowInverse, limit, false);
 			}
 			if (ok)return ok;
 		}
@@ -2554,6 +2598,8 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 map<Node *, Node *> normed;
 
 Node *normEntity(Node *node) {
+	if (not node)
+		return 0;
 	if (node->id < 0)
 		return node;
 	if (normed[node])

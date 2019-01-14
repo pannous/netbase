@@ -228,6 +228,11 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		data = next_word(data);
 		return show(findEntites(data));
 	}
+
+	if (startsWith(data, "qa") or startsWith(data, ":qa")) {
+		data = next_word(data);
+		return show(findAnswers(data));
+	}
 	if (startsWith(data, ":build-seo")) {
 		buildSeoIndex();
 		return OK;

@@ -2169,15 +2169,24 @@ void testBrandNewStuff() {
 		return; // no tests when profiling
     #endif
 	p("Test Brand New Stuff");
-	testBug();
-//	import("wins.n3");
-//	import("DiAS.n3");
-	testWins();
+//	testBug();
+if(!hasNode("iphone_x")){
+	import("wins.n3");
+	import("DiAS.n3");
+}
+//	handle("/json/query/iphone_se.vorl%C3%A4ufer");
+//	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
+//	handle("/json/qa/iphone_x");
+//	handle("/json/qa/iphone_x Barometer");
+    findAnswers("iphone_x Barometer");
+//	Luftdruckmesser
+
+
+//	testWins();
 	exit(0);
 	testSynonyms();
 	testServer();
 	testAll();
-	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 ////////////////////////////////////////////////////////////////////
 //	handle("/json/all/query/all/6256");
 }

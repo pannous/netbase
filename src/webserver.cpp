@@ -333,6 +333,12 @@ int handle(cchar *q0, int conn) {
 		showExcludes = false;
 		verbosity = alle;
 	}
+	bool get_norm=false;
+	if (startsWith(q,"norm/")){
+		get_norm=true;
+		q[4]=' ';
+		q=q+5;
+	}
 //	bool get_topic=false;
 	bool get_topic = true;
 	bool seo = false;
@@ -355,6 +361,14 @@ int handle(cchar *q0, int conn) {
 		get_topic = true;
 		entities = true;
 //		verbosity=longer;
+	}
+
+	if (startsWith(q,"qa/")){
+		q[2]=' ';
+		q=q+3;
+		get_norm=true;
+		get_topic = true;
+		entities = true;
 	}
 	if (startsWith(q, "?query=")) {
 		q[6] = ' ';
@@ -505,6 +519,13 @@ int handle(cchar *q0, int conn) {
 //    if(verbosity != alle and !get_topic)
 //			loadView(node);
 		bool got_topic = false;
+		if(use_json and get_norm){
+			N t=normEntity(node);// or getTopic(node);
+			if(t){
+				Writeline(conn, ",\n\t \"normed_id\":" + itoa(t->id));
+				Writeline(conn, ", \"normed\":\"" + string(fixName(t->name)) + "\"");
+			}
+		}
 		if (use_json and get_topic) {
 			N c = getClass(node);
 			N t = NO_TOPICS ? c : getTopic(node);
@@ -516,15 +537,15 @@ int handle(cchar *q0, int conn) {
 			if (t and eq(t->name,node->name)) t = null;
 			if (t != Entity and t) {
 				got_topic = true;
-				Writeline(conn, ",\n\t \"topicid\":" + itoa(t->id));
+				Writeline(conn, ",\n\t \"topic_id\":" + itoa(t->id));
 				Writeline(conn, ", \"topic\":\"" + string(fixName(t->name)) + "\"");
 			}
 			if (c != Entity and checkNode(c, -1, false, true) and c != t) {
-				Writeline(conn, ",\n\t \"classid\":" + itoa(c->id));
+				Writeline(conn, ",\n\t \"class_id\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");
 			}
 			if (ty and checkNode(ty, -1, false, true) and c != ty and ty != t) {
-				Writeline(conn, ",\n\t \"typeid\":" + itoa(ty->id));
+				Writeline(conn, ",\n\t \"type_id\":" + itoa(ty->id));
 				Writeline(conn, ", \"type\":\"" + string(fixName(ty->name)) + "\"");
 			}
 			if (node->name and !empty(node->name)) {
@@ -535,9 +556,9 @@ int handle(cchar *q0, int conn) {
 		if (use_json)
 			Writeline(conn, ", \"kind\":" + itoa(node->kind));
 		if (use_json and verbosity == alle and node->kind != _abstract and i == 0)
-			Writeline(conn, ", \"abstract\":" + itoa(getAbstract(node->name)->id));
+			Writeline(conn, ", \"abstract_id\":" + itoa(getAbstract(node->name)->id));
 		if (use_json and verbosity == alle and node->kind == _abstract and i == 0 and checkNode(getThe(node)))
-			Writeline(conn, ", \"main\":" + itoa(getThe(node)->id));
+			Writeline(conn, ", \"main_id\":" + itoa(getThe(node)->id));
 		bool show_images = SERVER_PORT < 1000 or verbosity == alle or format == html;// HACK!
 		if ((use_json and show_images) and verbosity != shorter and !showExcludes and node->statementCount > 1) {
 			string img = getImage(node, 150,/*thumb*/true);
@@ -608,6 +629,8 @@ int handle(cchar *q0, int conn) {
 		}
 		if (format == xml)Writeline(conn, "</entity>\n");
 	}
+
+
 
 	if (use_json or format == html or format == js)Writeline(conn, good > 0 ? "}\n]}" : "]}");
 	if (format == xml)Writeline(conn, "</results>\n");

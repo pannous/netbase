@@ -569,7 +569,8 @@ Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId
 bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bool report) {//
 //	bool report=true;
 	if (node == 0) {
-		bad();
+		bad();// too common
+//		bad("checkNode node == 0");
 		if (debug)
 			printf("^"); // p("null node");
 		//		p(nodeId);
