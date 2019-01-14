@@ -363,12 +363,14 @@ int handle(cchar *q0, int conn) {
 //		verbosity=longer;
 	}
 
+	bool properties=false;
 	if (startsWith(q,"qa/")){
 		q[2]=' ';
 		q=q+3;
 		get_norm=true;
 		get_topic = true;
 		entities = true;
+		properties= true;
 	}
 	if (startsWith(q, "?query=")) {
 		q[6] = ' ';
@@ -409,8 +411,10 @@ int handle(cchar *q0, int conn) {
 	if(!safeMode) // <<<<<<<< HANDLE QUERY WITH NETBASE!
 		all = parse(q, safeMode, false);
 	else{
-		if(entities)
-			all= findEntites(q);
+		if(properties)
+			all= findAnswers(q);
+		else if(entities)
+		 all= findEntites(q);
 		else if(seo)
 			all = wrap(getSeo(q));
 		else

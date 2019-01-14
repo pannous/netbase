@@ -2177,8 +2177,8 @@ if(!hasNode("iphone_x")){
 //	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_x");
-//	handle("/json/qa/iphone_x Barometer");
-    findAnswers("iphone_x Barometer");
+	handle("/json/qa/iphone_x Barometer");
+//    findAnswers("iphone_x Barometer");
 //	Luftdruckmesser
 
 
