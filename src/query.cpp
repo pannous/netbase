@@ -2538,6 +2538,7 @@ Node *findProperty(Node *n, const char *m, bool allowInverse, int limit) {
 // see getProperty
 Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool deep) {
 	if (!node or !checkNode(node))return null;
+	if (!key or !checkNode(key))return null;
 	if (limit < 0)return null;
 	if (limit == 0)limit = queryLimit;
 	Statement *s = 0;
