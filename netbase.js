@@ -299,8 +299,10 @@ function show_footer(){
 	else
 		makeLink(" LESS ",clean(url).replace("/html","/html/short"));
 	br();
-	if(!url.match("/html"))url=url.replace(".com/",".com/html/").replace(".de/",".de/html/").replace("81/","81/html/");
-    if(!url.match("/html")){
+	if(!url.match("/html"))
+		url=url.replace(".com/",".com/html/").replace(".de/",".de/html/").replace("81/","81/html/");
+
+  if(url.match("/html")){
 		makeLink(" TSV |",url.replace("/html","/csv"));
 		makeLink(" JSON |",url.replace("/html","/json"));
 		makeLink(" XML |",url.replace("/html","/xml"));
