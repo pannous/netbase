@@ -1296,8 +1296,13 @@ void testWinsOK(){
 void testWins() {
 	germanLabels=1;
 	autoDissectAbstracts=true;
+	check(eq(getClass(the(silber)), the(Farbe)));
+	N topic = getTopic(the(silber));
+	p(topic);
+	check(eq(topic, Attribute))
+
 	if(!hasNode("Apple_iPhone_X"))
-		import("wins.n3");
+		import("wins_all.n3");
 //	testWinsOK();
 //	check(findProperty(a(Apple_iPhone_X),the(Ean)));
 	N breite=normEntity(getThe("breite"));
@@ -2171,14 +2176,15 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	testBug();
 if(!hasNode("iphone_x")){
-	import("wins.n3");
+	import("wins_all.n3");
 	import("DiAS.n3");
 }
+   testWins();
 //	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_x");
 	handle("/json/qa/iphone_x Barometer");
-//    findAnswers("iphone_x Barometer");
+//  findAnswers("iphone_x Barometer");
 //	Luftdruckmesser
 
 

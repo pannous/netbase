@@ -71,7 +71,7 @@ NodeVector setToVector(NodeSet& input);
 map<int,bool> loadBlacklist(bool reload=false);// int: wordHash
 NV findEntites(cchar* query);
 NV findAnswers(cchar *query0);
-N getClass(N n, bool walkLabel= true);
+N getClass(N n, bool walkLabel= true, N old=0);
 N getTopic(N n);// highest
 NV getTopics(N entity);
 NV getTopics(NV entities);

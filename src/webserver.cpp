@@ -531,9 +531,9 @@ int handle(cchar *q0, int conn) {
 			}
 		}
 		if (use_json and get_topic) {
-			N c = getClass(node);
-			N t = NO_TOPICS ? c : getTopic(node);
 			N ty = getType(node);
+			N c = getClass(node,true,ty);
+			N t = NO_TOPICS ? c : getTopic(node);
 			if (ty == Internal)continue;
 			if (!t)t = ty;
 			if (t == node)t = ty;

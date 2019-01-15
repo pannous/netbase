@@ -2424,23 +2424,23 @@ N getInferredClass(N n, int limit = 1000) {
 	return 0;
 }
 
-N getClass(N n, bool walkLabel) {
+N getClass(N n, bool walkLabel, N old) {
 	N p = 0;
 	int limit = 100;
-	if (!p)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
-	if (!p)p = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
-	if (!p)p = getProperty(n, Type, limit); // Typ Flugzeug
+	if (!p or p==old)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
+	if (!p or p==old)p = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
+	if (!p or p==old)p = getProperty(n, Type, limit); // Typ Flugzeug
 	if (p == n || p == Entity || p && eq(p->name, n->name))p = 0;
-	if (!p)p = getProperty(n, get(-10106), limit);// Tätigkeit
+	if (!p or p==old)p = getProperty(n, get(-10106), limit);// Tätigkeit
 	if (!p and walkLabel) {
-		if (!p)p = getProperty(n, Synonym, limit);
-		if (!p)p = getProperty(n, Label, limit);
-		if (!p)p = getInferredClass(n, limit);
-		else return getClass(p, false);// now Label danger loop
+		if (!p or p==old)p = getProperty(n, Synonym, limit);
+		if (!p or p==old)p = getProperty(n, Label, limit);
+		if (!p or p==old)p = getInferredClass(n, limit);
+		else return getClass(p, false, old);// Deeper now, Label danger loop
 	}
-	if (!p and (n->kind > 0 or n->kind < -limit))
+	if ((!p or p==old) and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
-	if (!p) {
+	if (!p or p==old) {
 //		if(!p)p=getProperty(n,Type,1500);
 //		if(p)addStatement(n, Type, p,false);
 //		else
@@ -2465,6 +2465,10 @@ N getTopic(N node) {
 	if (t && checkNode(t) && !eq(t->name, node->name))return t;
 	t = getFurthest(node, topicFilter);
 	if (t && checkNode(t) && !eq(t->name, node->name))return t;
+	if(!t or eq(node,t)){
+		N aClass = getClass(node);
+		if(aClass!=node) return getTopic(aClass);
+	}
 	return 0;
 }
 
