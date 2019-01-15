@@ -93,3 +93,7 @@ CMakeCache.txt
 CMakeFiles/
 netbase.cbp
 extensions.py
+netbase.config
+netbase.config.wiki
+netbase.config.wins
+src/node_modules/

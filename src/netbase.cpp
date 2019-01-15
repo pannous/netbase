@@ -1164,7 +1164,9 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		Node *ort = getThe(str.substr(type + 4).data());
 		addStatement(word, Instance, subject, checkDuplicates);
-		addStatement(subject, at, ort, checkDuplicates);
+		addStatement(subject, at, ort, checkDuplicates);// or property car_in_blue ! :
+		addStatement(subject, Attribute, ort, checkDuplicates);
+		addStatement(subject, Type, word, checkDuplicates);
 		dissectParent(ort, checkDuplicates);
 		return original;
 	}

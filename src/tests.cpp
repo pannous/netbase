@@ -1307,6 +1307,11 @@ void testWins() {
 //	check(findProperty(a(Apple_iPhone_X),the(Ean)));
 	N breite=normEntity(getThe("breite"));
 	check(!eq(breite->name,"breite"))
+	check(autoDissectAbstracts)
+	dissectWord(the(Aluminiumgehäuse in silber));
+	check(has(the(Aluminiumgehäuse in silber),the(silber)))
+	check(isA(the(Aluminiumgehäuse in silber),the(Aluminiumgehäuse)))
+
 	check(parseProperty("iPhone+X+256+GB+silber.Abmessungen"));
 	check(parseProperty("iPhone+X+256+GB+silber.breite"));
 	check(parseProperty("iphone+x.breite"));
@@ -1315,8 +1320,6 @@ void testWins() {
 //	check(parseProperty("Apple_iPhone_X.farbe"));
 //	check(parseProperty("iPhone+X+256+GB+silber.farbe"));
 	check(parseProperty("Farbe.iPhone+X+256+GB+silber"));
-
-
 
 	Node *ean = a(EAN_(European_Article_Number));
 	dissectWord(ean);

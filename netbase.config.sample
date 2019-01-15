@@ -1,0 +1,19 @@
+## netbase.config overwrites env and netbase.hpp
+
+SERVER_PORT=8080
+
+## number of nodes (in million/MB if <1000)
+maxNodes=209715200
+
+## number of statements default: maxNodes*2
+maxStatements=471859200
+
+## use german wordnet (BMW ist_ein Auto ...)
+# germanLabels=true
+
+## number of result entities per query
+# resultLimit=10
+
+## number of nodes and statements to search per query
+## setting this property may increase performance but yield missing results
+# lookupLimit=1000000

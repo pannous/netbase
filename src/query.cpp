@@ -2702,9 +2702,27 @@ NodeVector findProperties(const char *n, const char *m, bool allowInverse) {
 	return good;// dedup(good);
 }
 
+Node *getPartner(Statement* s, Node* n, Node *m){
+	bool foundSubject=0;
+	bool foundPredicate=0;
+	bool foundObject=0;
+	if(s->Subject()==n or s->Subject()==m)foundSubject=1;
+	if(s->Predicate()==n or s->Predicate()==m)foundPredicate=1;
+	if(s->Object()==n or s->Object()==m)foundObject=1;
+	if (!foundSubject)return s->Subject();
+	if(!foundPredicate)return s->Predicate();
+	if(!foundObject)return s->Object();
+	bad("FOUND ALL");
+	return 0;
+}
 
 Node *has(Node *n, Node *m) {
 	clearAlgorithmHash(true);
+
+	Node *relation = findRelation(n, m);
+	if(relation)
+		return relation;
+
 	Node *ok = 0;
 	ok = getProperty(n, m, resultLimit);
 	if (ok) return ok;

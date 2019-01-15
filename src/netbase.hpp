@@ -565,6 +565,7 @@ Node* has(Node* subject, Node* predicate, Node* object, int recurse = true, bool
 
 //void initRelations();
 Node* add_force(int contextId, int id, const char* nodeName, int kind);
+Node *getPartner(Statement* s, Node* n, Node *m);
 
 #define is Parent
 #define is_a Parent
