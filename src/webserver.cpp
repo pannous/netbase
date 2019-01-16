@@ -524,12 +524,13 @@ int handle(cchar *q0, int conn) {
 //			loadView(node);
 		bool got_topic = false;
 		if(use_json and get_norm){
-			Writeline(conn, ", \"key\":\"" + string(getID(node)) + "\"");
 			N t=normEntity(node);// or getTopic(node);
 			if(t){
 				Writeline(conn, ",\n\t \"normed_id\":" + itoa(t->id));
 				Writeline(conn, ", \"normed\":\"" + string(fixName(t->name)) + "\"");
 			}
+			char *id = getID(node);
+			if(id) Writeline(conn, ", \"key\":\"" + string(id) + "\"");
 		}
 		if (use_json and get_topic) {
 			N ty = getType(node);
