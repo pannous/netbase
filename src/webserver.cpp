@@ -530,7 +530,7 @@ int handle(cchar *q0, int conn) {
 				Writeline(conn, ", \"normed\":\"" + string(fixName(t->name)) + "\"");
 			}
 			char *id = getID(node);
-			if(id) Writeline(conn, ", \"uid\":\"" + string(id) + "\"");
+			if(id) Writeline(conn, ", \"key\":\"" + string(id) + "\"");// uid? nah: blau
 		}
 		if (use_json and get_topic) {
 			N ty = getType(node);
