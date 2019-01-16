@@ -2601,6 +2601,15 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 
 map<Node *, Node *> normed;
 
+
+char *getID(Node *node) {
+	N found = 0;
+	if (!found)found = findProperty(node, ID, false, 1000, false);
+	if (!found)found = findProperty(normEntity(node), ID, false, 1000, false);
+	if(found)return found->name;
+	return 0;
+}
+
 Node *normEntity(Node *node) {
 	if (not node)
 		return 0;
@@ -2610,8 +2619,11 @@ Node *normEntity(Node *node) {
 		return normed[node];
 	if (eq(node->name, "Topic", true))
 		return node;
-	N found = findProperty(node, Label, true, 1000, false);// Label sure at beginning??
-	if (!found)found = findProperty(node, Synonym, true, 1000, false);// Label sure at beginning??
+	N found = 0;
+//	if (!found)found = findProperty(node, ID, false, 1000, false);
+//	if (!found)found = findProperty(node, Label, false, 1000, false);// directed Label first
+	if (!found)found = findProperty(node, Label, true, 1000, false);// Label sure at beginning??
+	if (!found)found = findProperty(node, Synonym, true, 1000, false);
 	if (found)normed[node] = found;
 	return found;
 }

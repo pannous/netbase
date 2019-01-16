@@ -300,6 +300,8 @@ bool addStatementToNode(Node *node, int statementId, bool insert_at_start = fals
 		Statement *to_insert = &context->statements[statementId];
 		//		if (to_insert->Predicate == Instance and to_insert->Subject == node or to_insert->Predicate == Type and to_insert->Object == node) {
 		Node *predicate = to_insert->Predicate();
+		insert_at_start = insert_at_start or predicate == ID and to_insert->subject == node->id;
+		insert_at_start = insert_at_start or predicate == Label and to_insert->subject == node->id;
 		insert_at_start = insert_at_start or predicate == Type and to_insert->subject == node->id;
 		insert_at_start = insert_at_start or predicate == SuperClass and to_insert->subject == node->id;
 		bool push_back = !insert_at_start;// default for all ~
@@ -1013,9 +1015,9 @@ Node *get(int nodeId) {
 	return &context->nodes[nodeId];
 }
 
-int getId(char *node) {
-	return getAbstract(node)->id;// for blueprint!
-}
+//int getId(char *node) {
+//	return getAbstract(node)->id;// for blueprint!
+//}
 
 Node *getNodeS(int node) {// for blueprint! debug
 	return get(node);

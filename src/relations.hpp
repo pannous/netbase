@@ -82,6 +82,7 @@ extern Node* Float;
 extern Node* Integer;
 extern Node* Range;
 extern Node* Unit;
+extern Node* ID;
 
 extern Node* Bytes;// byte[] -> serialized java object etc etc
 extern Node* Map; // Map<String,T>
@@ -128,6 +129,7 @@ static const int wordnet = 0;// 303; //context==Class??  TODO!
 static const int wikidata = 0;// for now
 
 // DANGER!!
+static const int _id = -90;// external UUID
 static const int _property = -98;
 static const int _singleton = -99;
 static const int _internal = -100;

@@ -112,5 +112,6 @@ bool filterWikiType(int object);
 Statement * findRelations(Node* from, Node * to);
 Statement* parseSentence(string sentence, bool learn = false);
 Node *normEntity(Node* node);
+char *getID(Node *node);
 
 #endif	/* QUERY_H */

@@ -35,6 +35,7 @@ Node *PERTAINYM;
 Node *Weight;
 Node *Type;
 Node *Instance;
+Node *ID;
 
 Node *Active;
 Node *Passive;
@@ -131,9 +132,12 @@ Node *UsageContext;
 
 void addLabel(Node *relation, const char lable[5]);
 
+map<cchar*,Node*> nameMap;
+
 Node *addRelation(int id, const char *name, bool transitive = false) {
 	Node *n = add_force(wordnet, id, name, _internal);
 	insertAbstractHash(wordHash(name), n, false, false);// ECHT? TYP ?
+	nameMap[name]=n;
 //	if(n->statementCount==0 and id>0)// IT BETTER BE!!!
 //		addStatement4(wordnet, getAbstract(name)->id,_instance,id);// Internal
 //	if(transitive)??? baked into Algorithms, at least four standard relations?
@@ -261,6 +265,7 @@ void initRelationsDE() {
 	Float = addRelation(_float, "Float");
 	Integer = addRelation(_integer, "Integer");
 	Range = addRelation(_range, "Bereich");
+	ID =  addRelation(_id, "ID");
 
 //	True = addRelation(_true, "Wahr");
 //	False = addRelation(_false, "Falsch");// todo
@@ -294,6 +299,8 @@ void initRelations() {
 	bool is_transitive = true;
 	Instance = addRelation(_instance, "instance", is_transitive);
 	Any = addRelation(_any, "?");
+
+	ID =  addRelation(_id, "ID");
 
 	Error = addRelation(_error, "Error");
 	Missing = addRelation(_missing, "Missing");
@@ -572,6 +579,8 @@ Node *getRelation(const char *thing) {
 //	N wiki=getWikidataRelation(field);
 //	if(wiki)return wiki;
 	if (thing[0] == '#') thing++;
+	if(nameMap[thing])return nameMap[thing];
+
 	if (eq(thing, "altLabel"))return Label;
 	if (eq(thing, "name"))return Label;
 	if (eq(thing, "lable"))return Label;
@@ -583,6 +592,7 @@ Node *getRelation(const char *thing) {
 		return 0;// ignore!
 
 
+	if (eq(thing, "class"))return Type;
 
 	if (eq(thing, "attribute")) return Property;
 	if (eq(thing, "Property")) return Property;

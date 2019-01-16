@@ -1301,6 +1301,16 @@ void testWins() {
 	p(topic);
 	check(eq(topic, Attribute))
 
+//	N SAR = getThe("tx tcwins keyfacts rel-uid-8413");
+//	N SAR = getThe("Key:8413");
+	N SAR = a(Key:8413);
+
+	N normed = normEntity(the(Strahlung));
+	p(normed);
+	check(eq(normEntity(the(SAR Wert)),SAR))
+	check(eq(getID(the(SAR Wert)),"Key:8413"));
+	check(eq(getID(the(Strahlung)),"Key:8413"));
+
 	if(!hasNode("Apple_iPhone_X"))
 		import("wins_all.n3");
 //	testWinsOK();
