@@ -464,7 +464,7 @@ void px(void *p) {
 }
 
 void p(char *s) {
-	if (quiet) return;
+	if (quiet or s==0) return;
 	printf("%s\n", s);
 	fflush(stdout);
 }

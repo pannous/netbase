@@ -1303,11 +1303,17 @@ void testWins() {
 
 //	N SAR = getThe("tx tcwins keyfacts rel-uid-8413");
 //	N SAR = getThe("Key:8413");
-	N SAR = a(Key:8413);
 
-	N normed = normEntity(the(Strahlung));
-	p(normed);
-	check(eq(normEntity(the(SAR Wert)),SAR))
+
+	check(the(blau)->id==3555)
+	N farbe=the(tx tcwins keyfacts rel-uid-8313);
+
+	check(eq(getClass(the(blau)),farbe));
+	check(eq(getID(the(farbe)),"Key:8313"));// Farbe
+
+	p(getID(the(blau)));
+
+	check(eq(getID(the(blau)),"Key:8313"));// Farbe
 	check(eq(getID(the(SAR Wert)),"Key:8413"));
 	check(eq(getID(the(Strahlung)),"Key:8413"));
 

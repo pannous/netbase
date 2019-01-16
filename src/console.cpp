@@ -338,7 +338,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (startsWith(data, ":autoids")||startsWith(data, ":autoIds")) {
 		p("use Q12134 P123 if needed ");
 	}
-	if (startsWith(data, ":i ") or eq(data, ":i") or startsWith(data, ":import")) {
+	if (startsWith(data, ":i ") or eq(data, ":i") or startsWith(data, ":import")) { // import/
 		autoIds = false;
 		string arg = next_word(string(data));
 		if (arg.length() > 2) import(arg.c_str());
@@ -607,6 +607,11 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		data = next_word(data);
 		autoIds = true;
 		return wrap(getClass(getThe(data)));
+	}
+
+	if (startsWith(data, ":id")) {
+		p(getID(getThe(next_word(data))));
+		return OK;
 	}
 
 	if (startsWith(data, ":abstract") or startsWith(data, ":ab") or startsWith(data, ":a")) {

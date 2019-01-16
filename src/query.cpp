@@ -2425,6 +2425,7 @@ N getInferredClass(N n, int limit = 1000) {
 }
 
 N getClass(N n, bool walkLabel, N old) {
+	if(!n)return 0;
 	N p = 0;
 	int limit = 100;
 	if (!p or p==old)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
@@ -2606,6 +2607,9 @@ char *getID(Node *node) {
 	N found = 0;
 	if (!found)found = findProperty(node, ID, false, 1000, false);
 	if (!found)found = findProperty(normEntity(node), ID, false, 1000, false);
+	if (!found or found == Attribute)found = findProperty(getClass(node), ID, false, 1000, false);
+	if (!found or found == Attribute)found = findProperty(getClass(normEntity(node)), ID, false, 1000, false);
+	if (!found or found == Attribute)found = findProperty(normEntity(getClass(node)), ID, false, 1000, false);
 	if(found)return found->name;
 	return 0;
 }

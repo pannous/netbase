@@ -591,7 +591,9 @@ Node *getRelation(const char *thing) {
 	if (eq(thing, "prefLabel"))
 		return 0;// ignore!
 
-
+	if (eq(thing, "id"))return ID;
+	if (eq(thing, "uid"))return ID;
+	if (eq(thing, "uuid"))return ID;
 	if (eq(thing, "class"))return Type;
 
 	if (eq(thing, "attribute")) return Property;
