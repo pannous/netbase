@@ -1296,6 +1296,9 @@ void testWinsOK(){
 void testWins() {
 	germanLabels=1;
 	autoDissectAbstracts=true;
+
+	import("test.n3");
+
 	check(eq(getClass(the(silber)), the(Farbe)));
 	N topic = getTopic(the(silber));
 	p(topic);
@@ -1304,6 +1307,7 @@ void testWins() {
 //	N SAR = getThe("tx tcwins keyfacts rel-uid-8413");
 //	N SAR = getThe("Key:8413");
 
+//	dissectWord("a_b/c");
 
 	check(the(blau)->id==3555)
 	N farbe=the(tx tcwins keyfacts rel-uid-8313);

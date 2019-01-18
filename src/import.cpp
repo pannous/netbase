@@ -1996,6 +1996,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	int ignored = 0;
 	int foreign = 0;// special case of ignored
 	badCount = 0;
+	bool wiki=contains("wiki",file);// Todo
 	char *subjectName0 = (char *) malloc(10000);
 	char *predicateName0 = (char *) malloc(10000);
 	char *objectName0 = (char *) malloc(10000);
@@ -2011,8 +2012,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		//		if (linecount % 1000 == 0 and linecount > 140000) p(linecount);
 		if (++linecount % 100000 == 0) {
 			long lost = ignored + badCount + MISSING;
-			cchar* format = "\r%d triples, ignored:%d foreign %d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld";
-			printf(format, linecount, ignored, foreign,badCount, MISSING, lost, linecount - lost);
+			cchar *format = "\r%d triples, ignored:%d foreign %d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld";
+			printf(format, linecount, ignored, foreign, badCount, MISSING, lost, linecount - lost);
 			fflush(stdout);
 			if (checkLowMemory()) {
 				printf("Quitting import : id > maxNodes\n");
@@ -2041,10 +2042,12 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 				continue;
 			}//  and !contains(line,"@en ")
 		if (objectName[0] == 'Q' && objectName[1] <= '9')objectName[0] = 'q';// hack against auto wiki ids
-		subjectName = cut_wiki_id(subjectName);
-		predicateName = cut_wiki_id(predicateName);
-		if (!isUrl(predicateName))
-			objectName = cut_wiki_id(objectName);
+		if(wiki){
+			subjectName = cut_wiki_id(subjectName);
+			predicateName = cut_wiki_id(predicateName);
+			if (!isUrl(predicateName))
+				objectName = cut_wiki_id(objectName);
+		}
 		if (debug && eq(predicateName, "description"))continue;// ignore in debug!
 
 		if (dropBadSubject(subjectName)) {

@@ -80,7 +80,7 @@ void getline(char *buf) {
 	int MAXLENGTH = 10000;
 	const char *PROMPT = "netbase> ";
 #ifdef USE_READLINE
-	if (!file_read_done) file_read_done = 1 + read_history(0);
+	if (!file_read_done) file_read_done = 1 + read_history(".netbase_history");
 	char *tmp = readline(PROMPT);
 	if (tmp == 0 or strlen(tmp) == 0) {
 		return;
@@ -89,7 +89,7 @@ void getline(char *buf) {
 	if (strncmp(tmp, buf, MAXLENGTH) and strlen(tmp) > 0) add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
 	buf[MAXLENGTH - 1] = '\0';
-	write_history(0);
+	write_history(".netbase_history");
 	//	append_history(1,0);
 	//      free(tmp);
 #else
