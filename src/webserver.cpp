@@ -151,6 +151,7 @@ deque<Statement *> sortStatements(Node *node, bool use_topic) {
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
 //	autoIds = false;
+//	Writeline("{'message':'Please use dev01 until going live'}"); return
 	autoIds = true; // 2.7.18 : for http://sqb:8080/html/550866 !?!
 	newQuery();
 	int len = (int) strlen(q0);

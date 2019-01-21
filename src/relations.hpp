@@ -67,7 +67,8 @@ extern Node* Pattern;// temporary
 
 extern Node* Any;
 // Semantics
-extern Node* Attribute; //ok, if extern Node* Attribute declared in netbase.cpp
+extern Node* Attribute; // explicit Properties
+extern Node *Value;
 //extern Node* Is; // danger: obama is president etc
 
 extern Node* Person;
@@ -149,12 +150,14 @@ static const int _statement = -109;
 static const int abstractId = _abstract;// use _abstract !
 
 // wn: done via type(33) statements
-static const int attribute = -42;
-static const int noun = -110;
-static const int verb = -111;
-static const int adjective = -112;
-static const int adverb = -113;
-static const int preposition = -114;
+//static const int _attribute = -42; see WordNet below: -60 or -2
+static const int _value = -48;
+
+static const int _noun = -110;
+static const int _verb = -111;
+static const int _adjective = -112;
+static const int _adverb = -113;
+static const int _preposition = -114;
 
 static const int _bytes = -119;
 static const int _map = -120;
@@ -165,16 +168,16 @@ static const int _integer = -124; //naa, see number
 static const int _float = -125; //naa, see number
 static const int _string = -126; // text
 static const int _date = -127;
-static const int unit = -128;
+static const int _unit = -128;
 static const int _range = -129;
 
 // syntactic relations:
-static const int singular = -130;
+static const int _singular = -130;
 static const int _plural = -131;
-static const int present_tense = -132;
-static const int past_tense = -133;
-static const int future_tense = -134;
-static const int translation = -139;
+static const int _present_tense = -132;
+static const int _past_tense = -133;
+static const int _future_tense = -134;
+static const int _translation = -139;
 
 static const int _And = -140;
 static const int _Or = -141;

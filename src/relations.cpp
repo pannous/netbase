@@ -113,6 +113,7 @@ Node *On;
 Node *Next;// followed by / comes-before
 Node *Previous;// follows / predecessor / comes-after
 
+Node *Value; // quality figure data amount via Lable =>
 Node *Equals;
 Node *Greater;
 Node *More;
@@ -225,12 +226,12 @@ void initRelationsDE() {
 	// Thing  = addRelation(101, "thing");
 	// Item  = addRelation(101, "item");
 	Person = addRelation(_person, "Person");
-	Adjective = addRelation(adjective, "Adjective");
-	Noun = addRelation(noun, "Nomen");
-	Verb = addRelation(verb, "Verb");
-	Adverb = addRelation(adverb, "Adverb");
+	Adjective = addRelation(_adjective, "Adjective");
+	Noun = addRelation(_noun, "Nomen");
+	Verb = addRelation(_verb, "Verb");
+	Adverb = addRelation(_adverb, "Adverb");
 	Number = addRelation(_number, "Zahl");
-	Unit = addRelation(unit, "Einheit");
+	Unit = addRelation(_unit, "Einheit");
 
 	Array = addRelation(_array, "Liste");
 	List = addRelation(_list, "Liste");
@@ -238,14 +239,14 @@ void initRelationsDE() {
 	Bytes = addRelation(_bytes, "Daten");
 
 	Plural = addRelation(_plural, "Plural");
-	Translation = addRelation(translation, "Übersetzung", is_transitive);// is_transitive if not mapped to abstract!
+	Translation = addRelation(_translation, "Übersetzung", is_transitive);// is_transitive if not mapped to abstract!
 
 	And = addRelation(_And, "Und");
 	Or = addRelation(_Or, "Oder");
 	Not = addRelation(_Not, "Nicht");
 	Any = addRelation(_any, "*");
 
-
+	Value = addRelation(_value, "value");
 	Equals = addRelation(_Equals, "=");
 	Greater = addRelation(_Greater, ">");
 	More = Greater;
@@ -401,21 +402,22 @@ void initRelations() {
 	// Thing  = addRelation(101, "thing");
 	// Item  = addRelation(101, "item");
 	Person = addRelation(_person, "person");
-	Adjective = addRelation(adjective, "adjective");
-	Noun = addRelation(noun, "noun");
-	Verb = addRelation(verb, "verb");
-	Adverb = addRelation(adverb, "adverb");
+	Adjective = addRelation(_adjective, "adjective");
+	Noun = addRelation(_noun, "noun");
+	Verb = addRelation(_verb, "verb");
+	Adverb = addRelation(_adverb, "adverb");
 	Number = addRelation(_number, "number");
-	Unit = addRelation(unit, "unit");
+	Unit = addRelation(_unit, "unit");
 	Array = addRelation(_array, "array");
 
 	Plural = addRelation(_plural, "plural");
-	Translation = addRelation(translation, "translation", is_transitive);// is_transitive if not mapped to abstract!
+	Translation = addRelation(_translation, "translation", is_transitive);// is_transitive if not mapped to abstract!
 
 	And = addRelation(_And, "and");
 	Or = addRelation(_Or, "or");
 	Not = addRelation(_Not, "not");
 
+	Value = addRelation(_value, "value");
 	Equals = addRelation(_Equals, "=");
 	Greater = addRelation(_Greater, ">");// super:derived
 	More = Greater;
@@ -457,11 +459,11 @@ void initRelations() {
 void addLabel(Node *relation, const char* lable) {
 //	if(lable[0]<'a')lable[0] += ('A' - 'a');// make upper case
 	addStatement(relation, Label, getThe(lable));
+	nameMap[lable]=relation;
 }
 
 
 void addSynonymsDE(){
-
 //	>
 	addLabel(Greater, "mehr");
 	addLabel(Greater, "höher");
@@ -480,6 +482,9 @@ void addSynonymsDE(){
 	addLabel(Equals, "gleich");
 	addLabel(Equals, "genau");
 	addLabel(Equals, "exakt");
+//	addLabel(Equals, "value");
+//	addLabel(Equals, "Value");
+//	addLabel(Equals, "Wert");
 
 //	~
 	addLabel(Circa, "etwa");
@@ -495,6 +500,9 @@ void addSynonymsDE(){
 void addSynonyms(){
 	if(germanLabels)
 		addSynonymsDE();
+
+	addLabel(Attribute, "Property");
+
 	addLabel(Greater, "larger");
 	addLabel(Greater, "taller");
 	addLabel(Greater, "higher");
@@ -594,7 +602,9 @@ Node *getRelation(const char *thing) {
 	if (eq(thing, "id"))return ID;
 	if (eq(thing, "uid"))return ID;
 	if (eq(thing, "uuid"))return ID;
-	if (eq(thing, "class"))return Type;
+//	if (eq(thing, "class"))return Type;
+
+	if (eq(thing, "value"))return Value;
 
 	if (eq(thing, "attribute")) return Property;
 	if (eq(thing, "Property")) return Property;

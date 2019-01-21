@@ -161,9 +161,9 @@ void testBasics() {
 	}
 
 
-	Node *good = add("good", adjective, 1);
-	Node *is = add("is", verb, 1);
-	Node *test = add("test", noun, 1);
+	Node *good = add("good", _adjective, 1);
+	Node *is = add("is", _verb, 1);
+	Node *test = add("test", _noun, 1);
 	addStatement(test, is, a(test));
 	check(is != null);
 	check(test->statementCount >= 1);
@@ -205,8 +205,8 @@ void testBasics() {
 	check(getStatementNr(good, 0)->Subject() == a(good));
 	bool explicitlyAddKindAsStatement = 0;
 	if (explicitlyAddKindAsStatement) {
-		check(getStatementNr(test, 1)->Object() == &c->nodes[(noun)]);
-		check(getStatementNr(good, 1)->Object() == &c->nodes[(adjective)]);
+		check(getStatementNr(test, 1)->Object() == &c->nodes[(_noun)]);
+		check(getStatementNr(good, 1)->Object() == &c->nodes[(_adjective)]);
 	}
 	p(is);
 //	check(getStatementNr(is, 2) == testIsGood);
@@ -836,11 +836,11 @@ void testInstanceLogic() {
 	//	deleteWord("tester",true);
 	//	deleteNode(a(test));
 	Node *test2 = getThe("test", Noun);
-	check(test2->kind == noun);
+	check(test2->kind == _noun);
 	check(!isA4(test2, Adjective, 6, true)); //semantic, depth 0
 	Node *test3 = getThe("test", Adjective); //add("test", adjective);
 	check(!isA4(test2, Adjective, 6, true)); //semantic, depth 0
-	check(test3->kind == adjective);
+	check(test3->kind == _adjective);
 	check(test3 != test2);// type Adjective vs Noun matters
 	N abstrac = a(test);
 	check(abstrac->kind == _abstract);
@@ -1297,21 +1297,25 @@ void testWins() {
 	germanLabels=1;
 	autoDissectAbstracts=true;
 
-	import("test.n3");
+//	import("test.n3");
 
-	check(eq(getClass(the(silber)), the(Farbe)));
-	N topic = getTopic(the(silber));
-	p(topic);
-	check(eq(topic, Attribute))
+
+
+	N typ = getType(the(silber));
+	p(typ);
+	check(eq(typ, Value))
+	N aClass = getClass(the(silber), true, typ);
+	p(aClass);
+	check(eq(aClass, the(Farbe)));
+//	check(eq(aClass, the(Key:8313)));
+//	check(eq(aClass, a(Key:8313)));
 
 //	N SAR = getThe("tx tcwins keyfacts rel-uid-8413");
 //	N SAR = getThe("Key:8413");
 
 //	dissectWord("a_b/c");
 
-	check(the(blau)->id==3555)
-	N farbe=the(tx tcwins keyfacts rel-uid-8313);
-
+	N farbe=a(Farbe);// a(Key:8313);
 	check(eq(getClass(the(blau)),farbe));
 	check(eq(getID(the(farbe)),"Key:8313"));// Farbe
 
@@ -2200,6 +2204,7 @@ void testBrandNewStuff() {
 //	testBug();
 if(!hasNode("iphone_x")){
 	import("wins_all.n3");
+	import("wins_smartpones.n3");
 	import("DiAS.n3");
 }
    testWins();

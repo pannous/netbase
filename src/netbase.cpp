@@ -2140,7 +2140,7 @@ extern "C" void *getData(int node) {
 	return n->value.data;
 }
 
-extern "C" Value getValue(int node) {
+extern "C" Payload getValue(int node) {
 	N n = getNode(node);
 	return n->value;
 }

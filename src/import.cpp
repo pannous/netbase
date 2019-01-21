@@ -337,11 +337,11 @@ void importNodes() {
 		if (kind == 105) kind = _relation; //relation
 		if (kind == 1) kind = _concept; //noun
 		//    if(kind==1)continue;
-		if (kind == 103) kind = noun; //noun
-		if (kind == 10) kind = noun; //noun
-		if (kind == 11) kind = verb; //verb
-		if (kind == 12) kind = adjective; //adjective
-		if (kind == 13) kind = adverb; //adverb
+		if (kind == 103) kind = _noun; //noun
+		if (kind == 10) kind = _noun; //noun
+		if (kind == 11) kind = _verb; //verb
+		if (kind == 12) kind = _adjective; //adjective
+		if (kind == 13) kind = _adverb; //adverb
 		//    contextId = atoi(contextId_s);
 		//
 		//    if (Id < 1000)contextId = wordnet; //wn
@@ -602,8 +602,9 @@ Node *namify(Node *node, char *name) {
 
 void addAttributes(Node *subject, char *line) {
 	line = replaceChar(line, '"', '\''); // why?
+	char *attribute = 0;
 	do {
-		char *attribute = match(line, " ([^=]+)='[^']'");
+		attribute = match(line, " ([^=]+)='[^']'");
 		char *value = match(line, " [^=]+='([^'])'");
 		if (!attribute) break;
 		Node *predicate = getThe(attribute);
@@ -2295,18 +2296,18 @@ void importGermanLables(bool addLabels = false) {
 		wn_labels[id] = german;
 		//		if(eq(german,"Autoerotik"))
 		//			p(line);
-		int kind = noun;
-		if (wordkind[0] == 'n')kind = noun;
+		int kind = _noun;
+		if (wordkind[0] == 'n')kind = _noun;
 		else if (wordkind[0] == 'v') {
-			kind = verb;
+			kind = _verb;
 			id += 200000000;
 		}
 		else if (wordkind[0] == 'a') {
-			kind = adjective;
+			kind = _adjective;
 			id += 300000000;
 		}
 		else if (wordkind[0] == 'r') {
-			kind = adverb;
+			kind = _adverb;
 			id += 400000000;
 		} // between -> preposition!!!
 		else {
@@ -2439,12 +2440,12 @@ void importSynsets() {
 		       definition);
 		id = norm_wordnet_id(id);
 		if (!id)continue;
-		if (pos == 'n') addStatement4(wordnet, id, Type->id, noun); // get(id)->kind = noun; DEFAULT!!
-		if (pos == 'v') addStatement4(wordnet, id, Type->id, verb); //get(id)->kind = verb;
-		if (pos == 'a') addStatement4(wordnet, id, Type->id, adjective); //get(id)->kind = adjective;
-		if (pos == 'r') addStatement4(wordnet, id, Type->id, adverb); //get(id)->kind = adverb;
-		if (pos == 's') addStatement4(wordnet, id, Type->id, adjective);
-		if (pos == 'p') addStatement4(wordnet, id, Type->id, preposition);
+		if (pos == 'n') addStatement4(wordnet, id, Type->id, _noun); // get(id)->kind = noun; DEFAULT!!
+		if (pos == 'v') addStatement4(wordnet, id, Type->id, _verb); //get(id)->kind = verb;
+		if (pos == 'a') addStatement4(wordnet, id, Type->id, _adjective); //get(id)->kind = adjective;
+		if (pos == 'r') addStatement4(wordnet, id, Type->id, _adverb); //get(id)->kind = adverb;
+		if (pos == 's') addStatement4(wordnet, id, Type->id, _adjective);
+		if (pos == 'p') addStatement4(wordnet, id, Type->id, _preposition);
 		//			get(id)->kind = adjective; // satelite !?
 		setText(get(id), definition);
 	}

@@ -90,7 +90,7 @@ struct Statement;
 
 struct Node;
 //class Node;
-typedef union Value {
+typedef union Payload {
     // why not just save values+text in 'name' as string??
   int name;// pointer to context->names
   char* text; // wiki abstracts etc
@@ -108,7 +108,7 @@ typedef union Value {
 
 	Node* node; // THE ONE in abstracts type --- cycle !---
   Statement* statement; // overhead OK!!! 8 bytes on 64bit machines (Statement too long, pointer OK)
-}Value;
+}Payload;
 //extern Context* context;
 extern "C" const char* getName(int node);
 char* resolveName(int pointer);
@@ -137,7 +137,7 @@ typedef struct Node {
   int statementCount; //explicit, can be made implicit and replaced with iterator
   int firstStatement;
   int lastStatement;// remove
-  Value value; // for statements, numbers WASTE!!! remove / merge with name!
+  Payload value; // for statements, numbers WASTE!!! remove / merge with name!
 //	bool operator<(const Node *rhs) const {
 //		return statementCount > rhs->statementCount;
 //	}
@@ -505,7 +505,7 @@ Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);
 extern "C" void saveData(int node,void* data,int size,bool copy);
 extern "C" void* getData(int node);
-extern "C" Value getValue(int node);
+extern "C" Payload getValue(int node);
 extern "C" int valueId(const char* aname, double v, int unit = 0);
 //Node * value(const char* aname, Value v, Node* unit = 0);
 Node* parseValue(const char* aname);
