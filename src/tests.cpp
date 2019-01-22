@@ -1299,8 +1299,10 @@ void testWins() {
 
 //	import("test.n3");
 
-
-
+	check(hasNode("blau (sapphire-blue)"));
+	p(the("blau (sapphire-blue)")->id);
+	check(isA(the("blau (sapphire-blue)"),the(blau)));
+	check(isA(the("blau (sapphire-blue)"),the(sapphire-blue)));
 	N typ = getType(the(silber));
 	p(typ);
 	check(eq(typ, Value))

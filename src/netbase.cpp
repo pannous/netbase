@@ -1152,7 +1152,8 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(word, Instance, subject, true);
 		addStatement(clazz, Instance, word, true);
 		//    addStatement(clazz, Member, word, true);
-		addStatement(subject, Instance, clazz, true);
+		addStatement(clazz, Instance, subject, true);
+//		addStatement(subject, Instance, clazz, true);
 		addStatement(subject, Label, word, true);
 		//	  return;
 		str = word->name;

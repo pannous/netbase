@@ -542,6 +542,8 @@ int handle(cchar *q0, int conn) {
 			if (t == node)t = ty;
 			if (!checkNode(t, -1, false, true)) t = null;
 			if (t and eq(t->name,node->name)) t = null;
+			if (!checkNode(ty, -1, false, true))ty = null;
+			if (ty and eq(ty->name,node->name)) ty = null;
 			if (t != Entity and t and t!=node) {
 				got_topic = true;
 				Writeline(conn, ",\n\t \"topic_id\":" + itoa(t->id));
@@ -551,7 +553,7 @@ int handle(cchar *q0, int conn) {
 				Writeline(conn, ",\n\t \"class_id\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");
 			}
-			if (ty and checkNode(ty, -1, false, true) and ty!=node  and c != ty and ty != t) {
+			if (ty and c != ty and ty != t ) {
 				Writeline(conn, ",\n\t \"type_id\":" + itoa(ty->id));
 				Writeline(conn, ", \"type\":\"" + string(fixName(ty->name)) + "\"");
 			}
