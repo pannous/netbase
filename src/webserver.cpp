@@ -166,7 +166,7 @@ int handle(cchar *q0, int conn) {
 		q++;
 
 	enum result_format format = html;//txt; html DANGER WITH ROBOTS
-	enum result_verbosity verbosity = normal;
+	enum result_verbosity verbosity = alle;//normal;
 	if (NO_TOPICS)p("NO_TOPICS!");
 	if (contains(q, "robots.txt")) {
 		Writeline(conn, "User-agent: *\n");
