@@ -549,7 +549,7 @@ int handle(cchar *q0, int conn) {
 				Writeline(conn, ",\n\t \"topic_id\":" + itoa(t->id));
 				Writeline(conn, ", \"topic\":\"" + string(fixName(t->name)) + "\"");
 			}
-			if (c != Entity and checkNode(c, -1, false, true) and c != t and c!=node) {
+			if (c != Entity and c != _Node and checkNode(c, -1, false, true) and c != t and c!=node) {
 				Writeline(conn, ",\n\t \"class_id\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");
 			}
