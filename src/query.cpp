@@ -2196,7 +2196,7 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 //	return blacklist;
 }
 
-NV findAnswers(cchar *query0) {
+NV findAnswers(cchar *query0, bool answerQuestions) {
 	NV all = findEntites(query0);
 
 	for (auto &entity: all) { // remove abstracts ... Rlly?
@@ -2204,6 +2204,8 @@ NV findAnswers(cchar *query0) {
 			all.erase(std::remove(all.begin(), all.end(), entity), all.end());
 		}
 	}
+
+	if(!answerQuestions) return all;
 
 	for (auto &entity: all) {
 //		if(isAbstract(entity))
