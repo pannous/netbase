@@ -215,7 +215,8 @@ static const int _null = 0;// ok as value?
 static const int _false = 0;// ok as value? todo ^^
 static const int _true = 1;// >0 ok, not a 'Relation' todo: Universe
 
-static const int _see= -50,//50 _see_also, -40 similar
+// Wikidata + Babelnet
+static const int
 	_Hypernym = -1,// ~
 	_SuperClass= -1,//SuperClass bugs=>ARE=>animals
 	_hyponym = -2,
@@ -234,12 +235,10 @@ static const int _see= -50,//50 _see_also, -40 similar
 	_antonym= -30,
 	_attribute= -60,
 	_cause= -23,
-	_derives= -80,// KF _derived^-1
 	_derived= -81,
 	_derived_from_noun=-81,//?
 	_synonym= -32, // -21 _ENTAILMENT
 	_DOMAIN_CATEGORY= -91,
-	_DOMAIN_BUG = -91,
 	_DOMAIN_REGION= -93,
 	_DOMAIN_USAGE= -95,
 	_MEMBER_DOMAIN_CATEGORY= -92,
@@ -257,12 +256,10 @@ _VERB_GROUP= -70;
 //	_DOMAIN_USAGE= -8,
 //	_ENTAILMENT= -9,// implies
 //	_Hypernym= -10,//SuperClass
+//	_SuperClass= -10,
 //	_hyponym= -11,//SubClass
 //	_Owner= -12,
 //	_Member= -13,
-//	_MEMBER_DOMAIN_CATEGORY= -14,
-//	_MEMBER_DOMAIN_REGION= -15,
-//	_MEMBER_DOMAIN_USAGE= -16,
 //	_PartOf= -17,
 //	_Part= -18,
 //	_PARTICIPLE_OF_VERB= -19,
@@ -274,7 +271,11 @@ _VERB_GROUP= -70;
 //	_Type= -33,
 //_instance= -34;
 
+
 static const int // additional
+		_see= -50,// _see_also, -40 similar
+		_derives= -80,// KF _derived^-1
+_DOMAIN_BUG = -91,
 _DOMAIN= -97,
 _DOMAIN_MEMBER= -98,
 _weight = -31,

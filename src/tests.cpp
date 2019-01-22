@@ -1296,7 +1296,11 @@ void testWinsOK(){
 void testWins() {
 	germanLabels=1;
 	autoDissectAbstracts=true;
-
+	if(!hasNode("iphone_x")){
+		import("wins_all.n3");
+		import("wins_smartpones.n3");
+		import("DiAS.n3");
+	}
 //	import("test.n3");
 
 	check(hasNode("blau (sapphire-blue)"));
@@ -2204,12 +2208,11 @@ void testBrandNewStuff() {
     #endif
 	p("Test Brand New Stuff");
 //	testBug();
-if(!hasNode("iphone_x")){
-	import("wins_all.n3");
-	import("wins_smartpones.n3");
-	import("DiAS.n3");
-}
-   testWins();
+
+clearMemory();
+importWordnet();
+
+//   testWins();
 //	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_x");

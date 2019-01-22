@@ -113,7 +113,7 @@ std::map<int, int> wordnet_synset_map;
 
 // 100001740  -> -200000 and so on, no gaps
 int norm_wordnet_id(int synsetid, bool force = false) {
-	if (synsetid < 1000)return synsetid;// relations!
+	if (0 < synsetid and synsetid < 1000)return -synsetid;// relations!
 	if (synsetid < million and !force) return synsetid;
 	int id = wordnet_synset_map[synsetid];
 	if (!id and synsetid <= 10000000) id = wordnet_synset_map[synsetid + 10000000];
