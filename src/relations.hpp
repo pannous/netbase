@@ -17,6 +17,8 @@ extern Node* Antonym;
 extern Node* Parent;
 extern Node* SuperClass;// Parent
 //extern Node* IsA;// Parent
+extern Node* Type;// a->A vs  SuperClass A1->A
+extern Node* Instance;
 extern Node* SubClass;
 extern Node* Cause;
 extern Node* Entailment; // Implication
@@ -27,8 +29,6 @@ extern Node* PartOf;
 extern Node* Substance;
 extern Node* Synonym;
 extern Node* Weight;
-extern Node* Type;
-extern Node* Instance;
 extern Node* Active;
 extern Node* Passive;
 extern Node* Tag;

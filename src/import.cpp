@@ -2033,9 +2033,12 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		char *predicateName = predicateName0;
 		char *objectName = objectName0;
 
+		replace(line, '>',' ');// hack against sscanf bug !
+
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
-		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
+//		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
+		sscanf(line, "<%s\t<%s\t%[^@>]s", subjectName, predicateName, objectName);
 		int leng = len(line);
 		if ((line[leng - 1] == '.' || line[leng - 2] == '.') and contains(line, "\"@"))
 			if (!contains(line, "@de ")) {
@@ -2130,7 +2133,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 			         object->id == 4167836/*Wikimedia-Kategorie*/)
 				subject->kind = _abstract;// todo?
 			else
-				addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
+				addStatement(subject, predicate, object, CHECK_DUPLICATES); // todo: id
 		}
 	}
 	p("import N3 ok");

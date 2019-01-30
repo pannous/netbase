@@ -423,6 +423,16 @@ int handle(cchar *q0, int conn) {
 	}
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
+	// all entities
+	if(all.size()==1 and all[0]->kind==_abstract){ ///  and verbosity!=shorter
+//				all.push_back(all[0]);
+//		Node *the = all[0];
+//		Node *the = getThe("Samsung");
+//				Node *the = getThe(all[0]);
+//		all.push_back(the);// segfault WHY?
+//		mergeVectors(&all,all_instances(all[0]));
+	}
+
 	if (contains(q, " limit ")) { strstr(q, " limit ")[0] = 0; }
 	int size = (int) all.size();
 	int count = (int) all.size();
@@ -489,7 +499,9 @@ int handle(cchar *q0, int conn) {
 		entity = (char *) cut_to(q, " ");
 		entity = keep_to(entity, "limit");
 	}
+
 	sortNodes(all);
+
 	int good = 0;
 	for (int i = 0; i < count and (i < resultLimit); i++) {
 		Node *node = (Node *) all[i];

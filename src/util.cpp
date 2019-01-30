@@ -1019,7 +1019,7 @@ void sortNodes(NodeVector &all) {
 	for (int i = 0; i < all.size(); i++) {
 		all[i] = sorted[i];
 	}
-	std::sort(all.begin(), all.end(), sortNodePredicate);
+	std::sort(all.begin(), all.end(), sortNodePredicate /*statementCount*/ );
 	//	auto x=all.begin();
 	//	auto y=all.end();
 	//	std::sort(x, y, sortNodePredicate);// [] (Node* a, Node* b){ return a->statementCount > b->statementCount; });
@@ -1028,7 +1028,6 @@ void sortNodes(NodeVector &all) {
 	//	std::sort(all.begin(), all.end(), [] (Node* a, Node* b) { return a->statementCount < b->statementCount; });
 	//	showNodes(all,false,false,false);
 	//	std::sort(all.begin(),all.end(),);
-
 }
 
 int wordCount(char *c) {

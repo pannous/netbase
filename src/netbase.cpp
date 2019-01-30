@@ -862,7 +862,8 @@ Statement *addStatement(Node *subject, Node *predicate, Node *object, bool check
 
 	if (checkDuplicate) {    //todo: add specifications but not generalizations?
 		Statement *old = findStatement(subject, predicate, object, 0, 0, 0); //,true,true,true);
-		if (old) return old; // showStatement(old)
+		if (old)
+			return old; // bad("duplicate relation"); showStatement(old)
 	}
 
 	if (subject == object and predicate->id < 1000) return 0;// such loops not allowed

@@ -1297,8 +1297,9 @@ void testWins() {
 	germanLabels=1;
 	autoDissectAbstracts=true;
 	if(!hasNode("iphone_x")){
-		import("wins_all.n3");
-		import("wins_smartpones.n3");
+		import("wins.n3");// via dias-feeding
+//		import("wins_all.n3");
+//		import("wins_smartpones.n3");
 		import("DiAS.n3");
 	}
 //	import("test.n3");
@@ -2210,9 +2211,9 @@ void testBrandNewStuff() {
 //	testBug();
 
 clearMemory();
-importWordnet();
+//importWordnet();
 
-//   testWins();
+   testWins();
 //	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_x");
