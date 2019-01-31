@@ -2608,6 +2608,7 @@ map<Node *, Node *> normed;
 char *getID(Node *node) {
 	N found = 0;
 	if (!found)found = findProperty(node, ID, false, 1000, false);
+	if (!found)found = findProperty(node, getThe("key"), false, 1000, false);
 	if (!found)found = findProperty(normEntity(node), ID, false, 1000, false);
 	if (!found or found == Attribute)found = findProperty(getClass(node), ID, false, 1000, false);
 	if (!found or found == Attribute)found = findProperty(getClass(normEntity(node)), ID, false, 1000, false);
