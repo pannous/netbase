@@ -550,25 +550,25 @@ int handle(cchar *q0, int conn) {
 			N ty = getType(node);
 			N c = getClass(node,true,ty);
 			N t = NO_TOPICS ? c : getTopic(node);
-			if (ty == Internal)continue;
-			if (!t)t = ty;
-			if (t == node)t = ty;
+//			if (ty == Internal)continue;
+			if (!checkNode(c, -1, false, true)) c = null;
+			if (c and eq(c->name,node->name)) c = null;
 			if (!checkNode(t, -1, false, true)) t = null;
 			if (t and eq(t->name,node->name)) t = null;
 			if (!checkNode(ty, -1, false, true))ty = null;
 			if (ty and eq(ty->name,node->name)) ty = null;
-			if (t != Entity and t and t!=node) {
-				got_topic = true;
-				Writeline(conn, ",\n\t \"topic_id\":" + itoa(t->id));
-				Writeline(conn, ", \"topic\":\"" + string(fixName(t->name)) + "\"");
-			}
-			if (c != Entity and c != _Node and checkNode(c, -1, false, true) and c != t and c!=node) {
+			if (c != Entity and c != _Node and  c!=node) {
 				Writeline(conn, ",\n\t \"class_id\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");
 			}
-			if (ty and c != ty and ty != t ) {
+			if (ty and c != ty and ty!=node ) {
 				Writeline(conn, ",\n\t \"type_id\":" + itoa(ty->id));
 				Writeline(conn, ", \"type\":\"" + string(fixName(ty->name)) + "\"");
+			}
+			if (t != Entity and t and t!=node and ty != t and c != t ) {
+				got_topic = true;
+				Writeline(conn, ",\n\t \"topic_id\":" + itoa(t->id));
+				Writeline(conn, ", \"topic\":\"" + string(fixName(t->name)) + "\"");
 			}
 			if (node->name and !empty(node->name)) {
 				string seo = generateSEOUrl(node->name);
