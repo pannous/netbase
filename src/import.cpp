@@ -1746,7 +1746,7 @@ Node *getPropertyDummy(const char *id) {
 	return p;
 }
 
-
+bool wiki_mode = false;
 Node *getEntity(char *name) {//=true
 	if (name[0] == '<') {
 		name++;
@@ -1775,7 +1775,7 @@ Node *getEntity(char *name) {//=true
 	cut_to(name, " (");// !?
 //	if((name[0]=='V' and name[1]<='C')) // or (name[0]=='n' and name[1]<='m')) ???
 //		return getPropertyDummy(name);// DUMMY!
-	if (name[0] == 'Q' and name[1] <= '9') {
+	if (wiki_mode && name[0] == 'Q' and name[1] >= '0' and name[1] <= '9') {
 		if (contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
 		int id = atoi(name + 1);
@@ -1788,7 +1788,7 @@ Node *getEntity(char *name) {//=true
 			return n;
 		}
 	}
-	if (name[0] == 'P' and name[1] <= '9') {
+	if (wiki_mode && name[0] == 'P' and name[1] >= '0' and name[1] <= '9') {
 //		if(thing[len(predicateName)-1]==">")thing[len(predicateName)-1]=0;
 		N p = getWikidataRelation(name);
 		if (p)return p;
@@ -2006,12 +2006,12 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	char line[MAX_CHARS_PER_LINE * sizeof(char)];
 	while (readFile(file, &line[0])) {
 		if (line[0] == 0)continue;// skip gzip new_block
-//		if(debug and !contains(line, "P1476"))
+//		if(debug and !contains(line, "Download-Datenrat"))
 //			continue;
 //        p(line);
 		//    if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 and linecount > 140000) p(linecount);
-		if (++linecount % 100000 == 0) {
+		if (++linecount % 10000 == 0) {
 			long lost = ignored + badCount + MISSING;
 			cchar *format = "\r%d triples, ignored:%d foreign %d BAD:%d MISSING:%d = LOST:%ld GOOD:%ld";
 			printf(format, linecount, ignored, foreign, badCount, MISSING, lost, linecount - lost);
@@ -2033,12 +2033,14 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		char *predicateName = predicateName0;
 		char *objectName = objectName0;
 
+		replace(line, ' ','_');// hack against sscanf bug
 		replace(line, '>',' ');// hack against sscanf bug !
 
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 //		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		sscanf(line, "<%s\t<%s\t%[^@>]s", subjectName, predicateName, objectName);
+		if(objectName[0]=='"')objectName++;
 		int leng = len(line);
 		if ((line[leng - 1] == '.' || line[leng - 2] == '.') and contains(line, "\"@"))
 			if (!contains(line, "@de ")) {
@@ -2081,7 +2083,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
 		if (subject == object) {
-			bad("no cyclic statements");
+//			bad("no cyclic statements");
 			continue;
 		}
 		if (predicate == Label || predicate == Description)
@@ -2731,6 +2733,7 @@ void testImportWiki() {
 void importWikiData() {
 	context = getContext(wikidata);
 	autoIds = false;
+	wiki_mode = true;
 	importing = true;
     context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	context->nodeCount=wikidata_limit;// for iteration!

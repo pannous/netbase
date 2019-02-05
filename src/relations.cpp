@@ -146,6 +146,7 @@ Node *addRelation(int id, const char *name, bool transitive = false) {
 }
 
 void initRelationsDE() {
+	addRelation(-10018, "Bild");
 	Error = addRelation(_error, "Fehler");
 	Missing = addRelation(_missing, "Fehlend");
 	Unknown = addRelation(_unknown, "?");
@@ -302,7 +303,7 @@ void initRelations() {
 	Any = addRelation(_any, "?");
 
 	ID =  addRelation(_id, "ID");
-
+	addRelation(-10018, "image");
 	Error = addRelation(_error, "Error");
 	Missing = addRelation(_missing, "Missing");
 	Antonym = addRelation(_antonym, "opposite");// antonym
@@ -458,7 +459,9 @@ void initRelations() {
 
 void addLabel(Node *relation, const char* lable) {
 //	if(lable[0]<'a')lable[0] += ('A' - 'a');// make upper case
-	addStatement(relation, Label, getThe(lable));
+
+// TODO messes with data
+//	addStatement(relation, Label, getThe(lable));
 	nameMap[lable]=relation;
 }
 

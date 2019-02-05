@@ -139,12 +139,15 @@ void increaseShmMax() {
 }
 
 void clearSharedMemory() {
-//	system("./clear-shared-memory.sh");
+	p("run as sudo or USE ./clear-shared-memory.sh ");
+	system("./clear-shared-memory.sh");// Process finished with exit code 1
 	system("ipcrm -M '0x69190'");
 	system("ipcrm -M '0x69191'");
 	system("ipcrm -M '0x69192'");
 	system("ipcrm -M '0x69193'");
 	system("ipcrm -M '0x69194'");
+	system("ipcrm -M '0x69195'");
+	system("ipcrm -M '0x69196'");
 	increaseShmMax();
 }
 
@@ -518,6 +521,7 @@ void fixNodeNames(Context *context, char *oldnodeNames) {
 }
 
 bool clearMemory() {
+//	clearSharedMemory();
 	if (!virgin_memory) {
 		ps("Cleansing Memory!");
 		detach_shared_memory();

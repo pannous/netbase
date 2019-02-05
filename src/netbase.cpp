@@ -113,17 +113,17 @@ void flush() {
 	fflush(stdout);
 }
 
-//inline
-//map<string,int> reasons;
-//string last_reason="";
-//void bad(string reason) {
+
+map<string,int> reasons;
 Node *bad(char* reason) {
-	if(debug and reason)
-		printf("%s\n",reason);
+	if(debug and reason){
+	    if(!reasons[reason])
+		   printf("%s\n",reason);
+//        reasons[reason]=(reasons[reason]||0)+1;
+	}
 	else
 		printf(".");// no reason
 
-//	if(reason!=0)reasons[reason]=(reasons[reason]||0)+1;
 	badCount++;
 	return Error;
 }
@@ -1818,7 +1818,7 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 		if (limit and lookup++ > limit)break;
 		if(_trace)
 			p(s);
-		if (visited[s]) {// Remove in live mode if all bugs are fixed
+		if (visited[s] and s->subject!=47 and s->subject!=46) {// Remove in live mode if all bugs are fixed
 			p("GRAPH ERROR: cyclic statement");
 			p(s);
 			bad();

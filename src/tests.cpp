@@ -1294,8 +1294,14 @@ void testWinsOK(){
 }
 
 void testWins() {
+//	clearMemory();
 	germanLabels=1;
 	autoDissectAbstracts=true;
+	check(getEntity("Bild"));
+	check(getEntity("Bild")->id)
+
+	check(wordHash("Apple_iPhone")!=wordHash("Apple_iPhon"));
+	check(a(Apple_iPhone)!=a(Apple_iPhon));
 	if(!hasNode("iphone_x")){
 		import("wins.n3");// via dias-feeding
 //		import("wins_all.n3");
@@ -2210,7 +2216,7 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	testBug();
 
-clearMemory();
+   clearMemory();
 //importWordnet();
 
    testWins();
