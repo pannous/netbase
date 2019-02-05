@@ -1302,12 +1302,13 @@ void testWins() {
 
 	check(wordHash("Apple_iPhone")!=wordHash("Apple_iPhon"));
 	check(a(Apple_iPhone)!=a(Apple_iPhon));
-	if(!hasNode("iphone_x")){
+	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 //		import("wins_all.n3");
 //		import("wins_smartpones.n3");
 		import("DiAS.n3");
 	}
+	handle("/html/timestamp");
 //	import("test.n3");
 
 	check(hasNode("blau (sapphire-blue)"));
@@ -2216,7 +2217,7 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	testBug();
 
-   clearMemory();
+//   clearMemory();
 //importWordnet();
 
    testWins();

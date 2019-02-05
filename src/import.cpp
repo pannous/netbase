@@ -1997,7 +1997,6 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	int ignored = 0;
 	int foreign = 0;// special case of ignored
 	badCount = 0;
-	bool wiki=contains("wiki",file);// Todo
 	char *subjectName0 = (char *) malloc(10000);
 	char *predicateName0 = (char *) malloc(10000);
 	char *objectName0 = (char *) malloc(10000);
@@ -2048,7 +2047,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 				continue;
 			}//  and !contains(line,"@en ")
 		if (objectName[0] == 'Q' && objectName[1] <= '9')objectName[0] = 'q';// hack against auto wiki ids
-		if(wiki){
+		if(wiki_mode){
 			subjectName = cut_wiki_id(subjectName);
 			predicateName = cut_wiki_id(predicateName);
 			if (!isUrl(predicateName))

@@ -427,6 +427,8 @@ int handle(cchar *q0, int conn) {
 	if(all.size()==1 and all[0]->kind==_abstract){ ///  and verbosity!=shorter
 //				all.push_back(all[0]);
 //		Node *the = all[0];
+	if(all[0]->statementCount==1)// instance:
+		all[0] = getThe(all[0]);
 //		Node *the = getThe("Samsung");
 //				Node *the = getThe(all[0]);
 //		all.push_back(the);// segfault WHY?
