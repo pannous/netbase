@@ -50,7 +50,7 @@ int typeLimit = 1000;// internal relations
 int queryLimit = 10000000;
 bool count_nodes_down= false;
 bool out_of_memory= false;
-bool checkDuplicates = true;
+bool checkDuplicates = false; //true; done in import feeder
 //Node** keyhash_root=0;
 
 #ifdef USE_SEMANTICS

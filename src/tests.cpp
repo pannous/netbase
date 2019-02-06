@@ -1321,7 +1321,8 @@ void testWins() {
 	check(isA(the("blau (sapphire-blue)"),the(sapphire-blue)));
 	N typ = getType(the(silber));
 	p(typ);
-	check(eq(typ, Value))
+//	check(eq(typ, Value))
+	check(eq(typ, the(attributevalue)));
 	N aClass = getClass(the(silber), true, typ);
 	p(aClass);
 	check(eq(aClass, the(Farbe)));
