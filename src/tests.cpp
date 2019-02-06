@@ -1297,7 +1297,6 @@ void testWins() {
 //	clearMemory();
 	germanLabels=1;
 	autoDissectAbstracts=true;
-	handle("/json/short/qa/displaydiagonale vom iphone 8");
 	check(getEntity("Bild"));
 	check(getEntity("Bild")->id)
 	check(wordHash("Apple_iPhone")!=wordHash("Apple_iPhon"));
@@ -1310,6 +1309,11 @@ void testWins() {
 //		import("wins_smartpones.n3");
 		import("dias.n3");
 	}
+
+	check(hasWord("Huawei P20"));
+
+	handle("/qa/Huawei P20");
+	handle("/json/short/qa/displaydiagonale vom iphone 8");
 	check(getClass(the(iPhone))==the(product));
 
 	handle("/html/timestamp");
@@ -1319,6 +1323,7 @@ void testWins() {
 	p(the("blau (sapphire-blue)")->id);
 	check(isA(the("blau (sapphire-blue)"),the(blau)));
 	check(isA(the("blau (sapphire-blue)"),the(sapphire-blue)));
+
 	N typ = getType(the(silber));
 	p(typ);
 //	check(eq(typ, Value))

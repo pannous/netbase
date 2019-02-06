@@ -2201,7 +2201,12 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 
 	for (auto &entity: all) { // remove abstracts ... Rlly?
 		if (isAbstract(entity)) {
-			all.erase(std::remove(all.begin(), all.end(), entity), all.end());
+			bool ok=0;
+			for(auto &instance: instanceFilter(entity)){
+				ok=1;
+				all.push_back(instance);
+			}
+			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
 		}
 	}
 
