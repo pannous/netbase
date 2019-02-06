@@ -1296,7 +1296,8 @@ void testWinsOK(){
 void testWins() {
 //	clearMemory();
 	germanLabels=1;
-	autoDissectAbstracts=true;
+//	autoDissectAbstracts=true;
+	autoDissectAbstracts= false;
 	check(getEntity("Bild"));
 	check(getEntity("Bild")->id)
 	check(wordHash("Apple_iPhone")!=wordHash("Apple_iPhon"));
