@@ -40,13 +40,11 @@ extern int maxRecursions;
 
 extern bool out_of_memory;// delayed exit()
 extern int wikidata_limit;// =60000000;
+extern bool checkDuplicates;
 // if test or called from other object
 
 //#define inlineName true // because of char* loss!!!! TODO!!!
 
-#define CHECK_DUPLICATES true
-#define DONT_CHECK_DUPLICATES false
-#define DONT_DISSECT false
 #define NO_TYPE 0
 
 //#define name(w) getThe(#w)

@@ -186,10 +186,10 @@ void importWordnetImages(cchar *file) { // 18 MILLION!  // 18496249
 		}
 		Node *object = getAbstract(image);
 		if (subject and subject->id != 0)
-			addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
+			addStatement(subject, wiki_image, object, !checkDuplicates);
 		if (!subject or subject->id == 0 or !isAbstract(subject)) {
 			if (hasWord(title))
-				addStatement(getAbstract(title), wiki_image, object, !CHECK_DUPLICATES);
+				addStatement(getAbstract(title), wiki_image, object, !checkDuplicates);
 		}
 	}
 	free(title);
@@ -225,7 +225,7 @@ void importImagesDE() {// dbpedia
 		if (!hasWord(title)) continue; // currently only import matching words.
 		Node *subject = getAbstract(title);
 		Node *object = getAbstract(image + 5);// ommit md5 part /9/9a/
-		addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
+		addStatement(subject, wiki_image, object, !checkDuplicates);
 	}
 	free(title);
 	fclose(infile);
@@ -259,7 +259,7 @@ void importImageTripels(const char *file) { // 18 MILLION!  // 18496249
 		Node *subject = getAbstract(title);
 		Node *object = getAbstract(image); // getThe(image);;
 		//		if(endswith(image,".ogg") or endswith(image,".mid") or endswith(image,".mp3"))
-		addStatement(subject, wiki_image, object, !CHECK_DUPLICATES);
+		addStatement(subject, wiki_image, object, !checkDuplicates);
 		printf("%s\n", title);
 		//		if (!eq(title, downcase(title),false))
 		//			addStatement(getAbstract(downcase(title)), wiki_image, object, false);
@@ -595,7 +595,7 @@ Node *namify(Node *node, char *name) {
 	strcpy(node->name, name); // can be freed now!
 	int l = len(name);
 	context->nodeNames[context->currentNameSlot + l] = 0;
-	addStatement(getAbstract(name), Instance, node, !CHECK_DUPLICATES);
+	addStatement(getAbstract(name), Instance, node, !checkDuplicates);
 	// replaceNode(subject,object);
 	return node;
 }
@@ -685,7 +685,7 @@ void importXml(const char *file, char *nameField, const char *ignoredFields, con
 				// address.CITY=bukarest
 				predicate = getThe(subject->name); // CITY
 				Node *object = namify(subject, value); // city.name=bukarest
-				addStatement(parent, predicate, object, !CHECK_DUPLICATES); // address.CITY=bukarest
+				addStatement(parent, predicate, object, !checkDuplicates); // address.CITY=bukarest
 				subject = object; // bukarest
 				//				show(subject,true);
 				continue;
@@ -702,13 +702,13 @@ void importXml(const char *file, char *nameField, const char *ignoredFields, con
 
 				if (!contains(line, "><")) {                // else empty!
 					object = add(field);
-					addStatement(subject, Member, object, !CHECK_DUPLICATES);
+					addStatement(subject, Member, object, !checkDuplicates);
 					subject = object;
 				} else {
 					object = getThe(field);
-					//					addStatement(subject, Unknown,object,!CHECK_DUPLICATES);//EMPTY
-					addStatement(subject, object, Unknown, !CHECK_DUPLICATES); //EMPTY
-					//					addStatement(subject, object,UNKNOWN_OR_EMPTY,!CHECK_DUPLICATES);//EMPTY
+					//					addStatement(subject, Unknown,object,!checkDuplicates);//EMPTY
+					addStatement(subject, object, Unknown, !checkDuplicates); //EMPTY
+					//					addStatement(subject, object,UNKNOWN_OR_EMPTY,!checkDuplicates);//EMPTY
 				}
 				addAttributes(subject, line);
 				continue;
@@ -721,7 +721,7 @@ void importXml(const char *file, char *nameField, const char *ignoredFields, con
 			}
 			object = getThe(value, NO_TYPE);
 			//			Statement* s=
-			addStatement(subject, predicate, object, !CHECK_DUPLICATES);
+			addStatement(subject, predicate, object, !checkDuplicates);
 
 			//			fields.insert(predicate,object);//
 			continue;
@@ -731,7 +731,7 @@ void importXml(const char *file, char *nameField, const char *ignoredFields, con
 			//			parents.push(subject); // <address> <city> ...
 			field = extractTagName(line);
 			subject = add(field); // can be replaced by name!
-			addStatement(parent, Member, subject, !CHECK_DUPLICATES); // address.city
+			addStatement(parent, Member, subject, !checkDuplicates); // address.city
 			addAttributes(subject, line);
 			continue;
 		}
@@ -826,11 +826,11 @@ void splitValues(N subject, N predicate, char *values) {
 	std::vector<string> &value_list = splitString(values, "|");
 	for (std::vector<string>::iterator it = value_list.begin(); it != value_list.end(); ++it) {
 		N object = getThe(*it);
-		addStatement(subject, predicate, object, !CHECK_DUPLICATES);
+		addStatement(subject, predicate, object, !checkDuplicates);
 	}
 //	for(string s : splitString(values,"|")){// c++11 not on all systems yet:(
 //		N object=getThe(s);
-//		addStatement(subject, predicate,object, !CHECK_DUPLICATES);
+//		addStatement(subject, predicate,object, !checkDuplicates);
 //	}
 }
 
@@ -954,7 +954,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 				N marke = getThe(values[1], Marke);
 				getThe(values[3], getThe("billiger.de Kategorie"));
 				if (subject)
-					addStatement(subject, Marke, marke,CHECK_DUPLICATES);// ok check here
+					addStatement(subject, Marke, marke,checkDuplicates);// ok check here
 //				if(checkNode(m)){// and !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
@@ -1014,7 +1014,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			}
 			if (doSplitValues and contains(object->name, '|'))
 				splitValues(subject, predicate, object->name);
-			else addStatement(subject, predicate, object, !CHECK_DUPLICATES);
+			else addStatement(subject, predicate, object, !checkDuplicates);
 		}
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
@@ -1292,7 +1292,7 @@ bool importYago(const char *file) {
 		//		if (contains(objectName, subjectName, true))
 		//			s = addStatement(subject, Member, object, false); // todo: id
 		//		else
-		s = addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
+		s = addStatement(subject, predicate, object, !checkDuplicates); // todo: id
 
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
@@ -1638,7 +1638,7 @@ bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, boo
 			if (contains(label, "\\u"))continue; //Stra��enverkehr or Stra\u00DFenverkehr
 			freebaseKeysConflicts++;
 			printf("labels[key] duplicate! %s => %s or %s\n", key, oldLabel->name, label);
-			addStatement(oldLabel, Label, getAbstract(label), !CHECK_DUPLICATES);
+			addStatement(oldLabel, Label, getAbstract(label), !checkDuplicates);
 			continue;// don't overwrite german with english
 			//Stra��enverkehr or Stra\u00DFenverkehr
 			//			setLabel(oldLabel, label,false,false);
@@ -1661,7 +1661,7 @@ bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, boo
 		if (hasWord(label)) n = getNew(label);        //get(1);//
 		else n = getAbstract(label);
 		//		n->value.text=...
-		addStatement(n, Labeled, getAbstract(key), !CHECK_DUPLICATES);// VERY EXPENSIVE ID !!!
+		addStatement(n, Labeled, getAbstract(key), !checkDuplicates);// VERY EXPENSIVE ID !!!
 
 		if (n) {
 			//			if(keepLabel)addStatement(n, ID, key);
@@ -2134,7 +2134,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 			         object->id == 4167836/*Wikimedia-Kategorie*/)
 				subject->kind = _abstract;// todo?
 			else
-				addStatement(subject, predicate, object, CHECK_DUPLICATES); // todo: id
+				addStatement(subject, predicate, object, checkDuplicates); // todo: id
 		}
 	}
 	p("import N3 ok");
@@ -2196,9 +2196,9 @@ bool importFacts(const char *file, const char *predicateName = "population") {
 		 dissectWord(subject);
 		Statement *s = 0;
 		if (contains(objectName, subjectName, true))
-			s = addStatement(subject, Member, object, !CHECK_DUPLICATES); // todo: id
+			s = addStatement(subject, Member, object, !checkDuplicates); // todo: id
 		else
-			s = addStatement(subject, predicate, object, !CHECK_DUPLICATES); // todo: id
+			s = addStatement(subject, predicate, object, !checkDuplicates); // todo: id
 		if (checkLowMemory()) {
 			printf("Quitting import : id > maxNodes\n");
 			exit(0);
@@ -2734,6 +2734,7 @@ void importWikiData() {
 	autoIds = false;
 	wiki_mode = true;
 	importing = true;
+	checkDuplicates = false;
     context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	context->nodeCount=wikidata_limit;// for iteration!
     if(germanLabels){

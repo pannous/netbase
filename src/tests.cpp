@@ -596,8 +596,8 @@ void testInstancesAtEnd() {
 	Node *t = the(testInstancesAtEnd1);
 	Node *p = the(testInstancesAtEndP);
 	Node *o = the(testInstancesAtEndO);
-	addStatement(t, Type, o, !CHECK_DUPLICATES);
-	addStatement(t, Instance, o, !CHECK_DUPLICATES);
+	addStatement(t, Type, o, !checkDuplicates);
+	addStatement(t, Instance, o, !checkDuplicates);
 	//	S s=addStatement(t, p, o, true);
 	S s = addStatement(t, Instance, o, false, false);
 	addStatement(t, p, o, false, false);// warning: addStatementToNode skipped
@@ -613,11 +613,11 @@ void testInsertForceStart() {
 	Node *t = the(testInsertForceStart5);
 	Node *p = the(testInsertForceStartP);
 	Node *o = the(testInsertForceStart0);
-	addStatement(t, Instance, o, !CHECK_DUPLICATES);
-	addStatement(t, Part, o, !CHECK_DUPLICATES);
-	addStatement(t, Type, o, !CHECK_DUPLICATES);
+	addStatement(t, Instance, o, !checkDuplicates);
+	addStatement(t, Part, o, !checkDuplicates);
+	addStatement(t, Type, o, !checkDuplicates);
 	addStatement(t, Instance, o, false);
-	addStatement(t, PartOf, o, !CHECK_DUPLICATES);
+	addStatement(t, PartOf, o, !checkDuplicates);
 
 	//	S s=addStatement(t, p, o, false);// warning: addStatementToNode skipped
 	//	addStatement(t, Type, o, false); types up too
@@ -1297,17 +1297,21 @@ void testWins() {
 //	clearMemory();
 	germanLabels=1;
 	autoDissectAbstracts=true;
+	handle("/json/short/qa/displaydiagonale vom iphone 8");
 	check(getEntity("Bild"));
 	check(getEntity("Bild")->id)
-
 	check(wordHash("Apple_iPhone")!=wordHash("Apple_iPhon"));
 	check(a(Apple_iPhone)!=a(Apple_iPhon));
+	check(isA(a(Framerate (Videoaufnahme)),a(Framerate)));
+
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 //		import("wins_all.n3");
 //		import("wins_smartpones.n3");
-		import("DiAS.n3");
+		import("dias.n3");
 	}
+	check(getClass(the(iPhone))==the(product));
+
 	handle("/html/timestamp");
 //	import("test.n3");
 
@@ -1394,11 +1398,11 @@ void testDelete() {
 	Node *t = the(testDelete);
 	Node *p = the(testDelete1);
 	Node *o = the(testDelete2);
-	addStatement(t, Instance, o, !CHECK_DUPLICATES);
-	s = addStatement(t, Part, p, !CHECK_DUPLICATES);
-	addStatement(t, Type, o, !CHECK_DUPLICATES);
+	addStatement(t, Instance, o, !checkDuplicates);
+	s = addStatement(t, Part, p, !checkDuplicates);
+	addStatement(t, Type, o, !checkDuplicates);
 	addStatement(t, Instance, o, false);
-	addStatement(t, PartOf, o, !CHECK_DUPLICATES);
+	addStatement(t, PartOf, o, !checkDuplicates);
 	int statementCount0 = t->statementCount;
 	deleteNode(p->id);
 	check(t->statementCount == statementCount0 - 1);

@@ -50,6 +50,7 @@ int typeLimit = 1000;// internal relations
 int queryLimit = 10000000;
 bool count_nodes_down= false;
 bool out_of_memory= false;
+bool checkDuplicates = true;
 //Node** keyhash_root=0;
 
 #ifdef USE_SEMANTICS
@@ -1157,7 +1158,9 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 //		addStatement(subject, Instance, clazz, true);
 		addStatement(subject, Label, word, true);
 		//	  return;
-		str = word->name;
+		if(word) str = word->name;
+		else str = str2;
+
 		//    subject=word;
 	}
 	type = (int) str.find(" in ");
@@ -1583,10 +1586,12 @@ Node *getAbstract(const char *thing) {            // AND CREATE! use hasWord for
 	Ahash *ok = insertAbstractHash(wordHash(thing), abstract);
 	//	if (ok == 0) insertAbstractHash(wordHash(thing), abstract);		// debug
 	if (ok == 0){bad();return Error;}// full!
-	if (autoDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, ".")))
+	if (autoDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, "."))){
+		dissectWord(abstract);
 		dissectParent(abstract);// later! else MESS!?
 	//	else dissectAbstracts(am Ende)
 	//	collectAbstractInstances(abstract am Ende);
+	}
 	return abstract;
 }
 
@@ -1881,9 +1886,8 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 		bool objectMatchReverse = object == s->Subject() or object == Any or isA4(s->Subject(), object, false, false);
 		objectMatchReverse = objectMatchReverse or (matchName and eq(object->name, s->Subject()->name));
 		bool predicateMatchReverse = predicate == Any; // or inverse
-		symmetric = symmetric or s->Predicate() == Synonym or predicate == Synonym or s->Predicate() == Antonym or
-		            predicate == Antonym;
-		symmetric = symmetric and !(s->Predicate() == Instance); // todo : ^^ + more
+		bool is_symmetric = symmetric or s->Predicate() == Synonym or predicate == Synonym or s->Predicate() == Antonym or predicate == Antonym;
+		is_symmetric = is_symmetric and !(s->Predicate() == Instance); // todo : ^^ + more
 		// todo: use inverse(predicate)
 		predicateMatchReverse = predicateMatchReverse or (predicate == Instance and s->Predicate() == Type);
 		predicateMatchReverse = predicateMatchReverse or (predicate == Type and s->Predicate() == Instance);
@@ -1893,7 +1897,7 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 		predicateMatchReverse = predicateMatchReverse or (predicate == Synonym and s->Predicate() == Synonym);
 //		predicateMatchReverse=predicateMatchReverse or (predicate == Translation and s->Predicate() == Translation);
 		predicateMatchReverse = predicateMatchReverse or predicate == Any;
-		predicateMatchReverse = predicateMatchReverse or (predicateMatch and symmetric);
+		predicateMatchReverse = predicateMatchReverse or (predicateMatch and is_symmetric);
 		// DO  NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 
 		//		predicateMatchReverse = predicateMatchReverse or predicate == invert(s->Predicate);// invert properties ?? NAH!!

@@ -2428,32 +2428,27 @@ N getInferredClass(N n, int limit = 1000) {
 
 N getClass(N n, bool walkLabel, N old) {
 	if(!n)return 0;
-	N p = 0;
+	N c = 0;
 	int limit = 100;
-	if (!p or p==old)p = getProperty(n, SuperClass, limit);// more specific: Transportflugzeug
-	if (!p or p==old)p = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
-	if (!p or p==old)p = getProperty(n, Type, limit); // Typ Flugzeug
-	if (p == n || p == Entity || p && eq(p->name, n->name))p = 0;
-	if (!p or p==old)p = getProperty(n, get(-10106), limit);// Tätigkeit
-	if (!p and walkLabel) {
-		if (!p or p==old)p = getProperty(n, Synonym, limit);
-		if (!p or p==old)p = getProperty(n, Label, limit);
-		if (!p or p==old)p = getInferredClass(n, limit);
-		else return getClass(p, false, old);// Deeper now, Label danger loop
+	if (!c or c==old)c = getProperty(n, SuperClass, limit, false);// more specific: Transportflugzeug
+	if (!c or c==old)c = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
+	if (!c or c==old)c = getProperty(n, Type, limit); // Typ Flugzeug
+	if (c == n || c == Entity || c && eq(c->name, n->name))c = 0;
+	if (!c or c==old)c = getProperty(n, get(-10106), limit);// Tätigkeit
+	if (!c and walkLabel) {
+		if (!c or c==old)c = getProperty(n, Synonym, limit);
+		if (!c or c==old)c = getProperty(n, Label, limit);
+		if (!c or c==old)c = getInferredClass(n, limit);
+		else return getClass(c, false, old);// Deeper now, Label danger loop
 	}
-	if ((!p or p==old) and (n->kind > 0 or n->kind < -limit))
+	if ((!c or c==old) and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
-	if (!p or p==old) {
-//		if(!p)p=getProperty(n,Type,1500);
-//		if(p)addStatement(n, Type, p,false);
-//		else
-		{
+	if (!c or c==old) {
 			if (n->statementCount > 3 and !atoi(n->name))
 				pf("Unknown type: %s %d\n", n->name, n->id);
 			return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
-		}
 	}
-	return p;
+	return c;
 }
 //N getPredicateTopic(N node) == getInferredClass
 // Node *findPredicateClass(Node *n, int limit) getInferredClass
@@ -2470,7 +2465,8 @@ N getTopic(N node) {
 	if (t && checkNode(t) && !eq(t->name, node->name))return t;
 	if(!t or eq(node,t)){
 		N aClass = getClass(node);
-		if(aClass!=node) return getTopic(aClass);
+		if(aClass!=node and !eq(aClass->name,node->name))
+			return getTopic(aClass);
 	}
 	return 0;
 }
@@ -2549,17 +2545,16 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 	Node *normed = normEntity(key);
 	while ((s = nextStatement(node, s)) and limit-- > 0) {
 		Node *pred = s->Predicate();
+		bool subjectMatch = allowInverse || s->subject == node->id;
 //		if (deep and contains(pred->name,key->name)) {// stupid and expensive
 //			found = s;
 //			break;
 //		}
-		if (pred == key) {
-//			if(eq(s->Subject()->name,s->Object()->name))continue;
+		if (pred == key and subjectMatch) {
 			found = s;
 			break;
 		}
-		if (pred == normed) {
-//			if(eq(s->Subject()->name,s->Object()->name))continue;
+		if (pred == normed and subjectMatch) {
 			found = s;
 			break;
 		}
@@ -2636,7 +2631,7 @@ Node *normEntity(Node *node) {
 }
 
 // see findProperty
-Node *getProperty(Node *node, Node *key, int limit) {
+Node *getProperty(Node *node, Node *key, int limit, bool allowInverse /*false*/) {
 	S s = findStatement(node, key, Any, 0, 0, 0, true, limit);
 	if (!checkStatement(s)) {
 		N normed = normEntity(key);
@@ -2644,7 +2639,7 @@ Node *getProperty(Node *node, Node *key, int limit) {
 			s = findStatement(node, normed, Any, 0, 0, 0, true, limit);
 	}
 	if (!checkStatement(s))
-		return findProperty(node, key, true, limit);
+		return findProperty(node, key, allowInverse, limit);
 	return s->Object() == node ? s->Subject() : s->Object();// inverse
 }
 
