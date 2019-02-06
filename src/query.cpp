@@ -2280,11 +2280,23 @@ NV findEntites(cchar *query0) {
 		int words = 1;
 		while (mid <= end and words < max_words and mid - start >= min_chars) {
 			mid[0] = 0;// Artificial cut
-//			if(!forbidden[ wordHash(start)]){
-//			p(start);
 			N entity = hasWord(start);
 
-			if (!entity and endsWith(start, "s")) { //!germanLabels and
+			if (!entity and endsWith(start, "en")) {
+				mid[-2] = 0; // ^^ Minimum stemming
+				entity = hasWord(start);// abstract OK
+				mid[-2] = 'e';// HAHA HAxk! ;)
+			}
+
+			if (!entity and endsWith(start, "ies")) {
+				mid[-2] = 0; // ^^ Minimum stemming
+				mid[-3] = 'y';
+				entity = hasWord(start);// abstract OK
+				mid[-3] = 'i';
+				mid[-2] = 'e';// HAHA HAxk! ;)
+			}
+
+			if (!entity and endsWith(start, "s")) {
 				mid[-1] = 0; // ^^ Minimum stemming
 				entity = hasWord(start);// abstract OK
 				mid[-1] = 's';// HAHA HAxk! ;)
@@ -2294,11 +2306,7 @@ NV findEntites(cchar *query0) {
 				entity = hasWord(start);// abstract OK
 				mid[-1] = 'e';// HAHA HAxk! ;)
 			}
-			// the United https://www.wikidata.org/wiki/Q7771566
-			// 239790	United				9 statements
 
-
-//			if (!NO_TOPICS)
 			if (atoi(start))
 				if (atoi(start) > 1 && atoi(start) < 100000 && strlen(start) == 5) {
 //					if (!getType(entity)==getThe("Postleitzahl"))
@@ -2320,13 +2328,11 @@ NV findEntites(cchar *query0) {
 						entity = hasWord(ename.data());
 						if (entity)all.push_back(entity);
 					}
-
 				} else {
 					pf("blacklisted: %s\n", entity->name);
 				}
 			}
-			mid[0] = ' ';// fix
-//		}
+			mid[0] = ' ';
 			if (mid == end)break;
 			mid = strstr(mid + 1, " ");// expand
 			if (!mid)mid = end;
