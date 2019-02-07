@@ -143,6 +143,6 @@ int len(cchar* c);
 //int len(Node* c);
 //template<typename T> int len(T* c); doesnt
 //template<typename T> int len(vector<T> c,allocator<T> o);
-int wordCount(char* c);
+int wordCount(cchar* c);
 string generateSEOUrl(string input);
 void error(string err);

@@ -355,13 +355,14 @@ int handle(cchar *q0, int conn) {
 		q = q + 3;// KEEP for parse command!
 		get_topic = true;
 		entities = true;
+		verbosity = shorter;
 	}
 	if (startsWith(q, "entities/")) {
 		q[8] = ' ';
 		q = q + 9;// KEEP for parse command!
 		get_topic = true;
 		entities = true;
-//		verbosity=longer;
+		verbosity=longer;
 	}
 
 	bool properties=false;
@@ -372,6 +373,7 @@ int handle(cchar *q0, int conn) {
 		get_topic = true;
 		entities = true;
 		properties= true;
+		verbosity = shorter;
 	}
 	if (startsWith(q, "?query=")) {
 		q[6] = ' ';
@@ -431,7 +433,8 @@ int handle(cchar *q0, int conn) {
 //				all.push_back(all[0]);
 //		Node *the = all[0];
 //	if(all[0]->statementCount==1)// instance:
-//		all[0] = getThe(all[0]); BUUUDG DONT
+      if(format == html)
+		all[0] = getThe(all[0]); // BUUUG DONT
 //		Node *the = getThe("Samsung");
 //				Node *the = getThe(all[0]);
 //		all.push_back(the);// segfault WHY?

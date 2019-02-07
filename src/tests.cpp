@@ -1304,6 +1304,7 @@ void testWins() {
 		import("dias.n3");
 	}
 	handle(":lable a_a b_b");
+	parse(":lable a_a b_b");
 	check(eq(a(a_a),a(b_b)));
 	check(findAnswers("schwarzes iphone xs").size());
 	dissectWord(a(P20_Pro));

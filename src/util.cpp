@@ -1039,7 +1039,7 @@ void sortNodes(NodeVector &all) {
 	//	std::sort(all.begin(),all.end(),);
 }
 
-int wordCount(char *c) {
+int wordCount(cchar *c) {
 	size_t len = strlen(c);
 	int count = 1;
 	for (size_t i = len - 1; i > 0; --i)

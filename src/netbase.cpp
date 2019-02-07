@@ -1280,6 +1280,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	//		addStatement(subject, Label, compound,  checkDuplicates);
 
 
+	int count = wordCount(thing);
 	while (true) {
 		len = (int) str.length();
 		type = str.find(" ");// needs to be at end because of  " in " ...
@@ -1293,10 +1294,11 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		const char *head = str.substr(0, type).data();
 		str = str.substr(type + 1);
 		Node *first = getThe(head);
+		if(count<3)
 		addStatement(subject, Label, first, checkDuplicates);
 		addStatement(first, Instance, subject, checkDuplicates);
 	}
-	if(!eq(subject->name,str.data()))
+	if(!eq(subject->name,str.data()) and count<3)
 	  addStatement(subject, Label, getThe(str), checkDuplicates);
 
 
