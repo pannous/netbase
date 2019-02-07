@@ -1302,6 +1302,8 @@ void testWins() {
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
 	}
+	dissectWord(a("P20_Pro"));
+	parse("P20_Pro");
 	handle("/json/qa/iphone");
 	check(getEntity("Bild")->id)
 	check(getEntity("Bild"));

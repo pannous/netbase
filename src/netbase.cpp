@@ -1127,7 +1127,24 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	dissected[subject] = true;
 
 	int len = (int) str.length();
-	int type = (int) str.find(",");
+	int type = str.find(" ");
+	if (type < 0) type = str.find("_");
+	if (type < 0) type = str.find("-");
+	if (type < 0) type = str.find(":");
+	if (type < 0) type = str.find("+");
+	if (type >= 0 and len - type > 2) {
+		const char *rest = str.substr(type + 1).data();
+		const char *head = str.substr(0,type).data();
+		if (startsWith(rest, "of "))rest += 3;// ...
+		Node *word = getThe(rest);
+		Node *first = getThe(head);
+		Node *compound = getThe(concat(head, rest));
+		addStatement(first, Instance, subject, checkDuplicates);
+		addStatement(word, Instance, subject, checkDuplicates);
+		addStatement(subject, Label, word,  checkDuplicates);
+	}
+
+	type = (int) str.find(",");
 	if (type >= 0 and len - type > 2) {
 		//		char* t=(str.substr(type + 2) + " " + str.substr(0, type)).data();
 		//		Node* word = getThe(t); //deCamel
@@ -1172,6 +1189,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	}
 	type = (int) str.find(" in ");
 	if (type < 0) type = (int) str.find(" am ");
+	if (type < 0) type = (int) str.find(" im ");
 	if (type < 0) type = (int) str.find(" at ");
 	if (type >= 0 and len - type > 2) {
 		Node *at = the(location);

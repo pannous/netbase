@@ -203,7 +203,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 //		return OK;
 	if (data[0] == '\'')data++;
 	if (data[0] == '!')((char *) data)[0] = ':';// norm!
-	if (data[0] == 'Q' and data[1] <= '9')data++;//Q1325845
+	if (data[0] == 'Q' and data[0] >='0' and data[1] <= '9')data++;//Q1325845
 	if (data[0] == ':')appendFile("logs/commands.log", data);
 	else appendFile("logs/query.log", data);
 
@@ -797,13 +797,17 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (data[lenge - 1] == ',')data[lenge - 1] = 0;
 	data = replace(data, ' ', '_');
 
-	int i = atoi(data);
-	if (data[0] == 'P' and data[1] <= '9')// and !forbidAutoIds)
-        if(lenge==2)return wrap(get(-atoi(++data)));// bug??
-        else return wrap(get(-atoi(++data) - propertyOffset));// P106 -> -10106
+	if (data[0] == 'P' and data[0] >= '0' and data[1] <= '9'){// and !forbidAutoIds)
+		N m=getEntity(data);
+		N n=get(-atoi(++data) - propertyOffset);
+		if(n and n->id!=0)return wrap(n);
+		else return wrap(m);// P106 -> -10106
+	}
 	if (startsWith(data, ":")) {
 		pf("UNKNOWN COMMAND %s\n", data)
-	}//showHelpMessage();pf("UNKNOWN COMMAND %s\n",data);}
+		//showHelpMessage()
+	}
+	int i = atoi(data);
 	if (startsWith(data, "$")) showStatement(getStatement(atoi(data + 1)));
 	if (endsWith(data, "$")) showStatement(getStatement(i));
 //	if(autoIds and i)return wrap(get(i));

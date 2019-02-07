@@ -2005,8 +2005,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	char line[MAX_CHARS_PER_LINE * sizeof(char)];
 	while (readFile(file, &line[0])) {
 		if (line[0] == 0)continue;// skip gzip new_block
-//		if(debug and !contains(line, "Download-Datenrat"))
-//			continue;
+		if(debug and !contains(line, "P20Pro"))
+			continue;
 //        p(line);
 		//    if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 and linecount > 140000) p(linecount);
@@ -2040,14 +2040,15 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 //		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		sscanf(line, "<%s\t<%s\t%[^@>]s", subjectName, predicateName, objectName);
 		if(objectName[0]=='"')objectName++;
+		fixNewline(objectName);
 		int leng = len(line);
 		if ((line[leng - 1] == '.' || line[leng - 2] == '.') and contains(line, "\"@"))
 			if (!contains(line, "@de ")) {
 				foreign++;
 				continue;
 			}//  and !contains(line,"@en ")
-		if (objectName[0] == 'Q' && objectName[1] <= '9')objectName[0] = 'q';// hack against auto wiki ids
 		if(wiki_mode){
+			if (objectName[0] == 'Q' && objectName[1] <= '9')objectName[0] = 'q';// hack against auto wiki ids
 			subjectName = cut_wiki_id(subjectName);
 			predicateName = cut_wiki_id(predicateName);
 			if (!isUrl(predicateName))
@@ -2073,7 +2074,6 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 			ignored++;
 			continue;
 		}
-		fixNewline(objectName);
 		if (!objectName or objectName[0] == '/' or objectName[1] == '/')
 			continue; // Key", 'object':"/wikipedia/de/Tribes_of_cain
 		subject = getEntity(subjectName);//,fixNamespaces); //
@@ -2082,7 +2082,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
 		if (subject == object) {
-//			bad("no cyclic statements");
+			bad("no cyclic statements");
 			continue;
 		}
 		if (predicate == Label || predicate == Description)
