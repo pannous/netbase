@@ -2005,8 +2005,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	char line[MAX_CHARS_PER_LINE * sizeof(char)];
 	while (readFile(file, &line[0])) {
 		if (line[0] == 0)continue;// skip gzip new_block
-		if(debug and !contains(line, "P20Pro"))
-			continue;
+//		if(debug and !contains(line, "P20Pro"))
+//			continue;
 //        p(line);
 		//    if(linecount > 1000)break;//test!
 		//		if (linecount % 1000 == 0 and linecount > 140000) p(linecount);

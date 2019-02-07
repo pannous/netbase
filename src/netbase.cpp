@@ -1048,8 +1048,7 @@ void dissectParent(Node *subject, bool checkDuplicates) {
 	dissected[subject] = true;
 
 	int len = (int) str.length();
-	bool plural = (char) str[len - 1] == 's' and (char) str[len - 2] != 's' and
-	              ((char) str[len - 2] != 'n' or (char) str[len - 3] == 'o');
+	bool plural = len>2 and (char) str[len - 1] == 's' and (char) str[len - 2] != 's' and ((char) str[len - 2] != 'n' or (char) str[len - 3] == 'o');
 
 	if (!contains(str, "_") and !plural) return;
 	if (contains(subject->name, "(")) return;
@@ -1108,6 +1107,8 @@ void dissectParent(Node *subject, bool checkDuplicates) {
 //Zeitschriftenverlag   Verlag_Otto_Beyer
 //Zeitschriftenverlag   Verlag_Technik
 
+bool dontDissect(char *name);
+
 Node *dissectWord(Node *subject, bool checkDuplicates) {
 	autoIds = false;
 	Node *original = subject;
@@ -1116,37 +1117,25 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	if (subject->statementCount > 1000)checkDuplicates = false;// expansive isA4 !!!!
 	//  => todo dissectWord befor loading data!!!!!
 
-	string str = replace_all(subject->name, "_", " ");
-	str = replace_all(str, "-", " ");
+//	replace(subject->name, '_', ' ');
+//	if (contains(subject->name, "-")) {
+//      	str = replace_all(str, "-", " ");
+//	}
 	//    p("dissectWord");
 	//    p(subject->name);
+	string str = replace_all(subject->name, "_", " ");
 	const char *thing = str.data();
 //	if (contains(thing, " ") or contains(thing, "_") or contains(thing, "/") or contains(thing, ".") or (endsWith(thing, "s") and !germanLabels))
 //		dissectParent(subject); // <<
 
 	dissected[subject] = true;
 
-	int len = (int) str.length();
-	int type = str.find(" ");
-	if (type < 0) type = str.find("_");
-	if (type < 0) type = str.find("-");
-	if (type < 0) type = str.find(":");
-	if (type < 0) type = str.find("+");
-	if (type >= 0 and len - type > 2) {
-		const char *rest = str.substr(type + 1).data();
-		const char *head = str.substr(0,type).data();
-		if (startsWith(rest, "of "))rest += 3;// ...
-		Node *word = getThe(rest);
-		Node *first = getThe(head);
-		Node *compound = getThe(concat(head, rest));
-		addStatement(first, Instance, subject, checkDuplicates);
-		addStatement(word, Instance, subject, checkDuplicates);
-		addStatement(subject, Label, first,  checkDuplicates);
-		addStatement(subject, Label, word,  checkDuplicates);
-		addStatement(subject, Label, compound,  checkDuplicates);
-	}
+	if(dontDissect(subject->name))
+		return subject;
 
-	type = (int) str.find(",");
+	int len = (int) str.length();
+
+	int type = (int) str.find(",");
 	if (type >= 0 and len - type > 2) {
 		//		char* t=(str.substr(type + 2) + " " + str.substr(0, type)).data();
 		//		Node* word = getThe(t); //deCamel
@@ -1168,7 +1157,8 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	if (type > 0 and len - type > 2) {        // not (030)4321643 !
 		int to = (int) str.find(")");
 		string str2 = str.substr(type + 1, to - type - 1);
-		Node *clazz = getThe(str2.data()); //,str.find(")")
+		const char *data = str2.data();
+		Node *clazz = getThe(data); //,str.find(")")
 		Node *word;
 		if (type > 0) word = getThe(str.substr(0, type - 1).data()); //deCamel
 		else word = getThe(str.substr(to + 1, len - 1).data()); //deCamel
@@ -1285,9 +1275,37 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, Number, nr, checkDuplicates);
 	}
+
+
+	type = str.find(" ");// needs to be at end because of  " in " ...
+	if (type < 0) type = str.find("_");
+	if (type < 0) type = str.find("-");
+	if (type < 0) type = str.find("/");
+	if (type < 0) type = str.find(":");
+	if (type < 0) type = str.find("+");
+	if (type >= 0 and len - type > 2) {
+		const char *rest = str.substr(type + 1).data();
+		const char *head = str.substr(0,type).data();
+		if (startsWith(rest, "of "))rest += 3;// ...
+		Node *word = getThe(rest);
+		Node *first = getThe(head);
+		Node *compound = getThe(concat(head, rest));
+		addStatement(subject, Label, first,  checkDuplicates);
+		addStatement(subject, Label, word,  checkDuplicates);
+		addStatement(subject, Label, compound,  checkDuplicates);
+		addStatement(first, Instance, subject, checkDuplicates);
+		addStatement(word, Instance, subject, checkDuplicates);
+	}
+
 	return original;
 	// todo: zu (ort/name) der (nicht:name) bei von auf der auf am (Angriff )gegen (Schlacht )um...
 	//  free(str);
+}
+
+bool dontDissect(char *name) {
+	if(startsWith(name,"attr"))
+		return true;
+	return false;
 }
 
 bool abstractsLoaded = true;

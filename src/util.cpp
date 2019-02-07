@@ -68,7 +68,7 @@ string next_word(string data) {
 char *substr(const char *what, int from, int to) {
 	if (to == -1) to = (int) strlen(what);
 	if (from > to) return (char *) what; // const -> ERROR!! + danger!
-	char *result = (char *) malloc(sizeof(char) * (to - from + 1));
+	char *result = (char *) malloc(sizeof(char) * (to - from + 2));
 	strncpy(result, what + from, to - from);
 	result[to - from] = 0; // In case of unclean malloc
 	return result;
@@ -314,13 +314,13 @@ bool endsWith(const char *x, const char *y) {
 	return true;
 }
 
-bool startsWith(const char *x, const char *y) {
-    if(!y||!x)
+bool startsWith(const char *word, const char *with) {
+    if(!with||!word)
         return false;
-	int len = strlen(y);
-	if (strlen(x) < len) return false;
+	int len = strlen(with);
+	if (strlen(word) < len) return false;
 	for (int i = 0; i < len; i++) {
-		if (x[i] != y[i]) return false;
+		if (word[i] != with[i]) return false;
 	}
 	return true;
 }
@@ -340,7 +340,7 @@ const char *concat(const char *a, const char *b) {
 	int la = (int) strlen(a);
 	int lb = (int) strlen(b);
 //	char c[la+lb];
-	char *c = (char *) malloc((la + lb) * sizeof(char) + 1);
+	char *c = (char *) malloc((la + lb + 1) * sizeof(char) );
 	strcpy(c, a);
 	strcpy(&c[la], b);
 	c[la + lb] = 0;
@@ -540,7 +540,7 @@ vector<string> &splitString(const char *line0, const char *separator) {
 		ps("empty splitString!");
 		return v;
 	}
-	char *line = (char *) malloc(strlen(line0) * 2 + 1); //dont free!
+	char *line = (char *) malloc((strlen(line0) + 1 )* sizeof(char) ); //dont free!
 	strcpy(line, line0);
 	token = strtok(line, separator);
 	while (token != NULL) {
@@ -573,7 +573,7 @@ vector<string> &splitString(const char *line0, const char *separator) {
 //}
 
 char *clone(const char *line) {
-	char *line0 = (char *) malloc(strlen(line) * 2 + 1); //dont free!
+	char *line0 = (char *) malloc((strlen(line) + 1 )* sizeof(char)); //dont free!
 	strcpy(line0, line);
 	return line0;
 }
@@ -587,7 +587,7 @@ char *editable(const char *line) {
 		bad();
 		return (char *) "";// or 0?
 	}
-	char *line0 = (char *) malloc(strlen(line) * 2 + 2);// callers duty to manually FREE
+	char *line0 = (char *) malloc((strlen(line0) + 1 )* sizeof(char));// callers duty to manually FREE
 	strcpy(line0, line);
 	return line0;// callers duty to manually FREE if not kept!
 }

@@ -1077,10 +1077,10 @@ int Parse_HTTP_Header(char *buffer, struct ReqInfo *reqinfo) {
    appropriate field value. This version only supports the
    "Referer:" and "User-Agent:" headers, ignoring all others. */
 	if (!strcmp(temp, "USER-AGENT")) {
-		reqinfo->useragent = (char *) malloc(strlen(buffer) + 1);
+		reqinfo->useragent = (char *) malloc((strlen(buffer) + 1 )* sizeof(char));
 		strcpy(reqinfo->useragent, buffer);
 	} else if (!strcmp(temp, "REFERER")) {
-		reqinfo->referer = (char *) malloc(strlen(buffer) + 1);
+		reqinfo->referer = (char *) malloc((strlen(buffer) + 1 )* sizeof(char));
 		strcpy(reqinfo->referer, buffer);
 	}
 	free(temp);

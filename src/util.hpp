@@ -27,7 +27,7 @@ bool eq(string x, const char* y);
 bool eq(string* x, const char* y);
 bool eq(int a,int b);
 bool eq(Node* x, Node* y);
-bool startsWith(const char* x,const char* y);
+bool startsWith(const char* word,const char* with);
 bool startsWith(string* x,const char* y);
 bool endsWith(const char* x, const char* y);
 //string cut_to(string str, string what);
