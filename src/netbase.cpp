@@ -1121,8 +1121,8 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	//    p("dissectWord");
 	//    p(subject->name);
 	const char *thing = str.data();
-	if (contains(thing, " ") or contains(thing, "_") or contains(thing, "/") or contains(thing, ".") or (endsWith(thing, "s") and !germanLabels))
-		dissectParent(subject); // <<
+//	if (contains(thing, " ") or contains(thing, "_") or contains(thing, "/") or contains(thing, ".") or (endsWith(thing, "s") and !germanLabels))
+//		dissectParent(subject); // <<
 
 	dissected[subject] = true;
 
@@ -1141,7 +1141,9 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		Node *compound = getThe(concat(head, rest));
 		addStatement(first, Instance, subject, checkDuplicates);
 		addStatement(word, Instance, subject, checkDuplicates);
+		addStatement(subject, Label, first,  checkDuplicates);
 		addStatement(subject, Label, word,  checkDuplicates);
+		addStatement(subject, Label, compound,  checkDuplicates);
 	}
 
 	type = (int) str.find(",");
@@ -1604,7 +1606,7 @@ Node *getAbstract(const char *thing) {            // AND CREATE! use hasWord for
 	//	if (ok == 0) insertAbstractHash(wordHash(thing), abstract);		// debug
 	if (ok == 0){bad();return Error;}// full!
 	if (autoDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, "."))){
-		dissectWord(abstract);
+		dissectWord(abstract,checkDuplicates);
 		dissectParent(abstract);// later! else MESS!?
 	//	else dissectAbstracts(am Ende)
 	//	collectAbstractInstances(abstract am Ende);

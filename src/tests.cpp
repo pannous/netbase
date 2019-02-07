@@ -1297,12 +1297,13 @@ void testWins() {
 //	clearMemory();
 	germanLabels=1;
 	autoDissectAbstracts=true;
+	checkDuplicates = true;
 //	autoDissectAbstracts= false;
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
 	}
-	dissectWord(a("P20_Pro"));
+	dissectWord(a(P20_Pro));
 	parse("P20_Pro");
 	handle("/json/qa/iphone");
 	check(getEntity("Bild")->id)
