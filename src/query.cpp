@@ -1728,7 +1728,7 @@ NodeVector anyFilterRandom(Node *subject, NodeQueue *queue, int *enqueued) {
 	return anyFilter(subject, queue, true, enqueued);
 }
 
-NodeVector reconstructPath(Node *from, Node *to, int *enqueued) {
+NodeVector reconstructPath(Node *from, Node *to, const int *enqueued) {
 	Node *current = to;
 	NodeVector all;
 //	bool ok = true;
@@ -1946,6 +1946,7 @@ NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQue
 	int *enqueued = (int *) malloc(byteCount);
 	if (enqueued == 0)throw "out of memory for findPath";
 	memset(enqueued, 0, byteCount);// Necessary?
+	enqueued[0]=0; // test memory
 //	ps("LOAD!");
 	NodeQueue q;
 	q.push(fro);
@@ -2196,6 +2197,7 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 //	return blacklist;
 }
 
+NV questionAnswering(){}
 NV findAnswers(cchar *query0, bool answerQuestions) {
 	NV all = findEntites(query0);
 
@@ -2203,8 +2205,8 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 		if (isAbstract(entity)) {
 			bool ok=0;
 			for(auto &instance: instanceFilter(entity)){
-				ok=1;
 				all.push_back(instance);
+				ok=1; // only delete abstract if it has instance
 			}
 			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
 		}
@@ -2246,6 +2248,36 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 	return all;
 }
 
+N stemming(char* start,char *mid){
+N entity=0;
+	// minimal stemming:
+	if (!entity and endsWith(start, "s")) {
+		mid[-1] = 0; // ^^ Minimum stemming
+		entity = hasWord(start);
+		mid[-1] = 's'; // HAHA HAxk! ;)
+	}
+	if (!entity and germanLabels and endsWith(start, "e")) { // Berge -> Berg
+		mid[-1] = 0; // ^^ Minimum stemming
+		entity = hasWord(start);
+		mid[-1] = 'e';
+	}
+
+	if (!entity and endsWith(start, "en")) {
+		mid[-2] = 0; // ^^ Minimum german plural stemming
+		entity = hasWord(start);
+		mid[-2] = 'e';
+	}
+
+	if (!entity and endsWith(start, "ies")) {
+		mid[-2] = 0; // ^^ Minimum stemming
+		mid[-3] = 'y'; // Galaxies -> Galaxy
+		entity = hasWord(start);
+		mid[-3] = 'i';
+		mid[-2] = 'e';
+	}
+	return entity;// abstract OK here
+}
+
 // Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(cchar *query0) {
 	autoIds = false;
@@ -2281,31 +2313,7 @@ NV findEntites(cchar *query0) {
 		while (mid <= end and words < max_words and mid - start >= min_chars) {
 			mid[0] = 0;// Artificial cut
 			N entity = hasWord(start);
-
-			if (!entity and endsWith(start, "en")) {
-				mid[-2] = 0; // ^^ Minimum stemming
-				entity = hasWord(start);// abstract OK
-				mid[-2] = 'e';// HAHA HAxk! ;)
-			}
-
-			if (!entity and endsWith(start, "ies")) {
-				mid[-2] = 0; // ^^ Minimum stemming
-				mid[-3] = 'y';
-				entity = hasWord(start);// abstract OK
-				mid[-3] = 'i';
-				mid[-2] = 'e';// HAHA HAxk! ;)
-			}
-
-			if (!entity and endsWith(start, "s")) {
-				mid[-1] = 0; // ^^ Minimum stemming
-				entity = hasWord(start);// abstract OK
-				mid[-1] = 's';// HAHA HAxk! ;)
-			}
-			if (!entity and germanLabels and endsWith(start, "e")) { // Berge -> Berg
-				mid[-1] = 0; // ^^ Minimum stemming
-				entity = hasWord(start);// abstract OK
-				mid[-1] = 'e';// HAHA HAxk! ;)
-			}
+			if (!entity) entity = stemming(start,mid);
 
 			if (atoi(start))
 				if (atoi(start) > 1 && atoi(start) < 100000 && strlen(start) == 5) {

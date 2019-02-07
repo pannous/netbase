@@ -583,7 +583,7 @@ int handle(cchar *q0, int conn) {
 			Writeline(conn, ", \"abstract_id\":" + itoa(getAbstract(node->name)->id));
 		if (use_json and verbosity == alle and node->kind == _abstract and i == 0 and checkNode(getThe(node)))
 			Writeline(conn, ", \"main_id\":" + itoa(getThe(node)->id));
-		bool show_images = SERVER_PORT < 1000 or verbosity == alle or format == html;// HACK!
+		bool show_images = verbosity == alle or format == html;
 		if ((use_json and show_images) and verbosity != shorter and !showExcludes and node->statementCount > 1) {
 			string img = getImage(node, 150,/*thumb*/true);
 			if (img != "") {

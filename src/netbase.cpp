@@ -1121,8 +1121,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	//    p("dissectWord");
 	//    p(subject->name);
 	const char *thing = str.data();
-	if (contains(thing, " ") or contains(thing, "_") or contains(thing, "/") or contains(thing, ".") or
-	    (endsWith(thing, "s") and !germanLabels))
+	if (contains(thing, " ") or contains(thing, "_") or contains(thing, "/") or contains(thing, ".") or (endsWith(thing, "s") and !germanLabels))
 		dissectParent(subject); // <<
 
 	dissected[subject] = true;
@@ -1137,6 +1136,9 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		Node *b = getThe((str.substr(type + 2).data()));
 		addStatement(a, Instance, subject, true);
 		addStatement(b, Instance, subject, true);
+//		if(!wiki)
+		addStatement(subject, Label, a, true);
+		addStatement(subject, Label, b, true);
 		dissectWord(a, checkDuplicates);
 		dissectWord(b, checkDuplicates);
 		return original;
@@ -1151,6 +1153,11 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		Node *word;
 		if (type > 0) word = getThe(str.substr(0, type - 1).data()); //deCamel
 		else word = getThe(str.substr(to + 1, len - 1).data()); //deCamel
+
+		// if(!wiki)
+		addStatement(word, Label, clazz,  true);
+		addStatement(subject, Label, clazz,  true);
+
 		addStatement(word, Instance, subject, true);
 		addStatement(clazz, Instance, word, true);
 		//    addStatement(clazz, Member, word, true);
@@ -1257,14 +1264,6 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		Node *word = getThe(str.substr(type + 2).data());
 		addStatement(word, Instance, subject, checkDuplicates);
 		addStatement(subject, Number, nr, checkDuplicates);
-	}
-	type = (int) str.find(" ");
-	if (type < 0) type = (int) str.find("/");
-	if (type >= 0 and len - type > 2) {
-		const char *rest = str.substr(type + 1).data();
-		if (startsWith(rest, "of "))rest += 3;// ...
-		Node *word = getThe(rest);
-		addStatement(word, Instance, subject, checkDuplicates);
 	}
 	return original;
 	// todo: zu (ort/name) der (nicht:name) bei von auf der auf am (Angriff )gegen (Schlacht )um...

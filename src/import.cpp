@@ -2735,6 +2735,7 @@ void importWikiData() {
 	wiki_mode = true;
 	importing = true;
 	checkDuplicates = false;
+	autoDissectAbstracts = false; // too messy, maybe AFTER import!
     context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	context->nodeCount=wikidata_limit;// for iteration!
     if(germanLabels){

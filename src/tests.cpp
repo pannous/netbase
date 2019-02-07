@@ -1296,27 +1296,35 @@ void testWinsOK(){
 void testWins() {
 //	clearMemory();
 	germanLabels=1;
-//	autoDissectAbstracts=true;
-	autoDissectAbstracts= false;
-	check(getEntity("Bild"));
+	autoDissectAbstracts=true;
+//	autoDissectAbstracts= false;
+	if(!hasWord("iphone_x")){
+		import("wins.n3");// via dias-feeding
+		import("dias.n3");
+	}
+	handle("/json/qa/iphone");
 	check(getEntity("Bild")->id)
+	check(getEntity("Bild"));
 	check(wordHash("Apple_iPhone")!=wordHash("Apple_iPhon"));
 	check(a(Apple_iPhone)!=a(Apple_iPhon));
 	check(isA(a(Framerate (Videoaufnahme)),a(Framerate)));
 
-	if(!hasWord("iphone_x")){
-		import("wins.n3");// via dias-feeding
-//		import("wins_all.n3");
-//		import("wins_smartpones.n3");
-		import("dias.n3");
-	}
-
 	check(hasWord("Huawei P20"));
+//	check(isA4(the(akkulaufzeit),Attribute));
 
 	handle("/qa/Huawei P20");
+
+	handle("/query/:learn aaa bbb ccc");
+	check(getProperty(the(aaa),the(bbb))==the(ccc));
 	handle("/json/short/qa/displaydiagonale vom iphone 8");
 	check(getClass(the(iPhone))==the(product));
 
+//	handle("/json/query/iphone_se.vorl%C3%A4ufer");
+//	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
+//	handle("/json/qa/iphone_x");
+	handle("/json/qa/iphone_x Barometer");
+//  findAnswers("iphone_x Barometer");
+//	Luftdruckmesser
 	handle("/html/timestamp");
 //	import("test.n3");
 
@@ -1385,6 +1393,7 @@ void testWins() {
 	//	check(results.size()>0);
 
 //	testWinsOK();
+	check(contains(findAnswers("Galaxies mit 256 GB in rot"),a(Galaxy)));
 }
 
 //#define sn showNode
@@ -2232,12 +2241,6 @@ void testBrandNewStuff() {
 //importWordnet();
 
    testWins();
-//	handle("/json/query/iphone_se.vorl%C3%A4ufer");
-//	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
-//	handle("/json/qa/iphone_x");
-	handle("/json/qa/iphone_x Barometer");
-//  findAnswers("iphone_x Barometer");
-//	Luftdruckmesser
 
 
 //	testWins();

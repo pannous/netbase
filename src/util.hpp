@@ -110,7 +110,9 @@ char* replace(char* data,char what,char with);
 //inline
 bool isAbstract(Node* object);
 //bool contains(NodeVector& v, Node& o,bool fuzzy=false);
-bool contains(NodeVector& v, Node* o,bool fuzzy=false);
+//bool contains(NodeVector* v, Node* o,bool fuzzy=false);
+//bool contains(NodeVector& v, Node* o,bool fuzzy=false);
+bool contains(NodeVector v, Node* o,bool fuzzy=false);
 bool contains(vector<char*>& all, const char* node);
 
 string itoa(int i);

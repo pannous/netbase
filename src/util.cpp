@@ -166,8 +166,8 @@ bool contains(NodeVector &all, Node &node, bool fuzzy) {
 	return false;
 }
 
-bool contains(NodeVector &all, Node *node, bool fuzzy) {
-//	return contains2(all,node);
+
+bool contains(NodeVector all, Node *node, bool fuzzy) {
 	for (int i = 0; i < all.size(); i++) {
 		Node *n = (Node *) all[i];
 		if (n == node or (fuzzy and eq(n, node)))
@@ -175,6 +175,15 @@ bool contains(NodeVector &all, Node *node, bool fuzzy) {
 	}
 	return false;
 }
+
+//bool contains(NodeVector &all, Node *node, bool fuzzy) {
+//	for (int i = 0; i < all.size(); i++) {
+//		Node *n = (Node *) all[i];
+//		if (n == node or (fuzzy and eq(n, node)))
+//			return true;
+//	}
+//	return false;
+//}
 
 bool contains(Node *list, char *object, bool fuzzy) {
 	S s = 0;
