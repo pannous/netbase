@@ -1130,11 +1130,11 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	if (dontDissect(subject->name))
 		return subject;
 
-	int len = (int) str.length();
-
+	int len;
 	int type;
 	while (true) {
 		type = (int) str.find(",");
+		len = (int) str.length();
 		if (type < 0 || len - type <= 2) break;
 		//		char* flip=(str.substr(type + 2) + " " + str.substr(0, type)).data();
 		//		Node* word = getThe(t); //deCamel
@@ -1150,7 +1150,6 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		dissectWord(a, checkDuplicates);
 		dissectWord(b, checkDuplicates);
 		str = next;
-
 	}
 
 	type = (int) str.find("(");
@@ -1176,7 +1175,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		//	  return;
 		if (word) str = word->name;
 		else str = str2;
-
+		len = (int) str.length();
 		//    subject=word;
 	}
 	type = (int) str.find(" in ");
@@ -1276,31 +1275,30 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(subject, Number, nr, checkDuplicates);
 	}
 
-
-	type = str.find(" ");// needs to be at end because of  " in " ...
-	if (type < 0) type = str.find("_");
-	if (type < 0) type = str.find("-");
-	if (type < 0) type = str.find("/");
-	if (type < 0) type = str.find(":");
-	if (type < 0) type = str.find("+");
-	if (type >= 0 and len - type > 2) {
-		const char *rest = str.substr(type + 1).data();
-		const char *head = str.substr(0, type).data();
-		if (startsWith(rest, "of "))rest += 3;// ...
-		Node *word = getThe(rest);
-		Node *first = getThe(head);
-//		const char *compounded = concat(head, rest); fucksup why?
-//		autoDissectAbstracts= false;
+	//		auto compounded = replace_all(str," ","")
 //		Node *compound = getThe(compounded);
+	//		addStatement(subject, Label, compound,  checkDuplicates);
+
+
+	while (true) {
+		len = (int) str.length();
+		type = str.find(" ");// needs to be at end because of  " in " ...
+		if (type < 0) type = (int) str.find(",");
+		if (type < 0) type = str.find("_");
+		if (type < 0) type = str.find("-");
+		if (type < 0) type = str.find("/");
+		if (type < 0) type = str.find(":");
+		if (type < 0) type = str.find("+");
+		if (type < 0 || len - type <= 2) break;
+		const char *head = str.substr(0, type).data();
+		str = str.substr(type + 1);
+		Node *first = getThe(head);
 		addStatement(subject, Label, first, checkDuplicates);
-		addStatement(subject, Label, word, checkDuplicates);
-//		addStatement(subject, Label, compound,  checkDuplicates);
 		addStatement(first, Instance, subject, checkDuplicates);
-		addStatement(word, Instance, subject, checkDuplicates);
-		autoDissectAbstracts = true;
-//		free(compounded);
-//		delete compounded;
 	}
+	if(!eq(subject->name,str.data()))
+	  addStatement(subject, Label, getThe(str), checkDuplicates);
+
 
 	return original;
 	// todo: zu (ort/name) der (nicht:name) bei von auf der auf am (Angriff )gegen (Schlacht )um...

@@ -625,8 +625,9 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 
 	if (startsWith(data, ":lable ") or startsWith(data, ":label ") or startsWith(data, ":l ")){
-		const char *what = next_word(data);
-		const char *lable = next_word(what).data();
+		char *what = next_word(data);
+		char *lable = next_word(what);
+		replace(what, ' ', 0);
 		addStatement(getThe(what), Label, getThe(lable));
 		addStatement(getAbstract(what), Label, getAbstract(lable));
 		return wrap(getThe(what));
