@@ -399,12 +399,15 @@ int handle(cchar *q0, int conn) {
 	bool safeMode = true;
 	if (startsWith(q, "query/")) { // AND ...
 		q = q + 6;
+//		safeMode = false;// RLLY?
+	}
+	if (startsWith(q, "synonym/")) { // AND ...
+		q = q + 8;
 		safeMode = false;// RLLY?
 	}
-//	if (startsWith(q, "llearn "))q[0]=':'; // Beth security through obscurity!
-//	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
-//	if (startsWith(q, "ddelete "))q[0]=':'; // Beth security through obscurity!
-//	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
+	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
+	if (startsWith(q, ":lable "))safeMode=false;// RLLY?
+	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
 
 	p(q);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -676,6 +679,7 @@ bool checkSanity(char *q, int len) {
 //		bad=true;
 	}
 	if (q[0] == ':' or q[0] == '!')bad = true;
+	if(startsWith(q,":lable"))bad=false;
 	for (int i = 0; i < len and i < MAX_QUERY_LENGTH; i++) {
 		if (q[i] > 127)bad = true;// no illegal chars!
 	}

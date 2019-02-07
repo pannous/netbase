@@ -624,9 +624,15 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		printlabels();
 	}
 
+	if (startsWith(data, ":lable ") or startsWith(data, ":label ") or startsWith(data, ":l ")){
+		const char *what = next_word(data);
+		const char *lable = next_word(what).data();
+		addStatement(getThe(what), Label, getThe(lable));
+		addStatement(getAbstract(what), Label, getAbstract(lable));
+		return wrap(getThe(what));
+	}
 
-	if (startsWith(data, ":label ") or startsWith(data, ":l ") or startsWith(data, ":rename") or
-	    startsWith(data, ":name")) {
+	if (startsWith(data, ":rename") or startsWith(data, ":name") or startsWith(data, ":n")) {
 		const char *what = next_word(data);
 		appendFile("import/labels.csv", what);
 		cchar *wordOrId = args[1].c_str();
