@@ -1135,13 +1135,15 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 
 	int len = (int) str.length();
 
-	int type = (int) str.find(",");
+	int type;
+	while(type = (int) str.find(",")){
 	if (type >= 0 and len - type > 2) {
 		//		char* t=(str.substr(type + 2) + " " + str.substr(0, type)).data();
 		//		Node* word = getThe(t); //deCamel
 		//		addStatement(word, Synonym, subject, true);
 		Node *a = getThe((str.substr(0, type).data()));
-		Node *b = getThe((str.substr(type + 2).data()));
+		auto next = str.substr(type + 2);
+		Node *b = getThe(next.data());
 		addStatement(a, Instance, subject, true);
 		addStatement(b, Instance, subject, true);
 //		if(!wiki)
@@ -1149,10 +1151,9 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(subject, Label, b, true);
 		dissectWord(a, checkDuplicates);
 		dissectWord(b, checkDuplicates);
-		return original;
-		//		str = word->name;
-		//    subject=word;
+		str=next;
 	}
+
 	type = (int) str.find("(");
 	if (type > 0 and len - type > 2) {        // not (030)4321643 !
 		int to = (int) str.find(")");
