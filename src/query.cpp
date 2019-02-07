@@ -2250,25 +2250,42 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 
 N stemming(char* start,char *mid){
 N entity=0;
+	int leng = mid - start;
 	// minimal stemming:
-	if (!entity and endsWith(start, "s")) {
+	if (!entity and germanLabels and leng>5 and endsWith(start, "es")) {
+			mid[-2] = 0; // ^^ German Genitive stemming
+			entity = hasWord(start);
+			mid[-2] = 'e';
+	}
+
+	if (!entity and endsWith(start, "s")) { // germanLabels too?
 		mid[-1] = 0; // ^^ Minimum stemming
 		entity = hasWord(start);
 		mid[-1] = 's'; // HAHA HAxk! ;)
 	}
-	if (!entity and germanLabels and endsWith(start, "e")) { // Berge -> Berg
+	if (!entity and germanLabels and leng>4 and endsWith(start, "e")) { // Berge -> Berg
 		mid[-1] = 0; // ^^ Minimum stemming
 		entity = hasWord(start);
 		mid[-1] = 'e';
 	}
 
-	if (!entity and endsWith(start, "en")) {
+	if (!entity and germanLabels and leng>5 and endsWith(start, "en")) {
 		mid[-2] = 0; // ^^ Minimum german plural stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
+	if (!entity and germanLabels and leng>5 and endsWith(start, "em")) {
+		mid[-2] = 0; // ^^ Minimum German Dative stemming
+		entity = hasWord(start);
+		mid[-2] = 'e';
+	}
+	if (!entity and germanLabels and leng>5 and endsWith(start, "er")) {
+		mid[-2] = 0; // ^^ Minimum German Dative stemming
+		entity = hasWord(start);
+		mid[-2] = 'e';
+	}
 
-	if (!entity and endsWith(start, "ies")) {
+	if (!entity and leng>4 and endsWith(start, "ies")) {
 		mid[-2] = 0; // ^^ Minimum stemming
 		mid[-3] = 'y'; // Galaxies -> Galaxy
 		entity = hasWord(start);

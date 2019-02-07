@@ -1303,6 +1303,7 @@ void testWins() {
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
 	}
+	check(findAnswers("schwarzes iphone xs").size());
 	dissectWord(a(P20_Pro));
 	parse("P20_Pro");
 	handle("/json/qa/iphone");

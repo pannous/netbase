@@ -1289,12 +1289,17 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		if (startsWith(rest, "of "))rest += 3;// ...
 		Node *word = getThe(rest);
 		Node *first = getThe(head);
-		Node *compound = getThe(concat(head, rest));
+//		const char *compounded = concat(head, rest); fucksup why?
+//		autoDissectAbstracts= false;
+//		Node *compound = getThe(compounded);
 		addStatement(subject, Label, first,  checkDuplicates);
 		addStatement(subject, Label, word,  checkDuplicates);
-		addStatement(subject, Label, compound,  checkDuplicates);
+//		addStatement(subject, Label, compound,  checkDuplicates);
 		addStatement(first, Instance, subject, checkDuplicates);
 		addStatement(word, Instance, subject, checkDuplicates);
+		autoDissectAbstracts = true;
+//		free(compounded);
+//		delete compounded;
 	}
 
 	return original;
