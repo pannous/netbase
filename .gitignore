@@ -80,6 +80,7 @@ netbase.warnings
 query.log
 run-remote.sh
 test.json
+logs/*
 test/
 import
 import/babelnet/translations.tsvnetbase.xcodeproj/xcuserdata
