@@ -1299,10 +1299,12 @@ void testWins() {
 	autoDissectAbstracts=true;
 	checkDuplicates = true;
 //	autoDissectAbstracts= false;
+	handle("/asdfdfsfasdfsadf");
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
 	}
+
 	handle(":lable a_a b_b");
 	parse(":lable a_a b_b");
 	check(eq(a(a_a),a(b_b)));

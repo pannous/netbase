@@ -1602,7 +1602,7 @@ Node *rdfValue(char *name) {
 
 // Abstract nodes are necessary in cases where it is not known whether it is the noun/verb etc.
 extern "C"
-Node *getAbstract(const char *thing) {            // AND CREATE! use hasWord for lookup!!!
+Node *getAbstract(const char *thing) {  // AND CREATE! use hasWord for lookup!!!
 	if (thing == 0 or strlen(thing) == 0) {// or not is
 		bad();
 		return 0;
@@ -2340,7 +2340,7 @@ NodeVector showWrap(Node *n) {
 
 NodeVector wrap(Node *n) {
 	NodeVector r;
-	r.push_back(n);
+	if(n) r.push_back(n);
 	return r;
 }
 

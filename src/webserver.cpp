@@ -373,6 +373,7 @@ int handle(cchar *q0, int conn) {
 		get_topic = true;
 		entities = true;
 		properties= true;
+		if(format!=html)
 		verbosity = shorter;
 	}
 	if (startsWith(q, "?query=")) {
@@ -424,7 +425,7 @@ int handle(cchar *q0, int conn) {
 		else if(seo)
 			all = wrap(getSeo(q));
 		else
-			all = wrap(get(q));;
+			all = wrap(hasWord(q));;
 	}
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -434,7 +435,7 @@ int handle(cchar *q0, int conn) {
 //		Node *the = all[0];
 //	if(all[0]->statementCount==1)// instance:
       if(format == html)
-		all[0] = getThe(all[0]); // BUUUG DONT
+		all[0] = getThe(all[0],0,false); // BUUUG DONT
 //		Node *the = getThe("Samsung");
 //				Node *the = getThe(all[0]);
 //		all.push_back(the);// segfault WHY?
@@ -587,7 +588,7 @@ int handle(cchar *q0, int conn) {
 			Writeline(conn, ", \"kind\":" + itoa(node->kind));
 		if (use_json and verbosity == alle and node->kind != _abstract and i == 0)
 			Writeline(conn, ", \"abstract_id\":" + itoa(getAbstract(node->name)->id));
-		if (use_json and verbosity == alle and node->kind == _abstract and i == 0 and checkNode(getThe(node)))
+		if (use_json and verbosity == alle and node->kind == _abstract and i == 0 and checkNode(getThe(node,0,0)))
 			Writeline(conn, ", \"main_id\":" + itoa(getThe(node)->id));
 		bool show_images = verbosity == alle or format == html;
 		if ((use_json and show_images) and verbosity != shorter and !showExcludes and node->statementCount > 1) {
