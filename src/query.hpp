@@ -114,4 +114,7 @@ Statement* parseSentence(string sentence, bool learn = false);
 Node *normEntity(Node* node);
 char *getID(Node *node);
 
+extern map<int,int> startPositions;
+extern map<int,int> endPositions;
+
 #endif	/* QUERY_H */

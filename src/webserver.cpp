@@ -41,6 +41,9 @@ static char netbase_css[100] = "netbase.css";
 static char favicon_ico[100] = "favicon.ico";
 int resultLimit = 200; // != lookuplimit reset with every fork !!
 
+//extern map<int,int> startPositions;
+//extern map<int,int> endPositions;
+
 pid_t pid;
 int listener, conn, closing = 0;
 struct sockaddr_in servaddr;
@@ -434,8 +437,10 @@ int handle(cchar *q0, int conn) {
 //				all.push_back(all[0]);
 //		Node *the = all[0];
 //	if(all[0]->statementCount==1)// instance:
-      if(format == html)
-		all[0] = getThe(all[0],0,false); // BUUUG DONT
+      if(format == html){
+		N the=getThe(all[0],0,false); // BUUUG DONT
+		if(the) all[0] = the;
+      }
 //		Node *the = getThe("Samsung");
 //				Node *the = getThe(all[0]);
 //		all.push_back(the);// segfault WHY?
@@ -521,6 +526,7 @@ int handle(cchar *q0, int conn) {
 		if (eq(node->name, "◊"))continue;
 		last = node;
 		if (verbosity == normal and entity and eq(entity, node->name))continue;
+		Node *abstracto = getAbstract(node);
 		char *text = fixName(getText(node));
 //		if(use_json and get_topic){
 //			if(empty(text))continue;//! no description = no entity? BAD for amazon etc
@@ -554,6 +560,15 @@ int handle(cchar *q0, int conn) {
 			char *id = getID(node);
 			if(id)replace(id, ' ', '_');// hack back
 			if(id) Writeline(conn, ", \"key\":\"" + string(id) + "\"");// uid? nah: blau
+			int start = startPositions[node->id];
+			if(start<0)start = startPositions[abstracto->id];
+			if(start>0){
+				int end = endPositions[node->id];
+				if(end<0)end=endPositions[abstracto->id];
+				char *match = substr(q, start - 1, end);
+				if(!eq(node->name,match,0,0))
+					Writeline(conn, ", \"match\":\"" + string(match) + "\"");
+			}
 		}
 		if (use_json and get_topic) {
 			N ty = getType(node);
@@ -581,7 +596,8 @@ int handle(cchar *q0, int conn) {
 			}
 			if (node->name and !empty(node->name)) {
 				string seo = generateSEOUrl(node->name);
-				Writeline(conn, ", \"seo\":\"" + seo + "\"");
+				if(!eq(seo.data(),node->name,1,1))
+					Writeline(conn, ", \"seo\":\"" + seo + "\"");
 			}
 		}
 		if (use_json)

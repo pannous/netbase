@@ -1306,6 +1306,7 @@ void testWins() {
 		deleteWord("rote");// rot stemming :( TODO
 	}
 	check(findAnswers("Bildschirm Diagonale").size()>0);
+	handle("/qa/a telekom speedsticks");
 	handle("/qa/Bildschirm Diagonale");
 //	handle("/qa/sar wert");
 

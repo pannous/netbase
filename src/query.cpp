@@ -11,6 +11,9 @@
 //int* enqueued; // 'parents'
 NodeVector EMPTY;
 
+map<int,int> startPositions;
+map<int,int> endPositions;
+
 string select(string s) {
 	if (contains(s, "select"))
 		return "";
@@ -2142,7 +2145,7 @@ NV filterCandidates(NV all, string query) {
 	for (int i = size - 1; i >= 0; i--) {
 		N entity = all[i];
 		char* longer = containsSubstring(words, entity->name);
-		if (longer and contains(query, longer))
+		if (longer and contains(query.data(), longer, true))
 			all.erase(all.begin() + i);
 	}
 	//	all.shrink_to_fit();
@@ -2300,6 +2303,7 @@ N entity=0;
 	return entity;// abstract OK here
 }
 
+
 // Amerika => http://de.netbase.pannous.com:81/html/828
 NV findEntites(cchar *query0) {
 	autoIds = false;
@@ -2308,6 +2312,8 @@ NV findEntites(cchar *query0) {
 	query = replaceChar(query, '.', ' ');
 	query = replaceChar(query, '?', ' ');
 	query = replaceChar(query, '!', ' ');
+	query = replaceChar(query, '[', ' ');
+	query = replaceChar(query, ']', ' ');
 	query = replaceChar(query, '(', ' ');
 	query = replaceChar(query, ')', ' ');
 	query = replaceChar(query, '%', ' ');
@@ -2348,6 +2354,9 @@ NV findEntites(cchar *query0) {
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
 				if (!forbidden[wordHash(entity->name)]) {
+					startPositions[entity->id]=(int)(start-query+1);// starting from 1, cause 0 = null
+					endPositions[entity->id]= (int)(mid - query);
+
 					all.push_back(entity);
 					if (!isAbstract(entity)) {
 						entity->kind = abstractId;
