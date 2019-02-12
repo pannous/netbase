@@ -1093,6 +1093,8 @@ NodeVector &all_instances2(Node *type, int recurse, int max, bool includeClasses
 
 bool stopAtGoodWiki(int object) {
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
+	if (object == 1400)return true;// iPhone Preisübersicht @ wins
+
 	if (object == 6256)return true;// Land	Q6256
 	if (object == 571)return true;//Buch
 	if (object == 22645)return true;//  Smartphone
@@ -2115,20 +2117,20 @@ NodeVector parseProperties(const char *data) {
 	return parseProperties(editable(data));
 }
 
-bool containsSubstring(vector<char *> &words, char *sub) {
+char * containsSubstring(vector<char *> &words, char *sub) {
 	for (int j = 0; j < words.size(); j++) {
 		char *word = words[j];
 		if (contains(word, sub, true/*ignoreCase*/)) {
 			if (eq(word, sub))
 				continue;// only true substrings!
 			else
-				return true;
+				return word;
 		}
 	}
-	return false;
+	return 0;
 }
 
-NV filterCandidates(NV all) {
+NV filterCandidates(NV all, string query) {
 	VC words;
 	int size = (int) all.size();
 	for (int i = size - 1; i >= 0; i--)
@@ -2139,7 +2141,8 @@ NV filterCandidates(NV all) {
 
 	for (int i = size - 1; i >= 0; i--) {
 		N entity = all[i];
-		if (containsSubstring(words, entity->name))
+		char* longer = containsSubstring(words, entity->name);
+		if (longer and contains(query, longer))
 			all.erase(all.begin() + i);
 	}
 	//	all.shrink_to_fit();
@@ -2205,10 +2208,12 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 		if (isAbstract(entity)) {
 			bool ok=0;
 			for(auto &instance: instanceFilter(entity)){
+				if(instance!=entity){
 				all.push_back(instance);
 				ok=1; // only delete abstract if it has instance
+				}
 			}
-			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
+//			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
 		}
 	}
 
@@ -2252,7 +2257,7 @@ N stemming(char* start,char *mid){
 N entity=0;
 	int leng = mid - start;
 	// minimal stemming:
-	if (!entity and germanLabels and leng>5 and endsWith(start, "es")) {
+	if (!entity and germanLabels and leng>4 and endsWith(start, "es")) {
 			mid[-2] = 0; // ^^ German Genitive stemming
 			entity = hasWord(start);
 			mid[-2] = 'e';
@@ -2263,23 +2268,23 @@ N entity=0;
 		entity = hasWord(start);
 		mid[-1] = 's'; // HAHA HAxk! ;)
 	}
-	if (!entity and germanLabels and leng>4 and endsWith(start, "e")) { // Berge -> Berg
-		mid[-1] = 0; // ^^ Minimum stemming
+	if (!entity and germanLabels and leng>3 and endsWith(start, "e")) { // Berge -> Berg
+		mid[-1] = 0; // ^^ Minimum stemming   rote -> rot
 		entity = hasWord(start);
 		mid[-1] = 'e';
 	}
 
-	if (!entity and germanLabels and leng>5 and endsWith(start, "en")) {
+	if (!entity and germanLabels and leng>3 and endsWith(start, "en")) {
 		mid[-2] = 0; // ^^ Minimum german plural stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng>5 and endsWith(start, "em")) {
+	if (!entity and germanLabels and leng>4 and endsWith(start, "em")) {
 		mid[-2] = 0; // ^^ Minimum German Dative stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng>5 and endsWith(start, "er")) {
+	if (!entity and germanLabels and leng>4 and endsWith(start, "er")) {
 		mid[-2] = 0; // ^^ Minimum German Dative stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
@@ -2372,7 +2377,7 @@ NV findEntites(cchar *query0) {
 		if (!mid)mid = end;
 	}
 	free(query);
-	return filterCandidates(all);
+	return filterCandidates(all,query0);
 }
 
 //

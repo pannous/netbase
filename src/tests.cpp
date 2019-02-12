@@ -1299,11 +1299,15 @@ void testWins() {
 	autoDissectAbstracts=true;
 	checkDuplicates = true;
 //	autoDissectAbstracts= false;
-	handle("/asdfdfsfasdfsadf");
+	handle("/asdfdfsfasdfsadf");// don't create abstract
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
+		deleteWord("rote");// rot stemming :( TODO
 	}
+	check(findAnswers("Bildschirm Diagonale").size()>0);
+	handle("/qa/Bildschirm Diagonale");
+//	handle("/qa/sar wert");
 
 	handle(":lable a_a b_b");
 	parse(":lable a_a b_b");
