@@ -11,6 +11,7 @@
 #define	RELATIONS_HPP
 
 extern Node* Unknown;
+extern Node *See;
 extern Node* Error;
 extern Node* Missing;
 extern Node* Antonym;

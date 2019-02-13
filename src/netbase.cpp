@@ -1121,7 +1121,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	//    p("dissectWord");
 	//    p(subject->name);
 	string str = replace_all(subject->name, "_", " ");
-	const char *thing = str.data();
+	char *thing = editable(str.data());
 //	if (contains(thing, " ") or contains(thing, "_") or contains(thing, "/") or contains(thing, ".") or (endsWith(thing, "s") and !germanLabels))
 //		dissectParent(subject); // <<
 
@@ -1132,24 +1132,26 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 
 	int len;
 	int type;
-	while (true) {
-		type = (int) str.find(",");
-		len = (int) str.length();
-		if (type < 0 || len - type <= 2) break;
-		//		char* flip=(str.substr(type + 2) + " " + str.substr(0, type)).data();
-		//		Node* word = getThe(t); //deCamel
-		//		addStatement(word, Synonym, subject, true);
-		Node *a = getThe((str.substr(0, type).data()));
-		auto next = str.substr(type + 2);
-		Node *b = getThe(next.data());
-		addStatement(a, Instance, subject, true);
-		addStatement(b, Instance, subject, true);
-//		if(!wiki)
-		addStatement(subject, Label, a, true);
-		addStatement(subject, Label, b, true);
-		dissectWord(a, checkDuplicates);
-		dissectWord(b, checkDuplicates);
-		str = next;
+	int commata=countChar(thing, ',')+countChar(thing, ';');
+	int words = wordCount(thing);
+	while (commata>1) {
+		type = indexOfReverse(thing, ',');
+		if (type<0) type = indexOfReverse(thing, ';');
+		if (type < 0) return original;
+		if(str.length() - type <= 2) return original;
+		thing[type]=0; // cut
+		Node *a = getThe(thing+type+1);
+		if (words <= 3 ) { // and !wiki
+		    Node *b = getThe(thing);
+			addStatement(a, Instance, subject, true);
+			addStatement(b, Instance, subject, true);
+			addStatement(subject, Label, a, true);
+			addStatement(subject, Label, b, true);
+			dissectWord(b); // may be done already
+		} else {
+//			addStatement(subject, See, a, true);
+			addStatement(a, Instance, subject, true);
+		}
 	}
 
 	type = (int) str.find("(");
@@ -1281,7 +1283,11 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 
 
 	int count = wordCount(thing);
-	while (true) {
+//	if(words==2)
+//		char* flip=(str.substr(type + 2) + " " + str.substr(0, type)).data();
+//		Node* word = getThe(t); //deCamel
+//		addStatement(word, Synonym, subject, true);
+		while (true) {
 		len = (int) str.length();
 		type = str.find(" ");// needs to be at end because of  " in " ...
 		if (type < 0) type = (int) str.find(",");
@@ -1294,12 +1300,12 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		const char *head = str.substr(0, type).data();
 		str = str.substr(type + 1);
 		Node *first = getThe(head);
-		if(count<3)
-		addStatement(subject, Label, first, checkDuplicates);
+		if (count < 3)
+			addStatement(subject, Label, first, checkDuplicates);
 		addStatement(first, Instance, subject, checkDuplicates);
 	}
-	if(!eq(subject->name,str.data()) and count<3)
-	  addStatement(subject, Label, getThe(str), checkDuplicates);
+	if (!eq(subject->name, str.data()) and count < 3)
+		addStatement(subject, Label, getThe(str), checkDuplicates);
 
 
 	return original;
@@ -1404,6 +1410,7 @@ bool hasNode(const char *thingy) {
 // merge with getAbstract bool create
 Node *hasWord(const char *thingy, bool seo/*=false*/) {
 	if (!thingy or thingy[0] == 0) return 0;
+
 	//	if (thingy[0] == ' ' or thingy[0] == '_' or thingy[0] == '"') // get rid of "'" leading spaces etc!
 	//  char* fixed=editable(thingy); // free!!!
 	//	thingy=(const char*) fixQuotesAndTrim(fixed);// NOT HERE!
@@ -2340,7 +2347,7 @@ NodeVector showWrap(Node *n) {
 
 NodeVector wrap(Node *n) {
 	NodeVector r;
-	if(n) r.push_back(n);
+	if (n) r.push_back(n);
 	return r;
 }
 

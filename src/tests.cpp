@@ -1305,6 +1305,15 @@ void testWins() {
 		import("dias.n3");
 		deleteWord("rote");// rot stemming :( TODO
 	}
+	findAnswers("galaxy schwarz");
+//	instanceFilter(get(3791));
+	dissectWord(get("breite_Betrachtungs\u00ADwinkel;_fettabweisende_Beschichtung;_Unterstützung_für_die_Anzeige_mehrerer_Sprachen_und_Zeichen_gleichzeitig;_Display_Zoom;_ Einhandmodus"));
+	check(a(Abmessungen in mm (LxBxH)->id==105));
+//	instanceFilter(a(breite));
+	check(contains(instanceFilter(get(3791)),a(Abmessungen in mm (LxBxH))));
+	check(contains(instanceFilter(the(breite)),a(Abmessungen in mm (LxBxH))));
+//	check(contains(instanceFilter(a(breite)),a(Abmessungen in mm (LxBxH))));
+	findAnswers("/qa/breite");
 	findAnswers("standby dauer");
 	check(findAnswers("Bildschirm Diagonale").size()>0);
 	handle("/qa/a telekom speedsticks");
@@ -1313,7 +1322,7 @@ void testWins() {
 
 	handle(":lable a_a b_b");
 	parse(":lable a_a b_b");
-	check(eq(a(a_a),a(b_b)));
+	check(isA(a(a_a),a(b_b)));
 	check(findAnswers("schwarzes iphone xs").size());
 	dissectWord(a(P20_Pro));
 	parse("P20_Pro");

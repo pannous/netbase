@@ -81,75 +81,9 @@ bool checkSanity(char *q, int len);
 
 bool checkHideStatement(Statement *s);
 
-char *fixName(char *name) {
-	if (!name)return (char *) "";
-	int len = (int) strlen(name);
+char *fixName(char *name);
 
-	while (--len >= 0) {
-		if (name[len] == '_')name[len] = ' ';// json-save!
-		if (name[len] == 9)name[len] = ' ';// json-save!
-		if (name[len] == '"')name[len] = '\'';// json-save!
-		if (name[len] == '`')name[len] = '\'';// json-save!
-	}
-	if (name[0] == '\'' or name[0] == '`')return name + 1;
-	if (startsWith(name, "entities"))
-		name += 9;
-	if (startsWith(name, "ee "))
-		name += 3;
-	return name;
-}
-
-// whats this??
-char *getStatementTitle(Statement *s, Node *n) {
-	if (!checkStatement(s))return (char *) "";
-	if (s->Object() == n)return getText(s->Subject());
-//	if(s->Subject()==n)
-	return getText(s->Object());// default
-}
-
-
-deque<Statement *> sortStatements(Node *node, bool use_topic) {
-	newQuery();
-	deque<Statement *> statements;
-	int count=0;
-	Statement *s=0;
-	while ((s = nextStatement(node, s)) and count++ < lookupLimit) {// resultLimit
-		if (!checkStatement(s)) {
-			p("!checkStatement(s)");
-			bad();
-			show(s);
-			break;
-		}
-//				if (!checkStatement(s))continue;// DANGER!
-//				if(!got_topic and ( s->predicate==_Type or s->predicate==_SuperClass)){
-//					addStatementToNode(node, s->id(), true);// next time
-//				}
-		//
-		if (use_topic and verbosity != verbose and verbosity != alle and verbosity != normal and
-		    (s->predicate > 100 or s->predicate < -100))
-			continue;// only important stuff here!
-		// filter statements
-
-//				if(eq(s->Predicate()->name,"Offizielle Website") and !contains(s->Object()->name,"www"))
-//					continue;
-
-		if (s->predicate == _derives or s->predicate == _derived) {// cognet
-			statements.push_front(s);
-			p("_derives!");
-		} else if (s->subject == node->id and s->predicate != 4)//_instance
-			statements.push_front(s);
-		else statements.push_back(s);
-	}
-//			if(get_topic and verbosity!=shorter){
-//				NV topics=getTopics(node);
-//				N s=topics[0];
-//				for (int j = 0; j < topics.size() and j<=resultLimit; j++) {
-//					N s=topics[j];
-//					Temporary statement (node,topic,s)
-//					statements.push_front(s);
-//				}
-//			}
-}
+deque<Statement *> sortStatements(Node *node, bool use_topic);
 
 /* CENTRAL METHOD to parse and render html request*/
 int handle(cchar *q0, int conn) {
@@ -425,6 +359,8 @@ int handle(cchar *q0, int conn) {
 			all= findAnswers(q);
 		else if(entities)
 		 all= findEntites(q);
+		else if (isNumber(q))
+			all = wrap(get(q));
 		else if(seo)
 			all = wrap(getSeo(q));
 		else
@@ -690,6 +626,77 @@ int handle(cchar *q0, int conn) {
 //	pf("Warnings/excluded: %d\n", warnings);
 	return 0;// 0K
 }
+
+char *fixName(char *name) {
+	if (!name)return (char *) "";
+	int len = (int) strlen(name);
+
+	while (--len >= 0) {
+		if (name[len] == '_')name[len] = ' ';// json-save!
+		if (name[len] == 9)name[len] = ' ';// json-save!
+		if (name[len] == '"')name[len] = '\'';// json-save!
+		if (name[len] == '`')name[len] = '\'';// json-save!
+	}
+	if (name[0] == '\'' or name[0] == '`')return name + 1;
+	if (startsWith(name, "entities"))
+		name += 9;
+	if (startsWith(name, "ee "))
+		name += 3;
+	return name;
+}
+
+// whats this??
+char *getStatementTitle(Statement *s, Node *n) {
+	if (!checkStatement(s))return (char *) "";
+	if (s->Object() == n)return getText(s->Subject());
+//	if(s->Subject()==n)
+	return getText(s->Object());// default
+}
+
+
+deque<Statement *> sortStatements(Node *node, bool use_topic) {
+	newQuery();
+	deque<Statement *> statements;
+	int count=0;
+	Statement *s=0;
+	while ((s = nextStatement(node, s)) and count++ < lookupLimit) {// resultLimit
+		if (!checkStatement(s)) {
+			p("!checkStatement(s)");
+			bad();
+			show(s);
+			break;
+		}
+//				if (!checkStatement(s))continue;// DANGER!
+//				if(!got_topic and ( s->predicate==_Type or s->predicate==_SuperClass)){
+//					addStatementToNode(node, s->id(), true);// next time
+//				}
+		//
+		if (use_topic and verbosity != verbose and verbosity != alle and verbosity != normal and
+		    (s->predicate > 100 or s->predicate < -100))
+			continue;// only important stuff here!
+		// filter statements
+
+//				if(eq(s->Predicate()->name,"Offizielle Website") and !contains(s->Object()->name,"www"))
+//					continue;
+
+		if (s->predicate == _derives or s->predicate == _derived) {// cognet
+			statements.push_front(s);
+			p("_derives!");
+		} else if (s->subject == node->id and s->predicate != 4)//_instance
+			statements.push_front(s);
+		else statements.push_back(s);
+	}
+//			if(get_topic and verbosity!=shorter){
+//				NV topics=getTopics(node);
+//				N s=topics[0];
+//				for (int j = 0; j < topics.size() and j<=resultLimit; j++) {
+//					N s=topics[j];
+//					Temporary statement (node,topic,s)
+//					statements.push_front(s);
+//				}
+//			}
+}
+
 
 bool checkSanity(char *q, int len) {
 	bool bad = false;
