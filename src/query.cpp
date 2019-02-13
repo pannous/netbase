@@ -2153,11 +2153,14 @@ NV filterCandidates(NV all, string query) {
 	for (int i = 0; i < size; i++) {
 		N entity = all[i];
 		if (isAbstract(entity)) {
+			bool ok=0;
 			NV more = allInstances(entity);
 			for (N n : more)
-				if (eq(n->name, entity->name))
+				if (eq(n->name, entity->name)){
 					all.push_back(n);
-//			mergeVectors(&all, more);
+					ok=1;
+				}
+			if(ok) all.erase(all.begin() + i);
 		}
 	}
 //	size=(int)all.size();
@@ -2170,8 +2173,6 @@ NV filterCandidates(NV all, string query) {
 }
 
 
-//vector<cchar*>
-//N
 map<int, bool> loadBlacklist(bool reload/*=false*/) {
 	N blacklist = getAbstract("entity blacklist");
 	map<int, bool> forbidden; // int: wordHash
@@ -2212,11 +2213,13 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 			bool ok=0;
 			for(auto &instance: instanceFilter(entity)){
 				if(instance!=entity){
+					startPositions[instance->id] = startPositions[entity->id];
+					endPositions[instance->id] = endPositions[entity->id];
 				all.push_back(instance);
-				ok=1; // only delete abstract if it has instance
+				if(eq(instance->name, entity->name)) ok=1; // only delete abstract if it has same instance
 				}
 			}
-//			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
+			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
 		}
 	}
 

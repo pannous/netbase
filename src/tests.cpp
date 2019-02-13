@@ -1305,6 +1305,7 @@ void testWins() {
 		import("dias.n3");
 		deleteWord("rote");// rot stemming :( TODO
 	}
+	findAnswers("standby dauer");
 	check(findAnswers("Bildschirm Diagonale").size()>0);
 	handle("/qa/a telekom speedsticks");
 	handle("/qa/Bildschirm Diagonale");
