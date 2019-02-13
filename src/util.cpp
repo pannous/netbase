@@ -1039,12 +1039,35 @@ void sortNodes(NodeVector &all) {
 	//	std::sort(all.begin(),all.end(),);
 }
 
-int wordCount(cchar *c) {
-	size_t len = strlen(c);
+int findChar(cchar *phrase,char c) {
+	return indexOf(phrase, c);
+}
+
+int indexOf(cchar *phrase,char c) {
+	size_t len = strlen(phrase);
+	for (size_t i = 0; i < len; i++)
+		if (phrase[i] == c)return i;
+	return -1;
+}
+
+int indexOfReverse(cchar *phrase,char c) {
+	size_t len = strlen(phrase);
+	for (size_t i = len - 1; i > 0; --i)
+		if (phrase[i] == c)return i;
+	return -1;
+}
+
+
+int countChar(cchar *phrase,char c) {
+	size_t len = strlen(phrase);
 	int count = 1;
 	for (size_t i = len - 1; i > 0; --i)
-		if (c[i] == ' ')count++;
+		if (phrase[i] == c)count++;
 	return count;
+}
+
+int wordCount(cchar *phrase) {
+	return countChar(phrase,' ');
 }
 
 bool empty(char *c) {

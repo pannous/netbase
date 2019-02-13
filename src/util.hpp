@@ -144,5 +144,9 @@ int len(cchar* c);
 //template<typename T> int len(T* c); doesnt
 //template<typename T> int len(vector<T> c,allocator<T> o);
 int wordCount(cchar* c);
+int countChar(cchar *phrase,char c);
+int findChar(cchar *phrase,char c) ;
+int indexOf(cchar *phrase,char c);
+int indexOfReverse(cchar *phrase,char c);
 string generateSEOUrl(string input);
 void error(string err);

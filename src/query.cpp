@@ -2133,7 +2133,7 @@ char * containsSubstring(vector<char *> &words, char *sub) {
 	return 0;
 }
 
-NV filterCandidates(NV all, string query) {
+NV filterCandidates(NV all, string query, bool strict) {
 	VC words;
 	int size = (int) all.size();
 	for (int i = size - 1; i >= 0; i--)
@@ -2145,7 +2145,7 @@ NV filterCandidates(NV all, string query) {
 	for (int i = size - 1; i >= 0; i--) {
 		N entity = all[i];
 		char* longer = containsSubstring(words, entity->name);
-		if (longer and contains(query.data(), longer, true))
+		if (longer and contains(query.data(), longer, true) and not eq(longer,entity->name))
 			all.erase(all.begin() + i);
 	}
 	//	all.shrink_to_fit();
@@ -2153,14 +2153,15 @@ NV filterCandidates(NV all, string query) {
 	for (int i = 0; i < size; i++) {
 		N entity = all[i];
 		if (isAbstract(entity)) {
-			bool ok=0;
 			NV more = allInstances(entity);
 			for (N n : more)
-				if (eq(n->name, entity->name)){
-					all.push_back(n);
-					ok=1;
+				if (!strict or eq(n->name, entity->name)){// only exact here, lables later!
+					if(!contains(all,n)){
+						startPositions[n->id]=startPositions[entity->id];
+						endPositions[n->id]=endPositions[entity->id];
+						all.push_back(n);
+					}
 				}
-			if(ok) all.erase(all.begin() + i);
 		}
 	}
 //	size=(int)all.size();
@@ -2204,10 +2205,8 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 //	return blacklist;
 }
 
-NV questionAnswering(){}
-NV findAnswers(cchar *query0, bool answerQuestions) {
-	NV all = findEntites(query0);
-
+void addInstances(NV all){
+    // previously only exact matches, now also lables
 	for (auto &entity: all) { // remove abstracts ... Rlly?
 		if (isAbstract(entity)) {
 			bool ok=0;
@@ -2215,14 +2214,22 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 				if(instance!=entity){
 					startPositions[instance->id] = startPositions[entity->id];
 					endPositions[instance->id] = endPositions[entity->id];
-				all.push_back(instance);
-				if(eq(instance->name, entity->name)) ok=1; // only delete abstract if it has same instance
+					if(!contains(all,instance)) all.push_back(instance);
+					if(eq(instance->name, entity->name)) ok=1; // only delete abstract if it has same instance
 				}
 			}
 			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
 		}
 	}
+	return;// all;
+}
 
+NV questionAnswering(){}
+NV findAnswers(cchar *query0, bool answerQuestions) {
+	NV all = findEntites(query0, false);
+//	addInstances(all);
+//	addInstances(all);// lables of instances too!
+//	removeAbstracts(all);
 	if(!answerQuestions) return all;
 
 	for (auto &entity: all) {
@@ -2308,11 +2315,13 @@ N entity=0;
 
 
 // Amerika => http://de.netbase.pannous.com:81/html/828
-NV findEntites(cchar *query0) {
+NV findEntites(cchar *query0, bool strict /*=true*/) {
 	autoIds = false;
 	char *query = modifyConstChar(query0);
 	query = replaceChar(query, '+', ' ');
 	query = replaceChar(query, '.', ' ');
+	query = replaceChar(query, ',', ' ');
+	query = replaceChar(query, '/', ' ');
 	query = replaceChar(query, '?', ' ');
 	query = replaceChar(query, '!', ' ');
 	query = replaceChar(query, '[', ' ');
@@ -2389,7 +2398,7 @@ NV findEntites(cchar *query0) {
 		if (!mid)mid = end;
 	}
 	free(query);
-	return filterCandidates(all,query0);
+	return filterCandidates(all,query0, strict);
 }
 
 //
