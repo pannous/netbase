@@ -1293,6 +1293,11 @@ void testWinsOK(){
 
 }
 
+NV qa(char* text){
+	NV as=findAnswers(text);
+	return as;
+}
+
 void testWins() {
 //	clearMemory();
 	germanLabels=1;
@@ -1305,12 +1310,25 @@ void testWins() {
 		import("dias.n3");
 		deleteWord("rote");// rot stemming :( TODO
 	}
+	qa("Bildschirm Diagonale");
+
+
 	learn("Arbeitszeit lable Laufzeit");
 	Node *Akkulaufzeit = findKey(a(Laufzeit));
 	Node *spec3283 = a(attr_spec_3283_double);
 	Node *spec11986 = a(attr_spec_11986_double);
 	check(eq(Akkulaufzeit, spec3283)||eq(Akkulaufzeit, spec11986));
 //	findAnswers("standby zeit");
+
+//    N key8413=a(attr_key_8413_double);
+	N key8413=the(attr_key_8413_double);
+	check(findKey(findAnswers("sar wert")[0])==key8413);
+	check(findKey(findAnswers("sar-wert")[0])==key8413);
+	check(findKey(findAnswers("sarwert")[0])==key8413);
+
+	check(findKey(findAnswers("SAR WERT")[0])==key8413);
+	check(findKey(findAnswers("SAR-WERT")[0])==key8413);
+	check(findKey(findAnswers("SarWERT")[0])==key8413);
 	findAnswers("sar wert");
 	dissectWord("Arbeitszeit_(Akkulaufzeit)");
 	findAnswers("galaxy schwarz");
@@ -1318,11 +1336,11 @@ void testWins() {
 //	dissectWord(get("breite_Betrachtungs\u00ADwinkel;_fettabweisende_Beschichtung;_Unterstützung_für_die_Anzeige_mehrerer_Sprachen_und_Zeichen_gleichzeitig;_Display_Zoom;_ Einhandmodus"));
 	check(a(Abmessungen in mm (LxBxH)->id==105));
 //	instanceFilter(a(breite));
-	check(contains(instanceFilter(get(3791)),a(Abmessungen in mm (LxBxH))));
 	check(contains(instanceFilter(the(breite)),a(Abmessungen in mm (LxBxH))));
 //	check(contains(instanceFilter(a(breite)),a(Abmessungen in mm (LxBxH))));
 	findAnswers("/qa/breite");
 	findAnswers("standby dauer");
+
 	check(findAnswers("Bildschirm Diagonale").size()>0);
 	handle("/qa/a telekom speedsticks");
 	handle("/qa/Bildschirm Diagonale");

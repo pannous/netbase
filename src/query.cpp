@@ -2276,9 +2276,8 @@ void removeAbstracts(NV& all) {
 
 NV findAnswers(cchar *query0, bool answerQuestions) {
 	NV all = findEntites(query0, true);
-//	addInstances(all);
 //	addInstances(all);// lables of instances too!
-	removeAbstracts(all);// DONT? http://localhost:6060/json/short/qa/standby%20zeit
+//	removeAbstracts(all);// DONT? SAR WERT / Bildschirm Diagonale
 	if(!answerQuestions) return all;
 
 	for (auto &entity: all) {

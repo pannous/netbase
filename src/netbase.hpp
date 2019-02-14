@@ -1,5 +1,5 @@
-static char* /*increase-package-version.py*/
-version="1.6.4";
+static char* /*increase-package-version.py src/netbase.hpp*/
+version="1.6.5";
 
 #pragma once
 #include <stdio.h>
