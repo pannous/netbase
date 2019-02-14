@@ -1983,6 +1983,21 @@ bool isUrl(char *predicateName) {
  or eq(predicateName, "P953") or eq(predicateName, "P963") or eq(predicateName, "P2699");// website
 	// P973 Wird beschrieben in URL   P953 Fulltext hmmm  P963 Downloadlink not used P2699 URL not used
 }
+
+#include <time.h>       /* time_t, struct tm, time, localtime, strftime */
+void timestamp(){
+	time_t rawtime;
+	struct tm * timeinfo;
+	char formatted [80];
+
+	time (&rawtime);
+	timeinfo = localtime (&rawtime);
+
+	strftime (formatted,80,"%Y-%m-%d",timeinfo);// or just %F
+	puts (formatted);
+	addStatement(get("last import"),get("timestamp"),get(formatted));
+}
+
 //#define var auto
 //#define let auto
 bool importN3(cchar *file) {//,bool fixNamespaces=true) {
@@ -2003,6 +2018,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	int linecount = 0;
 //	char* line=(char*) malloc(MAX_CHARS_PER_LINE* sizeof(char));
 	char line[MAX_CHARS_PER_LINE * sizeof(char)];
+	timestamp();
 	while (readFile(file, &line[0])) {
 		if (line[0] == 0)continue;// skip gzip new_block
 //		if(debug and !contains(line, "P20Pro"))
