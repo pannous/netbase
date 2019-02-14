@@ -131,7 +131,7 @@ Node *EndsWith;
 Node *UsageContext;
 
 
-void addLabel(Node *relation, const char lable[5]);
+void addLabel(Node *relation, const char* lable);
 
 map<cchar*,Node*> nameMap;
 
@@ -475,11 +475,14 @@ void addSynonymsDE(){
 	addLabel(Greater, "groesser");
 	addLabel(Greater, "groeßer");
 	addLabel(Greater, "grösser");
+	addLabel(Greater, "mindestens");
+	addLabel(Greater, "zumindest");
 
 //	<
 	addLabel(Smaller, "kleiner");
 	addLabel(Smaller, "weniger");
 	addLabel(Smaller, "geringer");
+	addLabel(Smaller, "höchstens");
 
 //	=
 	addLabel(Equals, "gleich");

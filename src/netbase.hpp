@@ -592,6 +592,7 @@ bool checkStatement(Statement *s,bool checkSPOs=false,bool checkNamesOfSPOs=fals
 void checkRootContext();
 Node* number(int n);
 void dissectParent(Node* subject,bool checkDuplicates=false);
+Node *dissectWord(char* word);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);

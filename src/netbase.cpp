@@ -1105,7 +1105,9 @@ void dissectParent(Node *subject, bool checkDuplicates) {
 //Zeitschriftenverlag   Verlag_Technik
 
 bool dontDissect(char *name);
-
+Node *dissectWord(char* word){
+	return dissectWord(get(word));
+}
 Node *dissectWord(Node *subject, bool checkDuplicates) {
 	autoIds = false;
 	Node *original = subject;
@@ -1130,7 +1132,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	if (dontDissect(subject->name))
 		return subject;
 
-	int len;
+	int length=str.length();
 	int type;
 	int commata=countChar(thing, ',')+countChar(thing, ';');
 	int words = wordCount(thing);
@@ -1138,15 +1140,16 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		type = indexOfReverse(thing, ',');
 		if (type<0) type = indexOfReverse(thing, ';');
 		if (type < 0) return original;
-		if(str.length() - type <= 2) return original;
+		if(length - type <= 2) return original;
 		thing[type]=0; // cut
+		length = len(thing);
 		Node *a = getThe(thing+type+1);
 		if (words <= 3 ) { // and !wiki
 		    Node *b = getThe(thing);
 			addStatement(a, Instance, subject, true);
 			addStatement(b, Instance, subject, true);
-			addStatement(subject, Label, a, true);
-			addStatement(subject, Label, b, true);
+//			addStatement(subject, Label, a, true);
+//			addStatement(subject, Label, b, true);
 			dissectWord(b); // may be done already
 		} else {
 //			addStatement(subject, See, a, true);
@@ -1155,14 +1158,14 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	}
 
 	type = (int) str.find("(");
-	if (type > 0 and len - type > 2) {        // not (030)4321643 !
+	if (type > 0 and length - type > 2) {        // not (030)4321643 !
 		int to = (int) str.find(")");
 		string str2 = str.substr(type + 1, to - type - 1);
 		const char *data = str2.data();
 		Node *clazz = getThe(data); //,str.find(")")
 		Node *word;
 		if (type > 0) word = getThe(str.substr(0, type - 1).data()); //deCamel
-		else word = getThe(str.substr(to + 1, len - 1).data()); //deCamel
+		else word = getThe(str.substr(to + 1, length - 1).data()); //deCamel
 
 		// if(!wiki)
 		addStatement(word, Label, clazz, true);
@@ -1174,17 +1177,18 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(clazz, Instance, subject, true);
 //		addStatement(subject, Instance, clazz, true);
 		addStatement(subject, Label, word, true);
+		addStatement(subject, Label, clazz, true);
 		//	  return;
 		if (word) str = word->name;
 		else str = str2;
-		len = (int) str.length();
+		length = (int) str.length();
 		//    subject=word;
 	}
 	type = (int) str.find(" in ");
 	if (type < 0) type = (int) str.find(" am ");
 	if (type < 0) type = (int) str.find(" im ");
 	if (type < 0) type = (int) str.find(" at ");
-	if (type >= 0 and len - type > 2) {
+	if (type >= 0 and length - type > 2) {
 		Node *at = the(location);
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		Node *ort = getThe(str.substr(type + 4).data());
@@ -1196,7 +1200,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		return original;
 	}
 	type = (int) str.find(" from ");
-	if (type >= 0 and len - type > 4) {
+	if (type >= 0 and length - type > 4) {
 		Node *from = getThe("from");
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		Node *ort = getThe(str.substr(type + 6).data());
@@ -1205,7 +1209,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	}
 	type = (int) str.find(" for ");
 	if (type < 0)type = (int) str.find(" für ");
-	if (type >= 0 and len - type > 5) {
+	if (type >= 0 and length - type > 5) {
 		Node *from = getThe("for");
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		Node *obj = getThe(str.substr(type + 5).data());
@@ -1213,7 +1217,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(subject, from, obj, checkDuplicates);
 	}
 	type = (int) str.find(" bei ");
-	if (type >= 0 and len - type > 2) {
+	if (type >= 0 and length - type > 2) {
 		Node *in = getThe("near");
 		//    check(eq(getThe("near")->name,"near"));
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
@@ -1226,7 +1230,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 
 	type = (int) str.find("'s ");
 	if (type < 0) type = (int) str.find("s' ");// Oswalds' Cave ?
-	if (type >= 0 and len - type > 2) {
+	if (type >= 0 and length - type > 2) {
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		const char *o = str.substr(type + 4).data();
 		Node *ort = getThe(o);
@@ -1239,7 +1243,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	if (type < 0) type = (int) str.find(" de "); // de la Casa
 	if (type < 0) type = (int) str.find(" du ");
 	// della de la del des
-	if (type >= 0 and len - type > 2) {
+	if (type >= 0 and length - type > 2) {
 		Node *hat = Member;
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		const char *o = str.substr(type + 4).data();
@@ -1252,7 +1256,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	if (type < 0) type = (int) str.find(" des ");
 	if (type < 0) type = (int) str.find(" del ");
 	// della
-	if (type >= 0 and len - type > 2) {
+	if (type >= 0 and length - type > 2) {
 		Node *hat = Member;
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		string so = str.substr(type + 5); // keep! dont autofree
@@ -1261,7 +1265,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(ort, hat, subject, checkDuplicates);
 	}
 	type = (int) str.find(" von ");
-	if (type >= 0 and len - type > 2) {
+	if (type >= 0 and length - type > 2) {
 		Node *hat = Member;
 		Node *word = getThe(str.substr(0, type).data()); //deCamel
 		string so = str.substr(type + 5); // keep! dont autofree
@@ -1270,7 +1274,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		addStatement(ort, hat, subject, checkDuplicates);
 	}
 	type = (int) str.find(". ");
-	if (type >= 0 and len - type > 2 and isNumber(str.data())) {
+	if (type >= 0 and length - type > 2 and isNumber(str.data())) {
 		Node *nr = getThe(str.substr(0, type).data()); //deCamel
 		Node *word = getThe(str.substr(type + 2).data());
 		addStatement(word, Instance, subject, checkDuplicates);
@@ -1288,7 +1292,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 //		Node* word = getThe(t); //deCamel
 //		addStatement(word, Synonym, subject, true);
 		while (true) {
-		len = (int) str.length();
+		length = (int) str.length();
 		type = str.find(" ");// needs to be at end because of  " in " ...
 		if (type < 0) type = (int) str.find(",");
 		if (type < 0) type = str.find("_");
@@ -1296,12 +1300,13 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		if (type < 0) type = str.find("/");
 		if (type < 0) type = str.find(":");
 		if (type < 0) type = str.find("+");
-		if (type < 0 || len - type <= 2) break;
+		if (type < 0 || length - type <= 2) break;
 		const char *head = str.substr(0, type).data();
 		str = str.substr(type + 1);
 		Node *first = getThe(head);
-		if (count < 3)
-			addStatement(subject, Label, first, checkDuplicates);
+//		if (count < 3)
+//			addStatement(subject, Label, first, checkDuplicates);//
+// Galaxy A6 	Label 	Galaxy  nee
 		addStatement(first, Instance, subject, checkDuplicates);
 	}
 	if (!eq(subject->name, str.data()) and count < 3)

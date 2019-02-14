@@ -833,6 +833,7 @@ NodeVector filter(Query &q, Node *_filter, int limit) {
 
 
 
+
 //char* all="*";
 
 void enqueueClass(Query &q, queue<Node *> &classQueue, Node *c) {
@@ -1620,6 +1621,7 @@ NodeVector memberFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 }
 
 
+
 NodeVector parentFilter2(Node *subject, NodeQueue *queue, bool backInstances, int *enqueued) {
 	NodeVector all;
 	if (stopAtGoodWiki(subject) or filterWikiType(subject->id)) {
@@ -1944,6 +1946,40 @@ NodeVector findAllSubclasses(Node *fro) {
 	return setToVector(all);
 }
 
+
+bool found_attribute= false;
+Node* findKey(Node *fro) {
+	context = getContext(0);
+
+	long byteCount = maxNodes * sizeof(int); // context->nodeCount
+	int *enqueued = (int *) malloc(byteCount);
+	if (enqueued == 0)throw "out of memory for findPath";
+	memset(enqueued, 0, byteCount);// Necessary?
+	NodeQueue q;
+	q.push(fro);
+	Node *current;
+	Node *key_type = getThe("key");
+	while ((current = q.front())) {
+		if (q.empty())break;
+		q.pop();
+		if (!checkNode(current, 0, true))
+			continue;
+		Node *key = findProperty(current, key_type, false, 1000, false);
+		if(key){
+			found_attribute= false;
+			return key;
+		}
+		Node *id = findProperty(current, ID, false, 1000, false);
+		if (id) {
+			found_attribute= true;
+			return id;
+		}
+		instanceFilter(current, &q,enqueued);
+	}
+	return 0;
+}
+
+
 // ONE path! See findAll for all leaves
 NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) {
 	context = getContext(0);
@@ -2133,7 +2169,7 @@ char * containsSubstring(vector<char *> &words, char *sub) {
 	return 0;
 }
 
-NV filterCandidates(NV all, string query, bool strict) {
+void filterCandidates(NV& all, string query, bool strict) {
 	VC words;
 	int size = (int) all.size();
 	for (int i = size - 1; i >= 0; i--)
@@ -2145,7 +2181,7 @@ NV filterCandidates(NV all, string query, bool strict) {
 	for (int i = size - 1; i >= 0; i--) {
 		N entity = all[i];
 		char* longer = containsSubstring(words, entity->name);
-		if (longer and contains(query.data(), longer, true) and not eq(longer,entity->name))
+		if (longer and contains(query.data(), longer, 1,1) and not eq(longer,entity->name))
 			all.erase(all.begin() + i);
 	}
 	//	all.shrink_to_fit();
@@ -2170,7 +2206,6 @@ NV filterCandidates(NV all, string query, bool strict) {
 //		if(containsSubstring(words, entity->name))
 //			all.erase(all.begin()+i);
 //	}
-	return all;
 }
 
 
@@ -2225,11 +2260,25 @@ void addInstances(NV all){
 }
 
 NV questionAnswering(){}
+
+void removeAbstracts(NV& all) {
+	for(int i=all.size()-1;i>=0;i--){
+		N entity=all[i];
+		if (isAbstract(entity))
+			all.erase(all.begin()+i);
+	}
+
+//	for (auto &entity: all) {
+//		if (isAbstract(entity))
+//			all.erase(std::remove(all.begin(), all.end(), entity), all.end());
+//	}
+}
+
 NV findAnswers(cchar *query0, bool answerQuestions) {
-	NV all = findEntites(query0, false);
+	NV all = findEntites(query0, true);
 //	addInstances(all);
 //	addInstances(all);// lables of instances too!
-//	removeAbstracts(all);
+	removeAbstracts(all);// DONT? http://localhost:6060/json/short/qa/standby%20zeit
 	if(!answerQuestions) return all;
 
 	for (auto &entity: all) {
@@ -2398,7 +2447,8 @@ NV findEntites(cchar *query0, bool strict /*=true*/) {
 		if (!mid)mid = end;
 	}
 	free(query);
-	return filterCandidates(all,query0, strict);
+	filterCandidates(all,query0, strict);
+	return all;
 }
 
 //
@@ -2664,6 +2714,7 @@ map<Node *, Node *> normed;
 
 char *getID(Node *node) {
 	N found = 0;
+	if (!found)found = findKey(node);
 	if (!found)found = findProperty(node, ID, false, 1000, false);
 	if (!found)found = findProperty(node, getThe("key"), false, 1000, false);
 	if (!found)found = findProperty(normEntity(node), ID, false, 1000, false);

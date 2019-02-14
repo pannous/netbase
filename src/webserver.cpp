@@ -487,13 +487,14 @@ int handle(cchar *q0, int conn) {
 //    if(verbosity != alle and !get_topic)
 //			loadView(node);
 		bool got_topic = false;
+		char *id = 0;
 		if(use_json and get_norm){
 			N t=normEntity(node);// or getTopic(node);
 			if(t){
 				Writeline(conn, ",\n\t \"normed_id\":" + itoa(t->id));
 				Writeline(conn, ", \"normed\":\"" + string(fixName(t->name)) + "\"");
 			}
-			char *id = getID(node);
+			id=getID(node);
 			if(id)replace(id, ' ', '_');// hack back
 			if(id) Writeline(conn, ", \"key\":\"" + string(id) + "\"");// uid? nah: blau
 			int start = startPositions[node->id];
@@ -502,7 +503,7 @@ int handle(cchar *q0, int conn) {
 				int end = endPositions[node->id];
 				if(end<0)end=endPositions[abstracto->id];
 				char *match = substr(q, start - 1, end);
-				if(!eq(node->name,match,0,0))
+				if(!eq(node->name,match,1,1))
 					Writeline(conn, ", \"match\":\"" + string(match) + "\"");
 			}
 		}
@@ -517,6 +518,8 @@ int handle(cchar *q0, int conn) {
 			if (t and eq(t->name,node->name)) t = null;
 			if (!checkNode(ty, -1, false, true))ty = null;
 			if (ty and eq(ty->name,node->name)) ty = null;
+			if(id && found_attribute)ty = Attribute;
+			if(id && !found_attribute)ty = getThe("attributevalue");// hack
 			if (c != Entity and c != _Node and  c!=node) {
 				Writeline(conn, ",\n\t \"class_id\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");

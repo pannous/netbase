@@ -1305,9 +1305,17 @@ void testWins() {
 		import("dias.n3");
 		deleteWord("rote");// rot stemming :( TODO
 	}
+	learn("Arbeitszeit lable Laufzeit");
+	Node *Akkulaufzeit = findKey(a(Laufzeit));
+	Node *spec3283 = a(attr_spec_3283_double);
+	Node *spec11986 = a(attr_spec_11986_double);
+	check(eq(Akkulaufzeit, spec3283)||eq(Akkulaufzeit, spec11986));
+//	findAnswers("standby zeit");
+	findAnswers("sar wert");
+	dissectWord("Arbeitszeit_(Akkulaufzeit)");
 	findAnswers("galaxy schwarz");
 //	instanceFilter(get(3791));
-	dissectWord(get("breite_Betrachtungs\u00ADwinkel;_fettabweisende_Beschichtung;_Unterstützung_für_die_Anzeige_mehrerer_Sprachen_und_Zeichen_gleichzeitig;_Display_Zoom;_ Einhandmodus"));
+//	dissectWord(get("breite_Betrachtungs\u00ADwinkel;_fettabweisende_Beschichtung;_Unterstützung_für_die_Anzeige_mehrerer_Sprachen_und_Zeichen_gleichzeitig;_Display_Zoom;_ Einhandmodus"));
 	check(a(Abmessungen in mm (LxBxH)->id==105));
 //	instanceFilter(a(breite));
 	check(contains(instanceFilter(get(3791)),a(Abmessungen in mm (LxBxH))));

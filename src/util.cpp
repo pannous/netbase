@@ -113,7 +113,7 @@ bool contains(const char *x, const char y) {
 	return false;
 }
 
-bool contains(const char *x, const char *y, bool ignoreCase) {
+bool contains(const char *x, const char *y, bool ignoreCase, bool ignoreUnderscore) {
 	// Sonderfall: contains("abc","")==false
 	if (!x or !y) return false;
 	if (x[0] == 0 or y[0] == 0) return false;
@@ -121,6 +121,8 @@ bool contains(const char *x, const char *y, bool ignoreCase) {
 	if (ignoreCase) {
 		char *mx = tolower(x);
 		char *my = tolower(y);
+		if(ignoreUnderscore)replaceChar(mx, '_', ' ');
+		if(ignoreUnderscore)replaceChar(my, '_', ' ');
 		bool does_contain = strstr(mx, my) >= mx;
 		free(mx);
 		free(my);
@@ -1060,14 +1062,14 @@ int indexOfReverse(cchar *phrase,char c) {
 
 int countChar(cchar *phrase,char c) {
 	size_t len = strlen(phrase);
-	int count = 1;
+	int count = 0;
 	for (size_t i = len - 1; i > 0; --i)
 		if (phrase[i] == c)count++;
 	return count;
 }
 
 int wordCount(cchar *phrase) {
-	return countChar(phrase,' ');
+	return countChar(phrase,' ')+1;
 }
 
 bool empty(char *c) {

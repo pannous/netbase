@@ -35,7 +35,7 @@ cchar* cut_to(cchar* str,cchar* match);
 char* cut_to(char* str,cchar* match);
 char* keep_to(char* str, cchar* match);
 bool contains(const char* x, const char y);
-bool contains(const char* x,const char* y,bool ignoreCase=false);
+bool contains(const char* x,const char* y,bool ignoreCase=false, bool ignoreUnderscore= false);
 //bool contains(const char* x,const char* y);
 //bool contains(NodeVector& all,Node* node);
 
