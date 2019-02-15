@@ -297,7 +297,7 @@ bool addStatementToNode(Node *node, int statementId, bool insert_at_start = fals
 		Statement *to_insert = &context->statements[statementId];
 		//		if (to_insert->Predicate == Instance and to_insert->Subject == node or to_insert->Predicate == Type and to_insert->Object == node) {
 		Node *predicate = to_insert->Predicate();
-		insert_at_start = insert_at_start or predicate == ID and to_insert->subject == node->id;
+		insert_at_start = insert_at_start or predicate == ID; // and to_insert->subject == node->id;
 		insert_at_start = insert_at_start or predicate == Label and to_insert->subject == node->id;
 		insert_at_start = insert_at_start or predicate == Type and to_insert->subject == node->id;
 		insert_at_start = insert_at_start or predicate == SuperClass and to_insert->subject == node->id;
@@ -568,9 +568,9 @@ Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId
 bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bool report) {//
 //	bool report=true;
 	if (node == 0) {
-		bad();// too common
+		if(report)bad();// too common
 //		bad("checkNode node == 0");
-		if (debug)
+		if (report && debug)
 			printf("^"); // p("null node");
 		//		p(nodeId);
 		return false;
@@ -1152,8 +1152,8 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 //			addStatement(subject, Label, b, true);
 			dissectWord(b); // may be done already
 		} else {
-//			addStatement(subject, See, a, true);
-			addStatement(a, Instance, subject, true);
+			if (words <= 8 )
+				addStatement(a, See, subject, true);
 		}
 	}
 
@@ -1306,7 +1306,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		Node *first = getThe(head);
 		if (count <= 3)
 			addStatement(first, Instance, subject, checkDuplicates);
-		else
+		else if (count <= 8 )
 			addStatement(first, See, subject, checkDuplicates);
 //			addStatement(subject, Label, first, checkDuplicates);// Galaxy A6 	Label 	Galaxy  nee  aber Angela Label Merkel?
 	}

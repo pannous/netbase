@@ -1310,12 +1310,32 @@ void testWins() {
 		import("dias.n3");
 		deleteWord("rote");// rot stemming :( TODO
 	}
+//	check(getTopic(the(GB))==Unit);
+
+	check(findKey(the(Bildschirm Diagonale)));
+	check(findKey(the(Standby Dauer)));
+//    check(getTopic(the(Navigation))==Attribute); BREAKs above how??
+	findKey(the(Navigation));
+	check(found_attribute=1);
+	check(isA(a(Xperia), get("product")));
+	 check(findStatement(the(Xperia), Type, get("product")))
+//	check(findStatement(a(Xperia), Type, get("product")))
+	check(!findKey(the(Xperia)));
+//	check(!findKey(a(Xperia)));
+	check(!findKey(the(experia)));
+	check(!findKey(the(iphone)));
+	N unit = getTopic(the(GB));
+	p(unit);
+	check(unit==Unit or eq(unit, a(Unit)));
+	dissectWord("MicroSD-Speicherkarten");
+
 //	check(findProperty(the(GB),Unit));
 //	check(findDirectRelation(the(GB), Unit));
 
 //	check(findStatement(the(GB),Class,Unit));
 //	check(findStatement(Any,Unit,the(GB)));
 //	check(findStatement(Any,Unit,a(GB)));
+	handle("qa/Farben");
 	qa("Bildschirm Diagonale");
 
 
@@ -1323,6 +1343,7 @@ void testWins() {
 	Node *Akkulaufzeit = findKey(a(Laufzeit));
 	Node *spec3283 = a(attr_spec_3283_double);
 	Node *spec11986 = a(attr_spec_11986_double);
+	show(Akkulaufzeit, 0);
 	check(eq(Akkulaufzeit, spec3283)||eq(Akkulaufzeit, spec11986));
 //	findAnswers("standby zeit");
 

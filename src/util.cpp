@@ -121,8 +121,11 @@ bool contains(const char *x, const char *y, bool ignoreCase, bool ignoreUndersco
 	if (ignoreCase) {
 		char *mx = tolower(x);
 		char *my = tolower(y);
+//		if (normChar(x[i]) == normChar(y[i])) continue;
 		if(ignoreUnderscore)replaceChar(mx, '_', ' ');
 		if(ignoreUnderscore)replaceChar(my, '_', ' ');
+		if(ignoreUnderscore)replaceChar(mx, '-', ' ');
+		if(ignoreUnderscore)replaceChar(my, '-', ' ');
 		bool does_contain = strstr(mx, my) >= mx;
 		free(mx);
 		free(my);
@@ -424,11 +427,11 @@ void ps(string s) {    // string geht nicht!?!
 	fflush(stdout);
 }
 
-void ps(NodeVector v) {
+void ps(NodeVector v, bool showStatements) {
 	if (quiet) return;
 	NodeVector::iterator it;
 	for (it = v.begin(); it != v.end(); ++it)
-		show(*it);
+		show(*it,showStatements);
 }
 
 void ps(string *s) {

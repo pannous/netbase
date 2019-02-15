@@ -520,9 +520,10 @@ int handle(cchar *q0, int conn) {
 			if (t and eq(t->name,node->name)) t = null;
 			if (!checkNode(ty, -1, false, true))ty = null;
 			if (ty and eq(ty->name,node->name)) ty = null;
-			if(id && found_attribute)ty = Attribute;
-			if(id && !found_attribute)ty = getThe("attributevalue");// hack
-			if (c != Entity and c != _Node and  c!=node) {
+			if(id && found_attribute==1)ty = Attribute;
+			if(id && found_attribute==0)ty = getThe("attributevalue");// hack
+//			if( c == Attribute)ty = Attribute; // why? SIM-Karten-Slot attributevalue hack
+			if (c and c != Entity and c != _Node and  c!=node) {
 				Writeline(conn, ",\n\t \"class_id\":" + itoa(c->id));
 				Writeline(conn, ", \"class\":\"" + string(fixName(c->name)) + "\"");
 			}
@@ -530,7 +531,7 @@ int handle(cchar *q0, int conn) {
 				Writeline(conn, ",\n\t \"type_id\":" + itoa(ty->id));
 				Writeline(conn, ", \"type\":\"" + string(fixName(ty->name)) + "\"");
 			}
-			if (t != Entity and t and t!=node and ty != t and c != t ) {
+			if (t and t != Entity and t!=node and ty != t and c != t ) {
 				got_topic = true;
 				Writeline(conn, ",\n\t \"topic_id\":" + itoa(t->id));
 				Writeline(conn, ", \"topic\":\"" + string(fixName(t->name)) + "\"");

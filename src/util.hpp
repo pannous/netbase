@@ -56,7 +56,7 @@ bool isInteger(const char* buf);
 void ps(const char* s);
 void ps(string s);// string geht nicht!?!
 void ps(string* s);
-void ps(NodeVector v);
+void ps(NodeVector v, bool showStatements= false);
 void p(long l);
 void pl(long l);
 void pd(double l);

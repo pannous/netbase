@@ -139,6 +139,7 @@ Node *parseProperty(const char *data, bool deepSearch) {
 	return found;
 }
 
+bool short_mode= false;
 void console() {
 	quiet = false;
 	if (germanLabels)printf("\nDeutsch");
@@ -153,8 +154,8 @@ void console() {
 		getline(data);
 		bool _autoIds = autoIds;
 		NodeVector results = parse(data, false, false);// safeMode only for web access
-		if (results.size() == 1)show(results[0]);
-		else show(results);
+		if (results.size() == 1)show(results[0],!short_mode);
+		else showNodes(results, false); // !short_mode
 		autoIds = _autoIds;
 	}
 }
@@ -173,6 +174,7 @@ NodeVector runScript(const char *file) {
 	fclose(fp);
 	return last;
 }
+
 
 // CENTRAL CONSOLE INSTRUCTION PARSING
 NodeVector parse(const char *data0, bool safeMode, bool info) {
@@ -586,6 +588,12 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		data = next_word(data);
 		return wrap(add(data));
 	}
+	if (startsWith(data, ":block") || startsWith(data, ":blacklist")) {
+		data = next_word(data);
+		appendFile("import/blacklist.csv", data);
+		loadBlacklist();
+		return OK;
+	}
 
 	if (startsWith(data, ":topics")) {
 		data = next_word(data);
@@ -594,6 +602,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 	if (startsWith(data, ":topic") or startsWith(data, ":to")) {
 		data = next_word(data);
+		short_mode= true;
 		autoIds = true;
 		return wrap(getTopic(getThe(data, More)));
 	}
@@ -612,6 +621,19 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 
 	if (startsWith(data, ":id")) {
 		p(getID(getThe(next_word(data))));
+		return OK;
+	}
+	if (startsWith(data, ":short")) {
+		short_mode=true;
+		return OK;
+	}
+	if (startsWith(data, ":long")) {
+		short_mode= false;
+		return OK;
+	}
+
+	if (startsWith(data, ":key")) {
+		p(findKey(getThe(next_word(data))));
 		return OK;
 	}
 
@@ -792,7 +814,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		NodeVector nv = wrap(learned->Subject());
 
 		// append to facts log
-		FILE *fp = fopen((data_path + "/facts.ssv").data(), "a");
+		FILE *fp = fopen("import/facts.ssv", "a");
 		if (!fp) {
 			p("NO such file facts.ssv!");
 			return OK;

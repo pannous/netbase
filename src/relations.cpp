@@ -476,13 +476,18 @@ void addSynonymsDE(){
 	addLabel(Greater, "groeßer");
 	addLabel(Greater, "grösser");
 	addLabel(Greater, "mindestens");
+	addLabel(Greater, "minimum");
+	addLabel(Greater, "min.");
 	addLabel(Greater, "zumindest");
+	addLabel(Greater, "zumin.");
 
 //	<
 	addLabel(Smaller, "kleiner");
 	addLabel(Smaller, "weniger");
 	addLabel(Smaller, "geringer");
 	addLabel(Smaller, "höchstens");
+	addLabel(Smaller, "maximum");
+	addLabel(Smaller, "maximal");
 
 //	=
 	addLabel(Equals, "gleich");
@@ -595,6 +600,7 @@ Node *getRelation(const char *thing) {
 	if (thing[0] == '#') thing++;
 	if(nameMap[thing])return nameMap[thing];
 
+	if(eq(thing,"Unit"))return Unit;
 	if (eq(thing, "altLabel"))return Label;
 	if (eq(thing, "name"))return Label;
 	if (eq(thing, "lable"))return Label;

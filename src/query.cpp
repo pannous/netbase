@@ -1097,8 +1097,8 @@ NodeVector &all_instances2(Node *type, int recurse, int max, bool includeClasses
 
 bool stopAtGoodWiki(int object) {
 //	if(object>0 and object<10000) Land	Q6256	=> Argentinien	Q414 ƒ
-	if (object == 1400)return true;// iPhone Preisübersicht @ wins
-
+	if (object ==_unit)return true;
+//	if (object == _attribute)return true; BREAKs findKey how??
 	if (object == 6256)return true;// Land	Q6256
 	if (object == 571)return true;//Buch
 	if (object == 22645)return true;//  Smartphone
@@ -1149,6 +1149,7 @@ bool stopAtGoodWiki(int object) {
 }
 
 bool stopAtGoodWiki(N n) {
+	if(n and eq(n->name,"Unit"))return true;//hack
 	return n and stopAtGoodWiki(n->id);
 }
 
@@ -1160,7 +1161,7 @@ bool filterWikiType(int object) {
 	// PROBLEM : Give lower priority with competing correct superclass
 //	if(object==4167410)return DROP; // Wikimedia-Begriffsklärungsseite
 //	if(object<0)return DROP;// wordnet!
-	if (object == 17444171)return DROP; // 	Modell	Q<= Handymodell	Q19723444
+		if (object == 17444171)return DROP; // 	Modell	Q<= Handymodell	Q19723444
 	if (object == 13406463)return DROP; // Wikimedia-Liste	Q13406463
 	if (object == 4167836)return DROP; // Wikimedia-Kategorie
 	if (object == 160872476)return DROP; // Dataset
@@ -1971,14 +1972,19 @@ NodeVector findAllSubclasses(Node *fro) {
 }
 
 
-bool found_attribute = false;
+int found_attribute = -1;
 
 Node *findKey(Node *fro) {
+	found_attribute = -1;
 	context = getContext(0);
-	if (findStatement(fro, Type, getThe("product"))) return 0;
-	if (findStatement(fro, Type, getThe("brand"))) return 0;
+	if (findStatement(fro, Type, get("product"))) return 0;
+	if (findStatement(fro, Type, get("brand"))) return 0;
 	if (findStatement(fro, Type, Unit)) return 0;
-	
+//	if (findStatement(fro, Type, Attribute)) found_attribute = 1;
+	if(isA(fro,get("product"))) return 0;
+	if(isA(fro,get("brand"))) return 0;
+	if(isA(fro,Unit)) return 0;
+
 	if (fro->id < 0)return 0;// problem : Bild
 
 	long byteCount = maxNodes * sizeof(int); // context->nodeCount
@@ -1994,15 +2000,28 @@ Node *findKey(Node *fro) {
 		q.pop();
 		if (!checkNode(current, 0, true))
 			continue;
+		// not happening:
+//		if(eq(current,the("brand")))
+//			return 0;
+//		if(eq(current,the("product")))
+//			return 0;
+//		if(eq(current,the("Einheit")))
+//			return 0;
+//		if(eq(current,the("Unit")))
+//			return 0;
+
+
+		Node *id = findProperty(current, ID, false, 1000, false);
+//		if(startsWith(current->name,"attr_"))id=current;
+		if (id) {
+			found_attribute = 1;
+			return id;
+		}
 		Node *key = findProperty(current, key_type, false, 1000, false);
 		if (key) {
-			found_attribute = false;
+			if(found_attribute<0) found_attribute = 0;
+			ps(reconstructPath(fro, current, enqueued));
 			return key;
-		}
-		Node *id = findProperty(current, ID, false, 1000, false);
-		if (id) {
-			found_attribute = true;
-			return id;
 		}
 		instanceFilter(current, &q, enqueued);
 		synonymFilter(current, &q, enqueued);
@@ -2295,7 +2314,7 @@ NV questionAnswering() {}
 void removeAbstracts(NV &all) {
 	for (int i = all.size() - 1; i >= 0; i--) {
 		N entity = all[i];
-		if (isAbstract(entity))
+		if (isAbstract(entity) and entity->statementCount<3)
 			all.erase(all.begin() + i);
 	}
 
@@ -2308,7 +2327,7 @@ void removeAbstracts(NV &all) {
 NV findAnswers(cchar *query0, bool answerQuestions) {
 	NV all = findEntites(query0, true);
 //	addInstances(all);// lables of instances too!
-//	removeAbstracts(all);// DONT? SAR WERT / Bildschirm Diagonale
+	removeAbstracts(all);// DONT? SAR WERT / Bildschirm Diagonale
 	if (!answerQuestions) return all;
 
 	for (auto &entity: all) {
@@ -2349,23 +2368,30 @@ N stemming(char *start, char *mid) {
 	N entity = 0;
 	int leng = mid - start;
 	// minimal stemming:
+
+	if (!entity and leng > 4 and endsWith(start, "s")) { // germanLabels too?
+		mid[-1] = 0; // ^^ Minimum stemming
+		entity = hasWord(start);
+		mid[-1] = 's'; // HAHA HAxk! ;)
+	}
+
 	if (!entity and germanLabels and leng > 4 and endsWith(start, "es")) {
 		mid[-2] = 0; // ^^ German Genitive stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
 
-	if (!entity and endsWith(start, "s")) { // germanLabels too?
-		mid[-1] = 0; // ^^ Minimum stemming
-		entity = hasWord(start);
-		mid[-1] = 's'; // HAHA HAxk! ;)
-	}
 	if (!entity and germanLabels and leng > 3 and endsWith(start, "e")) { // Berge -> Berg
 		mid[-1] = 0; // ^^ Minimum stemming   rote -> rot
 		entity = hasWord(start);
 		mid[-1] = 'e';
 	}
 
+	if (!entity and germanLabels and leng > 3 and endsWith(start, "nen")) {
+		mid[-3] = 0; // ^^ Minimum stemming   silbernen -> silber
+		entity = hasWord(start);
+		mid[-3] = 'n';
+	}
 	if (!entity and germanLabels and leng > 3 and endsWith(start, "en")) {
 		mid[-2] = 0; // ^^ Minimum german plural stemming
 		entity = hasWord(start);
@@ -2386,11 +2412,6 @@ N stemming(char *start, char *mid) {
 		entity = hasWord(start);
 		mid[-1] = 'n';
 	}
-	if (!entity and germanLabels and leng > 3 and endsWith(start, "nen")) {
-		mid[-3] = 0; // ^^ Minimum stemming   silbernen -> silber
-		entity = hasWord(start);
-		mid[-3] = 'n';
-	}
 	if (!entity and leng > 4 and endsWith(start, "ies")) {
 		mid[-2] = 0; // ^^ Minimum stemming
 		mid[-3] = 'y'; // Galaxies -> Galaxy
@@ -2407,8 +2428,11 @@ NV findEntites(cchar *query0, bool strict /*=true*/) {
 	autoIds = false;
 	char *query = modifyConstChar(query0);
 	query = replaceChar(query, '"', ' ');
+//	query = replaceChar(query, '“', ' ');
 	query = replaceChar(query, '+', ' ');
 	query = replaceChar(query, '.', ' ');
+	query = replaceChar(query, '-', ' ');// better, but 'Wi-Fi' no longer matched! todo normChar ok, why not ?
+	query = replaceChar(query, '_', ' ');// sure?
 	query = replaceChar(query, ',', ' ');
 	query = replaceChar(query, '/', ' ');
 	query = replaceChar(query, '?', ' ');
@@ -2596,8 +2620,9 @@ N getClass(N n, bool walkLabel, N old) {
 	if ((!c or c == old) and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
 	if (!c or c == old) {
-		if (n->statementCount > 3 and !atoi(n->name))
-			pf("Unknown type: %s %d\n", n->name, n->id);
+//		return n;
+//		if (n->statementCount > 3 and !atoi(n->name))
+//			pf("Unknown type: %s %d\n", n->name, n->id); // ???
 		return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 	}
 	return c;
@@ -2619,6 +2644,9 @@ N getTopic(N node) {
 		N aClass = getClass(node);
 		if (aClass != node and !eq(aClass->name, node->name))
 			return getTopic(aClass);
+		if(aClass==Entity)
+			return node;
+		return aClass;
 	}
 	return 0;
 }
