@@ -11,8 +11,8 @@
 //int* enqueued; // 'parents'
 NodeVector EMPTY;
 
-map<int,int> startPositions;
-map<int,int> endPositions;
+map<int, int> startPositions;
+map<int, int> endPositions;
 
 string select(string s) {
 	if (contains(s, "select"))
@@ -1489,7 +1489,7 @@ NodeVector synonymFilter(Node *subject, NodeQueue *queue, int *enqueued) {// cha
 		Node *object = s->Object();
 		bool subjectMatchReverse = object == subject;
 		bool predicateMatchReverse = s->Predicate() == Synonym;
-		predicateMatchReverse =  predicateMatchReverse || (INCLUDE_LABELS and s->Predicate() == Label);
+		predicateMatchReverse = predicateMatchReverse || (INCLUDE_LABELS and s->Predicate() == Label);
 
 		if (queue) {
 			if (subjectMatch and predicateMatch)enqueue(subject, object, queue, enqueued);
@@ -1644,7 +1644,6 @@ NodeVector memberFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 	else
 		return all;
 }
-
 
 
 NodeVector parentFilter2(Node *subject, NodeQueue *queue, bool backInstances, int *enqueued) {
@@ -1972,12 +1971,15 @@ NodeVector findAllSubclasses(Node *fro) {
 }
 
 
-bool found_attribute= false;
-Node* findKey(Node *fro) {
+bool found_attribute = false;
+
+Node *findKey(Node *fro) {
 	context = getContext(0);
-	if(findStatement(fro,Type,getThe("product"))) return 0;
-	if(findStatement(fro,Type,getThe("brand"))) return 0;
-	if(fro->id<0)return 0;// problem : Bild
+	if (findStatement(fro, Type, getThe("product"))) return 0;
+	if (findStatement(fro, Type, getThe("brand"))) return 0;
+	if (findStatement(fro, Type, Unit)) return 0;
+	
+	if (fro->id < 0)return 0;// problem : Bild
 
 	long byteCount = maxNodes * sizeof(int); // context->nodeCount
 	int *enqueued = (int *) malloc(byteCount);
@@ -1993,17 +1995,17 @@ Node* findKey(Node *fro) {
 		if (!checkNode(current, 0, true))
 			continue;
 		Node *key = findProperty(current, key_type, false, 1000, false);
-		if(key){
-			found_attribute= false;
+		if (key) {
+			found_attribute = false;
 			return key;
 		}
 		Node *id = findProperty(current, ID, false, 1000, false);
 		if (id) {
-			found_attribute= true;
+			found_attribute = true;
 			return id;
 		}
-		instanceFilter(current, &q,enqueued);
-		synonymFilter(current, &q,enqueued);
+		instanceFilter(current, &q, enqueued);
+		synonymFilter(current, &q, enqueued);
 	}
 	return 0;
 }
@@ -2016,7 +2018,7 @@ NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQue
 	int *enqueued = (int *) malloc(byteCount);
 	if (enqueued == 0)throw "out of memory for findPath";
 	memset(enqueued, 0, byteCount);// Necessary?
-	enqueued[0]=0; // test memory
+	enqueued[0] = 0; // test memory
 //	ps("LOAD!");
 	NodeQueue q;
 	q.push(fro);
@@ -2185,7 +2187,7 @@ NodeVector parseProperties(const char *data) {
 	return parseProperties(editable(data));
 }
 
-char * containsSubstring(vector<char *> &words, char *sub) {
+char *containsSubstring(vector<char *> &words, char *sub) {
 	for (int j = 0; j < words.size(); j++) {
 		char *word = words[j];
 		if (contains(word, sub, true/*ignoreCase*/)) {
@@ -2198,7 +2200,7 @@ char * containsSubstring(vector<char *> &words, char *sub) {
 	return 0;
 }
 
-void filterCandidates(NV& all, string query, bool strict) {
+void filterCandidates(NV &all, string query, bool strict) {
 	VC words;
 	int size = (int) all.size();
 	for (int i = size - 1; i >= 0; i--)
@@ -2209,8 +2211,8 @@ void filterCandidates(NV& all, string query, bool strict) {
 
 	for (int i = size - 1; i >= 0; i--) {
 		N entity = all[i];
-		char* longer = containsSubstring(words, entity->name);
-		if (longer and contains(query.data(), longer, 1,1) and not eq(longer,entity->name))
+		char *longer = containsSubstring(words, entity->name);
+		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name))
 			all.erase(all.begin() + i);
 	}
 	//	all.shrink_to_fit();
@@ -2220,10 +2222,10 @@ void filterCandidates(NV& all, string query, bool strict) {
 		if (isAbstract(entity)) {
 			NV more = allInstances(entity);
 			for (N n : more)
-				if (!strict or eq(n->name, entity->name)){// only exact here, lables later!
-					if(!contains(all,n)){
-						startPositions[n->id]=startPositions[entity->id];
-						endPositions[n->id]=endPositions[entity->id];
+				if (!strict or eq(n->name, entity->name)) {// only exact here, lables later!
+					if (!contains(all, n)) {
+						startPositions[n->id] = startPositions[entity->id];
+						endPositions[n->id] = endPositions[entity->id];
 						all.push_back(n);
 					}
 				}
@@ -2269,32 +2271,32 @@ map<int, bool> loadBlacklist(bool reload/*=false*/) {
 //	return blacklist;
 }
 
-void addInstances(NV all){
-    // previously only exact matches, now also lables
+void addInstances(NV all) {
+	// previously only exact matches, now also lables
 	for (auto &entity: all) { // remove abstracts ... Rlly?
 		if (isAbstract(entity)) {
-			bool ok=0;
-			for(auto &instance: instanceFilter(entity)){
-				if(instance!=entity){
+			bool ok = 0;
+			for (auto &instance: instanceFilter(entity)) {
+				if (instance != entity) {
 					startPositions[instance->id] = startPositions[entity->id];
 					endPositions[instance->id] = endPositions[entity->id];
-					if(!contains(all,instance)) all.push_back(instance);
-					if(eq(instance->name, entity->name)) ok=1; // only delete abstract if it has same instance
+					if (!contains(all, instance)) all.push_back(instance);
+					if (eq(instance->name, entity->name)) ok = 1; // only delete abstract if it has same instance
 				}
 			}
-			if(ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
+			if (ok) all.erase(std::remove(all.begin(), all.end(), entity), all.end());
 		}
 	}
 	return;// all;
 }
 
-NV questionAnswering(){}
+NV questionAnswering() {}
 
-void removeAbstracts(NV& all) {
-	for(int i=all.size()-1;i>=0;i--){
-		N entity=all[i];
+void removeAbstracts(NV &all) {
+	for (int i = all.size() - 1; i >= 0; i--) {
+		N entity = all[i];
 		if (isAbstract(entity))
-			all.erase(all.begin()+i);
+			all.erase(all.begin() + i);
 	}
 
 //	for (auto &entity: all) {
@@ -2307,7 +2309,7 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 	NV all = findEntites(query0, true);
 //	addInstances(all);// lables of instances too!
 //	removeAbstracts(all);// DONT? SAR WERT / Bildschirm Diagonale
-	if(!answerQuestions) return all;
+	if (!answerQuestions) return all;
 
 	for (auto &entity: all) {
 //		if(isAbstract(entity))
@@ -2343,14 +2345,14 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 	return all;
 }
 
-N stemming(char* start,char *mid){
-N entity=0;
+N stemming(char *start, char *mid) {
+	N entity = 0;
 	int leng = mid - start;
 	// minimal stemming:
-	if (!entity and germanLabels and leng>4 and endsWith(start, "es")) {
-			mid[-2] = 0; // ^^ German Genitive stemming
-			entity = hasWord(start);
-			mid[-2] = 'e';
+	if (!entity and germanLabels and leng > 4 and endsWith(start, "es")) {
+		mid[-2] = 0; // ^^ German Genitive stemming
+		entity = hasWord(start);
+		mid[-2] = 'e';
 	}
 
 	if (!entity and endsWith(start, "s")) { // germanLabels too?
@@ -2358,38 +2360,38 @@ N entity=0;
 		entity = hasWord(start);
 		mid[-1] = 's'; // HAHA HAxk! ;)
 	}
-	if (!entity and germanLabels and leng>3 and endsWith(start, "e")) { // Berge -> Berg
+	if (!entity and germanLabels and leng > 3 and endsWith(start, "e")) { // Berge -> Berg
 		mid[-1] = 0; // ^^ Minimum stemming   rote -> rot
 		entity = hasWord(start);
 		mid[-1] = 'e';
 	}
 
-	if (!entity and germanLabels and leng>3 and endsWith(start, "en")) {
+	if (!entity and germanLabels and leng > 3 and endsWith(start, "en")) {
 		mid[-2] = 0; // ^^ Minimum german plural stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng>4 and endsWith(start, "em")) {
+	if (!entity and germanLabels and leng > 4 and endsWith(start, "em")) {
 		mid[-2] = 0; // ^^ Minimum German Dative stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng>4 and endsWith(start, "er")) {
+	if (!entity and germanLabels and leng > 4 and endsWith(start, "er")) {
 		mid[-2] = 0; // ^^ Minimum German Dative stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng>3 and endsWith(start, "n")) {
+	if (!entity and germanLabels and leng > 3 and endsWith(start, "n")) {
 		mid[-1] = 0; // ^^ Minimum stemming   silbern -> silber
 		entity = hasWord(start);
 		mid[-1] = 'n';
 	}
-	if (!entity and germanLabels and leng>3 and endsWith(start, "nen")) {
+	if (!entity and germanLabels and leng > 3 and endsWith(start, "nen")) {
 		mid[-3] = 0; // ^^ Minimum stemming   silbernen -> silber
 		entity = hasWord(start);
 		mid[-3] = 'n';
 	}
-	if (!entity and leng>4 and endsWith(start, "ies")) {
+	if (!entity and leng > 4 and endsWith(start, "ies")) {
 		mid[-2] = 0; // ^^ Minimum stemming
 		mid[-3] = 'y'; // Galaxies -> Galaxy
 		entity = hasWord(start);
@@ -2440,7 +2442,7 @@ NV findEntites(cchar *query0, bool strict /*=true*/) {
 		while (mid <= end and words < max_words and mid - start >= min_chars) {
 			mid[0] = 0;// Artificial cut
 			N entity = hasWord(start);
-			if (!entity) entity = stemming(start,mid);
+			if (!entity) entity = stemming(start, mid);
 
 			if (atoi(start))
 				if (atoi(start) > 1 && atoi(start) < 100000 && strlen(start) == 5) {
@@ -2453,8 +2455,8 @@ NV findEntites(cchar *query0, bool strict /*=true*/) {
 				//				p(entity);
 //				if(!contains(forbidden,entity->name,true/*ignoreCase*/))
 				if (!forbidden[wordHash(entity->name)]) {
-					startPositions[entity->id]=(int)(start-query+1);// starting from 1, cause 0 = null
-					endPositions[entity->id]= (int)(mid - query);
+					startPositions[entity->id] = (int) (start - query + 1);// starting from 1, cause 0 = null
+					endPositions[entity->id] = (int) (mid - query);
 
 					all.push_back(entity);
 					if (!isAbstract(entity)) {
@@ -2485,7 +2487,7 @@ NV findEntites(cchar *query0, bool strict /*=true*/) {
 		if (!mid)mid = end;
 	}
 	free(query);
-	filterCandidates(all,query0, strict);
+	filterCandidates(all, query0, strict);
 	return all;
 }
 
@@ -2577,26 +2579,26 @@ N getInferredClass(N n, int limit = 1000) {
 }
 
 N getClass(N n, bool walkLabel, N old) {
-	if(!n)return 0;
+	if (!n)return 0;
 	N c = 0;
 	int limit = 100;
-	if (!c or c==old)c = getProperty(n, SuperClass, limit, false);// more specific: Transportflugzeug
-	if (!c or c==old)c = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
-	if (!c or c==old)c = getProperty(n, Type, limit); // Typ Flugzeug
+	if (!c or c == old)c = getProperty(n, SuperClass, limit, false);// more specific: Transportflugzeug
+	if (!c or c == old)c = getProperty(n, get(-10031), limit);// 	Ist ein(e) :(
+	if (!c or c == old)c = getProperty(n, Type, limit); // Typ Flugzeug
 	if (c == n || c == Entity || c && eq(c->name, n->name))c = 0;
-	if (!c or c==old)c = getProperty(n, get(-10106), limit);// Tätigkeit
+	if (!c or c == old)c = getProperty(n, get(-10106), limit);// Tätigkeit
 	if (!c and walkLabel) {
-		if (!c or c==old)c = getProperty(n, Synonym, limit);
-		if (!c or c==old)c = getProperty(n, Label, limit);
-		if (!c or c==old)c = getInferredClass(n, limit);
+		if (!c or c == old)c = getProperty(n, Synonym, limit);
+		if (!c or c == old)c = getProperty(n, Label, limit);
+		if (!c or c == old)c = getInferredClass(n, limit);
 		else return getClass(c, false, old);// Deeper now, Label danger loop
 	}
-	if ((!c or c==old) and (n->kind > 0 or n->kind < -limit))
+	if ((!c or c == old) and (n->kind > 0 or n->kind < -limit))
 		return get(n->kind);
-	if (!c or c==old) {
-			if (n->statementCount > 3 and !atoi(n->name))
-				pf("Unknown type: %s %d\n", n->name, n->id);
-			return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
+	if (!c or c == old) {
+		if (n->statementCount > 3 and !atoi(n->name))
+			pf("Unknown type: %s %d\n", n->name, n->id);
+		return Entity;// i.e. President #7241205 (kind: entity #-104), 1 statements --- Single von IAMX
 	}
 	return c;
 }
@@ -2613,9 +2615,9 @@ N getTopic(N node) {
 	if (t && checkNode(t) && !eq(t->name, node->name))return t;
 	t = getFurthest(node, topicFilter);
 	if (t && checkNode(t) && !eq(t->name, node->name))return t;
-	if(!t or eq(node,t)){
+	if (!t or eq(node, t)) {
 		N aClass = getClass(node);
-		if(aClass!=node and !eq(aClass->name,node->name))
+		if (aClass != node and !eq(aClass->name, node->name))
 			return getTopic(aClass);
 	}
 	return 0;
@@ -2759,7 +2761,7 @@ char *getID(Node *node) {
 	if (!found or found == Attribute)found = findProperty(getClass(node), ID, false, 1000, false);
 	if (!found or found == Attribute)found = findProperty(getClass(normEntity(node)), ID, false, 1000, false);
 	if (!found or found == Attribute)found = findProperty(normEntity(getClass(node)), ID, false, 1000, false);
-	if(found)return found->name;
+	if (found)return found->name;
 	return 0;
 }
 
@@ -2868,16 +2870,16 @@ NodeVector findProperties(const char *n, const char *m, bool allowInverse) {
 	return good;// dedup(good);
 }
 
-Node *getPartner(Statement* s, Node* n, Node *m){
-	bool foundSubject=0;
-	bool foundPredicate=0;
-	bool foundObject=0;
-	if(s->Subject()==n or s->Subject()==m)foundSubject=1;
-	if(s->Predicate()==n or s->Predicate()==m)foundPredicate=1;
-	if(s->Object()==n or s->Object()==m)foundObject=1;
+Node *getPartner(Statement *s, Node *n, Node *m) {
+	bool foundSubject = 0;
+	bool foundPredicate = 0;
+	bool foundObject = 0;
+	if (s->Subject() == n or s->Subject() == m)foundSubject = 1;
+	if (s->Predicate() == n or s->Predicate() == m)foundPredicate = 1;
+	if (s->Object() == n or s->Object() == m)foundObject = 1;
 	if (!foundSubject)return s->Subject();
-	if(!foundPredicate)return s->Predicate();
-	if(!foundObject)return s->Object();
+	if (!foundPredicate)return s->Predicate();
+	if (!foundObject)return s->Object();
 	bad("FOUND ALL");
 	return 0;
 }
@@ -2885,8 +2887,8 @@ Node *getPartner(Statement* s, Node* n, Node *m){
 Node *has(Node *n, Node *m) {
 	clearAlgorithmHash(true);
 
-	Node *relation = findRelation(n, m);
-	if(relation)
+	Node *relation = findDirectRelation(n, m);
+	if (relation)
 		return relation;
 
 	Node *ok = 0;
@@ -2934,9 +2936,14 @@ Statement *findRelations(Node *from, Node *to) {
 	else return s;
 }
 
-Node *findRelation(Node *from, Node *to) {    // todo : broken Instance !!!
-	Statement *s = findStatement(from, Any, to, false, false, false, false);
-	if (!s) s = findStatement(to, Any, from, false, false, false, false);
+Node *findRelation(Node *from, Node *to, int recurse, bool semantic, bool symmetric, bool semanticPredicate,
+                   bool matchName) {    // todo : broken Instance !!!
+	Statement *s = findStatement(from, Any, to, recurse, semantic, symmetric, semanticPredicate, matchName);
+	if (!s) s = findStatement(to, Any, from, recurse, semantic, symmetric, semanticPredicate, matchName);
+	if (!s) s = findStatement(Any, from, to, recurse, semantic, symmetric, semanticPredicate, matchName);
+	if (!s) s = findStatement(Any, to, from, recurse, semantic, symmetric, semanticPredicate, matchName);
+	if (!s) s = findStatement(from, to, Any, recurse, semantic, symmetric, semanticPredicate, matchName);
+	if (!s) s = findStatement(to, from, Any, recurse, semantic, symmetric, semanticPredicate, matchName);
 	if (s) {
 		if (s->Subject() == from) return s->Predicate();
 		if (s->Object() == to) return s->Predicate();
@@ -2948,6 +2955,10 @@ Node *findRelation(Node *from, Node *to) {    // todo : broken Instance !!!
 		//		else if(s->Subject==to) return invert(s->Predicate);
 	}
 	return null;
+}
+
+Node *findDirectRelation(Node *from, Node *to) {
+	return findRelation(from, to, false, false, false, false, false);
 }
 
 bool hasValue(Node *n) {

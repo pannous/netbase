@@ -89,7 +89,7 @@ Node* getProperty(Node* n,const char* s,int limit=0);
 Node* getProperty(Node* node, Node* key,int limit=0, bool allowInverse= false);// todo: redundant:
 Node* findProperty(Node* n , const char* m,bool allowInverse=true,int limit=0);
 Node *findProperty(Node *node, Node *key, bool allowInverse=true, int limit=queryLimit, bool deep= true);
-Node* findRelation(Node* from, Node* to);
+Node* findDirectRelation(Node *from, Node *to);
 Node* getPropertyDummy(const char* id);
 NodeVector findProperties(const char* n, const char* m,bool allowInverse=true);
 NodeVector findProperties(Node* n, const char* m,bool allowInverse=true);

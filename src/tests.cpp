@@ -1310,6 +1310,12 @@ void testWins() {
 		import("dias.n3");
 		deleteWord("rote");// rot stemming :( TODO
 	}
+//	check(findProperty(the(GB),Unit));
+//	check(findDirectRelation(the(GB), Unit));
+
+//	check(findStatement(the(GB),Class,Unit));
+//	check(findStatement(Any,Unit,the(GB)));
+//	check(findStatement(Any,Unit,a(GB)));
 	qa("Bildschirm Diagonale");
 
 
