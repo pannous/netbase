@@ -1304,10 +1304,11 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		const char *head = str.substr(0, type).data();
 		str = str.substr(type + 1);
 		Node *first = getThe(head);
-//		if (count < 3)
-//			addStatement(subject, Label, first, checkDuplicates);//
-// Galaxy A6 	Label 	Galaxy  nee
-		addStatement(first, Instance, subject, checkDuplicates);
+		if (count <= 3)
+			addStatement(first, Instance, subject, checkDuplicates);
+		else
+			addStatement(first, See, subject, checkDuplicates);
+//			addStatement(subject, Label, first, checkDuplicates);// Galaxy A6 	Label 	Galaxy  nee  aber Angela Label Merkel?
 	}
 	if (!eq(subject->name, str.data()) and count < 3)
 		addStatement(subject, Label, getThe(str), checkDuplicates);
@@ -2786,6 +2787,7 @@ int test2() {
 }        // RUBY/ JNA !!
 
 void replay(const char *file) {
+	if(!file)file="logs/replay.log";
 	char *line = (char *) malloc(MAX_CHARS_PER_LINE);
 //	while(readFile("logs/query.log", line)){
 //	while(readFile("logs/commands.log", line)){

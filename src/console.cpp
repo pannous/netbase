@@ -186,6 +186,15 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 
 	int lenge = (int) strlen(data);
 	if(lenge==0)return OK;
+	if (eq(data0, ""))return OK;
+//	if (!isprint(data0[0]) and not umlaut --) // chinese \0a etc
+//		return OK;
+	if (data[0] == '\'')data++;
+	if (data[0] == '!')((char *) data)[0] = ':';// norm!
+	if (data[0] == 'Q' and data[0] >='0' and data[1] <= '9')data++;//Q1325845
+	if (data[0] == ':')appendFile("logs/commands.log", data);
+	else appendFile("logs/query.log", data);
+
 	if (data[lenge - 1] == '\n') {
 		data[lenge - 1] = 0;
 		lenge--;
@@ -198,14 +207,6 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		data[lenge - 1] = 0;
 		lenge--;
 	}
-	if (eq(data0, ""))return OK;
-//	if (!isprint(data0[0]) and not umlaut --) // chinese \0a etc
-//		return OK;
-	if (data[0] == '\'')data++;
-	if (data[0] == '!')((char *) data)[0] = ':';// norm!
-	if (data[0] == 'Q' and data[0] >='0' and data[1] <= '9')data++;//Q1325845
-	if (data[0] == ':')appendFile("logs/commands.log", data);
-	else appendFile("logs/query.log", data);
 
 	vector<string> &args = splitString(data, " "); // WITH 0==cmd!!!
 //	vector<char*> args=vector<char*>(splitStringC(data, ' ')); // WITH 0==cmd!!!
@@ -578,7 +579,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return OK;
 	}
 	if (startsWith(data, ":replay")) {
-		replay("logs/replay.log");
+		replay(next_word(data));
 		return OK;
 	}
 	if (startsWith(data, ":new")) {

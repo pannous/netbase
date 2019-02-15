@@ -350,6 +350,8 @@ int handle(cchar *q0, int conn) {
 	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
 
 	p(q);
+	if (q[0] == ':')appendFile("logs/commands.log", q);
+	else appendFile("logs/query.log", q);
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	NodeVector all;
 	if(!safeMode) // <<<<<<<< HANDLE QUERY WITH NETBASE!

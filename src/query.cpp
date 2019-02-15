@@ -1477,6 +1477,31 @@ NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// ch
 	return all;
 }
 
+
+NodeVector synonymFilter(Node *subject, NodeQueue *queue, int *enqueued) {// chage all + edgeFilter!! for , int max) {
+	NodeVector all;
+	int i = 0;
+	Statement *s = 0;
+	while (i++ < typeLimit and (s = nextStatement(subject, s, false))) {// true !!!!
+		bool subjectMatch = (s->Subject() == subject or subject == Any);
+		bool predicateMatch = s->Predicate() == Synonym;
+		predicateMatch = predicateMatch || (INCLUDE_LABELS and s->Predicate() == Label);
+		Node *object = s->Object();
+		bool subjectMatchReverse = object == subject;
+		bool predicateMatchReverse = s->Predicate() == Synonym;
+		predicateMatchReverse =  predicateMatchReverse || (INCLUDE_LABELS and s->Predicate() == Label);
+
+		if (queue) {
+			if (subjectMatch and predicateMatch)enqueue(subject, object, queue, enqueued);
+			if (subjectMatchReverse and predicateMatchReverse)enqueue(subject, s->Subject(), queue, enqueued);
+		} else {
+			if (subjectMatch and predicateMatch)all.push_back(object);
+			if (subjectMatchReverse and predicateMatchReverse)all.push_back(s->Subject());
+		}
+	}
+	return all;
+}
+
 NodeVector childFilter(Node *subject, NodeQueue *queue, int *enqueued) {
 	INCLUDE_CLASSES = true;
 	NodeVector all;
@@ -1950,6 +1975,9 @@ NodeVector findAllSubclasses(Node *fro) {
 bool found_attribute= false;
 Node* findKey(Node *fro) {
 	context = getContext(0);
+	if(findStatement(fro,Type,getThe("product"))) return 0;
+	if(findStatement(fro,Type,getThe("brand"))) return 0;
+	if(fro->id<0)return 0;// problem : Bild
 
 	long byteCount = maxNodes * sizeof(int); // context->nodeCount
 	int *enqueued = (int *) malloc(byteCount);
@@ -1975,6 +2003,7 @@ Node* findKey(Node *fro) {
 			return id;
 		}
 		instanceFilter(current, &q,enqueued);
+		synonymFilter(current, &q,enqueued);
 	}
 	return 0;
 }
@@ -2350,7 +2379,16 @@ N entity=0;
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-
+	if (!entity and germanLabels and leng>3 and endsWith(start, "n")) {
+		mid[-1] = 0; // ^^ Minimum stemming   silbern -> silber
+		entity = hasWord(start);
+		mid[-1] = 'n';
+	}
+	if (!entity and germanLabels and leng>3 and endsWith(start, "nen")) {
+		mid[-3] = 0; // ^^ Minimum stemming   silbernen -> silber
+		entity = hasWord(start);
+		mid[-3] = 'n';
+	}
 	if (!entity and leng>4 and endsWith(start, "ies")) {
 		mid[-2] = 0; // ^^ Minimum stemming
 		mid[-3] = 'y'; // Galaxies -> Galaxy
@@ -2366,6 +2404,7 @@ N entity=0;
 NV findEntites(cchar *query0, bool strict /*=true*/) {
 	autoIds = false;
 	char *query = modifyConstChar(query0);
+	query = replaceChar(query, '"', ' ');
 	query = replaceChar(query, '+', ' ');
 	query = replaceChar(query, '.', ' ');
 	query = replaceChar(query, ',', ' ');
