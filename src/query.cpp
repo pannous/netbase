@@ -1973,8 +1973,9 @@ NodeVector findAllSubclasses(Node *fro) {
 
 
 int found_attribute = -1;
-
+Node* normed=0;
 Node *findKey(Node *fro) {
+	normed=0;
 	found_attribute = -1;
 	context = getContext(0);
 	if (findStatement(fro, Type, get("product"))) return 0;
@@ -2014,11 +2015,13 @@ Node *findKey(Node *fro) {
 		Node *id = findProperty(current, ID, false, 1000, false);
 //		if(startsWith(current->name,"attr_"))id=current;
 		if (id) {
+			normed = current;
 			found_attribute = 1;
 			return id;
 		}
 		Node *key = findProperty(current, key_type, false, 1000, false);
 		if (key) {
+			normed = current;
 			if(found_attribute<0) found_attribute = 0;
 			ps(reconstructPath(fro, current, enqueued));
 			return key;
@@ -2777,7 +2780,7 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 	return 0;
 }
 
-map<Node *, Node *> normed;
+map<Node *, Node *> isNormed;
 
 
 char *getID(Node *node) {
@@ -2798,8 +2801,8 @@ Node *normEntity(Node *node) {
 		return 0;
 	if (node->id < 0)
 		return node;
-	if (normed[node])
-		return normed[node];
+	if (isNormed[node])
+		return isNormed[node];
 	if (eq(node->name, "Topic", true))
 		return node;
 	N found = 0;
@@ -2807,7 +2810,7 @@ Node *normEntity(Node *node) {
 //	if (!found)found = findProperty(node, Label, false, 1000, false);// directed Label first
 	if (!found)found = findProperty(node, Label, true, 1000, false);// Label sure at beginning??
 	if (!found)found = findProperty(node, Synonym, true, 1000, false);
-	if (found)normed[node] = found;
+	if (found)isNormed[node] = found;
 	return found;
 }
 

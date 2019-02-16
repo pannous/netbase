@@ -491,12 +491,13 @@ int handle(cchar *q0, int conn) {
 		bool got_topic = false;
 		char *id = 0;
 		if(use_json and get_norm){
-			N t=normEntity(node);// or getTopic(node);
-			if(t){
-				Writeline(conn, ",\n\t \"normed_id\":" + itoa(t->id));
-				Writeline(conn, ", \"normed\":\"" + string(fixName(t->name)) + "\"");
+			id=getID(node); // side effect : set found_attribute and normed
+			N n=normEntity(node);// or getTopic(node);
+			if(normed)n=normed;
+			if(n){
+				Writeline(conn, ",\n\t \"normed_id\":" + itoa(n->id));
+				Writeline(conn, ", \"normed\":\"" + string(fixName(n->name)) + "\"");
 			}
-			id=getID(node);
 			if(id)replace(id, ' ', '_');// hack back
 			if(id) Writeline(conn, ", \"key\":\"" + string(id) + "\"");// uid? nah: blau
 			int start = startPositions[node->id];

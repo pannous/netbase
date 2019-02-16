@@ -43,6 +43,7 @@ NodeVector filter(NodeVector all, Node* filterTree);
 bool enqueue(Node* current, Node* d, NodeQueue* q,int* enqueued);
 //typedef (NodeVector (*edgeFilter)(Node*)) NodeFilter;
 extern int found_attribute;
+extern Node* normed;
 Node* findKey(Node *fro);
 NodeVector findPath(Node* fro, Node* to,NodeVector (*edgeFilter)(Node*,NodeQueue*,int*) );
 NodeVector parentFilter(Node* subject,NodeQueue* queue=null,int* enqueued=null);
