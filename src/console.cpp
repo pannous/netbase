@@ -433,6 +433,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		const char *what = d.data();
 		if(what[0]=='S')deleteStatement(atoi(++what));
 		else deleteWord(what, completely);
+		appendFile("import/deletes.cmd", data0);
 		return OK;
 	}
 	if (contains(data, ":english") or contains(data, ":en")) {
@@ -654,12 +655,13 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		replace(what, ' ', 0);
 		addStatement(getThe(what), Label, getThe(lable));
 		addStatement(getAbstract(what), Label, getAbstract(lable));
+		appendFile("import/labels.cmd", data0);
 		return wrap(getThe(what));
 	}
 
 	if (startsWith(data, ":rename") or startsWith(data, ":name") or startsWith(data, ":n")) {
 		const char *what = next_word(data);
-		appendFile("import/labels.csv", what);
+		appendFile("import/renames.csv", what);
 		cchar *wordOrId = args[1].c_str();
 		const char *label = next_word(what).data();
 		N n = getThe(wordOrId);
@@ -813,15 +815,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		if(!learned)
 			return OK;// NOT!
 		NodeVector nv = wrap(learned->Subject());
-
-		// append to facts log
-		FILE *fp = fopen("import/facts.ssv", "a");
-		if (!fp) {
-			p("NO such file facts.ssv!");
-			return OK;
-		}
-		fprintf(fp, "%s\n", what.data());
-		fclose(fp);
+		appendFile("import/learned.cmd", data0);
 		return nv;
 	}
 	if (data[lenge - 1] == '=')data[lenge - 1] = 0;

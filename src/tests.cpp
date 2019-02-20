@@ -1312,11 +1312,13 @@ void testWins() {
 		replay("learn.cmd");
 		replay("deletes.cmd");
 		deleteWord("rote");// rot stemming :( TODO
+		deleteWord("roten");
 	}
 //	check(getTopic(the(GB))==Unit);
 
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
+	check(not isA(the(Hersteller / Lieferant),a(Lieferant)));
 	check(not isA(the(Funkstandard),get("product")));
 	check(not isA(the(Standard),get("product")));
 	check(not isA(the(Einheit),get("product")));
