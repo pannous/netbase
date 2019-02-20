@@ -1766,8 +1766,8 @@ NodeVector reconstructPath(Node *from, Node *to, const int *enqueued) {
 	bool ok = false;
 	while (current and current != from) {
 		all.push_back(current);
-		int id = enqueued[current->id];
-		if (id==0 or id <= -propertyOffset) {
+		int id = enqueued[current->id+propertySlots];
+		if (id==0 or id <= -propertySlots) {
 			break;
 		}
 		ok = true;
@@ -1786,7 +1786,8 @@ NodeVector reconstructPath(Node *from, Node *to, const int *enqueued) {
 
 bool enqueue(Node *current, Node *d, NodeQueue *q, int *enqueued) {
 	if (!checkNode(d))return false;
-	if (!d or (enqueued and enqueued[d->id + propertySlots]))return false; // already done -> continue;
+	if (!d or (enqueued and enqueued[d->id + propertySlots]))
+		return false; // already done -> continue;
 //	printf("? %d %s\n",d->id, d->name);
 	// todo if d==to stop here!
 	if (enqueued)
@@ -2071,7 +2072,8 @@ NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQue
 	while ((current = q.front())) {
 		if (q.empty())break;
 		q.pop();
-		if (stopAtGoodWiki(current->id))return wrap(current);
+		if (stopAtGoodWiki(current->id))
+			return wrap(current);// todo hey, not for complete paths!!
 		if (filterWikiType(current->id)) {
 //			pf("filterWikiType %d %s\n",current->id,current->name);
 			continue;
@@ -2087,11 +2089,12 @@ NodeVector findPath(Node *fro, Node *to, NodeVector(*edgeFilter)(Node *, NodeQue
 		if (all != EMPTY)// no queue
 			for (int i = 0; i < all.size(); i++) {
 				Node *d = (Node *) all[i];
-				if (to == current) {// GOT ONE!
+				enqueue(current, d, &q, enqueued);
+				if (to == d) {// GOT ONE! early quitting (don't pop all!)
+					enqueue(current, d, &q, enqueued);// debug
 					path = reconstructPath(fro, to, enqueued); // shortcut
 					break;
 				}
-				enqueue(current, d, &q, enqueued);
 			}
 	}
 	free(enqueued);

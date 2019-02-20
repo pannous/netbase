@@ -1318,11 +1318,16 @@ void testWins() {
 
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
+	check(isA(the(Galaxy J3),get("product")));
+
 	check(not isA(the(Hersteller / Lieferant),a(Lieferant)));
 	check(not isA(the(Funkstandard),get("product")));
 	check(not isA(the(Standard),get("product")));
 	check(not isA(the(Einheit),get("product")));
 	check(not isA(the(Akkulaufzeit),get("product")));
+	check(not isA(the(Google Pixle),Unit));
+
+
 	check(findKey(the(Akkulaufzeit)));
 	dissectWord(a(Arbeitszeit_(Akkulaufzeit)));
 	check(findKey(the(Akkulaufzeit)));
