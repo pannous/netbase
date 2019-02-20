@@ -1314,9 +1314,11 @@ void testWins() {
 
 	check(findKey(the(Bildschirm Diagonale)));
 	check(findKey(the(Standby Dauer)));
+//	setLabel()
+	check(findKey(the(silberne)));
 //    check(getTopic(the(Navigation))==Attribute); BREAKs above how??
 	findKey(the(Navigation));
-	check(found_attribute=1);
+	check(found_attribute==1);
 	check(isA(a(Xperia), get("product")));
 	 check(findStatement(the(Xperia), Type, get("product")))
 //	check(findStatement(a(Xperia), Type, get("product")))

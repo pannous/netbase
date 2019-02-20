@@ -2234,8 +2234,11 @@ void filterCandidates(NV &all, string query, bool strict) {
 	for (int i = size - 1; i >= 0; i--) {
 		N entity = all[i];
 		char *longer = containsSubstring(words, entity->name);
-		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name))
-			all.erase(all.begin() + i);
+		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name)) {
+//			if(startPositions[entity->id]>)
+			if (len(longer) > len(entity->name) + 2) // allow small variations iPhone Xs, Farben
+				all.erase(all.begin() + i);
+		}
 	}
 	//	all.shrink_to_fit();
 	size = (int) all.size();
@@ -2368,6 +2371,7 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 }
 
 N stemming(char *start, char *mid) {
+	bool addSingular=true;
 	N entity = 0;
 	int leng = mid - start;
 	// minimal stemming:
@@ -2395,10 +2399,25 @@ N stemming(char *start, char *mid) {
 		entity = hasWord(start);
 		mid[-3] = 'n';
 	}
+	if (!entity and germanLabels and leng > 3 and endsWith(start, "ner")) {
+		mid[-3] = 0; // ^^ Minimum stemming   silberner -> silber
+		entity = hasWord(start);
+		mid[-3] = 'n';
+	}
+	if (!entity and germanLabels and leng > 5 and endsWith(start, "ener")) {
+		mid[-4] = 0; // ^^ Minimum stemming   goldener -> gold
+		entity = hasWord(start);
+		mid[-4] = 'e';
+	}
 	if (!entity and germanLabels and leng > 3 and endsWith(start, "en")) {
 		mid[-2] = 0; // ^^ Minimum german plural stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
+	}
+	if (!entity and germanLabels and leng > 3 and endsWith(start, "ne")) {
+		mid[-2] = 0; // ^^ Minimum silberne -> silber
+		entity = hasWord(start);
+		mid[-2] = 'n';
 	}
 	if (!entity and germanLabels and leng > 4 and endsWith(start, "em")) {
 		mid[-2] = 0; // ^^ Minimum German Dative stemming
@@ -2469,6 +2488,7 @@ NV findEntites(cchar *query0, bool strict /*=true*/) {
 		while (mid <= end and words < max_words and mid - start >= min_chars) {
 			mid[0] = 0;// Artificial cut
 			N entity = hasWord(start);
+//			bool addSingular= true;
 			if (!entity) entity = stemming(start, mid);
 
 			if (atoi(start))

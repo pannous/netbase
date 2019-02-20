@@ -509,7 +509,8 @@ extern "C" int valueId(const char* aname, double v, int unit = 0);
 Node* parseValue(const char* aname);
 
 
-
+extern "C" void addLabel(Node* n, const char* label);
+void addLabel(const char* n, const char* label);
 extern "C" void setLabel(Node* n, const char* label,bool addInstance=true,bool renameInstances=false);
 extern "C" void setName(int node, const char* label);
 Statement* pattern(Node* subject, Node* predicate, Node* object);

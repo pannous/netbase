@@ -2027,6 +2027,8 @@ void deleteStatement(int id) {
 
 // Does NOT delete tautological duplicates!
 void deleteStatement(Statement *s) {
+	if(!checkStatement(s))
+		return;
 	pf("deleteStatement %d\n", s->id());
 	p(s);
 //	if (!checkStatement(s, true, false)) {
