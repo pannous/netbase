@@ -488,7 +488,7 @@ bool show(Node* n, bool showStatements = true);
 bool showShort(Node* n);
 void show(Statement * s);
 //extern "C"
-Node * showNode(Node* n);
+Node * showNode(Node* n, bool showStatements=true);
 extern "C" Node* showNode(int id);
 void testBrandNewStuff();
 

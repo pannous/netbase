@@ -811,13 +811,25 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 			load(/*,8,*/1);
 			return OK;
 		}
+		appendFile("import/learned.cmd", data0);
 		Statement *learned = learn(what.data());
 		if(!learned)
 			return OK;// NOT!
 		NodeVector nv = wrap(learned->Subject());
-		appendFile("import/learned.cmd", data0);
 		return nv;
 	}
+	if (eq(args[0], ":forget")) {
+		N from = get(next_word(data));
+		N to = get(next_word(data));
+		showNode(from, false);
+		showNode(to, false);
+		Statement *s = findRelations(from, to);
+//		showStatement(s);
+		deleteStatement(s);
+		return OK;
+	}
+	
+	
 	if (data[lenge - 1] == '=')data[lenge - 1] = 0;
 	if (data[lenge - 1] == ',')data[lenge - 1] = 0;
 	data = replace(data, ' ', '_');

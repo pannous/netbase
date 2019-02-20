@@ -1070,8 +1070,8 @@ void dissectParent(Node *subject, bool checkDuplicates) {
 	//	}
 
 	int type = (int) str.find("_");
-	if (type < 1) type = (int) str.find(".");
-	if (type >= 0 and len - type > 2) {
+//	if (type < 1){ type = (int) str.find("."); if(isNum(str[type-1]))type=0;}
+	if (type > 0 and len - type > 2) {
 		string xx = str.substr(type + 1);
 		const char *type_name = xx.data();
 		Node *word = getAbstract(type_name); //getThe
@@ -1643,7 +1643,8 @@ Node *getAbstract(const char *thing) {  // AND CREATE! use hasWord for lookup!!!
 		bad();
 		return Error;
 	}// full!
-	if (autoDissectAbstracts and (contains(thing, "_") or contains(thing, " ") or contains(thing, "."))) {
+	if (autoDissectAbstracts and (contains(thing, "_") or contains(thing, " "))) {
+//		 or contains(thing, ".")
 		dissectWord(abstract, checkDuplicates);
 		dissectParent(abstract);// later! else MESS!?
 		//	else dissectAbstracts(am Ende)
@@ -1790,8 +1791,8 @@ bool showShort(Node *n) {
 }
 
 //extern "C"
-Node *showNode(Node *n) {
-	show(n);
+Node *showNode(Node *n, bool showStatements) {
+	show(n, showStatements);
 	return n;
 }
 
