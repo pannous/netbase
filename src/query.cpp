@@ -1763,21 +1763,24 @@ NodeVector anyFilterRandom(Node *subject, NodeQueue *queue, int *enqueued) {
 NodeVector reconstructPath(Node *from, Node *to, const int *enqueued) {
 	Node *current = to;
 	NodeVector all;
-//	bool ok = true;
-	//	p("++++++++ FOUND PATH ++++++++++++++");
+	bool ok = false;
 	while (current and current != from) {
 		all.push_back(current);
 		int id = enqueued[current->id];
-		if (id <= 0) {
-//			ok = false;
+		if (id==0 or id <= -propertyOffset) {
 			break;
 		}
+		ok = true;
 		current = get(id);
-		//		show(current,false);
+		show(current,false);
 		if (contains(all, current))break; //LOOOOOP
 	}
-	all.push_back(from); // done
-	std::reverse(all.begin(), all.end());
+	if(ok){
+	    all.push_back(from); // done
+		std::reverse(all.begin(), all.end());
+		p("++++++++ FOUND PATH ++++++++++++++");
+		showNodes(all, false);
+	}
 	return all;
 }
 
@@ -2236,7 +2239,7 @@ void filterCandidates(NV &all, string query, bool strict) {
 		char *longer = containsSubstring(words, entity->name);
 		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name)) {
 //			if(startPositions[entity->id]>)
-			if (len(longer) > len(entity->name) + 2) // allow small variations iPhone Xs, Farben
+			if (len(longer) > len(entity->name) + 1) // allow small variations iPhone Xs, Farben
 				all.erase(all.begin() + i);
 		}
 	}

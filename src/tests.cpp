@@ -1308,10 +1308,20 @@ void testWins() {
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
+		replay("lables.cmd");//
+		replay("learn.cmd");
+		replay("deletes.cmd");
 		deleteWord("rote");// rot stemming :( TODO
 	}
 //	check(getTopic(the(GB))==Unit);
 
+//<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
+//<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
+	check(not isA(the(Einheit),get("product")));
+	check(not isA(the(Akkulaufzeit),get("product")));
+	check(findKey(the(Akkulaufzeit)));
+	dissectWord(a(Arbeitszeit_(Akkulaufzeit)));
+	check(findKey(the(Akkulaufzeit)));
 	check(findKey(the(Bildschirm Diagonale)));
 	check(findKey(the(Standby Dauer)));
 //	setLabel()

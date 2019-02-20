@@ -2617,7 +2617,9 @@ bool isA(Node *fro, Node *to) {
 			if (s->Predicate() == Synonym)return true;
 		}
 	}
-	return !findPath(fro, to, parentFilter).empty();
+	newQuery();
+	const NodeVector &path1 = findPath(fro, to, parentFilter);
+	return path1.size()>1;
 }
 
 // all mountains higher than Krakatao

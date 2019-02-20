@@ -1998,6 +1998,17 @@ void timestamp(){
 	addStatement(get("last import"),get("timestamp"),get(formatted));
 }
 
+map<string, int> _reasons;
+int ignored = 0;
+void _ignore_(char *reason){ // vs std::ignore !
+	if (debug and reason) {
+		if (!_reasons[reason])
+			printf("%s\n", reason);
+	}
+	ignored++;
+}
+
+
 //#define var auto
 //#define let auto
 bool importN3(cchar *file) {//,bool fixNamespaces=true) {
@@ -2009,8 +2020,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	Node *predicate;
 	Node *object;
 	Node *lastPredicate = 0;
-	int ignored = 0;
 	int foreign = 0;// special case of ignored
+	ignored = 0;
 	badCount = 0;
 	char *subjectName0 = (char *) malloc(10000);
 	char *predicateName0 = (char *) malloc(10000);
@@ -2073,10 +2084,12 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		if (debug && eq(predicateName, "description"))continue;// ignore in debug!
 
 		if (dropBadSubject(subjectName)) {
+//			_ignore_("dropBadSubject");
 			ignored++;
 			continue;
 		}
 		if (dropBadPredicate(predicateName)) {
+//			_ignore_("dropBadPredicate");
 			ignored++;
 			if(LIGHT_IMPORT){
 			subject = getEntity(subjectName);
@@ -2789,6 +2802,8 @@ void import(const char *type, const char *filename) {
 		importLabels("labels.csv", false, true, true);
 	} else if (endsWith(type, "csv")) {
 		importCsv(filename);
+	} else if (endsWith(type, "cmd")) {
+		replay(filename);
 	} else if (eq(type, "wordnet")) {
 		importWordnet();
 	} else if (eq(type, "freebase")) {
