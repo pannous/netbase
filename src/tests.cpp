@@ -1317,6 +1317,8 @@ void testWins() {
 
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
+	check(not isA(the(Funkstandard),get("product")));
+	check(not isA(the(Standard),get("product")));
 	check(not isA(the(Einheit),get("product")));
 	check(not isA(the(Akkulaufzeit),get("product")));
 	check(findKey(the(Akkulaufzeit)));

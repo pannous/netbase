@@ -194,8 +194,9 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (data[0] == '\'')data++;
 	if (data[0] == '!')((char *) data)[0] = ':';// norm!
 	if (data[0] == 'Q' and data[0] >='0' and data[1] <= '9')data++;//Q1325845
-	if (data[0] == ':')appendFile("logs/commands.log", data);
+	if (data[0] == ':' and info) appendFile("logs/commands.log", data);
 	else appendFile("logs/query.log", data);
+
 
 	if (data[lenge - 1] == '\n') {
 		data[lenge - 1] = 0;
