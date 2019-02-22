@@ -525,7 +525,7 @@ int handle(cchar *q0, int conn) {
 			if(get_norm){
 				N n=0; //only
 				if(ty!=Attribute and ty!=getThe("attributevalue"))
-					n=normEntity(node);
+					n=normEntity(node, false);
 				if(normed)n=normed;
 				if(n){
 					Writeline(conn, ",\n\t \"normed_id\":" + itoa(n->id));

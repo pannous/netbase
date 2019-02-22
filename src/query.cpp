@@ -2822,7 +2822,7 @@ char *getID(Node *node) {
 	return 0;
 }
 
-Node *normEntity(Node *node) {
+Node *normEntity(Node *node, bool allowInverse) {
 	if (not node)
 		return 0;
 	if (node->id < 0)
@@ -2834,8 +2834,8 @@ Node *normEntity(Node *node) {
 	N found = 0;
 //	if (!found)found = findProperty(node, ID, false, 1000, false);
 //	if (!found)found = findProperty(node, Label, false, 1000, false);// directed Label first
-	if (!found)found = findProperty(node, Label, true, 1000, false);// Label sure at beginning??
-	if (!found)found = findProperty(node, Synonym, true, 1000, false);
+	if (!found)found = findProperty(node, Label, allowInverse, 1000, false);// Label sure at beginning??
+	if (!found)found = findProperty(node, Synonym, allowInverse, 1000, false);
 	if (found)isNormed[node] = found;
 	return found;
 }

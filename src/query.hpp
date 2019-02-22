@@ -114,7 +114,7 @@ bool isA(Node* fro, Node* to);
 bool filterWikiType(int object);
 Statement * findRelations(Node* from, Node * to);
 Statement* parseSentence(string sentence, bool learn = false);
-Node *normEntity(Node* node);
+Node *normEntity(Node* node, bool allowInverse=true);
 char *getID(Node *node);
 
 extern map<int,int> startPositions;
