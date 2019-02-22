@@ -489,28 +489,8 @@ int handle(cchar *q0, int conn) {
 //    if(verbosity != alle and !get_topic)
 //			loadView(node);
 		bool got_topic = false;
-		char *id = 0;
-		if(use_json and get_norm){
-			id=getID(node); // side effect : set found_attribute and normed
-			N n=0; //only normEntity(node);// or getTopic(node);
-			if(normed)n=normed;
-			if(n){
-				Writeline(conn, ",\n\t \"normed_id\":" + itoa(n->id));
-				Writeline(conn, ", \"normed\":\"" + string(fixName(n->name)) + "\"");
-			}
-			if(id)replace(id, ' ', '_');// hack back
-			if(id) Writeline(conn, ", \"key\":\"" + string(id) + "\"");// uid? nah: blau
-			int start = startPositions[node->id];
-			if(start<0)start = startPositions[abstracto->id];
-			if(start>0){
-				int end = endPositions[node->id];
-				if(end<0)end=endPositions[abstracto->id];
-				char *match = substr(q, start - 1, end);
-				if(!eq(node->name,match,1,1))
-					Writeline(conn, ", \"match\":\"" + string(match) + "\"");
-			}
-		}
 		if (use_json and get_topic) {
+			char *id=getID(node); // side effect : set found_attribute and normed
 			N ty = getType(node);
 			N c = getClass(node,true,ty);
 			N t = NO_TOPICS ? c : getTopic(node);
@@ -541,6 +521,27 @@ int handle(cchar *q0, int conn) {
 				string seo = generateSEOUrl(node->name);
 				if(!eq(seo.data(),node->name,1,1))
 					Writeline(conn, ", \"seo\":\"" + seo + "\"");
+			}
+			if(get_norm){
+				N n=0; //only
+				if(ty!=Attribute and ty!=getThe("attributevalue"))
+					n=normEntity(node);
+				if(normed)n=normed;
+				if(n){
+					Writeline(conn, ",\n\t \"normed_id\":" + itoa(n->id));
+					Writeline(conn, ", \"normed\":\"" + string(fixName(n->name)) + "\"");
+				}
+				if(id)replace(id, ' ', '_');// hack back
+				if(id) Writeline(conn, ", \"key\":\"" + string(id) + "\"");// uid? nah: blau
+				int start = startPositions[node->id];
+				if(start<0)start = startPositions[abstracto->id];
+				if(start>0){
+					int end = endPositions[node->id];
+					if(end<0)end=endPositions[abstracto->id];
+					char *match = substr(q, start - 1, end);
+					if(!eq(node->name,match,1,1))
+						Writeline(conn, ", \"match\":\"" + string(match) + "\"");
+				}
 			}
 		}
 		if (use_json)
