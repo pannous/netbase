@@ -140,6 +140,8 @@ Node *parseProperty(const char *data, bool deepSearch) {
 }
 
 bool short_mode= false;
+
+
 void console() {
 	quiet = false;
 	if (germanLabels)printf("\nDeutsch");
@@ -820,12 +822,9 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 	if (eq(args[0], ":forget")) {
 		N from = get(next_word(data));
+		N pred = get(next_word(data));
 		N to = get(next_word(data));
-		showNode(from, false);
-		showNode(to, false);
-		Statement *s = findRelations(from, to);
-//		showStatement(s);
-		deleteStatement(s);
+		forget(from, pred, to);
 		return OK;
 	}
 	
@@ -872,6 +871,21 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return all;
 	}
 	return wrap(a);
+}
+
+void forget(N from, N pred, N to) {
+//	showNode(from, false);
+//	showNode(to, false);
+	Statement *s;
+	if(!to or to==Any){
+		to=pred;
+		s = findRelations(from, to);
+	}else if(!pred or pred==Any){
+		s= findRelations(from, to);
+	}else{
+		s =findStatement(from, pred, to);
+	}
+	deleteStatement(s);
 }
 
 extern "C" Node **execute(const char *data, int *out) {

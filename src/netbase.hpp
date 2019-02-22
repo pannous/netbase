@@ -545,6 +545,7 @@ Node* last(NodeVector rows);
 //extern "C" Statement* learn(string& data);
 extern "C" Statement* learn(const char* data);
 extern "C" void deleteNode(int id);
+void forget(N from, N pred, N to=0);
 void deleteNode(Node *n, bool deleteChildren);
 void deleteStatements(Node* n);
 extern "C" void deleteStatement(int id);

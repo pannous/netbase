@@ -1304,6 +1304,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 		const char *head = str.substr(0, type).data();
 		str = str.substr(type + 1);
 		Node *first = getThe(head);
+//		if(len(first->name)<2) first=0; // 802.11a/b/g/n
 		if (count <= 3)
 			addStatement(first, Instance, subject, checkDuplicates);
 		else if (count <= 8 )

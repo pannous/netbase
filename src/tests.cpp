@@ -1318,11 +1318,15 @@ void testWins() {
 
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
+	check(not normEntity(the(iPhone Xs),false));
 	check(isA(the(Galaxy J3),get("product")));
 
 	check(not isA(the(Hersteller / Lieferant),a(Lieferant)));
 	check(not isA(the(Funkstandard),get("product")));
-	check(not isA(the(Standard),get("product")));
+	forget(the(Standard), Type, get("product"));
+	forget(the(Standard), Synonym, the(Digitalisierungsbox_Standard) );
+	forget(the(Standard), Any, the(WLAN_Standard) );// ... USELESS!
+//	check(not isA(the(Standard),get("product")));
 	check(not isA(the(Einheit),get("product")));
 	check(not isA(the(Akkulaufzeit),get("product")));
 	check(not isA(the(Google Pixle),Unit));

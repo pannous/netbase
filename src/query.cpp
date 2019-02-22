@@ -2755,6 +2755,8 @@ Node *findProperty(Node *node, Node *key, bool allowInverse, int limit, bool dee
 	while ((s = nextStatement(node, s)) and limit-- > 0) {
 		Node *pred = s->Predicate();
 		bool subjectMatch = allowInverse || s->subject == node->id;
+		if((key==Label or key==Synonym) and !allowInverse) // TODO norm -> lable -> synonym ok?
+			subjectMatch = s->object == node->id;// LabelED :(
 //		if (deep and contains(pred->name,key->name)) {// stupid and expensive
 //			found = s;
 //			break;
