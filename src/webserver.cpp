@@ -490,7 +490,9 @@ int handle(cchar *q0, int conn) {
 //			loadView(node);
 		bool got_topic = false;
 		if (use_json and get_topic) {
-			char *id=getID(node); // side effect : set found_attribute and normed
+			char *id=0;// side effect : set found_attribute and normed
+			N key= findKey(node);
+			if(checkNode(key))id = key->name;
 			N ty = getType(node);
 			N c = getClass(node,true,ty);
 			N t = NO_TOPICS ? c : getTopic(node);

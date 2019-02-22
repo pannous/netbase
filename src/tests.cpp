@@ -1319,13 +1319,16 @@ void testWins() {
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
 
+	handle("/json/qa/iphone x");
+
 	handle(":lable a_a b_b");
 	parse(":lable a_a b_b");
-//	check(isA(a(a_a),a(b_b)));
 	check(isA(the(a_a),the(b_b)));
 
 	check(not normEntity(the(iPhone Xs),false));
 	check(not normEntity(the(iPhone X),false));
+	check(not normEntity(a(iPhone Xs),false));
+	check(not normEntity(a(iPhone X),false));
 	check(isA(the(Galaxy J3),get("product")));
 
 	check(not isA(the(Hersteller / Lieferant),a(Lieferant)));

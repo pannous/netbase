@@ -2830,8 +2830,8 @@ Node *normEntity(Node *node, bool allowInverse) {
 		return 0;
 	if (node->id < 0)
 		return node;
-	if (isNormed[node])
-		return isNormed[node];
+	if (isNormed[node] and allowInverse)
+		return isNormed[node]; // cached
 	if (eq(node->name, "Topic", true))
 		return node;
 	N found = 0;
@@ -2839,7 +2839,8 @@ Node *normEntity(Node *node, bool allowInverse) {
 //	if (!found)found = findProperty(node, Label, false, 1000, false);// directed Label first
 	if (!found)found = findProperty(node, Label, allowInverse, 1000, false);// Label sure at beginning??
 	if (!found)found = findProperty(node, Synonym, allowInverse, 1000, false);
-	if (found)isNormed[node] = found;
+	if (found)
+		isNormed[node] = found;
 	return found;
 }
 
