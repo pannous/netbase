@@ -492,7 +492,7 @@ int handle(cchar *q0, int conn) {
 		char *id = 0;
 		if(use_json and get_norm){
 			id=getID(node); // side effect : set found_attribute and normed
-			N n=normEntity(node);// or getTopic(node);
+			N n=0; //only normEntity(node);// or getTopic(node);
 			if(normed)n=normed;
 			if(n){
 				Writeline(conn, ",\n\t \"normed_id\":" + itoa(n->id));
