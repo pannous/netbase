@@ -657,7 +657,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		replace(what, ' ', 0);
 		addStatement(getThe(what), Label, getThe(lable));
 		addStatement(getAbstract(what), Label, getAbstract(lable));
-		appendFile("import/labels.cmd", data0);
+		appendFile("import/lables.cmd", data0);
 		return wrap(getThe(what));
 	}
 

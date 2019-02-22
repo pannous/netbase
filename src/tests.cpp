@@ -1324,6 +1324,7 @@ void testWins() {
 	handle(":lable a_a b_b");
 	parse(":lable a_a b_b");
 	check(isA(the(a_a),the(b_b)));
+//	forget("Speicher Instanz Speicher_für_58_SMS"); TODO
 
 	check(not normEntity(the(iPhone Xs),false));
 	check(not normEntity(the(iPhone X),false));
