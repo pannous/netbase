@@ -1318,7 +1318,14 @@ void testWins() {
 
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
+
+	handle(":lable a_a b_b");
+	parse(":lable a_a b_b");
+//	check(isA(a(a_a),a(b_b)));
+	check(isA(the(a_a),the(b_b)));
+
 	check(not normEntity(the(iPhone Xs),false));
+	check(not normEntity(the(iPhone X),false));
 	check(isA(the(Galaxy J3),get("product")));
 
 	check(not isA(the(Hersteller / Lieferant),a(Lieferant)));
@@ -1338,6 +1345,7 @@ void testWins() {
 	check(findKey(the(Bildschirm Diagonale)));
 	check(findKey(the(Standby Dauer)));
 //	setLabel()
+	forget(the(X_rosé-gold), the(gold));
 	check(findKey(the(silberne)));
 //    check(getTopic(the(Navigation))==Attribute); BREAKs above how??
 	findKey(the(Navigation));
@@ -1398,9 +1406,6 @@ void testWins() {
 	handle("/qa/Bildschirm Diagonale");
 //	handle("/qa/sar wert");
 
-	handle(":lable a_a b_b");
-	parse(":lable a_a b_b");
-	check(isA(a(a_a),a(b_b)));
 	check(findAnswers("schwarzes iphone xs").size());
 	dissectWord(a(P20_Pro));
 	parse("P20_Pro");

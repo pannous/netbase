@@ -2597,7 +2597,7 @@ Node *getThe(Node *abstract, Node *type, bool create /*true!*/) {// first instan
 }
 
 extern "C"
-bool isA(Node *fro, Node *to) {
+bool isA(Node *fro, Node *to, int maxDepth) {
 //	show(fro);
 //	show(to);
 	if (isA4(fro, to, 0, 0)) return true;
@@ -2611,17 +2611,21 @@ bool isA(Node *fro, Node *to) {
 			if (s->Predicate() == Type)return true;
 			if (s->Predicate() == Instance)return true;
 			if (s->Predicate() == Synonym)return true;
+			if (s->Predicate() == Label)return true;
+			if (s->Predicate() == Labeled)return true;
 		}
 		if (s->Subject() == to and s->Object() == fro) {
 			if (s->Predicate() == SubClass)return true;
 			if (s->Predicate() == Type)return true;
 			if (s->Predicate() == Instance)return true;
 			if (s->Predicate() == Synonym)return true;
+			if (s->Predicate() == Label)return true;
+			if (s->Predicate() == Labeled)return true;
 		}
 	}
 	newQuery();
 	const NodeVector &path1 = findPath(fro, to, parentFilter);
-	return path1.size()>1;
+	return path1.size()>1 and (maxDepth?path1.size()<maxDepth: true);
 }
 
 // all mountains higher than Krakatao

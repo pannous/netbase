@@ -880,8 +880,10 @@ void forget(N from, N pred, N to) {
 	if(!to or to==Any){
 		to=pred;
 		s = findRelations(from, to);
+		if(!s)s = findRelations(to,from);
 	}else if(!pred or pred==Any){
 		s= findRelations(from, to);
+		if(!s)s = findRelations(to,from);
 	}else{
 		s =findStatement(from, pred, to);
 	}

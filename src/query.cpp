@@ -1982,13 +1982,14 @@ Node *findKey(Node *fro) {
 	normed=0;
 	found_attribute = -1;
 	context = getContext(0);
+	int maxDepth=5; // silberne -> gold_on_silver -> Xperia_X_rosé-gold
 	if (findStatement(fro, Type, get("product"))) return 0;
 	if (findStatement(fro, Type, get("brand"))) return 0;
 	if (findStatement(fro, Type, Unit)) return 0;
 //	if (findStatement(fro, Type, Attribute)) found_attribute = 1;
-	if(isA(fro,get("product"))) return 0;
-	if(isA(fro,get("brand"))) return 0;
-	if(isA(fro,Unit)) return 0;
+	if(isA(fro,get("product"),maxDepth)) return 0;
+	if(isA(fro,get("brand"),maxDepth)) return 0;
+	if(isA(fro,Unit,maxDepth)) return 0;
 
 	if (fro->id < 0)return 0;// problem : Bild
 
