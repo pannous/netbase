@@ -1297,14 +1297,44 @@ NV qa(char* text){
 	NV as=findAnswers(text);
 	return as;
 }
+void testLearnAndForget(){
+	parse(":lable a_a b_b");
+	check(isA(the(a_a),the(b_b)));
+	forget(the(a_a), the(b_b));
+	check(not isA(the(a_a),the(b_b)));
 
+	handle(":lable a_a b_b");
+	check(isA(the(a_a),the(b_b)));
+	forget(the(a_a), Label, the(b_b));
+	check(not isA(the(a_a),the(b_b)));
+
+	parse(":lable a_a b_b");
+	check(isA(the(a_a),the(b_b)));
+	parse(":forget a_a b_b");
+	check(not isA(the(a_a),the(b_b)));
+
+	handle(":lable a_a b_b");
+	check(isA(the(a_a),the(b_b)));
+	handle(":forget a_a b_b");
+	check(not isA(the(a_a),the(b_b)));
+
+	handle(":lable a_a b_b");
+	check(isA(the(a_a),the(b_b)));
+	handle(":forget a_a Lable b_b");
+	check(not isA(the(a_a),the(b_b)));
+}
 void testWins() {
 //	clearMemory();
 	germanLabels=1;
 	autoDissectAbstracts=true;
 	checkDuplicates = true;
 //	autoDissectAbstracts= false;
+
 	handle("/asdfdfsfasdfsadf");// don't create abstract
+	check(not hasWord("asdfdfsfasdfsadf"));
+
+	testLearnAndForget();
+
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
@@ -1319,11 +1349,11 @@ void testWins() {
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
 
+
+
+
 	handle("/json/qa/iphone x");
 
-	handle(":lable a_a b_b");
-	parse(":lable a_a b_b");
-	check(isA(the(a_a),the(b_b)));
 //	forget("Speicher Instanz Speicher_für_58_SMS"); TODO
 
 	check(not normEntity(the(iPhone Xs),false));

@@ -821,9 +821,12 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return nv;
 	}
 	if (eq(args[0], ":forget")) {
-		N from = get(next_word(data));
-		N pred = get(next_word(data));
-		N to = get(next_word(data));
+		char *from = next_word(data);
+		char *pred = next_word(from);
+		char *to = next_word(pred);
+		replace(from, ' ', 0);
+		replace(pred, ' ', 0);
+		replace(to, ' ', 0);
 		forget(from, pred, to);
 		return OK;
 	}
@@ -871,6 +874,10 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return all;
 	}
 	return wrap(a);
+}
+void forget(chars from, chars pred, chars to) {
+	forget(get(from),get(pred),get(to));
+	forget(getThe(from),getThe(pred),getThe(to));
 }
 
 void forget(N from, N pred, N to) {

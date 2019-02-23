@@ -9,6 +9,8 @@
 #ifndef QUERY_H
 #define	QUERY_H
 
+typedef const char * chars ;
+
 //string render_query(Query& q);// renderResults!
 Query& getQuery(Node* keyword);
 NodeVector query(Query& q);

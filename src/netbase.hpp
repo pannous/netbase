@@ -13,6 +13,8 @@ version="1.6.7";
 
 using namespace std;
 
+typedef const char * chars ;
+
 extern bool NO_TOPICS;
 extern bool useSemantics;
 extern bool germanLabels;
@@ -546,6 +548,7 @@ Node* last(NodeVector rows);
 extern "C" Statement* learn(const char* data);
 extern "C" void deleteNode(int id);
 void forget(N from, N pred, N to=0);
+void forget(chars from, chars pred, chars to);
 void deleteNode(Node *n, bool deleteChildren);
 void deleteStatements(Node* n);
 extern "C" void deleteStatement(int id);

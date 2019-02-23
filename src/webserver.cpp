@@ -345,13 +345,17 @@ int handle(cchar *q0, int conn) {
 		q = q + 8;
 		safeMode = false;// RLLY?
 	}
-	if (startsWith(q, ":learn "))safeMode=false;// RLLY?
-	if (startsWith(q, ":lable "))safeMode=false;// RLLY?
-	if (startsWith(q, ":delete "))safeMode=false;// RLLY?
+	if (startsWith(q, ":learn"))safeMode=false;// RLLY?
+	if (startsWith(q, ":lable"))safeMode=false;// RLLY?
+	if (startsWith(q, ":delete"))safeMode=false;// RLLY?
+	if (startsWith(q, ":forget"))safeMode=false;// RLLY?
 
 	p(q);
-	if (q[0] == ':')appendFile("logs/commands.log", q);
-	else appendFile("logs/query.log", q);
+	if (q[0] == ':')
+		appendFile("logs/commands.log", q);
+	else
+		appendFile("logs/query.log", q);
+
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!
 	NodeVector all;
 	if(!safeMode) // <<<<<<<< HANDLE QUERY WITH NETBASE!
@@ -717,6 +721,8 @@ bool checkSanity(char *q, int len) {
 	}
 	if (q[0] == ':' or q[0] == '!')bad = true;
 	if(startsWith(q,":lable"))bad=false;
+	if(startsWith(q,":label"))bad=false;
+	if(startsWith(q,":forget"))bad=false;
 	for (int i = 0; i < len and i < MAX_QUERY_LENGTH; i++) {
 		if (q[i] > 127)bad = true;// no illegal chars!
 	}
