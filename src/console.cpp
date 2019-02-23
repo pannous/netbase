@@ -828,6 +828,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		replace(pred, ' ', 0);
 		replace(to, ' ', 0);
 		forget(from, pred, to);
+		appendFile("import/forgets.cmd", data0);
 		return OK;
 	}
 	

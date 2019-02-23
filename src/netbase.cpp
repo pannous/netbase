@@ -2796,8 +2796,16 @@ int test2() {
 	return 12345;
 }        // RUBY/ JNA !!
 
+void replayAll(){
+	replay("lables.cmd");//
+	replay("learn.cmd");
+	replay("deletes.cmd");
+	replay("forgets.cmd");
+}
+
 void replay(const char *file) {
 	if(!file)file="logs/replay.log";
+	if(eq(file,"all")){replayAll();return;}
 	char *line = (char *) malloc(MAX_CHARS_PER_LINE);
 //	while(readFile("logs/query.log", line)){
 //	while(readFile("logs/commands.log", line)){

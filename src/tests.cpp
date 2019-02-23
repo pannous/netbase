@@ -1338,9 +1338,7 @@ void testWins() {
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
-		replay("lables.cmd");//
-		replay("learn.cmd");
-		replay("deletes.cmd");
+		replay("all");
 		deleteWord("rote");// rot stemming :( TODO
 		deleteWord("roten");
 	}
