@@ -1330,17 +1330,21 @@ void testWins() {
 	checkDuplicates = true;
 //	autoDissectAbstracts= false;
 
-	handle("/asdfdfsfasdfsadf");// don't create abstract
-	check(not hasWord("asdfdfsfasdfsadf"));
+//	handle("/asdfdfsfasdfsadf");// don't create abstract
+//	check(not hasWord("asdfdfsfasdfsadf"));
 
 
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
-		deleteWord("rote");// rot stemming :( TODO
-		deleteWord("roten");
+//		deleteWord("rote");// rot stemming :( TODO
+//		deleteWord("roten"); =>
+		replay("all");
 	}
-	replay("all");
+
+//	handle("/json/short/qa/samsung galaxy s9+");
+	findAnswers("samsung galaxy s9+");
+
 //	check(getTopic(the(GB))==Unit);
 
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"

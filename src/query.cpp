@@ -2251,7 +2251,8 @@ void filterCandidates(NV &all, string query, bool strict) {
 		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name)) {
 			if(startPositions[entity->id]>endPositions[other->id]);// keep
 			else if (endPositions[entity->id]<startPositions[other->id]);// keep
-			else all.erase(all.begin() + i);
+			else
+				all.erase(all.begin() + i);
 //			else if (len(longer) > len(entity->name) + 1) // allow small variations iPhone Xs, Farben
 		}
 	}
