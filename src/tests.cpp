@@ -116,7 +116,7 @@ void testBasics() {
 	assert(startsWith("abce", "ab"), "startsWith");
 	assert(!startsWith("abce", "ac"), "!startsWith");
 
-	check(eq("abce", "abce"));
+	cheq("abce", "abce");
 	check(!eq("abce", "ac"));
 	check(!eq("abce", "A"));
 	check(!eq("A", "abce"));
@@ -124,8 +124,8 @@ void testBasics() {
 	check(!eq("abc", "abce"));
 	check(!eq("abce", "aBcE", false));
 	check(!eq("abce", "ac", true));
-	check(eq("abce", "aBcE", true));
-	check(eq("ABce", "aBcE", true));
+	cheq("abce", "aBcE");
+	cheq("ABce", "aBcE");
 
 	check(contains("abcd", "bc"));
 	//  check(contains("abCd","Bc",true));
@@ -141,7 +141,7 @@ void testBasics() {
 	p(Synonym->name);
 	// does not work in test environment ( only???? ) ... fix!!!
 #ifdef inlineName // todo!
-	check(eq(Synonym->name, "synonym"));
+	cheq(Synonym->name, "synonym");
 #endif
 	showStatement(getStatementNr(syn, 0));
 	//  initContext(c);
@@ -281,7 +281,7 @@ void testGeoDB() {
 	check(all.size() > 0);
 	show(all[0]);
 	N countrycode = getProperty(all[0], "countrycode");
-	check(eq(countrycode->name, "AD"));
+	cheq(countrycode->name, "AD");
 
 	NV all_plural = query("all cities with countrycode=AD");// plural
 	check(all_plural.size() > 0);
@@ -290,7 +290,7 @@ void testGeoDB() {
 	//  check(all.size()>0);
 	//    show(all[0]);
 	//  countrycode=getProperty(all[0],"countrycode");
-	//  check(eq(countrycode->name,"AD"));
+	//  cheq(countrycode->name,"AD");
 
 
 
@@ -341,7 +341,7 @@ void testDummyLogic() {
 	Statement *s3 = addStatement(testDummy, Attribute, funny);
 	//  Statement* s4 = addStatement(Person, Instance, karsten);
 	Statement *s4 = addStatement(CEO, Instance, karsten);
-	check(eq(karsten->name, "karsten"));
+	cheq(karsten->name, "karsten");
 	Statement *s4a = addStatement(manager, SubClass, CEO);
 	//  Statement* s4a = addStatement(CEO, SuperClass, manager);
 	Statement *s4b = addStatement(manager, is, a(worker));
@@ -636,7 +636,7 @@ void testInsertForceStart() {
 
 void testStringLogic2() {
 	//  NV t= parse("label 4557271 woooot");
-	//  check(eq(t[0]->name,"woooot"));// OK
+	//  cheq(t[0]->name,"woooot");// OK
 	eine(Schlacht);
 	Node *Schlacht_bei_Guinegate2 = getThe(editable("Guinegate_(14791),_Schlacht_bei")); // intellij display bug!
 	p(Schlacht_bei_Guinegate2);
@@ -647,7 +647,7 @@ void testStringLogic2() {
 	//	Schlacht_bei_Guinegate=the(Schlacht_bei_Guinegate_(1479));
 	dissectWord(Schlacht_bei_Guinegate);
 	check(isA(Schlacht_bei_Guinegate, Schlacht));
-	check(eq(the(near)->name, "near"));
+	cheq(the(near)->name, "near");
 	show(Schlacht_bei_Guinegate);
 	check(findStatement(Schlacht_bei_Guinegate, a(near), a(Guinegate)));
 	NV all = instanceFilter(a(Guinegate));
@@ -682,7 +682,7 @@ void testHash() {
 	cchar *thing = "city";
 	Node *city = getAbstract(thing);
 	ps(city->name);
-	check(eq(city->name, "city"));
+	cheq(city->name, "city");
 	//	insertAbstractHash(wordHash(Circa->name), Domain);
 	//	insertAbstractHash(Circa);
 	//#ifdef inlineName
@@ -878,7 +878,7 @@ void testValueLogic() {
 	deleteNode(a(Booot), false);
 	deleteNode(a("14.32 meter"), false);
 	ein(Booot);
-	check(eq(Booot->name, "Booot"));
+	cheq(Booot->name, "Booot");
 	NodeVector alle = allInstances(Booot);
 	//  check(contains(alle, Booot)); // Nee, all_classes ja, all_instances nicht. oder?
 	Node *m14 = value("", 14, "m");
@@ -951,7 +951,7 @@ void testValueLogic() {
 
 	Node *kind = the(kind);
 	Node *length = the(length);
-	check(eq(length->name, "length")); //60350
+	cheq(length->name, "length"); //60350
 	clearAlgorithmHash();
 	show(length);
 	clearAlgorithmHash();
@@ -981,17 +981,17 @@ void testValueLogic() {
 	//  show(m143); //  417287
 	//  show(has(Booot, a(length)));
 	Node *n = has(Booot, the(length));
-	check(eq(n, m143));
+	cheq(n, m143);
 	//  show(n); // 413730
 	//  check(has(Booot,the(length))==m143);
-	check(eq(has(Booot, a(length)), m143));
-	check(eq(has(Booot, the(length)), m143));
+	cheq(has(Booot, a(length)), m143);
+	cheq(has(Booot, the(length)), m143);
 	//  show(has(Booot, a(length)));
 	showStatement(findStatement(Booot, a(length), Any));
 	check(!isA4(the(length), the(kind)));
 	check(!isA4(get(74), get(33)));
-	check(eq(has(Booot, a(length), Any), m143));
-	check(eq(has(Booot, a(length)), m143));
+	cheq(has(Booot, a(length), Any), m143);
+	cheq(has(Booot, a(length)), m143);
 
 	//  check(has(Booot,a(length))==m143);
 
@@ -1157,7 +1157,7 @@ void testComparisonQueryString() {
 	p(nv[0]);
 	N population = getProperty(nv[0], "population");
 	p(population);
-	check(eq(population->name, "1140"));
+	cheq(population->name, "1140");
 	check(atoi(population->name) == 1140);
 	//	check(population->value.number==1140);
 	//	showNodes(q.instances, false);
@@ -1168,7 +1168,7 @@ void testComparisonQueryString2() {
 	NV nv = query(q);
 	check(nv.size() > 0);
 	N countrycode = getProperty(nv[0], "countrycode");
-	check(eq(countrycode->name, "de"));
+	cheq(countrycode->name, "de");
 }
 
 void testQueryAnd() {
@@ -1178,7 +1178,7 @@ void testQueryAnd() {
 	N countrycode = getProperty(nv[0], "countrycode");
 	N population = getProperty(nv[0], "population");
 	p(nv[0]);
-	check(eq(countrycode->name, "us"));
+	cheq(countrycode->name, "us");
 	check(atoi(population->name) > 0 and atoi(population->name) < 2000);
 }
 
@@ -1202,7 +1202,7 @@ void testComparisonQueryStringLess() {
 	NV nv;
 	string s = "select * from city where population<1100";
 	q = parseQuery(s);
-	check(eq(q.keyword->name, "city"));
+	cheq(q.keyword->name, "city");
 	check(q.filters.size() == 1);
 	check(checkStatement(q.filters[0]));
 	nv = query(q);
@@ -1410,7 +1410,8 @@ void testWins() {
 	Node *spec3283 = a(attr_spec_3283_double);
 	Node *spec11986 = a(attr_spec_11986_double);
 	show(Akkulaufzeit, 0);
-	check(eq(Akkulaufzeit, spec3283)||eq(Akkulaufzeit, spec11986));
+//	cheq(Akkulaufzeit, spec3283);// or
+	cheq(Akkulaufzeit, spec11986);
 //	findAnswers("standby zeit");
 
 //    N key8413=a(attr_key_8413_double);
@@ -1476,12 +1477,12 @@ void testWins() {
 	N typ = getType(the(silber));
 	p(typ);
 //	check(eq(typ, Value))
-	check(eq(typ, the(attributevalue)));
+	cheq(typ, the(attributevalue));
 	N aClass = getClass(the(silber), true, typ);
 	p(aClass);
-//	check(eq(aClass, the(Farbe)));
-//	check(eq(aClass, the(attr_key_8313_txt)));
-//	check(eq(aClass, a(attr_key_8313_txt)));
+//	cheq(aClass, the(Farbe));
+//	cheq(aClass, the(attr_key_8313_txt));
+//	cheq(aClass, a(attr_key_8313_txt));
 
 //	N SAR = getThe("tx tcwins keyfacts rel-uid-8413");
 //	N SAR = getThe("attr_key_8413_txt");
@@ -1489,15 +1490,15 @@ void testWins() {
 //	dissectWord("a_b/c");
 
 	N farbe=a(Farbe);// a(attr_key_8313_txt);
-//	check(eq(getClass(the(blau)),farbe));
+//	cheq(getClass(the(blau)),farbe);
 
-	check(eq(getID(the(farbe)),"attr_key_8313_txt"));// Farbe
+	cheq(getID(the(farbe)),"attr_key_8313_txt");// Farbe
 	trace= false;
 	p(getID(the(blau)));
 
-	check(eq(getID(the(blau)),"attr_key_8313_txt"));// Farbe
-	check(eq(getID(the(SAR Wert)),"attr_key_8413_double"));
-	check(eq(getID(the(Strahlung)),"attr_key_8413_double"));
+	cheq(getID(the(blau)),"attr_key_8313_txt");// Farbe
+	cheq(getID(the(SAR Wert)),"attr_key_8413_double");
+	cheq(getID(the(Strahlung)),"attr_key_8413_double");
 
 	if(!hasNode("Apple_iPhone_X"))
 		import("wins_all.n3");
@@ -1657,7 +1658,7 @@ void testCities() {
 	p(the(Mersing));
 	N pop = getProperty(the(Mersing), a(population));
 	check(pop == the(22007));
-	check(eq(pop->name ,"22007"));
+	cheq(pop->name ,"22007");
 	check(findStatement(the(Mersing), a(population), Any));
 	check(findStatement(the(Mersing), a(population), the(22007)));
 	check(has(the(Mersing), a(population), the(22007)))
@@ -1671,7 +1672,7 @@ void testSplit() {
 	char **splat = splitStringC("a.a", ".");
 	char *thing = splat[0];
 	char *property = splat[1];
-	check(eq(thing, property));
+	cheq(thing, property);
 }
 
 void testOpposite() {
@@ -1850,7 +1851,7 @@ void testSqlDe() {
 	NodeVector r = query(sql);
 	check(r.size() >= 1);
 	p(r[0]->name);
-	check(eq(r[0]->name, "Karin"));
+	cheq(r[0]->name, "Karin");
 }
 
 void testSqlDe2() {
@@ -1864,7 +1865,7 @@ void testSqlDe2() {
 	NodeVector r = query(sql);
 	check(r.size() == 1);
 	p(r[0]->name);
-	check(eq(r[0]->name, "Achromatische farbe"));
+	cheq(r[0]->name, "Achromatische farbe");
 
 }
 
@@ -1901,7 +1902,7 @@ void old_to_remove() {
 	//	testHash();
 	//	checkWordnet();
 	//  const char* x=concat("ab","cde");
-	//  check(eq(x,"abcde"));
+	//  cheq(x,"abcde");
 	//	import("freebase");
 	//  importFreebase();// needs /Volumes/Data/BIG/ !
 	//  	import("yago");
@@ -1964,7 +1965,7 @@ bool assertResult(char *query, char *value0) {
 	Node *value = getThe(abstract);
 	check(contains(result, value) or contains(result, abstract));
 	return 1;
-	//	return check(eq(result,value));
+	//	return cheq(result,value);
 }
 
 void flattenGeographischeKoordinaten() {
@@ -2118,14 +2119,14 @@ void testWikidataTopics() {
 
 	filterWikiType(3423);
 	N to = getTopic(get(550866));
-	check(eq(to->name, "Dorf") || eq(to->name, "Kommune"));// 3266850
+	cheq(to->name, "Dorf");//|| eq(to->name, "Kommune");// 3266850
 	N sackgassendorf = get(177966);
 	N e = getTopic(sackgassendorf);// Sackgassendorf -> Reihendorf -> Dorf OK
-	check(eq(e->name, "Dorf"));
+	cheq(e->name, "Dorf");
 	N ta = getType(sackgassendorf);
-	check(eq(ta->name, "Siedlung"));
+	cheq(ta->name, "Siedlung");
 	N c = getClass(sackgassendorf);
-	check(eq(c->name, "Reihendorf"));
+	cheq(c->name, "Reihendorf");
 	//	N e=getTopic(get(177966));// Sackgassendorf -> Reihendorf -> Dorf OK
 	//	N e=the(Sackgassendorf);
 	//	N e=the(Angela Merkel);
@@ -2193,27 +2194,27 @@ void testSynonyms(){
 	check(normedEntity2 == the(Population));
 	const NodeVector pop = query("Gehren.Population");
 //	const NodeVector pop = parse("Gehren.Population", false, true);
-	check(eq(pop[0], the(3703)));
-	check(eq(parse("Gehren.Population", false)[0],the(3703)));
-	check(eq(parse("Gehren.Einwohner", false)[0],the(3703)));
+	cheq(pop[0], the(3703));
+	cheq(parse("Gehren.Population", false)[0],the(3703));
+	cheq(parse("Gehren.Einwohner", false)[0],the(3703));
 
-//	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
-//	check(eq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703)));
-//	check(eq(findProperty(a(Gehren),the(Population)),the(3703)));
-//	check(eq(findProperty(a(Gehren),the(Einwohner)),the(3703)));
-	check(eq(getProperty(a(Gehren),the(Einwohner)),the(3703)));
+//	cheq(findProperty(a(Gehren),the(Population)),the(3703));
+//	cheq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703));
+//	cheq(findProperty(a(Gehren),the(Population)),the(3703));
+//	cheq(findProperty(a(Gehren),the(Einwohner)),the(3703));
+	cheq(getProperty(a(Gehren),the(Einwohner)),the(3703));
 
-//	check(eq(findProperty(the(Gehren),the(Population)),the(3703)));
-//	check(eq(getProperty(the(Gehren),the(Einwohner)),the(3703)));
-//	check(eq(has(the(Gehren),the(Population)),the(3703)));
+//	cheq(findProperty(the(Gehren),the(Population)),the(3703));
+//	cheq(getProperty(the(Gehren),the(Einwohner)),the(3703));
+//	cheq(has(the(Gehren),the(Population)),the(3703));
 //	check(has(the(Gehren), the(Population)));
 //	check(has(the(Gehren), the(Einwohner)));
 
-	check(eq(findProperty(the(Gehren),the(PLZ)),the(98708)));
-	check(eq(getProperty(the(Gehren),the(PLZ)),the(98708)));
+	cheq(findProperty(the(Gehren),the(PLZ)),the(98708));
+	cheq(getProperty(the(Gehren),the(PLZ)),the(98708));
 	check(isA(the(Population), the(Einwohner)));
 	check(isA(the(Postleitzahl), the(PLZ)));
-	check(eq(getProperty(the(Gehren),the(Postleitzahl)),the(98708)));
+	cheq(getProperty(the(Gehren),the(Postleitzahl)),the(98708));
 	check(has(the(Gehren), the(Postleitzahl)));
 	check(has(the(Gehren), the(PLZ)));
 

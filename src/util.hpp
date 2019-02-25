@@ -119,13 +119,14 @@ string itoa(int i);
 void appendFile(const char* fileName,const char* data);
 
 #define check(assertion) pf("TEST %s\n",#assertion);\
-	trace= true;\
 	if(assertion)printf("PASSED %s\n",#assertion);\
-	else{printf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}\
-	trace= false;
+	else{printf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
+
 
 #define assertEquals(a,b) printf("TEST %s==%s\n",#a,#b);\
 	if(eq(a,b))p("PASSED\n");else{p(a);p("!=");p(b);printf("FAILED %s:%d\n",__FILE__,__LINE__);exit(0);}
+
+#define cheq assertEquals
 
 #define minimum(a,b) (a<b?a:b)
 void printlabels();
