@@ -2231,20 +2231,28 @@ char *containsSubstring(vector<char *> &words, char *sub) {
 
 void filterCandidates(NV &all, string query, bool strict) {
 	VC words;
+	map<chars ,Node*> entities;
 	int size = (int) all.size();
-	for (int i = size - 1; i >= 0; i--)
-		if (endsWith(all[i]->name, " "))
-			printf("bug name %s", all[i]->name);
-		else
-			words.push_back(all[i]->name);
-
+	for (int i = size - 1; i >= 0; i--){
+		Node *node = all[i];
+		char *name = node->name;
+		if (endsWith(name, " "))
+			printf("bug name %s", name);
+		else{			
+			words.push_back(name);
+			entities[name]=node;
+		}
+	}
+	
 	for (int i = size - 1; i >= 0; i--) {
 		N entity = all[i];
 		char *longer = containsSubstring(words, entity->name);
+		N other= entities[longer];
 		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name)) {
-//			if(startPositions[entity->id]>)
-			if (len(longer) > len(entity->name) + 1) // allow small variations iPhone Xs, Farben
-				all.erase(all.begin() + i);
+			if(startPositions[entity->id]>endPositions[other->id]);// keep
+			else if (endPositions[entity->id]<startPositions[other->id]);// keep
+			else all.erase(all.begin() + i);
+//			else if (len(longer) > len(entity->name) + 1) // allow small variations iPhone Xs, Farben
 		}
 	}
 	//	all.shrink_to_fit();
@@ -2377,8 +2385,9 @@ NV findAnswers(cchar *query0, bool answerQuestions) {
 	return all;
 }
 
-N stemming(char *start, char *mid) {
+N stemmed(char *start, char *mid) {
 	bool addSingular=true;
+	if(!mid)mid=start+len(start);
 	N entity = 0;
 	int leng = mid - start;
 	// minimal stemming:
@@ -2496,7 +2505,7 @@ NV findEntites(cchar *query0, bool strict /*=true*/) {
 			mid[0] = 0;// Artificial cut
 			N entity = hasWord(start);
 //			bool addSingular= true;
-			if (!entity) entity = stemming(start, mid);
+			if (!entity) entity = stemmed(start, mid);
 
 			if (atoi(start))
 				if (atoi(start) > 1 && atoi(start) < 100000 && strlen(start) == 5) {

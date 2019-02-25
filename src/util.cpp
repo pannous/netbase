@@ -377,6 +377,12 @@ bool is_out_of_bounds(cchar *pointer) {
 
 //inline
 bool eq(const char *x, const char *y, bool ignoreCase, bool ignoreUnderscore) { //
+	if(trace){
+		p("EQUALS?");
+		p(x);
+		p(y);
+	}
+
 	if (!x and !y) return true; //danger better: undefined?
 	if (!x or !y) return false; //danger better: undefined?
 //	if (x < 0 or y<0)return false;
@@ -484,7 +490,7 @@ void p(char *s) {
 }
 
 void p(const char *s) {
-	if (quiet) return;
+	if (quiet or not s) return;
 	printf("%s\n", s);
 	fflush(stdout);
 }
@@ -818,6 +824,8 @@ char *replace(char *data, char what, char with) {
 }
 
 void appendFile(const char *fileName, const char *data) {
+	if(replaying)
+		return;
 	FILE *fp = fopen(fileName, "a");
 	if (fp == 0) {
 		pf("CANNOT APPEND to FILE %s\n", fileName);

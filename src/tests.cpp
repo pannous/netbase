@@ -1333,22 +1333,22 @@ void testWins() {
 	handle("/asdfdfsfasdfsadf");// don't create abstract
 	check(not hasWord("asdfdfsfasdfsadf"));
 
-	testLearnAndForget();
 
 	if(!hasWord("iphone_x")){
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
-		replay("all");
 		deleteWord("rote");// rot stemming :( TODO
 		deleteWord("roten");
 	}
+	replay("all");
 //	check(getTopic(the(GB))==Unit);
 
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
 
+	check(findAnswers("iphone x and iphone xs").size()==2);
 
-
+	testLearnAndForget();
 
 	handle("/json/qa/iphone x");
 
@@ -1378,7 +1378,8 @@ void testWins() {
 	check(findKey(the(Standby Dauer)));
 //	setLabel()
 	forget(the(X_rosé-gold), the(gold));
-	check(findKey(the(silberne)));
+	deleteWord("silberne");
+	check(findKey(stemmed(editable("silberne"))));
 //    check(getTopic(the(Navigation))==Attribute); BREAKs above how??
 	findKey(the(Navigation));
 	check(found_attribute==1);
@@ -1478,24 +1479,25 @@ void testWins() {
 	check(eq(typ, the(attributevalue)));
 	N aClass = getClass(the(silber), true, typ);
 	p(aClass);
-	check(eq(aClass, the(Farbe)));
-//	check(eq(aClass, the(Key:8313)));
-//	check(eq(aClass, a(Key:8313)));
+//	check(eq(aClass, the(Farbe)));
+//	check(eq(aClass, the(attr_key_8313_txt)));
+//	check(eq(aClass, a(attr_key_8313_txt)));
 
 //	N SAR = getThe("tx tcwins keyfacts rel-uid-8413");
-//	N SAR = getThe("Key:8413");
+//	N SAR = getThe("attr_key_8413_txt");
 
 //	dissectWord("a_b/c");
 
-	N farbe=a(Farbe);// a(Key:8313);
-	check(eq(getClass(the(blau)),farbe));
-	check(eq(getID(the(farbe)),"Key:8313"));// Farbe
+	N farbe=a(Farbe);// a(attr_key_8313_txt);
+//	check(eq(getClass(the(blau)),farbe));
 
+	check(eq(getID(the(farbe)),"attr_key_8313_txt"));// Farbe
+	trace= false;
 	p(getID(the(blau)));
 
-	check(eq(getID(the(blau)),"Key:8313"));// Farbe
-	check(eq(getID(the(SAR Wert)),"Key:8413"));
-	check(eq(getID(the(Strahlung)),"Key:8413"));
+	check(eq(getID(the(blau)),"attr_key_8313_txt"));// Farbe
+	check(eq(getID(the(SAR Wert)),"attr_key_8413_double"));
+	check(eq(getID(the(Strahlung)),"attr_key_8413_double"));
 
 	if(!hasNode("Apple_iPhone_X"))
 		import("wins_all.n3");
@@ -1533,6 +1535,7 @@ void testWins() {
 
 //	testWinsOK();
 	check(contains(findAnswers("Galaxies mit 256 GB in rot"),a(Galaxy)));
+
 }
 
 //#define sn showNode

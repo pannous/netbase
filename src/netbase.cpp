@@ -1857,11 +1857,11 @@ Statement *findStatement(int subject, int predicate, int object, int recurse, bo
 	                     matchName);
 }
 
-bool _trace = false;
+bool trace = false;
 
-void trace() {
-	_trace = true;
-}
+//void trace() {
+//	_trace = true;
+//}
 
 // DO  NOT	TOUCH	A	SINGLE	LINE	IN	THIS	ALGORITHM	!!!!!!!!!!!!!!!!!!!!
 Statement *findStatement(Node *subject, Node *predicate, Node *object,
@@ -1880,7 +1880,7 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 	bool stopAtInstances = false;// predicate != Instance; too Fragile for ordering!
 	while ((s = nextStatement(subject, s, stopAtInstances))) { // kf predicate!=Any 24.1. REALLY??
 		if (limit and lookup++ > limit)break;
-		if (_trace)
+		if (trace)
 			p(s);
 		if (visited[s] and s->subject != 47 and s->subject != 46) {// Remove in live mode if all bugs are fixed
 			p("GRAPH ERROR: cyclic statement");
@@ -2803,7 +2803,9 @@ void replayAll(){
 	replay("forgets.cmd");
 }
 
+bool replaying= false;
 void replay(const char *file) {
+	replaying=true;
 	if(!file)file="logs/replay.log";
 	if(eq(file,"all")){replayAll();return;}
 	char *line = (char *) malloc(MAX_CHARS_PER_LINE);
@@ -2815,9 +2817,12 @@ void replay(const char *file) {
 		if (data[strlen(data) - 1] == '\r')data[strlen(data) - 1] = 0;
 		if (contains(line, ":del"))parse(line, false, false);
 		else if (contains(line, ":learn"))parse(line, false, false);
+		else if (contains(line, ":lable"))parse(line, false, false);
 		else if (contains(line, ":label"))parse(line, false, false);
+		else if (contains(line, ":forget"))parse(line, false, false);
 		else handle(concat("/ee/", line));// chaos monkey
 	}
+	replaying=false;
 }
 
 Context *currentContext() {

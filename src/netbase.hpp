@@ -20,8 +20,7 @@ extern bool useSemantics;
 extern bool germanLabels;
 extern bool exitOnFailure;
 extern bool debug; //=true;
-extern bool _trace;
-void trace();
+extern bool trace;//=false
 extern bool showAbstract;
 extern bool autoDissectAbstracts;
 extern int recursions;
@@ -601,6 +600,7 @@ Node *dissectWord(char* word);
 Node* dissectWord(Node* subject,bool checkDuplicates=false);
 Node* mergeNode(Node* target,Node* node);
 Node* mergeAll(const char* target);
+extern bool replaying;
 void replay(const char *file);
 //extern "C" C-linkage specified, but returns user-defined type 'NodeVector' (aka 'vector<Node *>') which is incompatible with C
 NodeVector parse(const char *data, bool safeMode, bool console);// and act -> extern "C" execute

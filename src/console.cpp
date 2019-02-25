@@ -435,7 +435,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		const char *what = d.data();
 		if(what[0]=='S')deleteStatement(atoi(++what));
 		else deleteWord(what, completely);
-		appendFile("import/deletes.cmd", data0);
+		if(info)appendFile("import/deletes.cmd", data0);
 		return OK;
 	}
 	if (contains(data, ":english") or contains(data, ":en")) {
@@ -594,7 +594,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 	if (startsWith(data, ":block") || startsWith(data, ":blacklist")) {
 		data = next_word(data);
-		appendFile("import/blacklist.csv", data);
+		if(info)appendFile("import/blacklist.csv", data);
 		loadBlacklist();
 		return OK;
 	}
