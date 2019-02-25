@@ -2243,24 +2243,13 @@ void filterCandidates(NV &all, string query, bool strict) {
 			entities[name]=node;
 		}
 	}
-	
-	for (int i = size - 1; i >= 0; i--) {
-		N entity = all[i];
-		char *longer = containsSubstring(words, entity->name);
-		N other= entities[longer];
-		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name)) {
-			if(startPositions[entity->id]>endPositions[other->id]);// keep
-			else if (endPositions[entity->id]<startPositions[other->id]);// keep
-			else
-				all.erase(all.begin() + i);
-//			else if (len(longer) > len(entity->name) + 1) // allow small variations iPhone Xs, Farben
-		}
-	}
+
+
 	//	all.shrink_to_fit();
 	size = (int) all.size();
 	for (int i = 0; i < size; i++) {
 		N entity = all[i];
-		if (isAbstract(entity)) {
+		if (isAbstract(entity) and entity->statementCount<10 /*todo magic*/) {
 			NV more = allInstances(entity);
 			for (N n : more)
 				if (!strict or eq(n->name, entity->name)) {// only exact here, lables later!
@@ -2272,6 +2261,23 @@ void filterCandidates(NV &all, string query, bool strict) {
 				}
 		}
 	}
+
+	// remove subentities:
+	size = (int) all.size();
+	for (int i = size - 1; i >= 0; i--) {
+		N entity = all[i];
+		char *longer = containsSubstring(words, entity->name);
+		N other= entities[longer];
+		if (longer and contains(query.data(), longer, 1, 1) and not eq(longer, entity->name)) {
+			if(startPositions[entity->id]>endPositions[other->id]);// keep
+			else if (endPositions[entity->id]<startPositions[other->id]);// keep
+//			else if (other==getAbstract(entity));// keep instance
+			else
+				all.erase(all.begin() + i);
+//			else if (len(longer) > len(entity->name) + 1) // allow small variations iPhone Xs, Farben
+		}
+	}
+
 //	size=(int)all.size();
 //	for(int i=size-1;i>=0;i--){
 //		N entity=all[i];
