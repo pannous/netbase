@@ -235,7 +235,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return show(findEntites(data));
 	}
 
-	if (startsWith(data, "qa") or startsWith(data, ":qa")) {
+	if (startsWith(data, "qa") or startsWith(data, ":qa") or startsWith(data, ":fa")) {
 		data = next_word(data);
 		return show(findAnswers(data));
 	}

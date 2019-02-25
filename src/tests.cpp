@@ -1342,8 +1342,12 @@ void testWins() {
 		replay("all");
 	}
 
-	handle("/json/short/qa/samsung galaxy s9+");
-	findAnswers("samsung galaxy s9+");
+	check(findAnswers("samsung galaxy s9 ").size()==1);
+//	check(findAnswers("samsung galaxy s9+").size()==1);
+//	check(findAnswers("samsung galaxy s9%2B").size()==1);
+
+
+//	handle("/json/short/qa/samsung galaxy s9+");
 
 //	check(getTopic(the(GB))==Unit);
 

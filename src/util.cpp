@@ -126,6 +126,8 @@ bool contains(const char *x, const char *y, bool ignoreCase, bool ignoreUndersco
 		if(ignoreUnderscore)replaceChar(my, '_', ' ');
 		if(ignoreUnderscore)replaceChar(mx, '-', ' ');
 		if(ignoreUnderscore)replaceChar(my, '-', ' ');
+		if(ignoreUnderscore)replaceChar(mx, '+', ' ');// galaxy s9+ 'hack' or ok?
+		if(ignoreUnderscore)replaceChar(my, '+', ' ');
 		bool does_contain = strstr(mx, my) >= mx;
 		free(mx);
 		free(my);
