@@ -33,6 +33,7 @@ bool endsWith(const char* x, const char* y);
 //string cut_to(string str, string what);
 cchar* cut_to(cchar* str,cchar* match);
 char* cut_to(char* str,cchar* match);
+char *cut(char *str, cchar *match);
 char* keep_to(char* str, cchar* match);
 bool contains(const char* x, const char y);
 bool contains(const char* x,const char* y,bool ignoreCase=false, bool ignoreUnderscore= false);

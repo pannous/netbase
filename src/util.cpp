@@ -271,6 +271,7 @@ string replace_all(char *str, string what, string with, bool replace_inline) {
 cchar *cut_to(cchar *str, cchar *match) {
 	cchar *i = strstr(str, match);
 	if (!i)return str;
+//	if (i)i[0] = 0;
 	return i + strlen(match);
 }
 
@@ -279,6 +280,13 @@ char *cut_to(char *str, cchar *match) {
 	if (!i)return str;
 	if (i)i[0] = 0;
 	return i + strlen(match);
+}
+
+
+char *cut(char *str, cchar *match) {
+	char* rest=cut_to(str,match);
+	if(len(rest))return rest;
+	else return str;
 }
 
 //#include <sstrings2.h> Linking with -lsstrings2

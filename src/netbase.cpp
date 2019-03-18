@@ -3077,12 +3077,17 @@ int main(int argc, char *argv[]) {
 
 	string a;
 	for (int i = 1; i < argc; i++) a = a + argv[i] + " ";
-	cchar *query = a.data();
+	char *query = editable(a.data());
 
 	// todo REDUNDANT! remove!
 	if (checkParams(argc, argv, "quiet")) quiet = true;
 	if (query[0] == '/')quiet = true;
 	bool quit = checkParams(argc, argv, "exit") || checkParams(argc, argv, "quit");
+	if(quit){
+		printf("quit after\n");
+		query=cut(query,"quit");
+		query=cut(query,"exit");
+	}
 
 	if (checkParams(argc, argv, "query") or checkParams(argc, argv, "select") or checkParams(argc, argv, "all")) {
 		quiet = true;
@@ -3100,7 +3105,7 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "import")) {
 		if (checkParams(argc, argv, "all") or argc < 2)
 			importAll();
-		else import(argv[2]); // danger netbase clear import save
+		else import(cut_to(query,"import ")); // danger netbase clear import save
 		if (checkParams(argc, argv, "save")) save();
 	}
 	if (checkParams(argc, argv, "load")) load(true);

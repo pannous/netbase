@@ -2569,6 +2569,16 @@ void importStatements() {
 	fclose(infile); /* Close the file */
 }
 
+void importWins(){
+	if(hasWord("iPhone")){
+		p("importWins already done");
+		return;
+	}
+	import("wins.n3");// created via dias-feeding
+	import("dias.n3");// manual
+	replay("all");    // api calls
+}
+
 void importWordnet() {
 	autoIds = false;
 	context = getContext(wordnet);
@@ -2806,6 +2816,8 @@ void import(const char *type, const char *filename) {
 		replay(filename);
 	} else if (eq(type, "wordnet")) {
 		importWordnet();
+	} else if (eq(type, "wins")) {
+		importWins();
 	} else if (eq(type, "freebase")) {
 		importFreebase();
 	} else if (eq(type, "geodb") or eq(type, "geo") or eq(type, "locations") or eq(type, "places") or
@@ -2824,10 +2836,6 @@ void import(const char *type, const char *filename) {
 		importImageTripels(substr(type, 7, -1));
 	} else if (eq(type, "wiki") or eq(type, "wikidata")) {
 		importWikiData();
-		//	} else if (eq(type, "wiki")) {
-		//		importWikipedia();
-		//	} else if (eq(type, "topic")) {
-		//		importWikipedia();
 	} else if (eq(type, "yago")) {
 		if (eq(filename, "yago")) importAllYago();
 		//		else if (contains(filename, "fact"))
@@ -2851,16 +2859,9 @@ void import(const char *type, const char *filename) {
 	} else if (endsWith(filename, "ttl")) {
 		importN3(filename);
 	} else {
-		//if (!importFacts(filename, filename))
-		printf("Unsupported file type %s %s\n", type, filename);
-		//		importAll();
+		printf("Unsupported file type %s\nfile: %s\n", type, filename);
 	}
 	importing = false;
-	// cout<<"nanoseconds "<< diff <<'\n';
-
-	// importSqlite(filename);
-	//  importNodes();
-	//  importStatements();
 }
 
 void importCustomFacts(){
