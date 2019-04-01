@@ -6,8 +6,7 @@ MAINTAINER Quasiris <info@quasiris.com>
 RUN apt-get update
 RUN apt-get install -y libreadline7
 
-EXPOSE 6060
-
+# EXPOSE 6060 # use run -p 6060:6060
 
 # Copy and run the install scripts.
 # COPY *.sh /netbase/
@@ -29,8 +28,10 @@ RUN ln -s /root/ /netbase
 # ADD /me/quasiris/DiAS/dias-feeding/pipelines/feeding/output/wins.n3 /netbase/import/wins.n3
 # docker cp /me/quasiris/DiAS/dias-feeding/pipelines/feeding/output/wins.n3 netbase:/netbase/import/
 
-RUN /netbase/netbase :import wins.n3
+RUN /netbase/netbase import wins.n3 exit 
+RUN /netbase/netbase :server 
+#-p 6060
 
-CMD /netbase/netbase server
+# CMD /netbase/netbase server
 # ENTRYPOINT ["redis", "-H", "something", "-u", "toto"]
-ENTRYPOINT ["netbase", "server"]
+# ENTRYPOINT ["netbase", "server"]

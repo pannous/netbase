@@ -3056,6 +3056,14 @@ Node *mergeNode(Node *target, Node *node) {
 //void SIGINT_handler(int x){
 //	shutdown_webserver();
 //}
+
+char* strip(char* s){
+	while(s[0]==' ')s++;
+	char* e=s+len(s)-1;
+	while(e[0]==' ' and e>=s){e[0]=0;e--;}
+	return s;
+}
+
 //#define _MAIN_
 int main(int argc, char *argv[]) {
 	char *data = getenv("QUERY_STRING");
@@ -3095,6 +3103,7 @@ int main(int argc, char *argv[]) {
 		printf("quit after\n");
 		query=cut(query,"quit");
 		query=cut(query,"exit");
+		query=strip(query);
 	}
 
 	if (checkParams(argc, argv, "query") or checkParams(argc, argv, "select") or checkParams(argc, argv, "all")) {
