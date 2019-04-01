@@ -284,7 +284,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		console();
 		return OK;
 	}
-	if (eq(data, ":export")) {
+	if (eq(data, ":export") or eq(data, ":e")) {
 		export_csv();
 		return OK;
 	}
@@ -294,10 +294,6 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 	if (eq(data, "./clear-shared-memory.sh")) {
 		clearMemory();
-		return OK;
-	}
-	if (eq(data, ":e")) {
-		export_csv();
 		return OK;
 	}
 	if (eq(data, ":quit") or eq(data, ":exit")) return OK;

@@ -2388,6 +2388,20 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 //	testBug();
 
+//	releaseSharedMemory();
+//	clearMemory();
+//	import("wins");
+//	Node *iPhone = hasWord("iPhone");
+//	parse(":save");
+//	Context *context0 = getContext(0);
+//	showContext(0);
+
+	load(true);
+	showContext(0);
+	Context *context1 = getContext(0);
+	Node *iPhoneX = get(13);
+	check(hasWord("iPhone"));
+
 //   clearMemory();
 //importWordnet();
 

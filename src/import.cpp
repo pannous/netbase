@@ -2169,6 +2169,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	p("import N3 ok");
 	closeFile(file);
 	pf("LINES IMPORTED: %d   BAD: %d   MISSING: %d\n",linecount-badCount, badCount, MISSING);
+	showReasons();
 	context->use_logic = false;
 	//	free(subjectName0);free(objectName0);free(predicateName0);// noone cares about 100bytes
 	//	freebaseKeys.clear();

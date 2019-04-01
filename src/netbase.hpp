@@ -624,6 +624,8 @@ extern char* name_root;
 extern int* freebaseKey_root;// keyhash-> NodeId 'map'
 
 Node* bad(char* message=0);//string="");
+void showReasons();
+
 void show(NodeSet& all);
 void addSeo(Node* n);
 Node *getSeo(const char* thingy);

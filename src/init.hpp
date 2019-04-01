@@ -8,6 +8,7 @@
 #ifndef INIT_HPP
 #define	INIT_HPP
 bool clearMemory();
+void releaseSharedMemory();
 void load(bool force=false);
 extern "C" void initSharedMemory(bool relations=true);
 extern "C" void allowWipe();

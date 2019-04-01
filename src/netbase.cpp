@@ -117,12 +117,17 @@ Node *bad(char *reason) {
 	if (debug and reason) {
 		if (!reasons[reason])
 			printf("%s\n", reason);
-//        reasons[reason]=(reasons[reason]||0)+1;
+        reasons[reason]=(reasons[reason]||0)+1;
 	} else
 		printf(".");// no reason
-
 	badCount++;
 	return Error;
+}
+
+void showReasons(){
+	for(auto &reason : reasons){
+		printf("%s: %d",reason.first.data(),reason.second);
+	}
 }
 
 bool isAbstract(Node *object) {

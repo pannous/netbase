@@ -7,7 +7,6 @@
 
 //Since using #include <stdlib.h> dumps all declared names in the global namespace,
 //the preference should be to use #include <cstdlib>, unless you need compatibility with C
-#include <cstdlib>
 #include <string.h>
 
 //#include <stdlib.h> // system(cmd)
@@ -15,12 +14,9 @@
 #include <signal.h> // kill
 
 #include "util.hpp"
-#include "netbase.hpp"
 #include "init.hpp"
 #include "relations.hpp"
 #include "webserver.hpp"
-
-#include "errno.h"
 
 namespace patch {
 	template<typename T>
@@ -121,8 +117,8 @@ void signal_handler(int signum) {// handle SIGSEGV smoothly
 //long GB=1073741824;
 void increaseShmMax() {
 	p("increase ShmMax");
+//	system("./increase-shared-memory.sh");// kill 9 itself :(
 //	return;
-//	system("./increase-shared-memory.sh");
 	//  sudo: no tty present and no askpass program specified in Xcode
 
 
@@ -138,9 +134,9 @@ void increaseShmMax() {
 	p("If you still cannot start netbase, decrease maxNodes in netbase.hpp");// or adjust shmmax, see clear-shared-memory.sh");
 }
 
-void clearSharedMemory() {
+void releaseSharedMemory() {
 	p("run as sudo or USE ./clear-shared-memory.sh ");
-	system("./clear-shared-memory.sh");// Process finished with exit code 1
+//	system("./clear-shared-memory.sh");// kill -9 self process :(
 	system("ipcrm -M '0x69190'");
 	system("ipcrm -M '0x69191'");
 	system("ipcrm -M '0x69192'");
@@ -159,7 +155,7 @@ void detach_shared_memory() {
 		return;
 	}
 	increaseShmMax();
-	clearSharedMemory();
+	releaseSharedMemory();
 }
 
 void *share_memory(key_t key, long sizeOfSharedMemory, void *root, const void *desired) {
@@ -371,6 +367,7 @@ void load(bool force) {
 
 	Context *c = getContext(current_context);
 	Node *oldNodes = c->nodes;
+	size_t read= 0;
 	char *oldnodeNames;//=c->nodeNames;
 	oldnodeNames = initContext(c);
 
@@ -391,20 +388,24 @@ void load(bool force) {
 		return;
 		//    exit(1);
 	} else {
-		fread(contexts, sizeof(Context), maxContexts, fp);
+		read=fread(contexts, sizeof(Context), maxContexts, fp);
+		printf("read %d entries\n",read);
 		fclose(fp);
 	}
 
 	fp = open_binary("names.bin");
-	fread(name_root, sizeof(char),maxChars, fp);
+	read=fread(name_root, sizeof(char),c->currentNameSlot + 100, fp);
+	printf("read %d entries\n",read);
 	fclose(fp);
 
 	fp = open_binary("statements.bin");
-	fread(c->statements, sizeof(Statement), c->statementCount, fp); // maxStatements
+	read=fread(c->statements, sizeof(Statement), maxStatements, fp); // c->statementCount
+	printf("read %d entries\n",read);
 	fclose(fp);
 
 	fp = open_binary("nodes.bin");
-	fread(c->nodes - propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
+	read=fread(c->nodes - propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
+	 printf("read %d entries\n",read);
 	fclose(fp);
 
 	if (oldNodes != c->nodes) {
@@ -415,7 +416,8 @@ void load(bool force) {
 
 	fp = open_binary("abstracts.bin");
 	if (fp) {
-		fread(abstracts, sizeof(Ahash), maxNodes * 2, fp);
+		read=fread(abstracts, sizeof(Ahash), maxNodes * 2, fp);
+		printf("read %d entries\n",read);
 		fclose(fp);
 	} else {
 		ps("collecting abstracts!");
@@ -521,7 +523,7 @@ void fixNodeNames(Context *context, char *oldnodeNames) {
 }
 
 bool clearMemory() {
-//	clearSharedMemory();
+//	releaseSharedMemory();
 	if (!virgin_memory) {
 		ps("Cleansing Memory!");
 		detach_shared_memory();
