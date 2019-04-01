@@ -693,7 +693,7 @@ void checkOutOfMemory() {
 		out_of_memory = true;
 	}
 	if (context->lastNode >= maxNodes - propertySlots) {
-		pf("context->lastNode > maxNodes %d>%ld ", context->lastNode, maxNodes);
+		pf("context->lastNode > maxNodes - propertySlots %d>%ld ", context->lastNode, maxNodes - propertySlots);
 		p("MEMORY FULL!!!");
 		out_of_memory = true;
 //					exit(1);
@@ -3081,7 +3081,10 @@ int main(int argc, char *argv[]) {
 	//	path=sprintf("%s/data",path);
 
 	string a;
-	for (int i = 1; i < argc; i++) a = a + argv[i] + " ";
+	for (int i = 1; i < argc; i++){
+		if(i>1)a=a+ " ";
+		a = a + argv[i] ;
+	}
 	char *query = editable(a.data());
 
 	// todo REDUNDANT! remove!

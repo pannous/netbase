@@ -1,1 +1,35 @@
-/me/.inputrc
+# killall xbindkeys && xbindkeys -p
+"\e[1;3D": backward-word
+"\e[1;3C": forward-word
+
+"\C-[[A": history-search-backward
+"\C-[[B": history-search-forward
+set completion-ignore-case on
+set show-all-if-ambiguous on
+set show-all-if-unmodified on
+# shift pageup => complete command from history!
+"\e[5~": history-search-backward
+"\e[6~": history-search-forward
+
+# Arrow up down
+# "\e[A": history-search-backward
+# "\e[B": history-search-forward
+
+set colored-stats on
+#TAB: menu-complete
+# Tab:complete "\e[Z":menu-complete
+
+# shift tab
+"\e[Z": menu-complete-backward 
+
+# cycle forward
+Control-k: menu-complete
+# cycle backward
+Control-j: menu-complete-backward
+
+"\C-f": menu-complete
+
+# display one column with matches
+# set completion-display-width 1
+
+# killall xbindkeys && xbindkeys -p

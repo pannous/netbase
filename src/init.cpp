@@ -687,14 +687,13 @@ bool isTrue(char* c){
 }
 
 
-long maxChars = 1*million;
-long maxNodes = 1*million;//  300*million;// Live 11.11.2018
+long maxChars = 10*million;
+long maxNodes = 10*million;//  300*million;// Live 11.11.2018
 long maxStatements = 2*maxNodes;
 long sizeOfSharedMemory = 0; // overwrite here:
 
 void loadConfig() {// char* args
-
-	// load netbase.config environment variables or fall back to defaults
+	p("load netbase.config environment variables or fall back to defaults");
 	if (getConfig("SERVER_PORT"))SERVER_PORT = atoi(getConfig("SERVER_PORT"));
 	if (getConfig("resultLimit"))resultLimit = atoi(getConfig("resultLimit"));
 	if (getConfig("lookupLimit"))lookupLimit = atoi(getConfig("lookupLimit"));

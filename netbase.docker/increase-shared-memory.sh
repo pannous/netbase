@@ -10,25 +10,13 @@ shared_memory_32GB=34359738368
 shared_memory_64GB=68719476736
 
 # allow bigger shared memory
-if [ $APPLE ] 
-then
-  # export shmmax=$shared_memory_4GB
-  export shmmax=$shared_memory_16GB
-  let "shmall=$shmmax/4096" # pages,  4096 bytes per page
-  sudo sysctl -w kern.sysv.shmmax=$shmmax
-  sudo sysctl -w kern.sysv.shmall=$shmall
-  # echo "kernel.sysv.shmmax        = $shmmax" | sudo tee -a /etc/sysctl.conf
-  # echo "kernel.sysv.shmall        = $shmall" | sudo tee -a /etc/sysctl.conf
-else 
-  #export shmmax=$shared_memory_16GB
-  export shmmax=$shared_memory_32GB
-  let "shmall=$shmmax/4096" # pages,  4096 bytes per page
-  sudo sysctl -w kernel.shmmax=$shmmax
-  sudo sysctl -w kernel.shmall=$shmall
+export shmmax=$shared_memory_4GB
+let "shmall=$shmmax/4096" # pages,  4096 bytes per page
+sudo sysctl -w kernel.shmmax=$shmmax
+sudo sysctl -w kernel.shmall=$shmall
   # sudo sysctl -w sys.kernel.shmmax=$shmmax
   #   sudo sysctl -w sys.kernel.shmmall=$shmmax
   # echo "kernel.shmmax              = $shmmax" | sudo tee --append /etc/sysctl.conf
   # echo "kernel.shmall              = $shmmax" | sudo tee --append /etc/sysctl.conf
-fi
 
 ./clear-shared-memory.sh
