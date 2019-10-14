@@ -102,3 +102,4 @@ mimir-restart-netbase.sh
 netbase-ruby/
 notes/
 update-mimir.sh
+mem

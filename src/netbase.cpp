@@ -110,6 +110,10 @@ void flush() {
 	fflush(stdout);
 }
 
+extern "C" char* _version(){
+  return version;
+}
+
 
 map<string, int> reasons;
 
@@ -441,7 +445,7 @@ Context *getContext(int contextId, bool init) {
 	//	  printf("bb %d\n",context->nodes[0]);
 	//	  printf("c3 %d\n",&context->nodes[context->nodeCount]);
 	//	  printf("cc %d\n",context->nodes[context->nodeCount]);
-	showContext(contextId);
+//	showContext(contextId);
 	//		contexts[contextId]=context;
 	return context;
 }
@@ -696,7 +700,7 @@ void checkOutOfMemory() {
 		pf("context->lastNode > maxNodes - propertySlots %d>%ld ", context->lastNode, maxNodes - propertySlots);
 		p("MEMORY FULL!!!");
 		out_of_memory = true;
-//					exit(1);
+		exit(1);
 	}
 }
 
@@ -1433,10 +1437,10 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 	if (found and found->abstract > 0 and (first = get(found->abstract))) {
 		//		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
 		//			return found->abstract;
-		if (first->name > &context->nodeNames[context->currentNameSlot] || first->name <= context->nodeNames) {
+		if (first->name > context->nodeNames+context->currentNameSlot || first->name <= context->nodeNames) {
 //			p("BAD NAME");// deleted
 			bad(); // todo
-			return 0;
+//			return 0;
 		}
 		if (eq(first->name, thingy, true))    // tolower
 			return first;

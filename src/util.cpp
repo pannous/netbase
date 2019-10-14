@@ -378,6 +378,7 @@ bool equalsFuzzy(const char *x, const char *y) {
 
 #include <fcntl.h> // open
 #include <unistd.h> // write
+#include <sys/stat.h>
 
 int nullfd = open("/dev/random", O_WRONLY);
 
@@ -1282,4 +1283,24 @@ string generateSEOUrl(string input) {
 //	}
 
 	return s;
+}
+
+
+long fileSize(char* file)
+{
+	struct stat stat_buf;
+	int rc = stat(file, &stat_buf);
+	return rc == 0 ? stat_buf.st_size : 0;// -1;
+}
+
+long fileSize(int fd)
+{
+	struct stat stat_buf;
+	int rc = fstat(fd, &stat_buf);
+	return rc == 0 ? stat_buf.st_size : 0;// -1;
+}
+
+long fileSize(FILE* fp)
+{
+	return fileSize(fileno(fp));
 }

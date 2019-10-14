@@ -154,3 +154,7 @@ int indexOf(cchar *phrase,char c);
 int indexOfReverse(cchar *phrase,char c);
 string generateSEOUrl(string input);
 void error(string err);
+long fileSize(FILE *fp);
+long fileSize(int fd);
+long fileSize(char* file);
+

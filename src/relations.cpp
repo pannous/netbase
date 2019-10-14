@@ -18,13 +18,12 @@ Node *Pattern; // temporary QUERY ONLY!
 
 //Node* Broader;
 Node *Antonym;
-Node *Parent;
+Node *Parent; // Hypernym / IsA
 Node *SuperClass; // Parent, HyponymOf
-// Node* IsA;// Parent
 Node *SubClass;// Hyponym
 Node *Cause;
 Node *Entailment; // Implication
-Node *Owner; //Owner inverse Member  (Prince of Persia) <=> (Persia has Prince)
+Node *Owner; // inverse of Member  (Prince of Persia) <=> (Persia has Prince)
 Node *Member;
 Node *Part;
 Node *PartOf;// Meronym: "wheels" is a meronym of "automobile".

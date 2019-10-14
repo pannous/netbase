@@ -2770,6 +2770,10 @@ void testImportWiki() {
 
 
 void importWikiData() {
+	if(maxNodes<wikidata_limit){
+		p("NOT ENOUGH MEMORY FOR importWikiData");
+		return;
+	}
 	context = getContext(wikidata);
 	autoIds = false;
 	wiki_mode = true;

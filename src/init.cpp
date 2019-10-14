@@ -3,7 +3,11 @@
 //#include <errno.h> // just use perror("blah")! Adds errorstr(errno) automagically
 //#include <sys/types.h>
 //#include <sys/ipc.h>
-#include <sys/shm.h>
+#include <sys/shm.h> // shared memory
+#include <sys/mman.h>// memory map
+//#include <mmap.h> // mmap_read NOPE
+//#include "mmap.h" // mmap_read NOPE
+
 
 //Since using #include <stdlib.h> dumps all declared names in the global namespace,
 //the preference should be to use #include <cstdlib>, unless you need compatibility with C
@@ -12,11 +16,16 @@
 //#include <stdlib.h> // system(cmd)
 #include <unistd.h> // getpid
 #include <signal.h> // kill
+#include <sys/stat.h>
+#include <fcntl.h> // falloc, open
+
 
 #include "util.hpp"
 #include "init.hpp"
 #include "relations.hpp"
 #include "webserver.hpp"
+
+bool USE_MMAP = true;
 
 namespace patch {
 	template<typename T>
@@ -263,6 +272,13 @@ void checkRootContext() {
 
 
 extern "C" void initSharedMemory(bool relations) {
+	if (USE_MMAP) {
+		p("USE_MMAP => NO initSharedMemory!");
+		contexts = context_root = static_cast<Context *>(malloc(1000 * sizeof(Context)));
+		context = &context_root[0];
+		load(1, 1);// loadMemoryMaps();
+		return;
+	}
 //	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly. USELESS for print_backtrace
 	signal(SIGCHLD, SIG_IGN); // https://stackoverflow.com/questions/6718272/c-exec-fork-defunct-processes
 //	print_backtrace();
@@ -277,25 +293,24 @@ extern "C" void initSharedMemory(bool relations) {
 	long statement_size = maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
 //	p("abstract_root:");
-	abstract_root = (Node *) share_memory(key, abstract_size * 2, abstract_root,
-	                                      root);// ((char*) context_root) + context_size
+	abstract_root = (Node *) share_memory(key, abstract_size * 2, abstract_root, root);
+	// ((char*) context_root) + context_size
 //	p("name_root:");
 	char *desiredAddress = ((char *) abstract_root) + abstract_size * 2;
 	name_root = (char *) share_memory(key + 1, name_size, name_root, desiredAddress);
-
-//	p("node_root:");
+	//	p("node_root:");
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
 //	p("statement_root:");
-	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root,
-	                                            ((char *) node_root) + node_size);
+	char *desiredRootS = ((char *) node_root) + node_size;
+	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root, desiredRootS);
 //	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 	//	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
 
 //  	p("context_root:");
-	context_root = (Context *) share_memory(key + 4, context_size, context_root,
-	                                        ((char *) statement_root) + statement_size);
+	char *desiredRootC = ((char *) statement_root) + statement_size;
+	context_root = (Context *) share_memory(key + 4, context_size, context_root, desiredRootC);
 	abstracts = (Ahash *) (abstract_root); // reuse or reinit
 	extrahash = (Ahash *) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts = (Context *) context_root;
@@ -354,22 +369,99 @@ void fixStatementNodeIds(Context *context, Node *oldNodes) {
 #endif
 }
 
-FILE *open_binary(cchar *c) {
-	printf("Opening File %s\n", (data_path + c).data());
-	FILE *fp = fopen((data_path + c).data(), "rb");
+FILE *open_binary(cchar *file) {
+//	const char *fullpath = (data_path + file).data(); AAARG out of scope => "" WTF!!
+	printf("Opening File %s\n", (data_path + file).data());
+	FILE *fp = fopen((data_path + file).data(), "rb");
 	if (fp == NULL)perror("Error opening file");
 	return fp;
 }
 
-void load(bool force) {
+void clearMemoryMaps() {
+
+}
+
+void loadMemoryMaps() {
+	Context *c = getContext(current_context);
+
+// MAP_UNINITIALIZED, MAP_SYNC in write maps
+	int mode = PROT_READ | PROT_WRITE;
+	int flags = MAP_SHARED;// |MAP_NORESERVE|MAP_NONBLOCK|MAP_FIXED;
+
+	int fd = open("mem/names.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	posix_fallocate(fd, 0, maxChars * sizeof(char));
+	if (errno!=EEXIST)perror("FAILED mem/names.bin fallocate ");
+	name_root = (char *) shmat_root;
+	name_root = (char *) mmap(name_root, maxChars * sizeof(char), mode, flags, fd, 0);
+	if (name_root == MAP_FAILED) {
+		perror("mem/names.bin MAP_FAILED ");// errno
+		exit(0);
+	}
+	close(fd);
+//	c->nodeNames=mmap_read("names.bin",len);// NOPE
+
+//	fp = fopen("mem/statements.bin", "rw");
+
+	fd = open("mem/statements.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	posix_fallocate(fd, 0, maxStatements * sizeof(Statement));
+	if (errno!=EEXIST)perror("FAILED mem/statements.bin fallocate ");
+	statement_root = (Statement *) mmap(c->statements, maxStatements * sizeof(Statement), mode, flags, fd, 0);
+	if (statement_root == MAP_FAILED)perror("statements.bin MAP_FAILED");// errno
+	close(fd);
+
+//	fp = fopen("mem/nodes.bin", "w+");// fileSize(fp)
+	fd = open("mem/nodes.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	posix_fallocate(fd, 0, maxNodes * sizeof(Node));
+	if (errno!=EEXIST)perror("FAILED mem/nodes.bin fallocate ");
+	node_root = (Node *) ((char *) statement_root) + (maxStatements * sizeof(Statement));
+	node_root = (Node *) mmap(node_root, maxNodes * sizeof(Node), mode, flags, fd, 0);
+	if (node_root == MAP_FAILED)perror("nodes.bin MAP_FAILED");// errno
+	close(fd);
+
+	Node *n = node_root + maxNodes - 1;
+	if(n->value.number = 123)
+	  check(n->id==123);// yay, persisted!
+	n->id = 123;// test access
+	n->value.number = 123;
+
+//	fp = fopen("mem/abstracts.bin", "r");
+	fd = open("mem/abstracts.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	posix_fallocate(fd, 0, sizeof(Ahash) * maxNodes * 2);
+	if (errno!=EEXIST)perror("FAILED mem/abstracts.bin fallocate ");
+	abstracts = (Ahash *) (node_root + maxNodes);
+	abstracts = (Ahash *) mmap(abstracts, sizeof(Ahash) * maxNodes * 2, mode, flags, fd, 0);
+	if (abstracts == MAP_FAILED)perror("abstracts.bin MAP_FAILED");// errno
+	extrahash = (Ahash *) &abstracts[maxNodes];
+	close(fd);
+
+//	abstracts = static_cast<Ahash *>(malloc(sizeof(Ahash) * maxNodes * 2));
+	initContext(context);//:
+//	context->lastNode = 0;
+	insertAbstractHash(get("berlin"));
+	if(!hasWord("berlin"))
+		p("WASSS");
+	check(get("berlin")==get("berlin"));
+
+	if(!hasWord("berlin"))
+		learn("berlin is city");
+	else
+		p(hasWord("berlin"));
+	if(!hasWord("berlin"))
+		p("WASSS");
+//	if ...
+//	collectAbstracts();// was empty!
+}
+
+void load(bool force, bool memory_map) {
+
 //	clock_t start=clock();
 //	double diff= ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 
 	Context *c = getContext(current_context);
 	Node *oldNodes = c->nodes;
-	size_t read= 0;
-	char *oldnodeNames;//=c->nodeNames;
-	oldnodeNames = initContext(c);
+	size_t read = 0;
+	char *oldnodeNames = c->nodeNames;
+	if (!memory_map)oldnodeNames = initContext(c);// allocate 64GB shared memory
 
 	if (!force and context_root) {
 		ps("loaded from shared memory");
@@ -383,29 +475,32 @@ void load(bool force) {
 
 	FILE *fp = open_binary("contexts.bin");
 	if (fp == NULL) {
-		p("starting with fresh context!");
+		p("contexts.bin missing! starting with fresh empty context!");
 		clearMemory();
 		return;
 		//    exit(1);
 	} else {
-		read=fread(contexts, sizeof(Context), maxContexts, fp);
-		printf("read %d entries\n",read);
+		read = fread(contexts, sizeof(Context), maxContexts, fp);
+		printf("read %zu entries\n", read);
 		fclose(fp);
 	}
-
+	if (memory_map) {
+		loadMemoryMaps();
+		return;
+	}
 	fp = open_binary("names.bin");
-	read=fread(name_root, sizeof(char),c->currentNameSlot + 100, fp);
-	printf("read %d entries\n",read);
+	read = fread(name_root, sizeof(char), c->currentNameSlot + 100, fp);
+	printf("read %zu entries\n", read);
 	fclose(fp);
 
 	fp = open_binary("statements.bin");
-	read=fread(c->statements, sizeof(Statement), maxStatements, fp); // c->statementCount
-	printf("read %d entries\n",read);
+	read = fread(c->statements, sizeof(Statement), maxStatements, fp); // c->statementCount
+	printf("read %zu entries\n", read);
 	fclose(fp);
 
 	fp = open_binary("nodes.bin");
-	read=fread(c->nodes - propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
-	 printf("read %d entries\n",read);
+	read = fread(c->nodes - propertySlots, sizeof(Node), maxNodes, fp);//c->nodeCount
+	printf("read %zu entries\n", read);
 	fclose(fp);
 
 	if (oldNodes != c->nodes) {
@@ -416,8 +511,8 @@ void load(bool force) {
 
 	fp = open_binary("abstracts.bin");
 	if (fp) {
-		read=fread(abstracts, sizeof(Ahash), maxNodes * 2, fp);
-		printf("read %d entries\n",read);
+		read = fread(abstracts, sizeof(Ahash), maxNodes * 2, fp);
+		printf("read %zu entries\n", read);
 		fclose(fp);
 	} else {
 		ps("collecting abstracts!");
@@ -660,19 +755,20 @@ extern "C" void allowWipe() {
 }
 
 
-extern char *getConfig (const char *name){
-	if(file_exists("netbase.config")) {
+extern char *getConfig(const char *name) {
+	if (file_exists("netbase.config")) {
 		FILE *infile = open_file("netbase.config");
 		char line[1000];
 //		char* key=(char*)malloc(1000);
 //		char* value=(char*)malloc(1000);
 		while (fgets(line, sizeof(line), infile) != NULL) {
-			if(line[0]=='#')continue;
+			if (line[0] == '#')continue;
 			fixNewline(line);
-			char* key=line;
-			char* value=index(line, '=');
-			if(!value)continue;
-			value[0]=0;value++;
+			char *key = line;
+			char *value = index(line, '=');
+			if (!value)continue;
+			value[0] = 0;
+			value++;
 //			int ok=sscanf(line, "%[^=]s=%s", key, value);// fuck c!
 			if (eq(key, name))
 				return value;
@@ -682,14 +778,14 @@ extern char *getConfig (const char *name){
 	return getenv(name);
 }
 
-bool isTrue(char* c){
-	return eq(c, "true")||eq(c, "1")||eq(c, "yes");
+bool isTrue(char *c) {
+	return eq(c, "true") || eq(c, "1") || eq(c, "yes");
 }
 
 
-long maxChars = 10*million;
-long maxNodes = 10*million;//  300*million;// Live 11.11.2018
-long maxStatements = 2*maxNodes;
+long maxChars = 10 * million;
+long maxNodes = 10 * million;// *40byte => 400MB  300*million;// Live 11.11.2018
+long maxStatements = 2 * maxNodes;
 long sizeOfSharedMemory = 0; // overwrite here:
 
 void loadConfig() {// char* args
@@ -697,20 +793,20 @@ void loadConfig() {// char* args
 	if (getConfig("SERVER_PORT"))SERVER_PORT = atoi(getConfig("SERVER_PORT"));
 	if (getConfig("resultLimit"))resultLimit = atoi(getConfig("resultLimit"));
 	if (getConfig("lookupLimit"))lookupLimit = atoi(getConfig("lookupLimit"));
-	if (getConfig("germanLabels"))germanLabels= isTrue(getConfig("germanLabels"));
-	if (getConfig("maxNodes")){
-		maxNodes= atoi(getConfig("maxNodes"));
-		if(maxNodes<10000)maxNodes=maxNodes*million;
+	if (getConfig("germanLabels"))germanLabels = isTrue(getConfig("germanLabels"));
+	if (getConfig("maxNodes")) {
+		maxNodes = atoi(getConfig("maxNodes"));
+		if (maxNodes < 10000)maxNodes = maxNodes * million;
 		if (getConfig("maxStatements"))
 			maxStatements = atoi(getConfig("maxStatements"));
 		else
-			maxStatements = maxNodes*2;
+			maxStatements = maxNodes * 2;
 		if (getConfig("maxChars"))
 			maxChars = atoi(getConfig("maxChars"));
 		else
 			maxChars = maxNodes * averageNameLength;
 	}
 	maxChars = maxNodes * averageNameLength;
-	sizeOfSharedMemory = contextOffset+ maxNodes*bytesPerNode+maxStatements*statementSize;
+	sizeOfSharedMemory = contextOffset + maxNodes * bytesPerNode + maxStatements * statementSize;
 }
 

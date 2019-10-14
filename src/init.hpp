@@ -9,7 +9,7 @@
 #define	INIT_HPP
 bool clearMemory();
 void releaseSharedMemory();
-void load(bool force=false);
+void load(bool force=false, bool memory_map= false);
 extern "C" void initSharedMemory(bool relations=true);
 extern "C" void allowWipe();
 extern "C" void init(bool relations); // synonym ^^

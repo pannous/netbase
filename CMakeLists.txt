@@ -55,7 +55,7 @@ set(SOURCE_FILES
         src/utf8.hpp
         #        src/json.cpp
         #        src/json.h
-        src/json.hpp
+#        src/json.hpp
         src/md5.cpp
         src/md5.h
         src/console.cpp
@@ -74,8 +74,8 @@ set(SOURCE_FILES
         src/reflection.hpp
         src/relations.cpp
         src/relations.hpp
-        src/shared_map.cpp
-        src/shared_map.hpp
+#        src/shared_map.cpp
+#        src/shared_map.hpp
         src/tests.cpp
         src/tests.hpp
         src/util.cpp

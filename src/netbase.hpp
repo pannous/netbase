@@ -1,7 +1,9 @@
+#pragma once
+
 static char* /*increase-package-version.py src/netbase.hpp*/
 version="1.6.7";
 
-#pragma once
+
 #include <stdio.h>
 #include <string>
 #include <sstream>
@@ -15,6 +17,7 @@ using namespace std;
 
 typedef const char * chars ;
 
+extern "C" char* _version();
 extern bool NO_TOPICS;
 extern bool useSemantics;
 extern bool germanLabels;

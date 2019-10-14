@@ -1,3 +1,5 @@
+#include <utility>
+
 typedef long KeyType;
 typedef int ValueType;
 typedef std::pair<const KeyType, ValueType> KeyValuePair;
@@ -19,6 +21,6 @@ public:
   void insert(KeyValuePair& x);
   void insert(KeyValuePair x);
   void load ();
-    void test();
+  void test();
 };
 #endif
