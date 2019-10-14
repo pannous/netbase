@@ -2414,6 +2414,8 @@ void testBrandNewStuff() {
 //	exit(0);
 //	testSynonyms();
 //	testServer();
+//	learn("berlin is city");
+
 	if(!hasWord("berlin"))
 		learn("berlin is city");
 	else

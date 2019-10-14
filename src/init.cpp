@@ -384,11 +384,15 @@ void clearMemoryMaps() {
 void loadMemoryMaps() {
 	Context *c = getContext(current_context);
 
+	p("Preparing mapped memory files, using some GB! This can take some minutes!");
+
 // MAP_UNINITIALIZED, MAP_SYNC in write maps
 	int mode = PROT_READ | PROT_WRITE;
 	int flags = MAP_SHARED;// |MAP_NORESERVE|MAP_NONBLOCK|MAP_FIXED;
+	int oflag = O_CREAT | O_RDWR | O_LARGEFILE;
 
-	int fd = open("mem/names.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	int fd = open("mem/names.bin", oflag| O_LARGEFILE);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	if(!file_exists("mem/names.bin"))
 	posix_fallocate(fd, 0, maxChars * sizeof(char));
 	if (errno!=EEXIST)perror("FAILED mem/names.bin fallocate ");
 	name_root = (char *) shmat_root;
@@ -402,7 +406,8 @@ void loadMemoryMaps() {
 
 //	fp = fopen("mem/statements.bin", "rw");
 
-	fd = open("mem/statements.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	fd = open("mem/statements.bin", oflag);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	if(!file_exists("mem/statements.bin"))
 	posix_fallocate(fd, 0, maxStatements * sizeof(Statement));
 	if (errno!=EEXIST)perror("FAILED mem/statements.bin fallocate ");
 	statement_root = (Statement *) mmap(c->statements, maxStatements * sizeof(Statement), mode, flags, fd, 0);
@@ -410,23 +415,18 @@ void loadMemoryMaps() {
 	close(fd);
 
 //	fp = fopen("mem/nodes.bin", "w+");// fileSize(fp)
-	fd = open("mem/nodes.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
-	posix_fallocate(fd, 0, maxNodes * sizeof(Node));
+	fd = open("mem/nodes.bin", oflag);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	if(!file_exists("mem/nodes.bin"))
+		posix_fallocate(fd, 0, maxNodes * sizeof(Node));
 	if (errno!=EEXIST)perror("FAILED mem/nodes.bin fallocate ");
 	node_root = (Node *) ((char *) statement_root) + (maxStatements * sizeof(Statement));
 	node_root = (Node *) mmap(node_root, maxNodes * sizeof(Node), mode, flags, fd, 0);
 	if (node_root == MAP_FAILED)perror("nodes.bin MAP_FAILED");// errno
 	close(fd);
 
-	Node *n = node_root + maxNodes - 1;
-	if(n->value.number = 123)
-	  check(n->id==123);// yay, persisted!
-	n->id = 123;// test access
-	n->value.number = 123;
-
-//	fp = fopen("mem/abstracts.bin", "r");
-	fd = open("mem/abstracts.bin", O_CREAT | O_RDWR);// O_WRONLY | | O_APPEND | O_LARGEFILE
-	posix_fallocate(fd, 0, sizeof(Ahash) * maxNodes * 2);
+	fd = open("mem/abstracts.bin", oflag);// O_WRONLY | | O_APPEND | O_LARGEFILE
+	if(!file_exists("mem/abstracts.bin"))
+		posix_fallocate(fd, 0, sizeof(Ahash) * maxNodes * 2);
 	if (errno!=EEXIST)perror("FAILED mem/abstracts.bin fallocate ");
 	abstracts = (Ahash *) (node_root + maxNodes);
 	abstracts = (Ahash *) mmap(abstracts, sizeof(Ahash) * maxNodes * 2, mode, flags, fd, 0);
@@ -434,21 +434,7 @@ void loadMemoryMaps() {
 	extrahash = (Ahash *) &abstracts[maxNodes];
 	close(fd);
 
-//	abstracts = static_cast<Ahash *>(malloc(sizeof(Ahash) * maxNodes * 2));
 	initContext(context);//:
-//	context->lastNode = 0;
-	insertAbstractHash(get("berlin"));
-	if(!hasWord("berlin"))
-		p("WASSS");
-	check(get("berlin")==get("berlin"));
-
-	if(!hasWord("berlin"))
-		learn("berlin is city");
-	else
-		p(hasWord("berlin"));
-	if(!hasWord("berlin"))
-		p("WASSS");
-//	if ...
 //	collectAbstracts();// was empty!
 }
 
@@ -783,7 +769,7 @@ bool isTrue(char *c) {
 }
 
 
-long maxChars = 10 * million;
+long maxChars = 10 * million;// SET VIA netbase.config !
 long maxNodes = 10 * million;// *40byte => 400MB  300*million;// Live 11.11.2018
 long maxStatements = 2 * maxNodes;
 long sizeOfSharedMemory = 0; // overwrite here:
