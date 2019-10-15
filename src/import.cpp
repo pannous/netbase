@@ -99,12 +99,12 @@ bool checkLowMemory() {
 		if (importing)exit(0);
 		return true;
 	}
-	if (extrahash + 20000 > abstracts + maxNodes * 2) {
-		p("OUT OF MEMORY!");
-		// 64 BIT : %x -> %016llX or %p for POINTER!
-		pf("hashes near %p\n", extrahash);
-		return true;
-	}
+//	if (extrahash + 20000 > abstracts + maxNodes * 2) {
+//		p("OUT OF MEMORY!");
+//		// 64 BIT : %x -> %016llX or %p for POINTER!
+//		pf("hashes near %p\n", extrahash);
+//		return true;
+//	}
 	return false;
 }
 

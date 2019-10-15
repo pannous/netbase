@@ -45,7 +45,7 @@ bool save() {
 
 	p("saving abstracts.bin");
 	fp = fopen((data_path + "abstracts.bin").data(), "wb");
-	fwrite(abstracts, sizeof(Ahash), maxNodes * 2, fp);// todo
+	fwrite(abstracts, sizeof(Ahash), maxNodes, fp);// todo
 	fclose(fp);
 
 	ps("context blob saved!");

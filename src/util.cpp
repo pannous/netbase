@@ -1304,3 +1304,8 @@ long fileSize(FILE* fp)
 {
 	return fileSize(fileno(fp));
 }
+
+
+bool file_exists(const char *fname) {
+	return (access(fname, F_OK) != -1);
+}

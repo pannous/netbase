@@ -103,3 +103,12 @@ netbase-ruby/
 notes/
 update-mimir.sh
 mem
+mem/abstracts.bin 
+mem/contexts.bin 
+mem/names.bin 
+mem/nodes.bin 
+mem/statements.bin
+/src/old/
+/src/mmap.h
+/.ipynb_checkpoints/
+/.netbase_history

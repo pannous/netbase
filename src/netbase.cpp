@@ -87,7 +87,7 @@ int current_context = wordnet;
 
 //map<string, Node*> abstracts;
 Ahash *abstracts; // Node name hash
-Ahash *extrahash; // for hashes that are not unique, increasing
+//Ahash *extrahash; // for hashes that are not unique, increasing
 
 //map<const char*,Node*> abstracts;
 map<int, int> wn_map;
@@ -110,8 +110,8 @@ void flush() {
 	fflush(stdout);
 }
 
-extern "C" char* _version(){
-  return version;
+extern "C" char *_version() {
+	return version;
 }
 
 
@@ -121,16 +121,16 @@ Node *bad(char *reason) {
 	if (debug and reason) {
 		if (!reasons[reason])
 			printf("%s\n", reason);
-        reasons[reason]=(reasons[reason]||0)+1;
+		reasons[reason] = (reasons[reason] || 0) + 1;
 	} else
 		printf(".");// no reason
 	badCount++;
 	return Error;
 }
 
-void showReasons(){
-	for(auto &reason : reasons){
-		printf("%s: %d",reason.first.data(),reason.second);
+void showReasons() {
+	for (auto &reason : reasons) {
+		printf("%s: %d", reason.first.data(), reason.second);
 	}
 }
 
@@ -147,7 +147,7 @@ bool checkHash(Ahash *ah) {
 	if (!debug)return true;
 	//  if(pos>maxNodes*2)
 	if (ah < abstracts or
-	    ah > &abstracts[maxNodes * 2]) { // times 2 because it can be an extraHash outside of abstracts!!
+	    ah > &abstracts[maxNodes]) {
 		p("ILLEGAL HASH!");
 		//	pi(pos);
 		px(ah);
@@ -247,8 +247,9 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 			}
 			return ah; // NAME schon da!!
 		}
-		ah->next = context->extrahashNr++;
-		ah = getAhash(ah->next);
+//		ah->next = maxNodes + context->extrahashNr++; TODO reactivate extrahash?
+//		ah = getAhash(ah->next);
+		return 0;// overflow
 	}
 	if (!ah or !checkHash(ah))
 		return 0;
@@ -427,7 +428,7 @@ Context *getContext(int contextId, bool init) {
 	printf("Reset context %d: %s", context->id, context->name);
 	context->id = contextId;
 	context->currentNameSlot = 0; //context->nodeNames;
-	context->extrahashNr = 0;
+//	context->extrahashNr = 0;
 #ifdef statementArrays
 	context->statementArrays = (int*) malloc(maxStatements());
 #endif
@@ -577,7 +578,7 @@ Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId
 bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bool report) {//
 //	bool report=true;
 	if (node == 0) {
-		if(report)bad();// too common
+		if (report)bad();// too common
 //		bad("checkNode node == 0");
 		if (report && debug)
 			printf("^"); // p("null node");
@@ -653,14 +654,9 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 //		if (report)printf("node->name == 0 %i\n", node->id); // todo
 		return false;
 	}
-	if (checkNames and (node->name >= &context->nodeNames[averageNameLength * maxNodes])) {
+	if (checkNames and (node->name >= name_root + maxChars or node->name < name_root)) {
 		bad();
-		if (report)printf("node->name out of bounds %i\n", node->id);
-		return false;
-	}
-	if (checkNames and (node->name < context->nodeNames)) {
-		bad();
-		if (report)printf("node->name out of bounds %i\n", node->id);
+		if (report)printf("node(%i)->name out of bounds:%p \n", node->id,&node->name);
 		return false;
 	}
 #ifdef inlineStatements
@@ -1114,9 +1110,11 @@ void dissectParent(Node *subject, bool checkDuplicates) {
 //Zeitschriftenverlag   Verlag_Technik
 
 bool dontDissect(char *name);
-Node *dissectWord(char* word){
+
+Node *dissectWord(char *word) {
 	return dissectWord(get(word));
 }
+
 Node *dissectWord(Node *subject, bool checkDuplicates) {
 	autoIds = false;
 	Node *original = subject;
@@ -1141,27 +1139,27 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 	if (dontDissect(subject->name))
 		return subject;
 
-	int length=str.length();
+	int length = str.length();
 	int type;
-	int commata=countChar(thing, ',')+countChar(thing, ';');
+	int commata = countChar(thing, ',') + countChar(thing, ';');
 	int words = wordCount(thing);
-	while (commata>1) {
+	while (commata > 1) {
 		type = indexOfReverse(thing, ',');
-		if (type<0) type = indexOfReverse(thing, ';');
+		if (type < 0) type = indexOfReverse(thing, ';');
 		if (type < 0) return original;
-		if(length - type <= 2) return original;
-		thing[type]=0; // cut
+		if (length - type <= 2) return original;
+		thing[type] = 0; // cut
 		length = len(thing);
-		Node *a = getThe(thing+type+1);
-		if (words <= 3 ) { // and !wiki
-		    Node *b = getThe(thing);
+		Node *a = getThe(thing + type + 1);
+		if (words <= 3) { // and !wiki
+			Node *b = getThe(thing);
 			addStatement(a, Instance, subject, true);
 			addStatement(b, Instance, subject, true);
 //			addStatement(subject, Label, a, true);
 //			addStatement(subject, Label, b, true);
 			dissectWord(b); // may be done already
 		} else {
-			if (words <= 8 )
+			if (words <= 8)
 				addStatement(a, See, subject, true);
 		}
 	}
@@ -1300,7 +1298,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 //		char* flip=(str.substr(type + 2) + " " + str.substr(0, type)).data();
 //		Node* word = getThe(t); //deCamel
 //		addStatement(word, Synonym, subject, true);
-		while (true) {
+	while (true) {
 		length = (int) str.length();
 		type = str.find(" ");// needs to be at end because of  " in " ...
 		if (type < 0) type = (int) str.find(",");
@@ -1316,7 +1314,7 @@ Node *dissectWord(Node *subject, bool checkDuplicates) {
 //		if(len(first->name)<2) first=0; // 802.11a/b/g/n
 		if (count <= 3)
 			addStatement(first, Instance, subject, checkDuplicates);
-		else if (count <= 8 )
+		else if (count <= 8)
 			addStatement(first, See, subject, checkDuplicates);
 //			addStatement(subject, Label, first, checkDuplicates);// Galaxy A6 	Label 	Galaxy  nee  aber Angela Label Merkel?
 	}
@@ -1433,15 +1431,8 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 	int h = wordHash(thingy);
 	long pos = abs(h) % maxNodes;
 	Ahash *found = &abstracts[pos]; // TODO: abstract=first word!!! (with new 'next' ptr!)
-	Node *first = 0;
-	if (found and found->abstract > 0 and (first = get(found->abstract))) {
-		//		if (contains(found->abstract->name, thingy))// get rid of "'" leading spaces etc!
-		//			return found->abstract;
-		if (first->name > context->nodeNames+context->currentNameSlot || first->name <= context->nodeNames) {
-//			p("BAD NAME");// deleted
-			bad(); // todo
-//			return 0;
-		}
+	if (found and found->abstract > 0 and checkNode(found->abstract, false, true)) {
+		Node *first = get(found->abstract);
 		if (eq(first->name, thingy, true))    // tolower
 			return first;
 		if (seo and first->name) {
@@ -1450,14 +1441,11 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 		}
 	}
 	int tries = 0; // cycle bugs
-
-	//  	map<Node*, bool> visited;
 //#ifdef DEBUG
 //	map<int, bool> visited;// relatively EXPENSIVE!!
 //#endif
-	//	map<Ahash*, bool> visited;
 	// ./clear-shared-memory.sh After changing anything here!!
-	while (found >= abstracts and found < &extrahash[maxNodes]) {
+	while (found >= abstracts and found < abstracts+maxNodes) {
 		if (tries++ > 1000) {
 //			p("cycle bug");
 			bad();
@@ -1473,8 +1461,6 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 //		visited[found->abstract]=1;
 //#endif
 		if (found and checkNode(found->abstract)) {
-			//			if (contains(found->abstract->name, thingy))//contains enough ?? 0%Likelihood of mismatch?
-			//				return found->abstract;
 			N a = get(found->abstract);
 			if (!checkNode(a, 0, 0, 1))continue;// check name
 			if (eq(a->name, thingy, true, true))            //teuer? n��, if 1.letter differs
@@ -2038,7 +2024,7 @@ void deleteStatement(int id) {
 
 // Does NOT delete tautological duplicates!
 void deleteStatement(Statement *s) {
-	if(!checkStatement(s))
+	if (!checkStatement(s))
 		return;
 	pf("deleteStatement %d\n", s->id());
 	p(s);
@@ -2433,7 +2419,7 @@ void initUnits() {
 	//  printf("Abstracts %p\n", abstracts);
 	printf("Abstracts %p\n", abstracts);
 	Ahash *ah = &abstracts[wordHash("meter") % maxNodes];//???;
-	if (ah < abstracts or ah > extrahash /**2*/) {
+	if (ah < abstracts or ah >= abstracts+maxNodes /**2*/) {
 		ps("abstracts kaputt");
 		//		collectAbstracts();
 	}
@@ -2634,7 +2620,7 @@ bool isA(Node *fro, Node *to, int maxDepth) {
 	}
 	newQuery();
 	const NodeVector &path1 = findPath(fro, to, parentFilter);
-	return path1.size()>1 and (maxDepth?path1.size()<maxDepth: true);
+	return path1.size() > 1 and (maxDepth ? path1.size() < maxDepth : true);
 }
 
 // all mountains higher than Krakatao
@@ -2805,18 +2791,22 @@ int test2() {
 	return 12345;
 }        // RUBY/ JNA !!
 
-void replayAll(){
+void replayAll() {
 	replay("lables.cmd");//
 	replay("learn.cmd");
 	replay("deletes.cmd");
 	replay("forgets.cmd");
 }
 
-bool replaying= false;
+bool replaying = false;
+
 void replay(const char *file) {
-	replaying=true;
-	if(!file)file="logs/replay.log";
-	if(eq(file,"all")){replayAll();return;}
+	replaying = true;
+	if (!file)file = "logs/replay.log";
+	if (eq(file, "all")) {
+		replayAll();
+		return;
+	}
 	char *line = (char *) malloc(MAX_CHARS_PER_LINE);
 //	while(readFile("logs/query.log", line)){
 //	while(readFile("logs/commands.log", line)){
@@ -2831,7 +2821,7 @@ void replay(const char *file) {
 		else if (contains(line, ":forget"))parse(line, false, false);
 		else handle(concat("/ee/", line));// chaos monkey
 	}
-	replaying=false;
+	replaying = false;
 }
 
 Context *currentContext() {
@@ -3061,10 +3051,13 @@ Node *mergeNode(Node *target, Node *node) {
 //	shutdown_webserver();
 //}
 
-char* strip(char* s){
-	while(s[0]==' ')s++;
-	char* e=s+len(s)-1;
-	while(e[0]==' ' and e>=s){e[0]=0;e--;}
+char *strip(char *s) {
+	while (s[0] == ' ')s++;
+	char *e = s + len(s) - 1;
+	while (e[0] == ' ' and e >= s) {
+		e[0] = 0;
+		e--;
+	}
 	return s;
 }
 
@@ -3093,9 +3086,9 @@ int main(int argc, char *argv[]) {
 	//	path=sprintf("%s/data",path);
 
 	string a;
-	for (int i = 1; i < argc; i++){
-		if(i>1)a=a+ " ";
-		a = a + argv[i] ;
+	for (int i = 1; i < argc; i++) {
+		if (i > 1)a = a + " ";
+		a = a + argv[i];
 	}
 	char *query = editable(a.data());
 
@@ -3103,11 +3096,11 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "quiet")) quiet = true;
 	if (query[0] == '/')quiet = true;
 	bool quit = checkParams(argc, argv, "exit") || checkParams(argc, argv, "quit");
-	if(quit){
+	if (quit) {
 		printf("quit after\n");
-		query=cut(query,"quit");
-		query=cut(query,"exit");
-		query=strip(query);
+		query = cut(query, "quit");
+		query = cut(query, "exit");
+		query = strip(query);
 	}
 
 	if (checkParams(argc, argv, "query") or checkParams(argc, argv, "select") or checkParams(argc, argv, "all")) {
@@ -3126,7 +3119,7 @@ int main(int argc, char *argv[]) {
 	if (checkParams(argc, argv, "import")) {
 		if (checkParams(argc, argv, "all") or argc < 2)
 			importAll();
-		else import(cut_to(query,"import ")); // danger netbase clear import save
+		else import(cut_to(query, "import ")); // danger netbase clear import save
 		if (checkParams(argc, argv, "save")) save();
 	}
 	if (checkParams(argc, argv, "load")) load(true);

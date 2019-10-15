@@ -2337,7 +2337,7 @@ void addInstances(NV all) {
 	return;// all;
 }
 
-NV questionAnswering() {}
+//NV questionAnswering() {}
 
 void removeAbstracts(NV &all) {
 	for (int i = all.size() - 1; i >= 0; i--) {

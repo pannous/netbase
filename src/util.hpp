@@ -157,4 +157,4 @@ void error(string err);
 long fileSize(FILE *fp);
 long fileSize(int fd);
 long fileSize(char* file);
-
+bool file_exists(const char *string);

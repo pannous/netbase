@@ -328,7 +328,7 @@ typedef struct Context {
   long currentNameSlot;
   int nodeCount;
   int lastNode;
-  int extrahashNr;
+//  int extrahashNr;
   int statementCount; //first 1000 reserved!
   bool use_logic;
   // Node nodes[maxNodes];
@@ -581,7 +581,7 @@ Node *getPartner(Statement* s, Node* n, Node *m);
 
 //extern map<long, Node*>* abstracts;
 extern Ahash* abstracts; // Node name hash
-extern Ahash* extrahash; // for hashes that are not unique, increasing!!!
+//extern Ahash* extrahash; // for hashes that are not unique, increasing!!!
 extern map < Node*, bool> yetvisited;
 extern map <double, short> yetvisitedIsA;// very memory expensive??
 //Ahash* getAbstractHash(int hashkey);
@@ -642,7 +642,7 @@ static long GB=1024*MB;
 static int million=MB;
 static long billion=GB;
 
-static int propertySlots=1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-200000-317658 wordnet!
+static int propertySlots=0x100000;//1000000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-200000-317658 wordnet!
 static int propertyOffset=10000;// PROPERTY RELATION SLOTS >-1000 internal, <-10000 wikidata <-20000 wordnet abstracts
 static int wordnetOffset=20000;//
 static int synsetOffset=100000;// 200000-317658 for wordnet + other !

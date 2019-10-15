@@ -703,6 +703,7 @@ deque<Statement *> sortStatements(Node *node, bool use_topic) {
 			statements.push_front(s);
 		else statements.push_back(s);
 	}
+	return statements;
 //			if(get_topic and verbosity!=shorter){
 //				NV topics=getTopics(node);
 //				N s=topics[0];

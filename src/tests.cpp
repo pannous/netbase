@@ -700,7 +700,7 @@ void testImportContacts() {
 			      Neumann));
 	check(the(Alexandra_Neumann) == the(Alexandra
 			      Neumann));
-	N plz = a(Postleitzahl (privat));
+	N plz = a(Postleitzahl(privat));
 	dissectWord(plz);
 	check(isA(plz, a(Postleitzahl)));
 
@@ -940,11 +940,11 @@ void testValueLogic() {
 	show(m1430);
 	p(m1430->value.number);
 	//  p(m1430->value.datetime);
-	N len=has(Booot, the(length));
-	if(!len)len=has(Booot, a(length));// bug!
+	N len = has(Booot, the(length));
+	if (!len)len = has(Booot, a(length));// bug!
 	p(len);
 	p(Booot);
-	cheq(len,m1430);
+	cheq(len, m1430);
 	check(has(Booot, the(length), m1430));
 	check(has(Booot, a(length), m1430));
 
@@ -1029,7 +1029,8 @@ void testValueQuery() {
 	Node *m15 = value("", 15, "m");
 	Node *m143 = value("14.320", 14.32, "meter");
 	show(Booot);
-	check(isA4(m14, the(14 m)));
+	check(isA4(m14, the(14
+			      m)));
 	//  check(isA4(m14, the(14 meter)));
 	addStatement(Booot, a(length), m143);
 	check(findStatement(Booot, a(length), m143));
@@ -1251,25 +1252,25 @@ void testQuery() {
 	//	testQueryMore();
 }
 
-void testWinsOK(){
+void testWinsOK() {
 	const char *iphoneX = "Apple_iPhone_X_256_GB_silber";
-	N iPhoneX=getThe(iphoneX);
-	check(the(iphone_se)->statementCount>10);
-	check(a(iphone+se)==a(iphone_se))
-	a(iphone+se)->value.node = 0;// reset 'The' WTF bug<<<<
-	check(the(iphone+se)->statementCount>10);
+	N iPhoneX = getThe(iphoneX);
+	check(the(iphone_se)->statementCount > 10);
+	check(a(iphone + se) == a(iphone_se))
+	a(iphone + se)->value.node = 0;// reset 'The' WTF bug<<<<
+	check(the(iphone + se)->statementCount > 10);
 	check(parseProperty("iphone+se.vorgänger"));
 
 	check(parseProperty("Apple_iPhone_X_256_GB_silber.farbe"));
 
 	N aClass = getClass(getThe("tx_tcwins_keyfacts_rel-uid-10941"));
-	N aClass1 = getClass(the(DSL-RAM));
-	check(aClass==aClass1);
-	check(aClass!=Abstract);
-	check(aClass==Attribute);
+	N aClass1 = getClass(the(DSL - RAM));
+	check(aClass == aClass1);
+	check(aClass != Abstract);
+	check(aClass == Attribute);
 	parse(":class DSL-RAM");
 
-	N found=parseProperty("vorgänger.iphone+se");
+	N found = parseProperty("vorgänger.iphone+se");
 	check(parseProperty("vorgänger.iphone+se"));
 
 //	handle("/short/query/iphone+se.vorgänger");
@@ -1277,22 +1278,22 @@ void testWinsOK(){
 //	findProperty("vorgänger.iphone+se")
 
 	Node *zoom = findProperty(iPhoneX, "zoom");
-	check(zoom and zoom->value.number==6);
+	check(zoom and zoom->value.number == 6);
 
 	check(parseProperty("iPhone_X.farbe"));
 
 
 	check(parseProperty("Apple_iPhone_X.farbe"));
-	check(findProperty(the(Apple_iPhone_X),the(farbe)))
-	check(findProperty(a(Apple_iPhone_X),the(farbe)))
+	check(findProperty(the(Apple_iPhone_X), the(farbe)))
+	check(findProperty(a(Apple_iPhone_X), the(farbe)))
 //	check(findProperty(the(Apple_iPhone_X),a(farbe)))
 //	check(findProperty(a(Apple_iPhone_X),a(farbe)))
 
 
 	check(parseProperty("Apple_iPhone_X_256_GB_silber.ean"))
-	check(findProperty(the(Apple_iPhone_X_256_GB_silber),the(ean)))
-	check(findProperty(a(Apple_iPhone_X_256_GB_silber),the(Ean)))
-	check(findProperty(a(Apple_iPhone_X),the(Ean)))
+	check(findProperty(the(Apple_iPhone_X_256_GB_silber), the(ean)))
+	check(findProperty(a(Apple_iPhone_X_256_GB_silber), the(Ean)))
+	check(findProperty(a(Apple_iPhone_X), the(Ean)))
 //	check(findProperty(the(Apple_iPhone_X),the(Ean)))
 
 	newQuery();
@@ -1300,40 +1301,42 @@ void testWinsOK(){
 
 }
 
-NV qa(char* text){
-	NV as=findAnswers(text);
+NV qa(char *text) {
+	NV as = findAnswers(text);
 	return as;
 }
-void testLearnAndForget(){
+
+void testLearnAndForget() {
 	parse(":lable a_a b_b");
-	check(isA(the(a_a),the(b_b)));
+	check(isA(the(a_a), the(b_b)));
 	forget(the(a_a), the(b_b));
-	check(not isA(the(a_a),the(b_b)));
+	check(not isA(the(a_a), the(b_b)));
 
 	handle(":lable a_a b_b");
-	check(isA(the(a_a),the(b_b)));
+	check(isA(the(a_a), the(b_b)));
 	forget(the(a_a), Label, the(b_b));
-	check(not isA(the(a_a),the(b_b)));
+	check(not isA(the(a_a), the(b_b)));
 
 	parse(":lable a_a b_b");
-	check(isA(the(a_a),the(b_b)));
+	check(isA(the(a_a), the(b_b)));
 	parse(":forget a_a b_b");
-	check(not isA(the(a_a),the(b_b)));
+	check(not isA(the(a_a), the(b_b)));
 
 	handle(":lable a_a b_b");
-	check(isA(the(a_a),the(b_b)));
+	check(isA(the(a_a), the(b_b)));
 	handle(":forget a_a b_b");
-	check(not isA(the(a_a),the(b_b)));
+	check(not isA(the(a_a), the(b_b)));
 
 	handle(":lable a_a b_b");
-	check(isA(the(a_a),the(b_b)));
+	check(isA(the(a_a), the(b_b)));
 	handle(":forget a_a Lable b_b");
-	check(not isA(the(a_a),the(b_b)));
+	check(not isA(the(a_a), the(b_b)));
 }
+
 void testWins() {
 //	clearMemory();
-	germanLabels=1;
-	autoDissectAbstracts=true;
+	germanLabels = 1;
+	autoDissectAbstracts = true;
 	checkDuplicates = true;
 //	autoDissectAbstracts= false;
 
@@ -1341,7 +1344,7 @@ void testWins() {
 //	check(not hasWord("asdfdfsfasdfsadf"));
 
 
-	if(!hasWord("iphone_x")){
+	if (!hasWord("iphone_x")) {
 		import("wins.n3");// via dias-feeding
 		import("dias.n3");
 //		deleteWord("rote");// rot stemming :( TODO
@@ -1349,7 +1352,7 @@ void testWins() {
 		replay("all");
 	}
 
-	check(findAnswers("samsung galaxy s9 ").size()==1);
+	check(findAnswers("samsung galaxy s9 ").size() == 1);
 //	check(findAnswers("samsung galaxy s9+").size()==1);
 //	check(findAnswers("samsung galaxy s9%2B").size()==1);
 
@@ -1361,7 +1364,7 @@ void testWins() {
 //<Arbeitszeit_(Akkulaufzeit)>	<type>	"attribute"
 //<Arbeitszeit_(Akkulaufzeit)>	<id>	"attr_spec_11986_double"
 
-	check(findAnswers("iphone x and iphone xs").size()==2);
+	check(findAnswers("iphone x and iphone xs").size() == 2);
 
 	testLearnAndForget();
 
@@ -1369,37 +1372,45 @@ void testWins() {
 
 //	forget("Speicher Instanz Speicher_für_58_SMS"); TODO
 
-	check(not normEntity(the(iPhone Xs),false));
-	check(not normEntity(the(iPhone X),false));
-	check(not normEntity(a(iPhone Xs),false));
-	check(not normEntity(a(iPhone X),false));
-	check(isA(the(Galaxy J3),get("product")));
+	check(not normEntity(the(iPhone
+			      Xs), false));
+	check(not normEntity(the(iPhone
+			      X), false));
+	check(not normEntity(a(iPhone
+			      Xs), false));
+	check(not normEntity(a(iPhone
+			      X), false));
+	check(isA(the(Galaxy
+			      J3), get("product")));
 
-	check(not isA(the(Hersteller / Lieferant),a(Lieferant)));
-	check(not isA(the(Funkstandard),get("product")));
+	check(not isA(the(Hersteller / Lieferant), a(Lieferant)));
+	check(not isA(the(Funkstandard), get("product")));
 	forget(the(Standard), Type, get("product"));
-	forget(the(Standard), Synonym, the(Digitalisierungsbox_Standard) );
-	forget(the(Standard), Any, the(WLAN_Standard) );// ... USELESS!
+	forget(the(Standard), Synonym, the(Digitalisierungsbox_Standard));
+	forget(the(Standard), Any, the(WLAN_Standard));// ... USELESS!
 //	check(not isA(the(Standard),get("product")));
-	check(not isA(the(Einheit),get("product")));
-	check(not isA(the(Akkulaufzeit),get("product")));
-	check(not isA(the(Google Pixle),Unit));
+	check(not isA(the(Einheit), get("product")));
+	check(not isA(the(Akkulaufzeit), get("product")));
+	check(not isA(the(Google
+			      Pixle), Unit));
 
 
 	check(findKey(the(Akkulaufzeit)));
 	dissectWord(a(Arbeitszeit_(Akkulaufzeit)));
 	check(findKey(the(Akkulaufzeit)));
-	check(findKey(the(Bildschirm Diagonale)));
-	check(findKey(the(Standby Dauer)));
+	check(findKey(the(Bildschirm
+			      Diagonale)));
+	check(findKey(the(Standby
+			      Dauer)));
 //	setLabel()
-	forget(the(X_rosé-gold), the(gold));
+	forget(the(X_rosé - gold), the(gold));
 	deleteWord("silberne");
 	check(findKey(stemmed(editable("silberne"))));
 //    check(getTopic(the(Navigation))==Attribute); BREAKs above how??
 	findKey(the(Navigation));
-	check(found_attribute==1);
+	check(found_attribute == 1);
 	check(isA(a(Xperia), get("product")));
-	 check(findStatement(the(Xperia), Type, get("product")))
+	check(findStatement(the(Xperia), Type, get("product")))
 //	check(findStatement(a(Xperia), Type, get("product")))
 	check(!findKey(the(Xperia)));
 //	check(!findKey(a(Xperia)));
@@ -1407,7 +1418,7 @@ void testWins() {
 	check(!findKey(the(iphone)));
 	N unit = getTopic(the(GB));
 	p(unit);
-	check(unit==Unit or eq(unit, a(Unit)));
+	check(unit == Unit or eq(unit, a(Unit)));
 	dissectWord("MicroSD-Speicherkarten");
 
 //	check(findProperty(the(GB),Unit));
@@ -1430,27 +1441,31 @@ void testWins() {
 //	findAnswers("standby zeit");
 
 //    N key8413=a(attr_key_8413_double);
-	N key8413=the(attr_key_8413_double);
-	check(findKey(findAnswers("sar wert")[0])==key8413);
-	check(findKey(findAnswers("sar-wert")[0])==key8413);
-	check(findKey(findAnswers("sarwert")[0])==key8413);
+	N key8413 = the(attr_key_8413_double);
+	check(findKey(findAnswers("sar wert")[0]) == key8413);
+	check(findKey(findAnswers("sar-wert")[0]) == key8413);
+	check(findKey(findAnswers("sarwert")[0]) == key8413);
 
-	check(findKey(findAnswers("SAR WERT")[0])==key8413);
-	check(findKey(findAnswers("SAR-WERT")[0])==key8413);
-	check(findKey(findAnswers("SarWERT")[0])==key8413);
+	check(findKey(findAnswers("SAR WERT")[0]) == key8413);
+	check(findKey(findAnswers("SAR-WERT")[0]) == key8413);
+	check(findKey(findAnswers("SarWERT")[0]) == key8413);
 	findAnswers("sar wert");
 	dissectWord("Arbeitszeit_(Akkulaufzeit)");
 	findAnswers("galaxy schwarz");
 //	instanceFilter(get(3791));
 //	dissectWord(get("breite_Betrachtungs\u00ADwinkel;_fettabweisende_Beschichtung;_Unterstützung_für_die_Anzeige_mehrerer_Sprachen_und_Zeichen_gleichzeitig;_Display_Zoom;_ Einhandmodus"));
-	check(a(Abmessungen in mm (LxBxH)->id==105));
+	check(a(Abmessungen
+			      in
+			      mm(LxBxH)->id == 105));
 //	instanceFilter(a(breite));
-	check(contains(instanceFilter(the(breite)),a(Abmessungen in mm (LxBxH))));
+	check(contains(instanceFilter(the(breite)), a(Abmessungen
+			      in
+			      mm(LxBxH))));
 //	check(contains(instanceFilter(a(breite)),a(Abmessungen in mm (LxBxH))));
 	findAnswers("/qa/breite");
 	findAnswers("standby dauer");
 
-	check(findAnswers("Bildschirm Diagonale").size()>0);
+	check(findAnswers("Bildschirm Diagonale").size() > 0);
 	handle("/qa/a telekom speedsticks");
 	handle("/qa/Bildschirm Diagonale");
 //	handle("/qa/sar wert");
@@ -1461,9 +1476,9 @@ void testWins() {
 	handle("/json/qa/iphone");
 	check(getEntity("Bild")->id)
 	check(getEntity("Bild"));
-	check(wordHash("Apple_iPhone")!=wordHash("Apple_iPhon"));
-	check(a(Apple_iPhone)!=a(Apple_iPhon));
-	check(isA(a(Framerate (Videoaufnahme)),a(Framerate)));
+	check(wordHash("Apple_iPhone") != wordHash("Apple_iPhon"));
+	check(a(Apple_iPhone) != a(Apple_iPhon));
+	check(isA(a(Framerate(Videoaufnahme)), a(Framerate)));
 
 	check(hasWord("Huawei P20"));
 //	check(isA4(the(akkulaufzeit),Attribute));
@@ -1471,9 +1486,9 @@ void testWins() {
 	handle("/qa/Huawei P20");
 
 	handle("/query/:learn aaa bbb ccc");
-	check(getProperty(the(aaa),the(bbb))==the(ccc));
+	check(getProperty(the(aaa), the(bbb)) == the(ccc));
 	handle("/json/short/qa/displaydiagonale vom iphone 8");
-	check(getClass(the(iPhone))==the(product));
+	check(getClass(the(iPhone)) == the(product));
 
 //	handle("/json/query/iphone_se.vorl%C3%A4ufer");
 //	handle("/json/qa/iphone_se+vorl%C3%A4ufer");
@@ -1486,8 +1501,8 @@ void testWins() {
 
 	check(hasNode("blau (sapphire-blue)"));
 	p(the("blau (sapphire-blue)")->id);
-	check(isA(the("blau (sapphire-blue)"),the(blau)));
-	check(isA(the("blau (sapphire-blue)"),the(sapphire-blue)));
+	check(isA(the("blau (sapphire-blue)"), the(blau)));
+	check(isA(the("blau (sapphire-blue)"), the(sapphire - blue)));
 
 	N typ = getType(the(silber));
 	p(typ);
@@ -1504,27 +1519,34 @@ void testWins() {
 
 //	dissectWord("a_b/c");
 
-	N farbe=a(Farbe);// a(attr_key_8313_txt);
+	N farbe = a(Farbe);// a(attr_key_8313_txt);
 //	cheq(getClass(the(blau)),farbe);
 
-	cheq(getID(the(farbe)),"attr_key_8313_txt");// Farbe
-	trace= false;
+	cheq(getID(the(farbe)), "attr_key_8313_txt");// Farbe
+	trace = false;
 	p(getID(the(blau)));
 
-	cheq(getID(the(blau)),"attr_key_8313_txt");// Farbe
-	cheq(getID(the(SAR Wert)),"attr_key_8413_double");
-	cheq(getID(the(Strahlung)),"attr_key_8413_double");
+	cheq(getID(the(blau)), "attr_key_8313_txt");// Farbe
+	cheq(getID(the(SAR
+			     Wert)), "attr_key_8413_double");
+	cheq(getID(the(Strahlung)), "attr_key_8413_double");
 
-	if(!hasNode("Apple_iPhone_X"))
+	if (!hasNode("Apple_iPhone_X"))
 		import("wins_all.n3");
 //	testWinsOK();
 //	check(findProperty(a(Apple_iPhone_X),the(Ean)));
-	N breite=normEntity(getThe("breite"));
-	check(!eq(breite->name,"breite"))
+	N breite = normEntity(getThe("breite"));
+	check(!eq(breite->name, "breite"))
 	check(autoDissectAbstracts)
-	dissectWord(the(Aluminiumgehäuse in silber));
-	check(has(the(Aluminiumgehäuse in silber),the(silber)))
-	check(isA(the(Aluminiumgehäuse in silber),the(Aluminiumgehäuse)))
+	dissectWord(the(Aluminiumgehäuse
+			                in
+			                silber));
+	check(has(the(Aluminiumgehäuse
+			      in
+			      silber), the(silber)))
+	check(isA(the(Aluminiumgehäuse
+			      in
+			      silber), the(Aluminiumgehäuse)))
 
 	check(parseProperty("iPhone+X+256+GB+silber.Abmessungen"));
 	check(parseProperty("iPhone+X+256+GB+silber.breite"));
@@ -1541,8 +1563,8 @@ void testWins() {
 //	Node *Ean = findProperty(ean, Label);
 	Node *Ean = findProperty(EAN, Label);
 	check(Ean);
-		p(Ean);
-	check(ean==Ean)
+	p(Ean);
+	check(ean == Ean)
 //	check(ean==the(EAN));
 
 //	Query aquery = parseQuery("iphone > 3 gb");
@@ -1550,7 +1572,7 @@ void testWins() {
 	//	check(results.size()>0);
 
 //	testWinsOK();
-	check(contains(findAnswers("Galaxies mit 256 GB in rot"),a(Galaxy)));
+	check(contains(findAnswers("Galaxies mit 256 GB in rot"), a(Galaxy)));
 
 }
 
@@ -1667,13 +1689,13 @@ void testCities() {
 	if (!hasWord("Mersing")) {
 		importGeoDB();
 	}
-	NV ns=query("Mersing.population");
+	NV ns = query("Mersing.population");
 //	check(len<Node*>(ns) > 0);
 	check(ns.size() > 0);
 	p(the(Mersing));
 	N pop = getProperty(the(Mersing), a(population));
 	check(pop == the(22007));
-	cheq(pop->name ,"22007");
+	cheq(pop->name, "22007");
 	check(findStatement(the(Mersing), a(population), Any));
 	check(findStatement(the(Mersing), a(population), the(22007)));
 	check(has(the(Mersing), a(population), the(22007)))
@@ -1984,7 +2006,8 @@ bool assertResult(char *query, char *value0) {
 }
 
 void flattenGeographischeKoordinaten() {
-	N n = the(Geographische Koordinaten);
+	N n = the(Geographische
+			          Koordinaten);
 	if (isAbstract(n))n = get(-10625);
 	N b = the(Breitengrad);
 	N l = the(Längengrad);
@@ -2197,7 +2220,7 @@ void collectTopics() {
 	}
 }
 
-void testSynonyms(){
+void testSynonyms() {
 
 	learn("Population Synonym Einwohnerzahl");
 	learn("Population Synonym Einwohner");
@@ -2210,14 +2233,14 @@ void testSynonyms(){
 	const NodeVector pop = query("Gehren.Population");
 //	const NodeVector pop = parse("Gehren.Population", false, true);
 	cheq(pop[0], the(3703));
-	cheq(parse("Gehren.Population", false)[0],the(3703));
-	cheq(parse("Gehren.Einwohner", false)[0],the(3703));
+	cheq(parse("Gehren.Population", false)[0], the(3703));
+	cheq(parse("Gehren.Einwohner", false)[0], the(3703));
 
 //	cheq(findProperty(a(Gehren),the(Population)),the(3703));
 //	cheq(findProperty(a(Gehren),the(Einwohnerzahl)),the(3703));
 //	cheq(findProperty(a(Gehren),the(Population)),the(3703));
 //	cheq(findProperty(a(Gehren),the(Einwohner)),the(3703));
-	cheq(getProperty(a(Gehren),the(Einwohner)),the(3703));
+	cheq(getProperty(a(Gehren), the(Einwohner)), the(3703));
 
 //	cheq(findProperty(the(Gehren),the(Population)),the(3703));
 //	cheq(getProperty(the(Gehren),the(Einwohner)),the(3703));
@@ -2225,15 +2248,15 @@ void testSynonyms(){
 //	check(has(the(Gehren), the(Population)));
 //	check(has(the(Gehren), the(Einwohner)));
 
-	cheq(findProperty(the(Gehren),the(PLZ)),the(98708));
-	cheq(getProperty(the(Gehren),the(PLZ)),the(98708));
+	cheq(findProperty(the(Gehren), the(PLZ)), the(98708));
+	cheq(getProperty(the(Gehren), the(PLZ)), the(98708));
 	check(isA(the(Population), the(Einwohner)));
 	check(isA(the(Postleitzahl), the(PLZ)));
-	cheq(getProperty(the(Gehren),the(Postleitzahl)),the(98708));
+	cheq(getProperty(the(Gehren), the(Postleitzahl)), the(98708));
 	check(has(the(Gehren), the(Postleitzahl)));
 	check(has(the(Gehren), the(PLZ)));
 
-	check(yetvisitedIsA[1]==0);
+	check(yetvisitedIsA[1] == 0);
 	check(isA(the(Postleitzahl), the(PLZ)));
 //	check(yetvisitedIsA[the(Postleitzahl)->id+the(PLZ)->id*billion]);
 	p(has(the(Gehren), the(PLZ)));
@@ -2316,7 +2339,7 @@ void testUmlauts() {
 	check(wordHash("mü") == wordHash("MÜ")); // todo: seo here!
 }
 
-void testServer(){
+void testServer() {
 	start_server(8080);
 }
 
@@ -2378,8 +2401,6 @@ void testImportant() {
 }
 
 
-
-
 void testBug() {// current
 	ee("welche+sprachen+iphone+x");
 //	handle("short/json/ee/hat+das+apple+iphone+x+gesichtserkennung");
@@ -2389,9 +2410,9 @@ void testBug() {// current
 
 
 void testBrandNewStuff() {
-	#ifdef __clang_analyzer__
-		return; // no tests when profiling
-    #endif
+#ifdef __clang_analyzer__
+	return; // no tests when profiling
+#endif
 	p("Test Brand New Stuff");
 //	testBug();
 //	releaseSharedMemory();
@@ -2401,25 +2422,16 @@ void testBrandNewStuff() {
 //	parse(":save");
 //	Context *context0 = getContext(0);
 //	showContext(0);
-
-//	load(1,1);
-//	load(true);
-//   clearMemory();
 //importWordnet();
-
 //   testWins();
-
-
-//	testWins();
 //	exit(0);
 //	testSynonyms();
 //	testServer();
 //	learn("berlin is city");
-
-	if(!hasWord("berlin"))
+//	clearMemory();
+	if (!hasWord("berlin"))
 		learn("berlin is city");
-	else
-	  p(hasWord("berlin"));
+	p(getThe("berlin"));
 //	importAll();
 //	testAll();
 ////////////////////////////////////////////////////////////////////
