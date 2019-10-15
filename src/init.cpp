@@ -288,10 +288,10 @@ extern "C" void initSharedMemory(bool relations) {
 	long statement_size = maxStatements * statementSize;
 //	node_root=&context_root[contextOffset];
 //	p("abstract_root:");
-	abstract_root = (Node *) share_memory(key, abstract_size * 2, abstract_root, root);
+	abstracts = (Ahash *) share_memory(key, abstract_size, abstracts, root);
 	// ((char*) context_root) + context_size
 //	p("name_root:");
-	char *desiredAddress = ((char *) abstract_root) + abstract_size * 2;
+	char *desiredAddress = ((char *) abstracts) + abstract_size;
 	name_root = (char *) share_memory(key + 1, name_size, name_root, desiredAddress);
 	//	p("node_root:");
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
@@ -306,7 +306,6 @@ extern "C" void initSharedMemory(bool relations) {
 //  	p("context_root:");
 	char *desiredRootC = ((char *) statement_root) + statement_size;
 	context_root = (Context *) share_memory(key + 4, context_size, context_root, desiredRootC);
-	abstracts = (Ahash *) (abstract_root); // reuse or reinit
 //	extrahash = (Ahash *) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts = (Context *) context_root;
 	context = getContext(current_context);
@@ -421,7 +420,7 @@ void loadMemoryMaps() {
 	if (statement_root == MAP_FAILED)perror("mem/statements.bin MAP_FAILED");
 	close(fd);
 
-	size_t abstractsSize = sizeof(Ahash) * maxNodes;
+	size_t abstractsSize = ahashSize * maxNodes * 2;
 	fd = open_map("mem/abstracts.bin", abstractsSize);
 	abstracts = (Ahash *) mmap(statement_root+statementsSize, abstractsSize, mode, flags, fd, 0);
 	if (abstracts == MAP_FAILED)perror("mem/abstracts.bin MAP_FAILED");
@@ -493,7 +492,7 @@ void load(bool force) {
 
 	fp = open_binary("abstracts.bin");
 	if (fp) {
-		read = fread(abstracts, sizeof(Ahash), maxNodes, fp);
+		read = fread(abstracts, sizeof(Ahash), maxNodes*2, fp);
 		printf("read %zu entries\n", read);
 		fclose(fp);
 	} else {
@@ -538,7 +537,7 @@ int collectAbstracts(bool clear/*=false*/) {
 	initRelations();
 	if (clear) {
 		p("WIPING OLD abstracts!");
-		memset(abstracts, 0, maxNodes * ahashSize);
+		memset(abstracts, 0, maxNodes * ahashSize *2);
 	}
 	Context *c = context;
 //	int max=c->nodeCount; // maxNodes;
@@ -559,7 +558,7 @@ int collectAbstracts(bool clear/*=false*/) {
 int collectInstances() {
 	ps("collecting instances");// int now
 	initRelations();
-	memset(abstracts, 0, maxNodes * ahashSize );
+	memset(abstracts, 0, maxNodes * ahashSize *2);
 	Context *c = context;
 	int max = c->nodeCount; // maxNodes;
 	int count = 0;
@@ -606,7 +605,7 @@ bool clearMemory() {
 			memset(node_root, 0, nodeSize * context->nodeCount +propertySlots+1000); //calloc!
 			memset(statement_root, 0, statementSize * context->statementCount+1000);
 			memset(name_root, 0, sizeof(char)*context->currentNameSlot+1000);
-			memset(abstracts, 0, ahashSize*maxNodes);// expensive, but no other way
+			memset(abstracts, 0, ahashSize*maxNodes*2);// expensive, but no other way
 			context->currentNameSlot=0;
 			context->nodeCount = 1;// 0 = ANY
 			context->lastNode = 1;

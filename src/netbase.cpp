@@ -87,7 +87,7 @@ int current_context = wordnet;
 
 //map<string, Node*> abstracts;
 Ahash *abstracts; // Node name hash
-//Ahash *extrahash; // for hashes that are not unique, increasing
+Ahash *extrahash; // for hashes that are not unique, increasing from abstracts+maxNodes
 
 //map<const char*,Node*> abstracts;
 map<int, int> wn_map;
@@ -147,7 +147,7 @@ bool checkHash(Ahash *ah) {
 	if (!debug)return true;
 	//  if(pos>maxNodes*2)
 	if (ah < abstracts or
-	    ah > &abstracts[maxNodes]) {
+	    ah >= abstracts+maxNodes*2) {
 		p("ILLEGAL HASH!");
 		//	pi(pos);
 		px(ah);
@@ -170,18 +170,17 @@ void debugAhash(int position) {
 		pf("%d | %d | >>%s<< | ", position, i, n);
 		if (checkNode(ah->abstract)) show(get(ah->abstract), false);
 		else p("XXX");
-		if (ah->next < 0 or ah->next > maxNodes)break;
-		ah = &abstracts[ah->next];
+		if (ah->next < 0 or ah->next >= maxNodes*2)break;
+		ah = abstracts+ah->next;
 	}
 }
 
 Ahash *getAhash(int position) {
-	if (position < 0 or position > maxNodes * 2)return 0;
+	if (position < 0 or position >= maxNodes * 2)return 0;
 	return &abstracts[position];
 }
 
 // ./clear-shared-memory.sh After changing anything here!!
-//int extrahashNr=0;// LOAD FROM CONTEXT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 map<Ahash *, bool> badAhashReported;// debug
 Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false*/, bool seo/*=false*/) {
 	// DO NOT TOUCH THIS ALGORITHM (unless VERY CAREFULLY!!)
@@ -247,9 +246,13 @@ Ahash *insertAbstractHash(unsigned int position, Node *a, bool overwrite/*=false
 			}
 			return ah; // NAME schon da!!
 		}
-//		ah->next = maxNodes + context->extrahashNr++; TODO reactivate extrahash?
-//		ah = getAhash(ah->next);
-		return 0;// overflow
+		ah->next = context->extrahashNr++ + maxNodes;// filling from end of abstracts
+		if(context->extrahashNr>=maxNodes){
+			bad("context->extrahashNr>=maxNodes can't be!");
+			return 0;// even exit()!
+		}
+		ah = getAhash(ah->next);
+		return ah;// overflow
 	}
 	if (!ah or !checkHash(ah))
 		return 0;
@@ -1445,7 +1448,7 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 //	map<int, bool> visited;// relatively EXPENSIVE!!
 //#endif
 	// ./clear-shared-memory.sh After changing anything here!!
-	while (found >= abstracts and found < abstracts+maxNodes) {
+	while (found >= abstracts and found < abstracts+maxNodes*2) {
 		if (tries++ > 1000) {
 //			p("cycle bug");
 			bad();
@@ -1476,7 +1479,7 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 		//			break;
 		//		}
 		if (!found or !found->next)break;
-		if (found->next <= 0 or found->next > maxNodes * 2 or found == &abstracts[found->next])break;
+		if (found->next <= 0 or found->next >= maxNodes * 2 or found == &abstracts[found->next])break;
 		found = &abstracts[found->next];
 	}
 //	p("/////////////");
@@ -2419,7 +2422,7 @@ void initUnits() {
 	//  printf("Abstracts %p\n", abstracts);
 	printf("Abstracts %p\n", abstracts);
 	Ahash *ah = &abstracts[wordHash("meter") % maxNodes];//???;
-	if (ah < abstracts or ah >= abstracts+maxNodes /**2*/) {
+	if (ah < abstracts or ah >= abstracts+maxNodes*2) {
 		ps("abstracts kaputt");
 		//		collectAbstracts();
 	}

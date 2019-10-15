@@ -328,7 +328,7 @@ typedef struct Context {
   long currentNameSlot;
   int nodeCount;
   int lastNode;
-//  int extrahashNr;
+  int extrahashNr;
   int statementCount; //first 1000 reserved!
   bool use_logic;
   // Node nodes[maxNodes];
@@ -581,7 +581,7 @@ Node *getPartner(Statement* s, Node* n, Node *m);
 
 //extern map<long, Node*>* abstracts;
 extern Ahash* abstracts; // Node name hash
-//extern Ahash* extrahash; // for hashes that are not unique, increasing!!!
+//extern Ahash* extrahash=abstracts+maxNodes; // for hashes that are not unique, increasing!!!
 extern map < Node*, bool> yetvisited;
 extern map <double, short> yetvisitedIsA;// very memory expensive??
 //Ahash* getAbstractHash(int hashkey);
@@ -619,7 +619,6 @@ extern "C" int test2();// extern "C" -> don't mangle!
 extern Context* contexts; //[maxContexts];
 extern Statement* statement_root;
 extern Context* context_root; // else: void value not ignored as it ought to be
-extern Node* abstract_root;
 extern Node* node_root;
 extern char* name_root;
 //extern char* english_words;// nonsense, just load whole data/ dir with correct abstracts and nodes...
