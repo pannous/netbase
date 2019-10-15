@@ -1309,3 +1309,11 @@ long fileSize(FILE* fp)
 bool file_exists(const char *fname) {
 	return (access(fname, F_OK) != -1);
 }
+
+void removeNode(NV &all,N n) {
+	for (int i = all.size() - 1; i >= 0; i--) {
+		N entity = all[i];
+		if (n == entity)
+			all.erase(all.begin() + i);
+	}
+}

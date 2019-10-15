@@ -862,10 +862,9 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (isAbstract(a) and i == 0) {
 		lookupLimit = resultLimit;
 		N the = getThe(a,0, false);// DONT create!
-		show(the);
 		NV all = instanceFilter(a);
-//		all.push_back(the);
-		all.push_back(a);// include abstract!
+		if(!contains(all,a))all.push_back(a);// include abstract!
+		if(!contains(all,the))all.push_back(the);
 //		sortNodes(all);
 		showNodes(all, true);
 		return all;

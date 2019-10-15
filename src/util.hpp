@@ -119,9 +119,9 @@ bool contains(vector<char*>& all, const char* node);
 string itoa(int i);
 void appendFile(const char* fileName,const char* data);
 
-#define check(assertion) pf("TEST %s\n",#assertion);\
+#define check(assertion) {pf("TEST %s\n",#assertion);\
 	if(assertion)printf("PASSED %s\n",#assertion);\
-	else{printf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}
+	else{printf("FAILED %s\n",#assertion);printf("%s:%d\n",__FILE__,__LINE__);exit(0);}}
 
 
 #define assertEquals(a,b) printf("TEST %s==%s\n",#a,#b);\
@@ -158,3 +158,4 @@ long fileSize(FILE *fp);
 long fileSize(int fd);
 long fileSize(char* file);
 bool file_exists(const char *string);
+void removeNode(NV &all,N n);

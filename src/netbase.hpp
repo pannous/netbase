@@ -78,7 +78,7 @@ extern bool checkDuplicates;
 //static int sizeOfSharedMemory= 0x0f000000;//1000*1000*400;// /* 400MB shared memory segment */
 static const bool multipleContexts = false;
 extern string path;
-extern string data_path;
+extern string data_path;// difference to memory path: memory map constantly writes to files!
 extern string import_path;
 
 extern bool virgin_memory;

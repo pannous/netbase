@@ -903,17 +903,22 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 //		if(contains(line, "DEBUG"))
 //		    ps(line);
 		if (fieldCount != size and fieldCount != size + 1 and fieldCount + 1 != size) {
-			bad();
+			bad("fieldCount mismatch");
 //			p(line);
 //			if(debug) printf("Warning: fieldCount!=columns (%d!=%d) in line %d %s \n", fieldCount, size,linecount - 1, file);
 			continue;
 		}
 		fixValues(values, size);
-		if(typeRow>=0)
-			type=getThe(values[typeRow]);
+		if(typeRow>=0){
+			auto typos=values[typeRow];
+			if(typos)
+				type=getThe(typos);
+			else
+				bad("No type in typeRow");
+		}
 		char *name = values[nameRowNr];
 		if (!name or len(name) == 0) {
-			bad();
+			bad("empty name row");
 			continue;
 		}
 		if (cut_amazon or cut_billiger) {
@@ -2798,6 +2803,7 @@ void import(const char *type, const char *filename) {
 	importing = true;
 	autoIds= false;
 
+	context = getContext(0, 0);
 	//  clock_t start;
 	//  double diff;
 	// start = clock();

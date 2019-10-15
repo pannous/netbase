@@ -427,6 +427,10 @@ Context *getContext(int contextId, bool init) {
 		//		printf("Found context %d: %s\n",context->id,context->name);
 		//		flush();
 		return context;
+	} else{
+		if (init)initContext(context);
+		return context;
+
 	}
 	printf("Reset context %d: %s", context->id, context->name);
 	context->id = contextId;
@@ -435,7 +439,6 @@ Context *getContext(int contextId, bool init) {
 #ifdef statementArrays
 	context->statementArrays = (int*) malloc(maxStatements());
 #endif
-	if (init)initContext(context);
 //	if (contextId == wordnet) context->lastNode=1; //sick hack to reserve first 1000 words!
 //	else context->nodeCount=0;
 //	context->statementCount=1; //1000;
@@ -1463,9 +1466,8 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 //		}
 //		visited[found->abstract]=1;
 //#endif
-		if (found and checkNode(found->abstract)) {
+		if (found and checkNode(found->abstract,0,1,0)) {
 			N a = get(found->abstract);
-			if (!checkNode(a, 0, 0, 1))continue;// check name
 			if (eq(a->name, thingy, true, true))            //teuer? n��, if 1.letter differs
 				return a;
 			if (seo and a->name) {

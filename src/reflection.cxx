@@ -40,7 +40,8 @@
 //  return pages * page_size;
 //}
 
-size_t getFreeSystemMemory() {
+size_t getFreeSystemMemoryXXX() {
+	return -1;
 #if defined(__linux__)
 // struct sysinfo info;
 // sysinfo(&info);

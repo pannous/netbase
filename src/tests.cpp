@@ -2414,14 +2414,13 @@ void testBrandNewStuff() {
 	return; // no tests when profiling
 #endif
 	p("Test Brand New Stuff");
+
 //	testBug();
 //	releaseSharedMemory();
 //	clearMemory();
 //	import("wins");
 //	Node *iPhone = hasWord("iPhone");
 //	parse(":save");
-//	Context *context0 = getContext(0);
-//	showContext(0);
 //importWordnet();
 //   testWins();
 //	exit(0);
@@ -2429,10 +2428,13 @@ void testBrandNewStuff() {
 //	testServer();
 //	learn("berlin is city");
 //	clearMemory();
-	if (!hasWord("berlin"))
-		learn("berlin is city");
+	parse("berlin",0,1);
+	Node *berlin = hasWord("berlin");
+	if (berlin == 0)
+		check("berlin must be there!"==0)
+//		learn("berlin is city");
 	p(getThe("berlin"));
-//	importAll();
+	importAll();
 //	testAll();
 ////////////////////////////////////////////////////////////////////
 //	handle("/json/all/query/all/6256");

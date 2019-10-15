@@ -246,6 +246,11 @@ void initRootContext() {
 	context_root->nodes = (Node *) node_root + propertySlots;
 	context_root->statements = (Statement *) statement_root;
 	context_root->nodeNames = name_root;
+	context->currentNameSlot=0;
+	context->nodeCount = 1;// 0 = ANY
+	context->lastNode = 1;
+	context->extrahashNr = 0;
+	context->statementCount = 1;// 0 = ERROR
 }
 
 void checkRootContext() {
@@ -272,6 +277,7 @@ extern "C" void initSharedMemory(bool relations) {
 		contexts = context_root = static_cast<Context *>(malloc(1000 * sizeof(Context)));
 		context = &context_root[0];
 		load(1);// loadMemoryMaps();
+		if(relations)		initRelations();
 		return;
 	}
 //	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly. USELESS for print_backtrace
@@ -389,7 +395,6 @@ int open_map(const char *file, long size) {
 }
 
 void loadMemoryMaps() {
-	Context *c = getContext(current_context);
 	p("Preparing mapped memory files, using some GB! This can take some minutes!");
 
 // MAP_UNINITIALIZED, MAP_SYNC in write maps
@@ -430,6 +435,7 @@ void loadMemoryMaps() {
 	context_root = contexts = (Context *) mmap(abstracts+abstractsSize, contextSize, mode, flags, fd, 0);
 	if (contexts == MAP_FAILED)perror("mem/contexts.bin MAP_FAILED ");
 	close(fd);
+	context = &contexts[0];
 	initContext(context);//:
 //	collectAbstracts();// was empty!
 }
@@ -600,16 +606,13 @@ bool clearMemory() {
 	if (!virgin_memory) {
 		ps("Cleansing Memory!");
 		if (USE_MMAP) {
-			p("memset context 0");
+			p("memset context 0, this takes a minute or 10");
 //			dd < /dev/zero bs=16777216 count=1 > contexts.bin LIMITED TO 2GB
 			memset(node_root, 0, nodeSize * context->nodeCount +propertySlots+1000); //calloc!
 			memset(statement_root, 0, statementSize * context->statementCount+1000);
 			memset(name_root, 0, sizeof(char)*context->currentNameSlot+1000);
 			memset(abstracts, 0, ahashSize*maxNodes*2);// expensive, but no other way
-			context->currentNameSlot=0;
-			context->nodeCount = 1;// 0 = ANY
-			context->lastNode = 1;
-			context->statementCount = 1;// 0 = ERROR
+			p("memset context 0 done");
 		}
 		else{
 			detach_shared_memory();
@@ -679,6 +682,7 @@ char *initContext(Context *context) {
 	context->nodes = nodes;
 	context->statements = statements;
 	context->nodeNames = nodeNames;
+	if(context->name[0]==0)strcpy(context->name, "Public");
 	if (context->currentNameSlot <= 0)
 		context->currentNameSlot = 1;
 	if (context->statementCount == 0)// ??

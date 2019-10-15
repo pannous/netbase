@@ -1451,6 +1451,7 @@ NodeVector instanceFilter(Node *subject, NodeQueue *queue, int *enqueued) {// ch
 	int i = 0;
 	Statement *s = 0;
 	while (i++ < typeLimit and (s = nextStatement(subject, s, false))) {// true !!!!
+		if(debug)p(s);
 		bool subjectMatch = (s->Subject() == subject or subject == Any);
 		bool predicateMatch = (s->Predicate() == Instance) or (INCLUDE_CLASSES and s->Predicate() == SubClass);
 		predicateMatch = predicateMatch or s->predicate == -10301;// Hauptartikel in der Kategorie
