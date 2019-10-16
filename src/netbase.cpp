@@ -1755,7 +1755,7 @@ bool show(Node *n, bool showStatements) {        //=true
 	// printf("Node: context:%s#%d id=%d name=%s statementCount=%d\n",c->name, c->id,n->id,n->name,n->statementCount);
 	//  printf("%s (#%d)\n", n->name, n->id);
 	string img = "";
-	cchar *text = "";//getText(n);
+	cchar *text = getText(n);
 //	bool showLabel=true;//false;//!debug; getLabel(n);
 	//	if (showLabel and n->name) img=getImage(n->name); EVIL!!!
 	//  if(n->value.number)
@@ -1883,9 +1883,8 @@ Statement *findStatement(Node *subject, Node *predicate, Node *object,
 		if (trace)
 			p(s);
 		if (visited[s] and s->subject != 47 and s->subject != 46) {// Remove in live mode if all bugs are fixed
-			p("GRAPH ERROR: cyclic statement");
+			bad("GRAPH ERROR: cyclic statement");
 			p(s);
-			bad();
 			return 0;
 		}
 		visited[s] = 1;
@@ -2664,7 +2663,7 @@ void setLabel(Node *n, cchar *label, bool addInstance, bool renameInstances) {
 	if (hasName and strlen(n->name) >= len) {// reuse! NOT when sharing char*s !!
 		strcpy(n->name, label);
 		n->name[len] = 0;
-	} else if (label >= c->nodeNames && label < &c->nodeNames[c->currentNameSlot]) {
+	} else if (label >= c->nodeNames && label < c->nodeNames+c->currentNameSlot) {
 		n->name = const_cast<char *>(label);
 	} else {
 		strcpy(newLabel, label);
@@ -2712,9 +2711,10 @@ bool checkParams(int argc, char *argv[], const char *p) {
 
 // description
 char *getText(Node *n) {
-	if (isAbstract(n))return NO_TEXT;
+	if(n->id>0)return NO_TEXT; // only wornet shall have text(!?)
+//	if (isAbstract(n))return NO_TEXT;
 	context = getContext(current_context);
-	if (n->value.text >= context->nodeNames and n->value.text <= &context->nodeNames[context->currentNameSlot]) {
+	if (n->value.text >= context->nodeNames and n->value.text <= context->nodeNames+context->currentNameSlot) {
 		return n->value.text;
 	}
 	return NO_TEXT;
@@ -2783,13 +2783,13 @@ extern "C" Node *save(Node *copy) {
 	p(copy);
 	Node *node = get(copy->id);
 	if (node == copy)return node;
-	memcpy(node, copy, nodeSize);
+	memcpy(node, copy, sizeof(Node));
 	return node;
 }
 
 extern "C" void save2(Node n) {
 	if (get(n.id) == &n)return;
-	memcpy(get(n.id), &n, nodeSize);
+	memcpy(get(n.id), &n, sizeof(Node));
 }
 
 int test2() {

@@ -435,11 +435,13 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return OK;
 	}
 	if (contains(data, ":english") or contains(data, ":en")) {
+		p("english ON");
 		germanLabels = false;
 		initRelations();
 		return OK;
 	}
 	if (contains(data, ":german") or contains(data, ":de")) {
+		p("german ON");
 		germanLabels = true;
 		initRelations();
 		return OK;
@@ -897,7 +899,7 @@ extern "C" Node **execute(const char *data, int *out) {
 	NodeVector result = parse(data, true, false);
 	int hits = (int) result.size();
 	if (out) *out = hits;
-	Node **results = (Node **) malloc((1 + hits) * nodeSize);
+	Node **results = (Node **) malloc((1 + hits) * sizeof(Node));
 	for (int i = 0; i < hits; i++) {
 		results[i] = result[i];
 	}

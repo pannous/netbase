@@ -44,6 +44,8 @@ void setText(Node *node, char *text) {
 	int l = len(text);
 	long slot = context->currentNameSlot;
 	char *label = context->nodeNames + slot;
+	if(label[0])
+		bad("LABEL NOT EMPTY!");
 	strcpy(label, text); // can be freed now!
 	node->value.text = label;
 	context->nodeNames[slot + l] = 0;
@@ -2319,7 +2321,7 @@ void importGermanLables(bool addLabels = false) {
 	int linecount = 0;
 	int id;
 	//  char pos;
-	FILE *infile = open_file("translations.tsv");
+	FILE *infile = open_file("wordnet/translations.tsv");
 	//	char** translationList=(char**)malloc(100);
 	while (fgets(line, sizeof(line), infile) != NULL) {
 		if (++linecount % 10000 == 0) {
@@ -2462,11 +2464,12 @@ void importSenses() {
 
 
 void importSynsets() {
-	if (germanLabels)return;
+	// really just abstracts, word types and definitions here
 	char line[1000];
 	char definition[1000];
 	int linecount = 0;
-	int id;
+	int id0;// original wordnet id
+	int id;// internal id
 	char pos;
 	FILE *infile = open_file("wordnet/synsets.tsv");
 	while (fgets(line, sizeof(line), infile) != NULL) {
@@ -2475,9 +2478,9 @@ void importSynsets() {
 			fflush(stdout);
 		}
 		fixNewline(line);
-		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id, &pos, /*&lexdomain,*/
+		sscanf(line, "%d\t%c\t%*d\t%[^\n]s", &id0, &pos, /*&lexdomain,*/
 		       definition);
-		id = norm_wordnet_id(id);
+		id = norm_wordnet_id(id0);
 		if (!id)continue;
 		if (pos == 'n') addStatement4(wordnet, id, Type->id, _noun); // get(id)->kind = noun; DEFAULT!!
 		if (pos == 'v') addStatement4(wordnet, id, Type->id, _verb); //get(id)->kind = verb;
@@ -2486,7 +2489,14 @@ void importSynsets() {
 		if (pos == 's') addStatement4(wordnet, id, Type->id, _adjective);
 		if (pos == 'p') addStatement4(wordnet, id, Type->id, _preposition);
 		//			get(id)->kind = adjective; // satelite !?
+		if(contains(line,"loves someone"))
+			debug= true;
+		if (germanLabels) continue;// no english definitions here
 		setText(get(id), definition);
+
+//		$12264 :	Lover		Instanz		Liebhaber		-99416⇛-4⇛-351677
+//$32153 :	Lover		Instanz		lover		-99416⇛-4⇛-557461
+//$136888 :	Lover		Instanz		Lover		-99416⇛-4⇛-351678
 	}
 	fclose(infile); /* Close the file */
 }

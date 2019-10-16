@@ -633,9 +633,6 @@ void addSeo(Node* n);
 Node *getSeo(const char* thingy);
 void buildSeoIndex();
 
-static int nodeSize=sizeof(Node);// 40
-static int statementSize=sizeof(Statement);// 26 after refactor !! // was 56!!
-static int ahashSize=sizeof(Ahash);
 static int MB=1048576;
 static long GB=1024*MB;
 static int million=MB;
@@ -655,7 +652,7 @@ Usage  nodes:62.37%                     statements:62.48%               chars:49
 
 static long contextOffset=0x800000;//0x10000;
 static int averageNameLength =10;// 10 for amazon! else 20 (cheap)
-static int bytesPerNode=(nodeSize+averageNameLength);//+ahashSize*2
+static int bytesPerNode=(sizeof(Node) + averageNameLength);//+ahashSize*2
 
 #ifdef HARD_WIRED_MEMSIZE
 

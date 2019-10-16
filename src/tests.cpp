@@ -2427,14 +2427,23 @@ void testBrandNewStuff() {
 //	testSynonyms();
 //	testServer();
 //	learn("berlin is city");
-//	clearMemory();
-	parse("berlin",0,1);
+	clearMemory();
+//	parse("berlin",0,1);
+	germanLabels= false;
+	importWordnet();
+	handle("love");// you can't! bjork!
+	check(isA(getThe("love"),Verb));
+//	check(isA(getThe("love"),getThe("verb")));
 	Node *berlin = hasWord("berlin");
 	if (berlin == 0)
-		check("berlin must be there!"==0)
+	{check("berlin must be there!"==0)}
+
+
+
+
 //		learn("berlin is city");
-	p(getThe("berlin"));
-	importAll();
+//	p(getThe("berlin"));
+//	importAll();
 //	testAll();
 ////////////////////////////////////////////////////////////////////
 //	handle("/json/all/query/all/6256");

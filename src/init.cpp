@@ -5,6 +5,7 @@
 //#include <sys/ipc.h>
 #include <sys/shm.h> // shared memory
 #include <sys/mman.h>// memory map
+#include <sys/stat.h> // mkdir
 //#include <mmap.h> // mmap_read NOPE
 //#include "mmap.h" // mmap_read NOPE
 
@@ -61,6 +62,7 @@ union semun {
 };
 
 
+void loadMemoryMaps();
 
 #endif
 
@@ -240,13 +242,12 @@ long GetAvailableMemory(void) {
 // modify char* in vivo / inline!
 
 void initRootContext() {
-	memset(context_root, 0, contextOffset); // ? why only?
 	initContext(context_root);
 	strcpy(context_root->name, "ROOT CONTEXT");
 	context_root->nodes = (Node *) node_root + propertySlots;
 	context_root->statements = (Statement *) statement_root;
 	context_root->nodeNames = name_root;
-	context->currentNameSlot=0;
+	context->currentNameSlot = 0;
 	context->nodeCount = 1;// 0 = ANY
 	context->lastNode = 1;
 	context->extrahashNr = 0;
@@ -276,8 +277,8 @@ extern "C" void initSharedMemory(bool relations) {
 		p("USE_MMAP => NO initSharedMemory!");
 		contexts = context_root = static_cast<Context *>(malloc(1000 * sizeof(Context)));
 		context = &context_root[0];
-		load(1);// loadMemoryMaps();
-		if(relations)		initRelations();
+		loadMemoryMaps();
+		if (relations) initRelations();
 		return;
 	}
 //	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly. USELESS for print_backtrace
@@ -288,10 +289,10 @@ extern "C" void initSharedMemory(bool relations) {
 	int key = 0x69190;
 	char *root = (char *) shmat_root;
 	long context_size = contextOffset;
-	long node_size = maxNodes * nodeSize;
-	long abstract_size = maxNodes * ahashSize * 2;
+	long node_size = maxNodes * sizeof(Node);
+	long abstract_size = maxNodes * sizeof(Ahash) * 2;
 	long name_size = maxChars;
-	long statement_size = maxStatements * statementSize;
+	long statement_size = maxStatements * sizeof(Statement);
 //	node_root=&context_root[contextOffset];
 //	p("abstract_root:");
 	abstracts = (Ahash *) share_memory(key, abstract_size, abstracts, root);
@@ -325,6 +326,8 @@ extern "C" void initSharedMemory(bool relations) {
 	}
 }
 
+void loadMemoryMaps();
+
 
 //static long shared_memory_2GB=2147483648;
 //static long shared_memory_4GB=4294967296;
@@ -341,8 +344,8 @@ void setMemoryLimit(long maxNodes0, long maxStatements0, long maxChars0) {
 	else maxStatements = maxNodes * 2;// *10 = crude average of Statements per Node (yago:12!!)
 	if (maxChars0 > 0) maxChars = maxChars0;
 	else maxChars = maxNodes * averageNameLength;
-	bytesPerNode = (nodeSize + averageNameLength);//+ahashSize*2
-	sizeOfSharedMemory = contextOffset + maxNodes * bytesPerNode + maxStatements * statementSize;
+	bytesPerNode = (sizeof(Node) + averageNameLength);//+ahashSize*2
+	sizeOfSharedMemory = contextOffset + maxNodes * bytesPerNode + maxStatements * sizeof(Statement);
 	initSharedMemory(true);
 }
 
@@ -381,11 +384,12 @@ FILE *open_binary(cchar *file) {
 // returns file-descriptor or 0
 int open_map(const char *file, long size) {
 	bool exists = file_exists(file);
+	errno = 0;
 	int oflag = O_CREAT | O_RDWR;// | O_LARGEFILE;// O_WRONLY \| \| O_APPEND \|
-	int fd = open(file, oflag);
-	if (!exists || fileSize(fd)<size)
+	int fd = open(file, oflag, 0777);
+	if (!exists || fileSize(fd) < size)
 		posix_fallocate(fd, 0, size);
-	if (errno != EEXIST){
+	if (errno and errno != EEXIST) {
 		p(file);
 		perror("FAILED fallocate ");
 		errno = 0;
@@ -396,23 +400,24 @@ int open_map(const char *file, long size) {
 
 void loadMemoryMaps() {
 	p("Preparing mapped memory files, using some GB! This can take some minutes!");
-
+	mkdir("mem", S_IRWXU | S_IRWXG);// user+group rwx
 // MAP_UNINITIALIZED, MAP_SYNC in write maps
 	int mode = PROT_READ | PROT_WRITE;
 	int flags = MAP_SHARED;// |MAP_NORESERVE|MAP_NONBLOCK|MAP_FIXED;
 
-	size_t contextSize = contextOffset*2;// * sizeof(Context);
+	size_t contextSize = contextOffset * 2;// * sizeof(Context);
 	size_t nameSize = maxChars * sizeof(char);
 	size_t statementsSize = maxStatements * sizeof(Statement);
 	size_t nodesSize = maxNodes * sizeof(Node);
-	
+	size_t abstractsSize = sizeof(Ahash) * maxNodes * 2;
+
 	int fd = open_map("mem/names.bin", nameSize);
-	name_root = (char *) mmap((char *)shmat_root, nameSize, mode, flags, fd, 0);
+	name_root = (char *) mmap((char *) shmat_root, nameSize, mode, flags, fd, 0);
+	close(fd);
 	if (name_root == MAP_FAILED) {
 		perror("mem/names.bin MAP_FAILED ");
 		exit(0);
 	}
-	close(fd);
 
 
 	fd = open_map("mem/nodes.bin", nodesSize);
@@ -421,18 +426,17 @@ void loadMemoryMaps() {
 	close(fd);
 
 	fd = open_map("mem/statements.bin", statementsSize);
-	statement_root = (Statement *) mmap(node_root+nodesSize, statementsSize, mode, flags, fd, 0);
+	statement_root = (Statement *) mmap(node_root + nodesSize, statementsSize, mode, flags, fd, 0);
 	if (statement_root == MAP_FAILED)perror("mem/statements.bin MAP_FAILED");
 	close(fd);
 
-	size_t abstractsSize = ahashSize * maxNodes * 2;
 	fd = open_map("mem/abstracts.bin", abstractsSize);
-	abstracts = (Ahash *) mmap(statement_root+statementsSize, abstractsSize, mode, flags, fd, 0);
+	abstracts = (Ahash *) mmap(statement_root + statementsSize, abstractsSize, mode, flags, fd, 0);
 	if (abstracts == MAP_FAILED)perror("mem/abstracts.bin MAP_FAILED");
 	close(fd);
-	
+
 	fd = open_map("mem/contexts.bin", contextSize);
-	context_root = contexts = (Context *) mmap(abstracts+abstractsSize, contextSize, mode, flags, fd, 0);
+	context_root = contexts = (Context *) mmap(abstracts + abstractsSize, contextSize, mode, flags, fd, 0);
 	if (contexts == MAP_FAILED)perror("mem/contexts.bin MAP_FAILED ");
 	close(fd);
 	context = &contexts[0];
@@ -498,7 +502,7 @@ void load(bool force) {
 
 	fp = open_binary("abstracts.bin");
 	if (fp) {
-		read = fread(abstracts, sizeof(Ahash), maxNodes*2, fp);
+		read = fread(abstracts, sizeof(Ahash), maxNodes * 2, fp);
 		printf("read %zu entries\n", read);
 		fclose(fp);
 	} else {
@@ -543,7 +547,7 @@ int collectAbstracts(bool clear/*=false*/) {
 	initRelations();
 	if (clear) {
 		p("WIPING OLD abstracts!");
-		memset(abstracts, 0, maxNodes * ahashSize *2);
+		memset(abstracts, 0, maxNodes * sizeof(Ahash) * 2);
 	}
 	Context *c = context;
 //	int max=c->nodeCount; // maxNodes;
@@ -564,7 +568,7 @@ int collectAbstracts(bool clear/*=false*/) {
 int collectInstances() {
 	ps("collecting instances");// int now
 	initRelations();
-	memset(abstracts, 0, maxNodes * ahashSize *2);
+	memset(abstracts, 0, maxNodes * sizeof(Ahash) * 2);
 	Context *c = context;
 	int max = c->nodeCount; // maxNodes;
 	int count = 0;
@@ -606,15 +610,22 @@ bool clearMemory() {
 	if (!virgin_memory) {
 		ps("Cleansing Memory!");
 		if (USE_MMAP) {
-			p("memset context 0, this takes a minute or 10");
+			p("memset context 0");
+			if (maxNodes <= 10 * million) {
+				p("memset FULL WIPE, this takes a minute or 10");
+				memset(node_root, 0, sizeof(Node) * maxNodes); //calloc!
+				memset(statement_root, 0, sizeof(Statement) * maxStatements);
+				memset(name_root, 0, sizeof(char) * maxChars);
+				memset(abstracts, 0, sizeof(Ahash) * maxNodes * 2);// expensive, but no other way
+			} else {
 //			dd < /dev/zero bs=16777216 count=1 > contexts.bin LIMITED TO 2GB
-			memset(node_root, 0, nodeSize * context->nodeCount +propertySlots+1000); //calloc!
-			memset(statement_root, 0, statementSize * context->statementCount+1000);
-			memset(name_root, 0, sizeof(char)*context->currentNameSlot+1000);
-			memset(abstracts, 0, ahashSize*maxNodes*2);// expensive, but no other way
+				memset(node_root, 0, sizeof(Node) * context->nodeCount + propertySlots + 1000); //calloc!
+				memset(statement_root, 0, sizeof(Statement) * context->statementCount + 1000);
+				memset(name_root, 0, sizeof(char) * context->currentNameSlot + 1000);
+				memset(abstracts, 0, sizeof(Ahash) * maxNodes * 2);// expensive, but no other way
+			}
 			p("memset context 0 done");
-		}
-		else{
+		} else {
 			detach_shared_memory();
 			initSharedMemory();
 		}
@@ -635,8 +646,8 @@ char *initContext(Context *context) {
 //	int ahashSize=sizeof(Ahash); //
 	//  int contextOffset=sizeof (Context) *maxContexts;
 	long nameSegmentSize = sizeof(char) * averageNameLength * maxNodes;
-	long nodeSegmentSize = nodeSize * maxNodes;
-	long statementSegmentSize = statementSize * maxStatements;
+	long nodeSegmentSize = sizeof(Node) * maxNodes;
+	long statementSegmentSize = sizeof(Statement) * maxStatements;
 //	long abstractOffset=contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize; //just put them at the end!!
 	if (node_root) {
 		p("Multiple shared memory segments");
@@ -646,7 +657,7 @@ char *initContext(Context *context) {
 	} else if (context_root) {
 		p("ONE shared memory segment");
 		if (contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize >
-		    sizeOfSharedMemory + ahashSize * 2) { //
+		    sizeOfSharedMemory + sizeof(Ahash) * 2) { //
 			ps("ERROR sizeOfSharedMemory TOO SMALL!");
 			ps("contextOffset+nodeSegmentSize+nameSegmentSize+statementSegmentSizeabstractSegment > sizeOfSharedMemory !");
 			p(contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize);
@@ -682,7 +693,7 @@ char *initContext(Context *context) {
 	context->nodes = nodes;
 	context->statements = statements;
 	context->nodeNames = nodeNames;
-	if(context->name[0]==0)strcpy(context->name, "Public");
+	if (context->name[0] == 0)strcpy(context->name, "Public");
 	if (context->currentNameSlot <= 0)
 		context->currentNameSlot = 1;
 	if (context->statementCount == 0)// ??
@@ -773,12 +784,14 @@ void loadConfig() {// char* args
 			maxStatements = atoi(getConfig("maxStatements"));
 		else
 			maxStatements = maxNodes * 2;
+		if (maxStatements < 10000)maxStatements = maxStatements * million;
 		if (getConfig("maxChars"))
 			maxChars = atoi(getConfig("maxChars"));
 		else
 			maxChars = maxNodes * averageNameLength;
+		if (maxChars < 10000)maxChars = maxChars * million;
 	}
 	maxChars = maxNodes * averageNameLength;
-	sizeOfSharedMemory = contextOffset + maxNodes * bytesPerNode + maxStatements * statementSize;
+	sizeOfSharedMemory = contextOffset + maxNodes * bytesPerNode + maxStatements * sizeof(Statement);
 }
 
