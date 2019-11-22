@@ -422,14 +422,21 @@ void loadMemoryMaps() {
 	size_t nodesSize = maxNodes * sizeof(Node);
 	size_t abstractsSize = sizeof(Ahash) * maxNodes * 2;
 
-	int fd = open_map("names.bin", nameSize);
-	name_root = (char *) mmap((char *) shmat_root, nameSize, mode, flags, fd, 0);
+	int fd;
+
+
+	fd = open_map("abstracts.bin", abstractsSize);
+	abstracts = (Ahash *) mmap((char *) shmat_root, abstractsSize, mode, flags, fd, 0);
+	if (abstracts == MAP_FAILED)perror("abstracts.bin MAP_FAILED");
+	close(fd);
+
+	fd = open_map("names.bin", nameSize);
+	name_root = (char *)mmap((char *) abstracts + abstractsSize, nameSize, mode, flags, fd, 0);
 	close(fd);
 	if (name_root == MAP_FAILED) {
 		perror("names.bin MAP_FAILED ");
 		exit(0);
 	}
-
 
 	fd = open_map("nodes.bin", nodesSize);
 	node_root = (Node *) mmap(name_root + nameSize, nodesSize, mode, flags, fd, 0);
@@ -437,24 +444,23 @@ void loadMemoryMaps() {
 	close(fd);
 
 	fd = open_map("statements.bin", statementsSize);
-	statement_root = (Statement *) mmap(node_root + nodesSize, statementsSize, mode, flags, fd, 0);
+
+	statement_root = (Statement *) mmap(((char *) node_root) + nodesSize, statementsSize, mode, flags, fd, 0);
 	if (statement_root == MAP_FAILED)perror("statements.bin MAP_FAILED");
 	close(fd);
 
-	fd = open_map("abstracts.bin", abstractsSize);
-	abstracts = (Ahash *) mmap(statement_root + statementsSize, abstractsSize, mode, flags, fd, 0);
-	if (abstracts == MAP_FAILED)perror("abstracts.bin MAP_FAILED");
-	close(fd);
 
 	fd = open_map("contexts.bin", contextSize);
-	context_root = contexts = (Context *) mmap(abstracts + abstractsSize, contextSize, mode, flags, fd, 0);
+	context_root = contexts = (Context *) mmap(statement_root + statementsSize, contextSize, mode, flags, fd, 0);
 	if (contexts == MAP_FAILED)perror("contexts.bin MAP_FAILED ");
 	close(fd);
 	context = &contexts[0];
-	context->nodeNames = name_root;// hack:
-	fixNodeNames(context, (char *) 0x2e8000000);// hack
+//	context->nodeNames = name_root;// hack:
+//	fixNodeNames(context, (char *) 0x2e8000000);// hack
 	if (context->nodeNames != name_root)
 		fixNodeNames(context, context->nodeNames);
+	if(context->statements != statement_root)
+		printf("WRONG IMPORT");
 //	initContext(context);// NO, IT SHOULD BE ALL SET!
 //	collectAbstracts();// was empty!
 }

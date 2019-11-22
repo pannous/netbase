@@ -391,7 +391,8 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if (checkNamesOfSPOs)
 		if (s->Subject()->name == 0 or s->Predicate()->name == 0 or s->Object()->name == 0)
 			return false;
-	if (s->subject == 0 and s->predicate == 0 and s->object == 0)return false;// one 0 OK :ANY
+	if (s->subject == 0 and s->predicate == 0 and s->object == 0)
+		return false;// one 0 OK :ANY
 	return true;
 }
 

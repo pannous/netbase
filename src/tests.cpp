@@ -2414,7 +2414,7 @@ void testBrandNewStuff() {
 	return; // no tests when profiling
 #endif
 	p("Test Brand New Stuff");
-	if(getContext()->nodeCount > 100000){
+	if(LIVE or getContext()->nodeCount > 100000){
 		p("LIVE DATA? not testing");
 		p(get(1));
 		return;
