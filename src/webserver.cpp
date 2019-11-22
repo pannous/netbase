@@ -29,8 +29,8 @@
 //#include "helper.h"
 
 /* Service an HTTP request */
-//bool LIVE = false; // fix names!
-bool LIVE = true; // READ_ONLY Mmap! lower limits, higher security
+bool LIVE = false; // READ_WRITE Mmap!  allow fix names, add, learn, ... !
+//bool LIVE = true; // READ_ONLY Mmap! lower limits, higher security
 int SERVER_PORT = 8080;
 int MAX_QUERY_LENGTH = 1000;
 //static char server_root[1000] = "/Users/me/";
@@ -592,7 +592,7 @@ int handle(cchar *q0, int conn) {
 					warnings++;
 					continue;
 				}
-				fixLabels(s);
+				fixLabels(s);// todo: make work in const LIVE mode
 				if (!(verbosity == verbose or verbosity == alle or verbosity == abstract) and
 				    (s->Predicate() == Instance or s->Predicate() == Type))
 					continue;
@@ -648,6 +648,7 @@ int handle(cchar *q0, int conn) {
 char *fixName(char *name) {
 	if (!name)return (char *) "";
 	int len = (int) strlen(name);
+	if(LIVE)name = editable(name);
 
 	while (--len >= 0) {
 		if (name[len] == '_')name[len] = ' ';// json-save!
@@ -754,6 +755,7 @@ void removeSpecialChars(char *line) {
 void fixLabel(Node *n) {
 	if (!checkNode(n))return;
 	if (n->name == 0)return;// HOW? checkNames=false :(
+	if(LIVE)return;// TODO: WARN!
 	if (n->name[0] == '"')n->name = n->name + 1;
 
 	if (n->name[strlen(n->name) - 1] == '"' and n->name[strlen(n->name) - 2] != '"')

@@ -601,7 +601,7 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 #endif
 //	if(!debug)return true;
 	context = getContext(current_context);
-	void *maxNodePointer = &context->nodes[maxNodes];
+	void *maxNodePointer = &context->nodes[maxNodes-propertySlots];
 	if (node < context->nodes - propertySlots) {
 		bad();
 		if (report) {// not for abstract.node (can be number etc)
@@ -632,7 +632,7 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 		return false;
 	}
 #endif
-	if (nodeId > maxNodes) {
+	if (nodeId > maxNodes - propertySlots) {
 		bad();
 		if (report)
 			pf("nodeId>maxNodes %d>%ld", nodeId, maxNodes);
@@ -709,6 +709,10 @@ void checkOutOfMemory() {
 
 
 Node *add(const char *nodeName, int kind, int contextId) { //=node =current_context
+	if(LIVE){
+		bad("NO NEW NODES IN LIVE MODE");
+		return 0;
+	}
 	if (kind < -propertySlots or kind > maxNodes)
 		kind = _abstract;// blueprint messup!
 #ifndef DEBUG
@@ -1123,6 +1127,8 @@ Node *dissectWord(char *word) {
 }
 
 Node *dissectWord(Node *subject, bool checkDuplicates) {
+	if(LIVE)
+		return subject;
 	autoIds = false;
 	Node *original = subject;
 	if (dissected[subject]) return original;
@@ -1388,7 +1394,7 @@ Node *getThe(const char *thing, Node *type) {//, bool dissect) {
 	if (insta) return insta;
 	if (type == More)type = 0;
 	if (type) insta = add(thing, type->id);
-	else insta = add(thing, Object->kind);
+	else insta = add(thing, _object);
 	if (insta == 0) {
 		p("add node failed!!");
 		ps(thing);
@@ -2264,6 +2270,7 @@ has(Node *subject, Node *predicate, Node *object, int recurse, bool semantic, bo
 bool isEqual(Node *subject, Node *object) {
 	if (!subject and !object)return true;
 	if (!subject or !object)return false;
+	if (!subject->name or !object->name)return false;
 	if (subject->value.number and subject->value.number == object->value.number) return subject;
 	if (atof(subject->name) > 0 and atof(subject->name) == atof(object->name)) return subject;
 	if (isA4(subject, object))
@@ -2553,7 +2560,7 @@ Node *getThe(Node *abstract, Node *type, bool create /*true!*/) {// first instan
 		}
 		if (create) {
 			N first = add(abstract->name, 0); // NO SUCH!! CREATE!?
-			if (!atoi(abstract->name))
+			if (!atoi(abstract->name) and not LIVE)
 				abstract->value.node = first; // CACHE! -> DON't store numbers in abstract->value (69: year, natural number, ...)
 			return first;
 		}
@@ -2725,7 +2732,8 @@ char *getText(Node *n) {
 string formatImage(Node *image, int size, bool thumb) {
 	if (!image or !checkNode(image) or !image->name) return "";
 	char *name = replaceChar(image->name, ' ', '_');
-	replace_all(name, "%20", "_", true);
+	string neu=replace_all(name, "%20", "_", false);
+	name= const_cast<char *>(neu.data());
 	char *start = strstr(name, "File:");
 	if (start) name = start + 5;
 	if (startsWith(name, "http"))return name;

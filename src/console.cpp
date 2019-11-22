@@ -859,6 +859,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 //		} else
 //			addStatement(getAbstract(a), Instance, a, true, true);
 //	}
+
 	dissectWord(a, true);  //	if (i == 0) instanceFilter(a), true);
 	//    findWord(context->id, data);
 	if (isAbstract(a) and i == 0) {

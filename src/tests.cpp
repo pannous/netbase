@@ -2416,7 +2416,9 @@ void testBrandNewStuff() {
 	p("Test Brand New Stuff");
 	if(LIVE or getContext()->nodeCount > 100000){
 		p("LIVE DATA? not testing");
-		p(get(1));
+		p(get(111));
+		parse("111");
+		handle("111");
 		return;
 	}
 //	testBug();

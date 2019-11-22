@@ -396,9 +396,13 @@ int open_map(const char *file0, long size) {
 		oflag = O_RDONLY;
 		fd = open(fullpath, oflag);
 	} else fd = open(fullpath, oflag, 0777);
-	bool grow = false;
-	if (!exists or (fileSize(fd) < size and grow))
-		posix_fallocate(fd, 0, size);
+//	bool grow = false;
+	bool grow = true;// DANGER?
+	long filesize = fileSize(fd);
+	if (!exists or (filesize < size)){
+		printf("GROWING %s from %ld to %ld bytes", file0, filesize, size);
+		if(grow) posix_fallocate(fd, 0, size);
+	}
 	if (errno and errno != EEXIST) {
 		p(fullpath);
 		perror("FAILED fallocate ");
@@ -417,7 +421,7 @@ void loadMemoryMaps() {
 	int flags = MAP_SHARED;// |MAP_NORESERVE|MAP_NONBLOCK|MAP_FIXED;
 
 	size_t contextSize = contextOffset * 2;// * sizeof(Context);
-	size_t nameSize = maxChars * sizeof(char);
+	size_t nameSize = maxChars;// * sizeof(char);
 	size_t statementsSize = maxStatements * sizeof(Statement);
 	size_t nodesSize = maxNodes * sizeof(Node);
 	size_t abstractsSize = sizeof(Ahash) * maxNodes * 2;
@@ -459,8 +463,21 @@ void loadMemoryMaps() {
 //	fixNodeNames(context, (char *) 0x2e8000000);// hack
 	if (context->nodeNames != name_root)
 		fixNodeNames(context, context->nodeNames);
-	if(context->statements != statement_root)
+	if(context->statements != statement_root){
 		printf("WRONG IMPORT");
+		exit(0);
+	}
+	if(context->nodes != node_root+propertySlots){
+		printf("WRONG IMPORT");
+		exit(0);
+	}
+	if(context->lastNode > maxNodes-propertySlots)
+	{
+		printf("OUT OF MEMORY");
+		printf("WRONG IMPORT");
+		exit(0);
+	}
+
 //	initContext(context);// NO, IT SHOULD BE ALL SET!
 //	collectAbstracts();// was empty!
 }
