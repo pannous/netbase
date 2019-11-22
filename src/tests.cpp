@@ -2414,7 +2414,11 @@ void testBrandNewStuff() {
 	return; // no tests when profiling
 #endif
 	p("Test Brand New Stuff");
-
+	if(getContext()->nodeCount > 100000){
+		p("LIVE DATA? not testing");
+		p(get(1));
+		return;
+	}
 //	testBug();
 //	releaseSharedMemory();
 //	clearMemory();
@@ -2427,12 +2431,15 @@ void testBrandNewStuff() {
 //	testSynonyms();
 //	testServer();
 //	learn("berlin is city");
-	clearMemory();
+//	clearMemory();
 //	parse("berlin",0,1);
 	germanLabels= false;
-	importWordnet();
-	handle("love");// you can't! bjork!
-	check(isA(getThe("love"),Verb));
+	initRelations();
+//	importWordnet();
+	importWikiData();
+//	handle("love");// you can't! bjork!
+//	parse("love");// you can't! bjork!
+//	check(isA(getThe("love"),Verb));
 //	check(isA(getThe("love"),getThe("verb")));
 	Node *berlin = hasWord("berlin");
 	if (berlin == 0)

@@ -74,7 +74,7 @@ int maxRecursions = 7;
 int runs = 0;
 Context *contexts; //[maxContexts];// extern
 std::string path = ""; // extern
-string data_path = "";
+string data_path;// set in main
 string import_path = "./import/";
 
 //extern "C" inline
@@ -1437,7 +1437,7 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 	int h = wordHash(thingy);
 	long pos = abs(h) % maxNodes;
 	Ahash *found = &abstracts[pos]; // TODO: abstract=first word!!! (with new 'next' ptr!)
-	if (found and found->abstract > 0 and checkNode(found->abstract, false, true)) {
+	if (found and found->abstract > -propertySlots and checkNode(found->abstract, false, true)) {
 		Node *first = get(found->abstract);
 		if (eq(first->name, thingy, true))    // tolower
 			return first;
@@ -3077,6 +3077,13 @@ int main(int argc, char *argv[]) {
 		//	start_server();
 	}
 
+	string a;
+	for (int i = 1; i < argc; i++) {
+		if (i > 1)a = a + " ";
+		a = a + argv[i];
+	}
+	char *query = editable(a.data());
+
 	loadConfig();
 	//	signal(SIGSEGV, handler); // only when fully debugged!
 	//	signal(SIGINT, SIGINT_handler); // only when fully debugged! messes with console!
@@ -3089,13 +3096,6 @@ int main(int argc, char *argv[]) {
 	import_path = path + "import/";
 	mkdir("./logs", 0777);
 	//	path=sprintf("%s/data",path);
-
-	string a;
-	for (int i = 1; i < argc; i++) {
-		if (i > 1)a = a + " ";
-		a = a + argv[i];
-	}
-	char *query = editable(a.data());
 
 	// todo REDUNDANT! remove!
 	if (checkParams(argc, argv, "quiet")) quiet = true;

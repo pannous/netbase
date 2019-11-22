@@ -29,7 +29,8 @@
 //#include "helper.h"
 
 /* Service an HTTP request */
-bool LIVE = true; // lower limits, higher security
+//bool LIVE = false; // fix names!
+bool LIVE = true; // READ_ONLY Mmap! lower limits, higher security
 int SERVER_PORT = 8080;
 int MAX_QUERY_LENGTH = 1000;
 //static char server_root[1000] = "/Users/me/";

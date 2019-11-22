@@ -31,7 +31,7 @@ cchar *images_file = "images.txt";
 cchar *images_file_de = "images_de.nt";
 
 //bool LIGHT_IMPORT= true; // ONLY IMPORT TYPE, CLASS!
-bool LIGHT_IMPORT= false; // normal import of all wikidata
+bool LIGHT_IMPORT = false; // normal import of all wikidata
 bool singleton_abstracts = false; // false == use normal abstracts until fixed!
 
 bool getSingletons = false;// i.e. Nationalmannschaft
@@ -44,7 +44,7 @@ void setText(Node *node, char *text) {
 	int l = len(text);
 	long slot = context->currentNameSlot;
 	char *label = context->nodeNames + slot;
-	if(label[0])
+	if (label[0])
 		bad("LABEL NOT EMPTY!");
 	strcpy(label, text); // can be freed now!
 	node->value.text = label;
@@ -565,6 +565,7 @@ void fixNewline(char *line, bool limit/*0=none*/) {
 			else if (line[l] == '\t') line[l--] = 0;
 			else if (line[l] == '"') line[l--] = 0;
 			else if (line[l] == ' ') line[l--] = 0;
+			else if (line[l] == '.' and line[l - 1] == '\t') line[l--] = 0;
 			else break;
 		}
 }
@@ -593,7 +594,7 @@ bool isNameField(char *field, char *nameField) {
 }
 
 Node *namify(Node *node, char *name) {
-	node->name = context->nodeNames+ context->currentNameSlot;
+	node->name = context->nodeNames + context->currentNameSlot;
 	strcpy(node->name, name); // can be freed now!
 	int l = len(name);
 	context->nodeNames[context->currentNameSlot + l] = 0;
@@ -749,20 +750,26 @@ void importXml(const char *file, char *nameField, const char *ignoredFields, con
 void fixValues(char **values, int size) {
 	for (int i = 0; i < size; i++) {
 		char *x = values[i];
-		if (x[0] == '"'){x[0]=0;x++;}
+		if (x[0] == '"') {
+			x[0] = 0;
+			x++;
+		}
 		int l = len(x);
-		if(!l){values[i] = 0;continue;}
+		if (!l) {
+			values[i] = 0;
+			continue;
+		}
 		if (x[l - 1] == '"') x[l - 1] = 0;
 		values[i] = x;
 	}
 }
 
 N addSubword(char *name, N kind) {
-    if(empty(name))
-        return 0;
-	if(endsWith(name," und"))
+	if (empty(name))
 		return 0;
-	if(endsWith(name," /"))
+	if (endsWith(name, " und"))
+		return 0;
+	if (endsWith(name, " /"))
 		return 0;
 	N old = hasWord(name);
 	if (old) {
@@ -877,7 +884,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 	int size = 0;// per row ~ Hopefully equal to fieldCount
 	while (readFile(file, &line[0])) {
 		fixNewline(line, false);
-		if(line00)free(line00);// LEAK OR object was probably modified after being freed HOW???
+		if (line00)free(line00);// LEAK OR object was probably modified after being freed HOW???
 		line0 = line00 = editable(line);
 		if (!separator) {
 			separator = guessSeparator(editable(line)); // would kill fieldCount
@@ -892,8 +899,8 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 				Node *fielt = getThe(field); // Firma		instance		Terror_Firma LOL
 //				dissectWord(fielt);
 				predicates.push_back(fielt);
-				if(eq(field,"topic") or eq(field,"type"))
-					typeRow=i;
+				if (eq(field, "topic") or eq(field, "type"))
+					typeRow = i;
 			}
 			++linecount;
 			continue;
@@ -911,10 +918,10 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			continue;
 		}
 		fixValues(values, size);
-		if(typeRow>=0){
-			auto typos=values[typeRow];
-			if(typos)
-				type=getThe(typos);
+		if (typeRow >= 0) {
+			auto typos = values[typeRow];
+			if (typos)
+				type = getThe(typos);
 			else
 				bad("No type in typeRow");
 		}
@@ -961,7 +968,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 				N marke = getThe(values[1], Marke);
 				getThe(values[3], getThe("billiger.de Kategorie"));
 				if (subject)
-					addStatement(subject, Marke, marke,checkDuplicates);// ok check here
+					addStatement(subject, Marke, marke, checkDuplicates);// ok check here
 //				if(checkNode(m)){// and !contains(name, " ")
 //					string full=string(m->name)+" "+name;
 //					N f=getThe(full.data(),getThe("billiger.de Produkt"));
@@ -1029,7 +1036,7 @@ void importCsv(const char *file, Node *type, char separator, const char *ignored
 			break;
 		}
 	}
-	pf("import csv ok ... lines imported: %d, nodecount: %d",linecount,nodeCount());
+	pf("import csv ok ... lines imported: %d, nodecount: %d", linecount, nodeCount());
 	autoIds = tmp_autoIds;
 }
 
@@ -1076,8 +1083,8 @@ char *cut_wiki_id(char *key) {
 	int i = len(key);
 	if (key[i - 1] == '>')key[i - 1] = 0;
 	if (key[i - 1] == '"')key[i - 1] = 0;
-	if (key[0] != '<')return ++key; // quoted
-	key++;
+//	if (key[0] != '<')return ++key; // quoted
+//	if (key[0]=='Q' || key[0]=='P') key++; NO!?
 	for (; i > 1; --i) {
 		if (key[i] == '#' || key[i] == '/') {
 			char *id = key + i + 1;
@@ -1384,7 +1391,7 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 	char *test;
 	int linecount = 0;
 	bool english = contains(file, ".en.");
-	if(english)germanLabels= false;
+	if (english)germanLabels = false;
 
 	while (readFile(file, &line[0])) {
 		if (++linecount % 10000 == 0) {
@@ -1396,7 +1403,8 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 //		if(contains(line, "Q3521>"))
 //			p(line);
 		//		if(debug)if(linecount>100)break;
-		u8_unescape(line, MAX_CHARS_PER_LINE, line); // utf8 unicode fix umlauts   not with new labels.csv!! removes 'ä' WTF why?
+		u8_unescape(line, MAX_CHARS_PER_LINE,
+		            line); // utf8 unicode fix umlauts   not with new labels.csv!! removes 'ä' WTF why?
 		//		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);
@@ -1477,15 +1485,15 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 		Node *node = &context->nodes[id];
 		if (!singleton_abstracts) {
 			// old simple (expensive) mode: one abstract per word
-			if(label[0]==' ')label++;
+			if (label[0] == ' ')label++;
 			Node *abstract = getAbstract(label);
-			if(!abstract or !eq(abstract->name,label)){
+			if (!abstract or !eq(abstract->name, label)) {
 				bad(); // "^^" ' Hydraenidae)'
 				continue;
 			}
-			node->id=id;
-			node->name=abstract->name;
-			node->kind=_entity;
+			node->id = id;
+			node->name = abstract->name;
+			node->kind = _entity;
 			addStatement(abstract, Instance, node, false);
 //			initNode(node,id,abstract->name,_entity,0);
 		} else {
@@ -1532,7 +1540,8 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 	return true;
 }
 
-bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, bool altLabel = false, bool checkDuplicates = true) {
+bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, bool altLabel = false,
+                  bool checkDuplicates = true) {
 	// TODO: RESTORE TO BEFORE! ~ 01.01.2016
 	char line[MAX_CHARS_PER_LINE];// malloc(100000) GEHT NICHT PERIOD!
 	char *label0 = (char *) malloc(10000);
@@ -1754,6 +1763,7 @@ Node *getPropertyDummy(const char *id) {
 }
 
 bool wiki_mode = false;
+
 Node *getEntity(char *name) {//=true
 	if (name[0] == '<') {
 		name++;
@@ -1851,12 +1861,12 @@ bool dropBadPredicate(char *name) {
 
 	//	if(name[0]=='.')return DROP;
 	if (name[0] == '<')name++;
-	int lenge=len(name);
-	if(lenge>2 && name[lenge-2]=='I' && name[lenge-1]=='D')// ID ...
+	int lenge = len(name);
+	if (lenge > 2 && name[lenge - 2] == 'I' && name[lenge - 1] == 'D')// ID ...
 		return DROP; // no IDs  but:  MusicBrainz-Gebiets-ID via P982
 
 	Node *wikidataRelation = getWikidataRelation(name);
-	if(LIGHT_IMPORT)
+	if (LIGHT_IMPORT)
 		return !wikidataRelation;
 
 //    if (predicateName[3] == '-' or predicateName[3] == '_' or predicateName[3] == 0) continue;    // <zh-ch, id ...
@@ -1922,10 +1932,10 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P971"))return DROP;// Category:cu:Earth		Kategorie kombiniert die Themen
 	if (eq(name, "P3911"))return DROP;// STW-ID  // 421 statements not worth it
 	if (eq(name, "P2347"))return DROP;// YSO ID
-	if (eq(name,"P3238"))return DROP; //		Verkehrsausscheidungsziffer
-	if(eq(name,"P1946"))return DROP;// -11946 NLI (Irland)
-	if(eq(name,"P3827"))return DROP;// JSTOR-Themen-ID
-	if(eq(name,"P982"))return DROP;// MusicBrainz-Gebiets-ID
+	if (eq(name, "P3238"))return DROP; //		Verkehrsausscheidungsziffer
+	if (eq(name, "P1946"))return DROP;// -11946 NLI (Irland)
+	if (eq(name, "P3827"))return DROP;// JSTOR-Themen-ID
+	if (eq(name, "P982"))return DROP;// MusicBrainz-Gebiets-ID
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
 //	if(eq(name,"P"))return DROP;
@@ -1988,29 +1998,38 @@ bool isUrl(char *predicateName) {
 	return eq(predicateName, "P854") or eq(predicateName, "P856") or eq(predicateName, "P973")  \
  or eq(predicateName, "P1896") or eq(predicateName, "P1630") or eq(predicateName, "P1065")\
  or eq(predicateName, "P953") or eq(predicateName, "P963") or eq(predicateName, "P2699");// website
-	// P973 Wird beschrieben in URL   P953 Fulltext hmmm  P963 Downloadlink not used P2699 URL not used
+	// P973 Wird beschrieben in URL
+	// P953 Fulltext hmmm
+	// P963 Downloadlink not used
+	// P1324 source code repository
+	// P1401 bug tracking system
+	// P2699 URL not used
 }
 
 #include <time.h>       /* time_t, struct tm, time, localtime, strftime */
-void timestamp(){
+
+void timestamp() {
 	time_t rawtime;
-	struct tm * timeinfo;
-	char formatted [80];
+	struct tm *timeinfo;
+	char formatted[80];
 
-	time (&rawtime);
-	timeinfo = localtime (&rawtime);
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
 
-	strftime (formatted,80,"%Y-%m-%d",timeinfo);// or just %F
-	puts (formatted);
-	addStatement(get("last import"),get("timestamp"),get(formatted));
+	strftime(formatted, 80, "%Y-%m-%d", timeinfo);// or just %F
+	puts(formatted);
+	addStatement(get("last import"), get("timestamp"), get(formatted));
 }
 
-map<string, int> _reasons;
+//map<string, int> _reasons;
+map<char *, int> _reasons;
 int ignored = 0;
-void _ignore_(char *reason){ // vs std::ignore !
+
+void _ignore_(char *reason) { // vs std::ignore !
 	if (debug and reason) {
 		if (!_reasons[reason])
 			printf("%s\n", reason);
+		_reasons[reason] = 1;
 	}
 	ignored++;
 }
@@ -2066,14 +2085,15 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		char *predicateName = predicateName0;
 		char *objectName = objectName0;
 
-		replace(line, ' ','_');// hack against sscanf bug
-		replace(line, '>',' ');// hack against sscanf bug !
+		replace(line, ' ', '\t');// hack against sscanf bug
+//		replace(line, ' ','_');// hack against sscanf bug
+		replace(line, '>', ' ');// hack against sscanf bug !
 
 		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
 		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
 //		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		sscanf(line, "<%s\t<%s\t%[^@>]s", subjectName, predicateName, objectName);
-		if(objectName[0]=='"')objectName++;
+		if (objectName[0] == '"')objectName++;
 		fixNewline(objectName);
 		int leng = len(line);
 		if ((line[leng - 1] == '.' || line[leng - 2] == '.') and contains(line, "\"@"))
@@ -2081,8 +2101,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 				foreign++;
 				continue;
 			}//  and !contains(line,"@en ")
-		if(wiki_mode){
-			if (objectName[0] == 'Q' && objectName[1] <= '9')objectName[0] = 'q';// hack against auto wiki ids
+		if (wiki_mode) {
+//			if (objectName[0] == 'Q' && objectName[1] <= '9')objectName[0] = 'q';// hack against auto wiki ids WHAAT?
 			subjectName = cut_wiki_id(subjectName);
 			predicateName = cut_wiki_id(predicateName);
 			if (!isUrl(predicateName))
@@ -2091,23 +2111,21 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		if (debug && eq(predicateName, "description"))continue;// ignore in debug!
 
 		if (dropBadSubject(subjectName)) {
-//			_ignore_("dropBadSubject");
-			ignored++;
+			_ignore_("dropBadSubject");
 			continue;
 		}
 		if (dropBadPredicate(predicateName)) {
-//			_ignore_("dropBadPredicate");
-			ignored++;
-			if(LIGHT_IMPORT){
-			subject = getEntity(subjectName);
-				if(!checkNode(subject))continue;
-			subject->statementCount++;
+			_ignore_("dropBadPredicate");
+			if (LIGHT_IMPORT) {
+				subject = getEntity(subjectName);
+				if (!checkNode(subject))continue;
+				subject->statementCount++;
 //				we still need statementCount for ranking!
 			}
 			continue;
 		}
 		if (dropBadObject(objectName)) {
-			ignored++;
+			_ignore_("dropBadObject");
 			continue;
 		}
 		if (!objectName or objectName[0] == '/' or objectName[1] == '/')
@@ -2140,7 +2158,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		}
 //		if (!subject->name or !object->name ){ ignored++;continue;}// only german!
 		if (!subject->id == _ignore or !predicate->id == _ignore or !object->id == _ignore) {
-			ignored++;
+			_ignore_("->id == _ignore");
 			continue;
 		}
 		if (subject == Error or predicate == Error or object == Error) {
@@ -2154,10 +2172,10 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 			object = t;
 		}
 		if (subject->kind == _ignore or predicate->kind == _ignore or object->kind == _ignore) {
-			ignored++;
+			_ignore_("->kind == _ignore");
 			continue;
 		} else if (eq(predicate, lastPredicate) and dropRedundantPredicate(predicateName)) {
-			ignored++;
+			_ignore_("dropRedundantPredicate");// Einwohnerzahl etc
 			continue;
 		} else {
 			lastPredicate = predicate;
@@ -2175,7 +2193,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 	}
 	p("import N3 ok");
 	closeFile(file);
-	pf("LINES IMPORTED: %d   BAD: %d   MISSING: %d\n",linecount-badCount, badCount, MISSING);
+	pf("LINES IMPORTED: %d   BAD: %d   MISSING: %d\n", linecount - badCount, badCount, MISSING);
 	showReasons();
 	context->use_logic = false;
 	//	free(subjectName0);free(objectName0);free(predicateName0);// noone cares about 100bytes
@@ -2229,8 +2247,8 @@ bool importFacts(const char *file, const char *predicateName = "population") {
 
 		subject = getAbstract(subjectName); //
 		object = getAbstract(objectName);
-		if(autoDissectAbstracts)
-		 dissectWord(subject);
+		if (autoDissectAbstracts)
+			dissectWord(subject);
 		Statement *s = 0;
 		if (contains(objectName, subjectName, true))
 			s = addStatement(subject, Member, object, !checkDuplicates); // todo: id
@@ -2309,7 +2327,7 @@ void importAbstracts() {
 int wn_synonym_count = 400000;// pointer autoincrement
 //      ^^^^^^^ aarg !?? compatible with german??
 
-int wikidata_limit= 60000000 ;// (int) maxNodes / 2;
+int wikidata_limit = 60000000;// (int) maxNodes / 2;
 
 void importGermanLables(bool addLabels = false) {
 	bool modify_english = hasWord("autoeroticism");//english already there
@@ -2342,12 +2360,10 @@ void importGermanLables(bool addLabels = false) {
 		else if (wordkind[0] == 'v') {
 			kind = _verb;
 			id += 200000000;
-		}
-		else if (wordkind[0] == 'a') {
+		} else if (wordkind[0] == 'a') {
 			kind = _adjective;
 			id += 300000000;
-		}
-		else if (wordkind[0] == 'r') {
+		} else if (wordkind[0] == 'r') {
 			kind = _adverb;
 			id += 400000000;
 		} // between -> preposition!!!
@@ -2372,7 +2388,7 @@ void importGermanLables(bool addLabels = false) {
 		wn_labels[id] = german;
 		wn_labels[-id] = german;
 		if (addLabels and strlen(translations) > 2) {// later, when settled (?)
-			char **translationList = (char **) malloc(MAX_ROWS* sizeof(char*));
+			char **translationList = (char **) malloc(MAX_ROWS * sizeof(char *));
 			char sep = ',';
 			char *translationz = modifyConstChar(translations);
 			translationz = translationz + 1;// cut [ ]
@@ -2489,8 +2505,8 @@ void importSynsets() {
 		if (pos == 's') addStatement4(wordnet, id, Type->id, _adjective);
 		if (pos == 'p') addStatement4(wordnet, id, Type->id, _preposition);
 		//			get(id)->kind = adjective; // satelite !?
-		if(contains(line,"loves someone"))
-			debug= true;
+		if (contains(line, "loves someone"))
+			debug = true;
 		if (germanLabels) continue;// no english definitions here
 		setText(get(id), definition);
 
@@ -2585,8 +2601,8 @@ void importStatements() {
 	fclose(infile); /* Close the file */
 }
 
-void importWins(){
-	if(hasWord("iPhone")){
+void importWins() {
+	if (hasWord("iPhone")) {
 		p("importWins already done");
 		return;
 	}
@@ -2644,31 +2660,36 @@ void importBilliger() {
 }
 
 
-
 int listdir(const char *path) {
-    DIR *dp = opendir(path);
-    if (dp == NULL) { perror("opendir: Path does not exist or could not be read.");return -1; }
-    struct dirent *entry;
-    while ((entry = readdir(dp))) {
+	DIR *dp = opendir(path);
+	if (dp == NULL) {
+		perror("opendir: Path does not exist or could not be read.");
+		return -1;
+	}
+	struct dirent *entry;
+	while ((entry = readdir(dp))) {
 //		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
 	}
-    closedir(dp);
-    return 0;
+	closedir(dp);
+	return 0;
 }
 
 
 void importAmazon() {
 	printf("importAmazon DISABLED!");
 	return;
-	autoDissectAbstracts=0;
+	autoDissectAbstracts = 0;
 //	importCsv("amazon/de_v3_csv_apparel_retail_delta_20151211.base.csv.gz",getThe(""));
 
 //	char separator, const char* ignoredFields, const char* includedFields, int nameRowNr,	const char* nameRow)
-	const char *includedFields ="title";// typ;
+	const char *includedFields = "title";// typ;
 	//,brand,author,artist,subcategorypath1"; "subcategorypath1"; "title,productdescription,asins,brand,author,artist,imagepathmedium,topcategory,ean,platforms,releasedate,salerank,subcategorypath1,subcategorypath2,gender,color,size,price1"; "asins,brand,author,artist,title,imagepathmedium,topcategory,ea
 
 	DIR *dp = opendir("import/amazon");
-	if (dp == NULL) { perror("Path import/amazon does not exist or could not be read.");return; }
+	if (dp == NULL) {
+		perror("Path import/amazon does not exist or could not be read.");
+		return;
+	}
 
 	const char *ignoredFields = 0;// rest! productdescription :(
 	const char *in = includedFields;
@@ -2681,7 +2702,7 @@ void importAmazon() {
 	struct dirent *entry;
 	auto type = getThe("Amazon product");
 	while ((entry = readdir(dp))) {
-		importCsv(concat("amazon/",entry->d_name), type, ',', out, in, col, t);
+		importCsv(concat("amazon/", entry->d_name), type, ',', out, in, col, t);
 	}
 	closedir(dp);
 }
@@ -2785,7 +2806,7 @@ void testImportWiki() {
 
 
 void importWikiData() {
-	if(maxNodes<wikidata_limit){
+	if (maxNodes < wikidata_limit) {
 		p("NOT ENOUGH MEMORY FOR importWikiData");
 		return;
 	}
@@ -2795,14 +2816,14 @@ void importWikiData() {
 	importing = true;
 	checkDuplicates = false;
 	autoDissectAbstracts = false; // too messy, maybe AFTER import!
-    context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
-	context->nodeCount=wikidata_limit;// for iteration!
-    if(germanLabels){
+	context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
+	context->nodeCount = wikidata_limit;// for iteration!
+	if (germanLabels) {
 		importWikiLabels("wikidata/latest-truthy.nt.de");
-        importWikiLabels("wikidata/latest-truthy.nt.en",false,true);// altlabels after abstracts are sorted!
-    } else {
-	    importWikiLabels("wikidata/latest-truthy.nt.en");
-    }
+		importWikiLabels("wikidata/latest-truthy.nt.en", false, true);// altlabels after abstracts are sorted!
+	} else {
+	 importWikiLabels("wikidata/latest-truthy.nt.en");
+	}
 	importN3("wikidata/latest-truthy.nt.facts");
 //	importN3("wikidata/latest-truthy.nt");
 //	importN3("wikifdata/latest-truthy.nt.gz");// MISSING STUFF WHY?? only two Q1603262
@@ -2811,7 +2832,7 @@ void importWikiData() {
 
 void import(const char *type, const char *filename) {
 	importing = true;
-	autoIds= false;
+	autoIds = false;
 
 	context = getContext(0, 0);
 	//  clock_t start;
@@ -2886,13 +2907,13 @@ void import(const char *type, const char *filename) {
 	importing = false;
 }
 
-void importCustomFacts(){
+void importCustomFacts() {
 	import("facts.n3");
 }
 
-void importTelekom(){
+void importTelekom() {
 //	importCsv("Telekom/used_keywords.csv");// same:
-	importCsv("Telekom/entities.ee.csv",getThe("Telekom-Entity"),0,0,"name,topic",0);
+	importCsv("Telekom/entities.ee.csv", getThe("Telekom-Entity"), 0, 0, "name,topic", 0);
 	importCsv("Telekom/whole_data.csv");
 	importCsv("Telekom/Telekom_Entitaet.csv");
 	importCsv("Telekom/Telekom-Produkt.csv");
@@ -2911,7 +2932,7 @@ void importAllDE() {
 	//	autoDissectAbstracts=true;// already? why not
 	autoDissectAbstracts = false;//MESSES TOO MUCH! why?
 	//	importDBPediaDE();
-	if (eq(get(1)->name,"Universum"))
+	if (eq(get(1)->name, "Universum"))
 		p("importWikiData already done");
 	else
 		importWikiData();
@@ -2950,9 +2971,9 @@ void importAll() {
 	//	autoDissectAbstracts=true;// already? why not
 	autoDissectAbstracts = false; // not live
 //	importGeoDB();
-	if(!eq(get(1)->name,"Universe"))
-	importWikiData();
-	else{
+	if (!eq(get(1)->name, "Universe"))
+		importWikiData();
+	else {
 		importRemaining();
 		return;
 	}
@@ -3112,7 +3133,9 @@ void importJson(const char *file, Node *type, const char *ignoredFields, const c
 }
 
 #else
-void importJson(const char* file, Node* type, const char* ignoredFields, const char* foldFields) {
+
+void importJson(const char *file, Node *type, const char *ignoredFields, const char *foldFields) {
 	p("importJson not supported without rapidjson");
 }
+
 #endif

@@ -5,10 +5,14 @@
 #include <sys/stat.h> // mkdir
 
 #undef assert
+
 bool save() {
+	if(USE_MMAP){
+		p("memory already synchronise to disk via memory map (USE_MMAP=1)");
+		return true;
+	}
 	Context *c = getContext(current_context);
-	mkdir((path + "data").c_str(), 0777);
-	string data_path = path + "data/";
+	mkdir(data_path.c_str(), 0777);
 
 	p("saving context blob to " + data_path);
 	p("This can take a few minutes");

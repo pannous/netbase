@@ -278,7 +278,11 @@ extern "C" void initSharedMemory(bool relations) {
 		contexts = context_root = static_cast<Context *>(malloc(1000 * sizeof(Context)));
 		context = &context_root[0];
 		loadMemoryMaps();
-		if (relations) initRelations();
+		context = getContext();
+		if (context->currentNameSlot > maxChars - 1000000)
+			context->currentNameSlot = maxChars - 1000000;// hack for Relations in full graph
+		if (relations and not hasWord("Synonym"))
+			initRelations();
 		return;
 	}
 //	signal(SIGSEGV, signal_handler); // handle SIGSEGV smoothly. USELESS for print_backtrace
@@ -382,15 +386,21 @@ FILE *open_binary(cchar *file) {
 
 
 // returns file-descriptor or 0
-int open_map(const char *file, long size) {
-	bool exists = file_exists(file);
+int open_map(const char *file0, long size) {
+	const char *fullpath = concat(data_path.c_str(), file0);
+	bool exists = file_exists(fullpath);
 	errno = 0;
+	int fd;
 	int oflag = O_CREAT | O_RDWR;// | O_LARGEFILE;// O_WRONLY \| \| O_APPEND \|
-	int fd = open(file, oflag, 0777);
-	if (!exists || fileSize(fd) < size)
+	if (LIVE) {
+		oflag = O_RDONLY;
+		fd = open(fullpath, oflag);
+	} else fd = open(fullpath, oflag, 0777);
+	bool grow = false;
+	if (!exists or (fileSize(fd) < size and grow))
 		posix_fallocate(fd, 0, size);
 	if (errno and errno != EEXIST) {
-		p(file);
+		p(fullpath);
 		perror("FAILED fallocate ");
 		errno = 0;
 		return 0;
@@ -400,9 +410,10 @@ int open_map(const char *file, long size) {
 
 void loadMemoryMaps() {
 	p("Preparing mapped memory files, using some GB! This can take some minutes!");
-	mkdir("mem", S_IRWXU | S_IRWXG);// user+group rwx
+	mkdir(data_path.c_str(), S_IRWXU | S_IRWXG);// user+group rwx
 // MAP_UNINITIALIZED, MAP_SYNC in write maps
 	int mode = PROT_READ | PROT_WRITE;
+	if (LIVE)mode = PROT_READ;// no PROT_WRITE!
 	int flags = MAP_SHARED;// |MAP_NORESERVE|MAP_NONBLOCK|MAP_FIXED;
 
 	size_t contextSize = contextOffset * 2;// * sizeof(Context);
@@ -411,36 +422,40 @@ void loadMemoryMaps() {
 	size_t nodesSize = maxNodes * sizeof(Node);
 	size_t abstractsSize = sizeof(Ahash) * maxNodes * 2;
 
-	int fd = open_map("mem/names.bin", nameSize);
+	int fd = open_map("names.bin", nameSize);
 	name_root = (char *) mmap((char *) shmat_root, nameSize, mode, flags, fd, 0);
 	close(fd);
 	if (name_root == MAP_FAILED) {
-		perror("mem/names.bin MAP_FAILED ");
+		perror("names.bin MAP_FAILED ");
 		exit(0);
 	}
 
 
-	fd = open_map("mem/nodes.bin", nodesSize);
+	fd = open_map("nodes.bin", nodesSize);
 	node_root = (Node *) mmap(name_root + nameSize, nodesSize, mode, flags, fd, 0);
-	if (node_root == MAP_FAILED)perror("mem/nodes.bin MAP_FAILED");
+	if (node_root == MAP_FAILED)perror("nodes.bin MAP_FAILED");
 	close(fd);
 
-	fd = open_map("mem/statements.bin", statementsSize);
+	fd = open_map("statements.bin", statementsSize);
 	statement_root = (Statement *) mmap(node_root + nodesSize, statementsSize, mode, flags, fd, 0);
-	if (statement_root == MAP_FAILED)perror("mem/statements.bin MAP_FAILED");
+	if (statement_root == MAP_FAILED)perror("statements.bin MAP_FAILED");
 	close(fd);
 
-	fd = open_map("mem/abstracts.bin", abstractsSize);
+	fd = open_map("abstracts.bin", abstractsSize);
 	abstracts = (Ahash *) mmap(statement_root + statementsSize, abstractsSize, mode, flags, fd, 0);
-	if (abstracts == MAP_FAILED)perror("mem/abstracts.bin MAP_FAILED");
+	if (abstracts == MAP_FAILED)perror("abstracts.bin MAP_FAILED");
 	close(fd);
 
-	fd = open_map("mem/contexts.bin", contextSize);
+	fd = open_map("contexts.bin", contextSize);
 	context_root = contexts = (Context *) mmap(abstracts + abstractsSize, contextSize, mode, flags, fd, 0);
-	if (contexts == MAP_FAILED)perror("mem/contexts.bin MAP_FAILED ");
+	if (contexts == MAP_FAILED)perror("contexts.bin MAP_FAILED ");
 	close(fd);
 	context = &contexts[0];
-	initContext(context);//:
+	context->nodeNames = name_root;// hack:
+	fixNodeNames(context, (char *) 0x2e8000000);// hack
+	if (context->nodeNames != name_root)
+		fixNodeNames(context, context->nodeNames);
+//	initContext(context);// NO, IT SHOULD BE ALL SET!
 //	collectAbstracts();// was empty!
 }
 
@@ -591,18 +606,29 @@ void fixNodeNames(Context *context, char *oldnodeNames) {
 #ifdef inlineName
 	printf("inlineNames!");
 	return;
-#else
+#endif
+	if (LIVE) {
+		printf("LIVE mode: Can NOT change Node Names!");
+		return;
+	}
+	printf("fix Node Names!");
+	// char* as offset to context->nodeNames would fix that too, but make names MUCH harder to debug
 	long newOffset = context->nodeNames - oldnodeNames;
 	if (newOffset == 0)return;
 	int max = context->nodeCount; // maxNodes;
 	for (int i = 0; i < max; i++) {
 		Node *n = &context->nodes[i];
-		//		show(n,true);
 		if (!checkNode(n, i, 0, 0)) continue;
-//		n->name=newOffset;
-		n->name = n->name + newOffset;
+//		if (n->name < (char *) 0 or n->name > context->nodeNames + maxChars)
+//			n->name = 0;// f'd up
+		if (n->name) {
+			n->name = n->name + newOffset;
+//			while (n->name < context->nodeNames)
+//				n->name += newOffset;// hack
+		}
+		n->name = n->name;
+		//		show(n,true);
 	}
-#endif
 }
 
 bool clearMemory() {
@@ -637,7 +663,7 @@ bool clearMemory() {
 }
 
 char *initContext(Context *context) {
-	pf("Initiating context %d\n", context->id);
+//	pf("Initiating context %d\n", context->id);
 	Node *nodes = 0;
 	Statement *statements = 0;
 	char *nodeNames = 0;
@@ -650,7 +676,7 @@ char *initContext(Context *context) {
 	long statementSegmentSize = sizeof(Statement) * maxStatements;
 //	long abstractOffset=contextOffset + nodeSegmentSize + nameSegmentSize + statementSegmentSize; //just put them at the end!!
 	if (node_root) {
-		p("Multiple shared memory segments");
+//		p("Multiple shared memory segments");
 		nodes = (Node *) node_root + propertySlots;
 		nodeNames = (char *) name_root;
 		statements = (Statement *) statement_root;
@@ -777,6 +803,9 @@ void loadConfig() {// char* args
 	if (getConfig("resultLimit"))resultLimit = atoi(getConfig("resultLimit"));
 	if (getConfig("lookupLimit"))lookupLimit = atoi(getConfig("lookupLimit"));
 	if (getConfig("germanLabels"))germanLabels = isTrue(getConfig("germanLabels"));
+	if (getConfig("USE_MMAP"))USE_MMAP = isTrue(getConfig("USE_MMAP"));
+	if (getConfig("data_path"))data_path = getConfig("data_path");
+	if (getConfig("dataPath"))data_path = getConfig("dataPath");
 	if (getConfig("maxNodes")) {
 		maxNodes = atoi(getConfig("maxNodes"));
 		if (maxNodes < 10000)maxNodes = maxNodes * million;

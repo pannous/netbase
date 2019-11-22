@@ -19,6 +19,7 @@ typedef const char * chars ;
 
 extern "C" char* _version();
 extern bool NO_TOPICS;
+extern bool LIVE;
 extern bool useSemantics;
 extern bool germanLabels;
 extern bool exitOnFailure;
@@ -80,6 +81,7 @@ static const bool multipleContexts = false;
 extern string path;
 extern string data_path;// difference to memory path: memory map constantly writes to files!
 extern string import_path;
+extern bool USE_MMAP;// 1 = memory map or shared memory = 0 via config
 
 extern bool virgin_memory;
 
@@ -651,7 +653,7 @@ Usage  nodes:62.37%                     statements:62.48%               chars:49
  */
 
 static long contextOffset=0x800000;//0x10000;
-static int averageNameLength =10;// 10 for amazon! else 20 (cheap)
+static int averageNameLength = 20;// 10 for amazon! else 20 (cheap)
 static int bytesPerNode=(sizeof(Node) + averageNameLength);//+ahashSize*2
 
 #ifdef HARD_WIRED_MEMSIZE
