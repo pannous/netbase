@@ -839,9 +839,9 @@ bool isTrue(char *c) {
 	return eq(c, "true") || eq(c, "1") || eq(c, "yes");
 }
 
-
-long maxChars = 400 * million;// SET VIA netbase.config !
-long maxNodes = 400 * million;// *40byte => 400MB  300*million;// Live 11.11.2018
+long maxChars = 2000 * million;// SET VIA netbase.config !
+long maxNodes = 1000 * million;// *40byte
+// => 400MB  300*million;// Live 11.11.2018
 long maxStatements = 2 * maxNodes;
 long sizeOfSharedMemory = 0; // overwrite here:
 
