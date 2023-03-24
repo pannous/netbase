@@ -840,8 +840,8 @@ bool isTrue(char *c) {
 }
 
 
-long maxChars = 100 * million;// SET VIA netbase.config !
-long maxNodes = 100 * million;// *40byte => 400MB  300*million;// Live 11.11.2018
+long maxChars = 400 * million;// SET VIA netbase.config !
+long maxNodes = 400 * million;// *40byte => 400MB  300*million;// Live 11.11.2018
 long maxStatements = 2 * maxNodes;
 long sizeOfSharedMemory = 0; // overwrite here:
 

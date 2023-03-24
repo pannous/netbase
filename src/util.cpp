@@ -1000,6 +1000,7 @@ char *fixLabel(char *label) {
 
 char *dropUrl(char *name) {
 	size_t len = strlen(name);
+	if (len == 0)return name;
 	if (name[len - 1] == '>')name[len - 1] = 0;
 	for (size_t i = len - 1; i > 0; --i)
 		if (name[i] == '#' or name[i] == '/' or name[i] == ':') // cut http://.../ namespaces

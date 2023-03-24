@@ -563,7 +563,14 @@ void fixNewline(char *line, bool limit/*0=none*/) {
 			if (line[l] == '\n') line[l--] = 0;
 			else if (line[l] == '\r') line[l--] = 0;
 			else if (line[l] == '\t') line[l--] = 0;
+			else if (line[l] == ':') line[l--] = 0;
+			else if (line[l] == ';') line[l--] = 0;
+			else if (line[l] == '?') line[l--] = 0;
+			else if (line[l] == '!') line[l--] = 0;
 			else if (line[l] == '"') line[l--] = 0;
+			else if (line[l] == '/') line[l--] = 0;
+			else if (line[l] == '_') line[l--] = 0;
+			else if (line[l] == '\\') line[l--] = 0;
 			else if (line[l] == ' ') line[l--] = 0;
 			else if (line[l] == '.' and line[l - 1] == '\t') line[l--] = 0;
 			else break;
@@ -1797,7 +1804,8 @@ Node *getEntity(char *name) {//=true
 			return getPropertyDummy(name);// DUMMY!
 		int id = atoi(name + 1);
 		if (id > maxNodes / 2) {
-			throw "id>maxNodes/2";
+			printf("ERROR id>maxNodes/2");
+			::exit(0);
 		}
 		if (id > 0) {
 			N n = getNode(id);
