@@ -1403,8 +1403,8 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 //		if(contains(line, "Q3521>"))
 //			p(line);
 		//		if(debug)if(linecount>100)break;
-		u8_unescape(line, MAX_CHARS_PER_LINE,
-		            line); // utf8 unicode fix umlauts   not with new labels.csv!! removes 'ä' WTF why?
+		u8_unescape(line, MAX_CHARS_PER_LINE, line); // utf8 unicode fix umlauts
+        // not with new labels.csv!! removes 'ä' WTF why?
 		//		if(line[0]=='#')continue;
 		sscanf(line, "%s\t%s\t\"%[^\"]s", key0, test0, label0);
 		fixNewline(line);

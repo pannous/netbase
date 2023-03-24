@@ -241,9 +241,9 @@ void initRelationsDE() {
 	Plural = addRelation(_plural, "Plural");
 	Translation = addRelation(_translation, "Übersetzung", is_transitive);// is_transitive if not mapped to abstract!
 
-	And = addRelation(_And, "Und");
-	Or = addRelation(_Or, "Oder");
-	Not = addRelation(_Not, "Nicht");
+	And = addRelation(_and, "Und");
+	Or = addRelation(_or, "Oder");
+	Not = addRelation(_not, "Nicht");
 	Any = addRelation(_any, "*");
 
 	Value = addRelation(_value, "value");
@@ -413,9 +413,9 @@ void initRelations() {
 	Plural = addRelation(_plural, "plural");
 	Translation = addRelation(_translation, "translation", is_transitive);// is_transitive if not mapped to abstract!
 
-	And = addRelation(_And, "and");
-	Or = addRelation(_Or, "or");
-	Not = addRelation(_Not, "not");
+	And = addRelation(_and, "and");
+	Or = addRelation(_or, "or");
+	Not = addRelation(_not, "not");
 
 	Value = addRelation(_value, "value");
 	Equals = addRelation(_Equals, "=");

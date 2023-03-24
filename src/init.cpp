@@ -26,7 +26,8 @@
 #include "relations.hpp"
 #include "webserver.hpp"
 
-bool USE_MMAP = true;
+// bool USE_MMAP = true; // memory map to file on systems with small RAM
+bool USE_MMAP = false; // use shared memory
 
 namespace patch {
 	template<typename T>
@@ -62,7 +63,6 @@ union semun {
 };
 
 
-void loadMemoryMaps();
 
 #endif
 
@@ -333,6 +333,8 @@ extern "C" void initSharedMemory(bool relations) {
 void loadMemoryMaps();
 
 
+void file_allocate(int fd, long size);
+
 //static long shared_memory_2GB=2147483648;
 //static long shared_memory_4GB=4294967296;
 //static long shared_memory_6GB=6442450944;
@@ -401,7 +403,8 @@ int open_map(const char *file0, long size) {
 	long filesize = fileSize(fd);
 	if (!exists or (filesize < size)){
 		printf("GROWING %s from %ld to %ld bytes", file0, filesize, size);
-		if(grow) posix_fallocate(fd, 0, size);
+		if(grow){file_allocate(fd,size);
+		}
 	}
 	if (errno and errno != EEXIST) {
 		p(fullpath);
@@ -410,6 +413,28 @@ int open_map(const char *file0, long size) {
 		return 0;
 	}
 	return fd;
+}
+
+void file_allocate(int fd, long size) {
+#if defined(HAVE_POSIX_FALLOCATE)
+    posix_fallocate(fd, 0, size);
+#elif defined(XP_WIN)
+    return PR_Seek64(aFD, aLength, PR_SEEK_SET) == aLength
+    && 0 != SetEndOfFile((HANDLE)PR_FileDesc2NativeHandle(aFD));
+#elif defined(XP_MACOSX)
+    int fd = PR_FileDesc2NativeHandle(aFD);
+  fstore_t store = {F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, aLength};
+  // Try to get a continous chunk of disk space
+  int ret = fcntl(fd, F_PREALLOCATE, &store);
+    if(-1 == ret){
+    // OK, perhaps we are too fragmented, allocate non-continuous
+    store.fst_flags = F_ALLOCATEALL;
+    ret = fcntl(fd, F_PREALLOCATE, &store);
+    if (-1 == ret)
+      return false;
+  }
+  return 0 == ftruncate(fd, aLength);
+#endif
 }
 
 void loadMemoryMaps() {

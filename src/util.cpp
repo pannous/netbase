@@ -349,12 +349,11 @@ bool startsWith(string *x, string *y) {
 }
 
 //string(x)+y
-const char *concat(const char *a, const char *b) {
 //const char* concat(char* a,char* b){// free manually!
+const char *concat(const char *a, const char *b) {
 	if (!b)return a;
 	int la = (int) strlen(a);
 	int lb = (int) strlen(b);
-//	char c[la+lb];
 	char *c = (char *) malloc((la + lb + 1) * sizeof(char) );
 	strcpy(c, a);
 	strcpy(&c[la], b);
@@ -690,26 +689,13 @@ short normChar(char c) {// 0..36 damn ;)
 		return 0;// no chinese etc! why not? (small) problem: €==$ Жабка == Λάδων etc
 	switch (c) {
 		case '"':
-			return 0;
-			break;
 		case '\'':
-			return 0;
-			break;
 		case '(':
-			return 0;
-			break;
 		case '_':
-			return 0;
-			break;
 		case '+':
-			return 0;
-			break;
 		case ' ':
-			return 0;
-			break;
 		case '-':
 			return 0;
-			break;
 		default:
 			return c;// for asian etc!
 	}

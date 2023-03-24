@@ -180,9 +180,9 @@ static const int _past_tense = -133;
 static const int _future_tense = -134;
 static const int _translation = -139;
 
-static const int _And = -140;
-static const int _Or = -141;
-static const int _Not = -142;
+static const int _and = -140;
+static const int _or = -141;
+static const int _not = -142;
 static const int _Equals = -150;
 static const int _Greater = -151;
 static const int _Less = -152;

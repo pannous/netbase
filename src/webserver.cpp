@@ -31,7 +31,8 @@
 /* Service an HTTP request */
 //bool LIVE = false; // READ_WRITE Mmap!  allow fix names, add, learn, ... !
 bool LIVE = true; // READ_ONLY Mmap! lower limits, higher security
-int SERVER_PORT = 8080;
+//int SERVER_PORT = 8080;
+int SERVER_PORT = 81;
 int MAX_QUERY_LENGTH = 1000;
 //static char server_root[1000] = "/Users/me/";
 //static char server_root[1000] = "./";

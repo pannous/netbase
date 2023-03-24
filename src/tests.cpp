@@ -2339,10 +2339,6 @@ void testUmlauts() {
 	check(wordHash("mü") == wordHash("MÜ")); // todo: seo here!
 }
 
-void testServer() {
-	start_server(8080);
-}
-
 extern "C" void testAll() {
 #ifndef __clang_analyzer__
 	context = getContext(0);

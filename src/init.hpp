@@ -21,6 +21,6 @@ void* share_memory(size_t key, long sizeOfSharedMemory, void* root, const void *
 void fixPointers();
 void fixPointers(Context* context);
 void fixNodeNames(Context* context, char* oldnodeNames);
-
+void loadMemoryMaps();
 #endif	/* INIT_HPP */
 
