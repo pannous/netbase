@@ -1803,8 +1803,9 @@ Node *getEntity(char *name) {//=true
 		if (contains(name, '-'))
 			return getPropertyDummy(name);// DUMMY!
 		int id = atoi(name + 1);
-		if (id > maxNodes / 2) {
-			printf("ERROR id>maxNodes/2");
+		if (id > maxNodes-1000000) {
+//			printf("ERROR id>maxNodes/2");
+			printf("ERROR id>maxNodes-1000000");
 			::exit(0);
 		}
 		if (id > 0) {
@@ -2335,7 +2336,7 @@ void importAbstracts() {
 int wn_synonym_count = 400000;// pointer autoincrement
 //      ^^^^^^^ aarg !?? compatible with german??
 
-int wikidata_limit = 60000000;// (int) maxNodes / 2;
+int wikidata_limit = 120000000;// (int) maxNodes / 2;
 
 void importGermanLables(bool addLabels = false) {
 	bool modify_english = hasWord("autoeroticism");//english already there
