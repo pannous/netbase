@@ -3,7 +3,7 @@ cd ~/netbase
 #killall -SIGKILL gdb-i386-apple-darwin
 #killall -SIGKILL netbase
 eval `ssh-agent -s`
-ssh-add ~/.ssh/git_key_quasiris
+ssh-add ~/.ssh/github_jini
 git pull #|| exit
 ./adjust.sh
 
@@ -31,11 +31,11 @@ options="-m64 --debug  -std=c++1z"  # 0x = old -std=c++11 once no jserver
 
 # mv src/netbase-ruby.cpp src/netbase-ruby.cpp.x # Stupid workaround
 
-g++ $options -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o netbase -lreadline -lz && ./netbase :exit $@
+g++ $options -g -w  src/*.cpp -o netbase -lreadline -lz && ./netbase :exit $@
 
 if [[ $platform == 'Darwin' ]]; then
 	# g++ $options -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -lreadline -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	
-	cp netbase lib/libNetbase.dylib
+	# cp netbase lib/libNetbase.dylib
 	cp netbase bin/netbase-mac
 else
 	g++ $options -fPIC -shared -I$JAVA_HOME/include/$arch -I$JAVA_HOME/include -DNO_READLINE -lreadline -lz -g -w  src/*.cpp src/jni/NetbaseJNI.cpp -o bin/libNetbase.so	

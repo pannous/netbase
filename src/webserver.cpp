@@ -1326,7 +1326,12 @@ void start_server(int port = SERVER_PORT) {
 
 	/* Assign socket address to socket */
 	//	__bind<int&,sockaddr *,unsigned long> x=
-	bind(listener, (struct sockaddr *) &servaddr, sizeof(servaddr));
+	auto x=bind(listener, (struct sockaddr *) &servaddr, sizeof(servaddr));
+//	if (x < 0) {
+//		perror("bind failed");
+//		exit(EXIT_FAILURE);
+//	}
+
 	if (listener < 0)
 		Error_Quit("Couldn't bind listening socket.");
 
@@ -1346,6 +1351,7 @@ void start_server(int port = SERVER_PORT) {
 		if (conn < 0)
 			Error_Quit("Error calling accept()! debugging not supported, are you debugging?");
 		else p("connection accept OK");
+		flush();
 		// WORKS FINE, but not when debugging
 		/* Fork child process to service connection */
 		pid = fork();

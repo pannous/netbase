@@ -1776,7 +1776,7 @@ Node *getEntity(char *name) {//=true
 			name[strlen(name) - 1] = 0;
 	}
 	size_t len = strlen(name);
-	if (len == 0)return 0;
+	if (len == 0 || len>1000)return 0;
 //	if(name[0]=='_' and name[1]==':')// 	_:
 //		return getPropertyDummy(name);// Missing;// _:node1a8gbf20dx14041
 	if (contains(name, ":"))return getAbstract(name);// Kategorie: ...
@@ -1789,7 +1789,7 @@ Node *getEntity(char *name) {//=true
 	if (contains(name, "^^"))
 		return rdfValue(name);
 //    if(fixUrls)cut_wordnet_id(name)
-	cut_to(name, " (");// !?
+	cut_to(name, " (");// Prince William (duke of Cambridge)
 //	if((name[0]=='V' and name[1]<='C')) // or (name[0]=='n' and name[1]<='m')) ???
 //		return getPropertyDummy(name);// DUMMY!
 	if (wiki_mode && name[0] == 'Q' and name[1] >= '0' and name[1] <= '9') {
