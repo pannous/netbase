@@ -12,7 +12,7 @@
 #                    make it's web api accessible on http://localhost:6060/
 ### END INIT INFO
 
-# Author: Karsten Flügge @ Pannous / Quasiris <kf@quasiris.com>
+# Author: Karsten Flügge @ Pannous info@pannous.com
 
 
 # /etc/systemd/system/netbase.service

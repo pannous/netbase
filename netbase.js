@@ -1,5 +1,5 @@
 // Netbase Graph Viewer :: version 1.2.8
-// © 2010 - 2017 Pannous + Quasiris
+// © 2010 - 2023 Pannous
 
 var div;// results
 var editMode=false;

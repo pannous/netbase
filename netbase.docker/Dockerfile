@@ -1,6 +1,6 @@
 FROM ubuntu:18.04
 
-MAINTAINER Quasiris <info@quasiris.com>
+MAINTAINER Pannous <info@pannous.com>
 
 # RUN apt-get install -y apt-utils 
 RUN apt-get update

@@ -43,4 +43,3 @@ Extremely fast data import is provided for all common graph/data formats includi
 The same formats are available for data access and data export together with the [blueprints](https://github.com/pannous/blueprints-netbase) standard.
 
 This database is already used by millions of users through the Genie/[Voice Actions](http://voice-actions.com/) app.
-Germans might also have contact with this technology as enterprise customers of [Quasiris Recharge](https://www.quasiris.de/de/recharge/). Here we show the power of natural language queries to get instant answers.
