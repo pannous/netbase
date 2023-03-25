@@ -127,7 +127,8 @@ void signal_handler(int signum) {// handle SIGSEGV smoothly
 
 //long GB=1073741824;
 void increaseShmMax() {
-	p("increase ShmMax");
+	p("please call ./increase-shared-memory.sh");
+//	p("increase ShmMax");
 //	system("./increase-shared-memory.sh");// kill 9 itself :(
 //	return;
 	//  sudo: no tty present and no askpass program specified in Xcode
@@ -139,8 +140,8 @@ void increaseShmMax() {
 	system((string("sudo sysctl -w kern.sysv.shmmax=")+std::to_string(mem)).data());
 	system((string("sudo sysctl -w kern.sysv.shmall=")+std::to_string(mem/4096)).data());
 #else
-	system((string("sudo sysctl -w kernel.shmmax=") + patch::to_string(sizeOfSharedMemory)).data());
-	system((string("sudo sysctl -w kernel.shmall=") + patch::to_string(sizeOfSharedMemory / 4096)).data());
+//	system((string("sudo sysctl -w kernel.shmmax=") + patch::to_string(sizeOfSharedMemory)).data());
+//	system((string("sudo sysctl -w kernel.shmall=") + patch::to_string(sizeOfSharedMemory / 4096)).data());
 #endif
 	p("If you still cannot start netbase, decrease maxNodes in netbase.hpp");// or adjust shmmax, see clear-shared-memory.sh");
 }
@@ -839,7 +840,7 @@ bool isTrue(char *c) {
 	return eq(c, "true") || eq(c, "1") || eq(c, "yes");
 }
 
-long maxChars = 2000 * million;// SET VIA netbase.config !
+long maxChars = 8000 * million;// SET VIA netbase.config !
 long maxNodes = 1000 * million;// *40byte
 // => 400MB  300*million;// Live 11.11.2018
 long maxStatements = 2 * maxNodes;
