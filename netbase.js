@@ -220,7 +220,7 @@ function makeEntity(entity)
 	if(entity.kind==abstract)appendText("*");
 
 	wiki_img=document.createElement("img");
-	wiki_img.src="http://pannous.com/wp-content/wikipedia.png";
+	wiki_img.src="http://pannous.com/wikipedia.png";
 	wiki_img.width=20
 	wiki=makeLink("","https://de.wikipedia.org/wiki/"+ entity.name,div)
 	wiki.style=nolink+bold+blue+big

@@ -1,0 +1,27 @@
+$761098071 :	Barbados		Inequality-adjusted Human Development Index		Decimal		244⇛-21593⇛81365
+Belgium 	Carbon footprint 	Decimal
+
+747270000 triples, ignored:215667863 foreign 0 BAD:41450868 MISSING:0 = LOST:257118731 GOOD:490151269.......................................................................
+992530000 triples, ignored:286753208 foreign 0 BAD:55061306 MISSING:0 = LOST:341814514 GOOD:650715486.......................................................................
+992540000 triples, ignored:286754591 foreign 0 BAD:55061819 MISSING:0 = LOST:341816410 GOOD:650723590.......................................................................
+995460000 triples, ignored:287356303 foreign 0 BAD:55236945 MISSING:0 = LOST:342593248 GOOD:652866752Segmentation fault (core dumped)
+not out of memory, but …?
+
+Current nodes:406032559		statements:770342652		chars:5809196244
+Maximum nodes:500000000		statements:1000000000		chars:8000000000
+Usage  nodes:81.21%			statements:77.03%		chars:72.61%
+
+http://jini:8080/html/-12670 Has part(s) of the class -=> JUST HAS!
+http://jini:8080/html/-10706 on physical feature => Location
+http://jini:8080/html/-12936 P2936 Language used
+
+Belgium 	Pronunciation audio => ?
+
+
+Economy of topic => Economy
+Demographics of topic => Demographics
+
+# DROP:
+http://jini:8080/html/-15587 P5587 Libris-URI
+
+http://jini:8080/html/120000061 planet OK

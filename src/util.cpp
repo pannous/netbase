@@ -867,7 +867,7 @@ FILE *open_file(const char *file, bool exitOnFailure/*=true*/) {
 	p(file);
 	if ((infile = fopen((file), "r")) == NULL) {
 		perror("Error opening file");
-		printf(" %s\n", (file));
+		printf("%s\n", (file));
 		if (exitOnFailure)
 			exit(1);
 	}

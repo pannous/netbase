@@ -1884,7 +1884,7 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "Name"))return DROP;// Label!?
 	if (eq(name, "dateModified"))return DROP; // eventuell doch später interessant?
 	if (eq(name, "Version"))return DROP;// hmmm
-
+//	MeSH tree code
 	if (eq(name, "P698"))return DROP; //		1930882 'PubMed-ID' -10
 	if (eq(name, "P932"))return DROP; //	PMCID
 	if (eq(name, "P961"))return DROP; //	IPNI-TaxonName-ID
@@ -2083,7 +2083,6 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 				break;
 			}
 		}
-//		if(!contains(line,"Q32652340"))continue; else p(line);
 //		if(linecount<29000000)continue;
 		//		if(debug)if(linecount>100)break;
 		memset(objectName0, 0, 10000);
@@ -2093,14 +2092,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		char *subjectName = subjectName0;
 		char *predicateName = predicateName0;
 		char *objectName = objectName0;
-
 		replace(line, ' ', '\t');// hack against sscanf bug
-//		replace(line, ' ','_');// hack against sscanf bug
 		replace(line, '>', ' ');// hack against sscanf bug !
-
-		//		sscanf(line, "%s\t%s\t%[^\t.]s", subjectName, predicateName, objectName);
-		//		sscanf(line, "%s\t%s\t%s\t.", subjectName, predicateName, objectName);// \t. terminated !!
-//		sscanf(line, "%s\t%s\t%[^@>]s", subjectName, predicateName, objectName);
 		sscanf(line, "<%s\t<%s\t%[^@>]s", subjectName, predicateName, objectName);
 		if (objectName[0] == '"')objectName++;
 		fixNewline(objectName);
@@ -2144,6 +2137,13 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 //			p("dffdsa");
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
+
+//		if(object and contains(object->name,"ecimal")){
+//			p(line);
+//			p(object->name);
+//			object = getEntity(objectName0);
+//		}
+
 		if (subject == object) {
 			bad("no cyclic statements");
 			continue;
@@ -2842,6 +2842,9 @@ void importWikiData() {
 void import(const char *type, const char *filename) {
 	importing = true;
 	autoIds = false;
+	if (filename == 0) filename = type;
+	if(startsWith(filename,":i ")) filename+=3;
+	if(startsWith(filename,":import ")) filename+=8;
 
 	context = getContext(0, 0);
 	//  clock_t start;
@@ -2849,7 +2852,6 @@ void import(const char *type, const char *filename) {
 	// start = clock();
 	// diff = ( std::clock() - start ) / (double)CLOCKS_PER_SEC;
 
-	if (filename == 0) filename = type;
 	if (eq(filename, "de")) {
 		importAllDE();
 	} else if (eq(type, "all")) {
