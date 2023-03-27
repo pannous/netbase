@@ -1335,7 +1335,7 @@ void testLearnAndForget() {
 
 void testWins() {
 //	clearMemory();
-	germanLabels = 1;
+	useGermanLabels = 1;
 	autoDissectAbstracts = true;
 	checkDuplicates = true;
 //	autoDissectAbstracts= false;
@@ -2342,7 +2342,7 @@ void testUmlauts() {
 extern "C" void testAll() {
 #ifndef __clang_analyzer__
 	context = getContext(0);
-	germanLabels = false; // for tests!
+	useGermanLabels = false; // for tests!
 //	clearMemory();
 	testBasics();
 	testUmlauts();
@@ -2371,7 +2371,7 @@ extern "C" void testAll() {
 	//  share_memory();
 	//  init();
 	//	clearTestContext();
-	germanLabels = false;
+	useGermanLabels = false;
 	testImportExport();
 	checkWordnet();
 	checkGeo();    //	testDummyLogic();// too big
@@ -2431,7 +2431,7 @@ void testBrandNewStuff() {
 //	learn("berlin is city");
 //	clearMemory();
 //	parse("berlin",0,1);
-	germanLabels= false;
+	useGermanLabels= false;
 	initRelations();
 //	importWordnet();
 	importWikiData();

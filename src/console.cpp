@@ -144,7 +144,7 @@ bool short_mode= false;
 
 void console() {
 	quiet = false;
-	if (germanLabels)printf("\nDeutsch");
+	if (useGermanLabels)printf("\nDeutsch");
 	printf("\nNetbase C++ Version %s\n",version);
 
 	char *data = (char *) malloc(10000);
@@ -436,13 +436,13 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 	if (contains(data, ":english") or contains(data, ":en")) {
 		p("english ON");
-		germanLabels = false;
+		useGermanLabels = false;
 		initRelations();
 		return OK;
 	}
 	if (contains(data, ":german") or contains(data, ":de")) {
 		p("german ON");
-		germanLabels = true;
+		useGermanLabels = true;
 		initRelations();
 		return OK;
 	}

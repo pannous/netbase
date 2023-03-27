@@ -36,7 +36,7 @@ bool singleton_abstracts = false; // false == use normal abstracts until fixed!
 
 bool getSingletons = false;// i.e. Nationalmannschaft
 bool getBest = false;// i.e. Madonna\Music | Madonna\Church
-bool germanLabels = false;//true;
+bool useGermanLabels = false;//true;
 bool importing = false;
 
 // Not on abstract because abstract values are 'The' entity pointers
@@ -282,7 +282,7 @@ void importImagesEN() { // 18 MILLION!  // 18496249
 void importImages() {
 	context = getContext(current_context);
 	importWordnetImages("images.wn.all.csv");// via name
-	if (germanLabels)
+	if (useGermanLabels)
 		importImagesDE();// dbpedia
 	else
 		importImagesEN();
@@ -1398,7 +1398,7 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 	char *test;
 	int linecount = 0;
 	bool english = contains(file, ".en.");
-	if (english)germanLabels = false;
+	if (english)useGermanLabels = false;
 
 	while (readFile(file, &line[0])) {
 		if (++linecount % 10000 == 0) {
@@ -1427,8 +1427,8 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 		bool isLabel = startsWith(test, "label");// or startsWith(test, "<#label"); or P1476:title
 		if (!altLabels and startsWith(test, "altLabel"))continue;
 		if (!isLabel and !startsWith(test, "altLabel") and !startsWith(test, "description")) continue;
-		if (germanLabels and !english and !endsWith(line, "@de ."))continue;
-		if (!(germanLabels or english) and !endsWith(line, "@en ."))continue;
+		if (useGermanLabels and !english and !endsWith(line, "@de ."))continue;
+		if (!(useGermanLabels or english) and !endsWith(line, "@en ."))continue;
 
 		label = fixLabel(label);
 		if (!label or label[0] == 0) {
@@ -1467,7 +1467,7 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 				continue;
 			}
 			if (!altLabels)continue;
-			if (english and germanLabels)continue;
+			if (english and useGermanLabels)continue;
 			N oldLabel = getEntity(key);
 			if (!oldLabel or oldLabel == Error)continue;
 //			if(oldLabel->value.text){
@@ -1504,7 +1504,7 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 			addStatement(abstract, Instance, node, false);
 //			initNode(node,id,abstract->name,_entity,0);
 		} else {
-			if (english and germanLabels and node->name)
+			if (english and useGermanLabels and node->name)
 				continue;// Only set labels of entities that don't have a German translation
 			N old = hasWord(label);
 			if (!old) {
@@ -1522,7 +1522,7 @@ bool importWikiLabels(cchar *file, bool properties/* = false*/, bool altLabels/*
 				if (!node->name) {
 					context->nodeCount++;
 					initNode(node, id, label, _entity, 0);
-					if (english and germanLabels)continue;
+					if (english and useGermanLabels)continue;
 				}
 				N ab;
 				if (wiki_abstracts[id] or old->kind == _abstract) {
@@ -1602,8 +1602,8 @@ bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, boo
 		if (!isLabel and !startsWith(test, "altLabel") and !startsWith(test, "description")) continue;
 		//		if (startsWith(label, "\"")) label++;
 		//		if (startsWith(key, "<")){ key++;key[strlen(key)-1]=0;}
-		if (germanLabels and !endsWith(line, "@de ."))continue;
-		if (!germanLabels and !endsWith(line, "@en ."))continue;
+		if (useGermanLabels and !endsWith(line, "@de ."))continue;
+		if (!useGermanLabels and !endsWith(line, "@en ."))continue;
 		//		if (!useHash and contains(label, "\\u")) continue;// no strange umlauts 'here'
 		if (useHash) {
 			if (!startsWith(key, "m.") and !startsWith(key, "g.")) continue;
@@ -1716,7 +1716,7 @@ bool importLabels(cchar *file, bool useHash = false, bool overwrite = false, boo
 }
 
 void importFreebaseLabels() {
-	if (germanLabels)
+	if (useGermanLabels)
 		importLabels("freebase.labels.de.txt", true);
 	importLabels("freebase.labels.en.txt", true);
 }
@@ -2295,7 +2295,7 @@ void importNames() {
 			                 firstname), are, the(firstname));
 	addStatement(all(female
 			                 firstname), Owner, the(female));
-	if (!germanLabels) {
+	if (!useGermanLabels) {
 		importList("FrauenVornamen.txt", "female firstname");
 		importList("MaennerVornamen.txt", "male firstname");
 	} else {
@@ -2450,7 +2450,7 @@ void importSenses() {
 
 		//		if(eq(name0,"autoeroticism"))
 		//			pf("id %d synsetid0 %d synsetid %d name %s",id,synsetid0,synsetid_mapped,name0);
-		if (germanLabels) {
+		if (useGermanLabels) {
 			const char *german = wn_labels[synsetid_mapped].data();
 			if (!german or strlen(german) == 0) {
 				//				pf("id %d synsetid0 %d synsetid %d >>> %s\n",id,synsetid0,synsetid_mapped,name0);
@@ -2480,7 +2480,7 @@ void importSenses() {
 			wn_synonym_count++;
 		}
 		addStatement(word, Instance, sense, false);
-		if (!germanLabels)
+		if (!useGermanLabels)
 			addStatement(sense, Sense, number(sensenum), false);
 	}
 	free(name0);
@@ -2516,7 +2516,7 @@ void importSynsets() {
 		//			get(id)->kind = adjective; // satelite !?
 		if (contains(line, "loves someone"))
 			debug = true;
-		if (germanLabels) continue;// no english definitions here
+		if (useGermanLabels) continue;// no english definitions here
 		setText(get(id), definition);
 
 //		$12264 :	Lover		Instanz		Liebhaber		-99416⇛-4⇛-351677
@@ -2626,7 +2626,7 @@ void importWordnet() {
 	load_wordnet_synset_map();
 	//	if(hasWord()) checkWordnet()
 	importAbstracts(); // MESSES WITH ABSTRACTS!!
-	if (germanLabels)
+	if (useGermanLabels)
 		importGermanLables();
 	importSenses();
 	getContext(wordnet)->lastNode = wn_synonym_count; //200000+117659;//WTH!
@@ -2634,7 +2634,7 @@ void importWordnet() {
 	importDescriptions();// English!
 	importStatements();
 	importLexlinks();
-	if (germanLabels)
+	if (useGermanLabels)
 		importGermanLables(true);// Now the other labels (otherwise abstracts might fail?)
 
 //	mergeNode(get(-81), get(81));// derived
@@ -2827,7 +2827,7 @@ void importWikiData() {
 	autoDissectAbstracts = false; // too messy, maybe AFTER import!
 	context->lastNode = wikidata_limit; // hack: Reserve the first half of memory for wikidata, the rest for other stuff
 	context->nodeCount = wikidata_limit;// for iteration!
-	if (germanLabels) {
+	if (useGermanLabels) {
 		importWikiLabels("wikidata/latest-truthy.nt.de");
 		importWikiLabels("wikidata/latest-truthy.nt.en", false, true);// altlabels after abstracts are sorted!
 	} else {
@@ -2878,7 +2878,7 @@ void import(const char *type, const char *filename) {
 	           eq(type, "cities")) {
 		importGeoDB();
 	} else if (eq(type, "dbpedia")) {
-		if (germanLabels)
+		if (useGermanLabels)
 			importDBPediaDE();
 		else
 			importDBPediaEN();
@@ -2935,7 +2935,7 @@ void importTelekom() {
 
 void importAllDE() {
 	importing = true;
-	germanLabels = true;
+	useGermanLabels = true;
 	autoIds = false;
 	p("importAll GERMAN");
 //	importLabels("labels.csv");
@@ -2959,7 +2959,7 @@ void importAllDE() {
 
 void importRemaining() {
 	importing = true;
-	germanLabels = true;
+	useGermanLabels = true;
 	autoIds = false;
 	importCsv("Telekom_Entitaet.csv");
 	importCsv("Telekom-Produkt.csv");
@@ -2974,7 +2974,7 @@ void importAll() {
 	importing = true;
 	autoIds = false;
 	importCustomFacts();
-	if (germanLabels)
+	if (useGermanLabels)
 		return importAllDE();
 	p("importAll ENGLISH");
 //	importWordnet();

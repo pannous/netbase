@@ -852,7 +852,8 @@ void loadConfig() {// char* args
 	if (getConfig("SERVER_PORT"))SERVER_PORT = atoi(getConfig("SERVER_PORT"));
 	if (getConfig("resultLimit"))resultLimit = atoi(getConfig("resultLimit"));
 	if (getConfig("lookupLimit"))lookupLimit = atoi(getConfig("lookupLimit"));
-	if (getConfig("germanLabels"))germanLabels = isTrue(getConfig("germanLabels"));
+	if (getConfig("german"))useGermanLabels = isTrue(getConfig("german"));
+	if (getConfig("germanLabels"))useGermanLabels = isTrue(getConfig("germanLabels"));
 	if (getConfig("USE_MMAP"))USE_MMAP = isTrue(getConfig("USE_MMAP"));
 	if (getConfig("data_path"))data_path = getConfig("data_path");
 	if (getConfig("dataPath"))data_path = getConfig("dataPath");

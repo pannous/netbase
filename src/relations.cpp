@@ -290,7 +290,7 @@ void initRelations() {
 
 	if (context->currentNameSlot == 0)
 		context->currentNameSlot++;// not 0!
-	if (germanLabels) {
+	if (useGermanLabels) {
 		initRelationsDE();
 		return;
 	}
@@ -508,7 +508,7 @@ void addSynonymsDE(){
 
 
 void addSynonyms(){
-	if(germanLabels)
+	if(useGermanLabels)
 		addSynonymsDE();
 
 	addLabel(Attribute, "Property");

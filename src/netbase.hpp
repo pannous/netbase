@@ -21,7 +21,7 @@ extern "C" char* _version();
 extern bool NO_TOPICS;
 extern bool LIVE;
 extern bool useSemantics;
-extern bool germanLabels;
+extern bool useGermanLabels;
 extern bool exitOnFailure;
 extern bool debug; //=true;
 extern bool trace;//=false

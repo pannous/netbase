@@ -507,7 +507,7 @@ Query parseQuery(string s, int limit) {
 	match = cut_to(ss, " where ");
 	type = cut_to(ss, " from ");
 	fields = cut_to(ss, "select ");
-	if (!germanLabels and type[strlen(type) - 1] == 's')type[strlen(type) - 1] = 0;// remove plural todo better
+	if (!useGermanLabels and type[strlen(type) - 1] == 's')type[strlen(type) - 1] = 0;// remove plural todo better
 	p(ss);
 	p(fields);
 	p(type);
@@ -2406,54 +2406,54 @@ N stemmed(char *start, char *mid) {
 		mid[-1] = 's'; // HAHA HAxk! ;)
 	}
 
-	if (!entity and germanLabels and leng > 4 and endsWith(start, "es")) {
+	if (!entity and useGermanLabels and leng > 4 and endsWith(start, "es")) {
 		mid[-2] = 0; // ^^ German Genitive stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
 
-	if (!entity and germanLabels and leng > 3 and endsWith(start, "e")) { // Berge -> Berg
+	if (!entity and useGermanLabels and leng > 3 and endsWith(start, "e")) { // Berge -> Berg
 		mid[-1] = 0; // ^^ Minimum stemming   rote -> rot
 		entity = hasWord(start);
 		mid[-1] = 'e';
 	}
 
-	if (!entity and germanLabels and leng > 3 and endsWith(start, "nen")) {
+	if (!entity and useGermanLabels and leng > 3 and endsWith(start, "nen")) {
 		mid[-3] = 0; // ^^ Minimum stemming   silbernen -> silber
 		entity = hasWord(start);
 		mid[-3] = 'n';
 	}
-	if (!entity and germanLabels and leng > 3 and endsWith(start, "ner")) {
+	if (!entity and useGermanLabels and leng > 3 and endsWith(start, "ner")) {
 		mid[-3] = 0; // ^^ Minimum stemming   silberner -> silber
 		entity = hasWord(start);
 		mid[-3] = 'n';
 	}
-	if (!entity and germanLabels and leng > 5 and endsWith(start, "ener")) {
+	if (!entity and useGermanLabels and leng > 5 and endsWith(start, "ener")) {
 		mid[-4] = 0; // ^^ Minimum stemming   goldener -> gold
 		entity = hasWord(start);
 		mid[-4] = 'e';
 	}
-	if (!entity and germanLabels and leng > 3 and endsWith(start, "en")) {
+	if (!entity and useGermanLabels and leng > 3 and endsWith(start, "en")) {
 		mid[-2] = 0; // ^^ Minimum german plural stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng > 3 and endsWith(start, "ne")) {
+	if (!entity and useGermanLabels and leng > 3 and endsWith(start, "ne")) {
 		mid[-2] = 0; // ^^ Minimum silberne -> silber
 		entity = hasWord(start);
 		mid[-2] = 'n';
 	}
-	if (!entity and germanLabels and leng > 4 and endsWith(start, "em")) {
+	if (!entity and useGermanLabels and leng > 4 and endsWith(start, "em")) {
 		mid[-2] = 0; // ^^ Minimum German Dative stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng > 4 and endsWith(start, "er")) {
+	if (!entity and useGermanLabels and leng > 4 and endsWith(start, "er")) {
 		mid[-2] = 0; // ^^ Minimum German Dative stemming
 		entity = hasWord(start);
 		mid[-2] = 'e';
 	}
-	if (!entity and germanLabels and leng > 3 and endsWith(start, "n")) {
+	if (!entity and useGermanLabels and leng > 3 and endsWith(start, "n")) {
 		mid[-1] = 0; // ^^ Minimum stemming   silbern -> silber
 		entity = hasWord(start);
 		mid[-1] = 'n';

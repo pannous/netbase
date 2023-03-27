@@ -1551,6 +1551,8 @@ Node *rdfValue(char *name) {
 	else if (eq(unit, "double")) unit = 0; //-> number
 	else if (eq(unit, "decimal")) unit = 0; //-> number return value(key, atof(key), Number);; //-> number
 	else if (eq(unit, "float")) unit = 0; //-> number
+	else if (eq(unit, "XMLSchema"))
+		unit = 0;// -> decimal BUG
 	else if (eq(unit, "nonNegativeInteger")) unit = 0; //-> number
 	else if (eq(unit, "yago0to100")) unit = 0;
 	if (!unit) return value(name, atof(name), Number);// unit==0 means number, ignore extra chars 123\"
@@ -3123,13 +3125,10 @@ int main(int argc, char *argv[]) {
 		query = cut_to(cut_to(query, "query "), "select");
 	}
 
-
-	germanLabels = true;
-
 	initSharedMemory(); // <<<
 
 	if (checkParams(argc, argv, "clear"))clearMemory();
-	if (checkParams(argc, argv, "de"))germanLabels = true;
+	if (checkParams(argc, argv, "de"))useGermanLabels = true;
 	if (checkParams(argc, argv, "import")) {
 		if (checkParams(argc, argv, "all") or argc < 2)
 			importAll();
