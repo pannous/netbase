@@ -195,7 +195,15 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 //		return OK;
 	if (data[0] == '\'')data++;
 	if (data[0] == '!')((char *) data)[0] = ':';// norm!
-	if (data[0] == 'Q' and data[0] >='0' and data[1] <= '9')data++;//Q1325845
+	if (data[0] == 'Q' and data[1] >='0' and data[1] <= '9')data++;//Q1325845
+
+	if (data[0] == 'P' and data[1] >= '0' and data[1] <= '9'){// and !forbidAutoIds)
+		N m=getEntity(data);
+		N n=get(-atoi(++data) - propertyOffset);
+		if(n and n->id!=0)return wrap(n);
+		else return wrap(m);// P106 -> -10106
+	}
+
 	if (data[0] == ':' and info) appendFile("logs/commands.log", data);
 	else appendFile("logs/query.log", data);
 
@@ -835,12 +843,6 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (data[lenge - 1] == ',')data[lenge - 1] = 0;
 	data = replace(data, ' ', '_');
 
-	if (data[0] == 'P' and data[0] >= '0' and data[1] <= '9'){// and !forbidAutoIds)
-		N m=getEntity(data);
-		N n=get(-atoi(++data) - propertyOffset);
-		if(n and n->id!=0)return wrap(n);
-		else return wrap(m);// P106 -> -10106
-	}
 	if (startsWith(data, ":")) {
 		pf("UNKNOWN COMMAND %s\n", data)
 		//showHelpMessage()

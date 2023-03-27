@@ -2096,6 +2096,12 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		replace(line, ' ', '\t');// hack against sscanf bug
 		replace(line, '>', ' ');// hack against sscanf bug !
 		sscanf(line, "<%s\t<%s\t%[^@>]s", subjectName, predicateName, objectName);
+
+//		if(eq(predicateName,"P1082"))
+//			p(line);
+//		if(contains(objectName0,"^^"))
+//			p(line);
+
 		if (objectName[0] == '"')objectName++;
 		fixNewline(objectName);
 		int leng = len(line);
@@ -2108,7 +2114,7 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 //			if (objectName[0] == 'Q' && objectName[1] <= '9')objectName[0] = 'q';// hack against auto wiki ids WHAAT?
 			subjectName = cut_wiki_id(subjectName);
 			predicateName = cut_wiki_id(predicateName);
-			if (!isUrl(predicateName))
+			if (!isUrl(predicateName)&&!objectName0[0]=='"' /* entityValue */)
 				objectName = cut_wiki_id(objectName);
 		}
 		if (debug && eq(predicateName, "description"))continue;// ignore in debug!
@@ -2136,6 +2142,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 		subject = getEntity(subjectName);//,fixNamespaces); //
 //		if(subject && subject->id==567)
 //			p("dffdsa");
+
+
 		object = getEntity(objectName);//,fixNamespaces);
 		predicate = getEntity(predicateName);
 
@@ -2194,9 +2202,8 @@ bool importN3(cchar *file) {//,bool fixNamespaces=true) {
 				subject->kind = _clazz;
 			else if (object == Entity || object == Item)// or endsWith(objectName, "#Entity"))
 				subject->kind = _entity;
-			else if (object->id == 1172284/*Dataset*/ || object->id == 4167410 ||
-			         object->id == 4167836/*Wikimedia-Kategorie*/)
-				subject->kind = _abstract;// todo?
+			else if (object->id == 1172284/*Dataset*/ || object->id == 4167410 || object->id == 4167836)
+				subject->kind = _abstract;// todo? /*Wikimedia-Kategorie*/
 			else
 				addStatement(subject, predicate, object, checkDuplicates); // todo: id
 		}
@@ -2908,6 +2915,7 @@ void import(const char *type, const char *filename) {
 	} else if (endsWith(filename, "xml")) {
 		importXml(filename);
 	} else if (endsWith(filename, "n3")) {
+		wiki_mode= true;// Q1234 P1234
 		importN3(filename);
 	} else if (endsWith(filename, "nt")) {
 		importN3(filename);
