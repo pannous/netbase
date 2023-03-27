@@ -11,6 +11,9 @@ Current nodes:406032559		statements:770342652		chars:5809196244
 Maximum nodes:500000000		statements:1000000000		chars:8000000000
 Usage  nodes:81.21%			statements:77.03%		chars:72.61%
 
+// TODO put these relations into relation hierarchy to infer "Aspekt von" < "OF"
+$21776673 :	Chronologie des Universums		Aspekt von		Universum		136407⇛-11269⇛1
+$122401205 :	BOSS Great Wall		übergeordneter astronomischer Körper		Universum		23054687⇛-10397⇛1
 http://jini:8080/html/-12670 Has part(s) of the class -=> JUST HAS!
 http://jini:8080/html/-10706 on physical feature => Location
 http://jini:8080/html/-12936 P2936 Language used

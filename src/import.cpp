@@ -1889,6 +1889,7 @@ bool dropBadPredicate(char *name) {
 	if (eq(name, "P932"))return DROP; //	PMCID
 	if (eq(name, "P961"))return DROP; //	IPNI-TaxonName-ID
 	if (eq(name, "P830"))return DROP; //	EOL-ID
+	if (eq(name, "P494"))return DROP; //   ICD-10
 	if (eq(name, "P846"))return DROP; //	GBIF-ID
 	if (eq(name, "P352"))return DROP; //	UniProt ID
 	if (eq(name, "P536"))return DROP; //	ATP ID
