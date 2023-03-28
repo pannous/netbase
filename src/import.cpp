@@ -1870,9 +1870,16 @@ bool dropBadPredicate(char *name) {
 
 	//	if(name[0]=='.')return DROP;
 	if (name[0] == '<')name++;
-	int lenge = len(name);
-	if (lenge > 2 && name[lenge - 2] == 'I' && name[lenge - 1] == 'D')// ID ...
+if(name[0]=='P' and name[1]>='0' and name[1]<='9') {
+	auto entity = getEntity(name);
+	if(!entity)return DROP;
+	auto label = entity->name;
+	if(!label)return DROP;
+	int lenge = len(label);
+//	if (endsWith(lable, "ID"))return DROP;
+	if (lenge > 2 && label[lenge - 2] == 'I' && label[lenge - 1] == 'D')// ID ...
 		return DROP; // no IDs  but:  MusicBrainz-Gebiets-ID via P982
+}
 
 	Node *wikidataRelation = getWikidataRelation(name);
 	if (LIGHT_IMPORT)

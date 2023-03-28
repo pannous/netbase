@@ -772,6 +772,8 @@ void fixLabel(Node *n) {
 	//char *curl_easy_escape( CURL * curl , char * url , int length );
 }
 
+#define HIDE true
+// filter excluded predicates !
 bool checkHideStatement(Statement *s) {
 	if (s->predicate == 23025403)return true;// 	Topic equivalent webpage
 //	if(eq(s->Predicate()->name,"Geographische Koordinaten"))continue;
@@ -797,49 +799,46 @@ bool checkHideStatement(Statement *s) {
 
 	if (eq(predicateName, "exclude")) {
 		excluded.push_back(objectName);
-		return true;
+		return HIDE;
 	}
 	if (eq(predicateName, "include")) {
 		included.push_back(objectName);
-		return true;
+		return HIDE;
 	}
 	if (predicateName[0] == '<')predicateName++;
-	if (eq(predicateName, "Key"))return true;
-	if (eq(predicateName, "expected type"))return true;
-	if (eq(predicateName, "Range"))return true;
-	if (eq(predicateName, "usage domain"))return true;
-	if (eq(predicateName, "schema"))return true;
-	if (startsWith(predicateName, "http"))return true;
+
+	// HIDE ID's
+	if (endsWith(predicateName, "ID"))return HIDE;
+
+	if (eq(predicateName, "Key"))return HIDE;
+	if (eq(predicateName, "expected type"))return HIDE;
+	if (eq(predicateName, "Range"))return HIDE;
+	if (eq(predicateName, "usage domain"))return HIDE;
+	if (eq(predicateName, "schema"))return HIDE;
+	if (startsWith(predicateName, "http"))return HIDE;
 
 	if (predicateName[2] == '-' or predicateName[2] == '_' or predicateName[2] == 0)
-		return true;// zh-ch, id ...
-	if (objectName[0] == '/' or objectName[1] == '/')return true;// ?
-
+		return HIDE;// zh-ch, id ...
+	if (objectName[0] == '/' or objectName[1] == '/')return HIDE;// ?
 
 	for (int i = 0; i < excluded.size(); i++) {
 		char *exclude = excluded.at(i);
 		if (contains(subjectName, exclude, 1) or contains(predicateName, exclude, 1) or
 		    contains(objectName, exclude, 1))
-			return true;
+			return HIDE;
 		if (eq(itoa(s->subject), exclude) or eq(itoa(s->predicate), exclude) or eq(itoa(s->object), exclude))
-			return true;
+			return HIDE;
 	}
 	bool ok = included.size() == 0;// no filter
 	for (int i = 0; i < included.size(); i++) {
 		char *include = included.at(i);
-//		if(eq(predicateName,"Bundesland"))
-//			p(s);
-		if (eq(itoa(s->subject), include) or eq(itoa(s->predicate), include) or eq(itoa(s->object), include))ok = true;
+		if (eq(itoa(s->subject), include) or eq(itoa(s->predicate), include) or eq(itoa(s->object), include))ok = HIDE;
 		if (contains(subjectName, include, 1) or contains(predicateName, include, 1) or
 		    contains(objectName, include, 1))
 			ok = true;
 	}
 
-	//  if(contains(predicateName,excluded,1) or contains(objectName,excluded,1) or contains(subjectName,excluded,1))return true;
-	//  if(contains(predicateName,excluded2,1) or contains(objectName,excluded2,1) or contains(subjectName,excluded2,1))return true;
-	//  if(contains(predicateName,excluded3,1) or contains(objectName,excluded3,1) or contains(subjectName,excluded3,1))return true;
 	return !ok;
-	//  return false;
 }
 
 void fixLabels(Statement *s) {

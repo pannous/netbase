@@ -1,3 +1,6 @@
+DON'T Germany		Population		+83149300,  just use value of 83149300 to save char space.
+findability for special numbers? who cares?
+
 $761098071 :	Barbados		Inequality-adjusted Human Development Index		Decimal		244⇛-21593⇛81365
 Belgium 	Carbon footprint 	Decimal
 
@@ -28,3 +31,33 @@ Demographics of topic => Demographics
 http://jini:8080/html/-15587 P5587 Libris-URI
 
 http://jini:8080/html/120000061 planet OK
+
+
+if endsWith(predicate, " ID")
+$104917915 :	Tolmerus poecilogaster		EUNIS ID for species		70975		10827504⇛-16177⇛203899258
+$105813543 :	(null)		Bgm.tv subject ID		70975		11621468⇛-15732⇛203899258
+$107462839 :	Lentagena tristani		LepIndex ID		70975		13389841⇛-13064⇛203899258
+$110274878 :	Gilletiodendron mildbraedii		African Plant Database ID		70975		15537182⇛-12036⇛203899258
+$164717378 :	Austroblastenia pauciseptata		NBIC taxon ID		70975		49606641⇛-18707⇛203899258
+$174468698 :	Mustafa Murad al-Dabbagh		FAST ID		70975		55957255⇛-12163⇛203899258
+$261019327 :	Waipukurau Cemetery		CWGC burial ground ID		70975		105674525⇛-11920⇛203899258
+$266136998 :	Utkast till medalj till minne av slaget vid Narva 1700		Nationalmuseum Sweden artwork ID		70975		110750693⇛-12539⇛203899258
+$282095829 :	Jacques Denjean		Cinémathèque québécoise person ID		70975		3158703⇛-18971⇛203899258
+$375444753 :	Myriophyllum elatinoides		APNI ID		70975		65944025⇛-15984⇛203899258
+$439491099 :	Fabrice Gamboa		MR Author ID		70975		102343189⇛-14955⇛203899258
+$455388171 :	Elli Erl		Musik-Sammler.de artist ID		70975		90051⇛-19965⇛203899258
+$457017518 :	Michael Frayn		TMDB person ID		70975		506231⇛-14985⇛203899258
+$476880031 :	Medicago sauvagei		NCBI taxonomy ID		70975		15434106⇛-10685⇛203899258
+$487844615 :	MAPK12		Rat Genome Database ID		70975		24390785⇛-13853⇛203899258
+$496306832 :	Édouard Armand		Olympedia people ID		70975		33139689⇛-18286⇛203899258
+$511967181 :	Wohnhaus		Bavarian Monument Map object ID (architectural monument)		70975		41318652⇛-19339⇛203899258
+$634593365 :	Stoplight loosejaw		BOLD Systems taxon ID		70975		134546⇛-13606⇛203899258
+$654387023 :	Boli Bolingoli-Mbombo		Soccerbase player ID		70975		14304469⇛-12193⇛203899258
+$728907713 :	LbrM.34.0260		Genomic end		70975		62433128⇛-10645⇛203899258
+$769575511 :	Arthur Serrieres		World Triathlon triathlete ID		70975		85865364⇛-13604⇛203899258
+$800817687 :	Dinesh Rajbanshi		National-Football-Teams.com player ID		70975		107315833⇛-12574⇛203899258
+$811823815 :	Wreathed hornbill		Observation.org ID		70975		31829⇛-16105⇛203899258
+$813564742 :	Hellboy		Cinémathèque québécoise work identifier		70975		461540⇛-14276⇛203899258
+$819319861 :	Clément Cazaud		Léonore Web ID		70975		2980581⇛-21152⇛203899258
+$819633634 :	Honami Kōetsu		ARTIC artist ID		70975		3139920⇛-16295⇛203899258
+$819677585 :	James Guitet		AbART person ID		70975		3161123⇛-16844⇛203899258
