@@ -1,11 +1,7 @@
-# echo killall -SIGKILL netbase
-#make -j8
-if [ $APPLE ] 
-then
-  open http://localhost:8181/html/1
-  sudo ~/netbase/netbase server :de $@ 
-else
-  open http://localhost:8080/html/1
-  sudo ~/netbase/netbase server $@ 
-fi
+echo killall -SIGKILL netbase
+#sudo ~/netbase/netbase server $@ 
+screen -dmS netbase # create detatched
+screen -x -RR netbase -X stuff 'ls^M'
+# screen -x -RR netbase  # reattach or create   
+# leave with ctrl-a ctrl-d "ade!"
 
