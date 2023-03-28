@@ -61,3 +61,33 @@ $813564742 :	Hellboy		Cinémathèque québécoise work identifier		70975		461540
 $819319861 :	Clément Cazaud		Léonore Web ID		70975		2980581⇛-21152⇛203899258
 $819633634 :	Honami Kōetsu		ARTIC artist ID		70975		3139920⇛-16295⇛203899258
 $819677585 :	James Guitet		AbART person ID		70975		3161123⇛-16844⇛203899258
+
+
+
+predicate	"Nighttime view"
+object	"http://commons.wikimedia.org/wiki/Special:FilePath/Las%20Vegas%20%28Nevada%2C%20USA%29%2C%20The%20Strip%20--%202012%20--%206232.jpg"
+pid	-13451
+
+-13451	Nighttime view		(4182 statements)
+$822551650 :	Nighttime view		label		View		-13451⇛-38⇛-18517
+$125697413 :	Nighttime view		type		http://www.w3.org/2002/07/owl#Class		-13451⇛-3⇛201204927
+$125697412 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697411 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697410 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697409 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697408 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697407 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697406 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697405 :	Nighttime view		type		http://www.w3.org/2002/07/owl#ObjectProperty		-13451⇛-3⇛201204926
+$125697395 :	Nighttime view		Stability of property value		Sometimes changes		-13451⇛-12668⇛24025284
+$125697394 :	Nighttime view		Has list		List of nighttime views of lighthouses		-13451⇛-12354⇛28321438
+$125697393 :	Nighttime view		Property constraint		Allowed-entity-types constraint		-13451⇛-12302⇛52004125
+$125697392 :	Nighttime view		Property constraint		Item-requires-statement constraint		-13451⇛-12302⇛21503247
+$125697391 :	Nighttime view		Property constraint		Format constraint		-13451⇛-12302⇛21502404
+$125697390 :	Nighttime view		Property constraint		Property scope constraint		-13451⇛-12302⇛53869507
+$125697389 :	Nighttime view		Property constraint		Single-value constraint		-13451⇛-12302⇛19474404
+$125697388 :	Nighttime view		Property constraint		Commons link constraint		-13451⇛-12302⇛21510852
+$125697387 :	Nighttime view		Subproperty of		image		-13451⇛-11647⇛-10018
+^^^^
+
+Has list => list

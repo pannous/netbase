@@ -251,6 +251,13 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		buildSeoIndex();
 		return OK;
 	}
+	if (startsWith(data, ":live")) {
+		LIVE = true;// disallow edits
+		data = next_word(data);
+	}
+
+
+
 	if (startsWith(data, "seo") or startsWith(data, ":seo")) {
 		data = next_word(data);
 		string seos = generateSEOUrl(data);
@@ -422,7 +429,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	}
 	if (eq(data, ":tb") or eq(data, ":tbn")) {
 		exitOnFailure = false;
-		testBrandNewStuff();
+		testCurrent();
 		return OK;
 	}
 	if (eq(data, ":debug") or eq(data, ":debug on") or eq(data, ":debug 1")) {

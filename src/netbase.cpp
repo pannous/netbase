@@ -293,6 +293,10 @@ bool prependLinkedListOfStatements(Statement *to_insert, Node *node, int stateme
 //bool insert_at_start=true;// <<< TODO HACK, REMOVE!!
 
 bool addStatementToNode(Node *node, int statementId, bool insert_at_start = false) {
+	if(LIVE){
+		p("NOT ALLOWED IN LIVE MODE");
+		return false;
+	}
 	if (statementId == 0) {
 		p("WARNING statementNr==0");
 		return false;
@@ -865,6 +869,7 @@ addStatement4(int contextId, int subjectId, int predicateId, int objectId, bool 
 }
 
 Statement *addStatement(Node *subject, Node *predicate, Node *object, bool checkDuplicate, bool force_insert_at_start) {
+
 	if (!checkNode(subject)) return 0;
 	if (!checkNode(object)) return 0;
 	if (!checkNode(predicate)) return 0;
@@ -3146,7 +3151,7 @@ int main(int argc, char *argv[]) {
 		for (int i = 0; i < argc; ++i) {
 			p(argv[i]);
 		}
-		testBrandNewStuff(); // << PUT ALL HERE!
+		testCurrent(); // << PUT ALL HERE!
 	} else {
 		bool _autoIds = autoIds;
 		autoIds = true;

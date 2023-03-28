@@ -496,7 +496,7 @@ void show(Statement * s);
 //extern "C"
 Node * showNode(Node* n, bool showStatements=true);
 extern "C" Node* showNode(int id);
-void testBrandNewStuff();
+void testCurrent();
 
 char* initContext(Context*);
 Node* hasWord(const char* thingy,bool seo=false);

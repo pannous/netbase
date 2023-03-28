@@ -1306,6 +1306,18 @@ NV qa(char *text) {
 	return as;
 }
 
+void testLearn() {
+	autoIds= true;
+	Statement *statement=learn("30 synonym USA");
+	check(statement->subject == 30);
+	check(statement->predicate == 32);
+	check(eq(get(statement->object)->name,"USA"));
+//	handle(":learn 30 synonym USA");
+	check(isA(get(30), getAbstract("USA")));
+	// todo getThe => getEntity("Q30")
+//	check(isA(getThe("Q30"), getAbstract("USA")));
+}
+
 void testLearnAndForget() {
 	parse(":lable a_a b_b");
 	check(isA(the(a_a), the(b_b)));
@@ -2344,6 +2356,7 @@ extern "C" void testAll() {
 	context = getContext(0);
 	useGermanLabels = false; // for tests!
 //	clearMemory();
+	testCurrent();
 	testBasics();
 	testUmlauts();
 	testTheSingletons();
@@ -2404,12 +2417,7 @@ void testBug() {// current
 	exit(0);
 }
 
-
-void testBrandNewStuff() {
-#ifdef __clang_analyzer__
-	return; // no tests when profiling
-#endif
-	p("Test Brand New Stuff");
+void testPrint(){
 	if(LIVE or getContext()->nodeCount > 100000){
 		p("LIVE DATA? not testing");
 		p(get(111));
@@ -2417,6 +2425,16 @@ void testBrandNewStuff() {
 		handle("111");
 		return;
 	}
+}
+
+void testCurrent() {
+#ifdef __clang_analyzer__  // no tests when profiling
+	return;
+#endif
+	p("Current Tests");
+	testLearn();
+	exit(0);
+	return;
 //	testBug();
 //	releaseSharedMemory();
 //	clearMemory();
