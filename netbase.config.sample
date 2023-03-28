@@ -1,5 +1,8 @@
 ## netbase.config overwrites env and netbase.hpp
 
+## after :save and before :load, netbase.config should be in ./data folder 
+## to make sure the context receives the correct amount of memory
+
 SERVER_PORT=8080
 
 ## number of nodes (in million/MB if <1000)

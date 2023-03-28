@@ -386,6 +386,7 @@ bool is_out_of_bounds(cchar *pointer) {
 }
 
 //inline
+// todo ignore space / camelcase option =>  data_path == dataPath
 bool eq(const char *x, const char *y, bool ignoreCase, bool ignoreUnderscore) { //
 	if(trace){
 		p("EQUALS?");

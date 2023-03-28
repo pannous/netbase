@@ -828,7 +828,8 @@ extern char *getConfig(const char *name) {
 			value[0] = 0;
 			value++;
 //			int ok=sscanf(line, "%[^=]s=%s", key, value);// fuck c!
-			if (eq(key, name))
+// todo ignore space / camelcase data_path == dataPath
+			if (eq(key, name, true, true))
 				return value;
 		}
 //		pf("PROPERTY MISSING IN netbase.config : %s\n",name)
@@ -849,11 +850,19 @@ long sizeOfSharedMemory = 0; // overwrite here:
 
 void loadConfig() {// char* args
 	p("load netbase.config environment variables or fall back to defaults");
+	if (getConfig("PORT"))SERVER_PORT = atoi(getConfig("PORT"));
 	if (getConfig("SERVER_PORT"))SERVER_PORT = atoi(getConfig("SERVER_PORT"));
+
+	if (getConfig("limit")){
+		lookupLimit = atoi(getConfig("limit"));
+		resultLimit = atoi(getConfig("limit"));
+	}
 	if (getConfig("resultLimit"))resultLimit = atoi(getConfig("resultLimit"));
 	if (getConfig("lookupLimit"))lookupLimit = atoi(getConfig("lookupLimit"));
 	if (getConfig("german"))useGermanLabels = isTrue(getConfig("german"));
 	if (getConfig("germanLabels"))useGermanLabels = isTrue(getConfig("germanLabels"));
+	if (getConfig("live"))LIVE = isTrue(getConfig("live"));
+	if (getConfig("LIVE"))LIVE = isTrue(getConfig("LIVE"));
 	if (getConfig("USE_MMAP"))USE_MMAP = isTrue(getConfig("USE_MMAP"));
 	if (getConfig("data_path"))data_path = getConfig("data_path");
 	if (getConfig("dataPath"))data_path = getConfig("dataPath");
