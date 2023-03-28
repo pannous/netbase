@@ -1,10 +1,9 @@
 #pragma once
 
 static char* /*increase-package-version.py src/netbase.hpp*/
-version="1.6.7";
+version="1.6.8";
 
-
-#include <stdio.h>
+#include <cstdio>
 #include <string>
 #include <sstream>
 #include <iostream>

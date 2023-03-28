@@ -146,6 +146,7 @@ void console() {
 	quiet = false;
 	if (useGermanLabels)printf("\nDeutsch");
 	printf("\nNetbase C++ Version %s\n",version);
+	if(LIVE)printf("LIVE MODE\n");
 
 	char *data = (char *) malloc(10000);
 #ifdef signal
