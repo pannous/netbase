@@ -1,5 +1,6 @@
 **/.AppleDouble/
 **/*.origimport/dbpedia_de/
+*.bak
 *.orig
 .*.orig
 .dep.inc
@@ -113,3 +114,5 @@ mem/statements.bin
 /src/mmap.h
 /.ipynb_checkpoints/
 /.netbase_history
+screenlog.0
+screen.dump
