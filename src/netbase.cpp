@@ -1386,7 +1386,8 @@ Node *getThe(const char *thing, Node *type) {//, bool dissect) {
 		bad();
 		return 0;
 	}
-	if (autoIds and type != Number and isInteger(thing))return get(atoi(thing));// WAH, not here! --
+	if (autoIds and type != Number and isInteger(thing))
+		return get(atoi(thing));// WAH, not here! --
 	Node *rel = getRelation(thing); // not here! doch
 	if (rel)return rel;
 //  replaceChar((char*)thing,'_',' ');// NOT HERE!
@@ -2464,9 +2465,8 @@ void loadConfig();
 extern "C"
 //Statement * learn(string& sentence0) {
 Statement *learn(const char *sentence0) {
-	if (!error_statement)error_statement = addStatement(Error, Error, Error);
-	p("OK");
-	p(sentence0);
+	if (!error_statement)
+		error_statement = addStatement(Error, Error, Error);
 	string sentence = sentence0;
 	ps("Learning " + sentence);
 	Statement *s;

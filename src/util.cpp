@@ -43,7 +43,7 @@ bool assert(bool test, cchar *what) { // bool nix gut
 
 
 bool isInteger(const char *buf) {
-	return strlen(buf) == strspn(buf, "-0123456789");
+	return strlen(buf) == strspn(buf, "+-0123456789");
 }
 
 bool isNumber(const char *buf) {

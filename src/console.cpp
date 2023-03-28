@@ -44,6 +44,7 @@ void showHelpMessage() {
 	ps(":delete :d <node|statement|id|name>");
 	//	ps("save and exit :x");
 	ps(":server");
+	ps(":live | :edit (dis)allow editing");
 	ps(":quit :q");
 	ps(":clear :cl");
 	ps(":context :info");
@@ -51,7 +52,8 @@ void showHelpMessage() {
 	ps("");
 	ps("Query data: type words, ids, or queries");
 	ps("Abraham Lincoln");
-	ps("Q5");
+	ps("Q5 (wikidata entity ids)");
+	ps("P1082 (wikidata property ids)");
 	ps("subclasses of human limit 1000");
 	//  ps("all animals that have feathers");
 	ps(":all animals with feathers");
@@ -253,10 +255,15 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 		return OK;
 	}
 	if (startsWith(data, ":live")) {
-		LIVE = true;// disallow edits
+		LIVE = true;
+		p("LIVE: edits disallowed");
 		data = next_word(data);
 	}
-
+	if (startsWith(data, ":edit")) {
+		LIVE = false;
+		p("edits allowed");
+		data = next_word(data);
+	}
 
 
 	if (startsWith(data, "seo") or startsWith(data, ":seo")) {

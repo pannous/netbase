@@ -27,6 +27,7 @@ import/missing/
 import/wins.csv
 netbase_results.html
 adjust.sh
+# adjust.sh  contains system local fixes called by remake.sh, don't check in
 import/babelnet/images.wn.all.csv
 import/data/images.txt
 import/freebase.data.txt.2 import/freebase.labels.de.txt import/freebase.labels.en.txt import/freebase.labels.en.txt.2 import/freebase.rb import/freebase.seds.sh
