@@ -817,8 +817,8 @@ extern "C" void allowWipe() {
 extern char *getConfig(const char *name) {
 	if (file_exists("netbase.config")) {
 		FILE *infile = open_file("netbase.config");
-//		char line[1000];
-		char* line=(char*)malloc(1000);
+		char line[1000];
+//		char* line=(char*)malloc(1000);
 //		char* value=(char*)malloc(1000);
 		while (fgets(line, sizeof(line), infile) != NULL) {
 			if (line[0] == '#')continue;
@@ -830,8 +830,10 @@ extern char *getConfig(const char *name) {
 			value++;
 //			int ok=sscanf(line, "%[^=]s=%s", key, value);// fuck c!
 // todo ignore space / camelcase data_path == dataPath
-			if (eq(key, name, true, true))
-				return value;
+			if (eq(key, name, true, true)) {
+				printf("got netbase.config setting %s=%s",key,value);
+				return clone(value);
+			}
 		}
 //		pf("PROPERTY MISSING IN netbase.config : %s\n",name)
 	}
