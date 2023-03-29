@@ -693,8 +693,10 @@ Node *getWikidataRelation(const char *thing) {
 	if (eq(thing, "P361")) return PartOf;
 	if (eq(thing, "P527")) return Part;// Holonym= has-part : transitive property!
 	if (eq(thing, "P127")) return Owner;
-//	if (eq(thing, "P131")) return In;// 1/PartOf;// 'located in administrative...'
-//	if (eq(thing, "P706")) return In;// 1/PartOf;// 'located in geographic'
+	if (eq(thing, "P131")) return In;// 1/PartOf;// 'located in administrative...'
+	if (eq(thing, "P706")) return In;// 1/PartOf;// 'located in geographic'
+	if (eq(thing, "P5869")) return Instance;// Planet 	Model item 	Jupiter
+	if (eq(thing, "P150")) return Part; // contains the administrative territorial entity
 
 	if (eq(thing, "P1696")) return Antonym;// Opposite;
 	if (eq(thing, "P461")) return Antonym; // AntonymOf == Antonym LOL

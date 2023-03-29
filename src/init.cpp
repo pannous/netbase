@@ -573,6 +573,7 @@ void load(bool force) {
 		ps("collecting abstracts!");
 		collectAbstracts(); //or load abstracts->bin
 	}
+	initRelations();
 	showContext(context);
 
 	// cout<<"nanoseconds "<< diff <<'\n';

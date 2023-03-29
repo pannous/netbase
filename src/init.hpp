@@ -10,6 +10,7 @@
 bool clearMemory();
 void releaseSharedMemory();
 void load(bool force);
+bool save();
 extern "C" void initSharedMemory(bool relations=true);
 extern "C" void allowWipe();
 extern "C" void init(bool relations); // synonym ^^

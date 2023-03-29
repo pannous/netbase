@@ -391,12 +391,13 @@ bool checkStatement(Statement *s, bool checkSPOs, bool checkNamesOfSPOs) {
 	if (s >= context->statements + maxStatements) return false;
 	if (!debug)return true;// bad idea!
 	if (s->id() == 0) return false; // !
-	if (checkSPOs or checkNamesOfSPOs) if (s->Subject() == 0 or s->Predicate() == 0 or s->Object() == 0) return false;
+	if (s->subject == 0 and s->predicate == 0 and s->object == 0)
+		return false;// one 0 OK :ANY
+	if (checkSPOs or checkNamesOfSPOs)
+		if (s->Subject() == 0 or s->Predicate() == 0 or s->Object() == 0) return false;
 	if (checkNamesOfSPOs)
 		if (s->Subject()->name == 0 or s->Predicate()->name == 0 or s->Object()->name == 0)
 			return false;
-	if (s->subject == 0 and s->predicate == 0 and s->object == 0)
-		return false;// one 0 OK :ANY
 	return true;
 }
 
@@ -586,6 +587,7 @@ Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId
 	return node;
 }
 
+// returns: OK?
 bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bool report) {//
 //	bool report=true;
 	if (node == 0) {
@@ -606,7 +608,7 @@ bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bo
 //	if(!debug)return true;
 	context = getContext(current_context);
 	void *maxNodePointer = &context->nodes[maxNodes-propertySlots];
-	if (node < context->nodes - propertySlots) {
+	if (node < context->nodes - propertySlots ) {
 		bad();
 		if (report) {// not for abstract.node (can be number etc)
 			printf("node* < context->nodes!!! %p < %p \n", node, context->nodes);
@@ -1450,13 +1452,17 @@ Node *hasWord(const char *thingy, bool seo/*=false*/) {
 	int h = wordHash(thingy);
 	long pos = abs(h) % maxNodes;
 	Ahash *found = &abstracts[pos]; // TODO: abstract=first word!!! (with new 'next' ptr!)
-	if (found and found->abstract > -propertySlots and checkNode(found->abstract, false, true)) {
-		Node *first = get(found->abstract);
-		if (eq(first->name, thingy, true))    // tolower
-			return first;
-		if (seo and first->name) {
-			if (eq(generateSEOUrl(first->name), thingy))
+	if (found) {
+		auto i = found->abstract;
+		auto ok = checkNode(i, false, true);
+		if (i > -propertySlots and ok) {
+			Node *first = get(i);
+			if (eq(first->name, thingy, true))    // tolower
 				return first;
+			if (seo and first->name) {
+				if (eq(generateSEOUrl(first->name), thingy))
+					return first;
+			}
 		}
 	}
 	int tries = 0; // cycle bugs

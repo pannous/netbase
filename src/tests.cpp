@@ -26,6 +26,12 @@ void checkWordnet() {
 
 void checkWikiData() {
 	if (hasWord("hamburg") && eq(get(1055)->name, "hamburg")) return;
+	else if(file_exists("data/contexts.bin")){
+		load(true);
+		if (!hasWord("hamburg") && eq(get(1055)->name, "hamburg"))
+			printf("Loaded data/contexts.bin but no hamburg found");
+		save();
+	}
 	else importWikiData();
 }
 
@@ -1308,9 +1314,13 @@ NV qa(char *text) {
 
 void testLearn() {
 	autoIds= true;
+	auto pNode = getThe("synonym");
+	check(pNode->id==-32);
+	check(checkNode(pNode));
+	
 	Statement *statement=learn("30 synonym USA");
 	check(statement->subject == 30);
-	check(statement->predicate == 32);
+	check(statement->predicate == -32);
 	check(eq(get(statement->object)->name,"USA"));
 //	handle(":learn 30 synonym USA");
 	check(isA(get(30), getAbstract("USA")));
@@ -2432,6 +2442,7 @@ void testCurrent() {
 	return;
 #endif
 	p("Current Tests");
+	checkWikiData();
 	testLearn();
 	exit(0);
 	return;
