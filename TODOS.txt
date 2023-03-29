@@ -1,3 +1,13 @@
+What kind of incompetent looser was in charge of this taxonomy?
+Steglitz 	type 	Locality of Berlin
+
+https://www.wikidata.org/wiki/Property:P150
+contains the administrative territorial entity
+
+
+
+
+
 DON'T Germany		Population		+83149300,  just use value of 83149300 to save char space.
 findability for special numbers? who cares?
 

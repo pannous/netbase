@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(netbase)
 
+set(DEBUG 1)
+
 set(CMAKE_CXX_STANDARD 11)
 
 set(CMAKE_VERBOSE_MAKEFILE on)
@@ -49,6 +51,11 @@ set(CMAKE_CXX_FLAGS "-lreadline -lz -Wno-write-strings  ${CMAKE_CXX_FLAGS}")
 if(ECHSE)
  set(CMAKE_CXX_FLAGS "-DECHSE ${CMAKE_CXX_FLAGS}")
 endif()
+
+if(DEBUG)
+    set(CMAKE_CXX_FLAGS "-g ${CMAKE_CXX_FLAGS}")
+endif()
+
 
 set(SOURCE_FILES
         src/utf8.cpp
