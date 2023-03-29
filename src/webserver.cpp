@@ -347,8 +347,10 @@ int handle(cchar *q0, int conn) {
 		q = q + 8;
 		safeMode = false;// RLLY?
 	}
+	if (contains(q, "."))safeMode=false;// RLLY? (property)
 	if (startsWith(q, ":learn"))safeMode=false;// RLLY?
 	if (startsWith(q, ":lable"))safeMode=false;// RLLY?
+	if (startsWith(q, ":label"))safeMode=false;// RLLY?
 	if (startsWith(q, ":delete"))safeMode=false;// RLLY?
 	if (startsWith(q, ":forget"))safeMode=false;// RLLY?
 

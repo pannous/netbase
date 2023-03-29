@@ -91,3 +91,24 @@ $125697387 :	Nighttime view		Subproperty of		image		-13451⇛-11647⇛-10018
 ^^^^
 
 Has list => list
+
+… Language of work or name		English		16957966⇛-10407⇛1860 => Language
+
+
+$165905122 :	President Barack Obama		Depicts		Chrysanthemum		50303833⇛-10180⇛59882
+$165905121 :	President Barack Obama		Depicts		Barack Obama		50303833⇛-10180⇛76
+$165905120 :	President Barack Obama		Creator		Kehinde Wiley		50303833⇛-10170⇛329092
+$165905119 :	President Barack Obama		type		http://wikiba.se/ontology#Item		50303833⇛-3⇛196184533
+$165905118 :	President Barack Obama		type		http://schema.org/Dataset		50303833⇛-3⇛196184525
+$4408483 :	President Barack Obama		instance		President Barack Obama		124152718⇛-4⇛50303833
+$349235611 :	First Lady Michelle Obama		Pendant of		President Barack Obama		50304023⇛-11639⇛50303833
+$713070561 :	(null)		synonym		President Barack Obama		52912457⇛-32⇛50303833
+-----------------------^ President Barack Obama #50303833 (kind: entity #-104), 32 statements ---  ^---------------
+netbase> Barack-Obama.Depiction
+does Barack-Obama have a Depiction?
++++++++++++++++++++++++++++++++++++
+++++++++++ Hits : 0 ++++++++++++++++++++
+netbase> Barack-Obama.Depictions
+does Barack-Obama have a Depictions?
++++++++++++++++++++++++++++++++++++
+++++++++++ Hits : 0 ++++++++++++++++++++
