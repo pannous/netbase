@@ -2444,8 +2444,8 @@ void testCurrent() {
 	p("Current Tests");
 	checkWikiData();
 	testLearn();
-	exit(0);
-	return;
+//	exit(0);
+//	return;
 //	testBug();
 //	releaseSharedMemory();
 //	clearMemory();

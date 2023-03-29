@@ -817,8 +817,8 @@ extern "C" void allowWipe() {
 extern char *getConfig(const char *name) {
 	if (file_exists("netbase.config")) {
 		FILE *infile = open_file("netbase.config");
-		char line[1000];
-//		char* key=(char*)malloc(1000);
+//		char line[1000];
+		char* line=(char*)malloc(1000);
 //		char* value=(char*)malloc(1000);
 		while (fgets(line, sizeof(line), infile) != NULL) {
 			if (line[0] == '#')continue;
