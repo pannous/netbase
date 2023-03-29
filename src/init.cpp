@@ -831,7 +831,7 @@ extern char *getConfig(const char *name) {
 //			int ok=sscanf(line, "%[^=]s=%s", key, value);// fuck c!
 // todo ignore space / camelcase data_path == dataPath
 			if (eq(key, name, true, true)) {
-				printf("got netbase.config setting %s=%s",key,value);
+				printf("got netbase.config setting %s=%s\n",key,value);
 				return clone(value);
 			}
 		}
@@ -883,7 +883,6 @@ void loadConfig() {// char* args
 			maxChars = maxNodes * averageNameLength;
 		if (maxChars < 10000)maxChars = maxChars * million;
 	}
-	maxChars = maxNodes * averageNameLength;
 	sizeOfSharedMemory = contextOffset + maxNodes * bytesPerNode + maxStatements * sizeof(Statement);
 }
 
