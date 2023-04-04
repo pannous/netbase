@@ -20,6 +20,7 @@
 #include "import.hpp"
 #include "relations.hpp"// for wordnet
 #include "reflection.hpp"
+#include "query.hpp"
 //#undef null
 //#include "json.hpp"
 //#define null 0
@@ -79,7 +80,8 @@ bool checkLowMemory() {
 		return true;
 	}
 #endif
-	//		 or currentSize*1.2>sizeOfSharedMemory or 
+	context=getContext(0, false);
+	//		 or currentSize*1.2>sizeOfSharedMemory or
 	if (context->nodeCount + 30000 > maxNodes) {
 		p("OUT OF MEMORY!");
 		pf("%d nodes!\n", context->nodeCount);
@@ -2834,6 +2836,11 @@ void importWikiData() {
 		p("NOT ENOUGH MEMORY FOR importWikiData");
 		return;
 	}
+	if(getProperty(getThe("Berlin"), getAbstract("Hauptstadt")),1,1){
+		p("WIKIDATA ALREADY IMPORTED");
+		return;
+	}
+
 	context = getContext(wikidata);
 	autoIds = false;
 	wiki_mode = true;

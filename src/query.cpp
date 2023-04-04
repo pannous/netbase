@@ -1916,7 +1916,7 @@ NodeSet findAll(Node *fro, NodeVector(*edgeFilter)(Node *, NodeQueue *, int *)) 
 	if (enqueued == 0) throw "out of memory for findPath";
 //	memset(enqueued, 0, min(context->nodeCount,maxNodes) * sizeof (bool)); // NOT neccessary?
 	NodeQueue q;
-	q.push(fro);
+	q.emplace(fro);
 	// NOT neccessary for anyPath , ...
 	NodeVector instances;
 	if (isAbstract(fro) and edgeFilter != anyFilterNoKinds and edgeFilter != instanceFilter and

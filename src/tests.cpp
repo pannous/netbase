@@ -26,13 +26,12 @@ void checkWordnet() {
 
 void checkWikiData() {
 	if (hasWord("hamburg") && eq(get(1055)->name, "hamburg")) return;
-	else if(file_exists("data/contexts.bin")){
+	else if (file_exists("data/contexts.bin")) {
 		load(true);
 		if (!hasWord("hamburg") && eq(get(1055)->name, "hamburg"))
 			printf("Loaded data/contexts.bin but no hamburg found");
 		save();
-	}
-	else importWikiData();
+	} else importWikiData();
 }
 
 void checkGeo() {
@@ -1313,15 +1312,15 @@ NV qa(char *text) {
 }
 
 void testLearn() {
-	autoIds= true;
+	autoIds = true;
 	auto pNode = getThe("synonym");
-	check(pNode->id==-32);
+	check(pNode->id == -32);
 	check(checkNode(pNode));
-	
-	Statement *statement=learn("30 synonym USA");
+
+	Statement *statement = learn("30 synonym USA");
 	check(statement->subject == 30);
 	check(statement->predicate == -32);
-	check(eq(get(statement->object)->name,"USA"));
+	check(eq(get(statement->object)->name, "USA"));
 //	handle(":learn 30 synonym USA");
 	check(isA(get(30), getAbstract("USA")));
 	// todo getThe => getEntity("Q30")
@@ -2427,14 +2426,22 @@ void testBug() {// current
 	exit(0);
 }
 
-void testPrint(){
-	if(LIVE or getContext()->nodeCount > 100000){
+void testPrint() {
+	if (LIVE or getContext()->nodeCount > 100000) {
 		p("LIVE DATA? not testing");
 		p(get(111));
 		parse("111");
 		handle("111");
 		return;
 	}
+}
+
+bool checkLowMemory();
+void deleteLastNodesForTesting(){
+	if(context->lastNode >= maxNodes - propertySlots-100000)
+	for (int i = 0; i < 1000000; i++)
+		get(context->lastNode--)->id=0;
+
 }
 
 void testCurrent() {
@@ -2444,6 +2451,12 @@ void testCurrent() {
 	p("Current Tests");
 	checkWikiData();
 	testLearn();
+	deleteLastNodesForTesting();
+	for (int i = 0; i < 1000; i++) {
+		auto pNode = add("test");
+		check(checkNode(pNode));
+	}
+
 //	exit(0);
 //	return;
 //	testBug();
@@ -2460,8 +2473,8 @@ void testCurrent() {
 //	learn("berlin is city");
 //	clearMemory();
 //	parse("berlin",0,1);
-	useGermanLabels= false;
-	initRelations();
+//	useGermanLabels= false;
+//	initRelations();
 //	importWordnet();
 	importWikiData();
 //	handle("love");// you can't! bjork!
@@ -2469,8 +2482,7 @@ void testCurrent() {
 //	check(isA(getThe("love"),Verb));
 //	check(isA(getThe("love"),getThe("verb")));
 	Node *berlin = hasWord("berlin");
-	if (berlin == 0)
-	{check("berlin must be there!"==0)}
+	if (berlin == 0) {check("berlin must be there!" == 0)}
 
 
 

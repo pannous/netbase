@@ -88,7 +88,8 @@ void getline(char *buf) {
 		return;
 	}
 //	tmp=fixQuotesAndTrim(tmp);// LATER!
-	if (strncmp(tmp, buf, MAXLENGTH) and strlen(tmp) > 0) add_history(tmp); // only add new content
+	if (strncmp(tmp, buf, MAXLENGTH) and strlen(tmp) > 0)
+		add_history(tmp); // only add new content
 	strncpy(buf, tmp, MAXLENGTH);
 	buf[MAXLENGTH - 1] = '\0';
 	write_history(".netbase_history");
@@ -148,9 +149,8 @@ void console() {
 	quiet = false;
 	if (useGermanLabels)printf("\nDeutsch");
 	printf("\nNetbase C++ Version %s\n",version);
-	if(LIVE)printf("LIVE MODE\n");
-
-	char *data = (char *) malloc(10000);
+	if(LIVE) printf("LIVE MODE\n");
+	char *data = (char *) calloc(10000,1);
 #ifdef signal
 	setjmp(try_context); //recovery point
 #endif
@@ -210,7 +210,7 @@ NodeVector parse(const char *data0, bool safeMode, bool info) {
 	if (data[0] == ':' and info) appendFile("logs/commands.log", data);
 	else appendFile("logs/query.log", data);
 
-
+	lenge=strlen(data);
 	if (data[lenge - 1] == '\n') {
 		data[lenge - 1] = 0;
 		lenge--;

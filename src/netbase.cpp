@@ -587,7 +587,7 @@ Node *initNode(Node *node, int id, const char *nodeName, int kind, int contextId
 	return node;
 }
 
-// returns: OK?
+// returns: 'OK'
 bool checkNode(Node *node, int nodeId, bool checkStatements, bool checkNames, bool report) {//
 //	bool report=true;
 	if (node == 0) {
@@ -700,21 +700,23 @@ Node *add(const char *key, const char *nodeName) {
 }
 
 
-void checkOutOfMemory() {
+bool checkOutOfMemory() {
 	if (context->lastNode <= 0) {
 		p("lastNode <=0 MEMORY FULL!!!");
 		out_of_memory = true;
 	}
 	if (context->lastNode >= maxNodes - propertySlots) {
-		pf("context->lastNode > maxNodes - propertySlots %d>%ld ", context->lastNode, maxNodes - propertySlots);
-		p("MEMORY FULL!!!");
+		pf("\ncontext->lastNode > maxNodes - propertySlots %d>%ld ", context->lastNode, maxNodes - propertySlots);
+		p("\nMEMORY FULL!!!");
 		out_of_memory = true;
 		exit(1);
 	}
+	return out_of_memory;
 }
 
 
 Node *add(const char *nodeName, int kind, int contextId) { //=node =current_context
+	::printf("%x\n",context->lastNode);
 	if(LIVE){
 		bad("NO NEW NODES IN LIVE MODE");
 		return 0;
@@ -730,8 +732,9 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	Node *node;
 	do {
 		context->lastNode++;// DON't MOVE!
+		::printf("%x\n",context->lastNode);
 		node = &(context->nodes[context->lastNode]);
-		checkOutOfMemory();
+		out_of_memory=checkOutOfMemory();
 		if (out_of_memory)return Error;
 	} while (node->id != 0);
 
