@@ -864,7 +864,6 @@ void loadConfig() {// char* args
 	if (getConfig("lookupLimit"))lookupLimit = atoi(getConfig("lookupLimit"));
 	if (getConfig("german"))useGermanLabels = isTrue(getConfig("german"));
 	if (getConfig("germanLabels"))useGermanLabels = isTrue(getConfig("germanLabels"));
-	if (getConfig("live"))LIVE = isTrue(getConfig("live"));
 	if (getConfig("LIVE"))LIVE = isTrue(getConfig("LIVE"));
 	if (getConfig("USE_MMAP"))USE_MMAP = isTrue(getConfig("USE_MMAP"));
 	if (getConfig("data_path"))data_path = getConfig("data_path");
