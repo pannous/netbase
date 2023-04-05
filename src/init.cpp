@@ -215,7 +215,7 @@ void *share_memory(key_t key, long long sizeOfSharedMemory, void *root, const vo
 		printf("FYI: root_memory != desired shmat_root %p!=%p \n", root, desired);
 //		fixPointers();
 	}
-	pf("share_memory at %p	size = %zX	max = %p\n", root, sizeOfSharedMemory, (char *) root + sizeOfSharedMemory);
+	pf("share_memory at %p	size = %llX	max = %p\n", root, sizeOfSharedMemory, (char *) root + sizeOfSharedMemory);
 	return root;
 }
 
@@ -870,15 +870,15 @@ void loadConfig() {// char* args
 	if (getConfig("data_path"))data_path = getConfig("data_path");
 	if (getConfig("dataPath"))data_path = getConfig("dataPath");
 	if (getConfig("maxNodes")) {
-		maxNodes = atoi(getConfig("maxNodes"));
+		maxNodes = atol(getConfig("maxNodes"));
 		if (maxNodes < 10000)maxNodes = maxNodes * million;
 		if (getConfig("maxStatements"))
-			maxStatements = atoi(getConfig("maxStatements"));
+			maxStatements = atol(getConfig("maxStatements"));
 		else
 			maxStatements = maxNodes * 2;
 		if (maxStatements < 10000)maxStatements = maxStatements * million;
 		if (getConfig("maxChars"))
-			maxChars = atoi(getConfig("maxChars"));
+			maxChars = atol(getConfig("maxChars"));
 		else
 			maxChars = maxNodes * averageNameLength;
 		if (maxChars < 10000)maxChars = maxChars * million;
