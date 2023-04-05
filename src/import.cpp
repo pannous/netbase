@@ -2836,10 +2836,10 @@ void importWikiData() {
 		p("NOT ENOUGH MEMORY FOR importWikiData");
 		return;
 	}
-	if(getProperty(getThe("Berlin"), getAbstract("Hauptstadt")),1,1){
-		p("WIKIDATA ALREADY IMPORTED");
-		return;
-	}
+//	if(getProperty(getThe("Berlin"), getAbstract("Hauptstadt")),1,1){
+//		p("WIKIDATA ALREADY IMPORTED");
+//		return;
+//	}
 
 	context = getContext(wikidata);
 	autoIds = false;
