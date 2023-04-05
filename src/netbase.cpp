@@ -716,7 +716,6 @@ bool checkOutOfMemory() {
 
 
 Node *add(const char *nodeName, int kind, int contextId) { //=node =current_context
-	::printf("%x\n",context->lastNode);
 	if(LIVE){
 		bad("NO NEW NODES IN LIVE MODE");
 		return 0;
@@ -732,7 +731,6 @@ Node *add(const char *nodeName, int kind, int contextId) { //=node =current_cont
 	Node *node;
 	do {
 		context->lastNode++;// DON't MOVE!
-		::printf("%x\n",context->lastNode);
 		node = &(context->nodes[context->lastNode]);
 		out_of_memory=checkOutOfMemory();
 		if (out_of_memory)return Error;
