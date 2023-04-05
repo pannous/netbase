@@ -2694,7 +2694,7 @@ void setLabel(Node *n, cchar *label, bool addInstance, bool renameInstances) {
 	} else if (label >= c->nodeNames && label < c->nodeNames+c->currentNameSlot) {
 		n->name = const_cast<char *>(label);
 	} else {
-		checkOutOfMemory();
+//		checkOutOfMemory();
 //		strlcpy(newLabel, label,len);
 		strcpy(newLabel, label);
 		newLabel[len] = 0;// be sure!
