@@ -713,6 +713,10 @@ bool checkOutOfMemory() {
 		out_of_memory = true;
 		exit(1);
 	}
+	if(context->currentNameSlot>=maxChars - 10000){
+		p("context->currentNameSlot>=maxChars MEMORY FULL!!!");
+		out_of_memory = true;
+	}
 	return out_of_memory;
 }
 
@@ -2690,7 +2694,9 @@ void setLabel(Node *n, cchar *label, bool addInstance, bool renameInstances) {
 	} else if (label >= c->nodeNames && label < c->nodeNames+c->currentNameSlot) {
 		n->name = const_cast<char *>(label);
 	} else {
-		strlcpy(newLabel, label,len);
+		checkOutOfMemory();
+//		strlcpy(newLabel, label,len);
+		strcpy(newLabel, label);
 		newLabel[len] = 0;// be sure!
 		n->name = newLabel;//
 		c->currentNameSlot += len + 1;
