@@ -1,4 +1,6 @@
 #include <string>
+#include <string.h> // strlcpy
+
 #include <sstream>
 #include <iostream>
 #include <map>
