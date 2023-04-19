@@ -47,7 +47,8 @@ bool _allowWipe = false;
 const void * shmat_root = (const void *) 0x10000000; // just higher than system Recommendation
 #else
 //const void *shmat_root = (const void *) 0x0220000000;// java !
-const void *shmat_root = (const void *) 0x7f6000000000;
+//const void *shmat_root = (const void *) 0x7f6000000000;
+const void *shmat_root = (const void *) 0x400000000000;
 #endif
 
 bool virgin_memory = false;
