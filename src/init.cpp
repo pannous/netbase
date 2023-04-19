@@ -312,7 +312,8 @@ extern "C" void initSharedMemory(bool relations) {
 	auto desired_node_root =(void*)( (long)shmat_root + 0x10000000000);//
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, desired_node_root);
 //	p("statement_root:");
-	char *desiredRootS = ((char *) node_root) + node_size;
+//	char *desiredRootS = ((char *) node_root) + node_size;
+	auto desiredRootS =(void*)( (long)shmat_root + 0x20000000000);//
 	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root, desiredRootS);
 //	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
