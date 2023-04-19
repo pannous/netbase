@@ -297,7 +297,7 @@ extern "C" void initSharedMemory(bool relations) {
 	long context_size = contextOffset;
 	long node_size = maxNodes * sizeof(Node);
 	long abstract_size = maxNodes * sizeof(Ahash) * 2;
-	long name_size = maxChars;
+	long long name_size = maxChars;
 	long statement_size = maxStatements * sizeof(Statement);
 //	node_root=&context_root[contextOffset];
 //	p("abstract_root:");
@@ -307,7 +307,8 @@ extern "C" void initSharedMemory(bool relations) {
 	char *desiredAddress = ((char *) abstracts) + abstract_size;
 	name_root = (char *) share_memory(key + 1, name_size, name_root, desiredAddress);
 	//	p("node_root:");
-	node_root = (Node *) share_memory(key + 2, node_size, node_root, name_root + name_size);
+	auto desired_node_root = name_root + name_size + 0x4e15c54800;// @jini WHY?
+	node_root = (Node *) share_memory(key + 2, node_size, node_root, desired_node_root);
 //	p("statement_root:");
 	char *desiredRootS = ((char *) node_root) + node_size;
 	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root, desiredRootS);
@@ -845,7 +846,7 @@ bool isTrue(char *c) {
 	return eq(c, "true") || eq(c, "1") || eq(c, "yes");
 }
 
-long maxChars = 10 * million;// SET VIA netbase.config !
+long long maxChars = 10 * million;// SET VIA netbase.config !
 long maxNodes = 10 * million;// *40byte => 400MB  300*million;// Live 11.11.2018
 
 // => 400MB  300*million;// Live 11.11.2018

@@ -676,7 +676,7 @@ static long stupidCompiler=billion+ahashSize+sizeOfSharedMemory;//abstractHashSi
 
 #else
 
-extern long maxChars;
+extern long long  maxChars;
 extern long maxNodes;
 extern long maxStatements;
 extern long sizeOfSharedMemory;
