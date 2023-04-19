@@ -48,7 +48,7 @@ const void * shmat_root = (const void *) 0x10000000; // just higher than system 
 #else
 //const void *shmat_root = (const void *) 0x0220000000;// java !
 //const void *shmat_root = (const void *) 0x7f6000000000;
-const void *shmat_root = (const void *) 0x400000000000;
+const void *shmat_root = (const void *) 0x800000000000;
 #endif
 
 bool virgin_memory = false;
@@ -308,7 +308,7 @@ extern "C" void initSharedMemory(bool relations) {
 	char *desiredAddress = ((char *) abstracts) + abstract_size;
 	name_root = (char *) share_memory(key + 1, name_size, name_root, desiredAddress);
 	//	p("node_root:");
-	auto desired_node_root = name_root + name_size + 0x4e15c54800;// @jini WHY?
+	auto desired_node_root = name_root + name_size;// + 0x4e15c54800;// @jini WHY?
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, desired_node_root);
 //	p("statement_root:");
 	char *desiredRootS = ((char *) node_root) + node_size;
