@@ -1,5 +1,4 @@
 #include <string>
-#include <string.h> // strlcpy
 
 #include <sstream>
 #include <iostream>
@@ -3193,3 +3192,29 @@ int main(int argc, char *argv[]) {
 	//  } catch (std::exception const& ex) {
 }
 // _MAIN_ ^^^
+
+//#include <Python.h>
+//#include "Python.h"
+//
+//static PyObject *my_module_function(PyObject *self, PyObject *args) {
+//	// define your module function here
+//}
+//
+//static PyMethodDef my_module_methods[] = {
+//		{"my_module_function", my_module_function, METH_VARARGS, "Description of my module function"},
+//		// add other methods here
+//		{NULL, NULL, 0, NULL}
+//};
+//
+//static struct PyModuleDef my_module_definition = {
+//		PyModuleDef_HEAD_INIT,
+//		"my_module",
+//		"Description of my module",
+//		-1,
+//		my_module_methods
+//};
+//
+//
+//PyMODINIT_FUNC PyInit_netbase(void) {
+//	return PyModule_Create(&my_module_definition);
+//}
