@@ -808,11 +808,11 @@ char *fixQuotesAndTrim(char *tmp) {
 }
 
 //#define str string
-//string itoa(int i) {
-//	std::stringstream ss;
-//	ss << i;
-//	return ss.str();
-//}
+string itoa(int i) {
+	std::stringstream ss;
+	ss << i;
+	return ss.str();
+}
 
 
 char *replace(char *data, char what, char with) {
@@ -1306,7 +1306,7 @@ void removeNode(NV &all,N n) {
 	}
 }
 
-chars itoa(long num) {
+chars itoa0(long num) {
 	char* buf = new char[33];
 	int i = 30;
 	for (; num && i; --i, num /= 10)
@@ -1316,7 +1316,7 @@ chars itoa(long num) {
 
 chars formatRealWithBaseAndPrecision(double num, int base = 10, int digits_after_zero = 4) {/*significant_digits*/
 	auto remainder = abs(num) - abs(long(num));
-	chars f = concat((chars) (itoa(int(num))), (chars)".");
+	chars f = concat((chars) (itoa0(int(num))), (chars)".");
 	while (digits_after_zero-- > 0) {
 		remainder *= base;
 		auto digit = itoa(int(remainder));

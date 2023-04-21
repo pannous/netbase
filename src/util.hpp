@@ -115,9 +115,9 @@ bool isAbstract(Node* object);
 //bool contains(NodeVector& v, Node* o,bool fuzzy=false);
 bool contains(NodeVector v, Node* o,bool fuzzy=false);
 bool contains(vector<char*>& all, const char* node);
-chars itoa(long num);
+chars itoa0(long num);
 chars ftoa(double num);
-//string itoa(int i);
+string itoa(int i);
 void appendFile(const char* fileName,const char* data);
 
 #define check(assertion) {pf("TEST %s\n",#assertion);\
