@@ -605,10 +605,10 @@ int handle(cchar *q0, int conn) {
 				if (verbosity == abstract and s->Predicate() != Instance and s->Predicate() != Type)continue;
 				if (!checkNode(s->object, false, true))continue;
 				if (use_json and good > 0)Writeline(conn, ",\n");
-				chars objectName = s->Object()->name;
+				char* objectName = s->Object()->name;
 
 				if (objectName == 0 or eq(objectName,"#") and s->Object()->value.data)
-					objectName  = ftoa(s->Object()->value.number);
+					objectName  = (char*) ftoa(s->Object()->value.number).data();
 
 				if (s->Predicate() == Instance) {
 					N type = getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);

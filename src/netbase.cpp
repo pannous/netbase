@@ -1792,8 +1792,8 @@ bool show(Node *n, bool showStatements) {        //=true
 	//		printf("Node#%p: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%p)\n", n->id, n->name,text, img.data(),n);
 	chars nam = n->name;
-	if (nam == 0 or eq(nam,"#") and n->value.data)
-		nam = ftoa(n->value.number);
+	if (eq(nam,"#") and n->value.data)
+		printf("%d\t%f\t\t(%d statements)\n", n->id, n->value.number, n->statementCount);//img.data(),
 	if (!text or isAbstract(n) or isValue(n) or strlen(text) == 0)
 		printf("%d\t%s\t\t(%d statements)\n", n->id, nam, n->statementCount);//img.data(),
 	else

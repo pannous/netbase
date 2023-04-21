@@ -1306,30 +1306,6 @@ void removeNode(NV &all,N n) {
 	}
 }
 
-chars itoa0(long num) {
-	char* buf = new char[33];
-	int i = 30;
-	for (; num && i; --i, num /= 10)
-		buf[i] = "0123456789"[num%10];
-	return &buf[i + 1];
-}
-
-chars formatRealWithBaseAndPrecision(double num, int base = 10, int digits_after_zero = 4) {/*significant_digits*/
-	auto remainder = abs(num) - abs(long(num));
-	chars f = concat((chars) (itoa0(int(num))), (chars)".");
-	while (digits_after_zero-- > 0) {
-		remainder *= base;
-		auto digit = itoa(int(remainder));
-		remainder -= int(remainder);
-		f = concat(f, digit);
-	}
-	int len = strlen(f);// cut trailing 0 : 1.1000 -> 1.1
-	for (int i = 1; i < len; ++i) {
-		if (f[len - i] == '0') ((char *) f)[len - i] = 0;
-		else break;
-	}
-	return f;
-}
-chars ftoa(double num) {
-	return formatRealWithBaseAndPrecision(num, 10, 4);
+string ftoa(double num) {
+	return std::to_string(num);
 }
