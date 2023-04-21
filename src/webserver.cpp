@@ -605,7 +605,11 @@ int handle(cchar *q0, int conn) {
 				if (verbosity == abstract and s->Predicate() != Instance and s->Predicate() != Type)continue;
 				if (!checkNode(s->object, false, true))continue;
 				if (use_json and good > 0)Writeline(conn, ",\n");
-				char *objectName = s->Object()->name;
+				chars objectName = s->Object()->name;
+
+				if (objectName == 0 or eq(objectName,"#") and s->Object()->value.data)
+					objectName  = ftoa(s->Object()->value.number);
+
 				if (s->Predicate() == Instance) {
 					N type = getClass(s->Object());// findProperty(s->Object(),Type->name,0,50);
 					if (checkNode(type, -1, false, true) and type->id != _entity and !contains(objectName, type->name))
@@ -619,7 +623,9 @@ int handle(cchar *q0, int conn) {
 					continue;// hebrew?
 				}
 
-				if (objectName[strlen(objectName) - 1] == '\n')objectName[strlen(objectName) - 1] = 0;
+				if (objectName[strlen(objectName) - 1] == '\n')
+					objectName[strlen(objectName) - 1] = 0;
+
 				char *subject = fixName(s->Subject()->name);
 				char *predicate = fixName(s->Predicate()->name);
 				char *object = fixName(objectName);

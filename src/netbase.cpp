@@ -1722,9 +1722,10 @@ void showStatement(Statement *s) {
 
 	if (checkNode(s->Subject(), s->subject) and checkNode(s->Predicate(), s->predicate) and
 	    checkNode(s->Object(), s->object))
-		//    if(s->Object->value.number)
-		//      printf("%d\t%s\t\t%s\t\t%g %s\t%d\t%d\t%d\n", s->id, s->Subject->name, s->Predicate->name, s->Object->value.number,s->Object->name, s->subject, s->predicate, s->object);
-		//    else
+		    if(s->Object()->value.data and eq(s->Object()->name,"#"))
+			    printf("$%d :\t%s\t\t%s\t\t%f\t\t%d⇛%d⇛%d\n", s->id(), s->Subject()->name, s->Predicate()->name,
+			           s->Object()->value.number, s->subject, s->predicate, s->object);
+		    else
 		printf("$%d :\t%s\t\t%s\t\t%s\t\t%d⇛%d⇛%d\n", s->id(), s->Subject()->name, s->Predicate()->name,
 		       s->Object()->name, s->subject, s->predicate,
 		       s->object);
@@ -1790,10 +1791,13 @@ bool show(Node *n, bool showStatements) {        //=true
 	//  else
 	//		printf("Node#%p: context:%d id=%d name=%s statementCount=%d kind=%d\n",n,n->context,n->id,n->name,n->statementCount,n->kind);
 	//		printf("%d\t%s\t%s\t%s\t(%p)\n", n->id, n->name,text, img.data(),n);
+	chars nam = n->name;
+	if (nam == 0 or eq(nam,"#") and n->value.data)
+		nam = ftoa(n->value.number);
 	if (!text or isAbstract(n) or isValue(n) or strlen(text) == 0)
-		printf("%d\t%s\t\t(%d statements)\n", n->id, n->name, n->statementCount);//img.data(),
+		printf("%d\t%s\t\t(%d statements)\n", n->id, nam, n->statementCount);//img.data(),
 	else
-		printf("%d\t%s\t\t%s\t(%d statements)\n", n->id, n->name, text, n->statementCount);//img.data(),
+		printf("%d\t%s\t\t%s\t(%d statements)\n", n->id, nam, text, n->statementCount);//img.data(),
 //  if(n->statementCount<=1)return false;
 	//	printf("%s\t\t(#%d)\t%s\n", n->name, n->id, img.data());
 	// else
@@ -1807,7 +1811,7 @@ bool show(Node *n, bool showStatements) {        //=true
 			if (checkStatement(s)) showStatement(s);
 			else pf("BROKEN STATEMENT: %p\n", s);// break?
 		}
-		printf("-----------------------^ %s #%d (kind: %s #%d), %d statements --- %s ^---------------\n", n->name,
+		printf("-----------------------^ %s #%d (kind: %s #%d), %d statements --- %s ^---------------\n", nam,
 		       n->id, get(n->kind)->name, n->kind, n->statementCount, text);
 		flush();
 	}
@@ -2187,10 +2191,11 @@ Node *value(const char *aname, double v, const char *unit) {
 	return value(aname, v, getThe(unit));
 }
 
+bool dublicate_value_in_name=false;
 Node *value(const char *name, double v, Node *unit/*kind*/) {
 	char *new_name = 0;
 
-	if (name == 0 or strlen(name) == 0) {
+	if (name == 0 or strlen(name) == 0 and dublicate_value_in_name) {
 		new_name = (char *) malloc(1000);// no todo: name_root done in getThe()
 		if (unit == Number or unit == Integer or unit == 0) {// double / long
 			sprintf(new_name, "%g", v); //Use the shorter of %e or %f 3.14 or 24E+35
@@ -2202,6 +2207,9 @@ Node *value(const char *name, double v, Node *unit/*kind*/) {
 		}
 		name = new_name;
 	}
+	if(name==0 or strlen(name) == 0)
+		name="#";
+
 	Node *n;
 	if (!unit or (unit->id < 1000 and unit != Number))
 		n = getThe(name); // 69 (year vs number!!)
