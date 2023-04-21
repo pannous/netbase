@@ -506,6 +506,8 @@ string getImage(Node* a, int size=150,bool thumb=false);
 
 Node* value(const char* name, double v,const char* unit);
 Node * value(const char* aname, double v, Node* unit = 0);
+Node *numberNode(double v);// name:"#"
+
 extern "C" void saveData(int node,void* data,int size,bool copy);
 extern "C" void* getData(int node);
 extern "C" Payload getValue(int node);

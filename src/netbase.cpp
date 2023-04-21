@@ -1573,7 +1573,9 @@ Node *rdfValue(char *name) {
 		unit = 0;// -> decimal BUG
 	else if (eq(unit, "nonNegativeInteger")) unit = 0; //-> number
 	else if (eq(unit, "yago0to100")) unit = 0;
-	if (!unit) return value(name, atof(name), Number);// unit==0 means number, ignore extra chars 123\"
+	if (!unit)
+		return numberNode(atof(name));
+//		return value(name, atof(name), Number);// unit==0 means number, ignore extra chars 123\"
 
 	if (eq(unit, "m")) unit = "Meter";
 	else if (eq(unit, "%")); // OK
@@ -2189,6 +2191,12 @@ int valueId(const char *aname, double v, int unit) {
 
 Node *value(const char *aname, double v, const char *unit) {
 	return value(aname, v, getThe(unit));
+}
+
+Node *numberNode(double v){
+	auto nod = add("#", _number, 0);
+	nod->value.number = v;
+	return nod;
 }
 
 bool dublicate_value_in_name=false;
