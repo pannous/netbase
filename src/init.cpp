@@ -137,13 +137,13 @@ void increaseShmMax() {
 
 
 #ifdef __APPLE__
-	long mem=4*GB;
+	long mem = 4 * GB;
 //	long mem=sizeOfSharedMemory;
-	system((string("sudo sysctl -w kern.sysv.shmmax=")+std::to_string(mem)).data());
-	system((string("sudo sysctl -w kern.sysv.shmall=")+std::to_string(mem/4096)).data());
+	system((string("sudo sysctl -w kern.sysv.shmmax=") + std::to_string(mem)).data());
+	system((string("sudo sysctl -w kern.sysv.shmall=") + std::to_string(mem / 4096)).data());
 #else
-//	system((string("sudo sysctl -w kernel.shmmax=") + patch::to_string(sizeOfSharedMemory)).data());
-//	system((string("sudo sysctl -w kernel.shmall=") + patch::to_string(sizeOfSharedMemory / 4096)).data());
+	//	system((string("sudo sysctl -w kernel.shmmax=") + patch::to_string(sizeOfSharedMemory)).data());
+	//	system((string("sudo sysctl -w kernel.shmall=") + patch::to_string(sizeOfSharedMemory / 4096)).data());
 #endif
 	p("If you still cannot start netbase, decrease maxNodes in netbase.hpp");// or adjust shmmax, see clear-shared-memory.sh");
 }
@@ -301,19 +301,19 @@ extern "C" void initSharedMemory(bool relations) {
 	long long name_size = maxChars;
 	long statement_size = maxStatements * sizeof(Statement);
 //	node_root=&context_root[contextOffset];
-//	p("abstract_root:");
+	p("abstract_root:");
 	abstracts = (Ahash *) share_memory(key, abstract_size, abstracts, root);
 	// ((char*) context_root) + context_size
-//	p("name_root:");
+	p("name_root:");
 	char *desiredAddress = ((char *) abstracts) + abstract_size;
 	name_root = (char *) share_memory(key + 1, name_size, name_root, desiredAddress);
-	//	p("node_root:");
+	p("node_root:");
 //	auto desired_node_root =	name_root + name_size;// + 0x4e15c54800;// @jini WHY?
-	auto desired_node_root =(void*)( (long)shmat_root + 0x10000000000);//
+	auto desired_node_root = (void *) ((long) shmat_root + 0x10000000000);//
 	node_root = (Node *) share_memory(key + 2, node_size, node_root, desired_node_root);
-//	p("statement_root:");
+	p("statement_root:");
 //	char *desiredRootS = ((char *) node_root) + node_size;
-	auto desiredRootS =(void*)( (long)shmat_root + 0x20000000000);//
+	auto desiredRootS = (void *) ((long) shmat_root + 0x20000000000);//
 	statement_root = (Statement *) share_memory(key + 3, statement_size, statement_root, desiredRootS);
 //	p("keyhash_root:");// for huge datasets ie freebase
 //	short ns = sizeof(Node*); // ;
@@ -407,9 +407,10 @@ int open_map(const char *file0, long size) {
 //	bool grow = false;
 	bool grow = true;// DANGER?
 	long filesize = fileSize(fd);
-	if (!exists or (filesize < size)){
+	if (!exists or (filesize < size)) {
 		printf("GROWING %s from %ld to %ld bytes", file0, filesize, size);
-		if(grow){file_allocate(fd,size);
+		if (grow) {
+			file_allocate(fd, size);
 		}
 	}
 	if (errno and errno != EEXIST) {
@@ -423,21 +424,21 @@ int open_map(const char *file0, long size) {
 
 void file_allocate(int fd, long size) {
 #if defined(HAVE_POSIX_FALLOCATE)
-    posix_fallocate(fd, 0, size);
+	posix_fallocate(fd, 0, size);
 #elif defined(XP_WIN)
-    return PR_Seek64(aFD, aLength, PR_SEEK_SET) == aLength
-    && 0 != SetEndOfFile((HANDLE)PR_FileDesc2NativeHandle(aFD));
+	return PR_Seek64(aFD, aLength, PR_SEEK_SET) == aLength
+	&& 0 != SetEndOfFile((HANDLE)PR_FileDesc2NativeHandle(aFD));
 #elif defined(XP_MACOSX)
-    int fd = PR_FileDesc2NativeHandle(aFD);
+	int fd = PR_FileDesc2NativeHandle(aFD);
   fstore_t store = {F_ALLOCATECONTIG, F_PEOFPOSMODE, 0, aLength};
   // Try to get a continous chunk of disk space
   int ret = fcntl(fd, F_PREALLOCATE, &store);
-    if(-1 == ret){
-    // OK, perhaps we are too fragmented, allocate non-continuous
-    store.fst_flags = F_ALLOCATEALL;
-    ret = fcntl(fd, F_PREALLOCATE, &store);
-    if (-1 == ret)
-      return false;
+	if(-1 == ret){
+	// OK, perhaps we are too fragmented, allocate non-continuous
+	store.fst_flags = F_ALLOCATEALL;
+	ret = fcntl(fd, F_PREALLOCATE, &store);
+	if (-1 == ret)
+	  return false;
   }
   return 0 == ftruncate(fd, aLength);
 #endif
@@ -466,7 +467,7 @@ void loadMemoryMaps() {
 	close(fd);
 
 	fd = open_map("names.bin", nameSize);
-	name_root = (char *)mmap((char *) abstracts + abstractsSize, nameSize, mode, flags, fd, 0);
+	name_root = (char *) mmap((char *) abstracts + abstractsSize, nameSize, mode, flags, fd, 0);
 	close(fd);
 	if (name_root == MAP_FAILED) {
 		perror("names.bin MAP_FAILED ");
@@ -494,16 +495,15 @@ void loadMemoryMaps() {
 //	fixNodeNames(context, (char *) 0x2e8000000);// hack
 	if (context->nodeNames != name_root)
 		fixNodeNames(context, context->nodeNames);
-	if(context->statements != statement_root){
+	if (context->statements != statement_root) {
 		printf("WRONG IMPORT");
 		exit(0);
 	}
-	if(context->nodes != node_root+propertySlots){
+	if (context->nodes != node_root + propertySlots) {
 		printf("WRONG IMPORT");
 		exit(0);
 	}
-	if(context->lastNode > maxNodes-propertySlots)
-	{
+	if (context->lastNode > maxNodes - propertySlots) {
 		printf("OUT OF MEMORY");
 		printf("WRONG IMPORT");
 		exit(0);
@@ -836,7 +836,7 @@ extern char *getConfig(const char *name) {
 //			int ok=sscanf(line, "%[^=]s=%s", key, value);// fuck c!
 // todo ignore space / camelcase data_path == dataPath
 			if (eq(key, name, true, true)) {
-				printf("got netbase.config setting %s=%s\n",key,value);
+				printf("got netbase.config setting %s=%s\n", key, value);
 				return clone(value);
 			}
 		}
@@ -861,7 +861,7 @@ void loadConfig() {// char* args
 	if (getConfig("PORT"))SERVER_PORT = atoi(getConfig("PORT"));
 	if (getConfig("SERVER_PORT"))SERVER_PORT = atoi(getConfig("SERVER_PORT"));
 
-	if (getConfig("limit")){
+	if (getConfig("limit")) {
 		lookupLimit = atoi(getConfig("limit"));
 		resultLimit = atoi(getConfig("limit"));
 	}
