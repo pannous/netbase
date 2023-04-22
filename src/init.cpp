@@ -320,8 +320,9 @@ extern "C" void initSharedMemory(bool relations) {
 //	keyhash_root = (Node**) share_memory(key + 5, 1 * billion * ns, keyhash_root, ((char*) statement_root) + statement_size);
 	//	freebaseKey_root=(int*) share_memory(key + 5, freebaseHashSize* sizeof(int), freebaseKey_root, ((char*) statement_root) + statement_size);
 
-//  	p("context_root:");
-	char *desiredRootC = ((char *) statement_root) + statement_size;
+  	p("context_root:");
+//	char *desiredRootC = ((char *) statement_root) + statement_size;
+	char *desiredRootC = (char *) ((long) shmat_root + 0x30000000000);//
 	context_root = (Context *) share_memory(key + 4, context_size, context_root, desiredRootC);
 //	extrahash = (Ahash *) &abstracts[maxNodes]; // (((char*)abstract_root + abstractHashSize);
 	contexts = (Context *) context_root;
